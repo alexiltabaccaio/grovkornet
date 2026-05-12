@@ -1,0 +1,16 @@
+# Antigravity Project Rules - Grovkornet
+
+## Workflow & Communication
+- **PRIMA DI MODIFICARE IL CODICE:** Proponi sempre un **Implementation Plan** dettagliato per modifiche complesse.
+- **CONFERMA:** Non applicare modifiche architetturali o complesse ai file finché non ricevi una conferma esplicita.
+- Mantieni le spiegazioni concise e focalizzate sul codice e le performance.
+
+## Architettura e Standard (React Native / Expo)
+- **Struttura (`src/`):** Organizza il progetto in directory logiche (`components`, `hooks`, `utils`, `assets`).
+- **TypeScript:** Usa TypeScript rigorosamente (evita `any`), definendo le interfacce per le props.
+- **Stile:** Usa `StyleSheet.create` o styling nativo di React Native.
+
+## Prestazioni e UI (Vision Camera, Skia & Reanimated)
+- **Worklets e UI Thread:** Fai molta attenzione alle performance. Quando scrivi logica per i frame processor (`react-native-vision-camera`) o per le animazioni (`react-native-reanimated`), assicurati di eseguire il codice corretto come worklet per evitare cali di frame (obiettivo 60 FPS fissi).
+- **React Native Skia:** Ottimizza l'uso degli shader (es. per l'effetto grana) pre-calcolando valori dove possibile e minimizzando il carico sulla GPU.
+- **Re-render:** Evita ri-renderizzazioni non necessarie dei componenti, in particolar modo durante lo streaming live della videocamera. Metti in cache callbacks e memoizza calcoli pesanti.

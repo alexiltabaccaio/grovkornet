@@ -3,25 +3,33 @@ uniform float time;
 uniform vec2 resolution;
 
 float random(vec2 p) {
-    vec2 K1 = vec2(
-        23.14069263277926, // e^pi (Gelfond's constant)
-         2.665144142690225 // 2^sqrt(2) (Gelfond-Schneider constant)
-    );
-    return fract( cos( dot(p,K1) ) * 12345.6789 );
+    // Numeri magici per un rumore pseudo-casuale
+    vec2 K1 = vec2(12.9898, 78.233);
+    return fract(sin(dot(p, K1)) * 43758.5453);
 }
 
 vec4 main(vec2 fragCoord) {
-    // Calcola le coordinate UV normalizzate
-    vec2 uv = fragCoord.xy / resolution.xy;
+    // 1. Spessore della grana (aumenta questo valore per grana più grossa)
+    float grainSize = 3.0;
     
-    // Genera rumore casuale basato sulle coordinate e sul tempo
-    // Moltiplicare le coordinate crea una "grana" più o meno spessa
-    float noise = random(uv * 1000.0 + time);
+    // 2. Creiamo una griglia a blocchi basata sulla dimensione della grana.
+    // Questo fa sì che pixel vicini abbiano lo stesso valore di rumore,
+    // creando l'effetto "spesso" tipico della pellicola, invece di 1 solo pixel.
+    vec2 blockPos = floor(fragCoord.xy / grainSize);
     
-    // Crea un colore grigio con il rumore applicato
-    // Il rumore va da 0.0 a 1.0. Lo riduciamo per non accecare l'immagine.
-    float intensity = 0.35; // Regola questo per una grana più spessa/evidente
+    // 3. Generiamo il rumore per questo blocco, usando il tempo per animarlo.
+    // Il tempo deve variare per dare l'effetto sfarfallio.
+    float noise = random(blockPos + time);
     
-    return vec4(vec3(noise), intensity);
+    // 4. Intensità dell'effetto grana
+    float intensity = 0.4;
+    
+    // 5. Aumentiamo il contrasto del rumore per renderlo più "croccante"
+    noise = smoothstep(0.2, 0.8, noise);
+    
+    // 6. Skia richiede l'alpha pre-moltiplicato: vec4(r*a, g*a, b*a, a)
+    // Se non lo facciamo, il colore si miscela male diventando solo una patina grigia.
+    vec3 grainColor = vec3(noise);
+    return vec4(grainColor * intensity, intensity);
 }
 `;

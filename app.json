@@ -46,7 +46,16 @@
           "microphonePermissionText": "Grovkornet necessita dell'accesso al microfono per registrare l'audio dei video."
         }
       ],
-      "expo-asset"
+      "expo-asset",
+      "expo-font",
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "minSdkVersion": 26
+          }
+        }
+      ]
     ]
   }
 }
