@@ -36,24 +36,19 @@ export const Footer = ({
       <View style={styles.topFooter}>
         {activeTab === 'grain' && (
           <Animated.View entering={FadeIn.duration(200)} exiting={FadeOut.duration(200)} style={styles.tabContent}>
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.filtersScroll}>
-               {['Film Grain', 'Fine', 'Coarse', 'Digital', 'Dust', 'Noise'].map((grain, index) => (
-                 <Pressable 
-                   key={index} 
-                   style={styles.filterThumb}
-                   onPress={() => handleToggle(index === 0 ? !isGrainEnabled : false)}
-                 >
-                    <View style={[
-                      styles.filterPlaceholder, 
-                      index === 0 && isGrainEnabled && styles.filterPlaceholderActive
-                    ]} />
-                    <Text style={[
-                      styles.filterText, 
-                      index === 0 && isGrainEnabled && styles.filterTextActive
-                    ]}>{grain}</Text>
-                 </Pressable>
-               ))}
-            </ScrollView>
+            <Pressable 
+              style={styles.filterThumb}
+              onPress={() => handleToggle(!isGrainEnabled)}
+            >
+              <View style={[
+                styles.filterPlaceholder, 
+                isGrainEnabled && styles.filterPlaceholderActive
+              ]} />
+              <Text style={[
+                styles.filterText, 
+                isGrainEnabled && styles.filterTextActive
+              ]}>FILM GRAIN</Text>
+            </Pressable>
           </Animated.View>
         )}
 
@@ -100,9 +95,9 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   topFooter: {
-    backgroundColor: 'rgba(0,0,0,0.85)',
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
+    backgroundColor: '#000',
+    borderTopLeftRadius: 0,
+    borderTopRightRadius: 0,
     paddingTop: 24,
     paddingBottom: 20,
     minHeight: 140,
@@ -155,9 +150,9 @@ const styles = StyleSheet.create({
     marginHorizontal: 12,
   },
   filterPlaceholder: {
-    width: 64,
-    height: 64,
-    borderRadius: 32,
+    width: 48,
+    height: 48,
+    borderRadius: 0,
     backgroundColor: '#222',
     borderWidth: 2,
     borderColor: '#444',
