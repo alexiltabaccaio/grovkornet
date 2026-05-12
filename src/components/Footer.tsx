@@ -1,16 +1,14 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, Pressable, Dimensions, ScrollView } from 'react-native';
-import Animated, { useAnimatedStyle, withSpring, FadeIn, FadeOut, SharedValue, runOnJS } from 'react-native-reanimated';
+import { StyleSheet, Text, View, Pressable, ScrollView } from 'react-native';
+import Animated, { FadeIn, FadeOut, SharedValue } from 'react-native-reanimated';
 import { Ionicons } from '@expo/vector-icons';
-import { GestureDetector, Gesture } from 'react-native-gesture-handler';
 
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
-const SLIDER_WIDTH = SCREEN_WIDTH - 80;
+import { TabType } from '../types/camera';
 
 interface FooterProps {
   enabled: SharedValue<boolean>;
   onGrainToggle: (val: boolean) => void;
-  onTabChange: (tab: 'grain' | 'saturation') => void;
+  onTabChange: (tab: TabType) => void;
 }
 
 export const Footer = ({ 
@@ -18,7 +16,7 @@ export const Footer = ({
   onGrainToggle,
   onTabChange
 }: FooterProps) => {
-  const [activeTab, setActiveTab] = useState<'grain' | 'saturation'>('grain');
+  const [activeTab, setActiveTab] = useState<TabType>('grain');
   const [isGrainEnabled, setIsGrainEnabled] = useState(false);
 
   const handleToggle = (value: boolean) => {
