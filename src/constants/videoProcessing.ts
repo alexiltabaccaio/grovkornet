@@ -1,5 +1,6 @@
 export const DEFAULT_GRAIN_INTENSITY = 0.5;
 export const DEFAULT_SATURATION = 1.0;
+export const DEFAULT_CONTRAST = 1.0;
 
 export const COLOR_MATRIX_CONSTANTS = {
   R: 0.2126,

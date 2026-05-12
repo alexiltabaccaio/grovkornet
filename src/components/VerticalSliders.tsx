@@ -3,7 +3,7 @@ import { StyleSheet, View, Dimensions } from 'react-native';
 import Animated, { useAnimatedStyle, SharedValue, runOnJS } from 'react-native-reanimated';
 import { GestureDetector, Gesture } from 'react-native-gesture-handler';
 
-import { TabType } from '../types/camera';
+import { TabType, ImageToolType } from '../types/camera';
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 const SLIDER_HEIGHT = SCREEN_HEIGHT * 0.3;
@@ -11,21 +11,33 @@ const SLIDER_HEIGHT = SCREEN_HEIGHT * 0.3;
 interface VerticalSlidersProps {
   grainIntensity: SharedValue<number>;
   saturation: SharedValue<number>;
+  contrast: SharedValue<number>;
   onGrainIntensityChange: (val: number) => void;
   onSaturationChange: (val: number) => void;
+  onContrastChange: (val: number) => void;
   activeTab: TabType;
+  activeImageTool: ImageToolType;
 }
 
 export const VerticalSliders = ({
   grainIntensity,
   saturation,
+  contrast,
   onGrainIntensityChange,
   onSaturationChange,
+  onContrastChange,
   activeTab,
+  activeImageTool,
 }: VerticalSlidersProps) => {
 
   const handleStyle = useAnimatedStyle(() => {
-    const val = activeTab === 'grain' ? grainIntensity.value : saturation.value;
+    let val = 0;
+    if (activeTab === 'grain') {
+      val = grainIntensity.value;
+    } else {
+      const rawVal = activeImageTool === 'saturation' ? saturation.value : contrast.value;
+      val = rawVal / 2.0;
+    }
     return {
       bottom: val * SLIDER_HEIGHT,
     };
@@ -33,13 +45,19 @@ export const VerticalSliders = ({
 
   const gesture = Gesture.Pan()
     .onUpdate((e) => {
-      const newValue = Math.min(Math.max(1 - (e.y / SLIDER_HEIGHT), 0), 1);
+      const normalizedValue = Math.min(Math.max(1 - (e.y / SLIDER_HEIGHT), 0), 1);
       if (activeTab === 'grain') {
-        grainIntensity.value = newValue;
-        runOnJS(onGrainIntensityChange)(newValue);
+        grainIntensity.value = normalizedValue;
+        runOnJS(onGrainIntensityChange)(normalizedValue);
       } else {
-        saturation.value = newValue;
-        runOnJS(onSaturationChange)(newValue);
+        const scaledValue = normalizedValue * 2.0;
+        if (activeImageTool === 'saturation') {
+          saturation.value = scaledValue;
+          runOnJS(onSaturationChange)(scaledValue);
+        } else {
+          contrast.value = scaledValue;
+          runOnJS(onContrastChange)(scaledValue);
+        }
       }
     });
 

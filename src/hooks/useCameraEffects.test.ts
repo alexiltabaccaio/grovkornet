@@ -34,10 +34,10 @@ describe('useCameraEffects', () => {
     const { result } = renderHook(() => useCameraEffects());
 
     act(() => {
-      result.current.setActiveTab('saturation');
+      result.current.setActiveTab('image');
     });
 
-    expect(result.current.activeTab).toBe('saturation');
+    expect(result.current.activeTab).toBe('image');
   });
 
   it('should have working setters for worklet values', () => {

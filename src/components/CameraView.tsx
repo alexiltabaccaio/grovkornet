@@ -13,12 +13,17 @@ export const CameraView = () => {
   const {
     activeTab,
     setActiveTab,
+    activeImageTool,
+    setActiveImageTool,
     grainIntensity,
     saturation,
+    contrast,
     grainEnabled,
     setGrainIntensity,
     setSaturation,
+    setContrast,
     setGrainEnabled,
+    resetTool,
     frameProcessor,
   } = useCameraEffects();
 
@@ -59,16 +64,22 @@ export const CameraView = () => {
       <VerticalSliders
         grainIntensity={grainIntensity}
         saturation={saturation}
+        contrast={contrast}
         activeTab={activeTab}
+        activeImageTool={activeImageTool}
         onGrainIntensityChange={setGrainIntensity}
         onSaturationChange={setSaturation}
+        onContrastChange={setContrast}
       />
 
       {/* Simplified Footer */}
       <Footer
         enabled={grainEnabled}
+        activeImageTool={activeImageTool}
         onGrainToggle={setGrainEnabled}
         onTabChange={setActiveTab}
+        onImageToolChange={setActiveImageTool}
+        onResetTool={resetTool}
       />
     </View>
   );
