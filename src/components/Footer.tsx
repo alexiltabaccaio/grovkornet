@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, Pressable, Dimensions } from 'react-native';
+import { StyleSheet, Text, View, Pressable, Dimensions, ScrollView } from 'react-native';
 import Animated, { useAnimatedStyle, withSpring, FadeIn, FadeOut, SharedValue, runOnJS } from 'react-native-reanimated';
 import { Ionicons } from '@expo/vector-icons';
 import { GestureDetector, Gesture } from 'react-native-gesture-handler';
@@ -9,41 +9,17 @@ const SLIDER_WIDTH = SCREEN_WIDTH - 80;
 
 interface FooterProps {
   enabled: SharedValue<boolean>;
-  saturation: SharedValue<number>;
   onGrainToggle: (val: boolean) => void;
-  onSaturationChange: (val: number) => void;
+  onTabChange: (tab: 'grain' | 'saturation') => void;
 }
 
-export const Footer = ({ enabled, saturation, onGrainToggle, onSaturationChange }: FooterProps) => {
-  const [showSlider, setShowSlider] = useState(false);
-  const [saturationDisplay, setSaturationDisplay] = useState(1);
+export const Footer = ({ 
+  enabled, 
+  onGrainToggle,
+  onTabChange
+}: FooterProps) => {
+  const [activeTab, setActiveTab] = useState<'grain' | 'saturation'>('grain');
   const [isGrainEnabled, setIsGrainEnabled] = useState(false);
-
-  const toggleAnimatedStyle = useAnimatedStyle(() => {
-    return {
-      transform: [{ translateX: withSpring(enabled.value ? 80 : 0, { damping: 15, stiffness: 100 }) }],
-    };
-  });
-
-  const sliderHandleStyle = useAnimatedStyle(() => {
-    return {
-      transform: [{ translateX: saturation.value * SLIDER_WIDTH }],
-    };
-  });
-
-  const sliderFillStyle = useAnimatedStyle(() => {
-    return {
-      width: `${saturation.value * 100}%`,
-    };
-  });
-
-  const panGesture = Gesture.Pan()
-    .onUpdate((e) => {
-      const newValue = Math.min(Math.max(e.x / SLIDER_WIDTH, 0), 1);
-      saturation.value = newValue; // Aggiornamento sincrono sull'UI Thread!
-      runOnJS(setSaturationDisplay)(newValue); // Aggiorna il testo su JS thread
-      runOnJS(onSaturationChange)(newValue);
-    });
 
   const handleToggle = (value: boolean) => {
     enabled.value = value;
@@ -51,49 +27,65 @@ export const Footer = ({ enabled, saturation, onGrainToggle, onSaturationChange 
     onGrainToggle(value);
   };
 
+  const handleTabChange = (tab: 'grain' | 'saturation') => {
+    setActiveTab(tab);
+    onTabChange(tab);
+  };
+
   return (
     <View style={styles.container}>
-      {showSlider && (
-        <Animated.View 
-          entering={FadeIn.duration(200)} 
-          exiting={FadeOut.duration(200)}
-          style={styles.sliderWrapper}
-        >
-          <Text style={styles.sliderLabel}>{Math.round(saturationDisplay * 100)}%</Text>
-          <GestureDetector gesture={panGesture}>
-            <View style={styles.sliderTouchArea}>
-              <View style={styles.sliderTrack}>
-                <Animated.View style={[styles.sliderFill, sliderFillStyle]} />
-                <Animated.View style={[styles.sliderHandle, sliderHandleStyle]} />
-              </View>
-            </View>
-          </GestureDetector>
-        </Animated.View>
-      )}
+      {/* TOP FOOTER (CONTENT OF ACTIVE TAB) */}
+      <View style={styles.topFooter}>
+        {activeTab === 'grain' && (
+          <Animated.View entering={FadeIn.duration(200)} exiting={FadeOut.duration(200)} style={styles.tabContent}>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.filtersScroll}>
+               {['Film Grain', 'Fine', 'Coarse', 'Digital', 'Dust', 'Noise'].map((grain, index) => (
+                 <Pressable 
+                   key={index} 
+                   style={styles.filterThumb}
+                   onPress={() => handleToggle(index === 0 ? !isGrainEnabled : false)}
+                 >
+                    <View style={[
+                      styles.filterPlaceholder, 
+                      index === 0 && isGrainEnabled && styles.filterPlaceholderActive
+                    ]} />
+                    <Text style={[
+                      styles.filterText, 
+                      index === 0 && isGrainEnabled && styles.filterTextActive
+                    ]}>{grain}</Text>
+                 </Pressable>
+               ))}
+            </ScrollView>
+          </Animated.View>
+        )}
 
-      <View style={styles.footerInner}>
-        <View style={styles.toggleContainer}>
-          <Animated.View style={[styles.activeIndicator, toggleAnimatedStyle]} />
-          
-          <Pressable style={styles.option} onPress={() => handleToggle(false)}>
-            <Text style={[styles.label, !isGrainEnabled && styles.labelActive]}>OFF</Text>
-          </Pressable>
+        {activeTab === 'saturation' && (
+          <Animated.View entering={FadeIn.duration(200)} exiting={FadeOut.duration(200)} style={styles.tabContent}>
+             <View style={styles.emptyContent}>
+                <Text style={styles.infoText}>ADJUST SATURATION USING THE SIDE SLIDER</Text>
+             </View>
+          </Animated.View>
+        )}
+      </View>
 
-          <Pressable style={styles.option} onPress={() => handleToggle(true)}>
-            <Text style={[styles.label, isGrainEnabled && styles.labelActive]}>ON</Text>
-          </Pressable>
-        </View>
-
+      {/* BOTTOM FOOTER (PARENT TABS) */}
+      <View style={styles.bottomFooter}>
         <Pressable 
-          style={[styles.iconButton, showSlider && styles.iconButtonActive]} 
-          onPress={() => setShowSlider(!showSlider)}
+          style={styles.tabButton} 
+          onPress={() => handleTabChange('grain')}
           hitSlop={15}
         >
-          <Ionicons 
-            name="color-palette-outline" 
-            size={24} 
-            color={showSlider ? "#000" : "#FFF"} 
-          />
+          <Ionicons name="apps-outline" size={24} color={activeTab === 'grain' ? "#FFF" : "#666"} />
+          <Text style={[styles.tabLabel, activeTab === 'grain' && styles.tabLabelActive]}>GRAIN</Text>
+        </Pressable>
+
+        <Pressable 
+          style={styles.tabButton} 
+          onPress={() => handleTabChange('saturation')}
+          hitSlop={15}
+        >
+          <Ionicons name="color-palette-outline" size={24} color={activeTab === 'saturation' ? "#FFF" : "#666"} />
+          <Text style={[styles.tabLabel, activeTab === 'saturation' && styles.tabLabelActive]}>SATURATION</Text>
         </Pressable>
       </View>
     </View>
@@ -106,108 +98,85 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    height: 180,
     backgroundColor: 'transparent',
     justifyContent: 'flex-end',
   },
-  footerInner: {
-    height: 100,
-    backgroundColor: 'rgba(0,0,0,0.95)',
+  topFooter: {
+    backgroundColor: 'rgba(0,0,0,0.85)',
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+    paddingTop: 24,
+    paddingBottom: 20,
+    minHeight: 140,
+    justifyContent: 'center',
+  },
+  bottomFooter: {
+    height: 90,
+    backgroundColor: '#000',
     flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    paddingBottom: 30,
+    paddingTop: 10,
+  },
+  tabContent: {
+    alignItems: 'center',
+    width: '100%',
+  },
+  emptyContent: {
+    height: 60,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingBottom: 20,
+  },
+  infoText: {
+    color: '#666',
+    fontSize: 10,
+    fontWeight: '800',
+    letterSpacing: 2,
+  },
+  tabButton: {
+    alignItems: 'center',
+    justifyContent: 'center',
     paddingHorizontal: 20,
   },
-  sliderWrapper: {
-    backgroundColor: 'rgba(0,0,0,0.85)',
-    paddingVertical: 20,
-    paddingHorizontal: 40,
-    alignItems: 'center',
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-  },
-  sliderLabel: {
-    color: '#FFF',
-    fontSize: 12,
-    fontWeight: 'bold',
-    marginBottom: 10,
-    fontVariant: ['tabular-nums'],
-  },
-  sliderTouchArea: {
-    width: SLIDER_WIDTH,
-    height: 40,
-    justifyContent: 'center',
-  },
-  sliderTrack: {
-    width: SLIDER_WIDTH,
-    height: 4,
-    backgroundColor: '#333',
-    borderRadius: 2,
-    justifyContent: 'center',
-  },
-  sliderFill: {
-    height: '100%',
-    backgroundColor: '#FFF',
-    borderRadius: 2,
-  },
-  sliderHandle: {
-    position: 'absolute',
-    width: 20,
-    height: 20,
-    borderRadius: 10,
-    backgroundColor: '#FFF',
-    borderWidth: 2,
-    borderColor: '#000',
-    left: -10,
-  },
-  toggleContainer: {
-    flexDirection: 'row',
-    backgroundColor: '#1A1A1A',
-    width: 160,
-    height: 44,
-    borderRadius: 22,
-    padding: 2,
-    position: 'relative',
-    borderWidth: 1,
-    borderColor: '#333',
-  },
-  activeIndicator: {
-    position: 'absolute',
-    top: 2,
-    left: 2,
-    width: 76,
-    height: 38,
-    backgroundColor: '#FFFFFF',
-    borderRadius: 20,
-  },
-  option: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    zIndex: 1,
-  },
-  label: {
-    color: '#888',
-    fontSize: 14,
-    fontWeight: '700',
+  tabLabel: {
+    color: '#666',
+    fontSize: 10,
+    fontWeight: '800',
+    marginTop: 6,
     letterSpacing: 1,
   },
-  labelActive: {
-    color: '#000',
+  tabLabelActive: {
+    color: '#FFF',
   },
-  iconButton: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: '#1A1A1A',
-    justifyContent: 'center',
+  filtersScroll: {
+    paddingHorizontal: 20,
+  },
+  filterThumb: {
     alignItems: 'center',
-    marginLeft: 20,
-    borderWidth: 1,
-    borderColor: '#333',
+    marginHorizontal: 12,
   },
-  iconButtonActive: {
-    backgroundColor: '#FFF',
+  filterPlaceholder: {
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    backgroundColor: '#222',
+    borderWidth: 2,
+    borderColor: '#444',
+    marginBottom: 8,
+  },
+  filterPlaceholderActive: {
+    borderColor: '#FFF',
+    backgroundColor: '#444',
+  },
+  filterText: {
+    color: '#CCC',
+    fontSize: 11,
+    fontWeight: '700',
+    letterSpacing: 0.5,
+  },
+  filterTextActive: {
+    color: '#FFF',
   },
 });
+

@@ -5,6 +5,7 @@ import { Skia, BlendMode } from '@shopify/react-native-skia';
 import { useSharedValue, withRepeat, withTiming, Easing } from 'react-native-reanimated';
 import { useSharedValue as useWCSharedValue } from 'react-native-worklets-core';
 import { FILM_GRAIN_SHADER } from '../shaders/FilmGrainShader';
+import { VerticalSliders } from './VerticalSliders';
 import { Footer } from './Footer';
 
 const grainShader = Skia.RuntimeEffect.Make(FILM_GRAIN_SHADER);
@@ -12,14 +13,17 @@ const grainShader = Skia.RuntimeEffect.Make(FILM_GRAIN_SHADER);
 export const CameraView = () => {
   const { hasPermission, requestPermission } = useCameraPermission();
   const device = useCameraDevice('back');
+  const [activeTab, setActiveTab] = React.useState<'grain' | 'saturation'>('grain');
 
   // Stati condivisi (UI Thread) per massime performance
   const grainEnabled = useSharedValue(false);
+  const grainIntensity = useSharedValue(0.5);
   const saturation = useSharedValue(1.0);
   const time = useSharedValue(0);
 
   // Stati condivisi per il Frame Processor (Worklets Core Thread)
   const wcGrainEnabled = useWCSharedValue(false);
+  const wcGrainIntensity = useWCSharedValue(0.5);
   const wcSaturation = useWCSharedValue(1.0);
 
   useEffect(() => {
@@ -71,7 +75,7 @@ export const CameraView = () => {
       // Usiamo il modulo per evitare che il tempo diventi un numero troppo grande 
       // (i float in GLSL perdono precisione e rompono il rumore se superano i milioni)
       const now = typeof Date !== 'undefined' ? (Date.now() % 100000) / 1000.0 : 0;
-      const shaderUniforms = [now, frame.width, frame.height];
+      const shaderUniforms = [now, frame.width, frame.height, wcGrainIntensity.value];
       grainPaint.setShader(grainShader.makeShader(shaderUniforms));
       grainPaint.setBlendMode(BlendMode.Overlay);
 
@@ -106,12 +110,20 @@ export const CameraView = () => {
         frameProcessor={frameProcessor}
       />
 
-      {/* Footer che passa direttamente le SharedValues */}
+      {/* Slider Verticali Laterali */}
+      <VerticalSliders
+        grainIntensity={grainIntensity}
+        saturation={saturation}
+        activeTab={activeTab}
+        onGrainIntensityChange={(val) => { wcGrainIntensity.value = val; }}
+        onSaturationChange={(val) => { wcSaturation.value = val; }}
+      />
+
+      {/* Footer semplificato */}
       <Footer
         enabled={grainEnabled}
-        saturation={saturation}
         onGrainToggle={(val) => { wcGrainEnabled.value = val; }}
-        onSaturationChange={(val) => { wcSaturation.value = val; }}
+        onTabChange={(tab) => setActiveTab(tab)}
       />
     </View>
   );
