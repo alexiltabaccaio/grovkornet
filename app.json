@@ -1,0 +1,52 @@
+{
+  "expo": {
+    "name": "Grovkornet",
+    "slug": "Grovkornet",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSCameraUsageDescription": "Grovkornet necessita dell'accesso alla fotocamera per applicare il filtro.",
+        "NSMicrophoneUsageDescription": "Grovkornet necessita dell'accesso al microfono per registrare l'audio dei video."
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "edgeToEdgeEnabled": true,
+      "predictiveBackGestureEnabled": false,
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO",
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO"
+      ],
+      "package": "com.anonymous.Grovkornet"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      [
+        "react-native-vision-camera",
+        {
+          "cameraPermissionText": "Grovkornet necessita dell'accesso alla fotocamera per applicare il filtro.",
+          "enableMicrophonePermission": true,
+          "microphonePermissionText": "Grovkornet necessita dell'accesso al microfono per registrare l'audio dei video."
+        }
+      ],
+      "expo-asset"
+    ]
+  }
+}
