@@ -4,34 +4,46 @@ import Animated, {
   FadeIn, 
   FadeOut, 
   SharedValue, 
-  useDerivedValue 
+  useDerivedValue,
+  useAnimatedStyle
 } from 'react-native-reanimated';
 import { Ionicons } from '@expo/vector-icons';
 import { Canvas, Rect, Shader, Skia } from '@shopify/react-native-skia';
 
-import { TabType, ImageToolType } from '../types/camera';
+import { TabType, ParameterType, ModuleType } from '../types/camera';
 import { FILM_GRAIN_SHADER } from '../shaders/FilmGrainShader';
 
 const grainEffect = Skia.RuntimeEffect.Make(FILM_GRAIN_SHADER);
 
 interface FooterProps {
   enabled: SharedValue<boolean>;
-  activeImageTool: ImageToolType;
+  grainIntensity: SharedValue<number>;
+  saturation: SharedValue<number>;
+  contrast: SharedValue<number>;
+  activeTab: TabType;
+  activeModule: ModuleType;
+  activeParameter: ParameterType;
   onGrainToggle: (val: boolean) => void;
   onTabChange: (tab: TabType) => void;
-  onImageToolChange: (tool: ImageToolType) => void;
-  onResetTool: (tool: 'grain' | ImageToolType) => void;
+  onModuleChange: (module: ModuleType) => void;
+  onParameterChange: (tool: ParameterType) => void;
+  onResetTool: (tool: 'grain' | ParameterType) => void;
 }
 
 export const Footer = ({
   enabled,
-  activeImageTool,
+  grainIntensity,
+  saturation,
+  contrast,
+  activeTab,
+  activeModule,
+  activeParameter,
   onGrainToggle,
   onTabChange,
-  onImageToolChange,
+  onModuleChange,
+  onParameterChange,
   onResetTool
 }: FooterProps) => {
-  const [activeTab, setActiveTab] = useState<TabType>('grain');
   const [isGrainEnabled, setIsGrainEnabled] = useState(false);
   const lastPressRef = useRef<{ [key: string]: number }>({});
 
@@ -40,7 +52,7 @@ export const Footer = ({
     const lastTime = lastPressRef.current[toolName] || 0;
     if (time - lastTime < 300) {
       // Double press: reset value
-      onResetTool(toolName as 'grain' | ImageToolType);
+      onResetTool(toolName as 'grain' | ParameterType);
       lastPressRef.current[toolName] = 0;
     } else {
       // Single press
@@ -55,106 +67,192 @@ export const Footer = ({
     intensity: 0.6,
   }));
 
+  const saturationFillStyle = useAnimatedStyle(() => {
+    return {
+      height: `${(saturation.value / 2.0) * 100}%`,
+    };
+  });
+
+  const contrastFillStyle = useAnimatedStyle(() => {
+    return {
+      height: `${(contrast.value / 2.0) * 100}%`,
+    };
+  });
+
+  const grainFillStyle = useAnimatedStyle(() => {
+    return {
+      height: `${Math.min(Math.max(grainIntensity.value * 100, 0), 100)}%`,
+    };
+  });
+
   const handleToggle = (value: boolean) => {
     enabled.value = value;
     setIsGrainEnabled(value);
     onGrainToggle(value);
   };
 
-  const handleTabChange = (tab: 'grain' | 'image') => {
-    setActiveTab(tab);
-    onTabChange(tab);
+  const handleTabChange = (tab: TabType) => {
+    const newTab = activeTab === tab ? 'none' : tab;
+    if (newTab === 'color') onModuleChange('color_grading');
+    else if (newTab === 'tape') onModuleChange('grain');
+    else onModuleChange('none'); // Reset module for lens, crt, or none
+    onTabChange(newTab);
   };
 
   return (
     <View style={styles.container}>
       {/* TOP FOOTER (CONTENT OF ACTIVE TAB) */}
-      <View style={styles.topFooter}>
-        {activeTab === 'grain' && (
-          <Animated.View entering={FadeIn.duration(200)} exiting={FadeOut.duration(200)} style={styles.tabContent}>
-            <Pressable
-              style={styles.filterThumb}
-              onPress={() => handlePressWithDouble('grain', () => handleToggle(!isGrainEnabled))}
-            >
-              <View style={[
-                styles.filterPlaceholder,
-                isGrainEnabled && styles.filterPlaceholderActive
-              ]}>
-                {grainEffect && (
-                  <Canvas style={styles.canvas}>
-                    <Rect x={0} y={0} width={48} height={48}>
-                      <Shader source={grainEffect} uniforms={uniforms} />
-                    </Rect>
-                  </Canvas>
-                )}
+      {activeTab !== 'none' && (
+        <View style={styles.topFooter}>
+          
+          {/* PILL MENU (LEVEL 2) */}
+          <ScrollView 
+            horizontal 
+            showsHorizontalScrollIndicator={false} 
+            contentContainerStyle={styles.pillMenuContainer}
+            style={styles.pillMenuWrapper}
+          >
+            {activeTab === 'color' && (
+              <>
+                <Pressable style={[styles.pill, activeModule === 'color_grading' && styles.pillActive]} onPress={() => onModuleChange('color_grading')}>
+                  <Text style={[styles.pillText, activeModule === 'color_grading' && styles.pillTextActive]}>Color Grading</Text>
+                </Pressable>
+                <Pressable style={[styles.pill, activeModule === 'fade' && styles.pillActive]} onPress={() => onModuleChange('fade')}>
+                  <Text style={[styles.pillText, activeModule === 'fade' && styles.pillTextActive]}>Fade</Text>
+                </Pressable>
+              </>
+            )}
+            {activeTab === 'tape' && (
+              <>
+                <Pressable style={[styles.pill, activeModule === 'grain' && styles.pillActive]} onPress={() => onModuleChange('grain')}>
+                  <Text style={[styles.pillText, activeModule === 'grain' && styles.pillTextActive]}>Grana</Text>
+                </Pressable>
+                <Pressable style={[styles.pill, activeModule === 'jitter' && styles.pillActive]} onPress={() => onModuleChange('jitter')}>
+                  <Text style={[styles.pillText, activeModule === 'jitter' && styles.pillTextActive]}>Jitter</Text>
+                </Pressable>
+                <Pressable style={[styles.pill, activeModule === 'dropouts' && styles.pillActive]} onPress={() => onModuleChange('dropouts')}>
+                  <Text style={[styles.pillText, activeModule === 'dropouts' && styles.pillTextActive]}>Dropouts</Text>
+                </Pressable>
+              </>
+            )}
+          </ScrollView>
+
+          {/* PARAMETERS (LEVEL 3) */}
+          {activeModule === 'grain' && (
+            <Animated.View entering={FadeIn.duration(200)} exiting={FadeOut.duration(200)} style={styles.tabContent}>
+              <Pressable
+                style={styles.filterThumb}
+                onPress={() => handlePressWithDouble('grain', () => handleToggle(!isGrainEnabled))}
+              >
+                <View style={[
+                  styles.filterPlaceholder,
+                  isGrainEnabled && styles.filterPlaceholderActive
+                ]}>
+                  <Animated.View style={[styles.progressFill, grainFillStyle]} />
+                  {grainEffect && (
+                    <Canvas style={styles.canvas}>
+                      <Rect x={0} y={0} width={48} height={48}>
+                        <Shader source={grainEffect} uniforms={uniforms} />
+                      </Rect>
+                    </Canvas>
+                  )}
+                </View>
+                <Text style={[
+                  styles.filterText,
+                  isGrainEnabled && styles.filterTextActive
+                ]}>FILM GRAIN</Text>
+              </Pressable>
+            </Animated.View>
+          )}
+
+          {activeModule === 'color_grading' && (
+            <Animated.View entering={FadeIn.duration(200)} exiting={FadeOut.duration(200)} style={styles.tabContent}>
+              <View style={styles.imageToolsContainer}>
+                <Pressable
+                  style={styles.filterThumb}
+                  onPress={() => handlePressWithDouble('saturation', () => onParameterChange('saturation'))}
+                >
+                  <View style={[
+                    styles.filterPlaceholder,
+                    activeParameter === 'saturation' && styles.filterPlaceholderActive,
+                    styles.iconPlaceholder
+                  ]}>
+                    <Animated.View style={[styles.progressFill, saturationFillStyle]} />
+                    <Ionicons name="color-filter-outline" size={24} color={activeParameter === 'saturation' ? "#FFF" : "#666"} style={{ zIndex: 1 }} />
+                  </View>
+                  <Text style={[
+                    styles.filterText,
+                    activeParameter === 'saturation' && styles.filterTextActive
+                  ]}>SATURATION</Text>
+                </Pressable>
+
+                <Pressable
+                  style={styles.filterThumb}
+                  onPress={() => handlePressWithDouble('contrast', () => onParameterChange('contrast'))}
+                >
+                  <View style={[
+                    styles.filterPlaceholder,
+                    activeParameter === 'contrast' && styles.filterPlaceholderActive,
+                    styles.iconPlaceholder
+                  ]}>
+                    <Animated.View style={[styles.progressFill, contrastFillStyle]} />
+                    <Ionicons name="contrast-outline" size={24} color={activeParameter === 'contrast' ? "#FFF" : "#666"} style={{ zIndex: 1 }} />
+                  </View>
+                  <Text style={[
+                    styles.filterText,
+                    activeParameter === 'contrast' && styles.filterTextActive
+                  ]}>CONTRAST</Text>
+                </Pressable>
               </View>
-              <Text style={[
-                styles.filterText,
-                isGrainEnabled && styles.filterTextActive
-              ]}>FILM GRAIN</Text>
-            </Pressable>
-          </Animated.View>
-        )}
+            </Animated.View>
+          )}
 
-        {activeTab === 'image' && (
-          <Animated.View entering={FadeIn.duration(200)} exiting={FadeOut.duration(200)} style={styles.tabContent}>
-            <View style={styles.imageToolsContainer}>
-              <Pressable
-                style={styles.filterThumb}
-                onPress={() => handlePressWithDouble('saturation', () => onImageToolChange('saturation'))}
-              >
-                <View style={[
-                  styles.filterPlaceholder,
-                  activeImageTool === 'saturation' && styles.filterPlaceholderActive,
-                  styles.iconPlaceholder
-                ]}>
-                  <Ionicons name="color-filter-outline" size={24} color={activeImageTool === 'saturation' ? "#FFF" : "#666"} />
-                </View>
-                <Text style={[
-                  styles.filterText,
-                  activeImageTool === 'saturation' && styles.filterTextActive
-                ]}>SATURATION</Text>
-              </Pressable>
-
-              <Pressable
-                style={styles.filterThumb}
-                onPress={() => handlePressWithDouble('contrast', () => onImageToolChange('contrast'))}
-              >
-                <View style={[
-                  styles.filterPlaceholder,
-                  activeImageTool === 'contrast' && styles.filterPlaceholderActive,
-                  styles.iconPlaceholder
-                ]}>
-                  <Ionicons name="contrast-outline" size={24} color={activeImageTool === 'contrast' ? "#FFF" : "#666"} />
-                </View>
-                <Text style={[
-                  styles.filterText,
-                  activeImageTool === 'contrast' && styles.filterTextActive
-                ]}>CONTRAST</Text>
-              </Pressable>
-            </View>
-          </Animated.View>
-        )}
-      </View>
+          {(activeModule !== 'grain' && activeModule !== 'color_grading') && (
+            <Animated.View entering={FadeIn.duration(200)} exiting={FadeOut.duration(200)} style={styles.tabContent}>
+              <View style={styles.emptyContent}>
+                <Text style={styles.infoText}>COMING SOON</Text>
+              </View>
+            </Animated.View>
+          )}
+        </View>
+      )}
 
       {/* BOTTOM FOOTER (PARENT TABS) */}
       <View style={styles.bottomFooter}>
         <Pressable
           style={styles.tabButton}
-          onPress={() => handleTabChange('grain')}
+          onPress={() => handleTabChange('lens')}
           hitSlop={15}
         >
-          <Ionicons name="apps-outline" size={24} color={activeTab === 'grain' ? "#FFF" : "#666"} />
-          <Text style={[styles.tabLabel, activeTab === 'grain' && styles.tabLabelActive]}>GRAIN</Text>
+          <Ionicons name="aperture-outline" size={24} color={activeTab === 'lens' ? "#FFF" : "#666"} />
+          <Text style={[styles.tabLabel, activeTab === 'lens' && styles.tabLabelActive]}>LENS</Text>
         </Pressable>
 
         <Pressable
           style={styles.tabButton}
-          onPress={() => handleTabChange('image')}
+          onPress={() => handleTabChange('color')}
           hitSlop={15}
         >
-          <Ionicons name="color-palette-outline" size={24} color={activeTab === 'image' ? "#FFF" : "#666"} />
-          <Text style={[styles.tabLabel, activeTab === 'image' && styles.tabLabelActive]}>IMAGE</Text>
+          <Ionicons name="color-palette-outline" size={24} color={activeTab === 'color' ? "#FFF" : "#666"} />
+          <Text style={[styles.tabLabel, activeTab === 'color' && styles.tabLabelActive]}>COLOR</Text>
+        </Pressable>
+
+        <Pressable
+          style={styles.tabButton}
+          onPress={() => handleTabChange('tape')}
+          hitSlop={15}
+        >
+          <Ionicons name="film-outline" size={24} color={activeTab === 'tape' ? "#FFF" : "#666"} />
+          <Text style={[styles.tabLabel, activeTab === 'tape' && styles.tabLabelActive]}>TAPE</Text>
+        </Pressable>
+
+        <Pressable
+          style={styles.tabButton}
+          onPress={() => handleTabChange('crt')}
+          hitSlop={15}
+        >
+          <Ionicons name="tv-outline" size={24} color={activeTab === 'crt' ? "#FFF" : "#666"} />
+          <Text style={[styles.tabLabel, activeTab === 'crt' && styles.tabLabelActive]}>CRT</Text>
         </Pressable>
       </View>
     </View>
@@ -169,6 +267,7 @@ const styles = StyleSheet.create({
     right: 0,
     backgroundColor: 'transparent',
     justifyContent: 'flex-end',
+    zIndex: 100,
   },
   topFooter: {
     backgroundColor: '#000',
@@ -261,6 +360,41 @@ const styles = StyleSheet.create({
   },
   filterTextActive: {
     color: '#FFF',
+  },
+  pillMenuWrapper: {
+    maxHeight: 40,
+    marginBottom: 20,
+    paddingHorizontal: 16,
+  },
+  pillMenuContainer: {
+    alignItems: 'center',
+    paddingRight: 32, // for scroll padding
+  },
+  pill: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 20,
+    backgroundColor: '#222',
+    marginRight: 8,
+  },
+  pillActive: {
+    backgroundColor: '#FFF',
+  },
+  pillText: {
+    color: '#AAA',
+    fontSize: 12,
+    fontWeight: '700',
+  },
+  pillTextActive: {
+    color: '#000',
+  },
+  progressFill: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: '#ff9800',
+    opacity: 0.3,
   },
 });
 

@@ -2,13 +2,14 @@ import { useState, useCallback } from 'react';
 import { useSharedValue } from 'react-native-reanimated';
 import { useSharedValue as useWCSharedValue } from 'react-native-worklets-core';
 import { useFilmFrameProcessor } from './useFilmFrameProcessor';
-import { TabType, CameraEffectState, ImageToolType } from '../types/camera';
+import { TabType, CameraEffectState, ParameterType, ModuleType } from '../types/camera';
 import { DEFAULT_GRAIN_INTENSITY, DEFAULT_SATURATION, DEFAULT_CONTRAST } from '../constants/videoProcessing';
 import { DrawableFrameProcessor } from 'react-native-vision-camera';
 
 export const useCameraEffects = (): CameraEffectState & { frameProcessor: DrawableFrameProcessor } => {
-  const [activeTab, setActiveTab] = useState<TabType>('grain');
-  const [activeImageTool, setActiveImageTool] = useState<ImageToolType>('saturation');
+  const [activeTab, setActiveTab] = useState<TabType>('none');
+  const [activeModule, setActiveModule] = useState<ModuleType>('none');
+  const [activeParameter, setActiveParameter] = useState<ParameterType>('saturation');
 
   // Reanimated Shared Values (for UI/Animations)
   const grainIntensity = useSharedValue(DEFAULT_GRAIN_INTENSITY);
@@ -45,7 +46,7 @@ export const useCameraEffects = (): CameraEffectState & { frameProcessor: Drawab
     wcGrainEnabled.value = value;
   }, [wcGrainEnabled]);
 
-  const resetTool = useCallback((tool: 'grain' | ImageToolType) => {
+  const resetTool = useCallback((tool: 'grain' | ParameterType) => {
     if (tool === 'grain') {
       grainIntensity.value = DEFAULT_GRAIN_INTENSITY;
       setGrainIntensity(DEFAULT_GRAIN_INTENSITY);
@@ -63,8 +64,10 @@ export const useCameraEffects = (): CameraEffectState & { frameProcessor: Drawab
   return {
     activeTab,
     setActiveTab,
-    activeImageTool,
-    setActiveImageTool,
+    activeModule,
+    setActiveModule,
+    activeParameter,
+    setActiveParameter,
     grainIntensity,
     saturation,
     contrast,

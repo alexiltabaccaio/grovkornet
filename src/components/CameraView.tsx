@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { Camera, useCameraDevice, useCameraPermission } from 'react-native-vision-camera';
 import { useCameraEffects } from '../hooks/useCameraEffects';
-import { VerticalSliders } from './VerticalSliders';
+import { GestureController } from './GestureController';
 import { Footer } from './Footer';
 
 export const CameraView = () => {
@@ -13,8 +13,10 @@ export const CameraView = () => {
   const {
     activeTab,
     setActiveTab,
-    activeImageTool,
-    setActiveImageTool,
+    activeModule,
+    setActiveModule,
+    activeParameter,
+    setActiveParameter,
     grainIntensity,
     saturation,
     contrast,
@@ -60,13 +62,14 @@ export const CameraView = () => {
         frameProcessor={frameProcessor}
       />
 
-      {/* Lateral Vertical Sliders */}
-      <VerticalSliders
+      {/* Full Screen Gesture Area */}
+      <GestureController
         grainIntensity={grainIntensity}
         saturation={saturation}
         contrast={contrast}
         activeTab={activeTab}
-        activeImageTool={activeImageTool}
+        activeModule={activeModule}
+        activeParameter={activeParameter}
         onGrainIntensityChange={setGrainIntensity}
         onSaturationChange={setSaturation}
         onContrastChange={setContrast}
@@ -75,10 +78,16 @@ export const CameraView = () => {
       {/* Simplified Footer */}
       <Footer
         enabled={grainEnabled}
-        activeImageTool={activeImageTool}
+        grainIntensity={grainIntensity}
+        saturation={saturation}
+        contrast={contrast}
+        activeTab={activeTab}
+        activeModule={activeModule}
+        activeParameter={activeParameter}
         onGrainToggle={setGrainEnabled}
         onTabChange={setActiveTab}
-        onImageToolChange={setActiveImageTool}
+        onModuleChange={setActiveModule}
+        onParameterChange={setActiveParameter}
         onResetTool={resetTool}
       />
     </View>
