@@ -4,8 +4,10 @@
   "main": "index.ts",
   "scripts": {
     "start": "expo start",
+    "dev": "expo run:android",
     "android": "expo run:android",
     "ios": "expo run:ios",
+    "build": "expo run:android --variant release",
     "web": "expo start --web",
     "test": "jest"
   },

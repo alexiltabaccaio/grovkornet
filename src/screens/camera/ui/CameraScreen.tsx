@@ -1,5 +1,5 @@
-import React, { useEffect } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { StyleSheet, Text, View, AppState, AppStateStatus } from 'react-native';
 import { Camera, useCameraDevice, useCameraPermission } from 'react-native-vision-camera';
 import { useTranslation } from 'react-i18next';
 
@@ -20,6 +20,18 @@ const CameraScreenContent = () => {
   const device = useCameraDevice('back');
   
   const { frameProcessor } = useCameraEffectsContext();
+
+  const [isActive, setIsActive] = useState(AppState.currentState === 'active');
+
+  useEffect(() => {
+    const subscription = AppState.addEventListener('change', (nextAppState: AppStateStatus) => {
+      setIsActive(nextAppState === 'active');
+    });
+
+    return () => {
+      subscription.remove();
+    };
+  }, []);
 
   useEffect(() => {
     if (!hasPermission) {
@@ -48,7 +60,7 @@ const CameraScreenContent = () => {
       <Camera
         style={StyleSheet.absoluteFill}
         device={device}
-        isActive={true}
+        isActive={isActive}
         pixelFormat="rgb"
         frameProcessor={frameProcessor}
       />
