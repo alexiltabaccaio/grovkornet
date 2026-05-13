@@ -92,6 +92,9 @@ export const CameraScreen = () => {
         onTabChange={setActiveTab}
         onModuleChange={setActiveModule}
         onParameterChange={setActiveParameter}
+        setGrainIntensity={setGrainIntensity}
+        setSaturation={setSaturation}
+        setContrast={setContrast}
         setChromaticAberration={setChromaticAberration}
         onResetTool={resetTool}
       />

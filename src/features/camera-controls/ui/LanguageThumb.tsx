@@ -33,7 +33,7 @@ export const LanguageThumb = ({
         />
       </View>
       <Text style={[styles.text, isActive && styles.textActive]}>
-        {label}
+        {label.toUpperCase()}
       </Text>
     </Pressable>
   );
@@ -64,9 +64,9 @@ const styles = StyleSheet.create({
     height: '100%',
   },
   text: {
-    color: '#666',
-    fontSize: 10,
-    fontWeight: '800',
+    color: '#CCC',
+    fontSize: 11,
+    fontWeight: '700',
     letterSpacing: 0.5,
   },
   textActive: {

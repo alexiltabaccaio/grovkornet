@@ -1,19 +1,14 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import Animated, { FadeIn, FadeOut, SharedValue, useDerivedValue, useAnimatedStyle } from 'react-native-reanimated';
-import { Skia } from '@shopify/react-native-skia';
+import Animated, { FadeIn, FadeOut, SharedValue } from 'react-native-reanimated';
 import { useTranslation } from 'react-i18next';
-
 import { TabType, ParameterType, ModuleType } from '@shared/types/camera';
-import { FILM_GRAIN_SHADER } from '@shared/shaders/FilmGrainShader';
 
 import { BottomNavigationBar } from './BottomNavigationBar';
 import { FilterPillMenu } from './FilterPillMenu';
 import { FilterParameterThumb } from './FilterParameterThumb';
 import { LanguageThumb } from './LanguageThumb';
 import { useDoublePress } from '../lib/useDoublePress';
-
-const grainEffect = Skia.RuntimeEffect.Make(FILM_GRAIN_SHADER);
 
 interface FooterProps {
   enabled: SharedValue<boolean>;
@@ -28,6 +23,9 @@ interface FooterProps {
   onTabChange: (tab: TabType) => void;
   onModuleChange: (module: ModuleType) => void;
   onParameterChange: (tool: ParameterType) => void;
+  setGrainIntensity: (val: number) => void;
+  setSaturation: (val: number) => void;
+  setContrast: (val: number) => void;
   setChromaticAberration: (val: number) => void;
   onResetTool: (tool: 'grain' | ParameterType) => void;
 }
@@ -43,21 +41,14 @@ export const Footer = ({
   onTabChange,
   onModuleChange,
   onParameterChange,
+  setGrainIntensity,
+  setSaturation,
+  setContrast,
+  setChromaticAberration,
   onResetTool,
 }: FooterProps) => {
   const { t, i18n } = useTranslation();
   const { handlePressWithDouble } = useDoublePress(onResetTool);
-
-  const uniforms = useDerivedValue(() => ({
-    time: 0,
-    resolution: [48, 48],
-    intensity: 0.6,
-  }));
-
-  const saturationFillStyle = useAnimatedStyle(() => ({ height: `${(saturation.value / 2.0) * 100}%` }));
-  const contrastFillStyle = useAnimatedStyle(() => ({ height: `${(contrast.value / 2.0) * 100}%` }));
-  const abFillStyle = useAnimatedStyle(() => ({ height: `${(chromaticAberration.value / 2.0) * 100}%` }));
-  const grainFillStyle = useAnimatedStyle(() => ({ height: `${Math.min(Math.max(grainIntensity.value * 100, 0), 100)}%` }));
 
   const handleTabChange = (tab: TabType) => {
     const newTab = activeTab === tab ? 'none' : tab;
@@ -86,9 +77,10 @@ export const Footer = ({
                   label={t('parameters.amount')}
                   isActive={activeParameter === 'grain'}
                   onPress={() => handlePressWithDouble('grain', () => onParameterChange('grain'))}
-                  progressStyle={grainFillStyle}
-                  skiaEffect={grainEffect}
-                  skiaUniforms={uniforms}
+                  value={grainIntensity}
+                  maxValue={1.0}
+                  onChange={setGrainIntensity}
+                  icon="water-outline"
                 />
               </Animated.View>
             )}
@@ -100,14 +92,18 @@ export const Footer = ({
                     label={t('parameters.saturation')}
                     isActive={activeParameter === 'saturation'}
                     onPress={() => handlePressWithDouble('saturation', () => onParameterChange('saturation'))}
-                    progressStyle={saturationFillStyle}
+                    value={saturation}
+                    maxValue={2.0}
+                    onChange={setSaturation}
                     icon="color-filter-outline"
                   />
                   <FilterParameterThumb
                     label={t('parameters.contrast')}
                     isActive={activeParameter === 'contrast'}
                     onPress={() => handlePressWithDouble('contrast', () => onParameterChange('contrast'))}
-                    progressStyle={contrastFillStyle}
+                    value={contrast}
+                    maxValue={2.0}
+                    onChange={setContrast}
                     icon="contrast-outline"
                   />
                 </View>
@@ -120,7 +116,9 @@ export const Footer = ({
                   label={t('parameters.phase_shift')}
                   isActive={activeParameter === 'chromatic_aberration'}
                   onPress={() => handlePressWithDouble('chromatic_aberration', () => onParameterChange('chromatic_aberration'))}
-                  progressStyle={abFillStyle}
+                  value={chromaticAberration}
+                  maxValue={2.0}
+                  onChange={setChromaticAberration}
                   icon="aperture-outline"
                 />
               </Animated.View>

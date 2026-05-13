@@ -11,10 +11,29 @@ export const useCameraEffects = (): CameraEffectState & { frameProcessor: Drawab
   const [activeModule, setActiveModule] = useState<ModuleType>('none');
   const [activeParameter, setActiveParameter] = useState<ParameterType>('none');
 
+  const [lastActiveParameters, setLastActiveParameters] = useState<Record<ModuleType, ParameterType>>({
+    none: 'none',
+    grain: 'grain',
+    color_grading: 'saturation',
+    lens_effects: 'chromatic_aberration',
+    language: 'none',
+    fade: 'none',
+    jitter: 'none',
+    dropouts: 'none',
+  });
+
   const handleSetActiveModule = useCallback((module: ModuleType) => {
     setActiveModule(module);
-    setActiveParameter('none');
-  }, []);
+    setActiveParameter(lastActiveParameters[module] || 'none');
+  }, [lastActiveParameters]);
+
+  const handleSetActiveParameter = useCallback((param: ParameterType) => {
+    setActiveParameter(param);
+    setLastActiveParameters(prev => ({
+      ...prev,
+      [activeModule]: param,
+    }));
+  }, [activeModule]);
 
   // Reanimated Shared Values (for UI/Animations)
   const grainIntensity = useSharedValue(DEFAULT_GRAIN_INTENSITY);
@@ -85,7 +104,7 @@ export const useCameraEffects = (): CameraEffectState & { frameProcessor: Drawab
     activeModule,
     setActiveModule: handleSetActiveModule,
     activeParameter,
-    setActiveParameter,
+    setActiveParameter: handleSetActiveParameter,
     grainIntensity,
     saturation,
     contrast,
