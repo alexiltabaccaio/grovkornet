@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, View, Dimensions } from 'react-native';
-import { SharedValue, runOnJS, useSharedValue } from 'react-native-reanimated';
+import { runOnJS, useSharedValue } from 'react-native-reanimated';
 import { GestureDetector, Gesture } from 'react-native-gesture-handler';
 
 import { useCameraEffectsContext } from '../model/CameraEffectsContext';

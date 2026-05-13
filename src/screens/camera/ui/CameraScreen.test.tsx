@@ -9,8 +9,9 @@ jest.mock('react-native-vision-camera', () => ({
   useCameraPermission: jest.fn(() => ({ hasPermission: true, requestPermission: jest.fn() })),
 }));
 
-jest.mock('@features/camera-controls/lib/useCameraEffects', () => ({
-  useCameraEffects: jest.fn(() => ({
+jest.mock('@features/camera-controls', () => ({
+  CameraEffectsProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+  useCameraEffectsContext: jest.fn(() => ({
     activeTab: 'none',
     setActiveTab: jest.fn(),
     activeModule: 'none',
@@ -28,13 +29,7 @@ jest.mock('@features/camera-controls/lib/useCameraEffects', () => ({
     resetTool: jest.fn(),
     frameProcessor: jest.fn(),
   })),
-}));
-
-jest.mock('@features/camera-controls/ui/GestureController', () => ({
   GestureController: 'GestureController',
-}));
-
-jest.mock('@features/camera-controls/ui/Footer', () => ({
   Footer: 'Footer',
 }));
 

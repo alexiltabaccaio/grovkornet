@@ -1,11 +1,31 @@
 import React from 'react';
 import { render } from '@testing-library/react-native';
 import { Footer } from './Footer';
-import { makeMutable } from 'react-native-reanimated';
 
 import { useCameraEffectsContext } from '../model/CameraEffectsContext';
 
 // Mocks for icons and Skia (which often cause issues in node tests)
+jest.mock('react-native-reanimated', () => {
+  const View = require('react-native').View;
+  const Reanimated = {
+    useSharedValue: jest.fn((val) => ({ value: val })),
+    useAnimatedStyle: jest.fn(() => ({})),
+    useAnimatedProps: jest.fn(() => ({})),
+    withTiming: jest.fn((val) => val),
+    withSpring: jest.fn((val) => val),
+    runOnJS: jest.fn((fn) => fn),
+    makeMutable: jest.fn((val) => ({ value: val })),
+    createAnimatedComponent: jest.fn((comp) => comp),
+    FadeIn: { duration: jest.fn().mockReturnThis() },
+    FadeOut: { duration: jest.fn().mockReturnThis() },
+    View: View,
+  };
+  return {
+    ...Reanimated,
+    default: Reanimated,
+  };
+});
+
 jest.mock('@expo/vector-icons', () => ({
   Ionicons: 'Ionicons'
 }));
@@ -19,6 +39,22 @@ jest.mock('@shopify/react-native-skia', () => ({
   Canvas: 'Canvas',
   Rect: 'Rect',
   Shader: 'Shader'
+}));
+
+jest.mock('./BottomNavigationBar', () => ({
+  BottomNavigationBar: 'BottomNavigationBar',
+}));
+
+jest.mock('./FilterPillMenu', () => ({
+  FilterPillMenu: 'FilterPillMenu',
+}));
+
+jest.mock('./FilterParameterThumb', () => ({
+  FilterParameterThumb: 'FilterParameterThumb',
+}));
+
+jest.mock('@shared/ui', () => ({
+  LanguageThumb: 'LanguageThumb',
 }));
 
 jest.mock('../model/CameraEffectsContext', () => ({

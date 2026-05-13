@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import Animated, { FadeIn, FadeOut, SharedValue } from 'react-native-reanimated';
+import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 import { useTranslation } from 'react-i18next';
 import { useCameraEffectsContext } from '../model/CameraEffectsContext';
 import { BottomNavigationBar } from './BottomNavigationBar';
@@ -13,9 +13,7 @@ import { useDoublePress } from '@shared/lib/hooks/useDoublePress';
 export const Footer = () => {
   const {
     activeTab,
-    setActiveTab,
     activeModule,
-    setActiveModule,
     activeParameter,
     setActiveParameter,
     grainIntensity,

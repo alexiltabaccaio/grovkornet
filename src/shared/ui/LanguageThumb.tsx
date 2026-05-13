@@ -2,7 +2,9 @@ import React from 'react';
 import { StyleSheet, Text, View, Pressable } from 'react-native';
 import { Image } from 'react-native';
 
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const enFlag = require('../../../assets/flags/en.png');
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const itFlag = require('../../../assets/flags/it.png');
 
 interface LanguageThumbProps {

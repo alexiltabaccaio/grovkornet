@@ -1,6 +1,5 @@
 import React from 'react';
 import { StyleSheet, Text, View, Pressable } from 'react-native';
-import { ViewStyle, StyleProp } from 'react-native';
 import Animated, { SharedValue, useAnimatedStyle, useAnimatedProps, interpolateColor, useSharedValue, runOnJS } from 'react-native-reanimated';
 import { GestureDetector, Gesture } from 'react-native-gesture-handler';
 import { Ionicons } from '@expo/vector-icons';

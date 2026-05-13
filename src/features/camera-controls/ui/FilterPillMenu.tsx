@@ -1,7 +1,6 @@
 import React from 'react';
 import { StyleSheet, Text, Pressable, ScrollView } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { TabType, ModuleType } from '@shared/types/camera';
 
 import { useCameraEffectsContext } from '../model/CameraEffectsContext';
 
