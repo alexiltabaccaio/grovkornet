@@ -9,7 +9,7 @@ interface FilterPillMenuProps {
 }
 
 export const FilterPillMenu = ({ activeTab, activeModule, onModuleChange }: FilterPillMenuProps) => {
-  if (activeTab !== 'color' && activeTab !== 'tape' && activeTab !== 'lens') return null;
+  if (activeTab !== 'color' && activeTab !== 'tape' && activeTab !== 'lens' && activeTab !== 'settings') return null;
 
   return (
     <ScrollView 
@@ -45,6 +45,13 @@ export const FilterPillMenu = ({ activeTab, activeModule, onModuleChange }: Filt
           </Pressable>
           <Pressable style={[styles.pill, activeModule === 'dropouts' && styles.pillActive]} onPress={() => onModuleChange('dropouts')}>
             <Text style={[styles.pillText, activeModule === 'dropouts' && styles.pillTextActive]}>Dropouts</Text>
+          </Pressable>
+        </>
+      )}
+      {activeTab === 'settings' && (
+        <>
+          <Pressable style={[styles.pill, activeModule === 'language' && styles.pillActive]} onPress={() => onModuleChange('language')}>
+            <Text style={[styles.pillText, activeModule === 'language' && styles.pillTextActive]}>Lingua</Text>
           </Pressable>
         </>
       )}

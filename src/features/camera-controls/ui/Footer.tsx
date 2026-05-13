@@ -9,6 +9,7 @@ import { FILM_GRAIN_SHADER } from '@shared/shaders/FilmGrainShader';
 import { BottomNavigationBar } from './BottomNavigationBar';
 import { FilterPillMenu } from './FilterPillMenu';
 import { FilterParameterThumb } from './FilterParameterThumb';
+import { LanguageThumb } from './LanguageThumb';
 import { useDoublePress } from '../lib/useDoublePress';
 
 const grainEffect = Skia.RuntimeEffect.Make(FILM_GRAIN_SHADER);
@@ -43,6 +44,7 @@ export const Footer = ({
   onParameterChange,
   onResetTool,
 }: FooterProps) => {
+  const [selectedLang, setSelectedLang] = React.useState<'en' | 'it'>('it');
   const { handlePressWithDouble } = useDoublePress(onResetTool);
 
   const uniforms = useDerivedValue(() => ({
@@ -61,6 +63,7 @@ export const Footer = ({
     if (newTab === 'color') onModuleChange('color_grading');
     else if (newTab === 'tape') onModuleChange('grain');
     else if (newTab === 'lens') onModuleChange('lens_effects');
+    else if (newTab === 'settings') onModuleChange('language');
     else onModuleChange('none');
     onTabChange(newTab);
   };
@@ -122,7 +125,26 @@ export const Footer = ({
               </Animated.View>
             )}
 
-            {activeModule !== 'grain' && activeModule !== 'color_grading' && activeModule !== 'lens_effects' && activeModule !== 'none' && (
+            {activeModule === 'language' && (
+              <Animated.View entering={FadeIn.duration(200)} exiting={FadeOut.duration(200)} style={styles.tabContent}>
+                <View style={styles.imageToolsContainer}>
+                  <LanguageThumb 
+                    label="English" 
+                    languageCode="en" 
+                    isActive={selectedLang === 'en'} 
+                    onPress={() => setSelectedLang('en')} 
+                  />
+                  <LanguageThumb 
+                    label="Italiano" 
+                    languageCode="it" 
+                    isActive={selectedLang === 'it'} 
+                    onPress={() => setSelectedLang('it')} 
+                  />
+                </View>
+              </Animated.View>
+            )}
+
+            {activeModule !== 'grain' && activeModule !== 'color_grading' && activeModule !== 'lens_effects' && activeModule !== 'language' && activeModule !== 'none' && (
               <Animated.View entering={FadeIn.duration(200)} exiting={FadeOut.duration(200)} style={styles.tabContent}>
                 <Text style={styles.infoText}>COMING SOON</Text>
               </Animated.View>
