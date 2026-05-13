@@ -22,10 +22,15 @@ const CameraScreenContent = () => {
   const { frameProcessor, isDebugEnabled } = useCameraEffectsContext();
 
   const [isActive, setIsActive] = useState(AppState.currentState === 'active');
+  const [cameraKey, setCameraKey] = useState(0);
 
   useEffect(() => {
     const subscription = AppState.addEventListener('change', (nextAppState: AppStateStatus) => {
-      setIsActive(nextAppState === 'active');
+      const nextIsActive = nextAppState === 'active';
+      setIsActive(nextIsActive);
+      if (nextIsActive) {
+        setCameraKey(prev => prev + 1);
+      }
     });
 
     return () => {
@@ -58,6 +63,7 @@ const CameraScreenContent = () => {
   return (
     <View style={styles.container}>
       <Camera
+        key={`camera-${cameraKey}`}
         style={StyleSheet.absoluteFill}
         device={device}
         isActive={isActive}
