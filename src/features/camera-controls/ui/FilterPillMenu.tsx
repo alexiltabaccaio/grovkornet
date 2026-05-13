@@ -9,7 +9,7 @@ interface FilterPillMenuProps {
 }
 
 export const FilterPillMenu = ({ activeTab, activeModule, onModuleChange }: FilterPillMenuProps) => {
-  if (activeTab !== 'color' && activeTab !== 'tape') return null;
+  if (activeTab !== 'color' && activeTab !== 'tape' && activeTab !== 'lens') return null;
 
   return (
     <ScrollView 
@@ -18,6 +18,13 @@ export const FilterPillMenu = ({ activeTab, activeModule, onModuleChange }: Filt
       contentContainerStyle={styles.pillMenuContainer}
       style={styles.pillMenuWrapper}
     >
+      {activeTab === 'lens' && (
+        <>
+          <Pressable style={[styles.pill, activeModule === 'lens_effects' && styles.pillActive]} onPress={() => onModuleChange('lens_effects')}>
+            <Text style={[styles.pillText, activeModule === 'lens_effects' && styles.pillTextActive]}>Aberrazione Cromatica</Text>
+          </Pressable>
+        </>
+      )}
       {activeTab === 'color' && (
         <>
           <Pressable style={[styles.pill, activeModule === 'color_grading' && styles.pillActive]} onPress={() => onModuleChange('color_grading')}>

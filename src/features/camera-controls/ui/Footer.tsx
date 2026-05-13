@@ -18,6 +18,7 @@ interface FooterProps {
   grainIntensity: SharedValue<number>;
   saturation: SharedValue<number>;
   contrast: SharedValue<number>;
+  chromaticAberration: SharedValue<number>;
   activeTab: TabType;
   activeModule: ModuleType;
   activeParameter: ParameterType;
@@ -25,6 +26,7 @@ interface FooterProps {
   onTabChange: (tab: TabType) => void;
   onModuleChange: (module: ModuleType) => void;
   onParameterChange: (tool: ParameterType) => void;
+  setChromaticAberration: (val: number) => void;
   onResetTool: (tool: 'grain' | ParameterType) => void;
 }
 
@@ -32,13 +34,14 @@ export const Footer = ({
   grainIntensity,
   saturation,
   contrast,
+  chromaticAberration,
   activeTab,
   activeModule,
   activeParameter,
   onTabChange,
   onModuleChange,
   onParameterChange,
-  onResetTool
+  onResetTool,
 }: FooterProps) => {
   const { handlePressWithDouble } = useDoublePress(onResetTool);
 
@@ -50,12 +53,14 @@ export const Footer = ({
 
   const saturationFillStyle = useAnimatedStyle(() => ({ height: `${(saturation.value / 2.0) * 100}%` }));
   const contrastFillStyle = useAnimatedStyle(() => ({ height: `${(contrast.value / 2.0) * 100}%` }));
+  const abFillStyle = useAnimatedStyle(() => ({ height: `${(chromaticAberration.value / 2.0) * 100}%` }));
   const grainFillStyle = useAnimatedStyle(() => ({ height: `${Math.min(Math.max(grainIntensity.value * 100, 0), 100)}%` }));
 
   const handleTabChange = (tab: TabType) => {
     const newTab = activeTab === tab ? 'none' : tab;
     if (newTab === 'color') onModuleChange('color_grading');
     else if (newTab === 'tape') onModuleChange('grain');
+    else if (newTab === 'lens') onModuleChange('lens_effects');
     else onModuleChange('none');
     onTabChange(newTab);
   };
@@ -105,7 +110,19 @@ export const Footer = ({
               </Animated.View>
             )}
 
-            {activeModule !== 'grain' && activeModule !== 'color_grading' && activeModule !== 'none' && (
+            {activeModule === 'lens_effects' && (
+              <Animated.View entering={FadeIn.duration(200)} exiting={FadeOut.duration(200)} style={styles.tabContent}>
+                <FilterParameterThumb
+                  label="SFASAMENTO"
+                  isActive={activeParameter === 'chromatic_aberration'}
+                  onPress={() => handlePressWithDouble('chromatic_aberration', () => onParameterChange('chromatic_aberration'))}
+                  progressStyle={abFillStyle}
+                  icon="aperture-outline"
+                />
+              </Animated.View>
+            )}
+
+            {activeModule !== 'grain' && activeModule !== 'color_grading' && activeModule !== 'lens_effects' && activeModule !== 'none' && (
               <Animated.View entering={FadeIn.duration(200)} exiting={FadeOut.duration(200)} style={styles.tabContent}>
                 <Text style={styles.infoText}>COMING SOON</Text>
               </Animated.View>

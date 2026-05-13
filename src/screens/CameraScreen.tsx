@@ -20,10 +20,12 @@ export const CameraScreen = () => {
     grainIntensity,
     saturation,
     contrast,
+    chromaticAberration,
     grainEnabled,
     setGrainIntensity,
     setSaturation,
     setContrast,
+    setChromaticAberration,
     setGrainEnabled,
     resetTool,
     frameProcessor,
@@ -65,12 +67,14 @@ export const CameraScreen = () => {
         grainIntensity={grainIntensity}
         saturation={saturation}
         contrast={contrast}
+        chromaticAberration={chromaticAberration}
         activeTab={activeTab}
         activeModule={activeModule}
         activeParameter={activeParameter}
         onGrainIntensityChange={setGrainIntensity}
         onSaturationChange={setSaturation}
         onContrastChange={setContrast}
+        onChromaticAberrationChange={setChromaticAberration}
       />
 
       <Footer
@@ -78,6 +82,7 @@ export const CameraScreen = () => {
         grainIntensity={grainIntensity}
         saturation={saturation}
         contrast={contrast}
+        chromaticAberration={chromaticAberration}
         activeTab={activeTab}
         activeModule={activeModule}
         activeParameter={activeParameter}
@@ -85,6 +90,7 @@ export const CameraScreen = () => {
         onTabChange={setActiveTab}
         onModuleChange={setActiveModule}
         onParameterChange={setActiveParameter}
+        setChromaticAberration={setChromaticAberration}
         onResetTool={resetTool}
       />
     </View>

@@ -1,15 +1,18 @@
 import { useSkiaFrameProcessor } from 'react-native-vision-camera';
 import { Skia, BlendMode } from '@shopify/react-native-skia';
 import { FILM_GRAIN_SHADER } from '@shared/shaders/FilmGrainShader';
+import { CHROMATIC_ABERRATION_SHADER } from '@shared/shaders/ChromaticAberrationShader';
 import { COLOR_MATRIX_CONSTANTS } from '@shared/constants/videoProcessing';
 
 const grainShader = Skia.RuntimeEffect.Make(FILM_GRAIN_SHADER);
+const abEffect = Skia.RuntimeEffect.Make(CHROMATIC_ABERRATION_SHADER);
 
 interface UseFilmFrameProcessorProps {
   wcGrainEnabled: { value: boolean };
   wcGrainIntensity: { value: number };
   wcSaturation: { value: number };
   wcContrast: { value: number };
+  wcChromaticAberration: { value: number };
 }
 
 export const useFilmFrameProcessor = ({
@@ -17,6 +20,7 @@ export const useFilmFrameProcessor = ({
   wcGrainIntensity,
   wcSaturation,
   wcContrast,
+  wcChromaticAberration,
 }: UseFilmFrameProcessorProps) => {
   return useSkiaFrameProcessor((frame) => {
     'worklet';
@@ -52,18 +56,16 @@ export const useFilmFrameProcessor = ({
       null
     );
 
-    // Compose filters: inner filter first (saturation), then outer (contrast)
-    // We compose if there's an API, but since MakeCompose exists in Skia:
-    if (Skia.ImageFilter.MakeCompose) {
-      paint.setImageFilter(Skia.ImageFilter.MakeCompose(contrastFilter, saturationFilter));
-    } else {
-      // Fallback if MakeCompose isn't available (though it is in RN Skia)
-      // We can chain ColorFilters
-      const combinedColorFilter = Skia.ColorFilter.MakeCompose(
-        Skia.ColorFilter.MakeMatrix(contrastMatrix),
-        Skia.ColorFilter.MakeMatrix(saturationMatrix)
-      );
-      paint.setImageFilter(Skia.ImageFilter.MakeColorFilter(combinedColorFilter, null));
+    const combinedFilter = Skia.ImageFilter.MakeCompose(contrastFilter, saturationFilter);
+
+    if (abEffect && combinedFilter) {
+      const builder = Skia.RuntimeShaderBuilder(abEffect);
+      builder.setUniform('resolution', [frame.width, frame.height]);
+      builder.setUniform('intensity', [wcChromaticAberration.value]);
+      
+      paint.setImageFilter(Skia.ImageFilter.MakeRuntimeShader(builder, 'image', combinedFilter));
+    } else if (combinedFilter) {
+      paint.setImageFilter(combinedFilter);
     }
 
     frame.render(paint);

@@ -12,9 +12,11 @@ interface GestureControllerProps {
   grainIntensity: SharedValue<number>;
   saturation: SharedValue<number>;
   contrast: SharedValue<number>;
+  chromaticAberration: SharedValue<number>;
   onGrainIntensityChange: (val: number) => void;
   onSaturationChange: (val: number) => void;
   onContrastChange: (val: number) => void;
+  onChromaticAberrationChange: (val: number) => void;
   activeTab: TabType;
   activeModule: ModuleType;
   activeParameter: ParameterType;
@@ -24,9 +26,11 @@ export const GestureController = ({
   grainIntensity,
   saturation,
   contrast,
+  chromaticAberration,
   onGrainIntensityChange,
   onSaturationChange,
   onContrastChange,
+  onChromaticAberrationChange,
   activeModule,
   activeParameter,
 }: GestureControllerProps) => {
@@ -43,6 +47,8 @@ export const GestureController = ({
         startVal.value = saturation.value / 2.0;
       } else if (activeModule === 'color_grading' && activeParameter === 'contrast') {
         startVal.value = contrast.value / 2.0;
+      } else if (activeModule === 'lens_effects' && activeParameter === 'chromatic_aberration') {
+        startVal.value = chromaticAberration.value / 2.0;
       } else {
         startVal.value = -1; // Indicate nothing is selected
       }
@@ -65,10 +71,14 @@ export const GestureController = ({
           contrast.value = scaledValue;
           runOnJS(onContrastChange)(scaledValue);
         }
+      } else if (activeModule === 'lens_effects' && activeParameter === 'chromatic_aberration') {
+        const scaledValue = normalizedValue * 2.0;
+        chromaticAberration.value = scaledValue;
+        runOnJS(onChromaticAberrationChange)(scaledValue);
       }
     });
 
-  if (activeModule !== 'grain' && activeModule !== 'color_grading') {
+  if (activeModule !== 'grain' && activeModule !== 'color_grading' && activeModule !== 'lens_effects') {
     return null;
   }
 
