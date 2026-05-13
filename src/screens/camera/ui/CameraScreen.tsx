@@ -3,7 +3,7 @@ import { StyleSheet, Text, View, AppState, AppStateStatus } from 'react-native';
 import { Camera, useCameraDevice, useCameraPermission } from 'react-native-vision-camera';
 import { useTranslation } from 'react-i18next';
 
-import { CameraEffectsProvider, useCameraEffectsContext, GestureController, Footer } from '@features/camera-controls';
+import { CameraEffectsProvider, useCameraEffectsContext, GestureController, Footer, DebugOverlay } from '@features/camera-controls';
 
 
 export const CameraScreen = () => {
@@ -19,7 +19,7 @@ const CameraScreenContent = () => {
   const { hasPermission, requestPermission } = useCameraPermission();
   const device = useCameraDevice('back');
   
-  const { frameProcessor } = useCameraEffectsContext();
+  const { frameProcessor, isDebugEnabled } = useCameraEffectsContext();
 
   const [isActive, setIsActive] = useState(AppState.currentState === 'active');
 
@@ -66,6 +66,8 @@ const CameraScreenContent = () => {
       />
 
       <GestureController />
+
+      {isDebugEnabled && <DebugOverlay />}
 
       <Footer />
     </View>

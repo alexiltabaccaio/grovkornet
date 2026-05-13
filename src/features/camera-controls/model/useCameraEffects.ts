@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
 import { useSharedValue } from 'react-native-reanimated';
-import { useSharedValue as useWCSharedValue } from 'react-native-worklets-core';
+import { Worklets, useSharedValue as useWCSharedValue } from 'react-native-worklets-core';
 import { useFilmFrameProcessor } from '@entities/camera';
 
 import { TabType, CameraEffectState, ParameterType, ModuleType } from '@shared/types/camera';
@@ -18,6 +18,7 @@ export const useCameraEffects = (): CameraEffectState & { frameProcessor: Drawab
     color_grading: 'saturation',
     lens_effects: 'chromatic_aberration',
     language: 'none',
+    debug: 'none',
     fade: 'none',
     jitter: 'none',
     dropouts: 'none',
@@ -42,6 +43,9 @@ export const useCameraEffects = (): CameraEffectState & { frameProcessor: Drawab
   const contrast = useSharedValue(DEFAULT_CONTRAST);
   const chromaticAberration = useSharedValue(DEFAULT_CHROMATIC_ABERRATION);
   const grainEnabled = useSharedValue(false);
+  const [isDebugEnabled, setIsDebugEnabledState] = useState(false);
+  const fps = useSharedValue(0);
+  const resolution = useSharedValue('');
 
   // Worklets Core Shared Values (for GPU Frame Processor)
   const wcGrainIntensity = useWCSharedValue(DEFAULT_GRAIN_INTENSITY);
@@ -50,12 +54,18 @@ export const useCameraEffects = (): CameraEffectState & { frameProcessor: Drawab
   const wcChromaticAberration = useWCSharedValue(DEFAULT_CHROMATIC_ABERRATION);
   const wcGrainEnabled = useWCSharedValue(false);
 
+  const onDebugUpdate = Worklets.createRunOnJS((newFps: number, newResolution: string) => {
+    fps.value = newFps;
+    resolution.value = newResolution;
+  });
+
   const frameProcessor = useFilmFrameProcessor({
     wcGrainEnabled,
     wcGrainIntensity,
     wcSaturation,
     wcContrast,
     wcChromaticAberration,
+    onDebugUpdate,
   });
 
   const setGrainIntensity = useCallback((value: number) => {
@@ -79,6 +89,10 @@ export const useCameraEffects = (): CameraEffectState & { frameProcessor: Drawab
   const setGrainEnabled = useCallback((value: boolean) => {
     wcGrainEnabled.value = value;
   }, [wcGrainEnabled]);
+
+  const setIsDebugEnabled = useCallback((value: boolean) => {
+    setIsDebugEnabledState(value);
+  }, []);
 
   const resetTool = useCallback((tool: 'grain' | ParameterType) => {
     if (tool === 'grain') {
@@ -111,11 +125,15 @@ export const useCameraEffects = (): CameraEffectState & { frameProcessor: Drawab
     contrast,
     chromaticAberration,
     grainEnabled,
+    isDebugEnabled,
+    fps,
+    resolution,
     setGrainIntensity,
     setSaturation,
     setContrast,
     setChromaticAberration,
     setGrainEnabled,
+    setIsDebugEnabled,
     resetTool,
     frameProcessor,
   };

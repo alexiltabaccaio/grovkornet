@@ -6,7 +6,7 @@ import { useCameraEffectsContext } from '../model/CameraEffectsContext';
 import { BottomNavigationBar } from './BottomNavigationBar';
 import { FilterPillMenu } from './FilterPillMenu';
 import { FilterParameterThumb } from './FilterParameterThumb';
-import { LanguageThumb } from '@shared/ui';
+import { LanguageThumb, DebugThumb } from '@shared/ui';
 
 import { useDoublePress } from '@shared/lib/hooks/useDoublePress';
 
@@ -20,10 +20,12 @@ export const Footer = () => {
     saturation,
     contrast,
     chromaticAberration,
+    isDebugEnabled,
     setGrainIntensity,
     setSaturation,
     setContrast,
     setChromaticAberration,
+    setIsDebugEnabled,
     resetTool,
   } = useCameraEffectsContext();
 
@@ -110,7 +112,19 @@ export const Footer = () => {
               </Animated.View>
             )}
 
-            {activeModule !== 'grain' && activeModule !== 'color_grading' && activeModule !== 'lens_effects' && activeModule !== 'language' && activeModule !== 'none' && (
+            {activeModule === 'debug' && (
+              <Animated.View entering={FadeIn.duration(200)} exiting={FadeOut.duration(200)} style={styles.tabContent}>
+                <View style={styles.imageToolsContainer}>
+                  <DebugThumb
+                    label={t('modules.debug')}
+                    isActive={isDebugEnabled}
+                    onPress={() => setIsDebugEnabled(!isDebugEnabled)}
+                  />
+                </View>
+              </Animated.View>
+            )}
+
+            {activeModule !== 'grain' && activeModule !== 'color_grading' && activeModule !== 'lens_effects' && activeModule !== 'language' && activeModule !== 'debug' && activeModule !== 'none' && (
               <Animated.View entering={FadeIn.duration(200)} exiting={FadeOut.duration(200)} style={styles.tabContent}>
                 <Text style={styles.infoText}>{t('footer.coming_soon')}</Text>
               </Animated.View>

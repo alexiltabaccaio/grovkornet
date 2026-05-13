@@ -52,6 +52,9 @@ export const FilterPillMenu = () => {
           <Pressable style={[styles.pill, activeModule === 'language' && styles.pillActive]} onPress={() => setActiveModule('language')} hitSlop={10}>
             <Text style={[styles.pillText, activeModule === 'language' && styles.pillTextActive]}>{t('modules.language')}</Text>
           </Pressable>
+          <Pressable style={[styles.pill, activeModule === 'debug' && styles.pillActive]} onPress={() => setActiveModule('debug')} hitSlop={10}>
+            <Text style={[styles.pillText, activeModule === 'debug' && styles.pillTextActive]}>{t('modules.debug')}</Text>
+          </Pressable>
         </>
       )}
     </ScrollView>

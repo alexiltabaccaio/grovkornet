@@ -4,3 +4,4 @@ export * from './ui/GestureController';
 export * from './ui/BottomNavigationBar';
 export * from './ui/FilterPillMenu';
 export * from './ui/FilterParameterThumb';
+export * from './ui/DebugOverlay';

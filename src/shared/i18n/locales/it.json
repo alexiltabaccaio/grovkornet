@@ -18,7 +18,8 @@
       "grain": "Grana",
       "jitter": "Jitter",
       "dropouts": "Dropouts",
-      "language": "Lingua"
+      "language": "Lingua",
+      "debug": "Debug"
     },
     "parameters": {
       "amount": "QUANTITÀ",

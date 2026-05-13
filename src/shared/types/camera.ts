@@ -1,7 +1,7 @@
 import { SharedValue } from 'react-native-reanimated';
 
 export type TabType = 'lens' | 'color' | 'tape' | 'crt' | 'settings' | 'none';
-export type ModuleType = 'color_grading' | 'fade' | 'grain' | 'jitter' | 'dropouts' | 'lens_effects' | 'language' | 'none';
+export type ModuleType = 'color_grading' | 'fade' | 'grain' | 'jitter' | 'dropouts' | 'lens_effects' | 'language' | 'debug' | 'none';
 export type ParameterType = 'saturation' | 'contrast' | 'grain' | 'chromatic_aberration' | 'none';
 
 export interface EffectSharedValues {
@@ -10,6 +10,9 @@ export interface EffectSharedValues {
   contrast: SharedValue<number>;
   chromaticAberration: SharedValue<number>;
   grainEnabled: SharedValue<boolean>;
+  isDebugEnabled: boolean;
+  fps: SharedValue<number>;
+  resolution: SharedValue<string>;
 }
 
 export interface EffectHandlers {
@@ -18,6 +21,7 @@ export interface EffectHandlers {
   setContrast: (value: number) => void;
   setChromaticAberration: (value: number) => void;
   setGrainEnabled: (value: boolean) => void;
+  setIsDebugEnabled: (value: boolean) => void;
   resetTool: (tool: 'grain' | ParameterType) => void;
 }
 
