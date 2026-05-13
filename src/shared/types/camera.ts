@@ -23,6 +23,7 @@ export interface EffectHandlers {
   setGrainEnabled: (value: boolean) => void;
   setIsDebugEnabled: (value: boolean) => void;
   resetTool: (tool: 'grain' | ParameterType) => void;
+  setDebugInfo: (fps: number, resolution: string) => void;
 }
 
 export interface CameraEffectState extends EffectSharedValues, EffectHandlers {

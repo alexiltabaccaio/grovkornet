@@ -6,12 +6,16 @@ import android.opengl.GLES11Ext
 import android.opengl.GLES20
 import android.opengl.GLSurfaceView
 import android.util.Log
+import android.util.Range
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ProcessLifecycleOwner
+import com.facebook.react.bridge.Arguments
+import com.facebook.react.uimanager.ThemedReactContext
+import com.facebook.react.uimanager.events.RCTEventEmitter
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.nio.FloatBuffer
@@ -40,6 +44,12 @@ class NativeFilmCameraView(context: Context) : GLSurfaceView(context), GLSurface
 
     private var viewportWidth = 0
     private var viewportHeight = 0
+    
+    private var cameraWidth = 0
+    private var cameraHeight = 0
+
+    private var framesCount = 0
+    private var lastLogTime = 0L
 
     private val VERTICES = floatArrayOf(
         -1.0f, -1.0f,
@@ -97,8 +107,27 @@ class NativeFilmCameraView(context: Context) : GLSurfaceView(context), GLSurface
 
     override fun onDrawFrame(gl: GL10?) {
         surfaceTexture?.updateTexImage()
-
         surfaceTexture?.getTransformMatrix(transformMatrix)
+
+        // Calcola e invia FPS
+        val now = System.currentTimeMillis()
+        if (lastLogTime == 0L) lastLogTime = now
+        framesCount++
+        if (now - lastLogTime >= 500) {
+            val actualFps = (framesCount * 1000) / (now - lastLogTime)
+            val event = Arguments.createMap().apply {
+                putInt("fps", actualFps.toInt())
+                putString("resolution", "${cameraWidth}x${cameraHeight}")
+            }
+            val reactContext = context as? ThemedReactContext
+            reactContext?.getJSModule(RCTEventEmitter::class.java)?.receiveEvent(
+                id,
+                "onDebugUpdate",
+                event
+            )
+            lastLogTime = now
+            framesCount = 0
+        }
 
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT)
         GLES20.glUseProgram(program)
@@ -140,10 +169,14 @@ class NativeFilmCameraView(context: Context) : GLSurfaceView(context), GLSurface
         val cameraProviderFuture = ProcessCameraProvider.getInstance(context)
         cameraProviderFuture.addListener({
             val cameraProvider = cameraProviderFuture.get()
-            val preview = Preview.Builder().build().also {
+            val preview = Preview.Builder()
+                .setTargetFrameRate(Range(60, 60))
+                .build().also {
                 it.setSurfaceProvider { request ->
                     val st = surfaceTexture
                     if (st != null) {
+                        cameraWidth = request.resolution.width
+                        cameraHeight = request.resolution.height
                         st.setDefaultBufferSize(request.resolution.width, request.resolution.height)
                         val surface = android.view.Surface(st)
                         request.provideSurface(surface, ContextCompat.getMainExecutor(context)) { result ->

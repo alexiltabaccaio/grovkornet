@@ -17,7 +17,7 @@ export const CameraScreen = () => {
 
 const CameraScreenContent = () => {
   const { t } = useTranslation();
-  const { isDebugEnabled, saturation, contrast, chromaticAberration, grainIntensity, grainEnabled } = useCameraEffectsContext();
+  const { isDebugEnabled, saturation, contrast, chromaticAberration, grainIntensity, grainEnabled, setDebugInfo } = useCameraEffectsContext();
 
   const [isActive, setIsActive] = useState(AppState.currentState === 'active');
   const [cameraKey, setCameraKey] = useState(0);
@@ -68,6 +68,11 @@ const CameraScreenContent = () => {
         chromaticAberration={chromaticAberration}
         grainIntensity={grainIntensity}
         grainEnabled={grainEnabled}
+        onDebugUpdate={(event: any) => {
+          if (event.nativeEvent) {
+            setDebugInfo(event.nativeEvent.fps, event.nativeEvent.resolution);
+          }
+        }}
       />
 
       <GestureController />

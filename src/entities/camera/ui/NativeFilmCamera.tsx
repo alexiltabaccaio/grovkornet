@@ -7,6 +7,7 @@ interface NativeFilmCameraProps extends ViewProps {
   grainIntensity: number;
   grainEnabled: boolean;
   chromaticAberration: number;
+  onDebugUpdate?: (event: { nativeEvent: { fps: number; resolution: string } }) => void;
 }
 
 const NativeFilmCameraBase = requireNativeComponent<NativeFilmCameraProps>('NativeFilmCamera');

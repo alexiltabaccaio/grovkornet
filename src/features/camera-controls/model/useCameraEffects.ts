@@ -88,6 +88,11 @@ export const useCameraEffects = (): CameraEffectState => {
     }
   }, [grainIntensity, saturation, contrast, chromaticAberration, setGrainIntensity, setSaturation, setContrast, setChromaticAberration]);
 
+  const setDebugInfo = useCallback((newFps: number, newResolution: string) => {
+    fps.value = newFps;
+    resolution.value = newResolution;
+  }, [fps, resolution]);
+
   return {
     activeTab,
     setActiveTab,
@@ -109,6 +114,7 @@ export const useCameraEffects = (): CameraEffectState => {
     setChromaticAberration,
     setGrainEnabled,
     setIsDebugEnabled,
+    setDebugInfo,
     resetTool,
   };
 };

@@ -3,11 +3,18 @@ package com.anonymous.Grovkornet
 import com.facebook.react.uimanager.SimpleViewManager
 import com.facebook.react.uimanager.ThemedReactContext
 import com.facebook.react.uimanager.annotations.ReactProp
+import com.facebook.react.common.MapBuilder
 
 class NativeFilmCameraManager : SimpleViewManager<NativeFilmCameraView>() {
 
     override fun getName(): String {
         return "NativeFilmCamera"
+    }
+
+    override fun getExportedCustomDirectEventTypeConstants(): MutableMap<String, Any> {
+        return MapBuilder.builder<String, Any>()
+            .put("onDebugUpdate", MapBuilder.of("registrationName", "onDebugUpdate"))
+            .build()
     }
 
     override fun createViewInstance(reactContext: ThemedReactContext): NativeFilmCameraView {
