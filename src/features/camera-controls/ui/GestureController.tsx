@@ -1,9 +1,9 @@
 import React from 'react';
 import { StyleSheet, View, Dimensions } from 'react-native';
-import Animated, { SharedValue, runOnJS, useSharedValue } from 'react-native-reanimated';
+import { SharedValue, runOnJS, useSharedValue } from 'react-native-reanimated';
 import { GestureDetector, Gesture } from 'react-native-gesture-handler';
 
-import { TabType, ParameterType, ModuleType } from '../types/camera';
+import { TabType, ParameterType, ModuleType } from '@shared/types/camera';
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 const SLIDER_HEIGHT = SCREEN_HEIGHT * 0.3;
@@ -27,7 +27,6 @@ export const GestureController = ({
   onGrainIntensityChange,
   onSaturationChange,
   onContrastChange,
-  activeTab,
   activeModule,
   activeParameter,
 }: GestureControllerProps) => {

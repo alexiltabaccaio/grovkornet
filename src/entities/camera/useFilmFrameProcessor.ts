@@ -1,7 +1,7 @@
 import { useSkiaFrameProcessor } from 'react-native-vision-camera';
 import { Skia, BlendMode } from '@shopify/react-native-skia';
-import { FILM_GRAIN_SHADER } from '../shaders/FilmGrainShader';
-import { COLOR_MATRIX_CONSTANTS } from '../constants/videoProcessing';
+import { FILM_GRAIN_SHADER } from '@shared/shaders/FilmGrainShader';
+import { COLOR_MATRIX_CONSTANTS } from '@shared/constants/videoProcessing';
 
 const grainShader = Skia.RuntimeEffect.Make(FILM_GRAIN_SHADER);
 

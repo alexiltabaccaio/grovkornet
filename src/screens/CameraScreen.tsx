@@ -1,15 +1,15 @@
 import React, { useEffect } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { Camera, useCameraDevice, useCameraPermission } from 'react-native-vision-camera';
-import { useCameraEffects } from '../hooks/useCameraEffects';
-import { GestureController } from './GestureController';
-import { Footer } from './Footer';
 
-export const CameraView = () => {
+import { useCameraEffects } from '@features/camera-controls/lib/useCameraEffects';
+import { GestureController } from '@features/camera-controls/ui/GestureController';
+import { Footer } from '@features/camera-controls/ui/Footer';
+
+export const CameraScreen = () => {
   const { hasPermission, requestPermission } = useCameraPermission();
   const device = useCameraDevice('back');
   
-  // Custom hook containing all the logic for frame processing and state synchronization
   const {
     activeTab,
     setActiveTab,
@@ -53,7 +53,6 @@ export const CameraView = () => {
 
   return (
     <View style={styles.container}>
-      {/* Native Camera with integrated Skia Frame Processor */}
       <Camera
         style={StyleSheet.absoluteFill}
         device={device}
@@ -62,7 +61,6 @@ export const CameraView = () => {
         frameProcessor={frameProcessor}
       />
 
-      {/* Full Screen Gesture Area */}
       <GestureController
         grainIntensity={grainIntensity}
         saturation={saturation}
@@ -75,7 +73,6 @@ export const CameraView = () => {
         onContrastChange={setContrast}
       />
 
-      {/* Simplified Footer */}
       <Footer
         enabled={grainEnabled}
         grainIntensity={grainIntensity}
@@ -110,4 +107,3 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
 });
-
