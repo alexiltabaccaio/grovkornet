@@ -2,6 +2,7 @@ import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import Animated, { FadeIn, FadeOut, SharedValue, useDerivedValue, useAnimatedStyle } from 'react-native-reanimated';
 import { Skia } from '@shopify/react-native-skia';
+import { useTranslation } from 'react-i18next';
 
 import { TabType, ParameterType, ModuleType } from '@shared/types/camera';
 import { FILM_GRAIN_SHADER } from '@shared/shaders/FilmGrainShader';
@@ -44,7 +45,7 @@ export const Footer = ({
   onParameterChange,
   onResetTool,
 }: FooterProps) => {
-  const [selectedLang, setSelectedLang] = React.useState<'en' | 'it'>('it');
+  const { t, i18n } = useTranslation();
   const { handlePressWithDouble } = useDoublePress(onResetTool);
 
   const uniforms = useDerivedValue(() => ({
@@ -82,7 +83,7 @@ export const Footer = ({
             {activeModule === 'grain' && (
               <Animated.View entering={FadeIn.duration(200)} exiting={FadeOut.duration(200)} style={styles.tabContent}>
                 <FilterParameterThumb
-                  label="AMOUNT"
+                  label={t('parameters.amount')}
                   isActive={activeParameter === 'grain'}
                   onPress={() => handlePressWithDouble('grain', () => onParameterChange('grain'))}
                   progressStyle={grainFillStyle}
@@ -96,14 +97,14 @@ export const Footer = ({
               <Animated.View entering={FadeIn.duration(200)} exiting={FadeOut.duration(200)} style={styles.tabContent}>
                 <View style={styles.imageToolsContainer}>
                   <FilterParameterThumb
-                    label="SATURATION"
+                    label={t('parameters.saturation')}
                     isActive={activeParameter === 'saturation'}
                     onPress={() => handlePressWithDouble('saturation', () => onParameterChange('saturation'))}
                     progressStyle={saturationFillStyle}
                     icon="color-filter-outline"
                   />
                   <FilterParameterThumb
-                    label="CONTRAST"
+                    label={t('parameters.contrast')}
                     isActive={activeParameter === 'contrast'}
                     onPress={() => handlePressWithDouble('contrast', () => onParameterChange('contrast'))}
                     progressStyle={contrastFillStyle}
@@ -116,7 +117,7 @@ export const Footer = ({
             {activeModule === 'lens_effects' && (
               <Animated.View entering={FadeIn.duration(200)} exiting={FadeOut.duration(200)} style={styles.tabContent}>
                 <FilterParameterThumb
-                  label="SFASAMENTO"
+                  label={t('parameters.phase_shift')}
                   isActive={activeParameter === 'chromatic_aberration'}
                   onPress={() => handlePressWithDouble('chromatic_aberration', () => onParameterChange('chromatic_aberration'))}
                   progressStyle={abFillStyle}
@@ -131,14 +132,14 @@ export const Footer = ({
                   <LanguageThumb 
                     label="English" 
                     languageCode="en" 
-                    isActive={selectedLang === 'en'} 
-                    onPress={() => setSelectedLang('en')} 
+                    isActive={i18n.language === 'en' || i18n.language.startsWith('en')} 
+                    onPress={() => i18n.changeLanguage('en')} 
                   />
                   <LanguageThumb 
                     label="Italiano" 
                     languageCode="it" 
-                    isActive={selectedLang === 'it'} 
-                    onPress={() => setSelectedLang('it')} 
+                    isActive={i18n.language === 'it' || i18n.language.startsWith('it')} 
+                    onPress={() => i18n.changeLanguage('it')} 
                   />
                 </View>
               </Animated.View>
@@ -146,7 +147,7 @@ export const Footer = ({
 
             {activeModule !== 'grain' && activeModule !== 'color_grading' && activeModule !== 'lens_effects' && activeModule !== 'language' && activeModule !== 'none' && (
               <Animated.View entering={FadeIn.duration(200)} exiting={FadeOut.duration(200)} style={styles.tabContent}>
-                <Text style={styles.infoText}>COMING SOON</Text>
+                <Text style={styles.infoText}>{t('footer.coming_soon')}</Text>
               </Animated.View>
             )}
           </View>

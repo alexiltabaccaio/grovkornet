@@ -13,7 +13,7 @@ interface FilterParameterThumbProps {
   icon?: keyof typeof Ionicons.glyphMap;
   skiaEffect?: SkRuntimeEffect | null;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  skiaUniforms?: any; // Uniforms di Skia sono dinamicamente tipizzate come any nel framework
+  skiaUniforms?: any; // Skia uniforms are dynamically typed as any in the framework
 }
 
 export const FilterParameterThumb = ({ 

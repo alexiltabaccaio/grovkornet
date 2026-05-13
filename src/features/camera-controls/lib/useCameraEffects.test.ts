@@ -12,7 +12,7 @@ jest.mock('react-native-worklets-core', () => ({
   useSharedValue: jest.fn((val) => ({ value: val })),
 }));
 
-// Mock useFilmFrameProcessor (che ora è in entities)
+// Mock useFilmFrameProcessor (which is now in entities)
 jest.mock('@entities/camera/useFilmFrameProcessor', () => ({
   useFilmFrameProcessor: jest.fn(() => ({})),
 }));

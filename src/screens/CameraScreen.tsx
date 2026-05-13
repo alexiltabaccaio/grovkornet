@@ -1,12 +1,14 @@
 import React, { useEffect } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { Camera, useCameraDevice, useCameraPermission } from 'react-native-vision-camera';
+import { useTranslation } from 'react-i18next';
 
 import { useCameraEffects } from '@features/camera-controls/lib/useCameraEffects';
 import { GestureController } from '@features/camera-controls/ui/GestureController';
 import { Footer } from '@features/camera-controls/ui/Footer';
 
 export const CameraScreen = () => {
+  const { t } = useTranslation();
   const { hasPermission, requestPermission } = useCameraPermission();
   const device = useCameraDevice('back');
   
@@ -40,7 +42,7 @@ export const CameraScreen = () => {
   if (!hasPermission) {
     return (
       <View style={styles.center}>
-        <Text style={styles.text}>Requesting camera permissions...</Text>
+        <Text style={styles.text}>{t('camera.requesting_permissions')}</Text>
       </View>
     );
   }
@@ -48,7 +50,7 @@ export const CameraScreen = () => {
   if (device == null) {
     return (
       <View style={styles.center}>
-        <Text style={styles.text}>Camera not found</Text>
+        <Text style={styles.text}>{t('camera.not_found')}</Text>
       </View>
     );
   }

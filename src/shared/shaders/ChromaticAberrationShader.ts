@@ -7,17 +7,17 @@ vec4 main(vec2 fragCoord) {
     vec2 uv = fragCoord / resolution;
     vec2 center = vec2(0.5);
     
-    // Distanza dal centro (0.0 al centro, ~0.707 agli angoli)
+    // Distance from the center (0.0 at center, ~0.707 at corners)
     float dist = distance(uv, center);
     
-    // Direzione dal centro verso l'esterno
+    // Direction from the center outwards
     vec2 dir = uv - center;
     
-    // Forza dell'effetto: un valore di 0.04 offre un buon bilanciamento
-    // al 100% è visibile, al 200% è marcato.
+    // Effect strength: a value of 0.04 offers a good balance
+    // at 100% it is visible, at 200% it is pronounced.
     float amount = dist * intensity * 0.04;
     
-    // Campionamento dei tre canali con offset divergenti
+    // Sampling of the three channels with divergent offsets
     float r = image.eval(fragCoord + dir * amount * resolution).r;
     float g = image.eval(fragCoord).g;
     float b = image.eval(fragCoord - dir * amount * resolution).b;

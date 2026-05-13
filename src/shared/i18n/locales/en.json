@@ -1,0 +1,33 @@
+{
+  "translation": {
+    "camera": {
+      "requesting_permissions": "Requesting camera permissions...",
+      "not_found": "Camera not found"
+    },
+    "tabs": {
+      "settings": "SETTINGS",
+      "lens": "LENS",
+      "color": "COLOR",
+      "tape": "TAPE",
+      "crt": "CRT"
+    },
+    "modules": {
+      "chromatic_aberration": "Chromatic Aberration",
+      "color_grading": "Color Grading",
+      "fade": "Fade",
+      "grain": "Grain",
+      "jitter": "Jitter",
+      "dropouts": "Dropouts",
+      "language": "Language"
+    },
+    "parameters": {
+      "amount": "AMOUNT",
+      "saturation": "SATURATION",
+      "contrast": "CONTRAST",
+      "phase_shift": "PHASE SHIFT"
+    },
+    "footer": {
+      "coming_soon": "COMING SOON"
+    }
+  }
+}

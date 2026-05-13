@@ -1,9 +1,11 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, LogBox } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { CameraScreen } from './src/screens/CameraScreen';
+import './src/shared/i18n';
 
 export default function App() {
+  LogBox.ignoreAllLogs(true);
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <View style={styles.container}>

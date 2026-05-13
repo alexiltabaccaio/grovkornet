@@ -2,7 +2,7 @@ import React from 'react';
 import { render } from '@testing-library/react-native';
 import { CameraScreen } from './CameraScreen';
 
-// Mock complessi per i componenti nativi e gli hook
+// Complex mocks for native components and hooks
 jest.mock('react-native-vision-camera', () => ({
   Camera: 'Camera',
   useCameraDevice: jest.fn(() => ({})),

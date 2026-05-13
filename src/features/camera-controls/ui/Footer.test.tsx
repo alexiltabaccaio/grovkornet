@@ -3,7 +3,7 @@ import { render } from '@testing-library/react-native';
 import { Footer } from './Footer';
 import { makeMutable } from 'react-native-reanimated';
 
-// Mock per le icone e Skia (che spesso danno problemi nei test node)
+// Mocks for icons and Skia (which often cause issues in node tests)
 jest.mock('@expo/vector-icons', () => ({
   Ionicons: 'Ionicons'
 }));
@@ -25,6 +25,7 @@ describe('Footer Component Stablity Test', () => {
     grainIntensity: makeMutable(0.5),
     saturation: makeMutable(1.0),
     contrast: makeMutable(1.0),
+    chromaticAberration: makeMutable(0),
     activeTab: 'none' as const,
     activeModule: 'none' as const,
     activeParameter: 'none' as const,
@@ -33,6 +34,7 @@ describe('Footer Component Stablity Test', () => {
     onModuleChange: jest.fn(),
     onParameterChange: jest.fn(),
     onResetTool: jest.fn(),
+    setChromaticAberration: jest.fn(),
   };
 
   it('should render correctly in default state', () => {

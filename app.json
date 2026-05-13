@@ -15,8 +15,8 @@
     "ios": {
       "supportsTablet": true,
       "infoPlist": {
-        "NSCameraUsageDescription": "Grovkornet necessita dell'accesso alla fotocamera per applicare il filtro.",
-        "NSMicrophoneUsageDescription": "Grovkornet necessita dell'accesso al microfono per registrare l'audio dei video."
+        "NSCameraUsageDescription": "Grovkornet needs camera access to apply the filter.",
+        "NSMicrophoneUsageDescription": "Grovkornet needs microphone access to record video audio."
       }
     },
     "android": {
@@ -41,9 +41,9 @@
       [
         "react-native-vision-camera",
         {
-          "cameraPermissionText": "Grovkornet necessita dell'accesso alla fotocamera per applicare il filtro.",
+          "cameraPermissionText": "Grovkornet needs camera access to apply the filter.",
           "enableMicrophonePermission": true,
-          "microphonePermissionText": "Grovkornet necessita dell'accesso al microfono per registrare l'audio dei video."
+          "microphonePermissionText": "Grovkornet needs microphone access to record video audio."
         }
       ],
       "expo-asset",

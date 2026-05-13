@@ -24,7 +24,7 @@ export default [
       '@typescript-eslint/no-explicit-any': 'error',
       '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
       'no-console': ['warn', { allow: ['warn', 'error'] }],
-      // 'import/no-relative-parent-imports': 'error', // Disabilitata temporaneamente per falsi positivi con alias @
+      // 'import/no-relative-parent-imports': 'error', // Temporarily disabled due to false positives with @ alias
     },
     settings: {
       'import/resolver': {
@@ -35,7 +35,7 @@ export default [
       },
     },
   },
-  // --- REGOLE FSD: CONFINI LAYER ---
+  // --- FSD RULES: LAYER BOUNDARIES ---
   {
     files: ['src/shared/**/*.{ts,tsx}'],
     rules: {
@@ -43,7 +43,7 @@ export default [
         patterns: [
           {
             group: ['@app/**', '@screens/**', '@widgets/**', '@features/**', '@entities/**'],
-            message: 'Il layer "shared" non può importare dai layer superiori.',
+            message: 'The "shared" layer cannot import from higher layers.',
           }
         ]
       }],
@@ -56,7 +56,7 @@ export default [
         patterns: [
           {
             group: ['@app/**', '@screens/**', '@widgets/**', '@features/**'],
-            message: 'Il layer "entities" non può importare dai layer superiori.',
+            message: 'The "entities" layer cannot import from higher layers.',
           }
         ]
       }],

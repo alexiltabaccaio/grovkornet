@@ -1,0 +1,33 @@
+{
+  "translation": {
+    "camera": {
+      "requesting_permissions": "Richiesta permessi fotocamera...",
+      "not_found": "Fotocamera non trovata"
+    },
+    "tabs": {
+      "settings": "IMPOSTAZIONI",
+      "lens": "OBIETTIVO",
+      "color": "COLORE",
+      "tape": "PELLICOLA",
+      "crt": "CRT"
+    },
+    "modules": {
+      "chromatic_aberration": "Aberrazione Cromatica",
+      "color_grading": "Color Grading",
+      "fade": "Fade",
+      "grain": "Grana",
+      "jitter": "Jitter",
+      "dropouts": "Dropouts",
+      "language": "Lingua"
+    },
+    "parameters": {
+      "amount": "QUANTITÀ",
+      "saturation": "SATURAZIONE",
+      "contrast": "CONTRASTO",
+      "phase_shift": "SFASAMENTO"
+    },
+    "footer": {
+      "coming_soon": "IN ARRIVO"
+    }
+  }
+}
