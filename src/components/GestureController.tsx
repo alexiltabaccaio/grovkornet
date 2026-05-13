@@ -38,17 +38,23 @@ export const GestureController = ({
 
   const gesture = Gesture.Pan()
     .onStart(() => {
-      if (activeModule === 'grain') {
+      if (activeModule === 'grain' && activeParameter === 'grain') {
         startVal.value = grainIntensity.value;
-      } else if (activeModule === 'color_grading') {
-        const rawVal = activeParameter === 'saturation' ? saturation.value : contrast.value;
-        startVal.value = rawVal / 2.0;
+      } else if (activeModule === 'color_grading' && activeParameter === 'saturation') {
+        startVal.value = saturation.value / 2.0;
+      } else if (activeModule === 'color_grading' && activeParameter === 'contrast') {
+        startVal.value = contrast.value / 2.0;
+      } else {
+        startVal.value = -1; // Indicate nothing is selected
       }
     })
     .onUpdate((e) => {
+      if (startVal.value === -1) return; // Do nothing if no parameter selected
+
       const delta = -(e.translationY / SLIDER_HEIGHT);
       const normalizedValue = Math.min(Math.max(startVal.value + delta, 0), 1);
-      if (activeModule === 'grain') {
+      
+      if (activeModule === 'grain' && activeParameter === 'grain') {
         grainIntensity.value = normalizedValue;
         runOnJS(onGrainIntensityChange)(normalizedValue);
       } else if (activeModule === 'color_grading') {
@@ -56,7 +62,7 @@ export const GestureController = ({
         if (activeParameter === 'saturation') {
           saturation.value = scaledValue;
           runOnJS(onSaturationChange)(scaledValue);
-        } else {
+        } else if (activeParameter === 'contrast') {
           contrast.value = scaledValue;
           runOnJS(onContrastChange)(scaledValue);
         }

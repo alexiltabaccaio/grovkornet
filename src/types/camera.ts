@@ -2,7 +2,7 @@ import { SharedValue } from 'react-native-reanimated';
 
 export type TabType = 'lens' | 'color' | 'tape' | 'crt' | 'none';
 export type ModuleType = 'color_grading' | 'fade' | 'grain' | 'jitter' | 'dropouts' | 'none';
-export type ParameterType = 'saturation' | 'contrast';
+export type ParameterType = 'saturation' | 'contrast' | 'grain' | 'none';
 
 export interface EffectSharedValues {
   grainIntensity: SharedValue<number>;

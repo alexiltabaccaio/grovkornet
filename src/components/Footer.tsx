@@ -44,7 +44,6 @@ export const Footer = ({
   onParameterChange,
   onResetTool
 }: FooterProps) => {
-  const [isGrainEnabled, setIsGrainEnabled] = useState(false);
   const lastPressRef = useRef<{ [key: string]: number }>({});
 
   const handlePressWithDouble = (toolName: string, onSingle: () => void) => {
@@ -85,11 +84,6 @@ export const Footer = ({
     };
   });
 
-  const handleToggle = (value: boolean) => {
-    enabled.value = value;
-    setIsGrainEnabled(value);
-    onGrainToggle(value);
-  };
 
   const handleTabChange = (tab: TabType) => {
     const newTab = activeTab === tab ? 'none' : tab;
@@ -106,47 +100,49 @@ export const Footer = ({
         <View style={styles.topFooter}>
           
           {/* PILL MENU (LEVEL 2) */}
-          <ScrollView 
-            horizontal 
-            showsHorizontalScrollIndicator={false} 
-            contentContainerStyle={styles.pillMenuContainer}
-            style={styles.pillMenuWrapper}
-          >
-            {activeTab === 'color' && (
-              <>
-                <Pressable style={[styles.pill, activeModule === 'color_grading' && styles.pillActive]} onPress={() => onModuleChange('color_grading')}>
-                  <Text style={[styles.pillText, activeModule === 'color_grading' && styles.pillTextActive]}>Color Grading</Text>
-                </Pressable>
-                <Pressable style={[styles.pill, activeModule === 'fade' && styles.pillActive]} onPress={() => onModuleChange('fade')}>
-                  <Text style={[styles.pillText, activeModule === 'fade' && styles.pillTextActive]}>Fade</Text>
-                </Pressable>
-              </>
-            )}
-            {activeTab === 'tape' && (
-              <>
-                <Pressable style={[styles.pill, activeModule === 'grain' && styles.pillActive]} onPress={() => onModuleChange('grain')}>
-                  <Text style={[styles.pillText, activeModule === 'grain' && styles.pillTextActive]}>Grana</Text>
-                </Pressable>
-                <Pressable style={[styles.pill, activeModule === 'jitter' && styles.pillActive]} onPress={() => onModuleChange('jitter')}>
-                  <Text style={[styles.pillText, activeModule === 'jitter' && styles.pillTextActive]}>Jitter</Text>
-                </Pressable>
-                <Pressable style={[styles.pill, activeModule === 'dropouts' && styles.pillActive]} onPress={() => onModuleChange('dropouts')}>
-                  <Text style={[styles.pillText, activeModule === 'dropouts' && styles.pillTextActive]}>Dropouts</Text>
-                </Pressable>
-              </>
-            )}
-          </ScrollView>
+          {(activeTab === 'color' || activeTab === 'tape') && (
+            <ScrollView 
+              horizontal 
+              showsHorizontalScrollIndicator={false} 
+              contentContainerStyle={styles.pillMenuContainer}
+              style={styles.pillMenuWrapper}
+            >
+              {activeTab === 'color' && (
+                <>
+                  <Pressable style={[styles.pill, activeModule === 'color_grading' && styles.pillActive]} onPress={() => onModuleChange('color_grading')}>
+                    <Text style={[styles.pillText, activeModule === 'color_grading' && styles.pillTextActive]}>Color Grading</Text>
+                  </Pressable>
+                  <Pressable style={[styles.pill, activeModule === 'fade' && styles.pillActive]} onPress={() => onModuleChange('fade')}>
+                    <Text style={[styles.pillText, activeModule === 'fade' && styles.pillTextActive]}>Fade</Text>
+                  </Pressable>
+                </>
+              )}
+              {activeTab === 'tape' && (
+                <>
+                  <Pressable style={[styles.pill, activeModule === 'grain' && styles.pillActive]} onPress={() => onModuleChange('grain')}>
+                    <Text style={[styles.pillText, activeModule === 'grain' && styles.pillTextActive]}>Grana</Text>
+                  </Pressable>
+                  <Pressable style={[styles.pill, activeModule === 'jitter' && styles.pillActive]} onPress={() => onModuleChange('jitter')}>
+                    <Text style={[styles.pillText, activeModule === 'jitter' && styles.pillTextActive]}>Jitter</Text>
+                  </Pressable>
+                  <Pressable style={[styles.pill, activeModule === 'dropouts' && styles.pillActive]} onPress={() => onModuleChange('dropouts')}>
+                    <Text style={[styles.pillText, activeModule === 'dropouts' && styles.pillTextActive]}>Dropouts</Text>
+                  </Pressable>
+                </>
+              )}
+            </ScrollView>
+          )}
 
           {/* PARAMETERS (LEVEL 3) */}
           {activeModule === 'grain' && (
             <Animated.View entering={FadeIn.duration(200)} exiting={FadeOut.duration(200)} style={styles.tabContent}>
               <Pressable
                 style={styles.filterThumb}
-                onPress={() => handlePressWithDouble('grain', () => handleToggle(!isGrainEnabled))}
+                onPress={() => handlePressWithDouble('grain', () => onParameterChange('grain'))}
               >
                 <View style={[
                   styles.filterPlaceholder,
-                  isGrainEnabled && styles.filterPlaceholderActive
+                  activeParameter === 'grain' && styles.filterPlaceholderActive
                 ]}>
                   <Animated.View style={[styles.progressFill, grainFillStyle]} />
                   {grainEffect && (
@@ -159,8 +155,8 @@ export const Footer = ({
                 </View>
                 <Text style={[
                   styles.filterText,
-                  isGrainEnabled && styles.filterTextActive
-                ]}>FILM GRAIN</Text>
+                  activeParameter === 'grain' && styles.filterTextActive
+                ]}>AMOUNT</Text>
               </Pressable>
             </Animated.View>
           )}
@@ -270,26 +266,27 @@ const styles = StyleSheet.create({
     zIndex: 100,
   },
   topFooter: {
-    backgroundColor: '#000',
+    backgroundColor: 'rgba(0, 0, 0, 0.85)',
     borderTopLeftRadius: 0,
     borderTopRightRadius: 0,
-    paddingTop: 16,
+    paddingTop: 10,
     paddingBottom: 0,
-    minHeight: 80,
-    justifyContent: 'center',
+    height: 120,
+    justifyContent: 'flex-end',
   },
   bottomFooter: {
-    height: 90,
-    backgroundColor: '#000',
+    backgroundColor: 'rgba(0, 0, 0, 0.85)',
     flexDirection: 'row',
     justifyContent: 'space-around',
     alignItems: 'center',
-    paddingBottom: 30,
-    paddingTop: 10,
+    paddingTop: 8,
+    paddingBottom: 24,
   },
   tabContent: {
     alignItems: 'center',
     width: '100%',
+    height: 65,
+    justifyContent: 'center',
   },
   emptyContent: {
     height: 60,
@@ -324,6 +321,7 @@ const styles = StyleSheet.create({
     fontWeight: '800',
     marginTop: 6,
     letterSpacing: 1,
+    textAlign: 'center',
   },
   tabLabelActive: {
     color: '#FFF',
@@ -342,7 +340,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#222',
     borderWidth: 2,
     borderColor: '#444',
-    marginBottom: 8,
+    marginBottom: 6,
     overflow: 'hidden',
   },
   filterPlaceholderActive: {
@@ -362,8 +360,8 @@ const styles = StyleSheet.create({
     color: '#FFF',
   },
   pillMenuWrapper: {
-    maxHeight: 40,
-    marginBottom: 20,
+    maxHeight: 35,
+    marginBottom: 10,
     paddingHorizontal: 16,
   },
   pillMenuContainer: {

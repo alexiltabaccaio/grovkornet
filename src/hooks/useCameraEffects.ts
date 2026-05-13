@@ -9,7 +9,12 @@ import { DrawableFrameProcessor } from 'react-native-vision-camera';
 export const useCameraEffects = (): CameraEffectState & { frameProcessor: DrawableFrameProcessor } => {
   const [activeTab, setActiveTab] = useState<TabType>('none');
   const [activeModule, setActiveModule] = useState<ModuleType>('none');
-  const [activeParameter, setActiveParameter] = useState<ParameterType>('saturation');
+  const [activeParameter, setActiveParameter] = useState<ParameterType>('none');
+
+  const handleSetActiveModule = useCallback((module: ModuleType) => {
+    setActiveModule(module);
+    setActiveParameter('none');
+  }, []);
 
   // Reanimated Shared Values (for UI/Animations)
   const grainIntensity = useSharedValue(DEFAULT_GRAIN_INTENSITY);
@@ -32,7 +37,9 @@ export const useCameraEffects = (): CameraEffectState & { frameProcessor: Drawab
 
   const setGrainIntensity = useCallback((value: number) => {
     wcGrainIntensity.value = value;
-  }, [wcGrainIntensity]);
+    wcGrainEnabled.value = value > 0;
+    grainEnabled.value = value > 0;
+  }, [wcGrainIntensity, wcGrainEnabled, grainEnabled]);
 
   const setSaturation = useCallback((value: number) => {
     wcSaturation.value = value;
@@ -65,7 +72,7 @@ export const useCameraEffects = (): CameraEffectState & { frameProcessor: Drawab
     activeTab,
     setActiveTab,
     activeModule,
-    setActiveModule,
+    setActiveModule: handleSetActiveModule,
     activeParameter,
     setActiveParameter,
     grainIntensity,
