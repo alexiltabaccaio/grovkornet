@@ -217,6 +217,15 @@ export const Footer = ({
       <View style={styles.bottomFooter}>
         <Pressable
           style={styles.tabButton}
+          onPress={() => handleTabChange('settings')}
+          hitSlop={15}
+        >
+          <Ionicons name="cog-outline" size={24} color={activeTab === 'settings' ? "#FFF" : "#666"} />
+          <Text style={[styles.tabLabel, activeTab === 'settings' && styles.tabLabelActive]}>SETTINGS</Text>
+        </Pressable>
+
+        <Pressable
+          style={styles.tabButton}
           onPress={() => handleTabChange('lens')}
           hitSlop={15}
         >
