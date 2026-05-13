@@ -32,26 +32,22 @@ export const useFilmFrameProcessor = ({
 }: UseFilmFrameProcessorProps) => {
   const lastFrameTime = useWCSharedValue(0);
   const lastLogTime = useWCSharedValue(0);
+  const framesCount = useWCSharedValue(0);
 
   return useSkiaFrameProcessor((frame) => {
     'worklet';
 
     const now = performance.now();
-    let currentFps = 0;
+    
+    // Accumuliamo il conteggio dei frame
+    framesCount.value += 1;
 
-    // FPS Calculation
-    if (lastFrameTime.value > 0) {
-      const delta = now - lastFrameTime.value;
-      if (delta > 0) {
-        currentFps = Math.round(1000 / delta);
-      }
-    }
-    lastFrameTime.value = now;
-
-    // Throttle JS updates to every 500ms
-    if (now - lastLogTime.value > 500 && onDebugUpdate) {
-      onDebugUpdate(currentFps, `${frame.width}x${frame.height}`);
+    // Aggiorniamo la UI ogni 500ms con una media reale
+    if (now - lastLogTime.value >= 500 && onDebugUpdate) {
+      const actualFps = Math.round((framesCount.value * 1000) / (now - lastLogTime.value));
+      onDebugUpdate(actualFps, `${frame.width}x${frame.height}`);
       lastLogTime.value = now;
+      framesCount.value = 0; // reset
     }
 
     if (!filmRuntimeEffect) {

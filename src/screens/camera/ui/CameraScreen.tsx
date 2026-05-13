@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, View, AppState, AppStateStatus } from 'react-native';
-import { Camera, useCameraDevice, useCameraPermission } from 'react-native-vision-camera';
+import { Camera, useCameraDevice, useCameraPermission, useCameraFormat } from 'react-native-vision-camera';
 import { useTranslation } from 'react-i18next';
 
 import { CameraEffectsProvider, useCameraEffectsContext, GestureController, Footer, DebugOverlay } from '@features/camera-controls';
@@ -18,6 +18,17 @@ const CameraScreenContent = () => {
   const { t } = useTranslation();
   const { hasPermission, requestPermission } = useCameraPermission();
   const device = useCameraDevice('back');
+  
+  // Per dispositivi di varie fasce:
+  // 1. Evitiamo il 4K che ucciderebbe le prestazioni con lo Skia Frame Processor (impostiamo 1080p o 720p).
+  // 2. Chiediamo 60 FPS se disponibili, ma la libreria farà un fallback automatico a 30 FPS se il telefono non li supporta.
+  const format = useCameraFormat(device, [
+    { videoResolution: { width: 1920, height: 1080 } },
+    { fps: 60 }
+  ]);
+  
+  // Se il device supporta i 60fps li usiamo, altrimenti usiamo il suo massimo (es. 30), senza superare i 60 per non consumare troppa batteria.
+  const targetFps = format?.maxFps ? Math.min(format.maxFps, 60) : 30;
   
   const { frameProcessor, isDebugEnabled } = useCameraEffectsContext();
 
@@ -66,6 +77,8 @@ const CameraScreenContent = () => {
         key={`camera-${cameraKey}`}
         style={StyleSheet.absoluteFill}
         device={device}
+        format={format}
+        fps={targetFps}
         isActive={isActive}
         pixelFormat="rgb"
         frameProcessor={frameProcessor}
