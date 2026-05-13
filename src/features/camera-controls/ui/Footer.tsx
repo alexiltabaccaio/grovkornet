@@ -73,10 +73,10 @@ export const Footer = ({
     <View style={styles.container}>
       {activeTab !== 'none' && (
         <View style={styles.topFooter}>
-          <FilterPillMenu 
-            activeTab={activeTab} 
-            activeModule={activeModule} 
-            onModuleChange={onModuleChange} 
+          <FilterPillMenu
+            activeTab={activeTab}
+            activeModule={activeModule}
+            onModuleChange={onModuleChange}
           />
 
           <View style={styles.tabContentWrapper}>
@@ -129,17 +129,17 @@ export const Footer = ({
             {activeModule === 'language' && (
               <Animated.View entering={FadeIn.duration(200)} exiting={FadeOut.duration(200)} style={styles.tabContent}>
                 <View style={styles.imageToolsContainer}>
-                  <LanguageThumb 
-                    label="English" 
-                    languageCode="en" 
-                    isActive={i18n.language === 'en' || i18n.language.startsWith('en')} 
-                    onPress={() => i18n.changeLanguage('en')} 
+                  <LanguageThumb
+                    label="English"
+                    languageCode="en"
+                    isActive={i18n.language === 'en' || i18n.language.startsWith('en')}
+                    onPress={() => i18n.changeLanguage('en')}
                   />
-                  <LanguageThumb 
-                    label="Italiano" 
-                    languageCode="it" 
-                    isActive={i18n.language === 'it' || i18n.language.startsWith('it')} 
-                    onPress={() => i18n.changeLanguage('it')} 
+                  <LanguageThumb
+                    label="Italiano"
+                    languageCode="it"
+                    isActive={i18n.language === 'it' || i18n.language.startsWith('it')}
+                    onPress={() => i18n.changeLanguage('it')}
                   />
                 </View>
               </Animated.View>

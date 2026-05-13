@@ -23,37 +23,37 @@ export const FilterPillMenu = ({ activeTab, activeModule, onModuleChange }: Filt
     >
       {activeTab === 'lens' && (
         <>
-          <Pressable style={[styles.pill, activeModule === 'lens_effects' && styles.pillActive]} onPress={() => onModuleChange('lens_effects')}>
+          <Pressable style={[styles.pill, activeModule === 'lens_effects' && styles.pillActive]} onPress={() => onModuleChange('lens_effects')} hitSlop={10}>
             <Text style={[styles.pillText, activeModule === 'lens_effects' && styles.pillTextActive]}>{t('modules.chromatic_aberration')}</Text>
           </Pressable>
         </>
       )}
       {activeTab === 'color' && (
         <>
-          <Pressable style={[styles.pill, activeModule === 'color_grading' && styles.pillActive]} onPress={() => onModuleChange('color_grading')}>
+          <Pressable style={[styles.pill, activeModule === 'color_grading' && styles.pillActive]} onPress={() => onModuleChange('color_grading')} hitSlop={10}>
             <Text style={[styles.pillText, activeModule === 'color_grading' && styles.pillTextActive]}>{t('modules.color_grading')}</Text>
           </Pressable>
-          <Pressable style={[styles.pill, activeModule === 'fade' && styles.pillActive]} onPress={() => onModuleChange('fade')}>
+          <Pressable style={[styles.pill, activeModule === 'fade' && styles.pillActive]} onPress={() => onModuleChange('fade')} hitSlop={10}>
             <Text style={[styles.pillText, activeModule === 'fade' && styles.pillTextActive]}>{t('modules.fade')}</Text>
           </Pressable>
         </>
       )}
       {activeTab === 'tape' && (
         <>
-          <Pressable style={[styles.pill, activeModule === 'grain' && styles.pillActive]} onPress={() => onModuleChange('grain')}>
+          <Pressable style={[styles.pill, activeModule === 'grain' && styles.pillActive]} onPress={() => onModuleChange('grain')} hitSlop={10}>
             <Text style={[styles.pillText, activeModule === 'grain' && styles.pillTextActive]}>{t('modules.grain')}</Text>
           </Pressable>
-          <Pressable style={[styles.pill, activeModule === 'jitter' && styles.pillActive]} onPress={() => onModuleChange('jitter')}>
+          <Pressable style={[styles.pill, activeModule === 'jitter' && styles.pillActive]} onPress={() => onModuleChange('jitter')} hitSlop={10}>
             <Text style={[styles.pillText, activeModule === 'jitter' && styles.pillTextActive]}>{t('modules.jitter')}</Text>
           </Pressable>
-          <Pressable style={[styles.pill, activeModule === 'dropouts' && styles.pillActive]} onPress={() => onModuleChange('dropouts')}>
+          <Pressable style={[styles.pill, activeModule === 'dropouts' && styles.pillActive]} onPress={() => onModuleChange('dropouts')} hitSlop={10}>
             <Text style={[styles.pillText, activeModule === 'dropouts' && styles.pillTextActive]}>{t('modules.dropouts')}</Text>
           </Pressable>
         </>
       )}
       {activeTab === 'settings' && (
         <>
-          <Pressable style={[styles.pill, activeModule === 'language' && styles.pillActive]} onPress={() => onModuleChange('language')}>
+          <Pressable style={[styles.pill, activeModule === 'language' && styles.pillActive]} onPress={() => onModuleChange('language')} hitSlop={10}>
             <Text style={[styles.pillText, activeModule === 'language' && styles.pillTextActive]}>{t('modules.language')}</Text>
           </Pressable>
         </>

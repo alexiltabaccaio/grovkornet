@@ -11,7 +11,7 @@ interface BottomNavigationBarProps {
 
 export const BottomNavigationBar = ({ activeTab, onTabChange }: BottomNavigationBarProps) => {
   const { t } = useTranslation();
-  
+
   const tabs: { id: TabType; icon: keyof typeof Ionicons.glyphMap; label: string }[] = [
     { id: 'settings', icon: 'cog-outline', label: t('tabs.settings') },
     { id: 'lens', icon: 'aperture-outline', label: t('tabs.lens') },
@@ -22,7 +22,7 @@ export const BottomNavigationBar = ({ activeTab, onTabChange }: BottomNavigation
 
   return (
     <View style={styles.bottomFooterWrapper}>
-      <ScrollView 
+      <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
@@ -33,9 +33,8 @@ export const BottomNavigationBar = ({ activeTab, onTabChange }: BottomNavigation
             key={tab.id}
             style={styles.tabButton}
             onPress={() => onTabChange(tab.id)}
-            hitSlop={15}
+            hitSlop={{ top: 20, bottom: 20, left: 15, right: 15 }}
           >
-            <Ionicons name={tab.icon} size={24} color={activeTab === tab.id ? "#FFF" : "#666"} />
             <Text style={[styles.tabLabel, activeTab === tab.id && styles.tabLabelActive]}>{tab.label}</Text>
           </Pressable>
         ))}
@@ -47,26 +46,27 @@ export const BottomNavigationBar = ({ activeTab, onTabChange }: BottomNavigation
 const styles = StyleSheet.create({
   bottomFooterWrapper: {
     backgroundColor: 'rgba(0, 0, 0, 0.85)',
-    paddingTop: 8,
-    paddingBottom: 24,
+    paddingTop: 16,
+    paddingBottom: 16,
   },
   scrollContent: {
     flexDirection: 'row',
     justifyContent: 'space-around',
     alignItems: 'center',
     minWidth: '100%',
-    paddingHorizontal: 16,
+    paddingHorizontal: 0,
   },
   tabButton: {
+    flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: 20,
+    paddingVertical: 4,
   },
   tabLabel: {
     color: '#666',
     fontSize: 10,
     fontWeight: '800',
-    marginTop: 6,
+    marginTop: 4,
     letterSpacing: 1,
     textAlign: 'center',
   },
