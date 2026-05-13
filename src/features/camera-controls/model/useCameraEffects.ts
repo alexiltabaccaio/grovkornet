@@ -1,13 +1,10 @@
 import { useState, useCallback } from 'react';
 import { useSharedValue } from 'react-native-reanimated';
-import { Worklets, useSharedValue as useWCSharedValue } from 'react-native-worklets-core';
-import { useFilmFrameProcessor } from '@entities/camera';
 
 import { TabType, CameraEffectState, ParameterType, ModuleType } from '@shared/types/camera';
 import { DEFAULT_GRAIN_INTENSITY, DEFAULT_SATURATION, DEFAULT_CONTRAST, DEFAULT_CHROMATIC_ABERRATION } from '@shared/constants/videoProcessing';
-import { DrawableFrameProcessor } from 'react-native-vision-camera';
 
-export const useCameraEffects = (): CameraEffectState & { frameProcessor: DrawableFrameProcessor } => {
+export const useCameraEffects = (): CameraEffectState => {
   const [activeTab, setActiveTab] = useState<TabType>('none');
   const [activeModule, setActiveModule] = useState<ModuleType>('none');
   const [activeParameter, setActiveParameter] = useState<ParameterType>('none');
@@ -47,48 +44,26 @@ export const useCameraEffects = (): CameraEffectState & { frameProcessor: Drawab
   const fps = useSharedValue(0);
   const resolution = useSharedValue('');
 
-  // Worklets Core Shared Values (for GPU Frame Processor)
-  const wcGrainIntensity = useWCSharedValue(DEFAULT_GRAIN_INTENSITY);
-  const wcSaturation = useWCSharedValue(DEFAULT_SATURATION);
-  const wcContrast = useWCSharedValue(DEFAULT_CONTRAST);
-  const wcChromaticAberration = useWCSharedValue(DEFAULT_CHROMATIC_ABERRATION);
-  const wcGrainEnabled = useWCSharedValue(false);
-
-  const onDebugUpdate = Worklets.createRunOnJS((newFps: number, newResolution: string) => {
-    fps.value = newFps;
-    resolution.value = newResolution;
-  });
-
-  const frameProcessor = useFilmFrameProcessor({
-    wcGrainEnabled,
-    wcGrainIntensity,
-    wcSaturation,
-    wcContrast,
-    wcChromaticAberration,
-    onDebugUpdate,
-  });
-
   const setGrainIntensity = useCallback((value: number) => {
-    wcGrainIntensity.value = value;
-    wcGrainEnabled.value = value > 0;
+    grainIntensity.value = value;
     grainEnabled.value = value > 0;
-  }, [wcGrainIntensity, wcGrainEnabled, grainEnabled]);
+  }, [grainIntensity, grainEnabled]);
 
   const setSaturation = useCallback((value: number) => {
-    wcSaturation.value = value;
-  }, [wcSaturation]);
+    saturation.value = value;
+  }, [saturation]);
 
   const setContrast = useCallback((value: number) => {
-    wcContrast.value = value;
-  }, [wcContrast]);
+    contrast.value = value;
+  }, [contrast]);
   
   const setChromaticAberration = useCallback((value: number) => {
-    wcChromaticAberration.value = value;
-  }, [wcChromaticAberration]);
+    chromaticAberration.value = value;
+  }, [chromaticAberration]);
 
   const setGrainEnabled = useCallback((value: boolean) => {
-    wcGrainEnabled.value = value;
-  }, [wcGrainEnabled]);
+    grainEnabled.value = value;
+  }, [grainEnabled]);
 
   const setIsDebugEnabled = useCallback((value: boolean) => {
     setIsDebugEnabledState(value);
@@ -135,6 +110,5 @@ export const useCameraEffects = (): CameraEffectState & { frameProcessor: Drawab
     setGrainEnabled,
     setIsDebugEnabled,
     resetTool,
-    frameProcessor,
   };
 };

@@ -4,7 +4,34 @@ dist/
 npm-debug.*
 yarn-debug.*
 yarn-error.*
-android/
-ios/
+# Android
+android/.gradle
+android/build/
+android/app/build/
+android/app/.cxx/
+android/local.properties
+*.iml
+.idea/
+*.apk
+*.aab
+
+# iOS
+ios/Pods/
+ios/build/
+*.xcworkspace/xcuserdata/
+*.xcodeproj/xcuserdata/
+ios/*.xcworkspace/xcuserdata/
+
+# OS / Misc
 .env*.local
+.env
 .DS_Store
+Thumbs.db
+
+# Testing / Build
+coverage/
+dist/
+web-build/
+*.jsbundle
+*.bundle
+*.bundle.map

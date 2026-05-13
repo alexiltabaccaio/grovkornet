@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, Text, View, AppState, AppStateStatus } from 'react-native';
-import { Camera, useCameraDevice, useCameraPermission, useCameraFormat } from 'react-native-vision-camera';
+import { StyleSheet, Text, View, AppState, AppStateStatus, PermissionsAndroid, Platform } from 'react-native';
+
 import { useTranslation } from 'react-i18next';
 
 import { CameraEffectsProvider, useCameraEffectsContext, GestureController, Footer, DebugOverlay } from '@features/camera-controls';
+import { NativeFilmCamera } from '@entities/camera/ui/NativeFilmCamera';
 
 
 export const CameraScreen = () => {
@@ -16,21 +17,7 @@ export const CameraScreen = () => {
 
 const CameraScreenContent = () => {
   const { t } = useTranslation();
-  const { hasPermission, requestPermission } = useCameraPermission();
-  const device = useCameraDevice('back');
-  
-  // Per dispositivi di varie fasce:
-  // 1. Evitiamo il 4K che ucciderebbe le prestazioni con lo Skia Frame Processor (impostiamo 1080p o 720p).
-  // 2. Chiediamo 60 FPS se disponibili, ma la libreria farà un fallback automatico a 30 FPS se il telefono non li supporta.
-  const format = useCameraFormat(device, [
-    { videoResolution: { width: 1920, height: 1080 } },
-    { fps: 60 }
-  ]);
-  
-  // Se il device supporta i 60fps li usiamo, altrimenti usiamo il suo massimo (es. 30), senza superare i 60 per non consumare troppa batteria.
-  const targetFps = format?.maxFps ? Math.min(format.maxFps, 60) : 30;
-  
-  const { frameProcessor, isDebugEnabled } = useCameraEffectsContext();
+  const { isDebugEnabled, saturation, contrast, chromaticAberration, grainIntensity, grainEnabled } = useCameraEffectsContext();
 
   const [isActive, setIsActive] = useState(AppState.currentState === 'active');
   const [cameraKey, setCameraKey] = useState(0);
@@ -49,11 +36,19 @@ const CameraScreenContent = () => {
     };
   }, []);
 
+  const [hasPermission, setHasPermission] = useState(false);
+
   useEffect(() => {
-    if (!hasPermission) {
-      requestPermission();
-    }
-  }, [hasPermission]);
+    const requestPermission = async () => {
+      if (Platform.OS === 'android') {
+        const granted = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.CAMERA);
+        setHasPermission(granted === PermissionsAndroid.RESULTS.GRANTED);
+      } else {
+        setHasPermission(true);
+      }
+    };
+    requestPermission();
+  }, []);
 
   if (!hasPermission) {
     return (
@@ -63,25 +58,16 @@ const CameraScreenContent = () => {
     );
   }
 
-  if (device == null) {
-    return (
-      <View style={styles.center}>
-        <Text style={styles.text}>{t('camera.not_found')}</Text>
-      </View>
-    );
-  }
-
   return (
     <View style={styles.container}>
-      <Camera
+      <NativeFilmCamera
         key={`camera-${cameraKey}`}
         style={StyleSheet.absoluteFill}
-        device={device}
-        format={format}
-        fps={targetFps}
-        isActive={isActive}
-        pixelFormat="rgb"
-        frameProcessor={frameProcessor}
+        saturation={saturation}
+        contrast={contrast}
+        chromaticAberration={chromaticAberration}
+        grainIntensity={grainIntensity}
+        grainEnabled={grainEnabled}
       />
 
       <GestureController />
