@@ -1,7 +1,8 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, View, LogBox } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { CameraScreen } from './src/screens/CameraScreen';
+import { CameraScreen } from '@screens/camera';
+
 import './src/shared/i18n';
 
 export default function App() {

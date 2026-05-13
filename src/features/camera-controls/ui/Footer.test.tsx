@@ -3,6 +3,8 @@ import { render } from '@testing-library/react-native';
 import { Footer } from './Footer';
 import { makeMutable } from 'react-native-reanimated';
 
+import { useCameraEffectsContext } from '../model/CameraEffectsContext';
+
 // Mocks for icons and Skia (which often cause issues in node tests)
 jest.mock('@expo/vector-icons', () => ({
   Ionicons: 'Ionicons'
@@ -19,36 +21,57 @@ jest.mock('@shopify/react-native-skia', () => ({
   Shader: 'Shader'
 }));
 
-describe('Footer Component Stablity Test', () => {
-  const mockProps = {
-    enabled: makeMutable(false),
-    grainIntensity: makeMutable(0.5),
-    saturation: makeMutable(1.0),
-    contrast: makeMutable(1.0),
-    chromaticAberration: makeMutable(0),
-    activeTab: 'none' as const,
-    activeModule: 'none' as const,
-    activeParameter: 'none' as const,
-    onGrainToggle: jest.fn(),
-    onTabChange: jest.fn(),
-    onModuleChange: jest.fn(),
-    onParameterChange: jest.fn(),
-    onResetTool: jest.fn(),
+jest.mock('../model/CameraEffectsContext', () => ({
+  useCameraEffectsContext: jest.fn()
+}));
+
+describe('Footer Component Stability Test', () => {
+  const mockContextValue = {
+    activeTab: 'none',
+    setActiveTab: jest.fn(),
+    activeModule: 'none',
+    setActiveModule: jest.fn(),
+    activeParameter: 'none',
+    setActiveParameter: jest.fn(),
+    grainIntensity: { value: 0.5 },
+    saturation: { value: 1.0 },
+    contrast: { value: 1.0 },
+    chromaticAberration: { value: 0 },
+    setGrainIntensity: jest.fn(),
+    setSaturation: jest.fn(),
+    setContrast: jest.fn(),
     setChromaticAberration: jest.fn(),
+    resetTool: jest.fn(),
+    frameProcessor: jest.fn(),
   };
 
+  beforeEach(() => {
+    (useCameraEffectsContext as jest.Mock).mockReturnValue(mockContextValue);
+  });
+
   it('should render correctly in default state', () => {
-    const { toJSON } = render(<Footer {...mockProps} />);
+    const { toJSON } = render(<Footer />);
     expect(toJSON()).toBeDefined();
   });
 
   it('should render correctly when color tab is active', () => {
-    const { toJSON } = render(<Footer {...mockProps} activeTab="color" activeModule="color_grading" />);
+    (useCameraEffectsContext as jest.Mock).mockReturnValue({
+      ...mockContextValue,
+      activeTab: 'color',
+      activeModule: 'color_grading',
+    });
+    const { toJSON } = render(<Footer />);
     expect(toJSON()).toBeDefined();
   });
 
   it('should render correctly when tape tab is active', () => {
-    const { toJSON } = render(<Footer {...mockProps} activeTab="tape" activeModule="grain" />);
+    (useCameraEffectsContext as jest.Mock).mockReturnValue({
+      ...mockContextValue,
+      activeTab: 'tape',
+      activeModule: 'grain',
+    });
+    const { toJSON } = render(<Footer />);
     expect(toJSON()).toBeDefined();
   });
 });
+

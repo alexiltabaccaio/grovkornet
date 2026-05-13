@@ -2,8 +2,8 @@ import React from 'react';
 import { StyleSheet, Text, View, Pressable } from 'react-native';
 import { Image } from 'react-native';
 
-const enFlag = require('../../../../assets/flags/en.png');
-const itFlag = require('../../../../assets/flags/it.png');
+const enFlag = require('../../../assets/flags/en.png');
+const itFlag = require('../../../assets/flags/it.png');
 
 interface LanguageThumbProps {
   label: string;

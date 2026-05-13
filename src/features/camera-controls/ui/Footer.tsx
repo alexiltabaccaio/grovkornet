@@ -2,73 +2,42 @@ import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import Animated, { FadeIn, FadeOut, SharedValue } from 'react-native-reanimated';
 import { useTranslation } from 'react-i18next';
-import { TabType, ParameterType, ModuleType } from '@shared/types/camera';
-
+import { useCameraEffectsContext } from '../model/CameraEffectsContext';
 import { BottomNavigationBar } from './BottomNavigationBar';
 import { FilterPillMenu } from './FilterPillMenu';
 import { FilterParameterThumb } from './FilterParameterThumb';
-import { LanguageThumb } from './LanguageThumb';
-import { useDoublePress } from '../lib/useDoublePress';
+import { LanguageThumb } from '@shared/ui';
 
-interface FooterProps {
-  enabled: SharedValue<boolean>;
-  grainIntensity: SharedValue<number>;
-  saturation: SharedValue<number>;
-  contrast: SharedValue<number>;
-  chromaticAberration: SharedValue<number>;
-  activeTab: TabType;
-  activeModule: ModuleType;
-  activeParameter: ParameterType;
-  onGrainToggle: (val: boolean) => void;
-  onTabChange: (tab: TabType) => void;
-  onModuleChange: (module: ModuleType) => void;
-  onParameterChange: (tool: ParameterType) => void;
-  setGrainIntensity: (val: number) => void;
-  setSaturation: (val: number) => void;
-  setContrast: (val: number) => void;
-  setChromaticAberration: (val: number) => void;
-  onResetTool: (tool: 'grain' | ParameterType) => void;
-}
+import { useDoublePress } from '@shared/lib/hooks/useDoublePress';
 
-export const Footer = ({
-  grainIntensity,
-  saturation,
-  contrast,
-  chromaticAberration,
-  activeTab,
-  activeModule,
-  activeParameter,
-  onTabChange,
-  onModuleChange,
-  onParameterChange,
-  setGrainIntensity,
-  setSaturation,
-  setContrast,
-  setChromaticAberration,
-  onResetTool,
-}: FooterProps) => {
+export const Footer = () => {
+  const {
+    activeTab,
+    setActiveTab,
+    activeModule,
+    setActiveModule,
+    activeParameter,
+    setActiveParameter,
+    grainIntensity,
+    saturation,
+    contrast,
+    chromaticAberration,
+    setGrainIntensity,
+    setSaturation,
+    setContrast,
+    setChromaticAberration,
+    resetTool,
+  } = useCameraEffectsContext();
+
   const { t, i18n } = useTranslation();
-  const { handlePressWithDouble } = useDoublePress(onResetTool);
+  const { handlePressWithDouble } = useDoublePress(resetTool);
 
-  const handleTabChange = (tab: TabType) => {
-    const newTab = activeTab === tab ? 'none' : tab;
-    if (newTab === 'color') onModuleChange('color_grading');
-    else if (newTab === 'tape') onModuleChange('grain');
-    else if (newTab === 'lens') onModuleChange('lens_effects');
-    else if (newTab === 'settings') onModuleChange('language');
-    else onModuleChange('none');
-    onTabChange(newTab);
-  };
 
   return (
     <View style={styles.container}>
       {activeTab !== 'none' && (
         <View style={styles.topFooter}>
-          <FilterPillMenu
-            activeTab={activeTab}
-            activeModule={activeModule}
-            onModuleChange={onModuleChange}
-          />
+          <FilterPillMenu />
 
           <View style={styles.tabContentWrapper}>
             {activeModule === 'grain' && (
@@ -76,7 +45,7 @@ export const Footer = ({
                 <FilterParameterThumb
                   label={t('parameters.amount')}
                   isActive={activeParameter === 'grain'}
-                  onPress={() => handlePressWithDouble('grain', () => onParameterChange('grain'))}
+                  onPress={() => handlePressWithDouble('grain', () => setActiveParameter('grain'))}
                   value={grainIntensity}
                   maxValue={1.0}
                   onChange={setGrainIntensity}
@@ -91,7 +60,7 @@ export const Footer = ({
                   <FilterParameterThumb
                     label={t('parameters.saturation')}
                     isActive={activeParameter === 'saturation'}
-                    onPress={() => handlePressWithDouble('saturation', () => onParameterChange('saturation'))}
+                    onPress={() => handlePressWithDouble('saturation', () => setActiveParameter('saturation'))}
                     value={saturation}
                     maxValue={2.0}
                     onChange={setSaturation}
@@ -100,7 +69,7 @@ export const Footer = ({
                   <FilterParameterThumb
                     label={t('parameters.contrast')}
                     isActive={activeParameter === 'contrast'}
-                    onPress={() => handlePressWithDouble('contrast', () => onParameterChange('contrast'))}
+                    onPress={() => handlePressWithDouble('contrast', () => setActiveParameter('contrast'))}
                     value={contrast}
                     maxValue={2.0}
                     onChange={setContrast}
@@ -115,7 +84,7 @@ export const Footer = ({
                 <FilterParameterThumb
                   label={t('parameters.phase_shift')}
                   isActive={activeParameter === 'chromatic_aberration'}
-                  onPress={() => handlePressWithDouble('chromatic_aberration', () => onParameterChange('chromatic_aberration'))}
+                  onPress={() => handlePressWithDouble('chromatic_aberration', () => setActiveParameter('chromatic_aberration'))}
                   value={chromaticAberration}
                   maxValue={2.0}
                   onChange={setChromaticAberration}
@@ -152,7 +121,7 @@ export const Footer = ({
         </View>
       )}
 
-      <BottomNavigationBar activeTab={activeTab} onTabChange={handleTabChange} />
+      <BottomNavigationBar />
     </View>
   );
 };

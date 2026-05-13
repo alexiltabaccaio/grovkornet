@@ -4,13 +4,21 @@ import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { TabType } from '@shared/types/camera';
 
-interface BottomNavigationBarProps {
-  activeTab: TabType;
-  onTabChange: (tab: TabType) => void;
-}
+import { useCameraEffectsContext } from '../model/CameraEffectsContext';
 
-export const BottomNavigationBar = ({ activeTab, onTabChange }: BottomNavigationBarProps) => {
+export const BottomNavigationBar = () => {
+  const { activeTab, setActiveTab, setActiveModule } = useCameraEffectsContext();
   const { t } = useTranslation();
+
+  const handleTabChange = (tab: TabType) => {
+    const newTab = activeTab === tab ? 'none' : tab;
+    if (newTab === 'color') setActiveModule('color_grading');
+    else if (newTab === 'tape') setActiveModule('grain');
+    else if (newTab === 'lens') setActiveModule('lens_effects');
+    else if (newTab === 'settings') setActiveModule('language');
+    else setActiveModule('none');
+    setActiveTab(newTab);
+  };
 
   const tabs: { id: TabType; icon: keyof typeof Ionicons.glyphMap; label: string }[] = [
     { id: 'settings', icon: 'cog-outline', label: t('tabs.settings') },
@@ -32,7 +40,7 @@ export const BottomNavigationBar = ({ activeTab, onTabChange }: BottomNavigation
           <Pressable
             key={tab.id}
             style={styles.tabButton}
-            onPress={() => onTabChange(tab.id)}
+            onPress={() => handleTabChange(tab.id)}
             hitSlop={{ top: 20, bottom: 20, left: 15, right: 15 }}
           >
             <Text style={[styles.tabLabel, activeTab === tab.id && styles.tabLabelActive]}>{tab.label}</Text>

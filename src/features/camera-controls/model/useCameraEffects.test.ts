@@ -1,5 +1,6 @@
 import { renderHook, act } from '@testing-library/react-native';
-import { useCameraEffects } from '@features/camera-controls/lib/useCameraEffects';
+import { useCameraEffects } from './useCameraEffects';
+
 import { DEFAULT_GRAIN_INTENSITY } from '@shared/constants/videoProcessing';
 
 // Mock Reanimated
@@ -13,7 +14,8 @@ jest.mock('react-native-worklets-core', () => ({
 }));
 
 // Mock useFilmFrameProcessor (which is now in entities)
-jest.mock('@entities/camera/useFilmFrameProcessor', () => ({
+jest.mock('@entities/camera', () => ({
+
   useFilmFrameProcessor: jest.fn(() => ({})),
 }));
 

@@ -1,7 +1,8 @@
 import { useState, useCallback } from 'react';
 import { useSharedValue } from 'react-native-reanimated';
 import { useSharedValue as useWCSharedValue } from 'react-native-worklets-core';
-import { useFilmFrameProcessor } from '@entities/camera/useFilmFrameProcessor';
+import { useFilmFrameProcessor } from '@entities/camera';
+
 import { TabType, CameraEffectState, ParameterType, ModuleType } from '@shared/types/camera';
 import { DEFAULT_GRAIN_INTENSITY, DEFAULT_SATURATION, DEFAULT_CONTRAST, DEFAULT_CHROMATIC_ABERRATION } from '@shared/constants/videoProcessing';
 import { DrawableFrameProcessor } from 'react-native-vision-camera';
