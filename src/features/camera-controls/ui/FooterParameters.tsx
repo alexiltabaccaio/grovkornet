@@ -79,7 +79,7 @@ export const FooterParameters = () => {
   return (
     <View style={styles.tabContentWrapper}>
       {activeModule === 'grain' && (
-        <Animated.View entering={FadeIn.duration(200)} exiting={FadeOut.duration(200)} style={styles.tabContent}>
+        <Animated.View style={styles.tabContent}>
           <FooterParameterControl
             label={t('parameters.amount')}
             isActive={activeParameter === 'grain'}
@@ -93,7 +93,7 @@ export const FooterParameters = () => {
       )}
 
       {activeModule === 'color_grading' && (
-        <Animated.View entering={FadeIn.duration(200)} exiting={FadeOut.duration(200)} style={styles.tabContent}>
+        <Animated.View style={styles.tabContent}>
           <View style={styles.imageToolsContainer}>
             <FooterParameterControl
               label={t('parameters.saturation')}
@@ -118,7 +118,7 @@ export const FooterParameters = () => {
       )}
 
       {activeModule === 'lens_effects' && (
-        <Animated.View entering={FadeIn.duration(200)} exiting={FadeOut.duration(200)} style={styles.tabContent}>
+        <Animated.View style={styles.tabContent}>
           <FooterParameterControl
             label={t('parameters.phase_shift')}
             isActive={activeParameter === 'chromatic_aberration'}
@@ -132,7 +132,7 @@ export const FooterParameters = () => {
       )}
 
       {activeModule === 'language' && (
-        <Animated.View entering={FadeIn.duration(200)} exiting={FadeOut.duration(200)} style={styles.tabContent}>
+        <Animated.View style={styles.tabContent}>
           <View style={styles.imageToolsContainer}>
             <LanguageThumb
               label="English"
@@ -151,7 +151,7 @@ export const FooterParameters = () => {
       )}
 
       {activeModule === 'debug' && (
-        <Animated.View entering={FadeIn.duration(200)} exiting={FadeOut.duration(200)} style={styles.tabContent}>
+        <Animated.View style={styles.tabContent}>
           <View style={styles.imageToolsContainer}>
             <DebugThumb
               label={t('modules.debug')}
@@ -163,7 +163,7 @@ export const FooterParameters = () => {
       )}
       
       {activeModule === 'manual_exposure' && (
-        <Animated.View entering={FadeIn.duration(200)} exiting={FadeOut.duration(200)} style={styles.tabContent}>
+        <Animated.View style={styles.tabContent}>
           <View style={styles.imageToolsContainer}>
             <FooterParameterControl
               label={t('parameters.iso')}
@@ -230,7 +230,7 @@ export const FooterParameters = () => {
       )}
 
       {activeModule !== 'grain' && activeModule !== 'color_grading' && activeModule !== 'lens_effects' && activeModule !== 'manual_exposure' && activeModule !== 'language' && activeModule !== 'debug' && activeModule !== 'none' && (
-        <Animated.View entering={FadeIn.duration(200)} exiting={FadeOut.duration(200)} style={styles.tabContent}>
+        <Animated.View style={styles.tabContent}>
           <Text style={styles.infoText}>{t('footer.coming_soon')}</Text>
         </Animated.View>
       )}
