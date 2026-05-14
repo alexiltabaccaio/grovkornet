@@ -5,6 +5,8 @@ interface NativeFilmCameraProps extends ViewProps {
   saturation: number | SharedValue<number>;
   contrast: number | SharedValue<number>;
   grainIntensity: number | SharedValue<number>;
+  grainChroma: number | SharedValue<number>;
+  grainSize: number | SharedValue<number>;
   grainEnabled: boolean | SharedValue<boolean>;
   chromaticAberration: number | SharedValue<number>;
   isoAuto?: boolean | SharedValue<boolean>;

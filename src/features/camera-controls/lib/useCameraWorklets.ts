@@ -8,6 +8,8 @@ import { updateSharedValue } from '@shared/lib/reanimated/safeUpdate';
 
 export const useCameraWorklets = (
   grainIntensity: SharedValue<number>,
+  grainChroma: SharedValue<number>,
+  grainSize: SharedValue<number>,
   grainEnabled: SharedValue<boolean>,
   saturation: SharedValue<number>,
   contrast: SharedValue<number>,
@@ -30,6 +32,16 @@ export const useCameraWorklets = (
     const safeValue = Math.min(Math.max(value, 0), 1);
     updateSharedValue(grainIntensity, safeValue);
     updateSharedValue(grainEnabled, safeValue > 0);
+  };
+  
+  const updateGrainChroma = (value: number) => {
+    'worklet';
+    updateSharedValue(grainChroma, value);
+  };
+  
+  const updateGrainSize = (value: number) => {
+    'worklet';
+    updateSharedValue(grainSize, value);
   };
 
   const updateSaturation = (value: number) => {
@@ -73,6 +85,8 @@ export const useCameraWorklets = (
 
   return {
     updateGrain,
+    updateGrainChroma,
+    updateGrainSize,
     updateSaturation,
     updateContrast,
     updateChromaticAberration,

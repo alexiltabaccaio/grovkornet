@@ -27,6 +27,8 @@
     },
     "parameters": {
       "amount": "AMOUNT",
+      "chroma": "CHROMA",
+      "size": "SIZE",
       "saturation": "SATURATION",
       "contrast": "CONTRAST",
       "phase_shift": "PHASE SHIFT",

@@ -40,7 +40,11 @@ export const FooterParameters = () => {
     shutterSpeedAuto: state.shutterSpeedAuto,
     whiteBalanceAuto: state.whiteBalanceAuto,
     evAuto: state.evAuto,
+    grainChroma: state.grainChroma,
+    grainSize: state.grainSize,
     setGrainIntensity: state.setGrainIntensity,
+    setGrainChroma: state.setGrainChroma,
+    setGrainSize: state.setGrainSize,
     setSaturation: state.setSaturation,
     setContrast: state.setContrast,
     setChromaticAberration: state.setChromaticAberration,
@@ -76,6 +80,10 @@ export const FooterParameters = () => {
             setActiveParameter={uiStore.setActiveParameter}
             grainIntensity={cameraStore.grainIntensity}
             setGrainIntensity={cameraStore.setGrainIntensity}
+            grainChroma={cameraStore.grainChroma}
+            setGrainChroma={cameraStore.setGrainChroma}
+            grainSize={cameraStore.grainSize}
+            setGrainSize={cameraStore.setGrainSize}
             handlePressWithDouble={handlePressWithDouble}
           />
         );

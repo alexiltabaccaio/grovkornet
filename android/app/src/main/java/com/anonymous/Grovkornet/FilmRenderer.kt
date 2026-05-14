@@ -23,6 +23,8 @@ class FilmRenderer(private val listener: Listener) : GLSurfaceView.Renderer, Sur
     @Volatile var saturation: Float = 1.0f
     @Volatile var contrast: Float = 1.0f
     @Volatile var grainIntensity: Float = 0.0f
+    @Volatile var grainChroma: Float = 0.0f
+    @Volatile var grainSize: Float = 1.0f
     @Volatile var grainEnabled: Boolean = true
     @Volatile var aberration: Float = 0.0f
     @Volatile var ev: Float = 0.0f
@@ -39,6 +41,8 @@ class FilmRenderer(private val listener: Listener) : GLSurfaceView.Renderer, Sur
     private var uContrastLoc = -1
     private var uAberrationLoc = -1
     private var uGrainIntensityLoc = -1
+    private var uGrainChromaLoc = -1
+    private var uGrainSizeLoc = -1
     private var uGrainEnabledLoc = -1
     private var uTimeLoc = -1
     private var uResolutionLoc = -1
@@ -101,6 +105,8 @@ class FilmRenderer(private val listener: Listener) : GLSurfaceView.Renderer, Sur
         uContrastLoc = GLES20.glGetUniformLocation(program, "u_Contrast")
         uAberrationLoc = GLES20.glGetUniformLocation(program, "u_AberrationIntensity")
         uGrainIntensityLoc = GLES20.glGetUniformLocation(program, "u_GrainIntensity")
+        uGrainChromaLoc = GLES20.glGetUniformLocation(program, "u_GrainChroma")
+        uGrainSizeLoc = GLES20.glGetUniformLocation(program, "u_GrainSize")
         uGrainEnabledLoc = GLES20.glGetUniformLocation(program, "u_GrainEnabled")
         uTimeLoc = GLES20.glGetUniformLocation(program, "u_Time")
         uResolutionLoc = GLES20.glGetUniformLocation(program, "u_Resolution")
@@ -156,6 +162,8 @@ class FilmRenderer(private val listener: Listener) : GLSurfaceView.Renderer, Sur
         GLES20.glUniform1f(uContrastLoc, contrast)
         GLES20.glUniform1f(uAberrationLoc, aberration)
         GLES20.glUniform1f(uGrainIntensityLoc, grainIntensity)
+        GLES20.glUniform1f(uGrainChromaLoc, grainChroma)
+        GLES20.glUniform1f(uGrainSizeLoc, grainSize)
         GLES20.glUniform1f(uGrainEnabledLoc, if (grainEnabled) 1.0f else 0.0f)
         GLES20.glUniform1f(uTimeLoc, (System.currentTimeMillis() % 10000) / 1000f)
         GLES20.glUniform2f(uResolutionLoc, viewportWidth.toFloat(), viewportHeight.toFloat())

@@ -2,7 +2,7 @@ import { SharedValue } from 'react-native-reanimated';
 
 export type TabType = 'lens' | 'color' | 'tape' | 'crt' | 'settings' | 'exposure' | 'none';
 export type ModuleType = 'color_grading' | 'fade' | 'grain' | 'jitter' | 'dropouts' | 'lens_effects' | 'language' | 'debug' | 'manual_exposure' | 'focus' | 'lens' | 'none';
-export type ParameterType = 'saturation' | 'contrast' | 'grain' | 'chromatic_aberration' | 'iso' | 'ev' | 'shutter_speed' | 'white_balance' | 'focus' | 'lens' | 'none';
+export type ParameterType = 'saturation' | 'contrast' | 'grain' | 'grain_chroma' | 'grain_size' | 'chromatic_aberration' | 'iso' | 'ev' | 'shutter_speed' | 'white_balance' | 'focus' | 'lens' | 'none';
 
 export interface CameraCapabilities {
   supportsFocus: boolean;
@@ -17,6 +17,8 @@ export interface CameraCapabilities {
 
 interface EffectSharedValues {
   grainIntensity: SharedValue<number>;
+  grainChroma: SharedValue<number>;
+  grainSize: SharedValue<number>;
   saturation: SharedValue<number>;
   contrast: SharedValue<number>;
   chromaticAberration: SharedValue<number>;
@@ -39,6 +41,8 @@ interface EffectSharedValues {
 
 interface EffectHandlers {
   setGrainIntensity: (value: number) => void;
+  setGrainChroma: (value: number) => void;
+  setGrainSize: (value: number) => void;
   setSaturation: (value: number) => void;
   setContrast: (value: number) => void;
   setChromaticAberration: (value: number) => void;

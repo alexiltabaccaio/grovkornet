@@ -38,6 +38,16 @@ class NativeFilmCameraManager : SimpleViewManager<NativeFilmCameraView>() {
         view.grainIntensity = grainIntensity
     }
 
+    @ReactProp(name = "grainChroma", defaultFloat = 0.0f)
+    fun setGrainChroma(view: NativeFilmCameraView, grainChroma: Float) {
+        view.grainChroma = grainChroma
+    }
+
+    @ReactProp(name = "grainSize", defaultFloat = 1.0f)
+    fun setGrainSize(view: NativeFilmCameraView, grainSize: Float) {
+        view.grainSize = grainSize
+    }
+
     @ReactProp(name = "grainEnabled", defaultBoolean = true)
     fun setGrainEnabled(view: NativeFilmCameraView, grainEnabled: Boolean) {
         view.grainEnabled = grainEnabled

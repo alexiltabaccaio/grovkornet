@@ -15,6 +15,8 @@ import {
 export const useCameraEffectsStore = create<CameraState>((set, get) => ({
   // Reanimated Shared Values
   grainIntensity: makeMutable(DEFAULT_GRAIN_INTENSITY),
+  grainChroma: makeMutable(0.0),
+  grainSize: makeMutable(1.0),
   saturation: makeMutable(DEFAULT_SATURATION),
   contrast: makeMutable(DEFAULT_CONTRAST),
   chromaticAberration: makeMutable(DEFAULT_CHROMATIC_ABERRATION),
@@ -45,6 +47,12 @@ export const useCameraEffectsStore = create<CameraState>((set, get) => ({
     const { grainIntensity, grainEnabled } = get();
     grainIntensity.value = value;
     grainEnabled.value = value > 0;
+  },
+  setGrainChroma: (value) => {
+    get().grainChroma.value = value;
+  },
+  setGrainSize: (value) => {
+    get().grainSize.value = value;
   },
 
   setSaturation: (value) => {
@@ -136,6 +144,8 @@ export const useCameraEffectsStore = create<CameraState>((set, get) => ({
 
     if (tool === 'grain') {
       grainIntensity.value = DEFAULT_GRAIN_INTENSITY;
+      get().grainChroma.value = 0.0;
+      get().grainSize.value = 1.0;
       setGrainIntensity(DEFAULT_GRAIN_INTENSITY);
     } else if (tool === 'saturation') {
       saturation.value = DEFAULT_SATURATION;

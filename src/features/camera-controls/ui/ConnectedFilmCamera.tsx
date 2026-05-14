@@ -20,6 +20,8 @@ export const ConnectedFilmCamera = ({ cameraKey }: ConnectedFilmCameraProps) => 
       contrast={store.contrast}
       chromaticAberration={store.chromaticAberration}
       grainIntensity={store.grainIntensity}
+      grainChroma={store.grainChroma}
+      grainSize={store.grainSize}
       grainEnabled={store.grainEnabled}
       iso={store.iso}
       exposureTime={store.shutterSpeed}

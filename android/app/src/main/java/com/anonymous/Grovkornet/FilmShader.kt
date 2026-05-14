@@ -22,6 +22,8 @@ object FilmShader {
         uniform float u_Contrast;
         uniform float u_AberrationIntensity;
         uniform float u_GrainIntensity;
+        uniform float u_GrainChroma;
+        uniform float u_GrainSize;
         uniform float u_GrainEnabled;
         uniform float u_Time;
         uniform vec2 u_Resolution;
@@ -52,15 +54,24 @@ object FilmShader {
 
             // 3. Film Grain
             if (u_GrainEnabled > 0.5 && u_GrainIntensity > 0.0) {
-                float noise = hash(v_TexCoord * u_Resolution + vec2(u_Time, u_Time * 0.5));
-                vec3 blend = vec3(noise);
+                vec2 grainCoord = (v_TexCoord * u_Resolution) / u_GrainSize;
+                vec2 seed = floor(grainCoord) + vec2(u_Time * 1.5, u_Time * 0.5);
+                float noiseR = hash(seed);
+                vec3 blend;
+                if (u_GrainChroma > 0.5) {
+                    float noiseG = hash(seed + vec2(12.34, 56.78));
+                    float noiseB = hash(seed + vec2(90.12, 34.56));
+                    blend = vec3(noiseR, noiseG, noiseB);
+                } else {
+                    blend = vec3(noiseR);
+                }
                 
                 vec3 overlay;
                 overlay.r = color.r < 0.5 ? (2.0 * color.r * blend.r) : (1.0 - 2.0 * (1.0 - color.r) * (1.0 - blend.r));
                 overlay.g = color.g < 0.5 ? (2.0 * color.g * blend.g) : (1.0 - 2.0 * (1.0 - color.g) * (1.0 - blend.g));
                 overlay.b = color.b < 0.5 ? (2.0 * color.b * blend.b) : (1.0 - 2.0 * (1.0 - color.b) * (1.0 - blend.b));
                 
-                color.rgb = mix(color.rgb, overlay, u_GrainIntensity * 2.0);
+                color.rgb = mix(color.rgb, overlay, u_GrainIntensity * 3.0);
             }
 
             // Apply EV multiplier
@@ -85,6 +96,8 @@ object FilmShader {
         uniform float u_Contrast;
         uniform float u_AberrationIntensity;
         uniform float u_GrainIntensity;
+        uniform float u_GrainChroma;
+        uniform float u_GrainSize;
         uniform float u_GrainEnabled;
         uniform float u_Time;
         uniform vec2 u_Resolution;
@@ -112,15 +125,24 @@ object FilmShader {
             color.rgb = ((color.rgb - 0.5) * max(u_Contrast, 0.0)) + 0.5;
 
             if (u_GrainEnabled > 0.5 && u_GrainIntensity > 0.0) {
-                float noise = hash(v_TexCoord * u_Resolution + vec2(u_Time, u_Time * 0.5));
-                vec3 blend = vec3(noise);
+                vec2 grainCoord = (v_TexCoord * u_Resolution) / u_GrainSize;
+                vec2 seed = floor(grainCoord) + vec2(u_Time * 1.5, u_Time * 0.5);
+                float noiseR = hash(seed);
+                vec3 blend;
+                if (u_GrainChroma > 0.5) {
+                    float noiseG = hash(seed + vec2(12.34, 56.78));
+                    float noiseB = hash(seed + vec2(90.12, 34.56));
+                    blend = vec3(noiseR, noiseG, noiseB);
+                } else {
+                    blend = vec3(noiseR);
+                }
                 
                 vec3 overlay;
                 overlay.r = color.r < 0.5 ? (2.0 * color.r * blend.r) : (1.0 - 2.0 * (1.0 - color.r) * (1.0 - blend.r));
                 overlay.g = color.g < 0.5 ? (2.0 * color.g * blend.g) : (1.0 - 2.0 * (1.0 - color.g) * (1.0 - blend.g));
                 overlay.b = color.b < 0.5 ? (2.0 * color.b * blend.b) : (1.0 - 2.0 * (1.0 - color.b) * (1.0 - blend.b));
                 
-                color.rgb = mix(color.rgb, overlay, u_GrainIntensity * 2.0);
+                color.rgb = mix(color.rgb, overlay, u_GrainIntensity * 3.0);
             }
             
             // Apply EV multiplier (each 1 EV doubles/halves light)

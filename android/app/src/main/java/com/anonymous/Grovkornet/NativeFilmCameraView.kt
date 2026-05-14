@@ -68,6 +68,10 @@ class NativeFilmCameraView(context: Context) : GLSurfaceView(context) {
         set(value) { if (field != value) { field = value; if (::renderer.isInitialized) renderer.contrast = value } }
     var grainIntensity: Float = 0.0f
         set(value) { if (field != value) { field = value; if (::renderer.isInitialized) renderer.grainIntensity = value } }
+    var grainChroma: Float = 0.0f
+        set(value) { if (field != value) { field = value; if (::renderer.isInitialized) renderer.grainChroma = value } }
+    var grainSize: Float = 1.0f
+        set(value) { if (field != value) { field = value; if (::renderer.isInitialized) renderer.grainSize = value } }
     var grainEnabled: Boolean = true
         set(value) { if (field != value) { field = value; if (::renderer.isInitialized) renderer.grainEnabled = value } }
     var aberration: Float = 0.0f

@@ -27,6 +27,8 @@
     },
     "parameters": {
       "amount": "QUANTITÀ",
+      "chroma": "CROMINANZA",
+      "size": "DIMENSIONE",
       "saturation": "SATURAZIONE",
       "contrast": "CONTRASTO",
       "phase_shift": "SFASAMENTO",

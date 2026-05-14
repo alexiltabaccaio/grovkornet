@@ -20,6 +20,8 @@ export const GestureController = () => {
 
   const {
     grainIntensity,
+    grainChroma,
+    grainSize,
     saturation,
     contrast,
     chromaticAberration,
@@ -34,6 +36,8 @@ export const GestureController = () => {
     whiteBalanceAuto,
   } = useCameraEffectsStore(useShallow(state => ({
     grainIntensity: state.grainIntensity,
+    grainChroma: state.grainChroma,
+    grainSize: state.grainSize,
     saturation: state.saturation,
     contrast: state.contrast,
     chromaticAberration: state.chromaticAberration,
@@ -50,6 +54,8 @@ export const GestureController = () => {
 
   const {
     updateGrain,
+    updateGrainChroma,
+    updateGrainSize,
     updateSaturation,
     updateContrast,
     updateChromaticAberration,
@@ -59,6 +65,8 @@ export const GestureController = () => {
     updateWhiteBalance,
   } = useCameraWorklets(
     grainIntensity,
+    grainChroma,
+    grainSize,
     grainEnabled,
     saturation,
     contrast,
@@ -79,6 +87,8 @@ export const GestureController = () => {
     .onStart(() => {
       if (activeModule === 'grain' && activeParameter === 'grain') {
         startVal.value = grainIntensity.value;
+      } else if (activeModule === 'grain' && activeParameter === 'grain_size') {
+        startVal.value = (grainSize.value - 1.0) / (4.0 - 1.0);
       } else if (activeModule === 'color_grading' && activeParameter === 'saturation') {
         startVal.value = saturation.value / 2.0;
       } else if (activeModule === 'color_grading' && activeParameter === 'contrast') {
@@ -109,6 +119,9 @@ export const GestureController = () => {
       
       if (activeModule === 'grain' && activeParameter === 'grain') {
         updateGrain(normalizedValue);
+      } else if (activeModule === 'grain' && activeParameter === 'grain_size') {
+        const val = 1.0 + normalizedValue * (4.0 - 1.0);
+        updateGrainSize(val);
       } else if (activeModule === 'color_grading') {
         const scaledValue = normalizedValue * 2.0;
         if (activeParameter === 'saturation') {
