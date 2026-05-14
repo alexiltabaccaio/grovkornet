@@ -21,35 +21,29 @@ export const GestureController = () => {
     saturation,
     contrast,
     chromaticAberration,
-    setGrainIntensity,
-    setSaturation,
-    setContrast,
-    setChromaticAberration,
+    grainEnabled,
     iso,
     ev,
     shutterSpeed,
     whiteBalance,
-    setIso,
-    setEv,
-    setShutterSpeed,
-    setWhiteBalance,
+    isoAuto,
+    evAuto,
+    shutterSpeedAuto,
+    whiteBalanceAuto,
   } = useCameraEffectsStore(useShallow(state => ({
     grainIntensity: state.grainIntensity,
     saturation: state.saturation,
     contrast: state.contrast,
     chromaticAberration: state.chromaticAberration,
-    setGrainIntensity: state.setGrainIntensity,
-    setSaturation: state.setSaturation,
-    setContrast: state.setContrast,
-    setChromaticAberration: state.setChromaticAberration,
+    grainEnabled: state.grainEnabled,
     iso: state.iso,
     ev: state.ev,
     shutterSpeed: state.shutterSpeed,
     whiteBalance: state.whiteBalance,
-    setIso: state.setIso,
-    setEv: state.setEv,
-    setShutterSpeed: state.setShutterSpeed,
-    setWhiteBalance: state.setWhiteBalance,
+    isoAuto: state.isoAuto,
+    evAuto: state.evAuto,
+    shutterSpeedAuto: state.shutterSpeedAuto,
+    whiteBalanceAuto: state.whiteBalanceAuto,
   })));
 
 
@@ -90,37 +84,34 @@ export const GestureController = () => {
       
       if (activeModule === 'grain' && activeParameter === 'grain') {
         grainIntensity.value = normalizedValue;
-        runOnJS(setGrainIntensity)(normalizedValue);
+        grainEnabled.value = normalizedValue > 0;
       } else if (activeModule === 'color_grading') {
         const scaledValue = normalizedValue * 2.0;
         if (activeParameter === 'saturation') {
           saturation.value = scaledValue;
-          runOnJS(setSaturation)(scaledValue);
         } else if (activeParameter === 'contrast') {
           contrast.value = scaledValue;
-          runOnJS(setContrast)(scaledValue);
         }
       } else if (activeModule === 'lens_effects' && activeParameter === 'chromatic_aberration') {
         const scaledValue = normalizedValue * 2.0;
         chromaticAberration.value = scaledValue;
-        runOnJS(setChromaticAberration)(scaledValue);
       } else if (activeModule === 'manual_exposure') {
         if (activeParameter === 'iso') {
           const val = 50 + normalizedValue * (3200 - 50);
           iso.value = val;
-          runOnJS(setIso)(val);
+          isoAuto.value = false;
         } else if (activeParameter === 'ev') {
           const val = -2.0 + normalizedValue * (2.0 - (-2.0));
           ev.value = val;
-          runOnJS(setEv)(val);
+          evAuto.value = false;
         } else if (activeParameter === 'shutter_speed') {
           const val = 1 + normalizedValue * (1000 - 1);
           shutterSpeed.value = val;
-          runOnJS(setShutterSpeed)(val);
+          shutterSpeedAuto.value = false;
         } else if (activeParameter === 'white_balance') {
           const val = 2000 + normalizedValue * (10000 - 2000);
           whiteBalance.value = val;
-          runOnJS(setWhiteBalance)(val);
+          whiteBalanceAuto.value = false;
         }
       }
     });

@@ -7,6 +7,21 @@ import { ParameterType } from '@shared/types/camera';
 import { FooterParameterControl } from '../FooterParameterControl';
 import { footerStyles } from '../Footer.styles';
 
+const formatEv = (v: number) => {
+  'worklet';
+  return v >= 0 ? `+${v.toFixed(1)}` : v.toFixed(1);
+};
+
+const formatShutterSpeed = (v: number) => {
+  'worklet';
+  return `1/${Math.round(v)}`;
+};
+
+const formatWhiteBalance = (v: number) => {
+  'worklet';
+  return `${Math.round(v)}K`;
+};
+
 interface ManualExposureModuleProps {
   activeParameter: ParameterType;
   setActiveParameter: (param: ParameterType) => void;
@@ -78,10 +93,7 @@ export const ManualExposureModule = ({
           variant="text"
           isAuto={evAuto}
           onLongPress={() => setEvAuto(true)}
-          valueFormatter={(v) => {
-            'worklet';
-            return v >= 0 ? `+${v.toFixed(1)}` : v.toFixed(1);
-          }}
+          valueFormatter={formatEv}
         />
         <FooterParameterControl
           label={t('parameters.shutter_speed')}
@@ -94,10 +106,7 @@ export const ManualExposureModule = ({
           variant="text"
           isAuto={shutterSpeedAuto}
           onLongPress={() => setShutterSpeedAuto(true)}
-          valueFormatter={(v) => {
-            'worklet';
-            return `1/${Math.round(v)}`;
-          }}
+          valueFormatter={formatShutterSpeed}
         />
         <FooterParameterControl
           label={t('parameters.white_balance')}
@@ -110,10 +119,7 @@ export const ManualExposureModule = ({
           variant="text"
           isAuto={whiteBalanceAuto}
           onLongPress={() => setWhiteBalanceAuto(true)}
-          valueFormatter={(v) => {
-            'worklet';
-            return `${Math.round(v)}K`;
-          }}
+          valueFormatter={formatWhiteBalance}
         />
       </View>
     </Animated.View>

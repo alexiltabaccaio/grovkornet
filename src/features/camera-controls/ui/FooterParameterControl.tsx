@@ -61,8 +61,10 @@ export const FooterParameterControl = ({
       const delta = -(e.translationY / THUMB_SENSITIVITY) * range;
       const newValue = Math.min(Math.max(startVal.value + delta, minValue), maxValue);
       value.value = newValue;
-      if (onChange) {
-        runOnJS(onChange)(newValue);
+      
+      // Handle AUTO mode deactivation natively on UI thread
+      if (isAuto && isAuto.value) {
+        isAuto.value = false;
       }
     });
 
@@ -135,7 +137,6 @@ export const FooterParameterControl = ({
             <AnimatedTextInput
               underlineColorAndroid="transparent"
               editable={false}
-              value={valueFormatter ? valueFormatter(value.value) : Math.round(value.value).toString()}
               style={[
                 styles.valueText, 
                 variant === 'text' && styles.valueTextLarge,
