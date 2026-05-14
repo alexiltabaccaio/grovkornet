@@ -5,9 +5,10 @@ object FilmShader {
         attribute vec4 a_Position;
         attribute vec4 a_TexCoord;
         uniform mat4 u_TransformMatrix;
+        uniform mat4 u_ScaleMatrix;
         varying vec2 v_TexCoord;
         void main() {
-            gl_Position = a_Position;
+            gl_Position = u_ScaleMatrix * a_Position;
             v_TexCoord = (u_TransformMatrix * a_TexCoord).xy;
         }
     """

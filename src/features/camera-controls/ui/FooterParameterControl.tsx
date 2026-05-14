@@ -129,7 +129,7 @@ export const FooterParameterControl = ({
 
   return (
     <GestureDetector gesture={combinedGesture}>
-      <Pressable style={styles.filterThumb} onPress={onPress}>
+      <Pressable style={styles.filterThumb} onPress={onPress} hitSlop={10}>
         <View style={[
           styles.filterPlaceholder,
           variant === 'square' && isActive && styles.filterPlaceholderActive,
@@ -184,6 +184,7 @@ const styles = StyleSheet.create({
   filterThumb: {
     alignItems: 'center',
     marginHorizontal: 12,
+    backgroundColor: 'transparent',
   },
   filterPlaceholder: {
     width: 48,

@@ -80,6 +80,7 @@ class NativeFilmCameraView(context: Context) : GLSurfaceView(context), GLSurface
     private var texCoordBuffer: FloatBuffer
 
     private val transformMatrix = FloatArray(16)
+    private val scaleMatrix = FloatArray(16)
 
     private var viewportWidth = 0
     private var viewportHeight = 0
@@ -175,6 +176,34 @@ class NativeFilmCameraView(context: Context) : GLSurfaceView(context), GLSurface
         // Pass transform matrix
         val uTransformMatrix = GLES20.glGetUniformLocation(program, "u_TransformMatrix")
         GLES20.glUniformMatrix4fv(uTransformMatrix, 1, false, transformMatrix, 0)
+
+        // Calculate and pass scale matrix for Center Crop
+        var scaleX = 1.0f
+        var scaleY = 1.0f
+
+        if (cameraWidth > 0 && cameraHeight > 0 && viewportWidth > 0 && viewportHeight > 0) {
+            val isViewPortrait = viewportWidth < viewportHeight
+            val isCameraPortrait = cameraWidth < cameraHeight
+            
+            val effCamWidth = if (isViewPortrait == isCameraPortrait) cameraWidth.toFloat() else cameraHeight.toFloat()
+            val effCamHeight = if (isViewPortrait == isCameraPortrait) cameraHeight.toFloat() else cameraWidth.toFloat()
+
+            val viewAspect = viewportWidth.toFloat() / viewportHeight.toFloat()
+            val camAspect = effCamWidth / effCamHeight
+
+            if (viewAspect > camAspect) {
+                // View is wider than camera. Scale Y to match width
+                scaleY = viewAspect / camAspect
+            } else {
+                // View is taller than camera. Scale X to match height
+                scaleX = camAspect / viewAspect
+            }
+        }
+
+        android.opengl.Matrix.setIdentityM(scaleMatrix, 0)
+        android.opengl.Matrix.scaleM(scaleMatrix, 0, scaleX, scaleY, 1.0f)
+        val uScaleMatrix = GLES20.glGetUniformLocation(program, "u_ScaleMatrix")
+        GLES20.glUniformMatrix4fv(uScaleMatrix, 1, false, scaleMatrix, 0)
 
         // Setup Uniforms
         GLES20.glUniform1f(GLES20.glGetUniformLocation(program, "u_Saturation"), saturation)
