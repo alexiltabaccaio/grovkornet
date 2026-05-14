@@ -1,6 +1,16 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import 'react-native-gesture-handler/jestSetup';
+import { Gesture } from 'react-native-gesture-handler';
+
+// Patch Gesture Handler mocks
+
+const panInstance = Gesture.Pan();
+const panProto = Object.getPrototypeOf(panInstance);
+if (panProto) {
+  panProto.hitSlop = function() { return this; };
+}
+
 
 // Mock Reanimated
 jest.mock('react-native-reanimated', () => {

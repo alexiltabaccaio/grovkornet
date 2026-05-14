@@ -1,4 +1,4 @@
-package com.anonymous.Grovkornet
+package com.grovkornet.app
 
 import android.content.Context
 import android.graphics.SurfaceTexture
@@ -36,10 +36,11 @@ class NativeFilmCameraView(context: Context) : GLSurfaceView(context) {
         }
 
         val cameraListener = object : CameraEngine.Listener {
-            override fun onExposureUpdate(iso: Int, shutterSpeed: Double) {
+            override fun onExposureUpdate(iso: Int, shutterSpeed: Double, focusDistance: Float) {
                 val event = Arguments.createMap().apply {
                     putInt("iso", iso)
                     putDouble("shutterSpeed", shutterSpeed)
+                    putDouble("focusDistance", focusDistance.toDouble())
                 }
                 emitEvent("onExposureUpdate", event)
             }

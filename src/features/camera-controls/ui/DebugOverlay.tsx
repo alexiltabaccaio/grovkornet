@@ -12,18 +12,18 @@ export const DebugOverlay = () => {
   return (
     <View style={styles.container} pointerEvents="none">
       <View style={styles.badge}>
-        <ReanimatedValueText 
-          label="FPS" 
-          value={fps} 
+        <ReanimatedValueText
+          label="FPS"
+          value={fps}
           formatter={(v: number) => {
             'worklet';
             return Math.round(v).toString();
-          }} 
+          }}
         />
         <View style={styles.separator} />
-        <ReanimatedValueText 
-          label="RES" 
-          value={resolution} 
+        <ReanimatedValueText
+          label="RES"
+          value={resolution}
         />
       </View>
     </View>

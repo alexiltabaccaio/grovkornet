@@ -53,7 +53,7 @@ export const FocusModule = ({
           onChange={setFocusDistance}
           variant="text"
           isAuto={focusAuto}
-          onLongPress={() => setFocusAuto(true)}
+          onLongPress={() => setFocusAuto(!focusAuto.value)}
           valueFormatter={formatFocus}
           invertDrag={true}
         />

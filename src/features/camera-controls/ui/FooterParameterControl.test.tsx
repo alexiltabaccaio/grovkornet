@@ -29,11 +29,15 @@ jest.mock('react-native-gesture-handler', () => {
     GestureDetector: ({ children }: { children: React.ReactNode }) => children,
     Gesture: {
       Pan: () => ({
+        hitSlop: jest.fn().mockReturnThis(),
         onStart: jest.fn().mockReturnThis(),
         onUpdate: jest.fn().mockReturnThis(),
       }),
       LongPress: () => ({
         onStart: jest.fn().mockReturnThis(),
+      }),
+      Tap: () => ({
+        onEnd: jest.fn().mockReturnThis(),
       }),
       Race: jest.fn(),
     },

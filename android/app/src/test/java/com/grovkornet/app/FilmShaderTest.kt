@@ -1,4 +1,4 @@
-package com.anonymous.Grovkornet
+package com.grovkornet.app
 
 import org.junit.Test
 import org.junit.Assert.*

@@ -1,4 +1,4 @@
-package com.anonymous.Grovkornet
+package com.grovkornet.app
 
 import android.content.Context
 import android.hardware.camera2.CameraCharacteristics
@@ -9,6 +9,7 @@ import android.hardware.camera2.CaptureResult
 import android.hardware.camera2.TotalCaptureResult
 import android.util.Log
 import android.util.Range
+import android.util.Size
 import androidx.camera.camera2.interop.Camera2CameraControl
 import androidx.camera.camera2.interop.Camera2CameraInfo
 import androidx.camera.camera2.interop.Camera2Interop
@@ -28,7 +29,7 @@ class CameraEngine(private val context: Context, private val lifecycleOwner: Lif
     private val TAG = "CameraEngine"
 
     interface Listener {
-        fun onExposureUpdate(iso: Int, shutterSpeed: Double)
+        fun onExposureUpdate(iso: Int, shutterSpeed: Double, focusDistance: Float)
         fun onCapabilitiesUpdate(capabilities: WritableMap)
         fun onCameraResolutionDetected(width: Int, height: Int)
     }
@@ -121,7 +122,12 @@ class CameraEngine(private val context: Context, private val lifecycleOwner: Lif
             }
             
             val resolutionSelector = androidx.camera.core.resolutionselector.ResolutionSelector.Builder()
-                .setResolutionStrategy(androidx.camera.core.resolutionselector.ResolutionStrategy.HIGHEST_AVAILABLE_STRATEGY)
+                .setResolutionStrategy(
+                    androidx.camera.core.resolutionselector.ResolutionStrategy(
+                        Size(1920, 1080),
+                        androidx.camera.core.resolutionselector.ResolutionStrategy.FALLBACK_RULE_CLOSEST_HIGHER_THEN_LOWER
+                    )
+                )
                 .build()
             builder.setResolutionSelector(resolutionSelector)
         } catch (e: Exception) {
@@ -136,9 +142,10 @@ class CameraEngine(private val context: Context, private val lifecycleOwner: Lif
                 if (now - lastExposureUpdateTime >= 100) {
                     val currentIso = result.get(CaptureResult.SENSOR_SENSITIVITY) ?: return
                     val currentShutter = result.get(CaptureResult.SENSOR_EXPOSURE_TIME) ?: return
+                    val currentFocus = result.get(CaptureResult.LENS_FOCUS_DISTANCE) ?: 0.0f
                     val shutterDenominator = 1_000_000_000.0 / currentShutter.toDouble()
                     
-                    listener.onExposureUpdate(currentIso, shutterDenominator)
+                    listener.onExposureUpdate(currentIso, shutterDenominator, currentFocus)
                     lastExposureUpdateTime = now
                 }
             }

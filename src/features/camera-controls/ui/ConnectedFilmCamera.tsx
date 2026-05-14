@@ -51,6 +51,9 @@ export const ConnectedFilmCamera = ({ cameraKey }: ConnectedFilmCameraProps) => 
           if (store.shutterSpeedAuto.value) {
             updateSharedValue(store.shutterSpeed, event.nativeEvent.shutterSpeed);
           }
+          if (store.focusAuto.value && event.nativeEvent.focusDistance !== undefined) {
+            updateSharedValue(store.focusDistance, event.nativeEvent.focusDistance);
+          }
         }
       }}
     />

@@ -86,14 +86,14 @@ android {
     buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdk rootProject.ext.compileSdkVersion
 
-    namespace 'com.anonymous.Grovkornet'
+    namespace 'com.grovkornet.app'
     defaultConfig {
-        applicationId 'com.anonymous.Grovkornet'
+        applicationId 'com.grovkornet.app'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
         versionName "1.0.0"
-        testInstrumentationRunner "com.anonymous.Grovkornet.CustomTestRunner"
+        testInstrumentationRunner "com.grovkornet.app.CustomTestRunner"
     }
     signingConfigs {
         debug {

@@ -1,4 +1,4 @@
-package com.anonymous.Grovkornet
+package com.grovkornet.app
 
 object FilmShader {
     const val VERTEX_SHADER = """

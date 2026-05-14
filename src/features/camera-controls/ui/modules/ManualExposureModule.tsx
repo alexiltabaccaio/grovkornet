@@ -80,7 +80,7 @@ export const ManualExposureModule = ({
           onChange={setIso}
           variant="text"
           isAuto={isoAuto}
-          onLongPress={() => setIsoAuto(true)}
+          onLongPress={() => setIsoAuto(!isoAuto.value)}
         />
         <FooterParameterControl
           label={t('parameters.ev')}
@@ -92,7 +92,7 @@ export const ManualExposureModule = ({
           onChange={setEv}
           variant="text"
           isAuto={evAuto}
-          onLongPress={() => setEvAuto(true)}
+          onLongPress={() => setEvAuto(!evAuto.value)}
           valueFormatter={formatEv}
         />
         <FooterParameterControl
@@ -105,7 +105,7 @@ export const ManualExposureModule = ({
           onChange={setShutterSpeed}
           variant="text"
           isAuto={shutterSpeedAuto}
-          onLongPress={() => setShutterSpeedAuto(true)}
+          onLongPress={() => setShutterSpeedAuto(!shutterSpeedAuto.value)}
           valueFormatter={formatShutterSpeed}
         />
         <FooterParameterControl
@@ -118,8 +118,9 @@ export const ManualExposureModule = ({
           onChange={setWhiteBalance}
           variant="text"
           isAuto={whiteBalanceAuto}
-          onLongPress={() => setWhiteBalanceAuto(true)}
+          onLongPress={() => setWhiteBalanceAuto(!whiteBalanceAuto.value)}
           valueFormatter={formatWhiteBalance}
+          hideValueInAuto={true}
         />
       </View>
     </Animated.View>

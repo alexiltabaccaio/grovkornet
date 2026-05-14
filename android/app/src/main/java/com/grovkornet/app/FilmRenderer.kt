@@ -1,4 +1,4 @@
-package com.anonymous.Grovkornet
+package com.grovkornet.app
 
 import android.graphics.SurfaceTexture
 import android.opengl.GLES11Ext

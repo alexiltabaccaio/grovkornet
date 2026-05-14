@@ -95,6 +95,9 @@ export const GestureController = () => {
         case 'grain':
           startVal.value = grainIntensity.value;
           break;
+        case 'grain_chroma':
+          startVal.value = grainChroma.value;
+          break;
         case 'grain_size':
           startVal.value = (grainSize.value - 1.0) / (4.0 - 1.0);
           break;
@@ -139,6 +142,9 @@ export const GestureController = () => {
       switch (activeParameter) {
         case 'grain':
           updateGrain(normalizedValue);
+          break;
+        case 'grain_chroma':
+          updateGrainChroma(Math.round(normalizedValue));
           break;
         case 'grain_size':
           updateGrainSize(1.0 + normalizedValue * (4.0 - 1.0));

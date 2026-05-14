@@ -20,7 +20,7 @@ interface NativeFilmCameraProps extends ViewProps {
   focusDistance?: number | SharedValue<number>;
   cameraId?: string | SharedValue<string>;
   onDebugUpdate?: (event: { nativeEvent: { fps: number; resolution: string } }) => void;
-  onExposureUpdate?: (event: { nativeEvent: { iso: number; shutterSpeed: number } }) => void;
+  onExposureUpdate?: (event: { nativeEvent: { iso: number; shutterSpeed: number; focusDistance: number } }) => void;
   onCapabilitiesUpdate?: (event: { nativeEvent: { 
     supportsFocus: boolean; 
     isoMin?: number; 

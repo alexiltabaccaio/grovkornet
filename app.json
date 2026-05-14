@@ -28,11 +28,9 @@
       "predictiveBackGestureEnabled": false,
       "permissions": [
         "android.permission.CAMERA",
-        "android.permission.RECORD_AUDIO",
-        "android.permission.CAMERA",
         "android.permission.RECORD_AUDIO"
       ],
-      "package": "com.anonymous.Grovkornet"
+      "package": "com.grovkornet.app"
     },
     "web": {
       "favicon": "./assets/favicon.png"

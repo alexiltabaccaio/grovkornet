@@ -25,6 +25,7 @@ interface FooterParameterControlProps {
   onLongPress?: () => void;
   staticText?: string;
   invertDrag?: boolean;
+  hideValueInAuto?: boolean;
 }
 
 import { updateSharedValue } from '@shared/lib/reanimated/safeUpdate';
@@ -44,6 +45,7 @@ export const FooterParameterControl = ({
   onLongPress,
   staticText,
   invertDrag = false,
+  hideValueInAuto = false,
 }: FooterParameterControlProps) => {
   const startVal = useSharedValue(minValue);
   const isDebugEnabled = useUIStore((s) => s.isDebugEnabled);
@@ -102,6 +104,14 @@ export const FooterParameterControl = ({
   const animatedTextProps = useAnimatedProps(() => {
     const isShowingValue = renderValue || variant === 'text';
     if (!value || !isShowingValue) return { text: '' };
+    
+    if (isAuto && isAuto.value && hideValueInAuto) {
+      return {
+        text: 'AUTO',
+        defaultValue: 'AUTO',
+      } as unknown as Record<string, unknown>;
+    }
+
     const val = valueFormatter ? valueFormatter(value.value) : Math.round(value.value).toString();
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
     return {
@@ -131,17 +141,21 @@ export const FooterParameterControl = ({
 
   const isShowingValue = renderValue || variant === 'text';
 
-  const combinedGesture = Gesture.Race(longPressGesture, panGesture);
+  const tapGesture = Gesture.Tap()
+    .onEnd(() => {
+      runOnJS(onPress)();
+    });
+
+  const combinedGesture = Gesture.Race(longPressGesture, tapGesture, panGesture);
 
   return (
     <GestureDetector gesture={combinedGesture}>
-      <Pressable 
+      <Animated.View 
         style={[
           styles.filterThumb,
           isDebugEnabled && { backgroundColor: 'rgba(0, 255, 0, 0.2)', borderWidth: 1, borderColor: 'green' }
         ]} 
-        onPress={onPress} 
-        hitSlop={20}
+        hitSlop={{ top: 20, bottom: 20, left: 20, right: 20 }}
       >
         <View style={[
           styles.filterPlaceholder,
@@ -191,7 +205,7 @@ export const FooterParameterControl = ({
         <Text style={[styles.filterText, isActive && styles.filterTextActive]}>
           {label.toUpperCase()}
         </Text>
-      </Pressable>
+      </Animated.View>
     </GestureDetector>
   );
 };

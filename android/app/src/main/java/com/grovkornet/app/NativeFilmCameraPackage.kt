@@ -1,4 +1,4 @@
-package com.anonymous.Grovkornet
+package com.grovkornet.app
 
 import com.facebook.react.ReactPackage
 import com.facebook.react.bridge.NativeModule
