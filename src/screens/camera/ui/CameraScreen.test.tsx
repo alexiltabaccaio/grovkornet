@@ -3,15 +3,10 @@ import { render } from '@testing-library/react-native';
 import { CameraScreen } from './CameraScreen';
 
 // Complex mocks for native components and hooks
-jest.mock('react-native-vision-camera', () => ({
-  Camera: 'Camera',
-  useCameraDevice: jest.fn(() => ({})),
-  useCameraPermission: jest.fn(() => ({ hasPermission: true, requestPermission: jest.fn() })),
-}));
+
 
 jest.mock('@features/camera-controls', () => ({
-  CameraEffectsProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
-  useCameraEffectsContext: jest.fn(() => ({
+  useCameraEffectsStore: jest.fn(() => ({
     activeTab: 'none',
     setActiveTab: jest.fn(),
     activeModule: 'none',
@@ -21,16 +16,19 @@ jest.mock('@features/camera-controls', () => ({
     grainIntensity: { value: 0 },
     saturation: { value: 1 },
     contrast: { value: 1 },
+    chromaticAberration: { value: 0 },
     grainEnabled: { value: false },
+    isDebugEnabled: false,
     setGrainIntensity: jest.fn(),
     setSaturation: jest.fn(),
     setContrast: jest.fn(),
     setGrainEnabled: jest.fn(),
+    setDebugInfo: jest.fn(),
     resetTool: jest.fn(),
-    frameProcessor: jest.fn(),
   })),
   GestureController: 'GestureController',
   Footer: 'Footer',
+  DebugOverlay: 'DebugOverlay',
 }));
 
 describe('CameraScreen Component Stability Test', () => {

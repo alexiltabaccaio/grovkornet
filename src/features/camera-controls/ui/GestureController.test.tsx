@@ -1,38 +1,31 @@
 import React from 'react';
 import { render } from '@testing-library/react-native';
 import { GestureController } from './GestureController';
-import { useCameraEffectsContext } from '../model/CameraEffectsContext';
+import { useCameraEffectsStore } from '../model/useCameraEffectsStore';
 
-// Mock the context
-jest.mock('../model/CameraEffectsContext');
+// Mock the store
+jest.mock('../model/useCameraEffectsStore');
 
 // Mock Reanimated
-jest.mock('react-native-reanimated', () => ({
-  useSharedValue: jest.fn((val) => ({ value: val })),
-  runOnJS: jest.fn((fn) => fn),
-}));
-// Mock Worklets Core
-jest.mock('react-native-worklets-core', () => ({
-  useSharedValue: jest.fn((val) => ({ value: val })),
-}));
+jest.mock('react-native-reanimated', () => {
+  const { View } = jest.requireActual('react-native');
+  return {
+    useSharedValue: jest.fn((val) => ({ value: val })),
+    useAnimatedStyle: jest.fn(() => ({})),
+    useAnimatedProps: jest.fn(() => ({})),
+    runOnJS: jest.fn((fn) => fn),
+    makeMutable: jest.fn((val) => ({ value: val })),
+    createAnimatedComponent: jest.fn((comp) => comp),
+    FadeIn: { duration: jest.fn().mockReturnThis() },
+    FadeOut: { duration: jest.fn().mockReturnThis() },
+    View: View,
+  };
+});
 
-// Mock Vision Camera
-jest.mock('react-native-vision-camera', () => ({
-  useSkiaFrameProcessor: jest.fn(),
-  VisionCameraProxy: {
-    initFrameProcessor: jest.fn(),
-  },
-}));
 
-// Mock Skia
-jest.mock('@shopify/react-native-skia', () => ({
-  Skia: {
-    RuntimeEffect: {
-      Make: jest.fn(),
-    },
-    Shader: jest.fn(),
-  },
-}));
+
+
+
 
 // Mock Gesture Handler
 jest.mock('react-native-gesture-handler', () => {
@@ -49,7 +42,7 @@ jest.mock('react-native-gesture-handler', () => {
 });
 
 describe('GestureController', () => {
-  const mockContext = {
+  const mockStore = {
     grainIntensity: { value: 0.5 },
     saturation: { value: 1.0 },
     contrast: { value: 1.0 },
@@ -64,7 +57,7 @@ describe('GestureController', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    (useCameraEffectsContext as jest.Mock).mockReturnValue(mockContext);
+    (useCameraEffectsStore as unknown as jest.Mock).mockReturnValue(mockStore);
   });
 
   it('should render null when activeModule is "none"', () => {
@@ -73,8 +66,8 @@ describe('GestureController', () => {
   });
 
   it('should render correctly when activeModule is "grain"', () => {
-    (useCameraEffectsContext as jest.Mock).mockReturnValue({
-      ...mockContext,
+    (useCameraEffectsStore as unknown as jest.Mock).mockReturnValue({
+      ...mockStore,
       activeModule: 'grain',
       activeParameter: 'grain',
     });
@@ -84,8 +77,8 @@ describe('GestureController', () => {
   });
 
   it('should render correctly when activeModule is "color_grading"', () => {
-    (useCameraEffectsContext as jest.Mock).mockReturnValue({
-      ...mockContext,
+    (useCameraEffectsStore as unknown as jest.Mock).mockReturnValue({
+      ...mockStore,
       activeModule: 'color_grading',
       activeParameter: 'saturation',
     });
@@ -95,8 +88,8 @@ describe('GestureController', () => {
   });
 
   it('should render correctly when activeModule is "lens_effects"', () => {
-    (useCameraEffectsContext as jest.Mock).mockReturnValue({
-      ...mockContext,
+    (useCameraEffectsStore as unknown as jest.Mock).mockReturnValue({
+      ...mockStore,
       activeModule: 'lens_effects',
       activeParameter: 'chromatic_aberration',
     });
@@ -106,8 +99,8 @@ describe('GestureController', () => {
   });
 
   it('should render null for unknown modules', () => {
-    (useCameraEffectsContext as jest.Mock).mockReturnValue({
-      ...mockContext,
+    (useCameraEffectsStore as unknown as jest.Mock).mockReturnValue({
+      ...mockStore,
       activeModule: 'something_else',
     });
 

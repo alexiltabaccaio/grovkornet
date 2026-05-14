@@ -3,7 +3,8 @@ import { StyleSheet, View, Dimensions } from 'react-native';
 import { runOnJS, useSharedValue } from 'react-native-reanimated';
 import { GestureDetector, Gesture } from 'react-native-gesture-handler';
 
-import { useCameraEffectsContext } from '../model/CameraEffectsContext';
+import { useShallow } from 'zustand/react/shallow';
+import { useCameraEffectsStore } from '../model/useCameraEffectsStore';
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 const SLIDER_HEIGHT = SCREEN_HEIGHT * 0.3;
@@ -20,7 +21,18 @@ export const GestureController = () => {
     setChromaticAberration,
     activeModule,
     activeParameter,
-  } = useCameraEffectsContext();
+  } = useCameraEffectsStore(useShallow(state => ({
+    grainIntensity: state.grainIntensity,
+    saturation: state.saturation,
+    contrast: state.contrast,
+    chromaticAberration: state.chromaticAberration,
+    setGrainIntensity: state.setGrainIntensity,
+    setSaturation: state.setSaturation,
+    setContrast: state.setContrast,
+    setChromaticAberration: state.setChromaticAberration,
+    activeModule: state.activeModule,
+    activeParameter: state.activeParameter,
+  })));
 
 
 

@@ -4,7 +4,7 @@ export type TabType = 'lens' | 'color' | 'tape' | 'crt' | 'settings' | 'none';
 export type ModuleType = 'color_grading' | 'fade' | 'grain' | 'jitter' | 'dropouts' | 'lens_effects' | 'language' | 'debug' | 'none';
 export type ParameterType = 'saturation' | 'contrast' | 'grain' | 'chromatic_aberration' | 'none';
 
-export interface EffectSharedValues {
+interface EffectSharedValues {
   grainIntensity: SharedValue<number>;
   saturation: SharedValue<number>;
   contrast: SharedValue<number>;
@@ -15,7 +15,7 @@ export interface EffectSharedValues {
   resolution: SharedValue<string>;
 }
 
-export interface EffectHandlers {
+interface EffectHandlers {
   setGrainIntensity: (value: number) => void;
   setSaturation: (value: number) => void;
   setContrast: (value: number) => void;

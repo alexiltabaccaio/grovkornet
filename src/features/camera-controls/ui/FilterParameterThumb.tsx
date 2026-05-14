@@ -3,7 +3,7 @@ import { StyleSheet, Text, View, Pressable } from 'react-native';
 import Animated, { SharedValue, useAnimatedStyle, useAnimatedProps, interpolateColor, useSharedValue, runOnJS } from 'react-native-reanimated';
 import { GestureDetector, Gesture } from 'react-native-gesture-handler';
 import { Ionicons } from '@expo/vector-icons';
-import { Canvas, Rect, Shader, SkRuntimeEffect } from '@shopify/react-native-skia';
+
 
 const AnimatedIcon = Animated.createAnimatedComponent(Ionicons);
 
@@ -15,9 +15,6 @@ interface FilterParameterThumbProps {
   maxValue?: number;
   onChange?: (val: number) => void;
   icon?: keyof typeof Ionicons.glyphMap;
-  skiaEffect?: SkRuntimeEffect | null;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  skiaUniforms?: any; // Skia uniforms are dynamically typed as any in the framework
 }
 
 export const FilterParameterThumb = ({ 
@@ -27,9 +24,7 @@ export const FilterParameterThumb = ({
   value,
   maxValue = 1,
   onChange,
-  icon, 
-  skiaEffect, 
-  skiaUniforms 
+  icon,
 }: FilterParameterThumbProps) => {
   const startVal = useSharedValue(0);
 
@@ -73,7 +68,7 @@ export const FilterParameterThumb = ({
         <View style={[
         styles.filterPlaceholder,
         isActive && styles.filterPlaceholderActive,
-        !skiaEffect && styles.iconPlaceholder
+        styles.iconPlaceholder
       ]}>
         <Animated.View style={[styles.progressFill, animatedBgStyle]} />
         
@@ -81,13 +76,7 @@ export const FilterParameterThumb = ({
           <AnimatedIcon name={icon} size={24} style={{ zIndex: 1 }} animatedProps={animatedIconProps} />
         )}
         
-        {skiaEffect && (
-          <Canvas style={styles.canvas}>
-            <Rect x={0} y={0} width={48} height={48}>
-              <Shader source={skiaEffect} uniforms={skiaUniforms} />
-            </Rect>
-          </Canvas>
-        )}
+
         <View style={[styles.borderOverlay, isActive && styles.borderOverlayActive]} pointerEvents="none" />
       </View>
       <Text style={[styles.filterText, isActive && styles.filterTextActive]}>
@@ -136,10 +125,7 @@ const styles = StyleSheet.create({
     left: -2,
     right: -2,
   },
-  canvas: {
-    width: 48,
-    height: 48,
-  },
+
   filterText: {
     color: '#CCC',
     fontSize: 11,

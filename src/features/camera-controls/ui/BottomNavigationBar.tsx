@@ -4,10 +4,15 @@ import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { TabType } from '@shared/types/camera';
 
-import { useCameraEffectsContext } from '../model/CameraEffectsContext';
+import { useShallow } from 'zustand/react/shallow';
+import { useCameraEffectsStore } from '../model/useCameraEffectsStore';
 
 export const BottomNavigationBar = () => {
-  const { activeTab, setActiveTab, setActiveModule } = useCameraEffectsContext();
+  const { activeTab, setActiveTab, setActiveModule } = useCameraEffectsStore(useShallow(state => ({
+    activeTab: state.activeTab,
+    setActiveTab: state.setActiveTab,
+    setActiveModule: state.setActiveModule
+  })));
   const { t } = useTranslation();
 
   const handleTabChange = (tab: TabType) => {

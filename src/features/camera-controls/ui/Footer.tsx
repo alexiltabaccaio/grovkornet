@@ -2,7 +2,8 @@ import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 import { useTranslation } from 'react-i18next';
-import { useCameraEffectsContext } from '../model/CameraEffectsContext';
+import { useShallow } from 'zustand/react/shallow';
+import { useCameraEffectsStore } from '../model/useCameraEffectsStore';
 import { BottomNavigationBar } from './BottomNavigationBar';
 import { FilterPillMenu } from './FilterPillMenu';
 import { FilterParameterThumb } from './FilterParameterThumb';
@@ -27,7 +28,23 @@ export const Footer = () => {
     setChromaticAberration,
     setIsDebugEnabled,
     resetTool,
-  } = useCameraEffectsContext();
+  } = useCameraEffectsStore(useShallow(state => ({
+    activeTab: state.activeTab,
+    activeModule: state.activeModule,
+    activeParameter: state.activeParameter,
+    setActiveParameter: state.setActiveParameter,
+    grainIntensity: state.grainIntensity,
+    saturation: state.saturation,
+    contrast: state.contrast,
+    chromaticAberration: state.chromaticAberration,
+    isDebugEnabled: state.isDebugEnabled,
+    setGrainIntensity: state.setGrainIntensity,
+    setSaturation: state.setSaturation,
+    setContrast: state.setContrast,
+    setChromaticAberration: state.setChromaticAberration,
+    setIsDebugEnabled: state.setIsDebugEnabled,
+    resetTool: state.resetTool,
+  })));
 
   const { t, i18n } = useTranslation();
   const { handlePressWithDouble } = useDoublePress(resetTool);

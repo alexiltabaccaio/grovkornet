@@ -2,10 +2,15 @@ import React from 'react';
 import { StyleSheet, Text, Pressable, ScrollView } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
-import { useCameraEffectsContext } from '../model/CameraEffectsContext';
+import { useShallow } from 'zustand/react/shallow';
+import { useCameraEffectsStore } from '../model/useCameraEffectsStore';
 
 export const FilterPillMenu = () => {
-  const { activeTab, activeModule, setActiveModule } = useCameraEffectsContext();
+  const { activeTab, activeModule, setActiveModule } = useCameraEffectsStore(useShallow(state => ({
+    activeTab: state.activeTab,
+    activeModule: state.activeModule,
+    setActiveModule: state.setActiveModule
+  })));
   const { t } = useTranslation();
   
   if (activeTab !== 'color' && activeTab !== 'tape' && activeTab !== 'lens' && activeTab !== 'settings') return null;

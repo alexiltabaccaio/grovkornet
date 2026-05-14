@@ -1,12 +1,13 @@
 import React from 'react';
 import { StyleSheet, View, TextInput } from 'react-native';
-import Animated, { useAnimatedStyle, useAnimatedProps } from 'react-native-reanimated';
-import { useCameraEffectsContext } from '../model/CameraEffectsContext';
+import Animated, { useAnimatedProps, SharedValue } from 'react-native-reanimated';
+import { useCameraEffectsStore } from '../model/useCameraEffectsStore';
 
 const AnimatedTextInput = Animated.createAnimatedComponent(TextInput);
 
 export const DebugOverlay = () => {
-  const { fps, resolution } = useCameraEffectsContext();
+  const fps = useCameraEffectsStore(state => state.fps);
+  const resolution = useCameraEffectsStore(state => state.resolution);
 
   return (
     <View style={styles.container} pointerEvents="none">
@@ -30,12 +31,12 @@ export const DebugOverlay = () => {
 };
 
 // Helper component to show reanimated values in text
-const ReanimatedValueText = ({ label, value, formatter }: { label: string, value: any, formatter?: (v: any) => string }) => {
+const ReanimatedValueText = <T extends number | string>({ label, value, formatter }: { label: string, value: SharedValue<T>, formatter?: (v: T) => string }) => {
   const animatedProps = useAnimatedProps(() => {
     const displayValue = formatter ? formatter(value.value) : value.value;
     return {
       text: `${label}: ${displayValue}`,
-    } as any;
+    };
   });
 
   return (
@@ -43,6 +44,7 @@ const ReanimatedValueText = ({ label, value, formatter }: { label: string, value
       editable={false}
       defaultValue={`${label}: ${value.value}`}
       style={styles.text}
+      // @ts-expect-error - 'text' is a native property used by TextInput to avoid re-renders
       animatedProps={animatedProps}
     />
   );

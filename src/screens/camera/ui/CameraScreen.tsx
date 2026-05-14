@@ -3,29 +3,34 @@ import { StyleSheet, Text, View, AppState, AppStateStatus, PermissionsAndroid, P
 
 import { useTranslation } from 'react-i18next';
 
-import { CameraEffectsProvider, useCameraEffectsContext, GestureController, Footer, DebugOverlay } from '@features/camera-controls';
+import { useShallow } from 'zustand/react/shallow';
+import { useCameraEffectsStore, GestureController, Footer, DebugOverlay } from '@features/camera-controls';
 import { NativeFilmCamera } from '@entities/camera/ui/NativeFilmCamera';
 
 
 export const CameraScreen = () => {
   return (
-    <CameraEffectsProvider>
-      <CameraScreenContent />
-    </CameraEffectsProvider>
+    <CameraScreenContent />
   );
 };
 
 const CameraScreenContent = () => {
   const { t } = useTranslation();
-  const { isDebugEnabled, saturation, contrast, chromaticAberration, grainIntensity, grainEnabled, setDebugInfo } = useCameraEffectsContext();
+  const { isDebugEnabled, saturation, contrast, chromaticAberration, grainIntensity, grainEnabled, setDebugInfo } = useCameraEffectsStore(useShallow(state => ({
+    isDebugEnabled: state.isDebugEnabled,
+    saturation: state.saturation,
+    contrast: state.contrast,
+    chromaticAberration: state.chromaticAberration,
+    grainIntensity: state.grainIntensity,
+    grainEnabled: state.grainEnabled,
+    setDebugInfo: state.setDebugInfo,
+  })));
 
-  const [isActive, setIsActive] = useState(AppState.currentState === 'active');
   const [cameraKey, setCameraKey] = useState(0);
 
   useEffect(() => {
     const subscription = AppState.addEventListener('change', (nextAppState: AppStateStatus) => {
       const nextIsActive = nextAppState === 'active';
-      setIsActive(nextIsActive);
       if (nextIsActive) {
         setCameraKey(prev => prev + 1);
       }
@@ -68,7 +73,7 @@ const CameraScreenContent = () => {
         chromaticAberration={chromaticAberration}
         grainIntensity={grainIntensity}
         grainEnabled={grainEnabled}
-        onDebugUpdate={(event: any) => {
+        onDebugUpdate={(event: { nativeEvent: { fps: number; resolution: string } }) => {
           if (event.nativeEvent) {
             setDebugInfo(event.nativeEvent.fps, event.nativeEvent.resolution);
           }

@@ -38,14 +38,7 @@
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
-      [
-        "react-native-vision-camera",
-        {
-          "cameraPermissionText": "Grovkornet needs camera access to apply the filter.",
-          "enableMicrophonePermission": true,
-          "microphonePermissionText": "Grovkornet needs microphone access to record video audio."
-        }
-      ],
+
       "expo-asset",
       "expo-font",
       [
