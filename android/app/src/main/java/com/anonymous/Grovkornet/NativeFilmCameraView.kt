@@ -45,19 +45,19 @@ class NativeFilmCameraView(context: Context) : GLSurfaceView(context), GLSurface
 
     // Manual Camera Props
     var isoAuto: Boolean = true
-        set(value) { field = value; updateCameraControls() }
+        set(value) { if (field != value) { field = value; updateCameraControls() } }
     var shutterSpeedAuto: Boolean = true
-        set(value) { field = value; updateCameraControls() }
+        set(value) { if (field != value) { field = value; updateCameraControls() } }
     var whiteBalanceAuto: Boolean = true
-        set(value) { field = value; updateCameraControls() }
+        set(value) { if (field != value) { field = value; updateCameraControls() } }
     var autoFocus: Boolean = false
-        set(value) { field = value; updateCameraControls() }
+        set(value) { if (field != value) { field = value; updateCameraControls() } }
     var iso: Int = 400
-        set(value) { field = value; updateCameraControls() }
+        set(value) { if (field != value) { field = value; updateCameraControls() } }
     var exposureTime: Long = 1000000000L / 60
-        set(value) { field = value; updateCameraControls() }
+        set(value) { if (field != value) { field = value; updateCameraControls() } }
     var focusDistance: Float = 0.0f
-        set(value) { field = value; updateCameraControls() }
+        set(value) { if (field != value) { field = value; updateCameraControls() } }
 
     private var camera: Camera? = null
 
