@@ -42,14 +42,22 @@ export const GrainModule = ({
         value={grainIntensity}
         maxValue={1.0}
         onChange={setGrainIntensity}
-        icon="water-outline"
+        renderValue={true}
+        variant="text"
+        valueFormatter={(v) => {
+          'worklet';
+          return `${Math.round(v * 100)}%`;
+        }}
       />
       <FooterParameterControl
         label={t('parameters.chroma')}
         isActive={activeParameter === 'grain_chroma'}
         onPress={() => {
-          setGrainChroma(grainChroma.value === 0 ? 1 : 0);
-          setActiveParameter('grain_chroma');
+          if (activeParameter === 'grain_chroma') {
+            setGrainChroma(grainChroma.value === 0 ? 1 : 0);
+          } else {
+            setActiveParameter('grain_chroma');
+          }
         }}
         value={grainChroma}
         renderValue={true}

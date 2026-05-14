@@ -3,6 +3,7 @@ import { StyleSheet, Text, View, Pressable, TextInput } from 'react-native';
 import Animated, { SharedValue, useAnimatedStyle, useAnimatedProps, interpolateColor, useSharedValue, runOnJS } from 'react-native-reanimated';
 import { GestureDetector, Gesture } from 'react-native-gesture-handler';
 import { Ionicons } from '@expo/vector-icons';
+import { useUIStore } from '../model/useUIStore';
 
 
 const AnimatedIcon = Animated.createAnimatedComponent(Ionicons);
@@ -43,6 +44,7 @@ export const FooterParameterControl = ({
   staticText,
 }: FooterParameterControlProps) => {
   const startVal = useSharedValue(minValue);
+  const isDebugEnabled = useUIStore((s) => s.isDebugEnabled);
 
   const longPressGesture = Gesture.LongPress()
     .onStart(() => {
@@ -52,6 +54,7 @@ export const FooterParameterControl = ({
     });
 
   const panGesture = Gesture.Pan()
+    .hitSlop(20)
     .onStart(() => {
       if (!value) return;
       startVal.value = value.value;
@@ -129,17 +132,26 @@ export const FooterParameterControl = ({
 
   return (
     <GestureDetector gesture={combinedGesture}>
-      <Pressable style={styles.filterThumb} onPress={onPress} hitSlop={10}>
+      <Pressable 
+        style={[
+          styles.filterThumb,
+          isDebugEnabled && { backgroundColor: 'rgba(0, 255, 0, 0.2)', borderWidth: 1, borderColor: 'green' }
+        ]} 
+        onPress={onPress} 
+        hitSlop={20}
+      >
         <View style={[
           styles.filterPlaceholder,
           variant === 'square' && isActive && styles.filterPlaceholderActive,
           variant === 'square' && styles.iconPlaceholder,
-          variant === 'text' && styles.textVariantPlaceholder
+          variant === 'text' && styles.textVariantPlaceholder,
+          isDebugEnabled && variant === 'text' && { backgroundColor: 'rgba(255,0,0,0.2)', borderWidth: 1, borderColor: 'red' }
         ]}>
           {variant === 'square' && <Animated.View style={[styles.progressFill, animatedBgStyle]} />}
           
           {isShowingValue && value ? (
             <AnimatedTextInput
+              pointerEvents="none"
               underlineColorAndroid="transparent"
               editable={false}
               style={[
@@ -150,7 +162,9 @@ export const FooterParameterControl = ({
               animatedProps={animatedTextProps}
             />
           ) : staticText ? (
-            <Text style={[
+            <Text 
+              pointerEvents="none"
+              style={[
               styles.valueText, 
               variant === 'text' && styles.valueTextLarge,
               { color: isActive ? "#FFF" : "#666" }

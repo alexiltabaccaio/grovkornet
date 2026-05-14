@@ -32,7 +32,12 @@ export const LensEffectsModule = ({
         value={chromaticAberration}
         maxValue={2.0}
         onChange={setChromaticAberration}
-        icon="aperture-outline"
+        renderValue={true}
+        variant="text"
+        valueFormatter={(v) => {
+          'worklet';
+          return `${v.toFixed(1)}%`;
+        }}
       />
     </Animated.View>
   );

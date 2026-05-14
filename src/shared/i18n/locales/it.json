@@ -35,7 +35,7 @@
       "iso": "ISO",
       "ev": "EV",
       "shutter_speed": "TEMPI",
-      "white_balance": "BILANC. BIANCO",
+      "white_balance": "TEMPERATURA",
       "focus": "FUOCO",
       "lens": "LENTE"
     },
