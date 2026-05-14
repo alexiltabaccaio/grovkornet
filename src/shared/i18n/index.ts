@@ -24,4 +24,3 @@ i18n
     compatibilityJSON: 'v4',
   });
 
-export default i18n;

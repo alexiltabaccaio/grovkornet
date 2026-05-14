@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { makeMutable } from 'react-native-reanimated';
-import { TabType, CameraEffectState, ParameterType, ModuleType } from '@shared/types/camera';
+import { CameraEffectState, ParameterType, ModuleType } from '@shared/types/camera';
 import { 
   DEFAULT_GRAIN_INTENSITY, 
   DEFAULT_SATURATION, 
