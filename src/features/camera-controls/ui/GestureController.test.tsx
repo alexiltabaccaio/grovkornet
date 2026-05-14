@@ -2,9 +2,11 @@ import React from 'react';
 import { render } from '@testing-library/react-native';
 import { GestureController } from './GestureController';
 import { useCameraEffectsStore } from '../model/useCameraEffectsStore';
+import { useUIStore } from '../model/useUIStore';
 
-// Mock the store
+// Mock the stores
 jest.mock('../model/useCameraEffectsStore');
+jest.mock('../model/useUIStore');
 
 // Mock Reanimated
 jest.mock('react-native-reanimated', () => {
@@ -42,7 +44,7 @@ jest.mock('react-native-gesture-handler', () => {
 });
 
 describe('GestureController', () => {
-  const mockStore = {
+  const mockCameraStore = {
     grainIntensity: { value: 0.5 },
     saturation: { value: 1.0 },
     contrast: { value: 1.0 },
@@ -51,13 +53,17 @@ describe('GestureController', () => {
     setSaturation: jest.fn(),
     setContrast: jest.fn(),
     setChromaticAberration: jest.fn(),
+  };
+
+  const mockUIStore = {
     activeModule: 'none',
     activeParameter: 'none',
   };
 
   beforeEach(() => {
     jest.clearAllMocks();
-    (useCameraEffectsStore as unknown as jest.Mock).mockReturnValue(mockStore);
+    (useCameraEffectsStore as unknown as jest.Mock).mockReturnValue(mockCameraStore);
+    (useUIStore as unknown as jest.Mock).mockReturnValue(mockUIStore);
   });
 
   it('should render null when activeModule is "none"', () => {
@@ -66,8 +72,7 @@ describe('GestureController', () => {
   });
 
   it('should render correctly when activeModule is "grain"', () => {
-    (useCameraEffectsStore as unknown as jest.Mock).mockReturnValue({
-      ...mockStore,
+    (useUIStore as unknown as jest.Mock).mockReturnValue({
       activeModule: 'grain',
       activeParameter: 'grain',
     });
@@ -77,8 +82,7 @@ describe('GestureController', () => {
   });
 
   it('should render correctly when activeModule is "color_grading"', () => {
-    (useCameraEffectsStore as unknown as jest.Mock).mockReturnValue({
-      ...mockStore,
+    (useUIStore as unknown as jest.Mock).mockReturnValue({
       activeModule: 'color_grading',
       activeParameter: 'saturation',
     });
@@ -88,8 +92,7 @@ describe('GestureController', () => {
   });
 
   it('should render correctly when activeModule is "lens_effects"', () => {
-    (useCameraEffectsStore as unknown as jest.Mock).mockReturnValue({
-      ...mockStore,
+    (useUIStore as unknown as jest.Mock).mockReturnValue({
       activeModule: 'lens_effects',
       activeParameter: 'chromatic_aberration',
     });
@@ -99,8 +102,7 @@ describe('GestureController', () => {
   });
 
   it('should render null for unknown modules', () => {
-    (useCameraEffectsStore as unknown as jest.Mock).mockReturnValue({
-      ...mockStore,
+    (useUIStore as unknown as jest.Mock).mockReturnValue({
       activeModule: 'something_else',
     });
 

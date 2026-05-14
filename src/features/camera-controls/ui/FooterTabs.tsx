@@ -5,10 +5,10 @@ import { useTranslation } from 'react-i18next';
 import { TabType } from '@shared/types/camera';
 
 import { useShallow } from 'zustand/react/shallow';
-import { useCameraEffectsStore } from '../model/useCameraEffectsStore';
+import { useUIStore } from '../model/useUIStore';
 
 export const FooterTabs = () => {
-  const { activeTab, setActiveTab, setActiveModule } = useCameraEffectsStore(useShallow(state => ({
+  const { activeTab, setActiveTab, setActiveModule } = useUIStore(useShallow(state => ({
     activeTab: state.activeTab,
     setActiveTab: state.setActiveTab,
     setActiveModule: state.setActiveModule

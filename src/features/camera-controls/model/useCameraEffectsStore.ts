@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { makeMutable } from 'react-native-reanimated';
-import { CameraEffectState, ParameterType, ModuleType } from '../../../shared/types/camera';
+import { CameraState } from '../../../shared/types/camera';
 import { 
   DEFAULT_GRAIN_INTENSITY, 
   DEFAULT_SATURATION, 
@@ -10,34 +10,10 @@ import {
   DEFAULT_EV,
   DEFAULT_SHUTTER_SPEED,
   DEFAULT_WHITE_BALANCE,
-  DEFAULT_AUTO_EXPOSURE
 } from '@shared/constants/videoProcessing';
 
-interface CameraEffectsStore extends CameraEffectState {
-  lastActiveParameters: Record<ModuleType, ParameterType>;
-}
-
-export const useCameraEffectsStore = create<CameraEffectsStore>((set, get) => ({
-  // UI State
-  activeTab: 'none',
-  activeModule: 'none',
-  activeParameter: 'none',
-  isDebugEnabled: false,
-  
-  lastActiveParameters: {
-    none: 'none',
-    grain: 'grain',
-    color_grading: 'saturation',
-    lens_effects: 'chromatic_aberration',
-    language: 'none',
-    debug: 'none',
-    fade: 'none',
-    jitter: 'none',
-    dropouts: 'none',
-    manual_exposure: 'iso',
-  },
-
-  // Reanimated Shared Values (created via makeMutable for global store usage)
+export const useCameraEffectsStore = create<CameraState>((set, get) => ({
+  // Reanimated Shared Values
   grainIntensity: makeMutable(DEFAULT_GRAIN_INTENSITY),
   saturation: makeMutable(DEFAULT_SATURATION),
   contrast: makeMutable(DEFAULT_CONTRAST),
@@ -55,27 +31,6 @@ export const useCameraEffectsStore = create<CameraEffectsStore>((set, get) => ({
   evAuto: makeMutable(true),
 
   // Actions
-  setActiveTab: (tab) => set({ activeTab: tab }),
-  
-  setActiveModule: (module) => {
-    const { lastActiveParameters } = get();
-    set({ 
-      activeModule: module, 
-      activeParameter: lastActiveParameters[module] || 'none' 
-    });
-  },
-
-  setActiveParameter: (param) => {
-    const { activeModule } = get();
-    set((state) => ({
-      activeParameter: param,
-      lastActiveParameters: {
-        ...state.lastActiveParameters,
-        [activeModule]: param,
-      },
-    }));
-  },
-
   setGrainIntensity: (value) => {
     const { grainIntensity, grainEnabled } = get();
     grainIntensity.value = value;
@@ -96,10 +51,6 @@ export const useCameraEffectsStore = create<CameraEffectsStore>((set, get) => ({
 
   setGrainEnabled: (value) => {
     get().grainEnabled.value = value;
-  },
-
-  setIsDebugEnabled: (value) => {
-    set({ isDebugEnabled: value });
   },
 
   setDebugInfo: (fpsVal, resVal) => {
@@ -150,7 +101,6 @@ export const useCameraEffectsStore = create<CameraEffectsStore>((set, get) => ({
       iso, ev, shutterSpeed, whiteBalance,
       isoAuto, evAuto, shutterSpeedAuto, whiteBalanceAuto,
       setGrainIntensity, setSaturation, setContrast, setChromaticAberration,
-      setIsoAuto, setEvAuto, setShutterSpeedAuto, setWhiteBalanceAuto
     } = get();
 
     if (tool === 'grain') {

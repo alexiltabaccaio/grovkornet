@@ -3,10 +3,10 @@ import { StyleSheet, Text, Pressable, ScrollView } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import { useShallow } from 'zustand/react/shallow';
-import { useCameraEffectsStore } from '../model/useCameraEffectsStore';
+import { useUIStore } from '../model/useUIStore';
 
 export const FooterModules = () => {
-  const { activeTab, activeModule, setActiveModule } = useCameraEffectsStore(useShallow(state => ({
+  const { activeTab, activeModule, setActiveModule } = useUIStore(useShallow(state => ({
     activeTab: state.activeTab,
     activeModule: state.activeModule,
     setActiveModule: state.setActiveModule

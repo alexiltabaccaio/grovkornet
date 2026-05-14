@@ -1,13 +1,13 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { useShallow } from 'zustand/react/shallow';
-import { useCameraEffectsStore } from '../model/useCameraEffectsStore';
+import { useUIStore } from '../model/useUIStore';
 import { FooterTabs } from './FooterTabs';
 import { FooterModules } from './FooterModules';
 import { FooterParameters } from './FooterParameters';
 
 export const Footer = () => {
-  const { activeTab } = useCameraEffectsStore(useShallow(state => ({
+  const { activeTab } = useUIStore(useShallow(state => ({
     activeTab: state.activeTab,
   })));
 

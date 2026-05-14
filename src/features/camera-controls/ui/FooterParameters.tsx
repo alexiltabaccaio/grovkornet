@@ -1,49 +1,31 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
+import { Text, View } from 'react-native';
+import Animated from 'react-native-reanimated';
 import { useTranslation } from 'react-i18next';
 import { useShallow } from 'zustand/react/shallow';
 import { useCameraEffectsStore } from '../model/useCameraEffectsStore';
-import { FooterParameterControl } from './FooterParameterControl';
-import { LanguageThumb, DebugThumb } from '@shared/ui';
+import { useUIStore } from '../model/useUIStore';
 import { useDoublePress } from '@shared/lib/hooks/useDoublePress';
+import { footerStyles } from './Footer.styles';
+
+// Import modules
+import { GrainModule } from './modules/GrainModule';
+import { ColorGradingModule } from './modules/ColorGradingModule';
+import { LensEffectsModule } from './modules/LensEffectsModule';
+import { ManualExposureModule } from './modules/ManualExposureModule';
+import { LanguageModule } from './modules/LanguageModule';
+import { DebugModule } from './modules/DebugModule';
 
 export const FooterParameters = () => {
-  const {
-    activeModule,
-    activeParameter,
-    setActiveParameter,
-    grainIntensity,
-    saturation,
-    contrast,
-    chromaticAberration,
-    isDebugEnabled,
-    iso,
-    ev,
-    shutterSpeed,
-    whiteBalance,
-    isoAuto,
-    shutterSpeedAuto,
-    whiteBalanceAuto,
-    evAuto,
-    setGrainIntensity,
-    setSaturation,
-    setContrast,
-    setChromaticAberration,
-    setIso,
-    setEv,
-    setShutterSpeed,
-    setWhiteBalance,
-    setIsoAuto,
-    setShutterSpeedAuto,
-    setWhiteBalanceAuto,
-    setEvAuto,
-    setIsDebugEnabled,
-    resetTool,
-  } = useCameraEffectsStore(useShallow(state => ({
+  const uiStore = useUIStore(useShallow(state => ({
     activeModule: state.activeModule,
     activeParameter: state.activeParameter,
     setActiveParameter: state.setActiveParameter,
+    isDebugEnabled: state.isDebugEnabled,
+    setIsDebugEnabled: state.setIsDebugEnabled,
+  })));
+
+  const cameraStore = useCameraEffectsStore(useShallow(state => ({
     grainIntensity: state.grainIntensity,
     saturation: state.saturation,
     contrast: state.contrast,
@@ -56,7 +38,6 @@ export const FooterParameters = () => {
     shutterSpeedAuto: state.shutterSpeedAuto,
     whiteBalanceAuto: state.whiteBalanceAuto,
     evAuto: state.evAuto,
-    isDebugEnabled: state.isDebugEnabled,
     setGrainIntensity: state.setGrainIntensity,
     setSaturation: state.setSaturation,
     setContrast: state.setContrast,
@@ -69,197 +50,93 @@ export const FooterParameters = () => {
     setShutterSpeedAuto: state.setShutterSpeedAuto,
     setWhiteBalanceAuto: state.setWhiteBalanceAuto,
     setEvAuto: state.setEvAuto,
-    setIsDebugEnabled: state.setIsDebugEnabled,
     resetTool: state.resetTool,
   })));
 
-  const { t, i18n } = useTranslation();
-  const { handlePressWithDouble } = useDoublePress(resetTool);
+  const { t } = useTranslation();
+  const { handlePressWithDouble } = useDoublePress(cameraStore.resetTool);
+
+  const renderModule = () => {
+    switch (uiStore.activeModule) {
+      case 'grain':
+        return (
+          <GrainModule
+            activeParameter={uiStore.activeParameter}
+            setActiveParameter={uiStore.setActiveParameter}
+            grainIntensity={cameraStore.grainIntensity}
+            setGrainIntensity={cameraStore.setGrainIntensity}
+            handlePressWithDouble={handlePressWithDouble}
+          />
+        );
+      case 'color_grading':
+        return (
+          <ColorGradingModule
+            activeParameter={uiStore.activeParameter}
+            setActiveParameter={uiStore.setActiveParameter}
+            saturation={cameraStore.saturation}
+            setSaturation={cameraStore.setSaturation}
+            contrast={cameraStore.contrast}
+            setContrast={cameraStore.setContrast}
+            handlePressWithDouble={handlePressWithDouble}
+          />
+        );
+      case 'lens_effects':
+        return (
+          <LensEffectsModule
+            activeParameter={uiStore.activeParameter}
+            setActiveParameter={uiStore.setActiveParameter}
+            chromaticAberration={cameraStore.chromaticAberration}
+            setChromaticAberration={cameraStore.setChromaticAberration}
+            handlePressWithDouble={handlePressWithDouble}
+          />
+        );
+      case 'manual_exposure':
+        return (
+          <ManualExposureModule
+            activeParameter={uiStore.activeParameter}
+            setActiveParameter={uiStore.setActiveParameter}
+            iso={cameraStore.iso}
+            setIso={cameraStore.setIso}
+            isoAuto={cameraStore.isoAuto}
+            setIsoAuto={cameraStore.setIsoAuto}
+            ev={cameraStore.ev}
+            setEv={cameraStore.setEv}
+            evAuto={cameraStore.evAuto}
+            setEvAuto={cameraStore.setEvAuto}
+            shutterSpeed={cameraStore.shutterSpeed}
+            setShutterSpeed={cameraStore.setShutterSpeed}
+            shutterSpeedAuto={cameraStore.shutterSpeedAuto}
+            setShutterSpeedAuto={cameraStore.setShutterSpeedAuto}
+            whiteBalance={cameraStore.whiteBalance}
+            setWhiteBalance={cameraStore.setWhiteBalance}
+            whiteBalanceAuto={cameraStore.whiteBalanceAuto}
+            setWhiteBalanceAuto={cameraStore.setWhiteBalanceAuto}
+            handlePressWithDouble={handlePressWithDouble}
+          />
+        );
+      case 'language':
+        return <LanguageModule />;
+      case 'debug':
+        return (
+          <DebugModule
+            isDebugEnabled={uiStore.isDebugEnabled}
+            setIsDebugEnabled={uiStore.setIsDebugEnabled}
+          />
+        );
+      case 'none':
+        return null;
+      default:
+        return (
+          <Animated.View style={footerStyles.tabContent}>
+            <Text style={footerStyles.infoText}>{t('footer.coming_soon')}</Text>
+          </Animated.View>
+        );
+    }
+  };
 
   return (
-    <View style={styles.tabContentWrapper}>
-      {activeModule === 'grain' && (
-        <Animated.View style={styles.tabContent}>
-          <FooterParameterControl
-            label={t('parameters.amount')}
-            isActive={activeParameter === 'grain'}
-            onPress={() => handlePressWithDouble('grain', () => setActiveParameter('grain'))}
-            value={grainIntensity}
-            maxValue={1.0}
-            onChange={setGrainIntensity}
-            icon="water-outline"
-          />
-        </Animated.View>
-      )}
-
-      {activeModule === 'color_grading' && (
-        <Animated.View style={styles.tabContent}>
-          <View style={styles.imageToolsContainer}>
-            <FooterParameterControl
-              label={t('parameters.saturation')}
-              isActive={activeParameter === 'saturation'}
-              onPress={() => handlePressWithDouble('saturation', () => setActiveParameter('saturation'))}
-              value={saturation}
-              maxValue={2.0}
-              onChange={setSaturation}
-              icon="color-filter-outline"
-            />
-            <FooterParameterControl
-              label={t('parameters.contrast')}
-              isActive={activeParameter === 'contrast'}
-              onPress={() => handlePressWithDouble('contrast', () => setActiveParameter('contrast'))}
-              value={contrast}
-              maxValue={2.0}
-              onChange={setContrast}
-              icon="contrast-outline"
-            />
-          </View>
-        </Animated.View>
-      )}
-
-      {activeModule === 'lens_effects' && (
-        <Animated.View style={styles.tabContent}>
-          <FooterParameterControl
-            label={t('parameters.phase_shift')}
-            isActive={activeParameter === 'chromatic_aberration'}
-            onPress={() => handlePressWithDouble('chromatic_aberration', () => setActiveParameter('chromatic_aberration'))}
-            value={chromaticAberration}
-            maxValue={2.0}
-            onChange={setChromaticAberration}
-            icon="aperture-outline"
-          />
-        </Animated.View>
-      )}
-
-      {activeModule === 'language' && (
-        <Animated.View style={styles.tabContent}>
-          <View style={styles.imageToolsContainer}>
-            <LanguageThumb
-              label="English"
-              languageCode="en"
-              isActive={i18n.language === 'en' || i18n.language.startsWith('en')}
-              onPress={() => i18n.changeLanguage('en')}
-            />
-            <LanguageThumb
-              label="Italiano"
-              languageCode="it"
-              isActive={i18n.language === 'it' || i18n.language.startsWith('it')}
-              onPress={() => i18n.changeLanguage('it')}
-            />
-          </View>
-        </Animated.View>
-      )}
-
-      {activeModule === 'debug' && (
-        <Animated.View style={styles.tabContent}>
-          <View style={styles.imageToolsContainer}>
-            <DebugThumb
-              label={t('modules.debug')}
-              isActive={isDebugEnabled}
-              onPress={() => setIsDebugEnabled(!isDebugEnabled)}
-            />
-          </View>
-        </Animated.View>
-      )}
-      
-      {activeModule === 'manual_exposure' && (
-        <Animated.View style={styles.tabContent}>
-          <View style={styles.imageToolsContainer}>
-            <FooterParameterControl
-              label={t('parameters.iso')}
-              isActive={activeParameter === 'iso'}
-              onPress={() => handlePressWithDouble('iso', () => setActiveParameter('iso'))}
-              value={iso}
-              minValue={50}
-              maxValue={3200}
-              onChange={setIso}
-              variant="text"
-              isAuto={isoAuto}
-              onLongPress={() => setIsoAuto(true)}
-            />
-            <FooterParameterControl
-              label={t('parameters.ev')}
-              isActive={activeParameter === 'ev'}
-              onPress={() => handlePressWithDouble('ev', () => setActiveParameter('ev'))}
-              value={ev}
-              minValue={-2.0}
-              maxValue={2.0}
-              onChange={setEv}
-              variant="text"
-              isAuto={evAuto}
-              onLongPress={() => setEvAuto(true)}
-              valueFormatter={(v) => {
-                'worklet';
-                return v >= 0 ? `+${v.toFixed(1)}` : v.toFixed(1);
-              }}
-            />
-            <FooterParameterControl
-              label={t('parameters.shutter_speed')}
-              isActive={activeParameter === 'shutter_speed'}
-              onPress={() => handlePressWithDouble('shutter_speed', () => setActiveParameter('shutter_speed'))}
-              value={shutterSpeed}
-              minValue={1}
-              maxValue={1000}
-              onChange={setShutterSpeed}
-              variant="text"
-              isAuto={shutterSpeedAuto}
-              onLongPress={() => setShutterSpeedAuto(true)}
-              valueFormatter={(v) => {
-                'worklet';
-                return `1/${Math.round(v)}`;
-              }}
-            />
-            <FooterParameterControl
-              label={t('parameters.white_balance')}
-              isActive={activeParameter === 'white_balance'}
-              onPress={() => handlePressWithDouble('white_balance', () => setActiveParameter('white_balance'))}
-              value={whiteBalance}
-              minValue={2000}
-              maxValue={10000}
-              onChange={setWhiteBalance}
-              variant="text"
-              isAuto={whiteBalanceAuto}
-              onLongPress={() => setWhiteBalanceAuto(true)}
-              valueFormatter={(v) => {
-                'worklet';
-                return `${Math.round(v)}K`;
-              }}
-            />
-          </View>
-        </Animated.View>
-      )}
-
-      {activeModule !== 'grain' && activeModule !== 'color_grading' && activeModule !== 'lens_effects' && activeModule !== 'manual_exposure' && activeModule !== 'language' && activeModule !== 'debug' && activeModule !== 'none' && (
-        <Animated.View style={styles.tabContent}>
-          <Text style={styles.infoText}>{t('footer.coming_soon')}</Text>
-        </Animated.View>
-      )}
+    <View style={footerStyles.tabContentWrapper}>
+      {renderModule()}
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  tabContentWrapper: {
-    height: 65,
-    justifyContent: 'center',
-  },
-  tabContent: {
-    alignItems: 'center',
-    width: '100%',
-    justifyContent: 'center',
-    position: 'absolute',
-  },
-  imageToolsContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    width: '100%',
-  },
-  infoText: {
-    color: '#666',
-    fontSize: 10,
-    fontWeight: '800',
-    letterSpacing: 2,
-    textAlign: 'center',
-  },
-});

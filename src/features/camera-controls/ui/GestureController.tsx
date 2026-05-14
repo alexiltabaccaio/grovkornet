@@ -5,11 +5,17 @@ import { GestureDetector, Gesture } from 'react-native-gesture-handler';
 
 import { useShallow } from 'zustand/react/shallow';
 import { useCameraEffectsStore } from '../model/useCameraEffectsStore';
+import { useUIStore } from '../model/useUIStore';
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 const SLIDER_HEIGHT = SCREEN_HEIGHT * 0.3;
 
 export const GestureController = () => {
+  const { activeModule, activeParameter } = useUIStore(useShallow(state => ({
+    activeModule: state.activeModule,
+    activeParameter: state.activeParameter,
+  })));
+
   const {
     grainIntensity,
     saturation,
@@ -19,8 +25,6 @@ export const GestureController = () => {
     setSaturation,
     setContrast,
     setChromaticAberration,
-    activeModule,
-    activeParameter,
     iso,
     ev,
     shutterSpeed,
@@ -38,8 +42,6 @@ export const GestureController = () => {
     setSaturation: state.setSaturation,
     setContrast: state.setContrast,
     setChromaticAberration: state.setChromaticAberration,
-    activeModule: state.activeModule,
-    activeParameter: state.activeParameter,
     iso: state.iso,
     ev: state.ev,
     shutterSpeed: state.shutterSpeed,

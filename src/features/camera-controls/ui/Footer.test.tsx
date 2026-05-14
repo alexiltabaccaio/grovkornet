@@ -3,6 +3,8 @@ import { render } from '@testing-library/react-native';
 import { Footer } from './Footer';
 
 import { useCameraEffectsStore } from '../model/useCameraEffectsStore';
+import { useUIStore } from '../model/useUIStore';
+import { TabType, ModuleType, ParameterType } from '@shared/types/camera';
 
 // Mocks for icons and Skia (which often cause issues in node tests)
 jest.mock('react-native-reanimated', () => {
@@ -57,14 +59,23 @@ jest.mock('../model/useCameraEffectsStore', () => ({
   useCameraEffectsStore: jest.fn()
 }));
 
+jest.mock('../model/useUIStore', () => ({
+  useUIStore: jest.fn()
+}));
+
 describe('Footer Component Stability Test', () => {
-  const mockStoreValue = {
-    activeTab: 'none',
+  const mockUIStoreValue = {
+    activeTab: 'none' as TabType,
+    activeModule: 'none' as ModuleType,
+    activeParameter: 'none' as ParameterType,
+    isDebugEnabled: false,
     setActiveTab: jest.fn(),
-    activeModule: 'none',
     setActiveModule: jest.fn(),
-    activeParameter: 'none',
     setActiveParameter: jest.fn(),
+    setIsDebugEnabled: jest.fn(),
+  };
+
+  const mockCameraStoreValue = {
     grainIntensity: { value: 0.5 },
     saturation: { value: 1.0 },
     contrast: { value: 1.0 },
@@ -74,12 +85,11 @@ describe('Footer Component Stability Test', () => {
     setContrast: jest.fn(),
     setChromaticAberration: jest.fn(),
     resetTool: jest.fn(),
-    isDebugEnabled: false,
-    setIsDebugEnabled: jest.fn(),
   };
 
   beforeEach(() => {
-    (useCameraEffectsStore as unknown as jest.Mock).mockReturnValue(mockStoreValue);
+    (useUIStore as unknown as jest.Mock).mockReturnValue(mockUIStoreValue);
+    (useCameraEffectsStore as unknown as jest.Mock).mockReturnValue(mockCameraStoreValue);
   });
 
   it('should render correctly in default state', () => {
@@ -88,8 +98,8 @@ describe('Footer Component Stability Test', () => {
   });
 
   it('should render correctly when color tab is active', () => {
-    (useCameraEffectsStore as unknown as jest.Mock).mockReturnValue({
-      ...mockStoreValue,
+    (useUIStore as unknown as jest.Mock).mockReturnValue({
+      ...mockUIStoreValue,
       activeTab: 'color',
       activeModule: 'color_grading',
     });
@@ -98,8 +108,8 @@ describe('Footer Component Stability Test', () => {
   });
 
   it('should render correctly when tape tab is active', () => {
-    (useCameraEffectsStore as unknown as jest.Mock).mockReturnValue({
-      ...mockStoreValue,
+    (useUIStore as unknown as jest.Mock).mockReturnValue({
+      ...mockUIStoreValue,
       activeTab: 'tape',
       activeModule: 'grain',
     });

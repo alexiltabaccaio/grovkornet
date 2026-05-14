@@ -4,8 +4,7 @@ import { StyleSheet, Text, View, AppState, AppStateStatus, PermissionsAndroid, P
 import { useTranslation } from 'react-i18next';
 
 import { useShallow } from 'zustand/react/shallow';
-import { useCameraEffectsStore, GestureController, Footer, DebugOverlay } from '@features/camera-controls';
-import { NativeFilmCamera } from '@entities/camera/ui/NativeFilmCamera';
+import { useUIStore, GestureController, Footer, DebugOverlay, ConnectedFilmCamera } from '@features/camera-controls';
 
 
 export const CameraScreen = () => {
@@ -16,21 +15,8 @@ export const CameraScreen = () => {
 
 const CameraScreenContent = () => {
   const { t } = useTranslation();
-  const { isDebugEnabled, saturation, contrast, chromaticAberration, grainIntensity, grainEnabled, iso, ev, shutterSpeed, whiteBalance, isoAuto, shutterSpeedAuto, whiteBalanceAuto, setDebugInfo } = useCameraEffectsStore(useShallow(state => ({
+  const { isDebugEnabled } = useUIStore(useShallow(state => ({
     isDebugEnabled: state.isDebugEnabled,
-    saturation: state.saturation,
-    contrast: state.contrast,
-    chromaticAberration: state.chromaticAberration,
-    grainIntensity: state.grainIntensity,
-    grainEnabled: state.grainEnabled,
-    iso: state.iso,
-    ev: state.ev,
-    shutterSpeed: state.shutterSpeed,
-    whiteBalance: state.whiteBalance,
-    isoAuto: state.isoAuto,
-    shutterSpeedAuto: state.shutterSpeedAuto,
-    whiteBalanceAuto: state.whiteBalanceAuto,
-    setDebugInfo: state.setDebugInfo,
   })));
 
   const [cameraKey, setCameraKey] = useState(0);
@@ -72,33 +58,7 @@ const CameraScreenContent = () => {
 
   return (
     <View style={styles.container}>
-      <NativeFilmCamera
-        key={`camera-${cameraKey}`}
-        style={StyleSheet.absoluteFill}
-        saturation={saturation}
-        contrast={contrast}
-        chromaticAberration={chromaticAberration}
-        grainIntensity={grainIntensity}
-        grainEnabled={grainEnabled}
-        iso={iso}
-        exposureTime={shutterSpeed}
-        ev={ev}
-        whiteBalance={whiteBalance}
-        isoAuto={isoAuto}
-        shutterSpeedAuto={shutterSpeedAuto}
-        whiteBalanceAuto={whiteBalanceAuto}
-        onDebugUpdate={(event: { nativeEvent: { fps: number; resolution: string } }) => {
-          if (event.nativeEvent) {
-            setDebugInfo(event.nativeEvent.fps, event.nativeEvent.resolution);
-          }
-        }}
-        onExposureUpdate={(event: { nativeEvent: { iso: number; shutterSpeed: number } }) => {
-          if (event.nativeEvent) {
-            if (isoAuto.value) iso.value = event.nativeEvent.iso;
-            if (shutterSpeedAuto.value) shutterSpeed.value = event.nativeEvent.shutterSpeed;
-          }
-        }}
-      />
+      <ConnectedFilmCamera cameraKey={cameraKey} />
 
       <GestureController />
 

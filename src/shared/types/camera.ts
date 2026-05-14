@@ -10,7 +10,6 @@ interface EffectSharedValues {
   contrast: SharedValue<number>;
   chromaticAberration: SharedValue<number>;
   grainEnabled: SharedValue<boolean>;
-  isDebugEnabled: boolean;
   fps: SharedValue<number>;
   resolution: SharedValue<string>;
   iso: SharedValue<number>;
@@ -29,7 +28,6 @@ interface EffectHandlers {
   setContrast: (value: number) => void;
   setChromaticAberration: (value: number) => void;
   setGrainEnabled: (value: boolean) => void;
-  setIsDebugEnabled: (value: boolean) => void;
   resetTool: (tool: 'grain' | ParameterType) => void;
   setDebugInfo: (fps: number, resolution: string) => void;
   setIso: (value: number) => void;
@@ -42,11 +40,19 @@ interface EffectHandlers {
   setEvAuto: (value: boolean) => void;
 }
 
-export interface CameraEffectState extends EffectSharedValues, EffectHandlers {
+export interface UIState {
   activeTab: TabType;
-  setActiveTab: (tab: TabType) => void;
   activeModule: ModuleType;
-  setActiveModule: (module: ModuleType) => void;
   activeParameter: ParameterType;
-  setActiveParameter: (tool: ParameterType) => void;
+  isDebugEnabled: boolean;
+  lastActiveParameters: Record<ModuleType, ParameterType>;
 }
+
+export interface UIActions {
+  setActiveTab: (tab: TabType) => void;
+  setActiveModule: (module: ModuleType) => void;
+  setActiveParameter: (param: ParameterType) => void;
+  setIsDebugEnabled: (enabled: boolean) => void;
+}
+
+export interface CameraState extends EffectSharedValues, EffectHandlers {}
