@@ -2,6 +2,9 @@ import tsPlugin from '@typescript-eslint/eslint-plugin';
 import tsParser from '@typescript-eslint/parser';
 import importPlugin from 'eslint-plugin-import';
 import unusedImports from 'eslint-plugin-unused-imports';
+import reactPlugin from 'eslint-plugin-react';
+import reactHooksPlugin from 'eslint-plugin-react-hooks';
+import reactNativePlugin from 'eslint-plugin-react-native';
 
 export default [
   {
@@ -13,16 +16,26 @@ export default [
       '@typescript-eslint': tsPlugin,
       'import': importPlugin,
       'unused-imports': unusedImports,
+      'react': reactPlugin,
+      'react-hooks': reactHooksPlugin,
+      'react-native': reactNativePlugin,
     },
     languageOptions: {
       parser: tsParser,
       parserOptions: {
+        project: './tsconfig.json',
         ecmaVersion: 'latest',
         sourceType: 'module',
+        ecmaFeatures: {
+          jsx: true,
+        },
       },
     },
     rules: {
       ...tsPlugin.configs.recommended.rules,
+      ...tsPlugin.configs['recommended-requiring-type-checking'].rules,
+      ...reactPlugin.configs.recommended.rules,
+      ...reactHooksPlugin.configs.recommended.rules,
       '@typescript-eslint/no-explicit-any': 'error',
       '@typescript-eslint/no-unused-vars': 'off',
       'unused-imports/no-unused-imports': 'error',
@@ -36,9 +49,16 @@ export default [
         },
       ],
       'no-console': ['warn', { allow: ['warn', 'error'] }],
-      // 'import/no-relative-parent-imports': 'error', // Temporarily disabled due to false positives with @ alias
+      'eqeqeq': ['error', 'always'],
+      'react/react-in-jsx-scope': 'off', // Not needed in modern React
+      'react/prop-types': 'off', // We use TypeScript
+      'react-native/no-unused-styles': 'warn',
+      'react-native/no-single-element-style-arrays': 'warn',
     },
     settings: {
+      react: {
+        version: 'detect',
+      },
       'import/resolver': {
         typescript: {
           alwaysTryTypes: true,

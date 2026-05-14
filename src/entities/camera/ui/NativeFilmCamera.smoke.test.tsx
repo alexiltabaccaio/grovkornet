@@ -12,7 +12,6 @@ describe('NativeFilmCamera', () => {
       chromaticAberration: 0.2,
     };
 
-    // @ts-expect-error - testing render of native component bridge
     const { toJSON } = render(<NativeFilmCamera {...mockProps} />);
     expect(toJSON()).toBeDefined();
   });
