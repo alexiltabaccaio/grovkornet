@@ -22,6 +22,8 @@ export const useCameraWorklets = (
   evAuto: SharedValue<boolean>,
   shutterSpeedAuto: SharedValue<boolean>,
   whiteBalanceAuto: SharedValue<boolean>,
+  focusDistance: SharedValue<number>,
+  focusAuto: SharedValue<boolean>,
 ) => {
   /**
    * Updates the grain intensity and automatically toggles the enabled state.
@@ -83,6 +85,12 @@ export const useCameraWorklets = (
     updateSharedValue(whiteBalanceAuto, false);
   };
 
+  const updateFocusDistance = (value: number) => {
+    'worklet';
+    updateSharedValue(focusDistance, value);
+    updateSharedValue(focusAuto, false);
+  };
+
   return {
     updateGrain,
     updateGrainChroma,
@@ -94,6 +102,7 @@ export const useCameraWorklets = (
     updateEv,
     updateShutterSpeed,
     updateWhiteBalance,
+    updateFocusDistance,
   };
 };
 

@@ -13,8 +13,7 @@ const SLIDER_HEIGHT = SCREEN_HEIGHT * 0.3;
 import { useCameraWorklets } from '../lib/useCameraWorklets';
 
 export const GestureController = () => {
-  const { activeModule, activeParameter } = useUIStore(useShallow(state => ({
-    activeModule: state.activeModule,
+  const { activeParameter } = useUIStore(useShallow(state => ({
     activeParameter: state.activeParameter,
   })));
 
@@ -34,6 +33,8 @@ export const GestureController = () => {
     evAuto,
     shutterSpeedAuto,
     whiteBalanceAuto,
+    focusDistance,
+    focusAuto,
   } = useCameraEffectsStore(useShallow(state => ({
     grainIntensity: state.grainIntensity,
     grainChroma: state.grainChroma,
@@ -50,6 +51,8 @@ export const GestureController = () => {
     evAuto: state.evAuto,
     shutterSpeedAuto: state.shutterSpeedAuto,
     whiteBalanceAuto: state.whiteBalanceAuto,
+    focusDistance: state.focusDistance,
+    focusAuto: state.focusAuto,
   })));
 
   const {
@@ -63,6 +66,7 @@ export const GestureController = () => {
     updateEv,
     updateShutterSpeed,
     updateWhiteBalance,
+    updateFocusDistance,
   } = useCameraWorklets(
     grainIntensity,
     grainChroma,
@@ -79,77 +83,94 @@ export const GestureController = () => {
     evAuto,
     shutterSpeedAuto,
     whiteBalanceAuto,
+    focusDistance,
+    focusAuto,
   );
 
   const startVal = useSharedValue(0);
 
   const gesture = Gesture.Pan()
     .onStart(() => {
-      if (activeModule === 'grain' && activeParameter === 'grain') {
-        startVal.value = grainIntensity.value;
-      } else if (activeModule === 'grain' && activeParameter === 'grain_size') {
-        startVal.value = (grainSize.value - 1.0) / (4.0 - 1.0);
-      } else if (activeModule === 'color_grading' && activeParameter === 'saturation') {
-        startVal.value = saturation.value / 2.0;
-      } else if (activeModule === 'color_grading' && activeParameter === 'contrast') {
-        startVal.value = contrast.value / 2.0;
-      } else if (activeModule === 'lens_effects' && activeParameter === 'chromatic_aberration') {
-        startVal.value = chromaticAberration.value / 2.0;
-      } else if (activeModule === 'manual_exposure') {
-        if (activeParameter === 'iso') {
+      switch (activeParameter) {
+        case 'grain':
+          startVal.value = grainIntensity.value;
+          break;
+        case 'grain_size':
+          startVal.value = (grainSize.value - 1.0) / (4.0 - 1.0);
+          break;
+        case 'saturation':
+          startVal.value = saturation.value / 2.0;
+          break;
+        case 'contrast':
+          startVal.value = contrast.value / 2.0;
+          break;
+        case 'chromatic_aberration':
+          startVal.value = chromaticAberration.value / 2.0;
+          break;
+        case 'iso':
           startVal.value = (iso.value - 50) / (3200 - 50);
-        } else if (activeParameter === 'ev') {
+          break;
+        case 'ev':
           startVal.value = (ev.value - (-2.0)) / (2.0 - (-2.0));
-        } else if (activeParameter === 'shutter_speed') {
+          break;
+        case 'shutter_speed':
           startVal.value = (shutterSpeed.value - 1) / (1000 - 1);
-        } else if (activeParameter === 'white_balance') {
+          break;
+        case 'white_balance':
           startVal.value = (whiteBalance.value - 2000) / (10000 - 2000);
-        } else {
+          break;
+        case 'focus':
+          startVal.value = focusDistance.value / 10.0;
+          break;
+        default:
           startVal.value = -1;
-        }
-      } else {
-        startVal.value = -1; // Indicate nothing is selected
       }
     })
     .onUpdate((e) => {
-      if (startVal.value === -1) return; // Do nothing if no parameter selected
+      if (startVal.value === -1) return;
 
-      const delta = -(e.translationY / SLIDER_HEIGHT);
+      let delta = -(e.translationY / SLIDER_HEIGHT);
+      if (activeParameter === 'focus') {
+        delta = -delta;
+      }
+      
       const normalizedValue = Math.min(Math.max(startVal.value + delta, 0), 1);
       
-      if (activeModule === 'grain' && activeParameter === 'grain') {
-        updateGrain(normalizedValue);
-      } else if (activeModule === 'grain' && activeParameter === 'grain_size') {
-        const val = 1.0 + normalizedValue * (4.0 - 1.0);
-        updateGrainSize(val);
-      } else if (activeModule === 'color_grading') {
-        const scaledValue = normalizedValue * 2.0;
-        if (activeParameter === 'saturation') {
-          updateSaturation(scaledValue);
-        } else if (activeParameter === 'contrast') {
-          updateContrast(scaledValue);
-        }
-      } else if (activeModule === 'lens_effects' && activeParameter === 'chromatic_aberration') {
-        const scaledValue = normalizedValue * 2.0;
-        updateChromaticAberration(scaledValue);
-      } else if (activeModule === 'manual_exposure') {
-        if (activeParameter === 'iso') {
-          const val = 50 + normalizedValue * (3200 - 50);
-          updateIso(val);
-        } else if (activeParameter === 'ev') {
-          const val = -2.0 + normalizedValue * (2.0 - (-2.0));
-          updateEv(val);
-        } else if (activeParameter === 'shutter_speed') {
-          const val = 1 + normalizedValue * (1000 - 1);
-          updateShutterSpeed(val);
-        } else if (activeParameter === 'white_balance') {
-          const val = 2000 + normalizedValue * (10000 - 2000);
-          updateWhiteBalance(val);
-        }
+      switch (activeParameter) {
+        case 'grain':
+          updateGrain(normalizedValue);
+          break;
+        case 'grain_size':
+          updateGrainSize(1.0 + normalizedValue * (4.0 - 1.0));
+          break;
+        case 'saturation':
+          updateSaturation(normalizedValue * 2.0);
+          break;
+        case 'contrast':
+          updateContrast(normalizedValue * 2.0);
+          break;
+        case 'chromatic_aberration':
+          updateChromaticAberration(normalizedValue * 2.0);
+          break;
+        case 'iso':
+          updateIso(50 + normalizedValue * (3200 - 50));
+          break;
+        case 'ev':
+          updateEv(-2.0 + normalizedValue * (2.0 - (-2.0)));
+          break;
+        case 'shutter_speed':
+          updateShutterSpeed(1 + normalizedValue * (1000 - 1));
+          break;
+        case 'white_balance':
+          updateWhiteBalance(2000 + normalizedValue * (10000 - 2000));
+          break;
+        case 'focus':
+          updateFocusDistance(normalizedValue * 10.0);
+          break;
       }
     });
 
-  if (activeModule !== 'grain' && activeModule !== 'color_grading' && activeModule !== 'lens_effects' && activeModule !== 'manual_exposure') {
+  if (!activeParameter || activeParameter === 'none' || activeParameter === 'lens') {
     return null;
   }
 

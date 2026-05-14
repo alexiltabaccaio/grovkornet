@@ -10,7 +10,13 @@ import { footerStyles } from '../Footer.styles';
 const formatFocus = (v: number) => {
   'worklet';
   if (v <= 0.1) return '∞';
-  return `${v.toFixed(1)}`;
+  
+  const distanceInMeters = 1 / v;
+  if (distanceInMeters >= 1) {
+    return `${distanceInMeters.toFixed(1)}m`;
+  } else {
+    return `${(distanceInMeters * 100).toFixed(0)}cm`;
+  }
 };
 
 interface FocusModuleProps {
@@ -49,6 +55,7 @@ export const FocusModule = ({
           isAuto={focusAuto}
           onLongPress={() => setFocusAuto(true)}
           valueFormatter={formatFocus}
+          invertDrag={true}
         />
       </View>
     </Animated.View>

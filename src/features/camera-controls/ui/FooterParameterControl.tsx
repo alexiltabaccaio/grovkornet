@@ -24,6 +24,7 @@ interface FooterParameterControlProps {
   isAuto?: SharedValue<boolean>;
   onLongPress?: () => void;
   staticText?: string;
+  invertDrag?: boolean;
 }
 
 import { updateSharedValue } from '@shared/lib/reanimated/safeUpdate';
@@ -42,6 +43,7 @@ export const FooterParameterControl = ({
   isAuto,
   onLongPress,
   staticText,
+  invertDrag = false,
 }: FooterParameterControlProps) => {
   const startVal = useSharedValue(minValue);
   const isDebugEnabled = useUIStore((s) => s.isDebugEnabled);
@@ -64,7 +66,8 @@ export const FooterParameterControl = ({
       if (!value) return;
       const THUMB_SENSITIVITY = 150;
       const range = maxValue - minValue;
-      const delta = -(e.translationY / THUMB_SENSITIVITY) * range;
+      const direction = invertDrag ? -1 : 1;
+      const delta = -(e.translationY / THUMB_SENSITIVITY) * range * direction;
       const newValue = Math.min(Math.max(startVal.value + delta, minValue), maxValue);
       
       updateSharedValue(value, newValue);
@@ -163,7 +166,6 @@ export const FooterParameterControl = ({
             />
           ) : staticText ? (
             <Text 
-              pointerEvents="none"
               style={[
               styles.valueText, 
               variant === 'text' && styles.valueTextLarge,
