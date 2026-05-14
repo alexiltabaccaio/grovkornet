@@ -1,11 +1,11 @@
 import React from 'react';
 import { StyleSheet, Text, View, Pressable } from 'react-native';
-import { Image } from 'react-native';
+import { Image, ImageSourcePropType } from 'react-native';
 
 // eslint-disable-next-line @typescript-eslint/no-require-imports
-const enFlag = require('../../../assets/flags/en.png');
+const enFlag = require('../../../assets/flags/en.png') as ImageSourcePropType;
 // eslint-disable-next-line @typescript-eslint/no-require-imports
-const itFlag = require('../../../assets/flags/it.png');
+const itFlag = require('../../../assets/flags/it.png') as ImageSourcePropType;
 
 interface LanguageThumbProps {
   label: string;

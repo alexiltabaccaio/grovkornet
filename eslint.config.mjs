@@ -93,5 +93,16 @@ export default [
         ]
       }],
     }
-  }
+  },
+  // --- TEST FILES: RELAXED TYPE CHECKING FOR MOCKS ---
+  {
+    files: ['**/*.test.{ts,tsx}', '**/__tests__/**', 'jest.setup.ts', '**/__mocks__/**'],
+    rules: {
+      '@typescript-eslint/no-unsafe-assignment': 'warn',
+      '@typescript-eslint/no-unsafe-member-access': 'warn',
+      '@typescript-eslint/no-unsafe-call': 'warn',
+      '@typescript-eslint/no-unsafe-return': 'warn',
+      '@typescript-eslint/no-explicit-any': 'warn',
+    },
+  },
 ];

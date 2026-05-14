@@ -15,13 +15,21 @@ export const LanguageModule = () => {
           label="English"
           languageCode="en"
           isActive={i18n.language === 'en' || i18n.language.startsWith('en')}
-          onPress={() => i18n.changeLanguage('en')}
+          onPress={() => {
+            void i18n.changeLanguage('en').catch(error => {
+              console.error('Failed to change language to en:', error);
+            });
+          }}
         />
         <LanguageThumb
           label="Italiano"
           languageCode="it"
           isActive={i18n.language === 'it' || i18n.language.startsWith('it')}
-          onPress={() => i18n.changeLanguage('it')}
+          onPress={() => {
+            void i18n.changeLanguage('it').catch(error => {
+              console.error('Failed to change language to it:', error);
+            });
+          }}
         />
       </View>
     </Animated.View>

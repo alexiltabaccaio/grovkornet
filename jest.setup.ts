@@ -4,10 +4,13 @@ import 'react-native-gesture-handler/jestSetup';
 
 // Mock Reanimated
 jest.mock('react-native-reanimated', () => {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   const Reanimated = require('react-native-reanimated/mock');
-  Reanimated.makeMutable = (initialValue: any) => ({
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+  Reanimated.makeMutable = <T>(initialValue: T) => ({
     value: initialValue,
   });
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
   return Reanimated;
 });
 
@@ -43,7 +46,7 @@ jest.mock('react-native', () => {
       RESULTS: { GRANTED: 'granted' },
       PERMISSIONS: { CAMERA: 'android.permission.CAMERA' },
     },
-  }, RN);
+  }, RN as object);
 
   return mockRN;
 });

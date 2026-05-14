@@ -45,7 +45,9 @@ const CameraScreenContent = () => {
         setHasPermission(true);
       }
     };
-    requestPermission();
+    requestPermission().catch(error => {
+      console.error('Camera permission error:', error);
+    });
   }, []);
 
   if (!hasPermission) {

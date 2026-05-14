@@ -22,5 +22,8 @@ i18n
       escapeValue: false, // react already safes from xss
     },
     compatibilityJSON: 'v4',
+  })
+  .catch(error => {
+    console.error('Failed to initialize i18n:', error);
   });
 

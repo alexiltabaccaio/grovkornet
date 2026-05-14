@@ -47,11 +47,11 @@ describe('CameraScreen Integration', () => {
     await waitFor(() => expect(getByText(/parameters\.iso/i)).toBeDefined());
   });
 
-  it('updates camera store when interaction happens', async () => {
+  it('updates camera store when interaction happens', () => {
     const { getByText } = render(<CameraScreen />);
     
     // Switch to exposure tab
-    await act(async () => {
+    act(() => {
       fireEvent.press(getByText(/tabs\.exposure/i));
     });
 

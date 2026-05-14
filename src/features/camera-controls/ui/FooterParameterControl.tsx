@@ -24,6 +24,8 @@ interface FooterParameterControlProps {
   onLongPress?: () => void;
 }
 
+import { updateSharedValue } from '@shared/lib/reanimated/safeUpdate';
+
 export const FooterParameterControl = ({ 
   label, 
   isActive, 
@@ -59,11 +61,12 @@ export const FooterParameterControl = ({
       const range = maxValue - minValue;
       const delta = -(e.translationY / THUMB_SENSITIVITY) * range;
       const newValue = Math.min(Math.max(startVal.value + delta, minValue), maxValue);
-      value.value = newValue;
+      
+      updateSharedValue(value, newValue);
       
       // Handle AUTO mode deactivation natively on UI thread
       if (isAuto && isAuto.value) {
-        isAuto.value = false;
+        updateSharedValue(isAuto, false);
       }
     });
 
@@ -92,6 +95,7 @@ export const FooterParameterControl = ({
     const isShowingValue = renderValue || variant === 'text';
     if (!value || !isShowingValue) return { text: '' };
     const val = valueFormatter ? valueFormatter(value.value) : Math.round(value.value).toString();
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
     return {
       text: val,
       defaultValue: val,

@@ -7,6 +7,8 @@ interface ConnectedFilmCameraProps {
   cameraKey?: number;
 }
 
+import { updateSharedValue } from '@shared/lib/reanimated/safeUpdate';
+
 export const ConnectedFilmCamera = ({ cameraKey }: ConnectedFilmCameraProps) => {
   const store = useCameraEffectsStore();
 
@@ -33,8 +35,12 @@ export const ConnectedFilmCamera = ({ cameraKey }: ConnectedFilmCameraProps) => 
       }}
       onExposureUpdate={(event) => {
         if (event.nativeEvent) {
-          if (store.isoAuto.value) store.iso.value = event.nativeEvent.iso;
-          if (store.shutterSpeedAuto.value) store.shutterSpeed.value = event.nativeEvent.shutterSpeed;
+          if (store.isoAuto.value) {
+            updateSharedValue(store.iso, event.nativeEvent.iso);
+          }
+          if (store.shutterSpeedAuto.value) {
+            updateSharedValue(store.shutterSpeed, event.nativeEvent.shutterSpeed);
+          }
         }
       }}
     />
