@@ -25,9 +25,8 @@ jest.mock('react-native-reanimated', () => {
 });
 
 jest.mock('react-native-gesture-handler', () => {
-  const { View } = jest.requireActual('react-native');
   return {
-    GestureDetector: ({ children }: any) => children,
+    GestureDetector: ({ children }: { children: React.ReactNode }) => children,
     Gesture: {
       Pan: () => ({
         onStart: jest.fn().mockReturnThis(),
@@ -46,7 +45,7 @@ describe('FooterParameterControl', () => {
     label: 'ISO',
     isActive: true,
     onPress: jest.fn(),
-    value: { value: 100 } as any,
+    value: { value: 100 } as unknown as import('react-native-reanimated').SharedValue<number>,
     variant: 'text' as const,
   };
 

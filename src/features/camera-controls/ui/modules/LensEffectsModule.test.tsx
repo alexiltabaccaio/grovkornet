@@ -32,7 +32,7 @@ describe('LensEffectsModule', () => {
   const mockProps = {
     activeParameter: 'chromatic_aberration' as ParameterType,
     setActiveParameter: jest.fn(),
-    chromaticAberration: { value: 0 } as any,
+    chromaticAberration: { value: 0 } as unknown as import('react-native-reanimated').SharedValue<number>,
     setChromaticAberration: jest.fn(),
     handlePressWithDouble: jest.fn(),
   };

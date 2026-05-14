@@ -31,7 +31,6 @@ export const FooterParameterControl = ({
   value,
   minValue = 0,
   maxValue = 1,
-  onChange,
   icon,
   renderValue,
   valueFormatter,
@@ -96,7 +95,7 @@ export const FooterParameterControl = ({
     return {
       text: val,
       defaultValue: val,
-    } as any;
+    } as unknown as Record<string, unknown>;
   });
 
   const animatedTextStyle = useAnimatedStyle(() => {

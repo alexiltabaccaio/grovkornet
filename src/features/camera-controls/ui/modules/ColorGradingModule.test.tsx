@@ -32,9 +32,9 @@ describe('ColorGradingModule', () => {
   const mockProps = {
     activeParameter: 'saturation' as ParameterType,
     setActiveParameter: jest.fn(),
-    saturation: { value: 1.0 } as any,
+    saturation: { value: 1.0 } as unknown as import('react-native-reanimated').SharedValue<number>,
     setSaturation: jest.fn(),
-    contrast: { value: 1.0 } as any,
+    contrast: { value: 1.0 } as unknown as import('react-native-reanimated').SharedValue<number>,
     setContrast: jest.fn(),
     handlePressWithDouble: jest.fn(),
   };
