@@ -247,6 +247,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     width: '100%',
     justifyContent: 'center',
+    position: 'absolute',
   },
   imageToolsContainer: {
     flexDirection: 'row',
