@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { makeMutable } from 'react-native-reanimated';
-import { CameraEffectState, ParameterType, ModuleType } from '@shared/types/camera';
+import { CameraEffectState, ParameterType, ModuleType } from '../../../shared/types/camera';
 import { 
   DEFAULT_GRAIN_INTENSITY, 
   DEFAULT_SATURATION, 
@@ -49,7 +49,10 @@ export const useCameraEffectsStore = create<CameraEffectsStore>((set, get) => ({
   ev: makeMutable(DEFAULT_EV),
   shutterSpeed: makeMutable(DEFAULT_SHUTTER_SPEED),
   whiteBalance: makeMutable(DEFAULT_WHITE_BALANCE),
-  autoExposure: makeMutable(DEFAULT_AUTO_EXPOSURE),
+  isoAuto: makeMutable(true),
+  shutterSpeedAuto: makeMutable(true),
+  whiteBalanceAuto: makeMutable(true),
+  evAuto: makeMutable(true),
 
   // Actions
   setActiveTab: (tab) => set({ activeTab: tab }),
@@ -107,34 +110,47 @@ export const useCameraEffectsStore = create<CameraEffectsStore>((set, get) => ({
 
   setIso: (value) => {
     get().iso.value = value;
-    get().autoExposure.value = false;
+    get().isoAuto.value = false;
   },
 
   setEv: (value) => {
     get().ev.value = value;
-    get().autoExposure.value = false;
+    get().evAuto.value = false;
   },
 
   setShutterSpeed: (value) => {
     get().shutterSpeed.value = value;
-    get().autoExposure.value = false;
+    get().shutterSpeedAuto.value = false;
   },
 
   setWhiteBalance: (value) => {
     get().whiteBalance.value = value;
-    get().autoExposure.value = false;
+    get().whiteBalanceAuto.value = false;
   },
 
-  setAutoExposure: (value) => {
-    get().autoExposure.value = value;
+  setIsoAuto: (value: boolean) => {
+    get().isoAuto.value = value;
+  },
+
+  setShutterSpeedAuto: (value: boolean) => {
+    get().shutterSpeedAuto.value = value;
+  },
+
+  setWhiteBalanceAuto: (value: boolean) => {
+    get().whiteBalanceAuto.value = value;
+  },
+
+  setEvAuto: (value: boolean) => {
+    get().evAuto.value = value;
   },
 
   resetTool: (tool) => {
     const { 
       grainIntensity, saturation, contrast, chromaticAberration,
-      iso, ev, shutterSpeed, whiteBalance, autoExposure,
+      iso, ev, shutterSpeed, whiteBalance,
+      isoAuto, evAuto, shutterSpeedAuto, whiteBalanceAuto,
       setGrainIntensity, setSaturation, setContrast, setChromaticAberration,
-      setIso, setEv, setShutterSpeed, setWhiteBalance, setAutoExposure
+      setIsoAuto, setEvAuto, setShutterSpeedAuto, setWhiteBalanceAuto
     } = get();
 
     if (tool === 'grain') {
@@ -151,18 +167,17 @@ export const useCameraEffectsStore = create<CameraEffectsStore>((set, get) => ({
       setChromaticAberration(DEFAULT_CHROMATIC_ABERRATION);
     } else if (tool === 'iso') {
       iso.value = DEFAULT_ISO;
-      setIso(DEFAULT_ISO);
+      isoAuto.value = true;
     } else if (tool === 'ev') {
       ev.value = DEFAULT_EV;
-      setEv(DEFAULT_EV);
+      evAuto.value = true;
     } else if (tool === 'shutter_speed') {
       shutterSpeed.value = DEFAULT_SHUTTER_SPEED;
-      setShutterSpeed(DEFAULT_SHUTTER_SPEED);
+      shutterSpeedAuto.value = true;
     } else if (tool === 'white_balance') {
       whiteBalance.value = DEFAULT_WHITE_BALANCE;
-      setWhiteBalance(DEFAULT_WHITE_BALANCE);
-      // Optional: non rimettiamo autoExposure=true per ora, per evitare sobbalzi 
-      // se gli altri controlli manuali sono ancora attivi.
+      whiteBalanceAuto.value = true;
     }
   },
 }));
+

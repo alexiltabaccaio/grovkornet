@@ -7,7 +7,9 @@ interface NativeFilmCameraProps extends ViewProps {
   grainIntensity: number | SharedValue<number>;
   grainEnabled: boolean | SharedValue<boolean>;
   chromaticAberration: number | SharedValue<number>;
-  autoExposure?: boolean | SharedValue<boolean>;
+  isoAuto?: boolean | SharedValue<boolean>;
+  shutterSpeedAuto?: boolean | SharedValue<boolean>;
+  whiteBalanceAuto?: boolean | SharedValue<boolean>;
   autoFocus?: boolean | SharedValue<boolean>;
   iso?: number | SharedValue<number>;
   exposureTime?: number | SharedValue<number>;
@@ -15,6 +17,7 @@ interface NativeFilmCameraProps extends ViewProps {
   whiteBalance?: number | SharedValue<number>;
   focusDistance?: number | SharedValue<number>;
   onDebugUpdate?: (event: { nativeEvent: { fps: number; resolution: string } }) => void;
+  onExposureUpdate?: (event: { nativeEvent: { iso: number; shutterSpeed: number } }) => void;
 }
 
 const NativeFilmCameraBase = requireNativeComponent<NativeFilmCameraProps>('NativeFilmCamera');

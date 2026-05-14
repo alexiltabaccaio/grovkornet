@@ -26,6 +26,10 @@ export const Footer = () => {
     ev,
     shutterSpeed,
     whiteBalance,
+    isoAuto,
+    shutterSpeedAuto,
+    whiteBalanceAuto,
+    evAuto,
     setGrainIntensity,
     setSaturation,
     setContrast,
@@ -34,6 +38,10 @@ export const Footer = () => {
     setEv,
     setShutterSpeed,
     setWhiteBalance,
+    setIsoAuto,
+    setShutterSpeedAuto,
+    setWhiteBalanceAuto,
+    setEvAuto,
     setIsDebugEnabled,
     resetTool,
   } = useCameraEffectsStore(useShallow(state => ({
@@ -49,6 +57,10 @@ export const Footer = () => {
     ev: state.ev,
     shutterSpeed: state.shutterSpeed,
     whiteBalance: state.whiteBalance,
+    isoAuto: state.isoAuto,
+    shutterSpeedAuto: state.shutterSpeedAuto,
+    whiteBalanceAuto: state.whiteBalanceAuto,
+    evAuto: state.evAuto,
     isDebugEnabled: state.isDebugEnabled,
     setGrainIntensity: state.setGrainIntensity,
     setSaturation: state.setSaturation,
@@ -58,6 +70,10 @@ export const Footer = () => {
     setEv: state.setEv,
     setShutterSpeed: state.setShutterSpeed,
     setWhiteBalance: state.setWhiteBalance,
+    setIsoAuto: state.setIsoAuto,
+    setShutterSpeedAuto: state.setShutterSpeedAuto,
+    setWhiteBalanceAuto: state.setWhiteBalanceAuto,
+    setEvAuto: state.setEvAuto,
     setIsDebugEnabled: state.setIsDebugEnabled,
     resetTool: state.resetTool,
   })));
@@ -168,7 +184,9 @@ export const Footer = () => {
                     minValue={50}
                     maxValue={3200}
                     onChange={setIso}
-                    icon="flash-outline"
+                    variant="text"
+                    isAuto={isoAuto}
+                    onLongPress={() => setIsoAuto(true)}
                   />
                   <FilterParameterThumb
                     label={t('parameters.ev')}
@@ -178,7 +196,13 @@ export const Footer = () => {
                     minValue={-2.0}
                     maxValue={2.0}
                     onChange={setEv}
-                    icon="sunny-outline"
+                    variant="text"
+                    isAuto={evAuto}
+                    onLongPress={() => setEvAuto(true)}
+                    valueFormatter={(v) => {
+                      'worklet';
+                      return v >= 0 ? `+${v.toFixed(1)}` : v.toFixed(1);
+                    }}
                   />
                   <FilterParameterThumb
                     label={t('parameters.shutter_speed')}
@@ -188,7 +212,13 @@ export const Footer = () => {
                     minValue={1}
                     maxValue={1000}
                     onChange={setShutterSpeed}
-                    icon="timer-outline"
+                    variant="text"
+                    isAuto={shutterSpeedAuto}
+                    onLongPress={() => setShutterSpeedAuto(true)}
+                    valueFormatter={(v) => {
+                      'worklet';
+                      return `1/${Math.round(v)}`;
+                    }}
                   />
                   <FilterParameterThumb
                     label={t('parameters.white_balance')}
@@ -198,7 +228,13 @@ export const Footer = () => {
                     minValue={2000}
                     maxValue={10000}
                     onChange={setWhiteBalance}
-                    icon="thermometer-outline"
+                    variant="text"
+                    isAuto={whiteBalanceAuto}
+                    onLongPress={() => setWhiteBalanceAuto(true)}
+                    valueFormatter={(v) => {
+                      'worklet';
+                      return `${Math.round(v)}K`;
+                    }}
                   />
                 </View>
               </Animated.View>

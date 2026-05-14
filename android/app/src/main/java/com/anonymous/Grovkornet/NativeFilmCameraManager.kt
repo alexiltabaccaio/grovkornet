@@ -14,6 +14,7 @@ class NativeFilmCameraManager : SimpleViewManager<NativeFilmCameraView>() {
     override fun getExportedCustomDirectEventTypeConstants(): MutableMap<String, Any> {
         return MapBuilder.builder<String, Any>()
             .put("onDebugUpdate", MapBuilder.of("registrationName", "onDebugUpdate"))
+            .put("onExposureUpdate", MapBuilder.of("registrationName", "onExposureUpdate"))
             .build()
     }
 
@@ -46,9 +47,19 @@ class NativeFilmCameraManager : SimpleViewManager<NativeFilmCameraView>() {
         view.aberration = aberration
     }
 
-    @ReactProp(name = "autoExposure", defaultBoolean = false)
-    fun setAutoExposure(view: NativeFilmCameraView, autoExposure: Boolean) {
-        view.autoExposure = autoExposure
+    @ReactProp(name = "isoAuto", defaultBoolean = true)
+    fun setIsoAuto(view: NativeFilmCameraView, isoAuto: Boolean) {
+        view.isoAuto = isoAuto
+    }
+
+    @ReactProp(name = "shutterSpeedAuto", defaultBoolean = true)
+    fun setShutterSpeedAuto(view: NativeFilmCameraView, shutterSpeedAuto: Boolean) {
+        view.shutterSpeedAuto = shutterSpeedAuto
+    }
+
+    @ReactProp(name = "whiteBalanceAuto", defaultBoolean = true)
+    fun setWhiteBalanceAuto(view: NativeFilmCameraView, whiteBalanceAuto: Boolean) {
+        view.whiteBalanceAuto = whiteBalanceAuto
     }
 
     @ReactProp(name = "autoFocus", defaultBoolean = false)

@@ -17,7 +17,10 @@ interface EffectSharedValues {
   ev: SharedValue<number>;
   shutterSpeed: SharedValue<number>;
   whiteBalance: SharedValue<number>;
-  autoExposure: SharedValue<boolean>;
+  isoAuto: SharedValue<boolean>;
+  shutterSpeedAuto: SharedValue<boolean>;
+  whiteBalanceAuto: SharedValue<boolean>;
+  evAuto: SharedValue<boolean>;
 }
 
 interface EffectHandlers {
@@ -33,7 +36,10 @@ interface EffectHandlers {
   setEv: (value: number) => void;
   setShutterSpeed: (value: number) => void;
   setWhiteBalance: (value: number) => void;
-  setAutoExposure: (value: boolean) => void;
+  setIsoAuto: (value: boolean) => void;
+  setShutterSpeedAuto: (value: boolean) => void;
+  setWhiteBalanceAuto: (value: boolean) => void;
+  setEvAuto: (value: boolean) => void;
 }
 
 export interface CameraEffectState extends EffectSharedValues, EffectHandlers {

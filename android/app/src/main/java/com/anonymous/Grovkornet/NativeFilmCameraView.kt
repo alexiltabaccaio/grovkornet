@@ -14,6 +14,10 @@ import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.camera2.interop.Camera2CameraControl
 import androidx.camera.camera2.interop.CaptureRequestOptions
 import android.hardware.camera2.CaptureRequest
+import android.hardware.camera2.CameraCaptureSession
+import android.hardware.camera2.CaptureResult
+import android.hardware.camera2.TotalCaptureResult
+import androidx.camera.camera2.interop.Camera2Interop
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ProcessLifecycleOwner
@@ -40,7 +44,11 @@ class NativeFilmCameraView(context: Context) : GLSurfaceView(context), GLSurface
     var whiteBalance: Float = 5000.0f
 
     // Manual Camera Props
-    var autoExposure: Boolean = false
+    var isoAuto: Boolean = true
+        set(value) { field = value; updateCameraControls() }
+    var shutterSpeedAuto: Boolean = true
+        set(value) { field = value; updateCameraControls() }
+    var whiteBalanceAuto: Boolean = true
         set(value) { field = value; updateCameraControls() }
     var autoFocus: Boolean = false
         set(value) { field = value; updateCameraControls() }
@@ -70,6 +78,7 @@ class NativeFilmCameraView(context: Context) : GLSurfaceView(context), GLSurface
 
     private var framesCount = 0
     private var lastLogTime = 0L
+    private var lastExposureUpdateTime = 0L
 
     private val VERTICES = floatArrayOf(
         -1.0f, -1.0f,
@@ -191,9 +200,38 @@ class NativeFilmCameraView(context: Context) : GLSurfaceView(context), GLSurface
         val cameraProviderFuture = ProcessCameraProvider.getInstance(context)
         cameraProviderFuture.addListener({
             val cameraProvider = cameraProviderFuture.get()
-            val preview = Preview.Builder()
+            val previewBuilder = Preview.Builder()
                 .setTargetFrameRate(Range(60, 60))
-                .build().also {
+            
+            // Aggiungi un callback per leggere ISO e Shutter in tempo reale
+            Camera2Interop.Extender(previewBuilder).setSessionCaptureCallback(object : CameraCaptureSession.CaptureCallback() {
+                override fun onCaptureCompleted(session: CameraCaptureSession, request: CaptureRequest, result: TotalCaptureResult) {
+                    val now = System.currentTimeMillis()
+                    // Inviamo l'aggiornamento a JS ~10 volte al secondo per non intasare il bridge
+                    if (now - lastExposureUpdateTime >= 100) {
+                        val currentIso = result.get(CaptureResult.SENSOR_SENSITIVITY) ?: return
+                        val currentShutter = result.get(CaptureResult.SENSOR_EXPOSURE_TIME) ?: return
+                        
+                        // Convertiamo il tempo di esposizione da nanosecondi al denominatore (es. 1/60s)
+                        val shutterDenominator = 1_000_000_000.0 / currentShutter.toDouble()
+
+                        val event = Arguments.createMap().apply {
+                            putInt("iso", currentIso)
+                            putDouble("shutterSpeed", shutterDenominator)
+                        }
+                        
+                        val reactContext = context as? ThemedReactContext
+                        reactContext?.getJSModule(RCTEventEmitter::class.java)?.receiveEvent(
+                            id,
+                            "onExposureUpdate",
+                            event
+                        )
+                        lastExposureUpdateTime = now
+                    }
+                }
+            })
+
+            val preview = previewBuilder.build().also {
                 it.setSurfaceProvider { request ->
                     val st = surfaceTexture
                     if (st != null) {
@@ -235,14 +273,23 @@ class NativeFilmCameraView(context: Context) : GLSurfaceView(context), GLSurface
             // Forza il range FPS a 60 per evitare che il sensore scenda a 30 quando in manuale
             builder.setCaptureRequestOption(CaptureRequest.CONTROL_AE_TARGET_FPS_RANGE, Range(60, 60))
             
-            if (autoExposure) {
+            // Logica per gestire l'auto esposizione parziale
+            if (isoAuto && shutterSpeedAuto) {
                 builder.setCaptureRequestOption(CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_AE_MODE_ON)
-                builder.setCaptureRequestOption(CaptureRequest.CONTROL_AWB_MODE, CaptureRequest.CONTROL_AWB_MODE_AUTO)
+                // Quando in AUTO, usiamo l'EV come compensazione dell'esposizione
+                // Nota: EV qui è un float, Camera2 si aspetta un intero (indici di compensazione)
+                builder.setCaptureRequestOption(CaptureRequest.CONTROL_AE_EXPOSURE_COMPENSATION, ev.toInt())
             } else {
+                // Se uno dei due è manuale, forziamo AE_MODE_OFF
                 builder.setCaptureRequestOption(CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_AE_MODE_OFF)
-                builder.setCaptureRequestOption(CaptureRequest.CONTROL_AWB_MODE, CaptureRequest.CONTROL_AWB_MODE_OFF)
                 builder.setCaptureRequestOption(CaptureRequest.SENSOR_SENSITIVITY, iso)
                 builder.setCaptureRequestOption(CaptureRequest.SENSOR_EXPOSURE_TIME, exposureTime)
+            }
+
+            if (whiteBalanceAuto) {
+                builder.setCaptureRequestOption(CaptureRequest.CONTROL_AWB_MODE, CaptureRequest.CONTROL_AWB_MODE_AUTO)
+            } else {
+                builder.setCaptureRequestOption(CaptureRequest.CONTROL_AWB_MODE, CaptureRequest.CONTROL_AWB_MODE_OFF)
             }
 
             if (autoFocus) {

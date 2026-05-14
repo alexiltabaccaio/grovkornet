@@ -16,7 +16,7 @@ export const CameraScreen = () => {
 
 const CameraScreenContent = () => {
   const { t } = useTranslation();
-  const { isDebugEnabled, saturation, contrast, chromaticAberration, grainIntensity, grainEnabled, iso, ev, shutterSpeed, whiteBalance, autoExposure, setDebugInfo } = useCameraEffectsStore(useShallow(state => ({
+  const { isDebugEnabled, saturation, contrast, chromaticAberration, grainIntensity, grainEnabled, iso, ev, shutterSpeed, whiteBalance, isoAuto, shutterSpeedAuto, whiteBalanceAuto, setDebugInfo } = useCameraEffectsStore(useShallow(state => ({
     isDebugEnabled: state.isDebugEnabled,
     saturation: state.saturation,
     contrast: state.contrast,
@@ -27,7 +27,9 @@ const CameraScreenContent = () => {
     ev: state.ev,
     shutterSpeed: state.shutterSpeed,
     whiteBalance: state.whiteBalance,
-    autoExposure: state.autoExposure,
+    isoAuto: state.isoAuto,
+    shutterSpeedAuto: state.shutterSpeedAuto,
+    whiteBalanceAuto: state.whiteBalanceAuto,
     setDebugInfo: state.setDebugInfo,
   })));
 
@@ -82,10 +84,18 @@ const CameraScreenContent = () => {
         exposureTime={shutterSpeed}
         ev={ev}
         whiteBalance={whiteBalance}
-        autoExposure={autoExposure}
+        isoAuto={isoAuto}
+        shutterSpeedAuto={shutterSpeedAuto}
+        whiteBalanceAuto={whiteBalanceAuto}
         onDebugUpdate={(event: { nativeEvent: { fps: number; resolution: string } }) => {
           if (event.nativeEvent) {
             setDebugInfo(event.nativeEvent.fps, event.nativeEvent.resolution);
+          }
+        }}
+        onExposureUpdate={(event: { nativeEvent: { iso: number; shutterSpeed: number } }) => {
+          if (event.nativeEvent) {
+            if (isoAuto.value) iso.value = event.nativeEvent.iso;
+            if (shutterSpeedAuto.value) shutterSpeed.value = event.nativeEvent.shutterSpeed;
           }
         }}
       />
