@@ -21,7 +21,9 @@
       "dropouts": "Dropouts",
       "language": "Lingua",
       "debug": "Debug",
-      "manual_exposure": "Esposizione Manuale"
+      "manual_exposure": "Esposizione Manuale",
+      "focus": "Messa a Fuoco",
+      "lens": "Lenti"
     },
     "parameters": {
       "amount": "QUANTITÀ",
@@ -31,7 +33,9 @@
       "iso": "ISO",
       "ev": "EV",
       "shutter_speed": "TEMPI",
-      "white_balance": "BILANC. BIANCO"
+      "white_balance": "BILANC. BIANCO",
+      "focus": "FUOCO",
+      "lens": "LENTE"
     },
     "footer": {
       "coming_soon": "IN ARRIVO"

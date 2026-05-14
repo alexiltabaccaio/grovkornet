@@ -15,6 +15,8 @@ import { LensEffectsModule } from './modules/LensEffectsModule';
 import { ManualExposureModule } from './modules/ManualExposureModule';
 import { LanguageModule } from './modules/LanguageModule';
 import { DebugModule } from './modules/DebugModule';
+import { FocusModule } from './modules/FocusModule';
+import { LensModule } from './modules/LensModule';
 
 export const FooterParameters = () => {
   const uiStore = useUIStore(useShallow(state => ({
@@ -50,6 +52,15 @@ export const FooterParameters = () => {
     setShutterSpeedAuto: state.setShutterSpeedAuto,
     setWhiteBalanceAuto: state.setWhiteBalanceAuto,
     setEvAuto: state.setEvAuto,
+    focusDistance: state.focusDistance,
+    setFocusDistance: state.setFocusDistance,
+    focusAuto: state.focusAuto,
+    setFocusAuto: state.setFocusAuto,
+    capabilities: state.capabilities,
+    cameraId: state.cameraId,
+    setCameraId: state.setCameraId,
+    cameraAuto: state.cameraAuto,
+    setCameraAuto: state.setCameraAuto,
     resetTool: state.resetTool,
   })));
 
@@ -111,6 +122,31 @@ export const FooterParameters = () => {
             setWhiteBalance={cameraStore.setWhiteBalance}
             whiteBalanceAuto={cameraStore.whiteBalanceAuto}
             setWhiteBalanceAuto={cameraStore.setWhiteBalanceAuto}
+            handlePressWithDouble={handlePressWithDouble}
+          />
+        );
+      case 'focus':
+        return (
+          <FocusModule
+            activeParameter={uiStore.activeParameter}
+            setActiveParameter={uiStore.setActiveParameter}
+            focusDistance={cameraStore.focusDistance}
+            setFocusDistance={cameraStore.setFocusDistance}
+            focusAuto={cameraStore.focusAuto}
+            setFocusAuto={cameraStore.setFocusAuto}
+            handlePressWithDouble={handlePressWithDouble}
+          />
+        );
+      case 'lens':
+        return (
+          <LensModule
+            activeParameter={uiStore.activeParameter}
+            setActiveParameter={uiStore.setActiveParameter}
+            capabilities={cameraStore.capabilities}
+            cameraId={cameraStore.cameraId}
+            setCameraId={cameraStore.setCameraId}
+            cameraAuto={cameraStore.cameraAuto}
+            setCameraAuto={cameraStore.setCameraAuto}
             handlePressWithDouble={handlePressWithDouble}
           />
         );

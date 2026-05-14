@@ -7,17 +7,20 @@ import android.opengl.GLES20
 import android.opengl.GLSurfaceView
 import android.util.Log
 import android.util.Range
+import androidx.camera.core.Camera
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.Preview
-import androidx.camera.core.Camera
 import androidx.camera.lifecycle.ProcessCameraProvider
-import androidx.camera.camera2.interop.Camera2CameraControl
-import androidx.camera.camera2.interop.CaptureRequestOptions
+import android.hardware.camera2.CameraCharacteristics
+import android.hardware.camera2.CameraManager
 import android.hardware.camera2.CaptureRequest
 import android.hardware.camera2.CameraCaptureSession
 import android.hardware.camera2.CaptureResult
 import android.hardware.camera2.TotalCaptureResult
+import androidx.camera.camera2.interop.Camera2CameraControl
+import androidx.camera.camera2.interop.Camera2CameraInfo
 import androidx.camera.camera2.interop.Camera2Interop
+import androidx.camera.camera2.interop.CaptureRequestOptions
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ProcessLifecycleOwner
@@ -58,6 +61,14 @@ class NativeFilmCameraView(context: Context) : GLSurfaceView(context), GLSurface
         set(value) { if (field != value) { field = value; updateCameraControls() } }
     var focusDistance: Float = 0.0f
         set(value) { if (field != value) { field = value; updateCameraControls() } }
+    
+    var cameraId: String? = null
+        set(value) {
+            if (field != value) {
+                field = value
+                post { startCamera() }
+            }
+        }
 
     private var camera: Camera? = null
 
@@ -201,7 +212,40 @@ class NativeFilmCameraView(context: Context) : GLSurfaceView(context), GLSurface
         cameraProviderFuture.addListener({
             val cameraProvider = cameraProviderFuture.get()
             val previewBuilder = Preview.Builder()
-                .setTargetFrameRate(Range(60, 60))
+            
+            // Rilevamento dinamico del miglior range FPS supportato dall'hardware
+            try {
+                val cameraManager = context.getSystemService(Context.CAMERA_SERVICE) as CameraManager
+                val targetId = if (!cameraId.isNullOrEmpty()) cameraId!! else cameraManager.cameraIdList.firstOrNull { 
+                    cameraManager.getCameraCharacteristics(it).get(CameraCharacteristics.LENS_FACING) == CameraCharacteristics.LENS_FACING_BACK 
+                }
+                
+                if (targetId != null) {
+                    val chars = cameraManager.getCameraCharacteristics(targetId)
+                    val fpsRanges = chars.get(CameraCharacteristics.CONTROL_AE_AVAILABLE_TARGET_FPS_RANGES)
+                    if (fpsRanges != null && fpsRanges.isNotEmpty()) {
+                        // Trova il range con il massimo upper bound (es. 60fps se supportato, altrimenti 30fps)
+                        val bestRange = fpsRanges.maxByOrNull { it.upper }
+                        if (bestRange != null) {
+                            Log.i(TAG, "Hardware max FPS range detected: $bestRange for camera $targetId")
+                            previewBuilder.setTargetFrameRate(bestRange)
+                        }
+                    }
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "Error querying hardware capabilities for FPS", e)
+            }
+
+            // Selezione dinamica della Risoluzione Massima Supportata
+            try {
+                val resolutionSelector = androidx.camera.core.resolutionselector.ResolutionSelector.Builder()
+                    .setResolutionStrategy(androidx.camera.core.resolutionselector.ResolutionStrategy.HIGHEST_AVAILABLE_STRATEGY)
+                    .build()
+                previewBuilder.setResolutionSelector(resolutionSelector)
+                Log.i(TAG, "Hardware max resolution strategy applied")
+            } catch (e: Exception) {
+                Log.e(TAG, "Error applying resolution selector", e)
+            }
             
             // Aggiungi un callback per leggere ISO e Shutter in tempo reale
             Camera2Interop.Extender(previewBuilder).setSessionCaptureCallback(object : CameraCaptureSession.CaptureCallback() {
@@ -246,22 +290,183 @@ class NativeFilmCameraView(context: Context) : GLSurfaceView(context), GLSurface
                 }
             }
 
-            val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
-
             try {
                 cameraProvider.unbindAll()
                 
-                // Usiamo il ProcessLifecycleOwner che è sempre disponibile e garantito, 
-                // aggirando i problemi di contesto di React Native
-                val lifecycleOwner = ProcessLifecycleOwner.get()
+                // Determina quale camera usare
+                var selectedSelector = CameraSelector.DEFAULT_BACK_CAMERA
+                var targetZoomRatio: Float? = null
                 
-                camera = cameraProvider.bindToLifecycle(lifecycleOwner, cameraSelector, preview)
+                if (!cameraId.isNullOrEmpty()) {
+                    val cameraManager = context.getSystemService(Context.CAMERA_SERVICE) as CameraManager
+                    var parentLogicalId: String? = null
+                    var isPhysical = false
+
+                    // PRIORITÀ 1: Controlla se l'ID richiesto è una lente fisica figlia di una camera logica
+                    for (id in cameraManager.cameraIdList) {
+                        val chars = cameraManager.getCameraCharacteristics(id)
+                        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.P) {
+                            val physicalIds = chars.physicalCameraIds
+                            if (physicalIds != null && physicalIds.contains(cameraId)) {
+                                parentLogicalId = id
+                                isPhysical = true
+                                break
+                            }
+                        }
+                    }
+
+                    // PRIORITÀ 2: Se non è una lente fisica, allora trattala come camera logica a sé stante
+                    if (parentLogicalId == null) {
+                        for (id in cameraManager.cameraIdList) {
+                            if (id == cameraId) {
+                                parentLogicalId = id
+                                break
+                            }
+                        }
+                    }
+
+                    if (parentLogicalId != null) {
+                        val builder = CameraSelector.Builder()
+                        
+                        if (isPhysical) {
+                            // Calcola lo zoom ratio necessario per simulare o supportare il cambio lente
+                            val physChars = cameraManager.getCameraCharacteristics(cameraId!!)
+                            val parentChars = cameraManager.getCameraCharacteristics(parentLogicalId)
+                            val physFocal = physChars.get(CameraCharacteristics.LENS_INFO_AVAILABLE_FOCAL_LENGTHS)?.getOrNull(0)
+                            val parentFocal = parentChars.get(CameraCharacteristics.LENS_INFO_AVAILABLE_FOCAL_LENGTHS)?.getOrNull(0)
+                            val physSensor = physChars.get(CameraCharacteristics.SENSOR_INFO_PHYSICAL_SIZE)
+                            val parentSensor = parentChars.get(CameraCharacteristics.SENSOR_INFO_PHYSICAL_SIZE)
+                            
+                            if (physFocal != null && parentFocal != null && physSensor != null && parentSensor != null) {
+                                val physDiag = Math.sqrt(Math.pow(physSensor.width.toDouble(), 2.0) + Math.pow(physSensor.height.toDouble(), 2.0))
+                                val parentDiag = Math.sqrt(Math.pow(parentSensor.width.toDouble(), 2.0) + Math.pow(parentSensor.height.toDouble(), 2.0))
+                                
+                                val phys35mm = physFocal * (43.27 / physDiag)
+                                val parent35mm = parentFocal * (43.27 / parentDiag)
+                                
+                                targetZoomRatio = (phys35mm / parent35mm).toFloat()
+                                Log.i(TAG, "Calculated target zoom ratio: $targetZoomRatio (phys35: $phys35mm, parent35: $parent35mm)")
+                            }
+
+                            // Usa l'API introdotta in CameraX 1.4.0 per forzare la lente fisica tramite la fotocamera madre
+                            builder.addCameraFilter { cameras ->
+                                cameras.filter { Camera2CameraInfo.from(it).cameraId == parentLogicalId }
+                            }
+                            builder.setPhysicalCameraId(cameraId!!)
+                            Log.i(TAG, "Binding physical lens $cameraId through logical parent $parentLogicalId")
+                        } else {
+                            // Camera logica o singola
+                            builder.addCameraFilter { cameras ->
+                                cameras.filter { Camera2CameraInfo.from(it).cameraId == parentLogicalId }
+                            }
+                            Log.i(TAG, "Binding standalone logical camera $parentLogicalId")
+                        }
+                        
+                        selectedSelector = builder.build()
+                    }
+
+                }
+
+                val lifecycleOwner = ProcessLifecycleOwner.get()
+                camera = cameraProvider.bindToLifecycle(lifecycleOwner, selectedSelector, preview)
+                
+                if (targetZoomRatio != null) {
+                    // Impostiamo anche il targetZoomRatio perché su Pixel 8 Pro l'HAL potrebbe croppare 
+                    // il sensore per matchare il FoV 1.0x se non cambiamo lo zoom
+                    camera?.cameraControl?.setZoomRatio(targetZoomRatio)
+                }
+                
+                // Emetti le capacità hardware dopo il binding
+                emitCapabilities(cameraProvider)
+                
                 updateCameraControls()
                 Log.i(TAG, "CameraX started successfully using ProcessLifecycleOwner")
             } catch (e: Exception) {
                 Log.e(TAG, "Use case binding failed", e)
             }
         }, ContextCompat.getMainExecutor(context))
+    }
+
+    private fun emitCapabilities(cameraProvider: ProcessCameraProvider) {
+        val event = Arguments.createMap()
+        val camerasList = Arguments.createArray()
+
+        val cameraManager = context.getSystemService(Context.CAMERA_SERVICE) as CameraManager
+        try {
+            val logicalCameras = cameraManager.cameraIdList
+            val addedIds = mutableSetOf<String>()
+
+            for (id in logicalCameras) {
+                val characteristics = cameraManager.getCameraCharacteristics(id)
+                val facing = characteristics.get(CameraCharacteristics.LENS_FACING)
+                
+                if (facing == CameraCharacteristics.LENS_FACING_BACK) {
+                    // Cerca lenti fisiche all'interno della camera logica
+                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.P) {
+                        val physicalIds = characteristics.physicalCameraIds
+                        if (physicalIds != null && physicalIds.isNotEmpty()) {
+                            for (physId in physicalIds) {
+                                if (addedIds.add(physId)) {
+                                    val physChars = cameraManager.getCameraCharacteristics(physId)
+                                    addCameraToMap(physId, physChars, camerasList)
+                                }
+                            }
+                            continue // Abbiamo aggiunto quelle fisiche, saltiamo la logica
+                        }
+                    }
+                    
+                    // Fallback: aggiungi la camera se non ha lenti fisiche figlie
+                    if (addedIds.add(id)) {
+                        addCameraToMap(id, characteristics, camerasList)
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to get physical cameras", e)
+        }
+        
+        event.putArray("availableCameras", camerasList)
+
+        // Caratteristiche della camera corrente
+        val currentCamera = camera ?: return
+        val currentInfo = Camera2CameraInfo.from(currentCamera.cameraInfo)
+        
+        // Supporto AF
+        val afModes = currentInfo.getCameraCharacteristic(CameraCharacteristics.CONTROL_AF_AVAILABLE_MODES)
+        val supportsAF = afModes?.any { it != CameraCharacteristics.CONTROL_AF_MODE_OFF } ?: false
+        event.putBoolean("supportsFocus", supportsAF)
+
+        // Range ISO
+        val isoRange = currentInfo.getCameraCharacteristic(CameraCharacteristics.SENSOR_INFO_SENSITIVITY_RANGE)
+        if (isoRange != null) {
+            event.putInt("isoMin", isoRange.lower)
+            event.putInt("isoMax", isoRange.upper)
+        }
+
+        val reactContext = context as? ThemedReactContext
+        reactContext?.getJSModule(RCTEventEmitter::class.java)?.receiveEvent(id, "onCapabilitiesUpdate", event)
+    }
+
+    private fun addCameraToMap(id: String, characteristics: CameraCharacteristics, camerasList: com.facebook.react.bridge.WritableArray) {
+        val camMap = Arguments.createMap()
+        camMap.putString("id", id)
+        
+        val focalLengths = characteristics.get(CameraCharacteristics.LENS_INFO_AVAILABLE_FOCAL_LENGTHS)
+        val sensorSize = characteristics.get(CameraCharacteristics.SENSOR_INFO_PHYSICAL_SIZE)
+        
+        if (focalLengths != null && sensorSize != null && focalLengths.isNotEmpty()) {
+            val focalLength = focalLengths[0]
+            camMap.putDouble("focalLength", focalLength.toDouble())
+            
+            // Calcolo equivalente 35mm
+            // Diagonale 35mm = 43.27mm
+            val sensorDiagonal = Math.sqrt(Math.pow(sensorSize.width.toDouble(), 2.0) + Math.pow(sensorSize.height.toDouble(), 2.0))
+            val cropFactor = 43.27 / sensorDiagonal
+            val focalLength35mm = focalLength * cropFactor
+            camMap.putInt("focalLength35mm", focalLength35mm.toInt())
+        }
+
+        camerasList.pushMap(camMap)
     }
 
     private fun updateCameraControls() {

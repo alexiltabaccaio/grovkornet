@@ -1,8 +1,19 @@
 import { SharedValue } from 'react-native-reanimated';
 
 export type TabType = 'lens' | 'color' | 'tape' | 'crt' | 'settings' | 'exposure' | 'none';
-export type ModuleType = 'color_grading' | 'fade' | 'grain' | 'jitter' | 'dropouts' | 'lens_effects' | 'language' | 'debug' | 'manual_exposure' | 'none';
-export type ParameterType = 'saturation' | 'contrast' | 'grain' | 'chromatic_aberration' | 'iso' | 'ev' | 'shutter_speed' | 'white_balance' | 'none';
+export type ModuleType = 'color_grading' | 'fade' | 'grain' | 'jitter' | 'dropouts' | 'lens_effects' | 'language' | 'debug' | 'manual_exposure' | 'focus' | 'lens' | 'none';
+export type ParameterType = 'saturation' | 'contrast' | 'grain' | 'chromatic_aberration' | 'iso' | 'ev' | 'shutter_speed' | 'white_balance' | 'focus' | 'lens' | 'none';
+
+export interface CameraCapabilities {
+  supportsFocus: boolean;
+  isoMin?: number;
+  isoMax?: number;
+  availableCameras: Array<{
+    id: string;
+    focalLength: number;
+    focalLength35mm: number;
+  }>;
+}
 
 interface EffectSharedValues {
   grainIntensity: SharedValue<number>;
@@ -20,6 +31,10 @@ interface EffectSharedValues {
   shutterSpeedAuto: SharedValue<boolean>;
   whiteBalanceAuto: SharedValue<boolean>;
   evAuto: SharedValue<boolean>;
+  focusDistance: SharedValue<number>;
+  focusAuto: SharedValue<boolean>;
+  cameraId: string;
+  cameraAuto: boolean;
 }
 
 interface EffectHandlers {
@@ -38,6 +53,11 @@ interface EffectHandlers {
   setShutterSpeedAuto: (value: boolean) => void;
   setWhiteBalanceAuto: (value: boolean) => void;
   setEvAuto: (value: boolean) => void;
+  setFocusDistance: (value: number) => void;
+  setFocusAuto: (value: boolean) => void;
+  setCameraId: (value: string) => void;
+  setCameraAuto: (value: boolean) => void;
+  setCapabilities: (capabilities: CameraCapabilities) => void;
 }
 
 export interface UIState {
@@ -46,6 +66,7 @@ export interface UIState {
   activeParameter: ParameterType;
   isDebugEnabled: boolean;
   lastActiveParameters: Record<ModuleType, ParameterType>;
+  capabilities: CameraCapabilities;
 }
 
 export interface UIActions {
@@ -55,4 +76,6 @@ export interface UIActions {
   setIsDebugEnabled: (enabled: boolean) => void;
 }
 
-export interface CameraState extends EffectSharedValues, EffectHandlers {}
+export interface CameraState extends EffectSharedValues, EffectHandlers {
+  capabilities: CameraCapabilities;
+}

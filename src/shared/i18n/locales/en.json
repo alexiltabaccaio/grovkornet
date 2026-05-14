@@ -21,7 +21,9 @@
       "dropouts": "Dropouts",
       "language": "Language",
       "debug": "Debug",
-      "manual_exposure": "Manual Exposure"
+      "manual_exposure": "Manual Exposure",
+      "focus": "Focus",
+      "lens": "Lenses"
     },
     "parameters": {
       "amount": "AMOUNT",
@@ -31,7 +33,9 @@
       "iso": "ISO",
       "ev": "EV",
       "shutter_speed": "SHUTTER",
-      "white_balance": "WHITE BAL."
+      "white_balance": "WHITE BAL.",
+      "focus": "FOCUS",
+      "lens": "LENS"
     },
     "footer": {
       "coming_soon": "COMING SOON"

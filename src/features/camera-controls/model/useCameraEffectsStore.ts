@@ -29,6 +29,16 @@ export const useCameraEffectsStore = create<CameraState>((set, get) => ({
   shutterSpeedAuto: makeMutable(true),
   whiteBalanceAuto: makeMutable(true),
   evAuto: makeMutable(true),
+  focusDistance: makeMutable(0),
+  focusAuto: makeMutable(true),
+  cameraId: '',
+  cameraAuto: true,
+  capabilities: {
+    supportsFocus: true,
+    isoMin: 100,
+    isoMax: 3200,
+    availableCameras: [],
+  },
 
   // Actions
   setGrainIntensity: (value) => {
@@ -95,6 +105,27 @@ export const useCameraEffectsStore = create<CameraState>((set, get) => ({
     get().evAuto.value = value;
   },
 
+  setFocusDistance: (value) => {
+    get().focusDistance.value = value;
+    get().focusAuto.value = false;
+  },
+
+  setFocusAuto: (value) => {
+    get().focusAuto.value = value;
+  },
+
+  setCameraId: (value) => {
+    set({ cameraId: value, cameraAuto: false });
+  },
+
+  setCameraAuto: (value) => {
+    set((state) => ({ cameraAuto: value, ...(value ? { cameraId: '' } : {}) }));
+  },
+
+  setCapabilities: (caps) => {
+    set({ capabilities: caps });
+  },
+
   resetTool: (tool) => {
     const { 
       grainIntensity, saturation, contrast, chromaticAberration,
@@ -127,6 +158,10 @@ export const useCameraEffectsStore = create<CameraState>((set, get) => ({
     } else if (tool === 'white_balance') {
       whiteBalance.value = DEFAULT_WHITE_BALANCE;
       whiteBalanceAuto.value = true;
+    } else if (tool === 'focus') {
+      get().focusAuto.value = true;
+    } else if (tool === 'lens') {
+      set({ cameraAuto: true, cameraId: '' });
     }
   },
 }));

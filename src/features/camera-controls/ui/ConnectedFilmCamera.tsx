@@ -28,6 +28,14 @@ export const ConnectedFilmCamera = ({ cameraKey }: ConnectedFilmCameraProps) => 
       isoAuto={store.isoAuto}
       shutterSpeedAuto={store.shutterSpeedAuto}
       whiteBalanceAuto={store.whiteBalanceAuto}
+      autoFocus={store.focusAuto}
+      focusDistance={store.focusDistance}
+      cameraId={store.cameraId}
+      onCapabilitiesUpdate={(event) => {
+        if (event.nativeEvent) {
+          store.setCapabilities(event.nativeEvent);
+        }
+      }}
       onDebugUpdate={(event) => {
         if (event.nativeEvent) {
           store.setDebugInfo(event.nativeEvent.fps, event.nativeEvent.resolution);

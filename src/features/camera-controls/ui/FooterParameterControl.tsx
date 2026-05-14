@@ -22,6 +22,7 @@ interface FooterParameterControlProps {
   variant?: 'square' | 'text';
   isAuto?: SharedValue<boolean>;
   onLongPress?: () => void;
+  staticText?: string;
 }
 
 import { updateSharedValue } from '@shared/lib/reanimated/safeUpdate';
@@ -39,6 +40,7 @@ export const FooterParameterControl = ({
   variant = 'square',
   isAuto,
   onLongPress,
+  staticText,
 }: FooterParameterControlProps) => {
   const startVal = useSharedValue(minValue);
 
@@ -147,6 +149,14 @@ export const FooterParameterControl = ({
               ]}
               animatedProps={animatedTextProps}
             />
+          ) : staticText ? (
+            <Text style={[
+              styles.valueText, 
+              variant === 'text' && styles.valueTextLarge,
+              { color: isActive ? "#FFF" : "#666" }
+            ]}>
+              {staticText}
+            </Text>
           ) : icon ? (
             <AnimatedIcon name={icon} size={24} style={{ zIndex: 1 }} animatedProps={animatedIconProps} />
           ) : null}

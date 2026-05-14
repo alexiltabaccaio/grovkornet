@@ -15,6 +15,7 @@ class NativeFilmCameraManager : SimpleViewManager<NativeFilmCameraView>() {
         return MapBuilder.builder<String, Any>()
             .put("onDebugUpdate", MapBuilder.of("registrationName", "onDebugUpdate"))
             .put("onExposureUpdate", MapBuilder.of("registrationName", "onExposureUpdate"))
+            .put("onCapabilitiesUpdate", MapBuilder.of("registrationName", "onCapabilitiesUpdate"))
             .build()
     }
 
@@ -92,5 +93,10 @@ class NativeFilmCameraManager : SimpleViewManager<NativeFilmCameraView>() {
     @ReactProp(name = "focusDistance", defaultFloat = 0.0f)
     fun setFocusDistance(view: NativeFilmCameraView, focusDistance: Float) {
         view.focusDistance = focusDistance
+    }
+
+    @ReactProp(name = "cameraId")
+    fun setCameraId(view: NativeFilmCameraView, cameraId: String?) {
+        view.cameraId = cameraId
     }
 }

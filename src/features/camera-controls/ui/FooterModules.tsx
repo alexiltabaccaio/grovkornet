@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 
 import { useShallow } from 'zustand/react/shallow';
 import { useUIStore } from '../model/useUIStore';
+import { useCameraEffectsStore } from '../model/useCameraEffectsStore';
 
 export const FooterModules = () => {
   const { activeTab, activeModule, setActiveModule } = useUIStore(useShallow(state => ({
@@ -13,6 +14,10 @@ export const FooterModules = () => {
   })));
   const { t } = useTranslation();
   
+  const { capabilities } = useCameraEffectsStore(useShallow(state => ({
+    capabilities: state.capabilities
+  })));
+
   if (activeTab !== 'color' && activeTab !== 'tape' && activeTab !== 'lens' && activeTab !== 'exposure' && activeTab !== 'settings') return null;
 
   return (
@@ -27,10 +32,20 @@ export const FooterModules = () => {
           <Pressable style={[styles.pill, activeModule === 'manual_exposure' && styles.pillActive]} onPress={() => setActiveModule('manual_exposure')} hitSlop={10}>
             <Text style={[styles.pillText, activeModule === 'manual_exposure' && styles.pillTextActive]}>{t('modules.manual_exposure')}</Text>
           </Pressable>
+          {capabilities.supportsFocus && (
+            <Pressable style={[styles.pill, activeModule === 'focus' && styles.pillActive]} onPress={() => setActiveModule('focus')} hitSlop={10}>
+              <Text style={[styles.pillText, activeModule === 'focus' && styles.pillTextActive]}>{t('modules.focus')}</Text>
+            </Pressable>
+          )}
         </>
       )}
       {activeTab === 'lens' && (
         <>
+          {capabilities.availableCameras.length > 1 && (
+            <Pressable style={[styles.pill, activeModule === 'lens' && styles.pillActive]} onPress={() => setActiveModule('lens')} hitSlop={10}>
+              <Text style={[styles.pillText, activeModule === 'lens' && styles.pillTextActive]}>{t('modules.lens')}</Text>
+            </Pressable>
+          )}
           <Pressable style={[styles.pill, activeModule === 'lens_effects' && styles.pillActive]} onPress={() => setActiveModule('lens_effects')} hitSlop={10}>
             <Text style={[styles.pillText, activeModule === 'lens_effects' && styles.pillTextActive]}>{t('modules.chromatic_aberration')}</Text>
           </Pressable>
