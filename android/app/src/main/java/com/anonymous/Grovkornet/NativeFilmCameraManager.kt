@@ -45,4 +45,41 @@ class NativeFilmCameraManager : SimpleViewManager<NativeFilmCameraView>() {
     fun setChromaticAberration(view: NativeFilmCameraView, aberration: Float) {
         view.aberration = aberration
     }
+
+    @ReactProp(name = "autoExposure", defaultBoolean = false)
+    fun setAutoExposure(view: NativeFilmCameraView, autoExposure: Boolean) {
+        view.autoExposure = autoExposure
+    }
+
+    @ReactProp(name = "autoFocus", defaultBoolean = false)
+    fun setAutoFocus(view: NativeFilmCameraView, autoFocus: Boolean) {
+        view.autoFocus = autoFocus
+    }
+
+    @ReactProp(name = "iso", defaultInt = 400)
+    fun setIso(view: NativeFilmCameraView, iso: Int) {
+        view.iso = iso
+    }
+
+    @ReactProp(name = "exposureTime", defaultDouble = 60.0) // 1/60s
+    fun setExposureTime(view: NativeFilmCameraView, exposureTime: Double) {
+        if (exposureTime > 0) {
+            view.exposureTime = (1_000_000_000.0 / exposureTime).toLong()
+        }
+    }
+
+    @ReactProp(name = "ev", defaultFloat = 0.0f)
+    fun setEv(view: NativeFilmCameraView, ev: Float) {
+        view.ev = ev
+    }
+
+    @ReactProp(name = "whiteBalance", defaultFloat = 5000.0f)
+    fun setWhiteBalance(view: NativeFilmCameraView, whiteBalance: Float) {
+        view.whiteBalance = whiteBalance
+    }
+
+    @ReactProp(name = "focusDistance", defaultFloat = 0.0f)
+    fun setFocusDistance(view: NativeFilmCameraView, focusDistance: Float) {
+        view.focusDistance = focusDistance
+    }
 }

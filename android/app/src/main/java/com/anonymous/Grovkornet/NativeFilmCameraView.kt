@@ -9,7 +9,11 @@ import android.util.Log
 import android.util.Range
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.Preview
+import androidx.camera.core.Camera
 import androidx.camera.lifecycle.ProcessCameraProvider
+import androidx.camera.camera2.interop.Camera2CameraControl
+import androidx.camera.camera2.interop.CaptureRequestOptions
+import android.hardware.camera2.CaptureRequest
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ProcessLifecycleOwner
@@ -32,6 +36,22 @@ class NativeFilmCameraView(context: Context) : GLSurfaceView(context), GLSurface
     var grainIntensity: Float = 0.0f
     var grainEnabled: Boolean = true
     var aberration: Float = 0.0f
+    var ev: Float = 0.0f
+    var whiteBalance: Float = 5000.0f
+
+    // Manual Camera Props
+    var autoExposure: Boolean = false
+        set(value) { field = value; updateCameraControls() }
+    var autoFocus: Boolean = false
+        set(value) { field = value; updateCameraControls() }
+    var iso: Int = 400
+        set(value) { field = value; updateCameraControls() }
+    var exposureTime: Long = 1000000000L / 60
+        set(value) { field = value; updateCameraControls() }
+    var focusDistance: Float = 0.0f
+        set(value) { field = value; updateCameraControls() }
+
+    private var camera: Camera? = null
 
     private var program = 0
     private var cameraTextureId = 0
@@ -144,6 +164,8 @@ class NativeFilmCameraView(context: Context) : GLSurfaceView(context), GLSurface
         GLES20.glUniform1f(GLES20.glGetUniformLocation(program, "u_GrainEnabled"), if (grainEnabled) 1.0f else 0.0f)
         GLES20.glUniform1f(GLES20.glGetUniformLocation(program, "u_Time"), (System.currentTimeMillis() % 10000) / 1000f)
         GLES20.glUniform2f(GLES20.glGetUniformLocation(program, "u_Resolution"), viewportWidth.toFloat(), viewportHeight.toFloat())
+        GLES20.glUniform1f(GLES20.glGetUniformLocation(program, "u_Ev"), ev)
+        GLES20.glUniform1f(GLES20.glGetUniformLocation(program, "u_WhiteBalance"), whiteBalance)
 
         val aPosition = GLES20.glGetAttribLocation(program, "a_Position")
         val aTexCoord = GLES20.glGetAttribLocation(program, "a_TexCoord")
@@ -195,11 +217,44 @@ class NativeFilmCameraView(context: Context) : GLSurfaceView(context), GLSurface
                 // aggirando i problemi di contesto di React Native
                 val lifecycleOwner = ProcessLifecycleOwner.get()
                 
-                cameraProvider.bindToLifecycle(lifecycleOwner, cameraSelector, preview)
+                camera = cameraProvider.bindToLifecycle(lifecycleOwner, cameraSelector, preview)
+                updateCameraControls()
                 Log.i(TAG, "CameraX started successfully using ProcessLifecycleOwner")
             } catch (e: Exception) {
                 Log.e(TAG, "Use case binding failed", e)
             }
         }, ContextCompat.getMainExecutor(context))
+    }
+
+    private fun updateCameraControls() {
+        val currentCamera = camera ?: return
+        try {
+            val camera2CameraControl = Camera2CameraControl.from(currentCamera.cameraControl)
+            val builder = CaptureRequestOptions.Builder()
+            
+            // Forza il range FPS a 60 per evitare che il sensore scenda a 30 quando in manuale
+            builder.setCaptureRequestOption(CaptureRequest.CONTROL_AE_TARGET_FPS_RANGE, Range(60, 60))
+            
+            if (autoExposure) {
+                builder.setCaptureRequestOption(CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_AE_MODE_ON)
+                builder.setCaptureRequestOption(CaptureRequest.CONTROL_AWB_MODE, CaptureRequest.CONTROL_AWB_MODE_AUTO)
+            } else {
+                builder.setCaptureRequestOption(CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_AE_MODE_OFF)
+                builder.setCaptureRequestOption(CaptureRequest.CONTROL_AWB_MODE, CaptureRequest.CONTROL_AWB_MODE_OFF)
+                builder.setCaptureRequestOption(CaptureRequest.SENSOR_SENSITIVITY, iso)
+                builder.setCaptureRequestOption(CaptureRequest.SENSOR_EXPOSURE_TIME, exposureTime)
+            }
+
+            if (autoFocus) {
+                builder.setCaptureRequestOption(CaptureRequest.CONTROL_AF_MODE, CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_VIDEO)
+            } else {
+                builder.setCaptureRequestOption(CaptureRequest.CONTROL_AF_MODE, CaptureRequest.CONTROL_AF_MODE_OFF)
+                builder.setCaptureRequestOption(CaptureRequest.LENS_FOCUS_DISTANCE, focusDistance)
+            }
+
+            camera2CameraControl.captureRequestOptions = builder.build()
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to update camera controls", e)
+        }
     }
 }

@@ -18,6 +18,7 @@ export const BottomNavigationBar = () => {
   const handleTabChange = (tab: TabType) => {
     const newTab = activeTab === tab ? 'none' : tab;
     if (newTab === 'color') setActiveModule('color_grading');
+    else if (newTab === 'exposure') setActiveModule('manual_exposure');
     else if (newTab === 'tape') setActiveModule('grain');
     else if (newTab === 'lens') setActiveModule('lens_effects');
     else if (newTab === 'settings') setActiveModule('language');
@@ -27,7 +28,8 @@ export const BottomNavigationBar = () => {
 
   const tabs: { id: TabType; icon: keyof typeof Ionicons.glyphMap; label: string }[] = [
     { id: 'settings', icon: 'cog-outline', label: t('tabs.settings') },
-    { id: 'lens', icon: 'aperture-outline', label: t('tabs.lens') },
+    { id: 'exposure', icon: 'aperture-outline', label: t('tabs.exposure') },
+    { id: 'lens', icon: 'aperture', label: t('tabs.lens') },
     { id: 'color', icon: 'color-palette-outline', label: t('tabs.color') },
     { id: 'tape', icon: 'film-outline', label: t('tabs.tape') },
     { id: 'crt', icon: 'tv-outline', label: t('tabs.crt') },

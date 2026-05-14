@@ -9,7 +9,8 @@
       "lens": "OBIETTIVO",
       "color": "COLORE",
       "tape": "PELLICOLA",
-      "crt": "CRT"
+      "crt": "CRT",
+      "exposure": "ESPOSIZIONE"
     },
     "modules": {
       "chromatic_aberration": "Aberrazione Cromatica",
@@ -19,13 +20,18 @@
       "jitter": "Jitter",
       "dropouts": "Dropouts",
       "language": "Lingua",
-      "debug": "Debug"
+      "debug": "Debug",
+      "manual_exposure": "Esposizione Manuale"
     },
     "parameters": {
       "amount": "QUANTITÀ",
       "saturation": "SATURAZIONE",
       "contrast": "CONTRASTO",
-      "phase_shift": "SFASAMENTO"
+      "phase_shift": "SFASAMENTO",
+      "iso": "ISO",
+      "ev": "EV",
+      "shutter_speed": "TEMPI",
+      "white_balance": "BILANC. BIANCO"
     },
     "footer": {
       "coming_soon": "IN ARRIVO"

@@ -9,7 +9,8 @@
       "lens": "LENS",
       "color": "COLOR",
       "tape": "TAPE",
-      "crt": "CRT"
+      "crt": "CRT",
+      "exposure": "EXPOSURE"
     },
     "modules": {
       "chromatic_aberration": "Chromatic Aberration",
@@ -19,13 +20,18 @@
       "jitter": "Jitter",
       "dropouts": "Dropouts",
       "language": "Language",
-      "debug": "Debug"
+      "debug": "Debug",
+      "manual_exposure": "Manual Exposure"
     },
     "parameters": {
       "amount": "AMOUNT",
       "saturation": "SATURATION",
       "contrast": "CONTRAST",
-      "phase_shift": "PHASE SHIFT"
+      "phase_shift": "PHASE SHIFT",
+      "iso": "ISO",
+      "ev": "EV",
+      "shutter_speed": "SHUTTER",
+      "white_balance": "WHITE BAL."
     },
     "footer": {
       "coming_soon": "COMING SOON"

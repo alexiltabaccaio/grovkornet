@@ -16,13 +16,18 @@ export const CameraScreen = () => {
 
 const CameraScreenContent = () => {
   const { t } = useTranslation();
-  const { isDebugEnabled, saturation, contrast, chromaticAberration, grainIntensity, grainEnabled, setDebugInfo } = useCameraEffectsStore(useShallow(state => ({
+  const { isDebugEnabled, saturation, contrast, chromaticAberration, grainIntensity, grainEnabled, iso, ev, shutterSpeed, whiteBalance, autoExposure, setDebugInfo } = useCameraEffectsStore(useShallow(state => ({
     isDebugEnabled: state.isDebugEnabled,
     saturation: state.saturation,
     contrast: state.contrast,
     chromaticAberration: state.chromaticAberration,
     grainIntensity: state.grainIntensity,
     grainEnabled: state.grainEnabled,
+    iso: state.iso,
+    ev: state.ev,
+    shutterSpeed: state.shutterSpeed,
+    whiteBalance: state.whiteBalance,
+    autoExposure: state.autoExposure,
     setDebugInfo: state.setDebugInfo,
   })));
 
@@ -73,6 +78,11 @@ const CameraScreenContent = () => {
         chromaticAberration={chromaticAberration}
         grainIntensity={grainIntensity}
         grainEnabled={grainEnabled}
+        iso={iso}
+        exposureTime={shutterSpeed}
+        ev={ev}
+        whiteBalance={whiteBalance}
+        autoExposure={autoExposure}
         onDebugUpdate={(event: { nativeEvent: { fps: number; resolution: string } }) => {
           if (event.nativeEvent) {
             setDebugInfo(event.nativeEvent.fps, event.nativeEvent.resolution);

@@ -13,7 +13,7 @@ export const FilterPillMenu = () => {
   })));
   const { t } = useTranslation();
   
-  if (activeTab !== 'color' && activeTab !== 'tape' && activeTab !== 'lens' && activeTab !== 'settings') return null;
+  if (activeTab !== 'color' && activeTab !== 'tape' && activeTab !== 'lens' && activeTab !== 'exposure' && activeTab !== 'settings') return null;
 
   return (
     <ScrollView 
@@ -22,6 +22,13 @@ export const FilterPillMenu = () => {
       contentContainerStyle={styles.pillMenuContainer}
       style={styles.pillMenuWrapper}
     >
+      {activeTab === 'exposure' && (
+        <>
+          <Pressable style={[styles.pill, activeModule === 'manual_exposure' && styles.pillActive]} onPress={() => setActiveModule('manual_exposure')} hitSlop={10}>
+            <Text style={[styles.pillText, activeModule === 'manual_exposure' && styles.pillTextActive]}>{t('modules.manual_exposure')}</Text>
+          </Pressable>
+        </>
+      )}
       {activeTab === 'lens' && (
         <>
           <Pressable style={[styles.pill, activeModule === 'lens_effects' && styles.pillActive]} onPress={() => setActiveModule('lens_effects')} hitSlop={10}>

@@ -21,6 +21,14 @@ export const GestureController = () => {
     setChromaticAberration,
     activeModule,
     activeParameter,
+    iso,
+    ev,
+    shutterSpeed,
+    whiteBalance,
+    setIso,
+    setEv,
+    setShutterSpeed,
+    setWhiteBalance,
   } = useCameraEffectsStore(useShallow(state => ({
     grainIntensity: state.grainIntensity,
     saturation: state.saturation,
@@ -32,6 +40,14 @@ export const GestureController = () => {
     setChromaticAberration: state.setChromaticAberration,
     activeModule: state.activeModule,
     activeParameter: state.activeParameter,
+    iso: state.iso,
+    ev: state.ev,
+    shutterSpeed: state.shutterSpeed,
+    whiteBalance: state.whiteBalance,
+    setIso: state.setIso,
+    setEv: state.setEv,
+    setShutterSpeed: state.setShutterSpeed,
+    setWhiteBalance: state.setWhiteBalance,
   })));
 
 
@@ -48,6 +64,18 @@ export const GestureController = () => {
         startVal.value = contrast.value / 2.0;
       } else if (activeModule === 'lens_effects' && activeParameter === 'chromatic_aberration') {
         startVal.value = chromaticAberration.value / 2.0;
+      } else if (activeModule === 'manual_exposure') {
+        if (activeParameter === 'iso') {
+          startVal.value = (iso.value - 50) / (3200 - 50);
+        } else if (activeParameter === 'ev') {
+          startVal.value = (ev.value - (-2.0)) / (2.0 - (-2.0));
+        } else if (activeParameter === 'shutter_speed') {
+          startVal.value = (shutterSpeed.value - 1) / (1000 - 1);
+        } else if (activeParameter === 'white_balance') {
+          startVal.value = (whiteBalance.value - 2000) / (10000 - 2000);
+        } else {
+          startVal.value = -1;
+        }
       } else {
         startVal.value = -1; // Indicate nothing is selected
       }
@@ -74,10 +102,28 @@ export const GestureController = () => {
         const scaledValue = normalizedValue * 2.0;
         chromaticAberration.value = scaledValue;
         runOnJS(setChromaticAberration)(scaledValue);
+      } else if (activeModule === 'manual_exposure') {
+        if (activeParameter === 'iso') {
+          const val = 50 + normalizedValue * (3200 - 50);
+          iso.value = val;
+          runOnJS(setIso)(val);
+        } else if (activeParameter === 'ev') {
+          const val = -2.0 + normalizedValue * (2.0 - (-2.0));
+          ev.value = val;
+          runOnJS(setEv)(val);
+        } else if (activeParameter === 'shutter_speed') {
+          const val = 1 + normalizedValue * (1000 - 1);
+          shutterSpeed.value = val;
+          runOnJS(setShutterSpeed)(val);
+        } else if (activeParameter === 'white_balance') {
+          const val = 2000 + normalizedValue * (10000 - 2000);
+          whiteBalance.value = val;
+          runOnJS(setWhiteBalance)(val);
+        }
       }
     });
 
-  if (activeModule !== 'grain' && activeModule !== 'color_grading' && activeModule !== 'lens_effects') {
+  if (activeModule !== 'grain' && activeModule !== 'color_grading' && activeModule !== 'lens_effects' && activeModule !== 'manual_exposure') {
     return null;
   }
 

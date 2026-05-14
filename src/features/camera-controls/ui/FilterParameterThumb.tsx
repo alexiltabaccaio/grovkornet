@@ -12,6 +12,7 @@ interface FilterParameterThumbProps {
   isActive: boolean;
   onPress: () => void;
   value?: SharedValue<number>;
+  minValue?: number;
   maxValue?: number;
   onChange?: (val: number) => void;
   icon?: keyof typeof Ionicons.glyphMap;
@@ -22,11 +23,12 @@ export const FilterParameterThumb = ({
   isActive, 
   onPress, 
   value,
+  minValue = 0,
   maxValue = 1,
   onChange,
   icon,
 }: FilterParameterThumbProps) => {
-  const startVal = useSharedValue(0);
+  const startVal = useSharedValue(minValue);
 
   const gesture = Gesture.Pan()
     .onStart(() => {
@@ -37,8 +39,9 @@ export const FilterParameterThumb = ({
     .onUpdate((e) => {
       if (!value) return;
       const THUMB_SENSITIVITY = 150;
-      const delta = -(e.translationY / THUMB_SENSITIVITY) * maxValue;
-      const newValue = Math.min(Math.max(startVal.value + delta, 0), maxValue);
+      const range = maxValue - minValue;
+      const delta = -(e.translationY / THUMB_SENSITIVITY) * range;
+      const newValue = Math.min(Math.max(startVal.value + delta, minValue), maxValue);
       value.value = newValue;
       if (onChange) {
         runOnJS(onChange)(newValue);
@@ -47,18 +50,22 @@ export const FilterParameterThumb = ({
 
   const animatedBgStyle = useAnimatedStyle(() => {
     if (!value) return { height: '0%' };
-    const clampedValue = Math.max(0, Math.min(value.value, maxValue));
+    const clampedValue = Math.max(minValue, Math.min(value.value, maxValue));
+    const range = maxValue - minValue;
+    const progress = (clampedValue - minValue) / range;
     return {
-      height: `${(clampedValue / maxValue) * 105}%`,
-      backgroundColor: interpolateColor(clampedValue, [0, maxValue], ['#222222', '#FFFFFF'])
+      height: `${progress * 105}%`,
+      backgroundColor: interpolateColor(progress, [0, 1], ['#222222', '#FFFFFF'])
     };
   });
 
   const animatedIconProps = useAnimatedProps(() => {
     if (!value) return { color: isActive ? "#FFF" : "#666" };
-    const clampedValue = Math.max(0, Math.min(value.value, maxValue));
+    const clampedValue = Math.max(minValue, Math.min(value.value, maxValue));
+    const range = maxValue - minValue;
+    const progress = (clampedValue - minValue) / range;
     return {
-      color: interpolateColor(clampedValue, [0, maxValue], [isActive ? "#FFF" : "#666", "#000000"])
+      color: interpolateColor(progress, [0, 1], [isActive ? "#FFF" : "#666", "#000000"])
     };
   });
 

@@ -24,6 +24,8 @@ object FilmShader {
         uniform float u_GrainEnabled;
         uniform float u_Time;
         uniform vec2 u_Resolution;
+        uniform float u_Ev;
+        uniform float u_WhiteBalance;
 
         float hash(vec2 p) {
             return fract(sin(dot(p, vec2(12.9898, 78.233))) * 43758.5453);
@@ -60,6 +62,14 @@ object FilmShader {
                 color.rgb = mix(color.rgb, overlay, u_GrainIntensity * 2.0);
             }
 
+            // Apply EV multiplier
+            color.rgb *= pow(2.0, u_Ev);
+
+            // Apply White Balance
+            float temp = u_WhiteBalance / 5000.0;
+            vec3 wbMultiplier = vec3(temp, 1.0, 1.0 / temp);
+            color.rgb *= wbMultiplier;
+
             gl_FragColor = color;
         }
     """
@@ -77,6 +87,8 @@ object FilmShader {
         uniform float u_GrainEnabled;
         uniform float u_Time;
         uniform vec2 u_Resolution;
+        uniform float u_Ev;
+        uniform float u_WhiteBalance;
 
         float hash(vec2 p) {
             return fract(sin(dot(p, vec2(12.9898, 78.233))) * 43758.5453);
@@ -109,6 +121,15 @@ object FilmShader {
                 
                 color.rgb = mix(color.rgb, overlay, u_GrainIntensity * 2.0);
             }
+            
+            // Apply EV multiplier (each 1 EV doubles/halves light)
+            color.rgb *= pow(2.0, u_Ev);
+
+            // Apply White Balance (Kelvin mapping approximation)
+            // 5000 is neutral. Lower is cooler (blue), higher is warmer (orange/red).
+            float temp = u_WhiteBalance / 5000.0;
+            vec3 wbMultiplier = vec3(temp, 1.0, 1.0 / temp);
+            color.rgb *= wbMultiplier;
 
             gl_FragColor = color;
         }

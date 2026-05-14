@@ -1,13 +1,19 @@
-import React from 'react';
 import { requireNativeComponent, ViewProps } from 'react-native';
-import Animated from 'react-native-reanimated';
+import Animated, { SharedValue } from 'react-native-reanimated';
 
 interface NativeFilmCameraProps extends ViewProps {
-  saturation: number;
-  contrast: number;
-  grainIntensity: number;
-  grainEnabled: boolean;
-  chromaticAberration: number;
+  saturation: number | SharedValue<number>;
+  contrast: number | SharedValue<number>;
+  grainIntensity: number | SharedValue<number>;
+  grainEnabled: boolean | SharedValue<boolean>;
+  chromaticAberration: number | SharedValue<number>;
+  autoExposure?: boolean | SharedValue<boolean>;
+  autoFocus?: boolean | SharedValue<boolean>;
+  iso?: number | SharedValue<number>;
+  exposureTime?: number | SharedValue<number>;
+  ev?: number | SharedValue<number>;
+  whiteBalance?: number | SharedValue<number>;
+  focusDistance?: number | SharedValue<number>;
   onDebugUpdate?: (event: { nativeEvent: { fps: number; resolution: string } }) => void;
 }
 

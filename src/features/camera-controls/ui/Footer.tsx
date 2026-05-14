@@ -22,10 +22,18 @@ export const Footer = () => {
     contrast,
     chromaticAberration,
     isDebugEnabled,
+    iso,
+    ev,
+    shutterSpeed,
+    whiteBalance,
     setGrainIntensity,
     setSaturation,
     setContrast,
     setChromaticAberration,
+    setIso,
+    setEv,
+    setShutterSpeed,
+    setWhiteBalance,
     setIsDebugEnabled,
     resetTool,
   } = useCameraEffectsStore(useShallow(state => ({
@@ -37,11 +45,19 @@ export const Footer = () => {
     saturation: state.saturation,
     contrast: state.contrast,
     chromaticAberration: state.chromaticAberration,
+    iso: state.iso,
+    ev: state.ev,
+    shutterSpeed: state.shutterSpeed,
+    whiteBalance: state.whiteBalance,
     isDebugEnabled: state.isDebugEnabled,
     setGrainIntensity: state.setGrainIntensity,
     setSaturation: state.setSaturation,
     setContrast: state.setContrast,
     setChromaticAberration: state.setChromaticAberration,
+    setIso: state.setIso,
+    setEv: state.setEv,
+    setShutterSpeed: state.setShutterSpeed,
+    setWhiteBalance: state.setWhiteBalance,
     setIsDebugEnabled: state.setIsDebugEnabled,
     resetTool: state.resetTool,
   })));
@@ -140,8 +156,55 @@ export const Footer = () => {
                 </View>
               </Animated.View>
             )}
+            
+            {activeModule === 'manual_exposure' && (
+              <Animated.View entering={FadeIn.duration(200)} exiting={FadeOut.duration(200)} style={styles.tabContent}>
+                <View style={styles.imageToolsContainer}>
+                  <FilterParameterThumb
+                    label={t('parameters.iso')}
+                    isActive={activeParameter === 'iso'}
+                    onPress={() => handlePressWithDouble('iso', () => setActiveParameter('iso'))}
+                    value={iso}
+                    minValue={50}
+                    maxValue={3200}
+                    onChange={setIso}
+                    icon="flash-outline"
+                  />
+                  <FilterParameterThumb
+                    label={t('parameters.ev')}
+                    isActive={activeParameter === 'ev'}
+                    onPress={() => handlePressWithDouble('ev', () => setActiveParameter('ev'))}
+                    value={ev}
+                    minValue={-2.0}
+                    maxValue={2.0}
+                    onChange={setEv}
+                    icon="sunny-outline"
+                  />
+                  <FilterParameterThumb
+                    label={t('parameters.shutter_speed')}
+                    isActive={activeParameter === 'shutter_speed'}
+                    onPress={() => handlePressWithDouble('shutter_speed', () => setActiveParameter('shutter_speed'))}
+                    value={shutterSpeed}
+                    minValue={1}
+                    maxValue={1000}
+                    onChange={setShutterSpeed}
+                    icon="timer-outline"
+                  />
+                  <FilterParameterThumb
+                    label={t('parameters.white_balance')}
+                    isActive={activeParameter === 'white_balance'}
+                    onPress={() => handlePressWithDouble('white_balance', () => setActiveParameter('white_balance'))}
+                    value={whiteBalance}
+                    minValue={2000}
+                    maxValue={10000}
+                    onChange={setWhiteBalance}
+                    icon="thermometer-outline"
+                  />
+                </View>
+              </Animated.View>
+            )}
 
-            {activeModule !== 'grain' && activeModule !== 'color_grading' && activeModule !== 'lens_effects' && activeModule !== 'language' && activeModule !== 'debug' && activeModule !== 'none' && (
+            {activeModule !== 'grain' && activeModule !== 'color_grading' && activeModule !== 'lens_effects' && activeModule !== 'manual_exposure' && activeModule !== 'language' && activeModule !== 'debug' && activeModule !== 'none' && (
               <Animated.View entering={FadeIn.duration(200)} exiting={FadeOut.duration(200)} style={styles.tabContent}>
                 <Text style={styles.infoText}>{t('footer.coming_soon')}</Text>
               </Animated.View>
