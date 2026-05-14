@@ -7,7 +7,7 @@ import { TabType } from '@shared/types/camera';
 import { useShallow } from 'zustand/react/shallow';
 import { useCameraEffectsStore } from '../model/useCameraEffectsStore';
 
-export const BottomNavigationBar = () => {
+export const FooterTabs = () => {
   const { activeTab, setActiveTab, setActiveModule } = useCameraEffectsStore(useShallow(state => ({
     activeTab: state.activeTab,
     setActiveTab: state.setActiveTab,

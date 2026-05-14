@@ -8,7 +8,7 @@ import { Ionicons } from '@expo/vector-icons';
 const AnimatedIcon = Animated.createAnimatedComponent(Ionicons);
 const AnimatedTextInput = Animated.createAnimatedComponent(TextInput);
 
-interface FilterParameterThumbProps {
+interface FooterParameterControlProps {
   label: string;
   isActive: boolean;
   onPress: () => void;
@@ -24,7 +24,7 @@ interface FilterParameterThumbProps {
   onLongPress?: () => void;
 }
 
-export const FilterParameterThumb = ({ 
+export const FooterParameterControl = ({ 
   label, 
   isActive, 
   onPress, 
@@ -38,7 +38,7 @@ export const FilterParameterThumb = ({
   variant = 'square',
   isAuto,
   onLongPress,
-}: FilterParameterThumbProps) => {
+}: FooterParameterControlProps) => {
   const startVal = useSharedValue(minValue);
 
   const longPressGesture = Gesture.LongPress()

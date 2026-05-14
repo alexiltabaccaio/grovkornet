@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { useShallow } from 'zustand/react/shallow';
 import { useCameraEffectsStore } from '../model/useCameraEffectsStore';
 
-export const FilterPillMenu = () => {
+export const FooterModules = () => {
   const { activeTab, activeModule, setActiveModule } = useCameraEffectsStore(useShallow(state => ({
     activeTab: state.activeTab,
     activeModule: state.activeModule,

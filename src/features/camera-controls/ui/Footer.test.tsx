@@ -32,16 +32,20 @@ jest.mock('@expo/vector-icons', () => ({
 
 
 
-jest.mock('./BottomNavigationBar', () => ({
-  BottomNavigationBar: 'BottomNavigationBar',
+jest.mock('./FooterTabs', () => ({
+  FooterTabs: 'FooterTabs',
 }));
 
-jest.mock('./FilterPillMenu', () => ({
-  FilterPillMenu: 'FilterPillMenu',
+jest.mock('./FooterModules', () => ({
+  FooterModules: 'FooterModules',
 }));
 
-jest.mock('./FilterParameterThumb', () => ({
-  FilterParameterThumb: 'FilterParameterThumb',
+jest.mock('./FooterParameterControl', () => ({
+  FooterParameterControl: 'FooterParameterControl',
+}));
+
+jest.mock('./FooterParameters', () => ({
+  FooterParameters: 'FooterParameters',
 }));
 
 jest.mock('@shared/ui', () => ({
