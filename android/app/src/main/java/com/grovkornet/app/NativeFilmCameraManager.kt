@@ -109,4 +109,14 @@ class NativeFilmCameraManager : SimpleViewManager<NativeFilmCameraView>() {
     fun setCameraId(view: NativeFilmCameraView, cameraId: String?) {
         view.cameraId = cameraId
     }
+
+    @ReactProp(name = "torchState", defaultFloat = 0.0f)
+    fun setTorchState(view: NativeFilmCameraView, torchState: Float) {
+        view.torchState = torchState
+    }
+
+    @ReactProp(name = "torchStrength", defaultFloat = 1.0f)
+    fun setTorchStrength(view: NativeFilmCameraView, torchStrength: Float) {
+        view.torchStrength = torchStrength.toInt()
+    }
 }

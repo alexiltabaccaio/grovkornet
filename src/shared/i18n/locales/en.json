@@ -37,7 +37,9 @@
       "shutter_speed": "SHUTTER",
       "white_balance": "TEMPERATURE",
       "focus": "FOCUS",
-      "lens": "LENS"
+      "lens": "LENS",
+      "torch": "TORCH",
+      "torch_dimmer": "DIMMER"
     },
     "footer": {
       "coming_soon": "COMING SOON"

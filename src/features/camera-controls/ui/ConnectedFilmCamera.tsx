@@ -56,6 +56,8 @@ export const ConnectedFilmCamera = ({ cameraKey }: ConnectedFilmCameraProps) => 
       autoFocus={store.focusAuto}
       focusDistance={store.focusDistance}
       cameraId={store.cameraId}
+      torchState={store.torchState}
+      torchStrength={store.torchStrength}
       onCapabilitiesUpdate={(event) => {
         if (event.nativeEvent) {
           store.setCapabilities(event.nativeEvent);

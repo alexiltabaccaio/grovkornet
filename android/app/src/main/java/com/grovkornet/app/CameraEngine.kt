@@ -47,6 +47,8 @@ class CameraEngine(private val context: Context, private val lifecycleOwner: Lif
     @Volatile var exposureTime: Long = 1000000000L / 60
     @Volatile var focusDistance: Float = 0.0f
     @Volatile var ev: Float = 0.0f
+    @Volatile var torchEnabled: Boolean = false
+    @Volatile var torchStrength: Int = 1
     
     @Volatile var cameraId: String? = null
 
@@ -240,6 +242,18 @@ class CameraEngine(private val context: Context, private val lifecycleOwner: Lif
                 builder.setCaptureRequestOption(CaptureRequest.LENS_FOCUS_DISTANCE, focusDistance)
             }
 
+            if (torchEnabled) {
+                currentCamera.cameraControl.enableTorch(true)
+                try {
+                    // Supported in CameraX 1.5+
+                    currentCamera.cameraControl.setTorchStrengthLevel(torchStrength)
+                } catch (e: Exception) {
+                    Log.e(TAG, "setTorchStrengthLevel failed or not supported", e)
+                }
+            } else {
+                currentCamera.cameraControl.enableTorch(false)
+            }
+
             control.captureRequestOptions = builder.build()
         } catch (e: Exception) {
             Log.e(TAG, "Failed to update camera controls", e)
@@ -278,6 +292,21 @@ class CameraEngine(private val context: Context, private val lifecycleOwner: Lif
             val info = Camera2CameraInfo.from(it.cameraInfo)
             val afModes = info.getCameraCharacteristic(CameraCharacteristics.CONTROL_AF_AVAILABLE_MODES)
             event.putBoolean("supportsFocus", afModes?.any { m -> m != CameraCharacteristics.CONTROL_AF_MODE_OFF } ?: false)
+            event.putBoolean("hasTorch", it.cameraInfo.hasFlashUnit())
+            
+            try {
+                // Fetch maximum torch strength. In CameraX 1.5+ we can use it.cameraInfo.torchState or similar, but
+                // it's safer to read directly from CameraCharacteristics on API 33+
+                if (android.os.Build.VERSION.SDK_INT >= 33) { // TIRAMISU
+                    val maxStrength = info.getCameraCharacteristic(CameraCharacteristics.FLASH_INFO_STRENGTH_MAXIMUM_LEVEL) ?: 1
+                    event.putInt("maxTorchStrength", maxStrength)
+                } else {
+                    event.putInt("maxTorchStrength", 1)
+                }
+            } catch (e: Exception) {
+                event.putInt("maxTorchStrength", 1)
+            }
+
             info.getCameraCharacteristic(CameraCharacteristics.SENSOR_INFO_SENSITIVITY_RANGE)?.let { range ->
                 event.putInt("isoMin", range.lower)
                 event.putInt("isoMax", range.upper)

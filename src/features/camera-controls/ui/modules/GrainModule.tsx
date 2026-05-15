@@ -53,11 +53,8 @@ export const GrainModule = ({
         label={t('parameters.chroma')}
         isActive={activeParameter === 'grain_chroma'}
         onPress={() => {
-          if (activeParameter === 'grain_chroma') {
-            setGrainChroma(grainChroma.value === 0 ? 1 : 0);
-          } else {
-            setActiveParameter('grain_chroma');
-          }
+          setGrainChroma(grainChroma.value === 0 ? 1 : 0);
+          setActiveParameter('grain_chroma');
         }}
         value={grainChroma}
         renderValue={true}

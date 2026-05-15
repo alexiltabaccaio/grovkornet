@@ -2,10 +2,12 @@ import { SharedValue } from 'react-native-reanimated';
 
 export type TabType = 'lens' | 'color' | 'tape' | 'crt' | 'settings' | 'exposure' | 'none';
 export type ModuleType = 'color_grading' | 'fade' | 'grain' | 'jitter' | 'dropouts' | 'lens_effects' | 'language' | 'debug' | 'manual_exposure' | 'focus' | 'lens' | 'none';
-export type ParameterType = 'saturation' | 'contrast' | 'grain' | 'grain_chroma' | 'grain_size' | 'chromatic_aberration' | 'iso' | 'ev' | 'shutter_speed' | 'white_balance' | 'focus' | 'lens' | 'none';
+export type ParameterType = 'saturation' | 'contrast' | 'grain' | 'grain_chroma' | 'grain_size' | 'chromatic_aberration' | 'iso' | 'ev' | 'shutter_speed' | 'white_balance' | 'focus' | 'lens' | 'torch' | 'torch_dimmer' | 'none';
 
 export interface CameraCapabilities {
   supportsFocus: boolean;
+  hasTorch?: boolean;
+  maxTorchStrength?: number;
   isoMin?: number;
   isoMax?: number;
   availableCameras: Array<{
@@ -38,6 +40,8 @@ interface EffectSharedValues {
   focusAuto: SharedValue<boolean>;
   cameraId: string;
   cameraAuto: boolean;
+  torchState: SharedValue<number>;
+  torchStrength: SharedValue<number>;
 }
 
 interface EffectHandlers {
@@ -62,6 +66,8 @@ interface EffectHandlers {
   setFocusAuto: (value: boolean) => void;
   setCameraId: (value: string) => void;
   setCameraAuto: (value: boolean) => void;
+  setTorchState: (value: number) => void;
+  setTorchStrength: (value: number) => void;
   setCapabilities: (capabilities: CameraCapabilities) => void;
 }
 

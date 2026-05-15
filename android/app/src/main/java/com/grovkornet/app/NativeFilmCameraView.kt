@@ -141,6 +141,28 @@ class NativeFilmCameraView(context: Context) : GLSurfaceView(context) {
     var focusDistance: Float = 0.0f
         set(value) { if (field != value) { field = value; if (::cameraEngine.isInitialized) { cameraEngine.focusDistance = value; scheduleCameraUpdate() } } }
     
+    var torchState: Float = 0.0f
+        set(value) {
+            if (field != value) {
+                field = value
+                if (::cameraEngine.isInitialized) {
+                    cameraEngine.torchEnabled = value > 0.5f
+                    scheduleCameraUpdate()
+                }
+            }
+        }
+    
+    var torchStrength: Int = 1
+        set(value) {
+            if (field != value) {
+                field = value
+                if (::cameraEngine.isInitialized) {
+                    cameraEngine.torchStrength = value
+                    scheduleCameraUpdate()
+                }
+            }
+        }
+    
     var cameraId: String? = null
         set(value) {
             if (field != value) {

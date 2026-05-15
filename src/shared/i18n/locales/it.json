@@ -37,7 +37,9 @@
       "shutter_speed": "TEMPI",
       "white_balance": "TEMPERATURA",
       "focus": "FUOCO",
-      "lens": "LENTE"
+      "lens": "LENTE",
+      "torch": "TORCIA",
+      "torch_dimmer": "INTENSITÀ"
     },
     "footer": {
       "coming_soon": "IN ARRIVO"

@@ -36,8 +36,12 @@ export const useCameraEffectsStore = create<CameraState>((set, get) => ({
   focusAuto: makeMutable(true),
   cameraId: '',
   cameraAuto: true,
+  torchState: makeMutable(0),
+  torchStrength: makeMutable(1),
   capabilities: {
     supportsFocus: true,
+    hasTorch: false,
+    maxTorchStrength: 1,
     isoMin: 100,
     isoMax: 3200,
     availableCameras: [],
@@ -130,6 +134,14 @@ export const useCameraEffectsStore = create<CameraState>((set, get) => ({
 
   setCameraAuto: (value) => {
     set((state) => ({ cameraAuto: value, ...(value ? { cameraId: '' } : {}) }));
+  },
+  
+  setTorchState: (value) => {
+    get().torchState.value = value;
+  },
+
+  setTorchStrength: (value) => {
+    get().torchStrength.value = value;
   },
 
   setCapabilities: (caps) => {

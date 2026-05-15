@@ -19,6 +19,8 @@ interface NativeFilmCameraProps extends ViewProps {
   whiteBalance?: number | SharedValue<number>;
   focusDistance?: number | SharedValue<number>;
   cameraId?: string | SharedValue<string>;
+  torchState?: number | SharedValue<number>;
+  torchStrength?: number | SharedValue<number>;
   onDebugUpdate?: (event: { nativeEvent: { fps: number; resolution: string } }) => void;
   onExposureUpdate?: (event: { nativeEvent: { iso: number; shutterSpeed: number; focusDistance: number } }) => void;
   onCapabilitiesUpdate?: (event: { nativeEvent: { 

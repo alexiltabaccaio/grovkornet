@@ -65,6 +65,10 @@ export const FooterParameters = () => {
     setCameraId: state.setCameraId,
     cameraAuto: state.cameraAuto,
     setCameraAuto: state.setCameraAuto,
+    torchState: state.torchState,
+    setTorchState: state.setTorchState,
+    torchStrength: state.torchStrength,
+    setTorchStrength: state.setTorchStrength,
     resetTool: state.resetTool,
   })));
 
@@ -155,6 +159,10 @@ export const FooterParameters = () => {
             setCameraId={cameraStore.setCameraId}
             cameraAuto={cameraStore.cameraAuto}
             setCameraAuto={cameraStore.setCameraAuto}
+            torchState={cameraStore.torchState}
+            setTorchState={cameraStore.setTorchState}
+            torchStrength={cameraStore.torchStrength}
+            setTorchStrength={cameraStore.setTorchStrength}
             handlePressWithDouble={handlePressWithDouble}
           />
         );
