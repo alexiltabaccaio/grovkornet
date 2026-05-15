@@ -37,7 +37,7 @@ export const SubParameterPanel = ({ translateY }: SubParameterPanelProps) => {
   const animatedStyle = useAnimatedStyle(() => {
     const opacity = interpolate(
       translateY.value,
-      [-100, -50, 0],
+      [-75, -25, 0],
       [1, 0, 0],
       Extrapolation.CLAMP
     );
@@ -101,7 +101,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    paddingVertical: 20,
+    paddingVertical: 10,
     width: '100%',
   },
 });

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { StyleSheet, View, TextInput } from 'react-native';
 import { useShallow } from 'zustand/react/shallow';
 import { useUIStore } from '../model/useUIStore';
@@ -24,6 +24,10 @@ export const Footer = () => {
   const translateY = useSharedValue(0);
   const startY = useSharedValue(0);
 
+  useEffect(() => {
+    translateY.value = 0;
+  }, [activeSection, translateY]);
+
   const MAX_UP = -250; // Massima altezza (aperto)
   const MAGNETIC_THRESHOLD = 50; // Quanti pixel dal bordo per far scattare il magnete
 
@@ -40,21 +44,12 @@ export const Footer = () => {
       translateY.value = newY;
     })
     .onEnd((e) => {
-      let targetY = translateY.value;
-
-      if (translateY.value > -MAGNETIC_THRESHOLD) {
-        // Se vicino alla base, scatta a 0 (Chiuso)
-        targetY = 0;
-      } else if (translateY.value < MAX_UP + MAGNETIC_THRESHOLD) {
-        // Se vicino alla cima, scatta a MAX_UP (Aperto)
-        targetY = MAX_UP;
-      } else {
-        // Drag libero al centro, con inerzia
-        targetY = translateY.value + e.velocityY * 0.1;
-        // Clamp di sicurezza
-        if (targetY < MAX_UP + MAGNETIC_THRESHOLD) targetY = MAX_UP;
-        if (targetY > -MAGNETIC_THRESHOLD) targetY = 0;
-      }
+      const estimatedY = translateY.value + e.velocityY * 0.1;
+      const snapPoints = [0, -75, MAX_UP];
+      
+      const targetY = snapPoints.reduce((prev, curr) => 
+        Math.abs(curr - estimatedY) < Math.abs(prev - estimatedY) ? curr : prev
+      );
 
       translateY.value = withSpring(targetY, {
         damping: 20,
@@ -83,12 +78,21 @@ export const Footer = () => {
     };
   });
 
+  const isSheetVisible = activeSection !== 'none';
+
   return (
     <View style={styles.container} pointerEvents="box-none">
-      <Animated.View style={[styles.unifiedBackground, animatedBackgroundStyle]} pointerEvents="none" />
+      <Animated.View 
+        style={[
+          styles.unifiedBackgroundBase,
+          isSheetVisible ? styles.unifiedBackgroundOpen : styles.unifiedBackgroundClosed,
+          animatedBackgroundStyle
+        ]} 
+        pointerEvents="none" 
+      />
       <Animated.View style={[styles.topFooterContainer, animatedTopFooterStyle]} pointerEvents="box-none">
 
-        {activeSection !== 'none' && (
+        {isSheetVisible && (
           <GestureDetector gesture={panGesture}>
             <View>
               <View style={styles.topFooter}>
@@ -133,19 +137,25 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
     zIndex: 100,
   },
-  unifiedBackground: {
+  unifiedBackgroundBase: {
     position: 'absolute',
     left: 0,
     right: 0,
-    height: 1000,
-    top: 0,
     backgroundColor: 'rgba(0, 0, 0, 0.85)',
+  },
+  unifiedBackgroundClosed: {
+    top: 0,
+    height: 1000,
+  },
+  unifiedBackgroundOpen: {
+    bottom: -1000,
+    height: 1180, // 1000 + 180 (topFooter height)
   },
 
   topFooterContainer: {
     width: '100%',
     position: 'absolute',
-    bottom: -400,
+    bottom: -340, // -400 + 60px (altezza tab)
   },
 
   topFooter: {
