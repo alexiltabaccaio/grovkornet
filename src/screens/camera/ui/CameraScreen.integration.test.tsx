@@ -33,15 +33,15 @@ describe('CameraScreen Integration', () => {
     await waitFor(() => expect(queryByText('camera.requesting_permissions')).toBeNull());
 
     // Check if Footer sections are present
-    const exposureSection = getByText(/tabs\.exposure/i);
+    const exposureSection = getByText(/sections\.body/i);
     expect(exposureSection).toBeDefined();
 
     // Click on Exposure section
     fireEvent.press(exposureSection);
 
     // Verify UI Store updated
-    expect(useUIStore.getState().activeSection).toBe('exposure');
-    expect(useUIStore.getState().activeModule).toBe('manual_exposure');
+    expect(useUIStore.getState().activeSection).toBe('body');
+    expect(useUIStore.getState().activeModule).toBe('exposure');
 
     // Verify ManualExposureModule components appear
     await waitFor(() => expect(getByText(/parameters\.iso/i)).toBeDefined());
@@ -52,7 +52,7 @@ describe('CameraScreen Integration', () => {
     
     // Switch to exposure section
     act(() => {
-      fireEvent.press(getByText(/tabs\.exposure/i));
+      fireEvent.press(getByText(/sections\.body/i));
     });
 
     // Find ISO control
@@ -60,7 +60,7 @@ describe('CameraScreen Integration', () => {
     
     // Simulate press on ISO control to make it active
     fireEvent.press(isoControl);
-    expect(useUIStore.getState().activePrimaryParameter).toBe('iso');
+    expect(useUIStore.getState().activeParameter).toBe('iso');
 
     // Directly test store integration (since Slider interaction is complex to mock/fire in unit test)
     act(() => {

@@ -4,8 +4,6 @@ import Animated, {
   useSharedValue, 
   useAnimatedStyle, 
   withSpring, 
-  withSequence,
-  runOnJS
 } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
 
@@ -24,18 +22,20 @@ export const ShutterButton = ({ onPress, disabled, translateY }: ShutterButtonPr
 
   const handlePressIn = () => {
     if (disabled || (translateY && translateY.value < -50)) return;
+    // eslint-disable-next-line react-hooks/immutability
     scale.value = withSpring(0.9, { damping: 10, stiffness: 300 });
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
   };
 
   const handlePressOut = () => {
+    // eslint-disable-next-line react-hooks/immutability
     scale.value = withSpring(1, { damping: 10, stiffness: 300 });
   };
 
   const handlePress = () => {
     if (disabled || (translateY && translateY.value < -50)) return;
     // Feedback tattile più forte allo scatto reale
-    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     onPress();
   };
 

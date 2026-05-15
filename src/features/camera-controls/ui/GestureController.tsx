@@ -196,7 +196,7 @@ export const GestureController = () => {
 
   const currentParam = activeSubParameter !== 'none' ? activeSubParameter : activeParameter;
 
-  if (!currentParam || !swipeableParams.includes(currentParam as string)) {
+  if (!currentParam || !swipeableParams.includes(currentParam)) {
     return null;
   }
 

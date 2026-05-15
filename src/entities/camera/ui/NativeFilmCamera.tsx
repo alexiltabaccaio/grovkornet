@@ -23,8 +23,8 @@ interface NativeFilmCameraProps extends ViewProps {
   cameraId?: string | SharedValue<string>;
   torchState?: number | SharedValue<number>;
   torchStrength?: number | SharedValue<number>;
-  onDebugUpdate?: (event: { nativeEvent: { fps: number; resolution: string } }) => void;
-  onExposureUpdate?: (event: { nativeEvent: { iso: number; shutterSpeed: number; focusDistance: number } }) => void;
+  onDebugUpdate?: (event: { nativeEvent: { fps: number; hwFps: number; resolution: string } }) => void;
+  onExposureUpdate?: (event: { nativeEvent: { iso: number; shutterSpeed: number; focusDistance?: number } }) => void;
   onCapabilitiesUpdate?: (event: { nativeEvent: { 
     supportsFocus: boolean; 
     isoMin?: number; 
@@ -55,3 +55,5 @@ export const NativeFilmCamera = forwardRef<NativeFilmCameraRef, NativeFilmCamera
 
   return <AnimatedNativeFilmCamera {...props} ref={nativeRef} />;
 });
+
+NativeFilmCamera.displayName = 'NativeFilmCamera';

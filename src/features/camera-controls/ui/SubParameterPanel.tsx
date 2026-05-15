@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { useShallow } from 'zustand/react/shallow';
 import { useTranslation } from 'react-i18next';
 import { useUIStore } from '../model/useUIStore';
@@ -12,8 +12,6 @@ interface SubParameterPanelProps {
 }
 
 export const SubParameterPanel = ({ translateY }: SubParameterPanelProps) => {
-  if (!translateY) return null;
-
   const { t } = useTranslation();
   
   const { activeParameter, activeSubParameter, setActiveSubParameter } = useUIStore(useShallow(state => ({
@@ -43,6 +41,8 @@ export const SubParameterPanel = ({ translateY }: SubParameterPanelProps) => {
   })));
 
   const animatedStyle = useAnimatedStyle(() => {
+    if (!translateY) return { opacity: 0 };
+
     const opacity = interpolate(
       translateY.value,
       [-75, -25, 0],
@@ -55,8 +55,7 @@ export const SubParameterPanel = ({ translateY }: SubParameterPanelProps) => {
     };
   });
 
-
-  if (activeParameter === 'none') return null;
+  if (!translateY || activeParameter === 'none') return null;
 
   const renderSubParams = () => {
     switch (activeParameter) {

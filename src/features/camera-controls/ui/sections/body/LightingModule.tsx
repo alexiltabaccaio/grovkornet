@@ -13,8 +13,6 @@ interface LightingModuleProps {
   capabilities: CameraCapabilities;
   torchState: SharedValue<number>;
   setTorchState: (value: number) => void;
-  torchStrength: SharedValue<number>;
-  setTorchStrength: (value: number) => void;
   handlePressWithDouble: (param: ParameterType, action: () => void) => void;
 }
 
@@ -24,8 +22,6 @@ export const LightingModule = ({
   capabilities,
   torchState,
   setTorchState,
-  torchStrength,
-  setTorchStrength,
   handlePressWithDouble,
 }: LightingModuleProps) => {
   const { t } = useTranslation();

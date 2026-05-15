@@ -53,7 +53,7 @@ export const OpticsModule = ({
   const autoShared = useSharedValue(cameraAuto);
   React.useEffect(() => {
     autoShared.value = cameraAuto;
-  }, [cameraAuto]);
+  }, [cameraAuto, autoShared]);
 
   return (
     <Animated.View style={footerStyles.tabContent}>

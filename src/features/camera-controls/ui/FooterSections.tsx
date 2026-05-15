@@ -1,6 +1,5 @@
 import React from 'react';
 import { StyleSheet, Text, View, Pressable, ScrollView } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { SectionType } from '@shared/types/camera';
 

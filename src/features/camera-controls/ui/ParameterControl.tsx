@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View, Pressable, TextInput } from 'react-native';
+import { StyleSheet, Text, View, TextInput } from 'react-native';
 import Animated, { SharedValue, useAnimatedStyle, useAnimatedProps, interpolateColor, useSharedValue, runOnJS } from 'react-native-reanimated';
 import { GestureDetector, Gesture } from 'react-native-gesture-handler';
 import { Ionicons } from '@expo/vector-icons';
@@ -109,18 +109,21 @@ export const ParameterControl = ({
     if (!value || !isShowingValue) return { text: '' };
     
     if (isAuto && isAuto.value && hideValueInAuto) {
+      /* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unnecessary-type-assertion */
       return {
         text: autoValueText,
         defaultValue: autoValueText,
-      } as unknown as Record<string, unknown>;
+      } as any;
+      /* eslint-enable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unnecessary-type-assertion */
     }
 
     const val = valueFormatter ? valueFormatter(value.value) : Math.round(value.value).toString();
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+    /* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unnecessary-type-assertion */
     return {
       text: val,
       defaultValue: val,
-    } as unknown as Record<string, unknown>;
+    } as any;
+    /* eslint-enable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unnecessary-type-assertion */
   });
 
   const animatedTextStyle = useAnimatedStyle(() => {

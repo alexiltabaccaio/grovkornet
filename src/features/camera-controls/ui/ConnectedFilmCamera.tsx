@@ -12,6 +12,18 @@ interface ConnectedFilmCameraProps {
 import { updateSharedValue } from '@shared/lib/reanimated/safeUpdate';
 import { FlashOverlay } from './FlashOverlay';
 
+interface ExposureUpdatePayload {
+  iso: number;
+  shutterSpeed: number;
+  focusDistance?: number;
+}
+
+interface DebugUpdatePayload {
+  fps: number;
+  hwFps: number;
+  resolution: string;
+}
+
 export const ConnectedFilmCamera = ({ cameraKey }: ConnectedFilmCameraProps) => {
   const store = useCameraEffectsStore();
   const cameraRef = React.useRef<NativeFilmCameraRef>(null);
@@ -24,26 +36,32 @@ export const ConnectedFilmCamera = ({ cameraKey }: ConnectedFilmCameraProps) => 
     }
   }, [isCapturing]);
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const exposureHandler = useEvent((event: any) => {
     'worklet';
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    const nativeEvent = (event.nativeEvent || event) as ExposureUpdatePayload;
     if (store.isoAuto.value) {
-      updateSharedValue(store.iso, event.iso);
+      updateSharedValue(store.iso, nativeEvent.iso);
     }
     if (store.shutterSpeedAuto.value) {
-      updateSharedValue(store.shutterSpeed, event.shutterSpeed);
+      updateSharedValue(store.shutterSpeed, nativeEvent.shutterSpeed);
     }
-    if (store.focusAuto.value && event.focusDistance !== undefined) {
-      updateSharedValue(store.focusDistance, event.focusDistance);
+    if (store.focusAuto.value && nativeEvent.focusDistance !== undefined) {
+      updateSharedValue(store.focusDistance, nativeEvent.focusDistance);
     }
   }, ['onExposureUpdate']);
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const debugHandler = useEvent((event: any) => {
     'worklet';
-    updateSharedValue(store.fps, event.fps);
-    updateSharedValue(store.hwFps, event.hwFps);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    const nativeEvent = (event.nativeEvent || event) as DebugUpdatePayload;
+    updateSharedValue(store.fps, nativeEvent.fps);
+    updateSharedValue(store.hwFps, nativeEvent.hwFps);
     // Note: resolution is a string, updateSharedValue only handles number/boolean.
-    // However, store.resolution.value = event.resolution is allowed in worklets for strings.
-    store.resolution.value = event.resolution;
+    // eslint-disable-next-line react-hooks/immutability
+    store.resolution.value = nativeEvent.resolution;
   }, ['onDebugUpdate']);
 
   return (

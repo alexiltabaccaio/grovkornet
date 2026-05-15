@@ -37,7 +37,6 @@ export const Footer = ({ translateY: externalTranslateY }: FooterProps) => {
   }, [activeSection, translateY]);
 
   const MAX_UP = -250; // Massima altezza (aperto)
-  const MAGNETIC_THRESHOLD = 50; // Quanti pixel dal bordo per far scattare il magnete
 
   const panGesture = Gesture.Pan()
     .activeOffsetY([-5, 5]) // Evita conflitti con scroll orizzontali
@@ -70,7 +69,7 @@ export const Footer = ({ translateY: externalTranslateY }: FooterProps) => {
     return {
       text: `Y: ${Math.round(translateY.value)}px`,
       defaultValue: `Y: 0px`,
-    } as any;
+    };
   });
 
   const animatedBackgroundStyle = useAnimatedStyle(() => {

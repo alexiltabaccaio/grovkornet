@@ -35,11 +35,13 @@ describe('ConnectedFilmCamera', () => {
     const { getByTestId } = render(<ConnectedFilmCamera />);
     const nativeCamera = getByTestId('native-camera');
 
-    // Simulate native event (useEvent expects direct data)
+    // Simulate native event
     nativeCamera.props.onDebugUpdate({
-      fps: 60, 
-      hwFps: 15,
-      resolution: '1080p'
+      nativeEvent: {
+        fps: 60, 
+        hwFps: 15,
+        resolution: '1080p'
+      }
     });
 
     expect(store.fps.value).toBe(60);
@@ -54,10 +56,12 @@ describe('ConnectedFilmCamera', () => {
     const { getByTestId } = render(<ConnectedFilmCamera />);
     const nativeCamera = getByTestId('native-camera');
 
-    // Simulate exposure update from native side (useEvent expects direct data)
+    // Simulate exposure update from native side
     nativeCamera.props.onExposureUpdate({
-      iso: 800, 
-      shutterSpeed: 100
+      nativeEvent: {
+        iso: 800, 
+        shutterSpeed: 100
+      }
     });
 
     expect(store.iso.value).toBe(800);

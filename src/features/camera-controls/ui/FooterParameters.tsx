@@ -164,8 +164,6 @@ export const FooterParameters = () => {
             capabilities={cameraStore.capabilities}
             torchState={cameraStore.torchState}
             setTorchState={cameraStore.setTorchState}
-            torchStrength={cameraStore.torchStrength}
-            setTorchStrength={cameraStore.setTorchStrength}
             handlePressWithDouble={handlePressWithDouble}
           />
         );

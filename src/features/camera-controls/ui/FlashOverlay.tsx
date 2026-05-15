@@ -5,7 +5,6 @@ import Animated, {
   useAnimatedStyle, 
   withTiming, 
   withSequence,
-  runOnJS
 } from 'react-native-reanimated';
 import { useUIStore } from '../model/useUIStore';
 
@@ -20,7 +19,7 @@ export const FlashOverlay = () => {
         withTiming(0, { duration: 150 })
       );
     }
-  }, [isCapturing]);
+  }, [isCapturing, opacity]);
 
   const animatedStyle = useAnimatedStyle(() => ({
     opacity: opacity.value,

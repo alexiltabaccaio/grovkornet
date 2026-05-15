@@ -26,6 +26,7 @@ jest.mock('@features/camera-controls', () => ({
   Footer: 'Footer',
   DebugOverlay: 'DebugOverlay',
   ConnectedFilmCamera: 'ConnectedFilmCamera',
+  ShutterButton: 'ShutterButton',
 }));
 
 describe('CameraScreen Component Stability Test', () => {

@@ -5,7 +5,6 @@ import { useTranslation } from 'react-i18next';
 
 import { useShallow } from 'zustand/react/shallow';
 import { useUIStore } from '../model/useUIStore';
-import { useCameraEffectsStore } from '../model/useCameraEffectsStore';
 
 export const FooterModules = () => {
   const { activeSection, activeModule, setActiveModule } = useUIStore(useShallow(state => ({
@@ -14,10 +13,6 @@ export const FooterModules = () => {
     setActiveModule: state.setActiveModule
   })));
   const { t } = useTranslation();
-  
-  const { capabilities } = useCameraEffectsStore(useShallow(state => ({
-    capabilities: state.capabilities
-  })));
 
   if (activeSection === 'none') return null;
 
