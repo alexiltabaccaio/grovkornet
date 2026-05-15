@@ -26,6 +26,7 @@ interface ParameterControlProps {
   staticText?: string;
   invertDrag?: boolean;
   hideValueInAuto?: boolean;
+  autoValueText?: string;
 }
 
 import { updateSharedValue } from '@shared/lib/reanimated/safeUpdate';
@@ -46,6 +47,7 @@ export const ParameterControl = ({
   staticText,
   invertDrag = false,
   hideValueInAuto = false,
+  autoValueText = 'AUTO',
 }: ParameterControlProps) => {
   const startVal = useSharedValue(minValue);
   const isDebugEnabled = useUIStore((s) => s.isDebugEnabled);
@@ -108,8 +110,8 @@ export const ParameterControl = ({
     
     if (isAuto && isAuto.value && hideValueInAuto) {
       return {
-        text: 'AUTO',
-        defaultValue: 'AUTO',
+        text: autoValueText,
+        defaultValue: autoValueText,
       } as unknown as Record<string, unknown>;
     }
 

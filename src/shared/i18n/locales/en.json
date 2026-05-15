@@ -18,7 +18,8 @@
       "lighting": "Lighting",
       "development": "Development",
       "texture": "Texture",
-      "capture": "Capture"
+      "capture": "Capture",
+      "debug": "Debug"
     },
     "parameters": {
       "amount": "AMOUNT",
@@ -28,7 +29,7 @@
       "size": "SIZE",
       "saturation": "SATURATION",
       "contrast": "CONTRAST",
-      "phase_shift": "PHASE SHIFT",
+      "chromatic_aberration": "CHROMATIC ABERRATION",
       "iso": "ISO",
       "ev": "EV",
       "shutter_speed": "SHUTTER",

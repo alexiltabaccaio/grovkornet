@@ -13,7 +13,7 @@ export const footerStyles = StyleSheet.create({
   },
   imageToolsContainer: {
     flexDirection: 'row',
-    justifyContent: 'center',
+    justifyContent: 'space-evenly',
     alignItems: 'center',
     width: '100%',
   },

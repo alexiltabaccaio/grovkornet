@@ -116,6 +116,9 @@ export const useCameraEffectsStore = create<CameraState>((set, get) => ({
 
   setTemperatureAuto: (value: boolean) => {
     get().temperatureAuto.value = value;
+    if (value) {
+      get().temperature.value = DEFAULT_TEMPERATURE;
+    }
   },
 
   setEvAuto: (value: boolean) => {

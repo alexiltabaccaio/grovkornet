@@ -131,7 +131,18 @@ class NativeFilmCameraView(context: Context) : GLSurfaceView(context) {
     var shutterSpeedAuto: Boolean = true
         set(value) { if (field != value) { field = value; if (::cameraEngine.isInitialized) { cameraEngine.shutterSpeedAuto = value; scheduleCameraUpdate() } } }
     var whiteBalanceAuto: Boolean = true
-        set(value) { if (field != value) { field = value; if (::cameraEngine.isInitialized) { cameraEngine.whiteBalanceAuto = value; scheduleCameraUpdate() } } }
+        set(value) { 
+            if (field != value) { 
+                field = value
+                if (::cameraEngine.isInitialized) { 
+                    cameraEngine.whiteBalanceAuto = value
+                    scheduleCameraUpdate() 
+                }
+                if (::renderer.isInitialized) {
+                    renderer.whiteBalanceAuto = value
+                }
+            } 
+        }
     var autoFocus: Boolean = false
         set(value) { if (field != value) { field = value; if (::cameraEngine.isInitialized) { cameraEngine.autoFocus = value; scheduleCameraUpdate() } } }
     var iso: Int = 400

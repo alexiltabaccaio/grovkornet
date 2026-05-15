@@ -25,11 +25,17 @@ jest.mock('react-native-reanimated', () => {
 
 jest.mock('@shared/ui', () => ({
   LanguageThumb: 'LanguageThumb',
+  DebugThumb: 'DebugThumb',
 }));
 
 describe('PreferencesModule', () => {
   it('renders correctly', () => {
-    const { toJSON } = render(<PreferencesModule />);
+    const { toJSON } = render(
+      <PreferencesModule 
+        isDebugEnabled={false} 
+        setIsDebugEnabled={jest.fn()} 
+      />
+    );
     expect(toJSON()).toBeDefined();
   });
 });

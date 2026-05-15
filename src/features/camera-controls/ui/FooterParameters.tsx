@@ -17,7 +17,6 @@ import { LightingModule } from './sections/body/LightingModule';
 import { CaptureModule } from './sections/body/CaptureModule';
 import { OpticsModule } from './sections/lens/OpticsModule';
 import { PreferencesModule } from './sections/system/PreferencesModule';
-import { DebugModule } from './sections/system/DebugModule';
 
 export const FooterParameters = () => {
   const uiStore = useUIStore(useShallow(state => ({
@@ -187,13 +186,10 @@ export const FooterParameters = () => {
       case 'preferences':
         // For now, mapping language and debug to preferences
         return (
-          <>
-            <PreferencesModule />
-            <DebugModule
-              isDebugEnabled={uiStore.isDebugEnabled}
-              setIsDebugEnabled={uiStore.setIsDebugEnabled}
-            />
-          </>
+          <PreferencesModule
+            isDebugEnabled={uiStore.isDebugEnabled}
+            setIsDebugEnabled={uiStore.setIsDebugEnabled}
+          />
         );
       case 'none':
         return null;

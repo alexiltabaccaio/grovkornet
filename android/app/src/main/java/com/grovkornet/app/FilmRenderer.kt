@@ -29,6 +29,7 @@ class FilmRenderer(private val listener: Listener) : GLSurfaceView.Renderer, Sur
     @Volatile var aberration: Float = 0.0f
     @Volatile var ev: Float = 0.0f
     @Volatile var whiteBalance: Float = 5000.0f
+    @Volatile var whiteBalanceAuto: Boolean = true
 
     private var program = 0
     private var cameraTextureId = 0
@@ -168,7 +169,7 @@ class FilmRenderer(private val listener: Listener) : GLSurfaceView.Renderer, Sur
         GLES20.glUniform1f(uTimeLoc, (System.currentTimeMillis() % 10000) / 1000f)
         GLES20.glUniform2f(uResolutionLoc, viewportWidth.toFloat(), viewportHeight.toFloat())
         GLES20.glUniform1f(uEvLoc, ev)
-        GLES20.glUniform1f(uWhiteBalanceLoc, whiteBalance)
+        GLES20.glUniform1f(uWhiteBalanceLoc, if (whiteBalanceAuto) 5000.0f else whiteBalance)
 
         GLES20.glEnableVertexAttribArray(aPositionLoc)
         GLES20.glVertexAttribPointer(aPositionLoc, 2, GLES20.GL_FLOAT, false, 0, vertexBuffer)

@@ -25,7 +25,10 @@ export const Footer = () => {
   const startY = useSharedValue(0);
 
   useEffect(() => {
-    translateY.value = 0;
+    // Reset only when closing the sheet (none section)
+    if (activeSection === 'none') {
+      translateY.value = 0;
+    }
   }, [activeSection, translateY]);
 
   const MAX_UP = -250; // Massima altezza (aperto)

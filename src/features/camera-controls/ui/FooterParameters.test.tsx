@@ -24,10 +24,7 @@ jest.mock('./sections/system/PreferencesModule', () => {
   const { Text: TextMock } = require('react-native');
   return { PreferencesModule: () => <TextMock>PreferencesModule</TextMock> };
 });
-jest.mock('./sections/system/DebugModule', () => {
-  const { Text: TextMock } = require('react-native');
-  return { DebugModule: () => <TextMock>DebugModule</TextMock> };
-});
+
 jest.mock('./sections/lens/OpticsModule', () => {
   const { Text: TextMock } = require('react-native');
   return { OpticsModule: () => <TextMock>OpticsModule</TextMock> };

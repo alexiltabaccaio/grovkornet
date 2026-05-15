@@ -2,11 +2,16 @@ import React from 'react';
 import { View } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { useTranslation } from 'react-i18next';
-import { LanguageThumb } from '@shared/ui';
+import { LanguageThumb, DebugThumb } from '@shared/ui';
 import { footerStyles } from '../../Footer.styles';
 
-export const PreferencesModule = () => {
-  const { i18n } = useTranslation();
+interface PreferencesModuleProps {
+  isDebugEnabled: boolean;
+  setIsDebugEnabled: (enabled: boolean) => void;
+}
+
+export const PreferencesModule = ({ isDebugEnabled, setIsDebugEnabled }: PreferencesModuleProps) => {
+  const { i18n, t } = useTranslation();
 
   return (
     <Animated.View style={footerStyles.tabContent}>
@@ -30,6 +35,11 @@ export const PreferencesModule = () => {
               console.error('Failed to change language to it:', error);
             });
           }}
+        />
+        <DebugThumb
+          label={t('modules.debug')}
+          isActive={isDebugEnabled}
+          onPress={() => setIsDebugEnabled(!isDebugEnabled)}
         />
       </View>
     </Animated.View>

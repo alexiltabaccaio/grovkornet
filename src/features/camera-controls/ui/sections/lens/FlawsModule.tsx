@@ -26,7 +26,7 @@ export const FlawsModule = ({
   return (
     <Animated.View style={footerStyles.tabContent}>
       <ParameterControl
-        label={t('parameters.phase_shift')}
+        label={t('parameters.chromatic_aberration')}
         isActive={activeParameter === 'chromatic_aberration'}
         onPress={() => handlePressWithDouble('chromatic_aberration', () => setActiveParameter('chromatic_aberration'))}
         value={chromaticAberration}

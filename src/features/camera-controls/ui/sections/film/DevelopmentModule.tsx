@@ -75,6 +75,7 @@ export const DevelopmentModule = ({
           onLongPress={() => setTemperatureAuto(!temperatureAuto.value)}
           valueFormatter={formatTemperature}
           hideValueInAuto={true}
+          autoValueText="AWB"
         />
       </View>
     </Animated.View>
