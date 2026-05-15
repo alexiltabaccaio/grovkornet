@@ -84,10 +84,6 @@ export const FooterPrimaryParameters = () => {
             setActivePrimaryParameter={uiStore.setActivePrimaryParameter}
             grainIntensity={cameraStore.grainIntensity}
             setGrainIntensity={cameraStore.setGrainIntensity}
-            grainChroma={cameraStore.grainChroma}
-            setGrainChroma={cameraStore.setGrainChroma}
-            grainSize={cameraStore.grainSize}
-            setGrainSize={cameraStore.setGrainSize}
             handlePressWithDouble={handlePressWithDouble}
           />
         );

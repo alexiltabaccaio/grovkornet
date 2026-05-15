@@ -64,10 +64,10 @@ export const FooterSections = () => {
 
 const styles = StyleSheet.create({
   bottomFooterWrapper: {
-    backgroundColor: 'rgba(0, 0, 0, 0.85)',
     paddingTop: 16,
     paddingBottom: 16,
   },
+
   scrollContent: {
     flexDirection: 'row',
     justifyContent: 'space-around',

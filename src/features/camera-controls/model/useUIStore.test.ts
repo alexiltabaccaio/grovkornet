@@ -6,7 +6,9 @@ describe('useUIStore', () => {
     state.setActiveSection('none');
     state.setActiveModule('none');
     state.setActivePrimaryParameter('none');
+    state.setActiveSubParameter('none');
     state.setIsDebugEnabled(false);
+
   });
 
   it('initializes with default values', () => {
@@ -14,7 +16,9 @@ describe('useUIStore', () => {
     expect(state.activeSection).toBe('none');
     expect(state.activeModule).toBe('none');
     expect(state.activePrimaryParameter).toBe('none');
+    expect(state.activeSubParameter).toBe('none');
   });
+
 
   it('sets active section correctly', () => {
     const { setActiveSection } = useUIStore.getState();
@@ -50,4 +54,23 @@ describe('useUIStore', () => {
     setIsDebugEnabled(true);
     expect(useUIStore.getState().isDebugEnabled).toBe(true);
   });
+
+  it('sets active sub parameter and resets correctly', () => {
+    const { setActiveSubParameter, setActivePrimaryParameter, setActiveModule } = useUIStore.getState();
+    
+    setActiveSubParameter('grain_chroma');
+    expect(useUIStore.getState().activeSubParameter).toBe('grain_chroma');
+
+    // Reset on primary parameter change
+    setActivePrimaryParameter('grain');
+    expect(useUIStore.getState().activeSubParameter).toBe('none');
+
+    setActiveSubParameter('grain_size');
+    expect(useUIStore.getState().activeSubParameter).toBe('grain_size');
+
+    // Reset on module change
+    setActiveModule('none');
+    expect(useUIStore.getState().activeSubParameter).toBe('none');
+  });
 });
+

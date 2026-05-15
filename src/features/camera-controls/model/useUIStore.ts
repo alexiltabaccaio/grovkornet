@@ -1,14 +1,15 @@
 import { create } from 'zustand';
-import { UIState, UIActions, ModuleType, PrimaryParameterType } from '@shared/types/camera';
-
-interface UIStore extends UIState, UIActions {}
+import { UIStore, ModuleType, PrimaryParameterType, SectionType, SubParameterType } from '@shared/types/camera';
 
 export const useUIStore = create<UIStore>((set, get) => ({
   // UI State
   activeSection: 'none',
   activeModule: 'none',
   activePrimaryParameter: 'none',
+  activeSubParameter: 'none',
   isDebugEnabled: false,
+  isSubPanelOpen: false,
+
   
   lastActivePrimaryParameters: {
     none: 'none',
@@ -26,28 +27,43 @@ export const useUIStore = create<UIStore>((set, get) => ({
   },
 
   // Actions
-  setActiveSection: (section) => set({ activeSection: section }),
+  setActiveSection: (section: SectionType) => {
+    set({ activeSection: section });
+  },
   
   setActiveModule: (module: ModuleType) => {
     const { lastActivePrimaryParameters } = get();
     set({ 
       activeModule: module, 
-      activePrimaryParameter: lastActivePrimaryParameters[module] || 'none' 
+      activePrimaryParameter: lastActivePrimaryParameters[module] || 'none',
+      activeSubParameter: 'none'
     });
+
   },
 
   setActivePrimaryParameter: (param: PrimaryParameterType) => {
     const { activeModule } = get();
     set((state) => ({
       activePrimaryParameter: param,
+      activeSubParameter: 'none',
       lastActivePrimaryParameters: {
         ...state.lastActivePrimaryParameters,
         [activeModule]: param,
       },
+
     }));
   },
 
-  setIsDebugEnabled: (value: boolean) => {
-    set({ isDebugEnabled: value });
+  setIsDebugEnabled: (enabled: boolean) => {
+    set({ isDebugEnabled: enabled });
   },
+
+  setIsSubPanelOpen: (open: boolean) => {
+    set({ isSubPanelOpen: open });
+  },
+
+  setActiveSubParameter: (param: SubParameterType) => {
+    set({ activeSubParameter: param });
+  },
+
 }));

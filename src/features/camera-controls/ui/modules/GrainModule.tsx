@@ -12,10 +12,6 @@ interface GrainModuleProps {
   setActivePrimaryParameter: (param: PrimaryParameterType) => void;
   grainIntensity: SharedValue<number>;
   setGrainIntensity: (value: number) => void;
-  grainChroma: SharedValue<number>;
-  setGrainChroma: (value: number) => void;
-  grainSize: SharedValue<number>;
-  setGrainSize: (value: number) => void;
   handlePressWithDouble: (param: PrimaryParameterType, action: () => void) => void;
 }
 
@@ -24,10 +20,6 @@ export const GrainModule = ({
   setActivePrimaryParameter,
   grainIntensity,
   setGrainIntensity,
-  grainChroma,
-  setGrainChroma,
-  grainSize,
-  setGrainSize,
   handlePressWithDouble,
 }: GrainModuleProps) => {
   const { t } = useTranslation();
@@ -36,7 +28,7 @@ export const GrainModule = ({
     <Animated.View style={footerStyles.tabContent}>
       <View style={footerStyles.imageToolsContainer}>
         <PrimaryParameterControl
-        label={t('parameters.amount')}
+        label={t('parameters.grain')}
         isActive={activePrimaryParameter === 'grain'}
         onPress={() => handlePressWithDouble('grain', () => setActivePrimaryParameter('grain'))}
         value={grainIntensity}
@@ -49,37 +41,8 @@ export const GrainModule = ({
           return `${Math.round(v * 100)}%`;
         }}
       />
-      <PrimaryParameterControl
-        label={t('parameters.chroma')}
-        isActive={activePrimaryParameter === 'grain_chroma'}
-        onPress={() => {
-          setGrainChroma(grainChroma.value === 0 ? 1 : 0);
-          setActivePrimaryParameter('grain_chroma');
-        }}
-        value={grainChroma}
-        renderValue={true}
-        variant="text"
-        valueFormatter={(v) => {
-          'worklet';
-          return v === 0 ? 'MONO' : 'RGB';
-        }}
-      />
-      <PrimaryParameterControl
-        label={t('parameters.size')}
-        isActive={activePrimaryParameter === 'grain_size'}
-        onPress={() => handlePressWithDouble('grain_size', () => setActivePrimaryParameter('grain_size'))}
-        value={grainSize}
-        minValue={1.0}
-        maxValue={4.0}
-        onChange={setGrainSize}
-        renderValue={true}
-        valueFormatter={(v) => {
-          'worklet';
-          return `${v.toFixed(1)}x`;
-        }}
-        variant="text"
-      />
       </View>
     </Animated.View>
   );
 };
+

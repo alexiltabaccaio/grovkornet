@@ -2,7 +2,9 @@ import { SharedValue } from 'react-native-reanimated';
 
 export type SectionType = 'lens' | 'color' | 'tape' | 'crt' | 'settings' | 'exposure' | 'none';
 export type ModuleType = 'color_grading' | 'fade' | 'grain' | 'jitter' | 'dropouts' | 'lens_effects' | 'language' | 'debug' | 'manual_exposure' | 'focus' | 'lens' | 'none';
-export type PrimaryParameterType = 'saturation' | 'contrast' | 'grain' | 'grain_chroma' | 'grain_size' | 'chromatic_aberration' | 'iso' | 'ev' | 'shutter_speed' | 'temperature' | 'white_balance' | 'focus' | 'lens' | 'torch' | 'torch_dimmer' | 'none';
+export type PrimaryParameterType = 'saturation' | 'contrast' | 'grain' | 'chromatic_aberration' | 'iso' | 'ev' | 'shutter_speed' | 'temperature' | 'white_balance' | 'focus' | 'lens' | 'torch' | 'torch_dimmer' | 'none';
+export type SubParameterType = 'grain_chroma' | 'grain_size' | 'none';
+
 
 export interface CameraCapabilities {
   supportsFocus: boolean;
@@ -75,16 +77,24 @@ export interface UIState {
   activeSection: SectionType;
   activeModule: ModuleType;
   activePrimaryParameter: PrimaryParameterType;
+  activeSubParameter: SubParameterType;
   isDebugEnabled: boolean;
+  isSubPanelOpen: boolean;
   lastActivePrimaryParameters: Record<ModuleType, PrimaryParameterType>;
 }
+
 
 export interface UIActions {
   setActiveSection: (section: SectionType) => void;
   setActiveModule: (module: ModuleType) => void;
   setActivePrimaryParameter: (param: PrimaryParameterType) => void;
+  setActiveSubParameter: (param: SubParameterType) => void;
   setIsDebugEnabled: (enabled: boolean) => void;
+  setIsSubPanelOpen: (open: boolean) => void;
 }
+
+
+export interface UIStore extends UIState, UIActions {}
 
 export interface CameraState extends EffectSharedValues, EffectHandlers {
   capabilities: CameraCapabilities;

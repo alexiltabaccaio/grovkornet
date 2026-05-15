@@ -13,9 +13,11 @@ const SLIDER_HEIGHT = SCREEN_HEIGHT * 0.3;
 import { useCameraWorklets } from '../lib/useCameraWorklets';
 
 export const GestureController = () => {
-  const { activePrimaryParameter } = useUIStore(useShallow(state => ({
+  const { activePrimaryParameter, activeSubParameter } = useUIStore(useShallow(state => ({
     activePrimaryParameter: state.activePrimaryParameter,
+    activeSubParameter: state.activeSubParameter,
   })));
+
 
   const {
     grainIntensity,
@@ -91,7 +93,8 @@ export const GestureController = () => {
 
   const gesture = Gesture.Pan()
     .onStart(() => {
-      switch (activePrimaryParameter) {
+      const activeParam = activeSubParameter !== 'none' ? activeSubParameter : activePrimaryParameter;
+      switch (activeParam as string) {
         case 'grain':
           startVal.value = grainIntensity.value;
           break;
@@ -132,17 +135,19 @@ export const GestureController = () => {
           startVal.value = -1;
       }
     })
+
     .onUpdate((e) => {
       if (startVal.value === -1) return;
 
+      const activeParam = activeSubParameter !== 'none' ? activeSubParameter : activePrimaryParameter;
       let delta = -(e.translationY / SLIDER_HEIGHT);
-      if (activePrimaryParameter === 'focus') {
+      if (activeParam === 'focus') {
         delta = -delta;
       }
       
       const normalizedValue = Math.min(Math.max(startVal.value + delta, 0), 1);
       
-      switch (activePrimaryParameter) {
+      switch (activeParam as string) {
         case 'grain':
           updateGrain(normalizedValue);
           break;
@@ -181,6 +186,7 @@ export const GestureController = () => {
           break;
       }
     });
+
 
   if (!activePrimaryParameter || activePrimaryParameter === 'none' || activePrimaryParameter === 'lens') {
     return null;

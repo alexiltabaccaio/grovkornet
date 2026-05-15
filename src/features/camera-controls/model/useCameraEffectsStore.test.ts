@@ -68,7 +68,7 @@ describe('useCameraEffectsStore', () => {
   it('updates debug info correctly', () => {
     const { setDebugInfo } = useCameraEffectsStore.getState();
     
-    setDebugInfo(60, '1920x1080');
+    setDebugInfo(60, '1920x1080', 60);
     const state = useCameraEffectsStore.getState();
     expect(state.fps.value).toBe(60);
     expect(state.resolution.value).toBe('1920x1080');
