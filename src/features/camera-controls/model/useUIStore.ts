@@ -19,6 +19,7 @@ export const useUIStore = create<UIStore>((set, get) => ({
     lighting: 'torch',
     development: 'temperature',
     texture: 'grain',
+    capture: 'aspect_ratio',
   },
 
   // Actions

@@ -17,7 +17,8 @@
       "exposure": "Exposure",
       "lighting": "Lighting",
       "development": "Development",
-      "texture": "Texture"
+      "texture": "Texture",
+      "capture": "Capture"
     },
     "parameters": {
       "amount": "AMOUNT",
@@ -35,7 +36,10 @@
       "focus": "FOCUS",
       "lens": "LENS",
       "torch": "TORCH",
-      "torch_dimmer": "DIMMER"
+      "torch_dimmer": "DIMMER",
+      "aspect_ratio": "FORMAT",
+      "resolution_setting": "RESOLUTION",
+      "fps_setting": "FPS"
     },
     "footer": {
       "coming_soon": "COMING SOON"

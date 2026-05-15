@@ -53,6 +53,9 @@ export const FooterModules = () => {
           <TouchableOpacity style={[styles.pill, activeModule === 'lighting' && styles.pillActive]} onPress={() => setActiveModule('lighting')} hitSlop={10}>
             <Text style={[styles.pillText, activeModule === 'lighting' && styles.pillTextActive]}>{t('modules.lighting')}</Text>
           </TouchableOpacity>
+          <TouchableOpacity style={[styles.pill, activeModule === 'capture' && styles.pillActive]} onPress={() => setActiveModule('capture')} hitSlop={10}>
+            <Text style={[styles.pillText, activeModule === 'capture' && styles.pillTextActive]}>{t('modules.capture')}</Text>
+          </TouchableOpacity>
         </>
       )}
       {activeSection === 'film' && (

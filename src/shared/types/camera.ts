@@ -1,8 +1,8 @@
 import { SharedValue } from 'react-native-reanimated';
 
 export type SectionType = 'system' | 'lens' | 'body' | 'film' | 'none';
-export type ModuleType = 'preferences' | 'optics' | 'flaws' | 'exposure' | 'lighting' | 'development' | 'texture' | 'none';
-export type ParameterType = 'language' | 'debug' | 'camera_selection' | 'focus' | 'chromatic_aberration' | 'iso' | 'shutter_speed' | 'ev' | 'torch' | 'temperature' | 'saturation' | 'contrast' | 'grain' | 'none';
+export type ModuleType = 'preferences' | 'optics' | 'flaws' | 'exposure' | 'lighting' | 'capture' | 'development' | 'texture' | 'none';
+export type ParameterType = 'language' | 'debug' | 'camera_selection' | 'focus' | 'chromatic_aberration' | 'iso' | 'shutter_speed' | 'ev' | 'torch' | 'torch_strength' | 'aspect_ratio' | 'resolution_setting' | 'fps_setting' | 'temperature' | 'saturation' | 'contrast' | 'grain' | 'none';
 export type SubParameterType = 'grain_size' | 'grain_chroma' | 'torch_strength' | 'none';
 
 
@@ -44,6 +44,9 @@ interface EffectSharedValues {
   cameraAuto: boolean;
   torchState: SharedValue<number>;
   torchStrength: SharedValue<number>;
+  aspectRatio: SharedValue<number>;
+  resolutionSetting: SharedValue<number>;
+  fpsSetting: SharedValue<number>;
 }
 
 interface EffectHandlers {
@@ -70,6 +73,9 @@ interface EffectHandlers {
   setCameraAuto: (value: boolean) => void;
   setTorchState: (value: number) => void;
   setTorchStrength: (value: number) => void;
+  setAspectRatio: (value: number) => void;
+  setResolutionSetting: (value: number) => void;
+  setFpsSetting: (value: number) => void;
   setCapabilities: (capabilities: CameraCapabilities) => void;
 }
 

@@ -14,6 +14,7 @@ import { DevelopmentModule } from './sections/film/DevelopmentModule';
 import { FlawsModule } from './sections/lens/FlawsModule';
 import { ExposureModule } from './sections/body/ExposureModule';
 import { LightingModule } from './sections/body/LightingModule';
+import { CaptureModule } from './sections/body/CaptureModule';
 import { OpticsModule } from './sections/lens/OpticsModule';
 import { PreferencesModule } from './sections/system/PreferencesModule';
 import { DebugModule } from './sections/system/DebugModule';
@@ -69,6 +70,12 @@ export const FooterParameters = () => {
     setTorchState: state.setTorchState,
     torchStrength: state.torchStrength,
     setTorchStrength: state.setTorchStrength,
+    aspectRatio: state.aspectRatio,
+    setAspectRatio: state.setAspectRatio,
+    resolutionSetting: state.resolutionSetting,
+    setResolutionSetting: state.setResolutionSetting,
+    fpsSetting: state.fpsSetting,
+    setFpsSetting: state.setFpsSetting,
     resetTool: state.resetTool,
   })));
 
@@ -160,6 +167,20 @@ export const FooterParameters = () => {
             setTorchState={cameraStore.setTorchState}
             torchStrength={cameraStore.torchStrength}
             setTorchStrength={cameraStore.setTorchStrength}
+            handlePressWithDouble={handlePressWithDouble}
+          />
+        );
+      case 'capture':
+        return (
+          <CaptureModule
+            activeParameter={uiStore.activeParameter}
+            setActiveParameter={uiStore.setActiveParameter}
+            aspectRatio={cameraStore.aspectRatio}
+            setAspectRatio={cameraStore.setAspectRatio}
+            resolutionSetting={cameraStore.resolutionSetting}
+            setResolutionSetting={cameraStore.setResolutionSetting}
+            fpsSetting={cameraStore.fpsSetting}
+            setFpsSetting={cameraStore.setFpsSetting}
             handlePressWithDouble={handlePressWithDouble}
           />
         );

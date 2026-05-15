@@ -17,7 +17,8 @@
       "exposure": "Esposizione",
       "lighting": "Illuminazione",
       "development": "Sviluppo",
-      "texture": "Texture"
+      "texture": "Texture",
+      "capture": "Acquisizione"
     },
     "parameters": {
       "amount": "QUANTITÀ",
@@ -35,7 +36,10 @@
       "focus": "FUOCO",
       "lens": "LENTE",
       "torch": "TORCIA",
-      "torch_dimmer": "INTENSITÀ"
+      "torch_dimmer": "INTENSITÀ",
+      "aspect_ratio": "FORMATO",
+      "resolution_setting": "RISOLUZIONE",
+      "fps_setting": "FPS"
     },
     "footer": {
       "coming_soon": "IN ARRIVO"
