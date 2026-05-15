@@ -3,46 +3,46 @@ import { useUIStore } from './useUIStore';
 describe('useUIStore', () => {
   beforeEach(() => {
     const state = useUIStore.getState();
-    state.setActiveTab('none');
+    state.setActiveSection('none');
     state.setActiveModule('none');
-    state.setActiveParameter('none');
+    state.setActivePrimaryParameter('none');
     state.setIsDebugEnabled(false);
   });
 
   it('initializes with default values', () => {
     const state = useUIStore.getState();
-    expect(state.activeTab).toBe('none');
+    expect(state.activeSection).toBe('none');
     expect(state.activeModule).toBe('none');
-    expect(state.activeParameter).toBe('none');
+    expect(state.activePrimaryParameter).toBe('none');
   });
 
-  it('sets active tab correctly', () => {
-    const { setActiveTab } = useUIStore.getState();
-    setActiveTab('exposure');
-    expect(useUIStore.getState().activeTab).toBe('exposure');
+  it('sets active section correctly', () => {
+    const { setActiveSection } = useUIStore.getState();
+    setActiveSection('exposure');
+    expect(useUIStore.getState().activeSection).toBe('exposure');
   });
 
-  it('sets active module and restores last active parameter', () => {
+  it('sets active module and restores last active primary parameter', () => {
     const { setActiveModule } = useUIStore.getState();
     
-    // Set color_grading module (which has 'saturation' as default in lastActiveParameters)
+    // Set color_grading module (which has 'saturation' as default in lastActivePrimaryParameters)
     setActiveModule('color_grading');
     let state = useUIStore.getState();
     expect(state.activeModule).toBe('color_grading');
-    expect(state.activeParameter).toBe('saturation');
+    expect(state.activePrimaryParameter).toBe('saturation');
 
     // Change parameter
-    state.setActiveParameter('contrast');
-    expect(useUIStore.getState().activeParameter).toBe('contrast');
+    state.setActivePrimaryParameter('contrast');
+    expect(useUIStore.getState().activePrimaryParameter).toBe('contrast');
 
     // Switch to another module and back
     setActiveModule('grain');
     expect(useUIStore.getState().activeModule).toBe('grain');
-    expect(useUIStore.getState().activeParameter).toBe('grain');
+    expect(useUIStore.getState().activePrimaryParameter).toBe('grain');
 
     setActiveModule('color_grading');
     expect(useUIStore.getState().activeModule).toBe('color_grading');
-    expect(useUIStore.getState().activeParameter).toBe('contrast'); // Should be restored
+    expect(useUIStore.getState().activePrimaryParameter).toBe('contrast'); // Should be restored
   });
 
   it('updates debug mode correctly', () => {

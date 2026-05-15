@@ -3,8 +3,8 @@ import { View } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { useTranslation } from 'react-i18next';
 import { SharedValue } from 'react-native-reanimated';
-import { ParameterType } from '@shared/types/camera';
-import { FooterParameterControl } from '../FooterParameterControl';
+import { PrimaryParameterType } from '@shared/types/camera';
+import { PrimaryParameterControl } from '../PrimaryParameterControl';
 import { footerStyles } from '../Footer.styles';
 
 const formatEv = (v: number) => {
@@ -18,8 +18,8 @@ const formatShutterSpeed = (v: number) => {
 };
 
 interface ManualExposureModuleProps {
-  activeParameter: ParameterType;
-  setActiveParameter: (param: ParameterType) => void;
+  activePrimaryParameter: PrimaryParameterType;
+  setActivePrimaryParameter: (param: PrimaryParameterType) => void;
   iso: SharedValue<number>;
   setIso: (value: number) => void;
   isoAuto: SharedValue<boolean>;
@@ -32,12 +32,12 @@ interface ManualExposureModuleProps {
   setShutterSpeed: (value: number) => void;
   shutterSpeedAuto: SharedValue<boolean>;
   setShutterSpeedAuto: (value: boolean) => void;
-  handlePressWithDouble: (param: ParameterType, action: () => void) => void;
+  handlePressWithDouble: (param: PrimaryParameterType, action: () => void) => void;
 }
 
 export const ManualExposureModule = ({
-  activeParameter,
-  setActiveParameter,
+  activePrimaryParameter,
+  setActivePrimaryParameter,
   iso,
   setIso,
   isoAuto,
@@ -57,10 +57,10 @@ export const ManualExposureModule = ({
   return (
     <Animated.View style={footerStyles.tabContent}>
       <View style={footerStyles.imageToolsContainer}>
-        <FooterParameterControl
+        <PrimaryParameterControl
           label={t('parameters.iso')}
-          isActive={activeParameter === 'iso'}
-          onPress={() => handlePressWithDouble('iso', () => setActiveParameter('iso'))}
+          isActive={activePrimaryParameter === 'iso'}
+          onPress={() => handlePressWithDouble('iso', () => setActivePrimaryParameter('iso'))}
           value={iso}
           minValue={50}
           maxValue={3200}
@@ -69,10 +69,10 @@ export const ManualExposureModule = ({
           isAuto={isoAuto}
           onLongPress={() => setIsoAuto(!isoAuto.value)}
         />
-        <FooterParameterControl
+        <PrimaryParameterControl
           label={t('parameters.ev')}
-          isActive={activeParameter === 'ev'}
-          onPress={() => handlePressWithDouble('ev', () => setActiveParameter('ev'))}
+          isActive={activePrimaryParameter === 'ev'}
+          onPress={() => handlePressWithDouble('ev', () => setActivePrimaryParameter('ev'))}
           value={ev}
           minValue={-2.0}
           maxValue={2.0}
@@ -82,10 +82,10 @@ export const ManualExposureModule = ({
           onLongPress={() => setEvAuto(!evAuto.value)}
           valueFormatter={formatEv}
         />
-        <FooterParameterControl
+        <PrimaryParameterControl
           label={t('parameters.shutter_speed')}
-          isActive={activeParameter === 'shutter_speed'}
-          onPress={() => handlePressWithDouble('shutter_speed', () => setActiveParameter('shutter_speed'))}
+          isActive={activePrimaryParameter === 'shutter_speed'}
+          onPress={() => handlePressWithDouble('shutter_speed', () => setActivePrimaryParameter('shutter_speed'))}
           value={shutterSpeed}
           minValue={1}
           maxValue={1000}

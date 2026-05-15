@@ -3,8 +3,8 @@ import { View } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { useTranslation } from 'react-i18next';
 import { SharedValue } from 'react-native-reanimated';
-import { ParameterType } from '@shared/types/camera';
-import { FooterParameterControl } from '../FooterParameterControl';
+import { PrimaryParameterType } from '@shared/types/camera';
+import { PrimaryParameterControl } from '../PrimaryParameterControl';
 import { footerStyles } from '../Footer.styles';
 
 const formatFocus = (v: number) => {
@@ -20,18 +20,18 @@ const formatFocus = (v: number) => {
 };
 
 interface FocusModuleProps {
-  activeParameter: ParameterType;
-  setActiveParameter: (param: ParameterType) => void;
+  activePrimaryParameter: PrimaryParameterType;
+  setActivePrimaryParameter: (param: PrimaryParameterType) => void;
   focusDistance: SharedValue<number>;
   setFocusDistance: (value: number) => void;
   focusAuto: SharedValue<boolean>;
   setFocusAuto: (value: boolean) => void;
-  handlePressWithDouble: (param: ParameterType, action: () => void) => void;
+  handlePressWithDouble: (param: PrimaryParameterType, action: () => void) => void;
 }
 
 export const FocusModule = ({
-  activeParameter,
-  setActiveParameter,
+  activePrimaryParameter,
+  setActivePrimaryParameter,
   focusDistance,
   setFocusDistance,
   focusAuto,
@@ -43,10 +43,10 @@ export const FocusModule = ({
   return (
     <Animated.View style={footerStyles.tabContent}>
       <View style={footerStyles.imageToolsContainer}>
-        <FooterParameterControl
+        <PrimaryParameterControl
           label={t('parameters.focus')}
-          isActive={activeParameter === 'focus'}
-          onPress={() => handlePressWithDouble('focus', () => setActiveParameter('focus'))}
+          isActive={activePrimaryParameter === 'focus'}
+          onPress={() => handlePressWithDouble('focus', () => setActivePrimaryParameter('focus'))}
           value={focusDistance}
           minValue={0}
           maxValue={10}

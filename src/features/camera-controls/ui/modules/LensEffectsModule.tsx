@@ -2,21 +2,21 @@ import React from 'react';
 import Animated from 'react-native-reanimated';
 import { useTranslation } from 'react-i18next';
 import { SharedValue } from 'react-native-reanimated';
-import { ParameterType } from '@shared/types/camera';
-import { FooterParameterControl } from '../FooterParameterControl';
+import { PrimaryParameterType } from '@shared/types/camera';
+import { PrimaryParameterControl } from '../PrimaryParameterControl';
 import { footerStyles } from '../Footer.styles';
 
 interface LensEffectsModuleProps {
-  activeParameter: ParameterType;
-  setActiveParameter: (param: ParameterType) => void;
+  activePrimaryParameter: PrimaryParameterType;
+  setActivePrimaryParameter: (param: PrimaryParameterType) => void;
   chromaticAberration: SharedValue<number>;
   setChromaticAberration: (value: number) => void;
-  handlePressWithDouble: (param: ParameterType, action: () => void) => void;
+  handlePressWithDouble: (param: PrimaryParameterType, action: () => void) => void;
 }
 
 export const LensEffectsModule = ({
-  activeParameter,
-  setActiveParameter,
+  activePrimaryParameter,
+  setActivePrimaryParameter,
   chromaticAberration,
   setChromaticAberration,
   handlePressWithDouble,
@@ -25,10 +25,10 @@ export const LensEffectsModule = ({
 
   return (
     <Animated.View style={footerStyles.tabContent}>
-      <FooterParameterControl
+      <PrimaryParameterControl
         label={t('parameters.phase_shift')}
-        isActive={activeParameter === 'chromatic_aberration'}
-        onPress={() => handlePressWithDouble('chromatic_aberration', () => setActiveParameter('chromatic_aberration'))}
+        isActive={activePrimaryParameter === 'chromatic_aberration'}
+        onPress={() => handlePressWithDouble('chromatic_aberration', () => setActivePrimaryParameter('chromatic_aberration'))}
         value={chromaticAberration}
         maxValue={2.0}
         onChange={setChromaticAberration}

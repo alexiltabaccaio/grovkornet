@@ -2,16 +2,16 @@ import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { useShallow } from 'zustand/react/shallow';
 import { useUIStore } from '../model/useUIStore';
-import { FooterTabs } from './FooterTabs';
+import { FooterSections } from './FooterSections';
 import { FooterModules } from './FooterModules';
-import { FooterParameters } from './FooterParameters';
+import { FooterPrimaryParameters } from './FooterPrimaryParameters';
 import { BottomSheetHandle } from './BottomSheetHandle';
 import { GestureDetector, Gesture } from 'react-native-gesture-handler';
 import Animated, { useSharedValue, useAnimatedStyle, withSpring } from 'react-native-reanimated';
 
 export const Footer = () => {
-  const { activeTab } = useUIStore(useShallow(state => ({
-    activeTab: state.activeTab,
+  const { activeSection } = useUIStore(useShallow(state => ({
+    activeSection: state.activeSection,
   })));
 
   const translateY = useSharedValue(0);
@@ -65,7 +65,7 @@ export const Footer = () => {
   return (
     <View style={styles.container} pointerEvents="box-none">
       <Animated.View style={[styles.topFooterContainer, animatedTopFooterStyle]} pointerEvents="box-none">
-        {activeTab !== 'none' && (
+        {activeSection !== 'none' && (
           <GestureDetector gesture={panGesture}>
             <View>
               <View style={styles.topFooter}>
@@ -73,7 +73,7 @@ export const Footer = () => {
                   <BottomSheetHandle />
                 </View>
                 <FooterModules />
-                <FooterParameters />
+                <FooterPrimaryParameters />
               </View>
               {/* Area espansa che riempie il vuoto sotto quando si tira su */}
               <View style={styles.expandedBackground} />
@@ -82,7 +82,7 @@ export const Footer = () => {
         )}
       </Animated.View>
 
-      <FooterTabs />
+      <FooterSections />
     </View>
   );
 };

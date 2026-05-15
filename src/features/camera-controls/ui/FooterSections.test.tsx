@@ -1,38 +1,38 @@
 import React from 'react';
 import { render, fireEvent } from '@testing-library/react-native';
-import { FooterTabs } from './FooterTabs';
+import { FooterSections } from './FooterSections';
 import { useUIStore } from '../model/useUIStore';
 
-describe('FooterTabs', () => {
+describe('FooterSections', () => {
   beforeEach(() => {
-    useUIStore.getState().setActiveTab('none');
+    useUIStore.getState().setActiveSection('none');
   });
 
-  it('renders all tabs', () => {
-    const { getByText } = render(<FooterTabs />);
+  it('renders all sections', () => {
+    const { getByText } = render(<FooterSections />);
     expect(getByText('tabs.exposure')).toBeDefined();
     expect(getByText('tabs.lens')).toBeDefined();
     expect(getByText('tabs.color')).toBeDefined();
   });
 
-  it('switches tab and module on press', () => {
-    const { getByText } = render(<FooterTabs />);
+  it('switches section and module on press', () => {
+    const { getByText } = render(<FooterSections />);
     
-    // Click on Color tab
+    // Click on Color section
     fireEvent.press(getByText('tabs.color'));
     
-    expect(useUIStore.getState().activeTab).toBe('color');
+    expect(useUIStore.getState().activeSection).toBe('color');
     expect(useUIStore.getState().activeModule).toBe('color_grading');
   });
 
-  it('toggles tab off if clicked again', () => {
-    const { getByText } = render(<FooterTabs />);
+  it('toggles section off if clicked again', () => {
+    const { getByText } = render(<FooterSections />);
     
-    // Click on Color tab twice
+    // Click on Color section twice
     fireEvent.press(getByText('tabs.color'));
     fireEvent.press(getByText('tabs.color'));
     
-    expect(useUIStore.getState().activeTab).toBe('none');
+    expect(useUIStore.getState().activeSection).toBe('none');
     expect(useUIStore.getState().activeModule).toBe('none');
   });
 });

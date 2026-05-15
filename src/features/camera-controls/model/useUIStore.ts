@@ -1,16 +1,16 @@
 import { create } from 'zustand';
-import { UIState, UIActions, ModuleType, ParameterType } from '@shared/types/camera';
+import { UIState, UIActions, ModuleType, PrimaryParameterType } from '@shared/types/camera';
 
 interface UIStore extends UIState, UIActions {}
 
 export const useUIStore = create<UIStore>((set, get) => ({
   // UI State
-  activeTab: 'none',
+  activeSection: 'none',
   activeModule: 'none',
-  activeParameter: 'none',
+  activePrimaryParameter: 'none',
   isDebugEnabled: false,
   
-  lastActiveParameters: {
+  lastActivePrimaryParameters: {
     none: 'none',
     grain: 'grain',
     color_grading: 'saturation',
@@ -21,25 +21,27 @@ export const useUIStore = create<UIStore>((set, get) => ({
     jitter: 'none',
     dropouts: 'none',
     manual_exposure: 'iso',
+    focus: 'none',
+    lens: 'none',
   },
 
   // Actions
-  setActiveTab: (tab) => set({ activeTab: tab }),
+  setActiveSection: (section) => set({ activeSection: section }),
   
   setActiveModule: (module: ModuleType) => {
-    const { lastActiveParameters } = get();
+    const { lastActivePrimaryParameters } = get();
     set({ 
       activeModule: module, 
-      activeParameter: lastActiveParameters[module] || 'none' 
+      activePrimaryParameter: lastActivePrimaryParameters[module] || 'none' 
     });
   },
 
-  setActiveParameter: (param: ParameterType) => {
+  setActivePrimaryParameter: (param: PrimaryParameterType) => {
     const { activeModule } = get();
     set((state) => ({
-      activeParameter: param,
-      lastActiveParameters: {
-        ...state.lastActiveParameters,
+      activePrimaryParameter: param,
+      lastActivePrimaryParameters: {
+        ...state.lastActivePrimaryParameters,
         [activeModule]: param,
       },
     }));

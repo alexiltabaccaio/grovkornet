@@ -3,25 +3,25 @@ import { View } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { useTranslation } from 'react-i18next';
 import { SharedValue } from 'react-native-reanimated';
-import { ParameterType } from '@shared/types/camera';
-import { FooterParameterControl } from '../FooterParameterControl';
+import { PrimaryParameterType } from '@shared/types/camera';
+import { PrimaryParameterControl } from '../PrimaryParameterControl';
 import { footerStyles } from '../Footer.styles';
 
 interface GrainModuleProps {
-  activeParameter: ParameterType;
-  setActiveParameter: (param: ParameterType) => void;
+  activePrimaryParameter: PrimaryParameterType;
+  setActivePrimaryParameter: (param: PrimaryParameterType) => void;
   grainIntensity: SharedValue<number>;
   setGrainIntensity: (value: number) => void;
   grainChroma: SharedValue<number>;
   setGrainChroma: (value: number) => void;
   grainSize: SharedValue<number>;
   setGrainSize: (value: number) => void;
-  handlePressWithDouble: (param: ParameterType, action: () => void) => void;
+  handlePressWithDouble: (param: PrimaryParameterType, action: () => void) => void;
 }
 
 export const GrainModule = ({
-  activeParameter,
-  setActiveParameter,
+  activePrimaryParameter,
+  setActivePrimaryParameter,
   grainIntensity,
   setGrainIntensity,
   grainChroma,
@@ -35,10 +35,10 @@ export const GrainModule = ({
   return (
     <Animated.View style={footerStyles.tabContent}>
       <View style={footerStyles.imageToolsContainer}>
-        <FooterParameterControl
+        <PrimaryParameterControl
         label={t('parameters.amount')}
-        isActive={activeParameter === 'grain'}
-        onPress={() => handlePressWithDouble('grain', () => setActiveParameter('grain'))}
+        isActive={activePrimaryParameter === 'grain'}
+        onPress={() => handlePressWithDouble('grain', () => setActivePrimaryParameter('grain'))}
         value={grainIntensity}
         maxValue={1.0}
         onChange={setGrainIntensity}
@@ -49,12 +49,12 @@ export const GrainModule = ({
           return `${Math.round(v * 100)}%`;
         }}
       />
-      <FooterParameterControl
+      <PrimaryParameterControl
         label={t('parameters.chroma')}
-        isActive={activeParameter === 'grain_chroma'}
+        isActive={activePrimaryParameter === 'grain_chroma'}
         onPress={() => {
           setGrainChroma(grainChroma.value === 0 ? 1 : 0);
-          setActiveParameter('grain_chroma');
+          setActivePrimaryParameter('grain_chroma');
         }}
         value={grainChroma}
         renderValue={true}
@@ -64,10 +64,10 @@ export const GrainModule = ({
           return v === 0 ? 'MONO' : 'RGB';
         }}
       />
-      <FooterParameterControl
+      <PrimaryParameterControl
         label={t('parameters.size')}
-        isActive={activeParameter === 'grain_size'}
-        onPress={() => handlePressWithDouble('grain_size', () => setActiveParameter('grain_size'))}
+        isActive={activePrimaryParameter === 'grain_size'}
+        onPress={() => handlePressWithDouble('grain_size', () => setActivePrimaryParameter('grain_size'))}
         value={grainSize}
         minValue={1.0}
         maxValue={4.0}

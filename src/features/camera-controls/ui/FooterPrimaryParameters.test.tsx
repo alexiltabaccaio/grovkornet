@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
 import { render, act } from '@testing-library/react-native';
-import { FooterParameters } from './FooterParameters';
+import { FooterPrimaryParameters } from './FooterPrimaryParameters';
 import { useUIStore } from '../model/useUIStore';
 
-// Mock the individual modules to simplify testing FooterParameters
+// Mock the individual modules to simplify testing FooterPrimaryParameters
 jest.mock('./modules/GrainModule', () => {
   const { Text: TextMock } = require('react-native');
   return { GrainModule: () => <TextMock>GrainModule</TextMock> };
@@ -29,12 +29,12 @@ jest.mock('./modules/DebugModule', () => {
   return { DebugModule: () => <TextMock>DebugModule</TextMock> };
 });
 
-describe('FooterParameters', () => {
+describe('FooterPrimaryParameters', () => {
   it('renders nothing inside if activeModule is none', () => {
     act(() => {
       useUIStore.getState().setActiveModule('none');
     });
-    const { toJSON } = render(<FooterParameters />);
+    const { toJSON } = render(<FooterPrimaryParameters />);
     expect(toJSON()?.children).toBeNull();
   });
 
@@ -42,7 +42,7 @@ describe('FooterParameters', () => {
     act(() => {
       useUIStore.getState().setActiveModule('grain');
     });
-    const { getByText } = render(<FooterParameters />);
+    const { getByText } = render(<FooterPrimaryParameters />);
     expect(getByText('GrainModule')).toBeDefined();
   });
 
@@ -50,7 +50,7 @@ describe('FooterParameters', () => {
     act(() => {
       useUIStore.getState().setActiveModule('manual_exposure');
     });
-    const { getByText } = render(<FooterParameters />);
+    const { getByText } = render(<FooterPrimaryParameters />);
     expect(getByText('ManualExposureModule')).toBeDefined();
   });
 });

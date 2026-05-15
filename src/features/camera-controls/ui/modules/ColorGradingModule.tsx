@@ -3,8 +3,8 @@ import { View } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { useTranslation } from 'react-i18next';
 import { SharedValue } from 'react-native-reanimated';
-import { ParameterType } from '@shared/types/camera';
-import { FooterParameterControl } from '../FooterParameterControl';
+import { PrimaryParameterType } from '@shared/types/camera';
+import { PrimaryParameterControl } from '../PrimaryParameterControl';
 import { footerStyles } from '../Footer.styles';
 
 const formatTemperature = (v: number) => {
@@ -13,8 +13,8 @@ const formatTemperature = (v: number) => {
 };
 
 interface ColorGradingModuleProps {
-  activeParameter: ParameterType;
-  setActiveParameter: (param: ParameterType) => void;
+  activePrimaryParameter: PrimaryParameterType;
+  setActivePrimaryParameter: (param: PrimaryParameterType) => void;
   saturation: SharedValue<number>;
   setSaturation: (value: number) => void;
   contrast: SharedValue<number>;
@@ -23,12 +23,12 @@ interface ColorGradingModuleProps {
   setTemperature: (value: number) => void;
   temperatureAuto: SharedValue<boolean>;
   setTemperatureAuto: (value: boolean) => void;
-  handlePressWithDouble: (param: ParameterType, action: () => void) => void;
+  handlePressWithDouble: (param: PrimaryParameterType, action: () => void) => void;
 }
 
 export const ColorGradingModule = ({
-  activeParameter,
-  setActiveParameter,
+  activePrimaryParameter,
+  setActivePrimaryParameter,
   saturation,
   setSaturation,
   contrast,
@@ -44,28 +44,28 @@ export const ColorGradingModule = ({
   return (
     <Animated.View style={footerStyles.tabContent}>
       <View style={footerStyles.imageToolsContainer}>
-        <FooterParameterControl
+        <PrimaryParameterControl
           label={t('parameters.saturation')}
-          isActive={activeParameter === 'saturation'}
-          onPress={() => handlePressWithDouble('saturation', () => setActiveParameter('saturation'))}
+          isActive={activePrimaryParameter === 'saturation'}
+          onPress={() => handlePressWithDouble('saturation', () => setActivePrimaryParameter('saturation'))}
           value={saturation}
           maxValue={2.0}
           onChange={setSaturation}
           icon="color-filter-outline"
         />
-        <FooterParameterControl
+        <PrimaryParameterControl
           label={t('parameters.contrast')}
-          isActive={activeParameter === 'contrast'}
-          onPress={() => handlePressWithDouble('contrast', () => setActiveParameter('contrast'))}
+          isActive={activePrimaryParameter === 'contrast'}
+          onPress={() => handlePressWithDouble('contrast', () => setActivePrimaryParameter('contrast'))}
           value={contrast}
           maxValue={2.0}
           onChange={setContrast}
           icon="contrast-outline"
         />
-        <FooterParameterControl
+        <PrimaryParameterControl
           label={t('parameters.temperature')}
-          isActive={activeParameter === 'temperature'}
-          onPress={() => handlePressWithDouble('temperature', () => setActiveParameter('temperature'))}
+          isActive={activePrimaryParameter === 'temperature'}
+          onPress={() => handlePressWithDouble('temperature', () => setActivePrimaryParameter('temperature'))}
           value={temperature}
           minValue={2000}
           maxValue={10000}

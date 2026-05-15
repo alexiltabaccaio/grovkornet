@@ -1,8 +1,8 @@
 import { SharedValue } from 'react-native-reanimated';
 
-export type TabType = 'lens' | 'color' | 'tape' | 'crt' | 'settings' | 'exposure' | 'none';
+export type SectionType = 'lens' | 'color' | 'tape' | 'crt' | 'settings' | 'exposure' | 'none';
 export type ModuleType = 'color_grading' | 'fade' | 'grain' | 'jitter' | 'dropouts' | 'lens_effects' | 'language' | 'debug' | 'manual_exposure' | 'focus' | 'lens' | 'none';
-export type ParameterType = 'saturation' | 'contrast' | 'grain' | 'grain_chroma' | 'grain_size' | 'chromatic_aberration' | 'iso' | 'ev' | 'shutter_speed' | 'temperature' | 'white_balance' | 'focus' | 'lens' | 'torch' | 'torch_dimmer' | 'none';
+export type PrimaryParameterType = 'saturation' | 'contrast' | 'grain' | 'grain_chroma' | 'grain_size' | 'chromatic_aberration' | 'iso' | 'ev' | 'shutter_speed' | 'temperature' | 'white_balance' | 'focus' | 'lens' | 'torch' | 'torch_dimmer' | 'none';
 
 export interface CameraCapabilities {
   supportsFocus: boolean;
@@ -52,7 +52,7 @@ interface EffectHandlers {
   setContrast: (value: number) => void;
   setChromaticAberration: (value: number) => void;
   setGrainEnabled: (value: boolean) => void;
-  resetTool: (tool: 'grain' | ParameterType) => void;
+  resetTool: (tool: 'grain' | PrimaryParameterType) => void;
   setDebugInfo: (fps: number, resolution: string, hwFps: number) => void;
   setIso: (value: number) => void;
   setEv: (value: number) => void;
@@ -72,18 +72,17 @@ interface EffectHandlers {
 }
 
 export interface UIState {
-  activeTab: TabType;
+  activeSection: SectionType;
   activeModule: ModuleType;
-  activeParameter: ParameterType;
+  activePrimaryParameter: PrimaryParameterType;
   isDebugEnabled: boolean;
-  lastActiveParameters: Record<ModuleType, ParameterType>;
-  capabilities: CameraCapabilities;
+  lastActivePrimaryParameters: Record<ModuleType, PrimaryParameterType>;
 }
 
 export interface UIActions {
-  setActiveTab: (tab: TabType) => void;
+  setActiveSection: (section: SectionType) => void;
   setActiveModule: (module: ModuleType) => void;
-  setActiveParameter: (param: ParameterType) => void;
+  setActivePrimaryParameter: (param: PrimaryParameterType) => void;
   setIsDebugEnabled: (enabled: boolean) => void;
 }
 

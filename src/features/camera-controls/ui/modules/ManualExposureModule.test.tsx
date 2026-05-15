@@ -1,7 +1,7 @@
 import React from 'react';
 import { render } from '@testing-library/react-native';
 import { ManualExposureModule } from './ManualExposureModule';
-import { ParameterType } from '@shared/types/camera';
+import { PrimaryParameterType } from '@shared/types/camera';
 
 jest.mock('react-i18next', () => ({
   useTranslation: () => ({
@@ -24,14 +24,14 @@ jest.mock('react-native-reanimated', () => {
   };
 });
 
-jest.mock('../FooterParameterControl', () => ({
-  FooterParameterControl: 'FooterParameterControl',
+jest.mock('../PrimaryParameterControl', () => ({
+  PrimaryParameterControl: 'PrimaryParameterControl',
 }));
 
 describe('ManualExposureModule', () => {
   const mockProps = {
-    activeParameter: 'iso' as ParameterType,
-    setActiveParameter: jest.fn(),
+    activePrimaryParameter: 'iso' as PrimaryParameterType,
+    setActivePrimaryParameter: jest.fn(),
     iso: { value: 100 } as unknown as import('react-native-reanimated').SharedValue<number>,
     setIso: jest.fn(),
     isoAuto: { value: true } as unknown as import('react-native-reanimated').SharedValue<boolean>,
@@ -44,10 +44,6 @@ describe('ManualExposureModule', () => {
     setShutterSpeed: jest.fn(),
     shutterSpeedAuto: { value: true } as unknown as import('react-native-reanimated').SharedValue<boolean>,
     setShutterSpeedAuto: jest.fn(),
-    whiteBalance: { value: 5000 } as unknown as import('react-native-reanimated').SharedValue<number>,
-    setWhiteBalance: jest.fn(),
-    whiteBalanceAuto: { value: true } as unknown as import('react-native-reanimated').SharedValue<boolean>,
-    setWhiteBalanceAuto: jest.fn(),
     handlePressWithDouble: jest.fn(),
   };
 

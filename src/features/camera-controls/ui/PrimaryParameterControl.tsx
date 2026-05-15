@@ -9,7 +9,7 @@ import { useUIStore } from '../model/useUIStore';
 const AnimatedIcon = Animated.createAnimatedComponent(Ionicons);
 const AnimatedTextInput = Animated.createAnimatedComponent(TextInput);
 
-interface FooterParameterControlProps {
+interface PrimaryParameterControlProps {
   label: string;
   isActive: boolean;
   onPress: () => void;
@@ -30,7 +30,7 @@ interface FooterParameterControlProps {
 
 import { updateSharedValue } from '@shared/lib/reanimated/safeUpdate';
 
-export const FooterParameterControl = ({ 
+export const PrimaryParameterControl = ({ 
   label, 
   isActive, 
   onPress, 
@@ -46,7 +46,7 @@ export const FooterParameterControl = ({
   staticText,
   invertDrag = false,
   hideValueInAuto = false,
-}: FooterParameterControlProps) => {
+}: PrimaryParameterControlProps) => {
   const startVal = useSharedValue(minValue);
   const isDebugEnabled = useUIStore((s) => s.isDebugEnabled);
 

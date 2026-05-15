@@ -4,7 +4,7 @@ import { Footer } from './Footer';
 
 import { useCameraEffectsStore } from '../model/useCameraEffectsStore';
 import { useUIStore } from '../model/useUIStore';
-import { TabType, ModuleType, ParameterType } from '@shared/types/camera';
+import { SectionType, ModuleType, PrimaryParameterType } from '@shared/types/camera';
 
 // Mocks for icons (which often cause issues in node tests)
 jest.mock('react-native-reanimated', () => {
@@ -32,22 +32,20 @@ jest.mock('@expo/vector-icons', () => ({
   Ionicons: 'Ionicons'
 }));
 
-
-
-jest.mock('./FooterTabs', () => ({
-  FooterTabs: 'FooterTabs',
+jest.mock('./FooterSections', () => ({
+  FooterSections: 'FooterSections',
 }));
 
 jest.mock('./FooterModules', () => ({
   FooterModules: 'FooterModules',
 }));
 
-jest.mock('./FooterParameterControl', () => ({
-  FooterParameterControl: 'FooterParameterControl',
+jest.mock('./PrimaryParameterControl', () => ({
+  PrimaryParameterControl: 'PrimaryParameterControl',
 }));
 
-jest.mock('./FooterParameters', () => ({
-  FooterParameters: 'FooterParameters',
+jest.mock('./FooterPrimaryParameters', () => ({
+  FooterPrimaryParameters: 'FooterPrimaryParameters',
 }));
 
 jest.mock('@shared/ui', () => ({
@@ -65,13 +63,13 @@ jest.mock('../model/useUIStore', () => ({
 
 describe('Footer Component Stability Test', () => {
   const mockUIStoreValue = {
-    activeTab: 'none' as TabType,
+    activeSection: 'none' as SectionType,
     activeModule: 'none' as ModuleType,
-    activeParameter: 'none' as ParameterType,
+    activePrimaryParameter: 'none' as PrimaryParameterType,
     isDebugEnabled: false,
-    setActiveTab: jest.fn(),
+    setActiveSection: jest.fn(),
     setActiveModule: jest.fn(),
-    setActiveParameter: jest.fn(),
+    setActivePrimaryParameter: jest.fn(),
     setIsDebugEnabled: jest.fn(),
   };
 
@@ -97,20 +95,20 @@ describe('Footer Component Stability Test', () => {
     expect(toJSON()).toBeDefined();
   });
 
-  it('should render correctly when color tab is active', () => {
+  it('should render correctly when color section is active', () => {
     (useUIStore as unknown as jest.Mock).mockReturnValue({
       ...mockUIStoreValue,
-      activeTab: 'color',
+      activeSection: 'color',
       activeModule: 'color_grading',
     });
     const { toJSON } = render(<Footer />);
     expect(toJSON()).toBeDefined();
   });
 
-  it('should render correctly when tape tab is active', () => {
+  it('should render correctly when tape section is active', () => {
     (useUIStore as unknown as jest.Mock).mockReturnValue({
       ...mockUIStoreValue,
-      activeTab: 'tape',
+      activeSection: 'tape',
       activeModule: 'grain',
     });
     const { toJSON } = render(<Footer />);

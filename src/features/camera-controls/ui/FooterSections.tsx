@@ -2,32 +2,32 @@ import React from 'react';
 import { StyleSheet, Text, View, Pressable, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
-import { TabType } from '@shared/types/camera';
+import { SectionType } from '@shared/types/camera';
 
 import { useShallow } from 'zustand/react/shallow';
 import { useUIStore } from '../model/useUIStore';
 
-export const FooterTabs = () => {
-  const { activeTab, setActiveTab, setActiveModule, isDebugEnabled } = useUIStore(useShallow(state => ({
-    activeTab: state.activeTab,
-    setActiveTab: state.setActiveTab,
+export const FooterSections = () => {
+  const { activeSection, setActiveSection, setActiveModule, isDebugEnabled } = useUIStore(useShallow(state => ({
+    activeSection: state.activeSection,
+    setActiveSection: state.setActiveSection,
     setActiveModule: state.setActiveModule,
     isDebugEnabled: state.isDebugEnabled,
   })));
   const { t } = useTranslation();
 
-  const handleTabChange = (tab: TabType) => {
-    const newTab = activeTab === tab ? 'none' : tab;
-    if (newTab === 'color') setActiveModule('color_grading');
-    else if (newTab === 'exposure') setActiveModule('manual_exposure');
-    else if (newTab === 'tape') setActiveModule('grain');
-    else if (newTab === 'lens') setActiveModule('lens_effects');
-    else if (newTab === 'settings') setActiveModule('language');
+  const handleSectionChange = (section: SectionType) => {
+    const newSection = activeSection === section ? 'none' : section;
+    if (newSection === 'color') setActiveModule('color_grading');
+    else if (newSection === 'exposure') setActiveModule('manual_exposure');
+    else if (newSection === 'tape') setActiveModule('grain');
+    else if (newSection === 'lens') setActiveModule('lens_effects');
+    else if (newSection === 'settings') setActiveModule('language');
     else setActiveModule('none');
-    setActiveTab(newTab);
+    setActiveSection(newSection);
   };
 
-  const tabs: { id: TabType; icon: keyof typeof Ionicons.glyphMap; label: string }[] = [
+  const sections: { id: SectionType; icon: keyof typeof Ionicons.glyphMap; label: string }[] = [
     { id: 'settings', icon: 'cog-outline', label: t('tabs.settings') },
     { id: 'exposure', icon: 'aperture-outline', label: t('tabs.exposure') },
     { id: 'lens', icon: 'aperture', label: t('tabs.lens') },
@@ -44,17 +44,17 @@ export const FooterTabs = () => {
         contentContainerStyle={styles.scrollContent}
         bounces={true}
       >
-        {tabs.map((tab) => (
+        {sections.map((section) => (
           <Pressable
-            key={tab.id}
+            key={section.id}
             style={[styles.tabButton, isDebugEnabled && styles.debugTabButton]}
-            onPress={() => handleTabChange(tab.id)}
+            onPress={() => handleSectionChange(section.id)}
             hitSlop={{ top: 20, bottom: 20, left: 0, right: 0 }}
           >
             {isDebugEnabled && (
               <View style={styles.debugHitbox} pointerEvents="none" />
             )}
-            <Text style={[styles.tabLabel, activeTab === tab.id && styles.tabLabelActive]}>{tab.label}</Text>
+            <Text style={[styles.tabLabel, activeSection === section.id && styles.tabLabelActive]}>{section.label}</Text>
           </Pressable>
         ))}
       </ScrollView>

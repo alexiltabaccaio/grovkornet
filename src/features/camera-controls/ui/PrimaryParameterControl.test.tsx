@@ -1,6 +1,6 @@
 import React from 'react';
 import { render } from '@testing-library/react-native';
-import { FooterParameterControl } from './FooterParameterControl';
+import { PrimaryParameterControl } from './PrimaryParameterControl';
 
 jest.mock('react-i18next', () => ({
   useTranslation: () => ({
@@ -30,6 +30,7 @@ jest.mock('react-native-gesture-handler', () => {
     Gesture: {
       Pan: () => ({
         hitSlop: jest.fn().mockReturnThis(),
+        activeOffsetY: jest.fn().mockReturnThis(),
         onStart: jest.fn().mockReturnThis(),
         onUpdate: jest.fn().mockReturnThis(),
       }),
@@ -44,7 +45,7 @@ jest.mock('react-native-gesture-handler', () => {
   };
 });
 
-describe('FooterParameterControl', () => {
+describe('PrimaryParameterControl', () => {
   const mockProps = {
     label: 'ISO',
     isActive: true,
@@ -54,7 +55,7 @@ describe('FooterParameterControl', () => {
   };
 
   it('renders correctly without value prop in AnimatedTextInput', () => {
-    const { toJSON } = render(<FooterParameterControl {...mockProps} />);
+    const { toJSON } = render(<PrimaryParameterControl {...mockProps} />);
     expect(toJSON()).toBeDefined();
   });
 });

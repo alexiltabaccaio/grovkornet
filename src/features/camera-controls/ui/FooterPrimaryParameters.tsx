@@ -18,11 +18,11 @@ import { DebugModule } from './modules/DebugModule';
 import { FocusModule } from './modules/FocusModule';
 import { LensModule } from './modules/LensModule';
 
-export const FooterParameters = () => {
+export const FooterPrimaryParameters = () => {
   const uiStore = useUIStore(useShallow(state => ({
     activeModule: state.activeModule,
-    activeParameter: state.activeParameter,
-    setActiveParameter: state.setActiveParameter,
+    activePrimaryParameter: state.activePrimaryParameter,
+    setActivePrimaryParameter: state.setActivePrimaryParameter,
     isDebugEnabled: state.isDebugEnabled,
     setIsDebugEnabled: state.setIsDebugEnabled,
   })));
@@ -80,8 +80,8 @@ export const FooterParameters = () => {
       case 'grain':
         return (
           <GrainModule
-            activeParameter={uiStore.activeParameter}
-            setActiveParameter={uiStore.setActiveParameter}
+            activePrimaryParameter={uiStore.activePrimaryParameter}
+            setActivePrimaryParameter={uiStore.setActivePrimaryParameter}
             grainIntensity={cameraStore.grainIntensity}
             setGrainIntensity={cameraStore.setGrainIntensity}
             grainChroma={cameraStore.grainChroma}
@@ -94,8 +94,8 @@ export const FooterParameters = () => {
       case 'color_grading':
         return (
           <ColorGradingModule
-            activeParameter={uiStore.activeParameter}
-            setActiveParameter={uiStore.setActiveParameter}
+            activePrimaryParameter={uiStore.activePrimaryParameter}
+            setActivePrimaryParameter={uiStore.setActivePrimaryParameter}
             saturation={cameraStore.saturation}
             setSaturation={cameraStore.setSaturation}
             contrast={cameraStore.contrast}
@@ -110,8 +110,8 @@ export const FooterParameters = () => {
       case 'lens_effects':
         return (
           <LensEffectsModule
-            activeParameter={uiStore.activeParameter}
-            setActiveParameter={uiStore.setActiveParameter}
+            activePrimaryParameter={uiStore.activePrimaryParameter}
+            setActivePrimaryParameter={uiStore.setActivePrimaryParameter}
             chromaticAberration={cameraStore.chromaticAberration}
             setChromaticAberration={cameraStore.setChromaticAberration}
             handlePressWithDouble={handlePressWithDouble}
@@ -120,8 +120,8 @@ export const FooterParameters = () => {
       case 'manual_exposure':
         return (
           <ManualExposureModule
-            activeParameter={uiStore.activeParameter}
-            setActiveParameter={uiStore.setActiveParameter}
+            activePrimaryParameter={uiStore.activePrimaryParameter}
+            setActivePrimaryParameter={uiStore.setActivePrimaryParameter}
             iso={cameraStore.iso}
             setIso={cameraStore.setIso}
             isoAuto={cameraStore.isoAuto}
@@ -140,8 +140,8 @@ export const FooterParameters = () => {
       case 'focus':
         return (
           <FocusModule
-            activeParameter={uiStore.activeParameter}
-            setActiveParameter={uiStore.setActiveParameter}
+            activePrimaryParameter={uiStore.activePrimaryParameter}
+            setActivePrimaryParameter={uiStore.setActivePrimaryParameter}
             focusDistance={cameraStore.focusDistance}
             setFocusDistance={cameraStore.setFocusDistance}
             focusAuto={cameraStore.focusAuto}
@@ -152,8 +152,8 @@ export const FooterParameters = () => {
       case 'lens':
         return (
           <LensModule
-            activeParameter={uiStore.activeParameter}
-            setActiveParameter={uiStore.setActiveParameter}
+            activePrimaryParameter={uiStore.activePrimaryParameter}
+            setActivePrimaryParameter={uiStore.setActivePrimaryParameter}
             capabilities={cameraStore.capabilities}
             cameraId={cameraStore.cameraId}
             setCameraId={cameraStore.setCameraId}

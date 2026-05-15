@@ -57,7 +57,7 @@ describe('GestureController', () => {
 
   const mockUIStore = {
     activeModule: 'none',
-    activeParameter: 'none',
+    activePrimaryParameter: 'none',
   };
 
   beforeEach(() => {
@@ -74,7 +74,7 @@ describe('GestureController', () => {
   it('should render correctly when activeModule is "grain"', () => {
     (useUIStore as unknown as jest.Mock).mockReturnValue({
       activeModule: 'grain',
-      activeParameter: 'grain',
+      activePrimaryParameter: 'grain',
     });
 
     const { toJSON } = render(<GestureController />);
@@ -84,7 +84,7 @@ describe('GestureController', () => {
   it('should render correctly when activeModule is "color_grading"', () => {
     (useUIStore as unknown as jest.Mock).mockReturnValue({
       activeModule: 'color_grading',
-      activeParameter: 'saturation',
+      activePrimaryParameter: 'saturation',
     });
 
     const { toJSON } = render(<GestureController />);
@@ -94,7 +94,7 @@ describe('GestureController', () => {
   it('should render correctly when activeModule is "lens_effects"', () => {
     (useUIStore as unknown as jest.Mock).mockReturnValue({
       activeModule: 'lens_effects',
-      activeParameter: 'chromatic_aberration',
+      activePrimaryParameter: 'chromatic_aberration',
     });
 
     const { toJSON } = render(<GestureController />);
@@ -104,6 +104,7 @@ describe('GestureController', () => {
   it('should render null for unknown modules', () => {
     (useUIStore as unknown as jest.Mock).mockReturnValue({
       activeModule: 'something_else',
+      activePrimaryParameter: 'none'
     });
 
     const { toJSON } = render(<GestureController />);

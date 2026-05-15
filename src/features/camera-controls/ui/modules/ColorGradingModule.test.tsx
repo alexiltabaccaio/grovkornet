@@ -1,7 +1,7 @@
 import React from 'react';
 import { render } from '@testing-library/react-native';
 import { ColorGradingModule } from './ColorGradingModule';
-import { ParameterType } from '@shared/types/camera';
+import { PrimaryParameterType } from '@shared/types/camera';
 
 jest.mock('react-i18next', () => ({
   useTranslation: () => ({
@@ -24,18 +24,22 @@ jest.mock('react-native-reanimated', () => {
   };
 });
 
-jest.mock('../FooterParameterControl', () => ({
-  FooterParameterControl: 'FooterParameterControl',
+jest.mock('../PrimaryParameterControl', () => ({
+  PrimaryParameterControl: 'PrimaryParameterControl',
 }));
 
 describe('ColorGradingModule', () => {
   const mockProps = {
-    activeParameter: 'saturation' as ParameterType,
-    setActiveParameter: jest.fn(),
+    activePrimaryParameter: 'saturation' as PrimaryParameterType,
+    setActivePrimaryParameter: jest.fn(),
     saturation: { value: 1.0 } as unknown as import('react-native-reanimated').SharedValue<number>,
     setSaturation: jest.fn(),
     contrast: { value: 1.0 } as unknown as import('react-native-reanimated').SharedValue<number>,
     setContrast: jest.fn(),
+    temperature: { value: 5000 } as unknown as import('react-native-reanimated').SharedValue<number>,
+    setTemperature: jest.fn(),
+    temperatureAuto: { value: true } as unknown as import('react-native-reanimated').SharedValue<boolean>,
+    setTemperatureAuto: jest.fn(),
     handlePressWithDouble: jest.fn(),
   };
 

@@ -4,17 +4,17 @@ import { FooterModules } from './FooterModules';
 import { useUIStore } from '../model/useUIStore';
 
 describe('FooterModules', () => {
-  it('renders nothing if activeTab is none', () => {
+  it('renders nothing if activeSection is none', () => {
     act(() => {
-      useUIStore.getState().setActiveTab('none');
+      useUIStore.getState().setActiveSection('none');
     });
     const { toJSON } = render(<FooterModules />);
     expect(toJSON()).toBeNull();
   });
 
-  it('renders correct modules for color tab', () => {
+  it('renders correct modules for color section', () => {
     act(() => {
-      useUIStore.getState().setActiveTab('color');
+      useUIStore.getState().setActiveSection('color');
     });
     const { getByText } = render(<FooterModules />);
     expect(getByText('modules.color_grading')).toBeDefined();
@@ -23,7 +23,7 @@ describe('FooterModules', () => {
 
   it('switches active module on press', () => {
     act(() => {
-      useUIStore.getState().setActiveTab('color');
+      useUIStore.getState().setActiveSection('color');
       useUIStore.getState().setActiveModule('color_grading');
     });
     const { getByText } = render(<FooterModules />);

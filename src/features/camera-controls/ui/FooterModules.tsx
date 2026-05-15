@@ -8,8 +8,8 @@ import { useUIStore } from '../model/useUIStore';
 import { useCameraEffectsStore } from '../model/useCameraEffectsStore';
 
 export const FooterModules = () => {
-  const { activeTab, activeModule, setActiveModule } = useUIStore(useShallow(state => ({
-    activeTab: state.activeTab,
+  const { activeSection, activeModule, setActiveModule } = useUIStore(useShallow(state => ({
+    activeSection: state.activeSection,
     activeModule: state.activeModule,
     setActiveModule: state.setActiveModule
   })));
@@ -19,7 +19,7 @@ export const FooterModules = () => {
     capabilities: state.capabilities
   })));
 
-  if (activeTab !== 'color' && activeTab !== 'tape' && activeTab !== 'lens' && activeTab !== 'exposure' && activeTab !== 'settings') return null;
+  if (activeSection !== 'color' && activeSection !== 'tape' && activeSection !== 'lens' && activeSection !== 'exposure' && activeSection !== 'settings') return null;
 
   return (
     <ScrollView 
@@ -28,7 +28,7 @@ export const FooterModules = () => {
       contentContainerStyle={styles.pillMenuContainer}
       style={styles.pillMenuWrapper}
     >
-      {activeTab === 'exposure' && (
+      {activeSection === 'exposure' && (
         <>
           <TouchableOpacity style={[styles.pill, activeModule === 'manual_exposure' && styles.pillActive]} onPress={() => setActiveModule('manual_exposure')} hitSlop={10}>
             <Text style={[styles.pillText, activeModule === 'manual_exposure' && styles.pillTextActive]}>{t('modules.manual_exposure')}</Text>
@@ -40,7 +40,7 @@ export const FooterModules = () => {
           )}
         </>
       )}
-      {activeTab === 'lens' && (
+      {activeSection === 'lens' && (
         <>
           {capabilities.availableCameras.length > 1 && (
             <TouchableOpacity style={[styles.pill, activeModule === 'lens' && styles.pillActive]} onPress={() => setActiveModule('lens')} hitSlop={10}>
@@ -52,7 +52,7 @@ export const FooterModules = () => {
           </TouchableOpacity>
         </>
       )}
-      {activeTab === 'color' && (
+      {activeSection === 'color' && (
         <>
           <TouchableOpacity style={[styles.pill, activeModule === 'color_grading' && styles.pillActive]} onPress={() => setActiveModule('color_grading')} hitSlop={10}>
             <Text style={[styles.pillText, activeModule === 'color_grading' && styles.pillTextActive]}>{t('modules.color_grading')}</Text>
@@ -62,7 +62,7 @@ export const FooterModules = () => {
           </TouchableOpacity>
         </>
       )}
-      {activeTab === 'tape' && (
+      {activeSection === 'tape' && (
         <>
           <TouchableOpacity style={[styles.pill, activeModule === 'grain' && styles.pillActive]} onPress={() => setActiveModule('grain')} hitSlop={10}>
             <Text style={[styles.pillText, activeModule === 'grain' && styles.pillTextActive]}>{t('modules.grain')}</Text>
@@ -75,7 +75,7 @@ export const FooterModules = () => {
           </TouchableOpacity>
         </>
       )}
-      {activeTab === 'settings' && (
+      {activeSection === 'settings' && (
         <>
           <TouchableOpacity style={[styles.pill, activeModule === 'language' && styles.pillActive]} onPress={() => setActiveModule('language')} hitSlop={10}>
             <Text style={[styles.pillText, activeModule === 'language' && styles.pillTextActive]}>{t('modules.language')}</Text>

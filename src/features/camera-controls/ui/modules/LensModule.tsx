@@ -2,14 +2,14 @@ import React from 'react';
 import { View } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { useTranslation } from 'react-i18next';
-import { ParameterType, CameraCapabilities } from '@shared/types/camera';
-import { FooterParameterControl } from '../FooterParameterControl';
+import { PrimaryParameterType, CameraCapabilities } from '@shared/types/camera';
+import { PrimaryParameterControl } from '../PrimaryParameterControl';
 import { footerStyles } from '../Footer.styles';
 import { SharedValue, useSharedValue } from 'react-native-reanimated';
 
 interface LensModuleProps {
-  activeParameter: ParameterType;
-  setActiveParameter: (param: ParameterType) => void;
+  activePrimaryParameter: PrimaryParameterType;
+  setActivePrimaryParameter: (param: PrimaryParameterType) => void;
   capabilities: CameraCapabilities;
   cameraId: string;
   setCameraId: (id: string) => void;
@@ -19,12 +19,12 @@ interface LensModuleProps {
   setTorchState: (value: number) => void;
   torchStrength: SharedValue<number>;
   setTorchStrength: (value: number) => void;
-  handlePressWithDouble: (param: ParameterType, action: () => void) => void;
+  handlePressWithDouble: (param: PrimaryParameterType, action: () => void) => void;
 }
 
 export const LensModule = ({
-  activeParameter,
-  setActiveParameter,
+  activePrimaryParameter,
+  setActivePrimaryParameter,
   capabilities,
   cameraId,
   setCameraId,
@@ -38,7 +38,7 @@ export const LensModule = ({
 }: LensModuleProps) => {
   const { t } = useTranslation();
   
-  // Sincronizza il boolean nativo di React con l'attributo isAuto richiesto da FooterParameterControl
+  // Sincronizza il boolean nativo di React con l'attributo isAuto richiesto da PrimaryParameterControl
   const autoShared = useSharedValue(cameraAuto);
   React.useEffect(() => {
     autoShared.value = cameraAuto;
@@ -48,13 +48,13 @@ export const LensModule = ({
     <Animated.View style={footerStyles.tabContent}>
       <View style={footerStyles.imageToolsContainer}>
         {capabilities.availableCameras.map((cam) => (
-          <FooterParameterControl
+          <PrimaryParameterControl
             key={cam.id}
             label={t('parameters.lens')}
-            isActive={activeParameter === 'lens' && cameraId === cam.id}
+            isActive={activePrimaryParameter === 'lens' && cameraId === cam.id}
             onPress={() => {
                 setCameraId(cam.id);
-                setActiveParameter('lens');
+                setActivePrimaryParameter('lens');
             }}
             variant="text"
             isAuto={autoShared}
@@ -63,12 +63,12 @@ export const LensModule = ({
           />
         ))}
         {capabilities.hasTorch && (
-          <FooterParameterControl
+          <PrimaryParameterControl
             label={t('parameters.torch')}
-            isActive={activeParameter === 'torch'}
+            isActive={activePrimaryParameter === 'torch'}
             onPress={() => {
               setTorchState(torchState.value === 0 ? 1 : 0);
-              setActiveParameter('torch');
+              setActivePrimaryParameter('torch');
             }}
             value={torchState}
             variant="text"
@@ -80,10 +80,10 @@ export const LensModule = ({
           />
         )}
         {capabilities.hasTorch && capabilities.maxTorchStrength !== undefined && capabilities.maxTorchStrength > 1 && (
-          <FooterParameterControl
+          <PrimaryParameterControl
             label={t('parameters.torch_dimmer')}
-            isActive={activeParameter === 'torch_dimmer'}
-            onPress={() => handlePressWithDouble('torch_dimmer', () => setActiveParameter('torch_dimmer'))}
+            isActive={activePrimaryParameter === 'torch_dimmer'}
+            onPress={() => handlePressWithDouble('torch_dimmer', () => setActivePrimaryParameter('torch_dimmer'))}
             value={torchStrength}
             minValue={1}
             maxValue={capabilities.maxTorchStrength}

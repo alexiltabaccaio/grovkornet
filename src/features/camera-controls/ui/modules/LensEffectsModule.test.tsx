@@ -1,7 +1,7 @@
 import React from 'react';
 import { render } from '@testing-library/react-native';
 import { LensEffectsModule } from './LensEffectsModule';
-import { ParameterType } from '@shared/types/camera';
+import { PrimaryParameterType } from '@shared/types/camera';
 
 jest.mock('react-i18next', () => ({
   useTranslation: () => ({
@@ -24,14 +24,14 @@ jest.mock('react-native-reanimated', () => {
   };
 });
 
-jest.mock('../FooterParameterControl', () => ({
-  FooterParameterControl: 'FooterParameterControl',
+jest.mock('../PrimaryParameterControl', () => ({
+  PrimaryParameterControl: 'PrimaryParameterControl',
 }));
 
 describe('LensEffectsModule', () => {
   const mockProps = {
-    activeParameter: 'chromatic_aberration' as ParameterType,
-    setActiveParameter: jest.fn(),
+    activePrimaryParameter: 'chromatic_aberration' as PrimaryParameterType,
+    setActivePrimaryParameter: jest.fn(),
     chromaticAberration: { value: 0 } as unknown as import('react-native-reanimated').SharedValue<number>,
     setChromaticAberration: jest.fn(),
     handlePressWithDouble: jest.fn(),

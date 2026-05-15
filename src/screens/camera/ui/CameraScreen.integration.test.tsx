@@ -20,27 +20,27 @@ describe('CameraScreen Integration', () => {
   beforeEach(() => {
     // Reset stores
     act(() => {
-      useUIStore.getState().setActiveTab('none');
+      useUIStore.getState().setActiveSection('none');
       useUIStore.getState().setActiveModule('none');
       useCameraEffectsStore.getState().resetTool('iso');
     });
   });
 
-  it('renders correctly and handles tab switching', async () => {
+  it('renders correctly and handles section switching', async () => {
     const { getByText, queryByText } = render(<CameraScreen />);
 
     // Wait for permissions to be resolved (mocked as granted)
     await waitFor(() => expect(queryByText('camera.requesting_permissions')).toBeNull());
 
-    // Check if Footer tabs are present
-    const exposureTab = getByText(/tabs\.exposure/i);
-    expect(exposureTab).toBeDefined();
+    // Check if Footer sections are present
+    const exposureSection = getByText(/tabs\.exposure/i);
+    expect(exposureSection).toBeDefined();
 
-    // Click on Exposure tab
-    fireEvent.press(exposureTab);
+    // Click on Exposure section
+    fireEvent.press(exposureSection);
 
     // Verify UI Store updated
-    expect(useUIStore.getState().activeTab).toBe('exposure');
+    expect(useUIStore.getState().activeSection).toBe('exposure');
     expect(useUIStore.getState().activeModule).toBe('manual_exposure');
 
     // Verify ManualExposureModule components appear
@@ -50,7 +50,7 @@ describe('CameraScreen Integration', () => {
   it('updates camera store when interaction happens', () => {
     const { getByText } = render(<CameraScreen />);
     
-    // Switch to exposure tab
+    // Switch to exposure section
     act(() => {
       fireEvent.press(getByText(/tabs\.exposure/i));
     });
@@ -60,7 +60,7 @@ describe('CameraScreen Integration', () => {
     
     // Simulate press on ISO control to make it active
     fireEvent.press(isoControl);
-    expect(useUIStore.getState().activeParameter).toBe('iso');
+    expect(useUIStore.getState().activePrimaryParameter).toBe('iso');
 
     // Directly test store integration (since Slider interaction is complex to mock/fire in unit test)
     act(() => {
