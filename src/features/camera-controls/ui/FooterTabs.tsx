@@ -8,10 +8,11 @@ import { useShallow } from 'zustand/react/shallow';
 import { useUIStore } from '../model/useUIStore';
 
 export const FooterTabs = () => {
-  const { activeTab, setActiveTab, setActiveModule } = useUIStore(useShallow(state => ({
+  const { activeTab, setActiveTab, setActiveModule, isDebugEnabled } = useUIStore(useShallow(state => ({
     activeTab: state.activeTab,
     setActiveTab: state.setActiveTab,
-    setActiveModule: state.setActiveModule
+    setActiveModule: state.setActiveModule,
+    isDebugEnabled: state.isDebugEnabled,
   })));
   const { t } = useTranslation();
 
@@ -46,10 +47,13 @@ export const FooterTabs = () => {
         {tabs.map((tab) => (
           <Pressable
             key={tab.id}
-            style={styles.tabButton}
+            style={[styles.tabButton, isDebugEnabled && styles.debugTabButton]}
             onPress={() => handleTabChange(tab.id)}
-            hitSlop={{ top: 20, bottom: 20, left: 15, right: 15 }}
+            hitSlop={{ top: 20, bottom: 20, left: 0, right: 0 }}
           >
+            {isDebugEnabled && (
+              <View style={styles.debugHitbox} pointerEvents="none" />
+            )}
             <Text style={[styles.tabLabel, activeTab === tab.id && styles.tabLabelActive]}>{tab.label}</Text>
           </Pressable>
         ))}
@@ -76,6 +80,20 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: 4,
+  },
+  debugTabButton: {
+    borderWidth: 1,
+    borderColor: 'yellow',
+  },
+  debugHitbox: {
+    position: 'absolute',
+    top: -20,
+    bottom: -20,
+    left: 0,
+    right: 0,
+    borderWidth: 1,
+    borderColor: 'red',
+    backgroundColor: 'rgba(255, 0, 0, 0.2)',
   },
   tabLabel: {
     color: '#666',
