@@ -7,6 +7,11 @@ import { ParameterType } from '@shared/types/camera';
 import { FooterParameterControl } from '../FooterParameterControl';
 import { footerStyles } from '../Footer.styles';
 
+const formatTemperature = (v: number) => {
+  'worklet';
+  return `${Math.round(v)}K`;
+};
+
 interface ColorGradingModuleProps {
   activeParameter: ParameterType;
   setActiveParameter: (param: ParameterType) => void;
@@ -14,6 +19,10 @@ interface ColorGradingModuleProps {
   setSaturation: (value: number) => void;
   contrast: SharedValue<number>;
   setContrast: (value: number) => void;
+  temperature: SharedValue<number>;
+  setTemperature: (value: number) => void;
+  temperatureAuto: SharedValue<boolean>;
+  setTemperatureAuto: (value: boolean) => void;
   handlePressWithDouble: (param: ParameterType, action: () => void) => void;
 }
 
@@ -24,6 +33,10 @@ export const ColorGradingModule = ({
   setSaturation,
   contrast,
   setContrast,
+  temperature,
+  setTemperature,
+  temperatureAuto,
+  setTemperatureAuto,
   handlePressWithDouble,
 }: ColorGradingModuleProps) => {
   const { t } = useTranslation();
@@ -48,6 +61,20 @@ export const ColorGradingModule = ({
           maxValue={2.0}
           onChange={setContrast}
           icon="contrast-outline"
+        />
+        <FooterParameterControl
+          label={t('parameters.temperature')}
+          isActive={activeParameter === 'temperature'}
+          onPress={() => handlePressWithDouble('temperature', () => setActiveParameter('temperature'))}
+          value={temperature}
+          minValue={2000}
+          maxValue={10000}
+          onChange={setTemperature}
+          variant="text"
+          isAuto={temperatureAuto}
+          onLongPress={() => setTemperatureAuto(!temperatureAuto.value)}
+          valueFormatter={formatTemperature}
+          hideValueInAuto={true}
         />
       </View>
     </Animated.View>

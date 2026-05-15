@@ -9,7 +9,7 @@ import {
   DEFAULT_ISO,
   DEFAULT_EV,
   DEFAULT_SHUTTER_SPEED,
-  DEFAULT_WHITE_BALANCE,
+  DEFAULT_TEMPERATURE,
 } from '@shared/constants/videoProcessing';
 
 export const useCameraEffectsStore = create<CameraState>((set, get) => ({
@@ -27,10 +27,10 @@ export const useCameraEffectsStore = create<CameraState>((set, get) => ({
   iso: makeMutable(DEFAULT_ISO),
   ev: makeMutable(DEFAULT_EV),
   shutterSpeed: makeMutable(DEFAULT_SHUTTER_SPEED),
-  whiteBalance: makeMutable(DEFAULT_WHITE_BALANCE),
+  temperature: makeMutable(DEFAULT_TEMPERATURE),
   isoAuto: makeMutable(true),
   shutterSpeedAuto: makeMutable(true),
-  whiteBalanceAuto: makeMutable(true),
+  temperatureAuto: makeMutable(true),
   evAuto: makeMutable(true),
   focusDistance: makeMutable(0),
   focusAuto: makeMutable(true),
@@ -98,9 +98,9 @@ export const useCameraEffectsStore = create<CameraState>((set, get) => ({
     get().shutterSpeedAuto.value = false;
   },
 
-  setWhiteBalance: (value) => {
-    get().whiteBalance.value = value;
-    get().whiteBalanceAuto.value = false;
+  setTemperature: (value) => {
+    get().temperature.value = value;
+    get().temperatureAuto.value = false;
   },
 
   setIsoAuto: (value: boolean) => {
@@ -111,8 +111,8 @@ export const useCameraEffectsStore = create<CameraState>((set, get) => ({
     get().shutterSpeedAuto.value = value;
   },
 
-  setWhiteBalanceAuto: (value: boolean) => {
-    get().whiteBalanceAuto.value = value;
+  setTemperatureAuto: (value: boolean) => {
+    get().temperatureAuto.value = value;
   },
 
   setEvAuto: (value: boolean) => {
@@ -145,14 +145,18 @@ export const useCameraEffectsStore = create<CameraState>((set, get) => ({
   },
 
   setCapabilities: (caps) => {
+    const state = get();
+    if (state.capabilities.maxTorchStrength === 1 && caps.maxTorchStrength && caps.maxTorchStrength > 1) {
+      state.torchStrength.value = caps.maxTorchStrength;
+    }
     set({ capabilities: caps });
   },
 
   resetTool: (tool) => {
     const { 
       grainIntensity, saturation, contrast, chromaticAberration,
-      iso, ev, shutterSpeed, whiteBalance,
-      isoAuto, evAuto, shutterSpeedAuto, whiteBalanceAuto,
+      iso, ev, shutterSpeed, temperature,
+      isoAuto, evAuto, shutterSpeedAuto, temperatureAuto,
       setGrainIntensity, setSaturation, setContrast, setChromaticAberration,
     } = get();
 
@@ -179,9 +183,13 @@ export const useCameraEffectsStore = create<CameraState>((set, get) => ({
     } else if (tool === 'shutter_speed') {
       shutterSpeed.value = DEFAULT_SHUTTER_SPEED;
       shutterSpeedAuto.value = true;
+    } else if (tool === 'temperature') {
+      temperature.value = DEFAULT_TEMPERATURE;
+      temperatureAuto.value = true;
     } else if (tool === 'white_balance') {
-      whiteBalance.value = DEFAULT_WHITE_BALANCE;
-      whiteBalanceAuto.value = true;
+      // Legacy support for internal resets if needed, but should be temperature
+      temperature.value = DEFAULT_TEMPERATURE;
+      temperatureAuto.value = true;
     } else if (tool === 'focus') {
       get().focusAuto.value = true;
     } else if (tool === 'lens') {

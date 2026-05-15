@@ -2,7 +2,7 @@ import { SharedValue } from 'react-native-reanimated';
 
 export type TabType = 'lens' | 'color' | 'tape' | 'crt' | 'settings' | 'exposure' | 'none';
 export type ModuleType = 'color_grading' | 'fade' | 'grain' | 'jitter' | 'dropouts' | 'lens_effects' | 'language' | 'debug' | 'manual_exposure' | 'focus' | 'lens' | 'none';
-export type ParameterType = 'saturation' | 'contrast' | 'grain' | 'grain_chroma' | 'grain_size' | 'chromatic_aberration' | 'iso' | 'ev' | 'shutter_speed' | 'white_balance' | 'focus' | 'lens' | 'torch' | 'torch_dimmer' | 'none';
+export type ParameterType = 'saturation' | 'contrast' | 'grain' | 'grain_chroma' | 'grain_size' | 'chromatic_aberration' | 'iso' | 'ev' | 'shutter_speed' | 'temperature' | 'white_balance' | 'focus' | 'lens' | 'torch' | 'torch_dimmer' | 'none';
 
 export interface CameraCapabilities {
   supportsFocus: boolean;
@@ -31,10 +31,10 @@ interface EffectSharedValues {
   iso: SharedValue<number>;
   ev: SharedValue<number>;
   shutterSpeed: SharedValue<number>;
-  whiteBalance: SharedValue<number>;
+  temperature: SharedValue<number>;
   isoAuto: SharedValue<boolean>;
   shutterSpeedAuto: SharedValue<boolean>;
-  whiteBalanceAuto: SharedValue<boolean>;
+  temperatureAuto: SharedValue<boolean>;
   evAuto: SharedValue<boolean>;
   focusDistance: SharedValue<number>;
   focusAuto: SharedValue<boolean>;
@@ -57,10 +57,10 @@ interface EffectHandlers {
   setIso: (value: number) => void;
   setEv: (value: number) => void;
   setShutterSpeed: (value: number) => void;
-  setWhiteBalance: (value: number) => void;
+  setTemperature: (value: number) => void;
   setIsoAuto: (value: boolean) => void;
   setShutterSpeedAuto: (value: boolean) => void;
-  setWhiteBalanceAuto: (value: boolean) => void;
+  setTemperatureAuto: (value: boolean) => void;
   setEvAuto: (value: boolean) => void;
   setFocusDistance: (value: number) => void;
   setFocusAuto: (value: boolean) => void;

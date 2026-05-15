@@ -17,11 +17,6 @@ const formatShutterSpeed = (v: number) => {
   return `1/${Math.round(v)}`;
 };
 
-const formatWhiteBalance = (v: number) => {
-  'worklet';
-  return `${Math.round(v)}K`;
-};
-
 interface ManualExposureModuleProps {
   activeParameter: ParameterType;
   setActiveParameter: (param: ParameterType) => void;
@@ -37,10 +32,6 @@ interface ManualExposureModuleProps {
   setShutterSpeed: (value: number) => void;
   shutterSpeedAuto: SharedValue<boolean>;
   setShutterSpeedAuto: (value: boolean) => void;
-  whiteBalance: SharedValue<number>;
-  setWhiteBalance: (value: number) => void;
-  whiteBalanceAuto: SharedValue<boolean>;
-  setWhiteBalanceAuto: (value: boolean) => void;
   handlePressWithDouble: (param: ParameterType, action: () => void) => void;
 }
 
@@ -59,10 +50,6 @@ export const ManualExposureModule = ({
   setShutterSpeed,
   shutterSpeedAuto,
   setShutterSpeedAuto,
-  whiteBalance,
-  setWhiteBalance,
-  whiteBalanceAuto,
-  setWhiteBalanceAuto,
   handlePressWithDouble,
 }: ManualExposureModuleProps) => {
   const { t } = useTranslation();
@@ -107,20 +94,6 @@ export const ManualExposureModule = ({
           isAuto={shutterSpeedAuto}
           onLongPress={() => setShutterSpeedAuto(!shutterSpeedAuto.value)}
           valueFormatter={formatShutterSpeed}
-        />
-        <FooterParameterControl
-          label={t('parameters.white_balance')}
-          isActive={activeParameter === 'white_balance'}
-          onPress={() => handlePressWithDouble('white_balance', () => setActiveParameter('white_balance'))}
-          value={whiteBalance}
-          minValue={2000}
-          maxValue={10000}
-          onChange={setWhiteBalance}
-          variant="text"
-          isAuto={whiteBalanceAuto}
-          onLongPress={() => setWhiteBalanceAuto(!whiteBalanceAuto.value)}
-          valueFormatter={formatWhiteBalance}
-          hideValueInAuto={true}
         />
       </View>
     </Animated.View>

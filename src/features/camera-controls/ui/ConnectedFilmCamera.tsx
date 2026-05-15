@@ -49,10 +49,10 @@ export const ConnectedFilmCamera = ({ cameraKey }: ConnectedFilmCameraProps) => 
       iso={store.iso}
       exposureTime={store.shutterSpeed}
       ev={store.ev}
-      whiteBalance={store.whiteBalance}
+      whiteBalance={store.temperature}
       isoAuto={store.isoAuto}
       shutterSpeedAuto={store.shutterSpeedAuto}
-      whiteBalanceAuto={store.whiteBalanceAuto}
+      whiteBalanceAuto={store.temperatureAuto}
       autoFocus={store.focusAuto}
       focusDistance={store.focusDistance}
       cameraId={store.cameraId}

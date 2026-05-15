@@ -17,11 +17,11 @@ export const useCameraWorklets = (
   iso: SharedValue<number>,
   ev: SharedValue<number>,
   shutterSpeed: SharedValue<number>,
-  whiteBalance: SharedValue<number>,
+  temperature: SharedValue<number>,
   isoAuto: SharedValue<boolean>,
   evAuto: SharedValue<boolean>,
   shutterSpeedAuto: SharedValue<boolean>,
-  whiteBalanceAuto: SharedValue<boolean>,
+  temperatureAuto: SharedValue<boolean>,
   focusDistance: SharedValue<number>,
   focusAuto: SharedValue<boolean>,
 ) => {
@@ -79,10 +79,10 @@ export const useCameraWorklets = (
     updateSharedValue(shutterSpeedAuto, false);
   };
 
-  const updateWhiteBalance = (value: number) => {
+  const updateTemperature = (value: number) => {
     'worklet';
-    updateSharedValue(whiteBalance, value);
-    updateSharedValue(whiteBalanceAuto, false);
+    updateSharedValue(temperature, value);
+    updateSharedValue(temperatureAuto, false);
   };
 
   const updateFocusDistance = (value: number) => {
@@ -101,7 +101,7 @@ export const useCameraWorklets = (
     updateIso,
     updateEv,
     updateShutterSpeed,
-    updateWhiteBalance,
+    updateTemperature,
     updateFocusDistance,
   };
 };

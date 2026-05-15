@@ -35,10 +35,10 @@ export const FooterParameters = () => {
     iso: state.iso,
     ev: state.ev,
     shutterSpeed: state.shutterSpeed,
-    whiteBalance: state.whiteBalance,
+    temperature: state.temperature,
     isoAuto: state.isoAuto,
     shutterSpeedAuto: state.shutterSpeedAuto,
-    whiteBalanceAuto: state.whiteBalanceAuto,
+    temperatureAuto: state.temperatureAuto,
     evAuto: state.evAuto,
     grainChroma: state.grainChroma,
     grainSize: state.grainSize,
@@ -51,10 +51,10 @@ export const FooterParameters = () => {
     setIso: state.setIso,
     setEv: state.setEv,
     setShutterSpeed: state.setShutterSpeed,
-    setWhiteBalance: state.setWhiteBalance,
+    setTemperature: state.setTemperature,
     setIsoAuto: state.setIsoAuto,
     setShutterSpeedAuto: state.setShutterSpeedAuto,
-    setWhiteBalanceAuto: state.setWhiteBalanceAuto,
+    setTemperatureAuto: state.setTemperatureAuto,
     setEvAuto: state.setEvAuto,
     focusDistance: state.focusDistance,
     setFocusDistance: state.setFocusDistance,
@@ -100,6 +100,10 @@ export const FooterParameters = () => {
             setSaturation={cameraStore.setSaturation}
             contrast={cameraStore.contrast}
             setContrast={cameraStore.setContrast}
+            temperature={cameraStore.temperature}
+            setTemperature={cameraStore.setTemperature}
+            temperatureAuto={cameraStore.temperatureAuto}
+            setTemperatureAuto={cameraStore.setTemperatureAuto}
             handlePressWithDouble={handlePressWithDouble}
           />
         );
@@ -130,10 +134,6 @@ export const FooterParameters = () => {
             setShutterSpeed={cameraStore.setShutterSpeed}
             shutterSpeedAuto={cameraStore.shutterSpeedAuto}
             setShutterSpeedAuto={cameraStore.setShutterSpeedAuto}
-            whiteBalance={cameraStore.whiteBalance}
-            setWhiteBalance={cameraStore.setWhiteBalance}
-            whiteBalanceAuto={cameraStore.whiteBalanceAuto}
-            setWhiteBalanceAuto={cameraStore.setWhiteBalanceAuto}
             handlePressWithDouble={handlePressWithDouble}
           />
         );

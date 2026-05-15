@@ -28,11 +28,11 @@ export const GestureController = () => {
     iso,
     ev,
     shutterSpeed,
-    whiteBalance,
+    temperature,
     isoAuto,
     evAuto,
     shutterSpeedAuto,
-    whiteBalanceAuto,
+    temperatureAuto,
     focusDistance,
     focusAuto,
   } = useCameraEffectsStore(useShallow(state => ({
@@ -46,11 +46,11 @@ export const GestureController = () => {
     iso: state.iso,
     ev: state.ev,
     shutterSpeed: state.shutterSpeed,
-    whiteBalance: state.whiteBalance,
+    temperature: state.temperature,
     isoAuto: state.isoAuto,
     evAuto: state.evAuto,
     shutterSpeedAuto: state.shutterSpeedAuto,
-    whiteBalanceAuto: state.whiteBalanceAuto,
+    temperatureAuto: state.temperatureAuto,
     focusDistance: state.focusDistance,
     focusAuto: state.focusAuto,
   })));
@@ -65,7 +65,7 @@ export const GestureController = () => {
     updateIso,
     updateEv,
     updateShutterSpeed,
-    updateWhiteBalance,
+    updateTemperature,
     updateFocusDistance,
   } = useCameraWorklets(
     grainIntensity,
@@ -78,11 +78,11 @@ export const GestureController = () => {
     iso,
     ev,
     shutterSpeed,
-    whiteBalance,
+    temperature,
     isoAuto,
     evAuto,
     shutterSpeedAuto,
-    whiteBalanceAuto,
+    temperatureAuto,
     focusDistance,
     focusAuto,
   );
@@ -119,8 +119,11 @@ export const GestureController = () => {
         case 'shutter_speed':
           startVal.value = (shutterSpeed.value - 1) / (1000 - 1);
           break;
+        case 'temperature':
+          startVal.value = (temperature.value - 2000) / (10000 - 2000);
+          break;
         case 'white_balance':
-          startVal.value = (whiteBalance.value - 2000) / (10000 - 2000);
+          startVal.value = (temperature.value - 2000) / (10000 - 2000);
           break;
         case 'focus':
           startVal.value = focusDistance.value / 10.0;
@@ -167,8 +170,11 @@ export const GestureController = () => {
         case 'shutter_speed':
           updateShutterSpeed(1 + normalizedValue * (1000 - 1));
           break;
+        case 'temperature':
+          updateTemperature(2000 + normalizedValue * (10000 - 2000));
+          break;
         case 'white_balance':
-          updateWhiteBalance(2000 + normalizedValue * (10000 - 2000));
+          updateTemperature(2000 + normalizedValue * (10000 - 2000));
           break;
         case 'focus':
           updateFocusDistance(normalizedValue * 10.0);
