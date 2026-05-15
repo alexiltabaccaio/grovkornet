@@ -59,6 +59,7 @@ export const FooterParameterControl = ({
 
   const panGesture = Gesture.Pan()
     .hitSlop(20)
+    .activeOffsetY([-2, 2]) // Si attiva prima del [-5, 5] del parent
     .onStart(() => {
       if (!value) return;
       startVal.value = value.value;
