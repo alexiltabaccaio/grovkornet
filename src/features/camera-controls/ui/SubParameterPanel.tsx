@@ -4,7 +4,7 @@ import { useShallow } from 'zustand/react/shallow';
 import { useTranslation } from 'react-i18next';
 import { useUIStore } from '../model/useUIStore';
 import { useCameraEffectsStore } from '../model/useCameraEffectsStore';
-import { PrimaryParameterControl } from './PrimaryParameterControl';
+import { ParameterControl } from './ParameterControl';
 import Animated, { SharedValue, useAnimatedStyle, interpolate, Extrapolation } from 'react-native-reanimated';
 
 interface SubParameterPanelProps {
@@ -16,8 +16,8 @@ export const SubParameterPanel = ({ translateY }: SubParameterPanelProps) => {
 
   const { t } = useTranslation();
   
-  const { activePrimaryParameter, activeSubParameter, setActiveSubParameter } = useUIStore(useShallow(state => ({
-    activePrimaryParameter: state.activePrimaryParameter,
+  const { activeParameter, activeSubParameter, setActiveSubParameter } = useUIStore(useShallow(state => ({
+    activeParameter: state.activeParameter,
     activeSubParameter: state.activeSubParameter,
     setActiveSubParameter: state.setActiveSubParameter,
   })));
@@ -27,11 +27,15 @@ export const SubParameterPanel = ({ translateY }: SubParameterPanelProps) => {
     setGrainChroma,
     grainSize,
     setGrainSize,
+    torchStrength,
+    setTorchStrength,
   } = useCameraEffectsStore(useShallow(state => ({
     grainChroma: state.grainChroma,
     setGrainChroma: state.setGrainChroma,
     grainSize: state.grainSize,
     setGrainSize: state.setGrainSize,
+    torchStrength: state.torchStrength,
+    setTorchStrength: state.setTorchStrength,
   })));
 
   const animatedStyle = useAnimatedStyle(() => {
@@ -48,14 +52,14 @@ export const SubParameterPanel = ({ translateY }: SubParameterPanelProps) => {
   });
 
 
-  if (activePrimaryParameter === 'none') return null;
+  if (activeParameter === 'none') return null;
 
   const renderSubParams = () => {
-    switch (activePrimaryParameter) {
+    switch (activeParameter) {
       case 'grain':
         return (
           <Animated.View style={[styles.container, animatedStyle]}>
-            <PrimaryParameterControl
+            <ParameterControl
               label={t('parameters.chroma')}
               isActive={activeSubParameter === 'grain_chroma'}
               onPress={() => {
@@ -70,7 +74,7 @@ export const SubParameterPanel = ({ translateY }: SubParameterPanelProps) => {
                 return v === 0 ? 'MONO' : 'RGB';
               }}
             />
-            <PrimaryParameterControl
+            <ParameterControl
               label={t('parameters.size')}
               isActive={activeSubParameter === 'grain_size'}
               onPress={() => setActiveSubParameter('grain_size')}
@@ -84,6 +88,26 @@ export const SubParameterPanel = ({ translateY }: SubParameterPanelProps) => {
                 return `${v.toFixed(1)}x`;
               }}
               variant="text"
+            />
+          </Animated.View>
+        );
+      case 'torch':
+        return (
+          <Animated.View style={[styles.container, animatedStyle]}>
+            <ParameterControl
+              label={t('parameters.torch_dimmer')}
+              isActive={activeSubParameter === 'torch_strength'}
+              onPress={() => setActiveSubParameter('torch_strength')}
+              value={torchStrength}
+              minValue={0.1}
+              maxValue={1}
+              onChange={setTorchStrength}
+              variant="text"
+              renderValue={true}
+              valueFormatter={(v) => {
+                'worklet';
+                return `${(v * 100).toFixed(0)}%`;
+              }}
             />
           </Animated.View>
         );

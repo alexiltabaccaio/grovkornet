@@ -1,6 +1,6 @@
 import React from 'react';
 import { render } from '@testing-library/react-native';
-import { PrimaryParameterControl } from './PrimaryParameterControl';
+import { ParameterControl } from './ParameterControl';
 
 jest.mock('react-i18next', () => ({
   useTranslation: () => ({
@@ -45,7 +45,7 @@ jest.mock('react-native-gesture-handler', () => {
   };
 });
 
-describe('PrimaryParameterControl', () => {
+describe('ParameterControl', () => {
   const mockProps = {
     label: 'ISO',
     isActive: true,
@@ -55,7 +55,7 @@ describe('PrimaryParameterControl', () => {
   };
 
   it('renders correctly without value prop in AnimatedTextInput', () => {
-    const { toJSON } = render(<PrimaryParameterControl {...mockProps} />);
+    const { toJSON } = render(<ParameterControl {...mockProps} />);
     expect(toJSON()).toBeDefined();
   });
 });

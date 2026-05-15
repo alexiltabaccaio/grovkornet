@@ -5,48 +5,46 @@ describe('useUIStore', () => {
     const state = useUIStore.getState();
     state.setActiveSection('none');
     state.setActiveModule('none');
-    state.setActivePrimaryParameter('none');
+    state.setActiveParameter('none');
     state.setActiveSubParameter('none');
     state.setIsDebugEnabled(false);
-
   });
 
   it('initializes with default values', () => {
     const state = useUIStore.getState();
     expect(state.activeSection).toBe('none');
     expect(state.activeModule).toBe('none');
-    expect(state.activePrimaryParameter).toBe('none');
+    expect(state.activeParameter).toBe('none');
     expect(state.activeSubParameter).toBe('none');
   });
 
-
   it('sets active section correctly', () => {
     const { setActiveSection } = useUIStore.getState();
-    setActiveSection('exposure');
-    expect(useUIStore.getState().activeSection).toBe('exposure');
+    setActiveSection('body');
+    expect(useUIStore.getState().activeSection).toBe('body');
   });
 
-  it('sets active module and restores last active primary parameter', () => {
-    const { setActiveModule } = useUIStore.getState();
+  it('sets active module and restores last active parameter', () => {
+    const { setActiveModule, setActiveParameter } = useUIStore.getState();
     
-    // Set color_grading module (which has 'saturation' as default in lastActivePrimaryParameters)
-    setActiveModule('color_grading');
+    // Set development module (which has 'temperature' as default in lastActiveParameters)
+    setActiveModule('development');
     let state = useUIStore.getState();
-    expect(state.activeModule).toBe('color_grading');
-    expect(state.activePrimaryParameter).toBe('saturation');
+    expect(state.activeModule).toBe('development');
+    expect(state.activeParameter).toBe('temperature');
 
     // Change parameter
-    state.setActivePrimaryParameter('contrast');
-    expect(useUIStore.getState().activePrimaryParameter).toBe('contrast');
+    setActiveParameter('contrast');
+    expect(useUIStore.getState().activeParameter).toBe('contrast');
 
     // Switch to another module and back
-    setActiveModule('grain');
-    expect(useUIStore.getState().activeModule).toBe('grain');
-    expect(useUIStore.getState().activePrimaryParameter).toBe('grain');
+    setActiveModule('texture');
+    expect(useUIStore.getState().activeModule).toBe('texture');
+    expect(useUIStore.getState().activeParameter).toBe('grain');
 
-    setActiveModule('color_grading');
-    expect(useUIStore.getState().activeModule).toBe('color_grading');
-    expect(useUIStore.getState().activePrimaryParameter).toBe('contrast'); // Should be restored
+    setActiveModule('development');
+    expect(useUIStore.getState().activeModule).toBe('development');
+    expect(useUIStore.getState().activeParameter).toBe('contrast'); // Should be restored
   });
 
   it('updates debug mode correctly', () => {
@@ -56,13 +54,13 @@ describe('useUIStore', () => {
   });
 
   it('sets active sub parameter and resets correctly', () => {
-    const { setActiveSubParameter, setActivePrimaryParameter, setActiveModule } = useUIStore.getState();
+    const { setActiveSubParameter, setActiveParameter, setActiveModule } = useUIStore.getState();
     
     setActiveSubParameter('grain_chroma');
     expect(useUIStore.getState().activeSubParameter).toBe('grain_chroma');
 
-    // Reset on primary parameter change
-    setActivePrimaryParameter('grain');
+    // Reset on parameter change
+    setActiveParameter('grain');
     expect(useUIStore.getState().activeSubParameter).toBe('none');
 
     setActiveSubParameter('grain_size');

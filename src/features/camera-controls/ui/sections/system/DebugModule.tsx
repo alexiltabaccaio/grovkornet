@@ -3,7 +3,7 @@ import { View } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { useTranslation } from 'react-i18next';
 import { DebugThumb } from '@shared/ui';
-import { footerStyles } from '../Footer.styles';
+import { footerStyles } from '../../Footer.styles';
 
 interface DebugModuleProps {
   isDebugEnabled: boolean;

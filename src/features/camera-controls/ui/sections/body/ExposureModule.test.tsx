@@ -1,7 +1,7 @@
 import React from 'react';
 import { render } from '@testing-library/react-native';
-import { ManualExposureModule } from './ManualExposureModule';
-import { PrimaryParameterType } from '@shared/types/camera';
+import { ExposureModule } from './ExposureModule';
+import { ParameterType } from '@shared/types/camera';
 
 jest.mock('react-i18next', () => ({
   useTranslation: () => ({
@@ -24,14 +24,14 @@ jest.mock('react-native-reanimated', () => {
   };
 });
 
-jest.mock('../PrimaryParameterControl', () => ({
-  PrimaryParameterControl: 'PrimaryParameterControl',
+jest.mock('../../ParameterControl', () => ({
+  ParameterControl: 'ParameterControl',
 }));
 
-describe('ManualExposureModule', () => {
+describe('ExposureModule', () => {
   const mockProps = {
-    activePrimaryParameter: 'iso' as PrimaryParameterType,
-    setActivePrimaryParameter: jest.fn(),
+    activeParameter: 'iso' as ParameterType,
+    setActiveParameter: jest.fn(),
     iso: { value: 100 } as unknown as import('react-native-reanimated').SharedValue<number>,
     setIso: jest.fn(),
     isoAuto: { value: true } as unknown as import('react-native-reanimated').SharedValue<boolean>,
@@ -48,7 +48,7 @@ describe('ManualExposureModule', () => {
   };
 
   it('renders correctly', () => {
-    const { toJSON } = render(<ManualExposureModule {...mockProps} />);
+    const { toJSON } = render(<ExposureModule {...mockProps} />);
     expect(toJSON()).toBeDefined();
   });
 });

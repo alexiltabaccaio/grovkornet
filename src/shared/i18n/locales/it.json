@@ -4,26 +4,20 @@
       "requesting_permissions": "Richiesta permessi fotocamera...",
       "not_found": "Fotocamera non trovata"
     },
-    "tabs": {
-      "settings": "IMPOSTAZIONI",
+    "sections": {
+      "system": "SISTEMA",
       "lens": "OBIETTIVO",
-      "color": "COLORE",
-      "tape": "PELLICOLA",
-      "crt": "CRT",
-      "exposure": "ESPOSIZIONE"
+      "body": "CORPO",
+      "film": "PELLICOLA"
     },
     "modules": {
-      "chromatic_aberration": "Aberrazione Cromatica",
-      "color_grading": "Color Grading",
-      "fade": "Fade",
-      "grain": "Grana",
-      "jitter": "Jitter",
-      "dropouts": "Dropouts",
-      "language": "Lingua",
-      "debug": "Debug",
-      "manual_exposure": "Esposizione Manuale",
-      "focus": "Messa a Fuoco",
-      "lens": "Lenti"
+      "preferences": "Preferenze",
+      "optics": "Ottica",
+      "flaws": "Difetti Ottici",
+      "exposure": "Esposizione",
+      "lighting": "Illuminazione",
+      "development": "Sviluppo",
+      "texture": "Texture"
     },
     "parameters": {
       "amount": "QUANTITÀ",

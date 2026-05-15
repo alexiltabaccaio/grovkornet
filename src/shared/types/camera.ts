@@ -1,9 +1,9 @@
 import { SharedValue } from 'react-native-reanimated';
 
-export type SectionType = 'lens' | 'color' | 'tape' | 'crt' | 'settings' | 'exposure' | 'none';
-export type ModuleType = 'color_grading' | 'fade' | 'grain' | 'jitter' | 'dropouts' | 'lens_effects' | 'language' | 'debug' | 'manual_exposure' | 'focus' | 'lens' | 'none';
-export type PrimaryParameterType = 'saturation' | 'contrast' | 'grain' | 'chromatic_aberration' | 'iso' | 'ev' | 'shutter_speed' | 'temperature' | 'white_balance' | 'focus' | 'lens' | 'torch' | 'torch_dimmer' | 'none';
-export type SubParameterType = 'grain_chroma' | 'grain_size' | 'none';
+export type SectionType = 'system' | 'lens' | 'body' | 'film' | 'none';
+export type ModuleType = 'preferences' | 'optics' | 'flaws' | 'exposure' | 'lighting' | 'development' | 'texture' | 'none';
+export type ParameterType = 'language' | 'debug' | 'camera_selection' | 'focus' | 'chromatic_aberration' | 'iso' | 'shutter_speed' | 'ev' | 'torch' | 'temperature' | 'saturation' | 'contrast' | 'grain' | 'none';
+export type SubParameterType = 'grain_size' | 'grain_chroma' | 'torch_strength' | 'none';
 
 
 export interface CameraCapabilities {
@@ -54,7 +54,7 @@ interface EffectHandlers {
   setContrast: (value: number) => void;
   setChromaticAberration: (value: number) => void;
   setGrainEnabled: (value: boolean) => void;
-  resetTool: (tool: 'grain' | PrimaryParameterType) => void;
+  resetTool: (tool: 'grain' | ParameterType) => void;
   setDebugInfo: (fps: number, resolution: string, hwFps: number) => void;
   setIso: (value: number) => void;
   setEv: (value: number) => void;
@@ -76,18 +76,18 @@ interface EffectHandlers {
 export interface UIState {
   activeSection: SectionType;
   activeModule: ModuleType;
-  activePrimaryParameter: PrimaryParameterType;
+  activeParameter: ParameterType;
   activeSubParameter: SubParameterType;
   isDebugEnabled: boolean;
   isSubPanelOpen: boolean;
-  lastActivePrimaryParameters: Record<ModuleType, PrimaryParameterType>;
+  lastActiveParameters: Record<ModuleType, ParameterType>;
 }
 
 
 export interface UIActions {
   setActiveSection: (section: SectionType) => void;
   setActiveModule: (module: ModuleType) => void;
-  setActivePrimaryParameter: (param: PrimaryParameterType) => void;
+  setActiveParameter: (param: ParameterType) => void;
   setActiveSubParameter: (param: SubParameterType) => void;
   setIsDebugEnabled: (enabled: boolean) => void;
   setIsSubPanelOpen: (open: boolean) => void;

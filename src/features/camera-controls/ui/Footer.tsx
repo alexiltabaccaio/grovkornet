@@ -4,7 +4,7 @@ import { useShallow } from 'zustand/react/shallow';
 import { useUIStore } from '../model/useUIStore';
 import { FooterSections } from './FooterSections';
 import { FooterModules } from './FooterModules';
-import { FooterPrimaryParameters } from './FooterPrimaryParameters';
+import { FooterParameters } from './FooterParameters';
 import { BottomSheetHandle } from './BottomSheetHandle';
 import { SubParameterPanel } from './SubParameterPanel';
 
@@ -100,7 +100,7 @@ export const Footer = () => {
                   <BottomSheetHandle />
                 </View>
                 <FooterModules />
-                <FooterPrimaryParameters />
+                <FooterParameters />
               </View>
               {isDebugEnabled && (
                 <View style={styles.debugContainer} pointerEvents="none">

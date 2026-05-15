@@ -18,22 +18,19 @@ export const FooterSections = () => {
 
   const handleSectionChange = (section: SectionType) => {
     const newSection = activeSection === section ? 'none' : section;
-    if (newSection === 'color') setActiveModule('color_grading');
-    else if (newSection === 'exposure') setActiveModule('manual_exposure');
-    else if (newSection === 'tape') setActiveModule('grain');
-    else if (newSection === 'lens') setActiveModule('lens_effects');
-    else if (newSection === 'settings') setActiveModule('language');
+    if (newSection === 'system') setActiveModule('preferences');
+    else if (newSection === 'lens') setActiveModule('optics');
+    else if (newSection === 'body') setActiveModule('exposure');
+    else if (newSection === 'film') setActiveModule('development');
     else setActiveModule('none');
     setActiveSection(newSection);
   };
 
-  const sections: { id: SectionType; icon: keyof typeof Ionicons.glyphMap; label: string }[] = [
-    { id: 'settings', icon: 'cog-outline', label: t('tabs.settings') },
-    { id: 'exposure', icon: 'aperture-outline', label: t('tabs.exposure') },
-    { id: 'lens', icon: 'aperture', label: t('tabs.lens') },
-    { id: 'color', icon: 'color-palette-outline', label: t('tabs.color') },
-    { id: 'tape', icon: 'film-outline', label: t('tabs.tape') },
-    { id: 'crt', icon: 'tv-outline', label: t('tabs.crt') },
+  const sections: { id: SectionType; label: string }[] = [
+    { id: 'system', label: t('sections.system') },
+    { id: 'lens', label: t('sections.lens') },
+    { id: 'body', label: t('sections.body') },
+    { id: 'film', label: t('sections.film') },
   ];
 
   return (

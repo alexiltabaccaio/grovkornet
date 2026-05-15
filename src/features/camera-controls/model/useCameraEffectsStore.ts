@@ -145,10 +145,6 @@ export const useCameraEffectsStore = create<CameraState>((set, get) => ({
   },
 
   setCapabilities: (caps) => {
-    const state = get();
-    if (state.capabilities.maxTorchStrength === 1 && caps.maxTorchStrength && caps.maxTorchStrength > 1) {
-      state.torchStrength.value = caps.maxTorchStrength;
-    }
     set({ capabilities: caps });
   },
 
@@ -186,14 +182,14 @@ export const useCameraEffectsStore = create<CameraState>((set, get) => ({
     } else if (tool === 'temperature') {
       temperature.value = DEFAULT_TEMPERATURE;
       temperatureAuto.value = true;
-    } else if (tool === 'white_balance') {
-      // Legacy support for internal resets if needed, but should be temperature
-      temperature.value = DEFAULT_TEMPERATURE;
-      temperatureAuto.value = true;
     } else if (tool === 'focus') {
       get().focusAuto.value = true;
-    } else if (tool === 'lens') {
+    } else if (tool === 'camera_selection') {
       set({ cameraAuto: true, cameraId: '' });
+    } else if (tool === 'torch') {
+      get().torchState.value = 0;
+    } else if (tool === 'torch_strength') {
+      get().torchStrength.value = 1.0;
     }
   },
 }));

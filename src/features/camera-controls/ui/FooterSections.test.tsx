@@ -10,27 +10,28 @@ describe('FooterSections', () => {
 
   it('renders all sections', () => {
     const { getByText } = render(<FooterSections />);
-    expect(getByText('tabs.exposure')).toBeDefined();
-    expect(getByText('tabs.lens')).toBeDefined();
-    expect(getByText('tabs.color')).toBeDefined();
+    expect(getByText('sections.system')).toBeDefined();
+    expect(getByText('sections.lens')).toBeDefined();
+    expect(getByText('sections.body')).toBeDefined();
+    expect(getByText('sections.film')).toBeDefined();
   });
 
   it('switches section and module on press', () => {
     const { getByText } = render(<FooterSections />);
     
-    // Click on Color section
-    fireEvent.press(getByText('tabs.color'));
+    // Click on Film section
+    fireEvent.press(getByText('sections.film'));
     
-    expect(useUIStore.getState().activeSection).toBe('color');
-    expect(useUIStore.getState().activeModule).toBe('color_grading');
+    expect(useUIStore.getState().activeSection).toBe('film');
+    expect(useUIStore.getState().activeModule).toBe('development');
   });
 
   it('toggles section off if clicked again', () => {
     const { getByText } = render(<FooterSections />);
     
-    // Click on Color section twice
-    fireEvent.press(getByText('tabs.color'));
-    fireEvent.press(getByText('tabs.color'));
+    // Click on Film section twice
+    fireEvent.press(getByText('sections.film'));
+    fireEvent.press(getByText('sections.film'));
     
     expect(useUIStore.getState().activeSection).toBe('none');
     expect(useUIStore.getState().activeModule).toBe('none');

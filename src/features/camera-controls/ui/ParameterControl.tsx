@@ -9,7 +9,7 @@ import { useUIStore } from '../model/useUIStore';
 const AnimatedIcon = Animated.createAnimatedComponent(Ionicons);
 const AnimatedTextInput = Animated.createAnimatedComponent(TextInput);
 
-interface PrimaryParameterControlProps {
+interface ParameterControlProps {
   label: string;
   isActive: boolean;
   onPress: () => void;
@@ -30,7 +30,7 @@ interface PrimaryParameterControlProps {
 
 import { updateSharedValue } from '@shared/lib/reanimated/safeUpdate';
 
-export const PrimaryParameterControl = ({ 
+export const ParameterControl = ({ 
   label, 
   isActive, 
   onPress, 
@@ -46,7 +46,7 @@ export const PrimaryParameterControl = ({
   staticText,
   invertDrag = false,
   hideValueInAuto = false,
-}: PrimaryParameterControlProps) => {
+}: ParameterControlProps) => {
   const startVal = useSharedValue(minValue);
   const isDebugEnabled = useUIStore((s) => s.isDebugEnabled);
 

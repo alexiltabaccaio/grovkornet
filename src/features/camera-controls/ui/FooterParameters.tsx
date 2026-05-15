@@ -9,20 +9,20 @@ import { useDoublePress } from '@shared/lib/hooks/useDoublePress';
 import { footerStyles } from './Footer.styles';
 
 // Import modules
-import { GrainModule } from './modules/GrainModule';
-import { ColorGradingModule } from './modules/ColorGradingModule';
-import { LensEffectsModule } from './modules/LensEffectsModule';
-import { ManualExposureModule } from './modules/ManualExposureModule';
-import { LanguageModule } from './modules/LanguageModule';
-import { DebugModule } from './modules/DebugModule';
-import { FocusModule } from './modules/FocusModule';
-import { LensModule } from './modules/LensModule';
+import { TextureModule } from './sections/film/TextureModule';
+import { DevelopmentModule } from './sections/film/DevelopmentModule';
+import { FlawsModule } from './sections/lens/FlawsModule';
+import { ExposureModule } from './sections/body/ExposureModule';
+import { LightingModule } from './sections/body/LightingModule';
+import { OpticsModule } from './sections/lens/OpticsModule';
+import { PreferencesModule } from './sections/system/PreferencesModule';
+import { DebugModule } from './sections/system/DebugModule';
 
-export const FooterPrimaryParameters = () => {
+export const FooterParameters = () => {
   const uiStore = useUIStore(useShallow(state => ({
     activeModule: state.activeModule,
-    activePrimaryParameter: state.activePrimaryParameter,
-    setActivePrimaryParameter: state.setActivePrimaryParameter,
+    activeParameter: state.activeParameter,
+    setActiveParameter: state.setActiveParameter,
     isDebugEnabled: state.isDebugEnabled,
     setIsDebugEnabled: state.setIsDebugEnabled,
   })));
@@ -77,21 +77,21 @@ export const FooterPrimaryParameters = () => {
 
   const renderModule = () => {
     switch (uiStore.activeModule) {
-      case 'grain':
+      case 'texture':
         return (
-          <GrainModule
-            activePrimaryParameter={uiStore.activePrimaryParameter}
-            setActivePrimaryParameter={uiStore.setActivePrimaryParameter}
+          <TextureModule
+            activeParameter={uiStore.activeParameter}
+            setActiveParameter={uiStore.setActiveParameter}
             grainIntensity={cameraStore.grainIntensity}
             setGrainIntensity={cameraStore.setGrainIntensity}
             handlePressWithDouble={handlePressWithDouble}
           />
         );
-      case 'color_grading':
+      case 'development':
         return (
-          <ColorGradingModule
-            activePrimaryParameter={uiStore.activePrimaryParameter}
-            setActivePrimaryParameter={uiStore.setActivePrimaryParameter}
+          <DevelopmentModule
+            activeParameter={uiStore.activeParameter}
+            setActiveParameter={uiStore.setActiveParameter}
             saturation={cameraStore.saturation}
             setSaturation={cameraStore.setSaturation}
             contrast={cameraStore.contrast}
@@ -103,21 +103,21 @@ export const FooterPrimaryParameters = () => {
             handlePressWithDouble={handlePressWithDouble}
           />
         );
-      case 'lens_effects':
+      case 'flaws':
         return (
-          <LensEffectsModule
-            activePrimaryParameter={uiStore.activePrimaryParameter}
-            setActivePrimaryParameter={uiStore.setActivePrimaryParameter}
+          <FlawsModule
+            activeParameter={uiStore.activeParameter}
+            setActiveParameter={uiStore.setActiveParameter}
             chromaticAberration={cameraStore.chromaticAberration}
             setChromaticAberration={cameraStore.setChromaticAberration}
             handlePressWithDouble={handlePressWithDouble}
           />
         );
-      case 'manual_exposure':
+      case 'exposure':
         return (
-          <ManualExposureModule
-            activePrimaryParameter={uiStore.activePrimaryParameter}
-            setActivePrimaryParameter={uiStore.setActivePrimaryParameter}
+          <ExposureModule
+            activeParameter={uiStore.activeParameter}
+            setActiveParameter={uiStore.setActiveParameter}
             iso={cameraStore.iso}
             setIso={cameraStore.setIso}
             isoAuto={cameraStore.isoAuto}
@@ -133,28 +133,29 @@ export const FooterPrimaryParameters = () => {
             handlePressWithDouble={handlePressWithDouble}
           />
         );
-      case 'focus':
+      case 'optics':
         return (
-          <FocusModule
-            activePrimaryParameter={uiStore.activePrimaryParameter}
-            setActivePrimaryParameter={uiStore.setActivePrimaryParameter}
+          <OpticsModule
+            activeParameter={uiStore.activeParameter}
+            setActiveParameter={uiStore.setActiveParameter}
             focusDistance={cameraStore.focusDistance}
             setFocusDistance={cameraStore.setFocusDistance}
             focusAuto={cameraStore.focusAuto}
             setFocusAuto={cameraStore.setFocusAuto}
-            handlePressWithDouble={handlePressWithDouble}
-          />
-        );
-      case 'lens':
-        return (
-          <LensModule
-            activePrimaryParameter={uiStore.activePrimaryParameter}
-            setActivePrimaryParameter={uiStore.setActivePrimaryParameter}
             capabilities={cameraStore.capabilities}
             cameraId={cameraStore.cameraId}
             setCameraId={cameraStore.setCameraId}
             cameraAuto={cameraStore.cameraAuto}
             setCameraAuto={cameraStore.setCameraAuto}
+            handlePressWithDouble={handlePressWithDouble}
+          />
+        );
+      case 'lighting':
+        return (
+          <LightingModule
+            activeParameter={uiStore.activeParameter}
+            setActiveParameter={uiStore.setActiveParameter}
+            capabilities={cameraStore.capabilities}
             torchState={cameraStore.torchState}
             setTorchState={cameraStore.setTorchState}
             torchStrength={cameraStore.torchStrength}
@@ -162,14 +163,16 @@ export const FooterPrimaryParameters = () => {
             handlePressWithDouble={handlePressWithDouble}
           />
         );
-      case 'language':
-        return <LanguageModule />;
-      case 'debug':
+      case 'preferences':
+        // For now, mapping language and debug to preferences
         return (
-          <DebugModule
-            isDebugEnabled={uiStore.isDebugEnabled}
-            setIsDebugEnabled={uiStore.setIsDebugEnabled}
-          />
+          <>
+            <PreferencesModule />
+            <DebugModule
+              isDebugEnabled={uiStore.isDebugEnabled}
+              setIsDebugEnabled={uiStore.setIsDebugEnabled}
+            />
+          </>
         );
       case 'none':
         return null;

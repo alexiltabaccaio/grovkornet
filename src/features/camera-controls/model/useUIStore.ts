@@ -1,29 +1,24 @@
 import { create } from 'zustand';
-import { UIStore, ModuleType, PrimaryParameterType, SectionType, SubParameterType } from '@shared/types/camera';
+import { UIStore, ModuleType, ParameterType, SectionType, SubParameterType } from '@shared/types/camera';
 
 export const useUIStore = create<UIStore>((set, get) => ({
   // UI State
   activeSection: 'none',
   activeModule: 'none',
-  activePrimaryParameter: 'none',
+  activeParameter: 'none',
   activeSubParameter: 'none',
   isDebugEnabled: false,
   isSubPanelOpen: false,
 
-  
-  lastActivePrimaryParameters: {
+  lastActiveParameters: {
     none: 'none',
-    grain: 'grain',
-    color_grading: 'saturation',
-    lens_effects: 'chromatic_aberration',
-    language: 'none',
-    debug: 'none',
-    fade: 'none',
-    jitter: 'none',
-    dropouts: 'none',
-    manual_exposure: 'iso',
-    focus: 'none',
-    lens: 'none',
+    preferences: 'language',
+    optics: 'camera_selection',
+    flaws: 'chromatic_aberration',
+    exposure: 'iso',
+    lighting: 'torch',
+    development: 'temperature',
+    texture: 'grain',
   },
 
   // Actions
@@ -32,25 +27,23 @@ export const useUIStore = create<UIStore>((set, get) => ({
   },
   
   setActiveModule: (module: ModuleType) => {
-    const { lastActivePrimaryParameters } = get();
+    const { lastActiveParameters } = get();
     set({ 
       activeModule: module, 
-      activePrimaryParameter: lastActivePrimaryParameters[module] || 'none',
+      activeParameter: lastActiveParameters[module] || 'none',
       activeSubParameter: 'none'
     });
-
   },
 
-  setActivePrimaryParameter: (param: PrimaryParameterType) => {
+  setActiveParameter: (param: ParameterType) => {
     const { activeModule } = get();
     set((state) => ({
-      activePrimaryParameter: param,
+      activeParameter: param,
       activeSubParameter: 'none',
-      lastActivePrimaryParameters: {
-        ...state.lastActivePrimaryParameters,
+      lastActiveParameters: {
+        ...state.lastActiveParameters,
         [activeModule]: param,
       },
-
     }));
   },
 
@@ -65,5 +58,4 @@ export const useUIStore = create<UIStore>((set, get) => ({
   setActiveSubParameter: (param: SubParameterType) => {
     set({ activeSubParameter: param });
   },
-
 }));

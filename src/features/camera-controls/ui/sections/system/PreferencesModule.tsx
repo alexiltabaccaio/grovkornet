@@ -3,9 +3,9 @@ import { View } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { useTranslation } from 'react-i18next';
 import { LanguageThumb } from '@shared/ui';
-import { footerStyles } from '../Footer.styles';
+import { footerStyles } from '../../Footer.styles';
 
-export const LanguageModule = () => {
+export const PreferencesModule = () => {
   const { i18n } = useTranslation();
 
   return (

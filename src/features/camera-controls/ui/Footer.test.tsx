@@ -4,7 +4,7 @@ import { Footer } from './Footer';
 
 import { useCameraEffectsStore } from '../model/useCameraEffectsStore';
 import { useUIStore } from '../model/useUIStore';
-import { SectionType, ModuleType, PrimaryParameterType } from '@shared/types/camera';
+import { SectionType, ModuleType, ParameterType } from '@shared/types/camera';
 
 // Mocks for icons (which often cause issues in node tests)
 jest.mock('react-native-reanimated', () => {
@@ -40,12 +40,12 @@ jest.mock('./FooterModules', () => ({
   FooterModules: 'FooterModules',
 }));
 
-jest.mock('./PrimaryParameterControl', () => ({
-  PrimaryParameterControl: 'PrimaryParameterControl',
+jest.mock('./ParameterControl', () => ({
+  ParameterControl: 'ParameterControl',
 }));
 
-jest.mock('./FooterPrimaryParameters', () => ({
-  FooterPrimaryParameters: 'FooterPrimaryParameters',
+jest.mock('./FooterParameters', () => ({
+  FooterParameters: 'FooterParameters',
 }));
 
 jest.mock('@shared/ui', () => ({
@@ -65,11 +65,11 @@ describe('Footer Component Stability Test', () => {
   const mockUIStoreValue = {
     activeSection: 'none' as SectionType,
     activeModule: 'none' as ModuleType,
-    activePrimaryParameter: 'none' as PrimaryParameterType,
+    activeParameter: 'none' as ParameterType,
     isDebugEnabled: false,
     setActiveSection: jest.fn(),
     setActiveModule: jest.fn(),
-    setActivePrimaryParameter: jest.fn(),
+    setActiveParameter: jest.fn(),
     setIsDebugEnabled: jest.fn(),
   };
 
@@ -95,21 +95,21 @@ describe('Footer Component Stability Test', () => {
     expect(toJSON()).toBeDefined();
   });
 
-  it('should render correctly when color section is active', () => {
+  it('should render correctly when film section is active', () => {
     (useUIStore as unknown as jest.Mock).mockReturnValue({
       ...mockUIStoreValue,
-      activeSection: 'color',
-      activeModule: 'color_grading',
+      activeSection: 'film',
+      activeModule: 'development',
     });
     const { toJSON } = render(<Footer />);
     expect(toJSON()).toBeDefined();
   });
 
-  it('should render correctly when tape section is active', () => {
+  it('should render correctly when texture section is active', () => {
     (useUIStore as unknown as jest.Mock).mockReturnValue({
       ...mockUIStoreValue,
-      activeSection: 'tape',
-      activeModule: 'grain',
+      activeSection: 'film',
+      activeModule: 'texture',
     });
     const { toJSON } = render(<Footer />);
     expect(toJSON()).toBeDefined();

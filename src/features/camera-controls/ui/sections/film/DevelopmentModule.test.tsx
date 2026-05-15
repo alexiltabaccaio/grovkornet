@@ -1,7 +1,7 @@
 import React from 'react';
 import { render } from '@testing-library/react-native';
-import { ColorGradingModule } from './ColorGradingModule';
-import { PrimaryParameterType } from '@shared/types/camera';
+import { DevelopmentModule } from './DevelopmentModule';
+import { ParameterType } from '@shared/types/camera';
 
 jest.mock('react-i18next', () => ({
   useTranslation: () => ({
@@ -24,14 +24,14 @@ jest.mock('react-native-reanimated', () => {
   };
 });
 
-jest.mock('../PrimaryParameterControl', () => ({
-  PrimaryParameterControl: 'PrimaryParameterControl',
+jest.mock('../../ParameterControl', () => ({
+  ParameterControl: 'ParameterControl',
 }));
 
-describe('ColorGradingModule', () => {
+describe('DevelopmentModule', () => {
   const mockProps = {
-    activePrimaryParameter: 'saturation' as PrimaryParameterType,
-    setActivePrimaryParameter: jest.fn(),
+    activeParameter: 'saturation' as ParameterType,
+    setActiveParameter: jest.fn(),
     saturation: { value: 1.0 } as unknown as import('react-native-reanimated').SharedValue<number>,
     setSaturation: jest.fn(),
     contrast: { value: 1.0 } as unknown as import('react-native-reanimated').SharedValue<number>,
@@ -44,7 +44,7 @@ describe('ColorGradingModule', () => {
   };
 
   it('renders correctly', () => {
-    const { toJSON } = render(<ColorGradingModule {...mockProps} />);
+    const { toJSON } = render(<DevelopmentModule {...mockProps} />);
     expect(toJSON()).toBeDefined();
   });
 });

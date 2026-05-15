@@ -4,26 +4,20 @@
       "requesting_permissions": "Requesting camera permissions...",
       "not_found": "Camera not found"
     },
-    "tabs": {
-      "settings": "SETTINGS",
+    "sections": {
+      "system": "SYSTEM",
       "lens": "LENS",
-      "color": "COLOR",
-      "tape": "TAPE",
-      "crt": "CRT",
-      "exposure": "EXPOSURE"
+      "body": "BODY",
+      "film": "FILM"
     },
     "modules": {
-      "chromatic_aberration": "Chromatic Aberration",
-      "color_grading": "Color Grading",
-      "fade": "Fade",
-      "grain": "Grain",
-      "jitter": "Jitter",
-      "dropouts": "Dropouts",
-      "language": "Language",
-      "debug": "Debug",
-      "manual_exposure": "Manual Exposure",
-      "focus": "Focus",
-      "lens": "Lenses"
+      "preferences": "Preferences",
+      "optics": "Optics",
+      "flaws": "Flaws",
+      "exposure": "Exposure",
+      "lighting": "Lighting",
+      "development": "Development",
+      "texture": "Texture"
     },
     "parameters": {
       "amount": "AMOUNT",

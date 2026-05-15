@@ -3,18 +3,18 @@ import { View } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { useTranslation } from 'react-i18next';
 import { SharedValue } from 'react-native-reanimated';
-import { PrimaryParameterType } from '@shared/types/camera';
-import { PrimaryParameterControl } from '../PrimaryParameterControl';
-import { footerStyles } from '../Footer.styles';
+import { ParameterType } from '@shared/types/camera';
+import { ParameterControl } from '../../ParameterControl';
+import { footerStyles } from '../../Footer.styles';
 
 const formatTemperature = (v: number) => {
   'worklet';
   return `${Math.round(v)}K`;
 };
 
-interface ColorGradingModuleProps {
-  activePrimaryParameter: PrimaryParameterType;
-  setActivePrimaryParameter: (param: PrimaryParameterType) => void;
+interface DevelopmentModuleProps {
+  activeParameter: ParameterType;
+  setActiveParameter: (param: ParameterType) => void;
   saturation: SharedValue<number>;
   setSaturation: (value: number) => void;
   contrast: SharedValue<number>;
@@ -23,12 +23,12 @@ interface ColorGradingModuleProps {
   setTemperature: (value: number) => void;
   temperatureAuto: SharedValue<boolean>;
   setTemperatureAuto: (value: boolean) => void;
-  handlePressWithDouble: (param: PrimaryParameterType, action: () => void) => void;
+  handlePressWithDouble: (param: ParameterType, action: () => void) => void;
 }
 
-export const ColorGradingModule = ({
-  activePrimaryParameter,
-  setActivePrimaryParameter,
+export const DevelopmentModule = ({
+  activeParameter,
+  setActiveParameter,
   saturation,
   setSaturation,
   contrast,
@@ -38,34 +38,34 @@ export const ColorGradingModule = ({
   temperatureAuto,
   setTemperatureAuto,
   handlePressWithDouble,
-}: ColorGradingModuleProps) => {
+}: DevelopmentModuleProps) => {
   const { t } = useTranslation();
 
   return (
     <Animated.View style={footerStyles.tabContent}>
       <View style={footerStyles.imageToolsContainer}>
-        <PrimaryParameterControl
+        <ParameterControl
           label={t('parameters.saturation')}
-          isActive={activePrimaryParameter === 'saturation'}
-          onPress={() => handlePressWithDouble('saturation', () => setActivePrimaryParameter('saturation'))}
+          isActive={activeParameter === 'saturation'}
+          onPress={() => handlePressWithDouble('saturation', () => setActiveParameter('saturation'))}
           value={saturation}
           maxValue={2.0}
           onChange={setSaturation}
           icon="color-filter-outline"
         />
-        <PrimaryParameterControl
+        <ParameterControl
           label={t('parameters.contrast')}
-          isActive={activePrimaryParameter === 'contrast'}
-          onPress={() => handlePressWithDouble('contrast', () => setActivePrimaryParameter('contrast'))}
+          isActive={activeParameter === 'contrast'}
+          onPress={() => handlePressWithDouble('contrast', () => setActiveParameter('contrast'))}
           value={contrast}
           maxValue={2.0}
           onChange={setContrast}
           icon="contrast-outline"
         />
-        <PrimaryParameterControl
+        <ParameterControl
           label={t('parameters.temperature')}
-          isActive={activePrimaryParameter === 'temperature'}
-          onPress={() => handlePressWithDouble('temperature', () => setActivePrimaryParameter('temperature'))}
+          isActive={activeParameter === 'temperature'}
+          onPress={() => handlePressWithDouble('temperature', () => setActiveParameter('temperature'))}
           value={temperature}
           minValue={2000}
           maxValue={10000}

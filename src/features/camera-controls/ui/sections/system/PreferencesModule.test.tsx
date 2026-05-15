@@ -1,6 +1,6 @@
 import React from 'react';
 import { render } from '@testing-library/react-native';
-import { LanguageModule } from './LanguageModule';
+import { PreferencesModule } from './PreferencesModule';
 
 jest.mock('react-i18next', () => ({
   useTranslation: () => ({
@@ -27,9 +27,9 @@ jest.mock('@shared/ui', () => ({
   LanguageThumb: 'LanguageThumb',
 }));
 
-describe('LanguageModule', () => {
+describe('PreferencesModule', () => {
   it('renders correctly', () => {
-    const { toJSON } = render(<LanguageModule />);
+    const { toJSON } = render(<PreferencesModule />);
     expect(toJSON()).toBeDefined();
   });
 });

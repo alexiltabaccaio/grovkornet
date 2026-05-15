@@ -3,34 +3,34 @@ import { View } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { useTranslation } from 'react-i18next';
 import { SharedValue } from 'react-native-reanimated';
-import { PrimaryParameterType } from '@shared/types/camera';
-import { PrimaryParameterControl } from '../PrimaryParameterControl';
-import { footerStyles } from '../Footer.styles';
+import { ParameterType } from '@shared/types/camera';
+import { ParameterControl } from '../../ParameterControl';
+import { footerStyles } from '../../Footer.styles';
 
-interface GrainModuleProps {
-  activePrimaryParameter: PrimaryParameterType;
-  setActivePrimaryParameter: (param: PrimaryParameterType) => void;
+interface TextureModuleProps {
+  activeParameter: ParameterType;
+  setActiveParameter: (param: ParameterType) => void;
   grainIntensity: SharedValue<number>;
   setGrainIntensity: (value: number) => void;
-  handlePressWithDouble: (param: PrimaryParameterType, action: () => void) => void;
+  handlePressWithDouble: (param: ParameterType, action: () => void) => void;
 }
 
-export const GrainModule = ({
-  activePrimaryParameter,
-  setActivePrimaryParameter,
+export const TextureModule = ({
+  activeParameter,
+  setActiveParameter,
   grainIntensity,
   setGrainIntensity,
   handlePressWithDouble,
-}: GrainModuleProps) => {
+}: TextureModuleProps) => {
   const { t } = useTranslation();
 
   return (
     <Animated.View style={footerStyles.tabContent}>
       <View style={footerStyles.imageToolsContainer}>
-        <PrimaryParameterControl
+        <ParameterControl
         label={t('parameters.grain')}
-        isActive={activePrimaryParameter === 'grain'}
-        onPress={() => handlePressWithDouble('grain', () => setActivePrimaryParameter('grain'))}
+        isActive={activeParameter === 'grain'}
+        onPress={() => handlePressWithDouble('grain', () => setActiveParameter('grain'))}
         value={grainIntensity}
         maxValue={1.0}
         onChange={setGrainIntensity}

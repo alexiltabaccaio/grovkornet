@@ -1,7 +1,7 @@
 import React from 'react';
 import { render } from '@testing-library/react-native';
-import { LensEffectsModule } from './LensEffectsModule';
-import { PrimaryParameterType } from '@shared/types/camera';
+import { FlawsModule } from './FlawsModule';
+import { ParameterType } from '@shared/types/camera';
 
 jest.mock('react-i18next', () => ({
   useTranslation: () => ({
@@ -24,21 +24,21 @@ jest.mock('react-native-reanimated', () => {
   };
 });
 
-jest.mock('../PrimaryParameterControl', () => ({
-  PrimaryParameterControl: 'PrimaryParameterControl',
+jest.mock('../../ParameterControl', () => ({
+  ParameterControl: 'ParameterControl',
 }));
 
-describe('LensEffectsModule', () => {
+describe('FlawsModule', () => {
   const mockProps = {
-    activePrimaryParameter: 'chromatic_aberration' as PrimaryParameterType,
-    setActivePrimaryParameter: jest.fn(),
+    activeParameter: 'chromatic_aberration' as ParameterType,
+    setActiveParameter: jest.fn(),
     chromaticAberration: { value: 0 } as unknown as import('react-native-reanimated').SharedValue<number>,
     setChromaticAberration: jest.fn(),
     handlePressWithDouble: jest.fn(),
   };
 
   it('renders correctly', () => {
-    const { toJSON } = render(<LensEffectsModule {...mockProps} />);
+    const { toJSON } = render(<FlawsModule {...mockProps} />);
     expect(toJSON()).toBeDefined();
   });
 });

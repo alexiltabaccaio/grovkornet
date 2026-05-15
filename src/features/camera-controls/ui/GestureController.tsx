@@ -13,8 +13,8 @@ const SLIDER_HEIGHT = SCREEN_HEIGHT * 0.3;
 import { useCameraWorklets } from '../lib/useCameraWorklets';
 
 export const GestureController = () => {
-  const { activePrimaryParameter, activeSubParameter } = useUIStore(useShallow(state => ({
-    activePrimaryParameter: state.activePrimaryParameter,
+  const { activeParameter, activeSubParameter } = useUIStore(useShallow(state => ({
+    activeParameter: state.activeParameter,
     activeSubParameter: state.activeSubParameter,
   })));
 
@@ -93,7 +93,7 @@ export const GestureController = () => {
 
   const gesture = Gesture.Pan()
     .onStart(() => {
-      const activeParam = activeSubParameter !== 'none' ? activeSubParameter : activePrimaryParameter;
+      const activeParam = activeSubParameter !== 'none' ? activeSubParameter : activeParameter;
       switch (activeParam as string) {
         case 'grain':
           startVal.value = grainIntensity.value;
@@ -139,7 +139,7 @@ export const GestureController = () => {
     .onUpdate((e) => {
       if (startVal.value === -1) return;
 
-      const activeParam = activeSubParameter !== 'none' ? activeSubParameter : activePrimaryParameter;
+      const activeParam = activeSubParameter !== 'none' ? activeSubParameter : activeParameter;
       let delta = -(e.translationY / SLIDER_HEIGHT);
       if (activeParam === 'focus') {
         delta = -delta;
@@ -188,7 +188,15 @@ export const GestureController = () => {
     });
 
 
-  if (!activePrimaryParameter || activePrimaryParameter === 'none' || activePrimaryParameter === 'lens') {
+  const swipeableParams = [
+    'grain', 'grain_chroma', 'grain_size', 'saturation', 'contrast',
+    'chromatic_aberration', 'iso', 'ev', 'shutter_speed', 'temperature',
+    'white_balance', 'focus'
+  ];
+
+  const currentParam = activeSubParameter !== 'none' ? activeSubParameter : activeParameter;
+
+  if (!currentParam || !swipeableParams.includes(currentParam as string)) {
     return null;
   }
 
