@@ -6,11 +6,14 @@
 - Mantieni le spiegazioni concise e focalizzate sul codice e le performance.
 
 ## Architettura e Standard (React Native / Expo)
-- **Struttura (`src/`):** Organizza il progetto in directory logiche (`components`, `hooks`, `utils`, `assets`).
+- **Struttura (`src/`):** Organizza il progetto utilizzando un approccio basato sulle funzionalità (`features/`, es. `src/features/camera-controls`), mantenendo anche le directory condivise logiche (`components`, `hooks`, `utils`, `assets`).
 - **TypeScript:** Usa TypeScript rigorosamente (evita `any`), definendo le interfacce per le props.
 - **Stile:** Usa `StyleSheet.create` o styling nativo di React Native.
 
-## Prestazioni e UI (Vision Camera, Skia & Reanimated)
-- **Worklets e UI Thread:** Fai molta attenzione alle performance. Quando scrivi logica per i frame processor (`react-native-vision-camera`) o per le animazioni (`react-native-reanimated`), assicurati di eseguire il codice corretto come worklet per evitare cali di frame (obiettivo 60 FPS fissi).
-- **React Native Skia:** Ottimizza l'uso degli shader (es. per l'effetto grana) pre-calcolando valori dove possibile e minimizzando il carico sulla GPU.
-- **Re-render:** Evita ri-renderizzazioni non necessarie dei componenti, in particolar modo durante lo streaming live della videocamera. Metti in cache callbacks e memoizza calcoli pesanti.
+## Prestazioni e UI (NativeFilmCamera & Reanimated)
+- **NativeFilmCamera:** Il progetto utilizza un componente fotocamera nativo custom (`NativeFilmCamera`) con una pipeline di rendering single-pass (Uber Shader). Non utilizzare o reintrodurre dipendenze come `react-native-vision-camera` o `react-native-skia`.
+- **Worklets e Shared Values:** La comunicazione continua tra React Native e il modulo nativo avviene tramite eventi e `SharedValue` di Reanimated (es. `useEvent`, `updateSharedValue`). Assicurati che gli handler degli eventi girino rigorosamente come worklet (`'worklet';`) per evitare di intasare il thread JS e mantenere i 60 FPS fissi.
+- **Re-render:** Evita ri-renderizzazioni non necessarie dei componenti JS, in particolar modo durante lo streaming live della videocamera. Metti in cache callbacks e memoizza calcoli pesanti.
+
+## Qualità del Codice e Proattività
+- **Segnalazione Problemi:** Se durante lo sviluppo o l'analisi del codice si notano bug evidenti, colli di bottiglia per le prestazioni, o potenziali problemi di sicurezza, segnalali proattivamente all'utente, anche se esulano dal task principale.

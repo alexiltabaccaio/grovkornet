@@ -1,69 +1,82 @@
-# Grovkornet: Gerarchia degli Effetti a 3 Livelli
+# Grovkornet: Gerarchia degli Effetti e UX (Metafora Analogica)
 
-Questa struttura definisce l'interfaccia utente e l'organizzazione logica di tutti i filtri disponibili nell'applicazione. La gerarchia è organizzata su 3 livelli:
+Questa struttura definisce l'interfaccia utente, organizzata simulando fedelmente le componenti fisiche di un setup cinematografico. 
 
-1.  **Macro-Categoria (Ambiente):** I tab principali dell'applicazione.
-2.  **Modulo (Effetto):** L'effetto specifico (che può essere acceso o spento).
-3.  **Parametri (Terza Fase):** I singoli slider e interruttori regolabili dall'utente.
+## UX Design Pattern (Modello a Bottom Sheet)
+Il sistema è progettato per essere rapido da usare con una mano (run-and-gun), nascondendo la complessità ai principianti ma lasciandola accessibile ai professionisti.
 
----
+1.  **Macro-Categoria (Tab):** Le sezioni fisiche principali (es. System, Lens, Body).
+2.  **Modulo (Pill Menu):** Il sottomenù o famiglia di effetti (es. Esposizione, Texture).
+3.  **Parametro "Hero" (Box Principale):** Il parametro più importante e usato (es. Intensità della Grana), immediatamente visibile come box slider a scorrimento verticale rapido.
+4.  **Impostazioni Avanzate (Bottom Sheet Modale):** Accessibile tramite un Long Press, Doppio Tap o l'icona ingranaggio sul parametro Hero. Fa scivolare verso l'alto un pannello avanzato con le regolazioni di fino (es. Dimensione e Croma della grana), senza intasare lo spazio orizzontale della UI primaria.
 
-## 1. LENS (L'Obiettivo)
-*Simula i difetti ottici e fisici del vetro della telecamera.*
-
-### Vignettatura
-*   **Intensità:** Quanto è scuro il nero ai bordi.
-*   **Raggio:** Quanto l'ombra penetra verso il centro dell'inquadratura.
-
-### Aberrazione Cromatica (Color Bleed)
-*   **Sfasamento:** La distanza di separazione tra il canale Rosso e il canale Blu (sbavatura sui bordi).
-
-### Distorsione Lente
-*   **Quantità:** L'effetto "barilotto" o fish-eye che curva leggermente l'immagine.
+## Pipeline di Rendering (L'Ordine del Segnale)
+Per garantire il massimo realismo, l'Uber Shader (il cuore del motore grafico nativo) **deve** elaborare l'immagine e applicare i filtri seguendo il percorso fisico esatto che compirebbe la luce nella realtà (la tab SYSTEM è esclusa in quanto non fa parte del flusso ottico):
+1.  **LENS:** Prima la luce attraversa il vetro, quindi si calcolano distorsioni, aberrazioni cromatiche e vignettature sui bordi dell'inquadratura originale.
+2.  **BODY:** L'immagine ottica colpisce il sensore, dove avvengono le regolazioni elettroniche/meccaniche di esposizione, ISO e bilanciamento del bianco nativo.
+3.  **FILM:** Il segnale grezzo "sviluppa" una pasta cromatica, subendo alterazioni di color grading (saturazione, contrasto, fade) e infine viene impressa la grana chimica/fisica della pellicola sulla pasta colore risultante.
+4.  **DECK:** Il segnale già stampato e sviluppato subisce i danni del nastro magnetico (Jitter, Dropouts) e la distorsione finale dovuta allo schermo di riproduzione (CRT Scanlines, curvatura).
 
 ---
 
-## 2. COLOR (Lo Sviluppo)
-*Riguarda la manipolazione cromatica pura dell'immagine (Color Grading).*
+## 1. SYSTEM (Sistema)
+*Impostazioni tecniche dell'applicazione, posizionate per prime a sinistra nell'interfaccia.*
 
-### Color Grading Base
-*   **Saturazione:** L'intensità dei colori (da bianco e nero a fluo).
-*   **Contrasto:** La differenza tra le aree chiare e quelle scure.
-*   **Temperatura:** Regolazione da tonalità fredde (blu) a calde (arancione).
-*   **Tinta:** Regolazione da tonalità verdi a magenta.
-
-### Livello del Nero (Fade)
-*   **Quantità:** Prende i neri profondi e li "alza" trasformandoli in grigi opachi (effetto pellicola sbiadita).
+### Preferenze
+*   **Hero:** Lingua (Cambio lingua UI).
+*   **Hero:** Debug (Attiva/Disattiva le statistiche on-screen per FPS, rendering, risoluzione).
 
 ---
 
-## 3. TAPE (Il Nastro Magnetico)
-*Simula il degrado fisico del supporto di registrazione (VHS, nastro).*
+## 2. LENS (L'Obiettivo)
+*Tutto ciò che riguarda il vetro, la rifrazione della luce e l'ottica fisica prima che la luce tocchi il sensore.*
 
-### Grana (Grain)
-*   **Intensità:** L'opacità e la visibilità generale della grana.
-*   **Scala (Dimensione):** Quanto è grande ogni singolo "chicco" di rumore.
-*   **Velocità (Flicker):** La frequenza con cui la grana sfarfalla e si aggiorna nel tempo.
-*   **Modalità Colore:** Interruttore per scegliere tra Luma (grana in bianco e nero) o Chroma (grana colorata RGB).
+### Ottica (Optics)
+*   **Hero:** Selezione Fotocamera (es. Grandangolo, Teleobiettivo).
+*   **Hero:** Messa a Fuoco (Distanza). Include il toggle AF/MF.
 
-### Tracking Jitter (Distorsione orizzontale)
-*   **Frequenza:** Quante volte al secondo o al minuto il nastro "salta".
-*   **Ampiezza:** Quanto è violento lo spostamento laterale dell'immagine durante il salto.
-
-### Dropouts (Artefatti)
-*   **Intensità:** La quantità di graffi o piccoli puntini bianchi orizzontali dovuti alla smagnetizzazione.
+### Difetti Ottici (Flaws)
+*   **Hero:** Aberrazione Cromatica (Amount).
+*   *(In programma)* **Vignettatura**
+*   *(In programma)* **Distorsione a barilotto**
 
 ---
 
-## 4. CRT (Il Tubo Catodico)
-*Rappresenta come il video finale viene visualizzato su una vecchia televisione.*
+## 3. BODY (Corpo Macchina)
+*La meccanica della fotocamera: cattura elettronica e tempi di scatto.*
 
-### Scanlines (Righe di scansione)
-*   **Spessore:** La larghezza delle bande nere orizzontali.
-*   **Opacità:** Quanto le righe sono marcate rispetto al video sottostante.
+### Esposizione (Exposure)
+*   **Hero:** EV (Compensazione esposizione generale).
+*   **Hero:** Shutter Speed (Tempi di posa per motion blur e luminosità).
 
-### Curvatura Schermo
-*   **Quantità Warp:** L'effetto convesso che fa sembrare lo schermo bombato in avanti.
+### Sensore (Sensor / Speed)
+*   **Hero:** ISO (Sensibilità alla luce).
+*   **Hero:** White Balance (Bilanciamento del bianco alla fonte).
 
-### Fosfori RGB
-*   **Intensità:** La visibilità del micro-pattern a griglia (i sub-pixel rossi, verdi e blu dello schermo).
+---
+
+## 4. FILM (Pellicola)
+*La chimica e il carattere visivo del supporto (il rullino scelto).*
+
+### Sviluppo (Development / Color)
+*   **Hero:** Saturazione.
+*   **Hero:** Contrasto.
+*   **Hero:** Fade (Quantità di innalzamento del nero per l'effetto matte/slavato).
+
+### Texture (Materiale visibile)
+*   **Hero:** Grana (Amount/Intensità).
+    *   *Bottom Sheet Avanzate:* Dimensione Grana (Scale), Modalità Colore (Luma B/N o Chroma RGB).
+*   *(In programma)* **Dust & Scratches:** Polvere e graffi fisici sulla pellicola.
+
+---
+
+## 5. DECK (Riproduttore analogico)
+*Simula l'usura del nastro magnetico e la visualizzazione su tubi catodici.*
+
+### Usura Nastro (Tape)
+*   **Hero:** Tracking Jitter (Instabilità orizzontale e salti).
+*   **Hero:** Dropouts (Smagnetizzazione e glitch bianchi).
+
+### Schermo (Display)
+*   **Hero:** Scanlines (Quantità di linee orizzontali).
+    *   *Bottom Sheet Avanzate:* Curvatura schermo, Intensità fosfori RGB, Spessore linee.

@@ -6,7 +6,7 @@ import { useCameraEffectsStore } from '../model/useCameraEffectsStore';
 import { useUIStore } from '../model/useUIStore';
 import { TabType, ModuleType, ParameterType } from '@shared/types/camera';
 
-// Mocks for icons and Skia (which often cause issues in node tests)
+// Mocks for icons (which often cause issues in node tests)
 jest.mock('react-native-reanimated', () => {
   const { View } = jest.requireActual('react-native');
   const Reanimated = {
