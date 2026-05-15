@@ -2,6 +2,7 @@ import React from 'react';
 import { StyleSheet } from 'react-native';
 import { useCameraEffectsStore } from '../model/useCameraEffectsStore';
 import { NativeFilmCamera } from '@entities/camera/ui/NativeFilmCamera';
+import { useEvent } from 'react-native-reanimated';
 
 interface ConnectedFilmCameraProps {
   cameraKey?: number;
@@ -11,6 +12,28 @@ import { updateSharedValue } from '@shared/lib/reanimated/safeUpdate';
 
 export const ConnectedFilmCamera = ({ cameraKey }: ConnectedFilmCameraProps) => {
   const store = useCameraEffectsStore();
+
+  const exposureHandler = useEvent((event: any) => {
+    'worklet';
+    if (store.isoAuto.value) {
+      updateSharedValue(store.iso, event.iso);
+    }
+    if (store.shutterSpeedAuto.value) {
+      updateSharedValue(store.shutterSpeed, event.shutterSpeed);
+    }
+    if (store.focusAuto.value && event.focusDistance !== undefined) {
+      updateSharedValue(store.focusDistance, event.focusDistance);
+    }
+  }, ['onExposureUpdate']);
+
+  const debugHandler = useEvent((event: any) => {
+    'worklet';
+    updateSharedValue(store.fps, event.fps);
+    updateSharedValue(store.hwFps, event.hwFps);
+    // Note: resolution is a string, updateSharedValue only handles number/boolean.
+    // However, store.resolution.value = event.resolution is allowed in worklets for strings.
+    store.resolution.value = event.resolution;
+  }, ['onDebugUpdate']);
 
   return (
     <NativeFilmCamera
@@ -38,24 +61,8 @@ export const ConnectedFilmCamera = ({ cameraKey }: ConnectedFilmCameraProps) => 
           store.setCapabilities(event.nativeEvent);
         }
       }}
-      onDebugUpdate={(event) => {
-        if (event.nativeEvent) {
-          store.setDebugInfo(event.nativeEvent.fps, event.nativeEvent.resolution);
-        }
-      }}
-      onExposureUpdate={(event) => {
-        if (event.nativeEvent) {
-          if (store.isoAuto.value) {
-            updateSharedValue(store.iso, event.nativeEvent.iso);
-          }
-          if (store.shutterSpeedAuto.value) {
-            updateSharedValue(store.shutterSpeed, event.nativeEvent.shutterSpeed);
-          }
-          if (store.focusAuto.value && event.nativeEvent.focusDistance !== undefined) {
-            updateSharedValue(store.focusDistance, event.nativeEvent.focusDistance);
-          }
-        }
-      }}
+      onDebugUpdate={debugHandler}
+      onExposureUpdate={exposureHandler}
     />
   );
 };

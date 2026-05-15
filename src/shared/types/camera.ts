@@ -24,6 +24,7 @@ interface EffectSharedValues {
   chromaticAberration: SharedValue<number>;
   grainEnabled: SharedValue<boolean>;
   fps: SharedValue<number>;
+  hwFps: SharedValue<number>;
   resolution: SharedValue<string>;
   iso: SharedValue<number>;
   ev: SharedValue<number>;
@@ -48,7 +49,7 @@ interface EffectHandlers {
   setChromaticAberration: (value: number) => void;
   setGrainEnabled: (value: boolean) => void;
   resetTool: (tool: 'grain' | ParameterType) => void;
-  setDebugInfo: (fps: number, resolution: string) => void;
+  setDebugInfo: (fps: number, resolution: string, hwFps: number) => void;
   setIso: (value: number) => void;
   setEv: (value: number) => void;
   setShutterSpeed: (value: number) => void;

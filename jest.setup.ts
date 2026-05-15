@@ -20,6 +20,9 @@ jest.mock('react-native-reanimated', () => {
   Reanimated.makeMutable = <T>(initialValue: T) => ({
     value: initialValue,
   });
+  Reanimated.useEvent = (handler: (event: any) => void) => {
+    return (event: any) => handler(event);
+  };
   // eslint-disable-next-line @typescript-eslint/no-unsafe-return
   return Reanimated;
 });

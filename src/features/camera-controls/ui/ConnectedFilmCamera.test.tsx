@@ -31,17 +31,20 @@ describe('ConnectedFilmCamera', () => {
 
   it('handles debug update events', () => {
     const store = useCameraEffectsStore.getState();
-    const setDebugInfoSpy = jest.spyOn(store, 'setDebugInfo');
 
     const { getByTestId } = render(<ConnectedFilmCamera />);
     const nativeCamera = getByTestId('native-camera');
 
-    // Simulate native event
+    // Simulate native event (useEvent expects direct data)
     nativeCamera.props.onDebugUpdate({
-      nativeEvent: { fps: 60, resolution: '1080p' }
+      fps: 60, 
+      hwFps: 15,
+      resolution: '1080p'
     });
 
-    expect(setDebugInfoSpy).toHaveBeenCalledWith(60, '1080p');
+    expect(store.fps.value).toBe(60);
+    expect(store.hwFps.value).toBe(15);
+    expect(store.resolution.value).toBe('1080p');
   });
 
   it('updates store values on exposure update when in auto mode', () => {
@@ -51,9 +54,10 @@ describe('ConnectedFilmCamera', () => {
     const { getByTestId } = render(<ConnectedFilmCamera />);
     const nativeCamera = getByTestId('native-camera');
 
-    // Simulate exposure update from native side
+    // Simulate exposure update from native side (useEvent expects direct data)
     nativeCamera.props.onExposureUpdate({
-      nativeEvent: { iso: 800, shutterSpeed: 100 }
+      iso: 800, 
+      shutterSpeed: 100
     });
 
     expect(store.iso.value).toBe(800);

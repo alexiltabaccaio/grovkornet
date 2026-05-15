@@ -22,6 +22,16 @@ export const DebugOverlay = () => {
         />
         <View style={styles.separator} />
         <ReanimatedValueText
+          label="HW"
+          value={useCameraEffectsStore(state => state.hwFps)}
+          formatter={(v: number) => {
+            'worklet';
+            return Math.round(v).toString() + 'hz';
+          }}
+        />
+
+        <View style={styles.separator} />
+        <ReanimatedValueText
           label="RES"
           value={resolution}
         />

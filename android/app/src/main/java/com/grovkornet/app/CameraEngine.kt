@@ -139,7 +139,7 @@ class CameraEngine(private val context: Context, private val lifecycleOwner: Lif
         Camera2Interop.Extender(builder).setSessionCaptureCallback(object : CameraCaptureSession.CaptureCallback() {
             override fun onCaptureCompleted(session: CameraCaptureSession, request: CaptureRequest, result: TotalCaptureResult) {
                 val now = System.currentTimeMillis()
-                if (now - lastExposureUpdateTime >= 100) {
+                if (now - lastExposureUpdateTime >= 200) {
                     val currentIso = result.get(CaptureResult.SENSOR_SENSITIVITY) ?: return
                     val currentShutter = result.get(CaptureResult.SENSOR_EXPOSURE_TIME) ?: return
                     val currentFocus = result.get(CaptureResult.LENS_FOCUS_DISTANCE) ?: 0.0f

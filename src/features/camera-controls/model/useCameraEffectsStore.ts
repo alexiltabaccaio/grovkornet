@@ -22,6 +22,7 @@ export const useCameraEffectsStore = create<CameraState>((set, get) => ({
   chromaticAberration: makeMutable(DEFAULT_CHROMATIC_ABERRATION),
   grainEnabled: makeMutable(false),
   fps: makeMutable(0),
+  hwFps: makeMutable(0),
   resolution: makeMutable(''),
   iso: makeMutable(DEFAULT_ISO),
   ev: makeMutable(DEFAULT_EV),
@@ -71,10 +72,11 @@ export const useCameraEffectsStore = create<CameraState>((set, get) => ({
     get().grainEnabled.value = value;
   },
 
-  setDebugInfo: (fpsVal, resVal) => {
-    const { fps, resolution } = get();
+  setDebugInfo: (fpsVal, resVal, hwFpsVal) => {
+    const { fps, resolution, hwFps } = get();
     fps.value = fpsVal;
     resolution.value = resVal;
+    hwFps.value = hwFpsVal;
   },
 
   setIso: (value) => {
