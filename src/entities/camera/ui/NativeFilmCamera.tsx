@@ -1,4 +1,5 @@
-import { requireNativeComponent, ViewProps } from 'react-native';
+import React, { forwardRef, useImperativeHandle, useRef } from 'react';
+import { requireNativeComponent, ViewProps, UIManager, findNodeHandle } from 'react-native';
 import Animated, { SharedValue } from 'react-native-reanimated';
 
 interface NativeFilmCameraProps extends ViewProps {
@@ -9,6 +10,7 @@ interface NativeFilmCameraProps extends ViewProps {
   grainSize: number | SharedValue<number>;
   grainEnabled: boolean | SharedValue<boolean>;
   chromaticAberration: number | SharedValue<number>;
+  aberrationDirection: number | SharedValue<number>;
   isoAuto?: boolean | SharedValue<boolean>;
   shutterSpeedAuto?: boolean | SharedValue<boolean>;
   whiteBalanceAuto?: boolean | SharedValue<boolean>;
@@ -29,12 +31,27 @@ interface NativeFilmCameraProps extends ViewProps {
     isoMax?: number;
     availableCameras: Array<{ id: string; focalLength: number; focalLength35mm: number }>;
   } }) => void;
+  onPhotoCaptured?: (event: { nativeEvent: { uri: string } }) => void;
 }
 
 const NativeFilmCameraBase = requireNativeComponent<NativeFilmCameraProps>('NativeFilmCamera');
-export const NativeFilmCamera = Animated.createAnimatedComponent(NativeFilmCameraBase) as React.ComponentType<NativeFilmCameraProps>;
+const AnimatedNativeFilmCamera = Animated.createAnimatedComponent(NativeFilmCameraBase);
 
+export interface NativeFilmCameraRef {
+  takePhoto: () => void;
+}
 
+export const NativeFilmCamera = forwardRef<NativeFilmCameraRef, NativeFilmCameraProps>((props, ref) => {
+  const nativeRef = useRef(null);
 
+  useImperativeHandle(ref, () => ({
+    takePhoto: () => {
+      const handle = findNodeHandle(nativeRef.current);
+      if (handle) {
+        UIManager.dispatchViewManagerCommand(handle, 'takePhoto', []);
+      }
+    },
+  }));
 
-
+  return <AnimatedNativeFilmCamera {...props} ref={nativeRef} />;
+});

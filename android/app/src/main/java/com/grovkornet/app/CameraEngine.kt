@@ -17,9 +17,21 @@ import androidx.camera.camera2.interop.CaptureRequestOptions
 import androidx.camera.core.Camera
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.Preview
+import androidx.camera.core.ImageCapture
+import androidx.camera.core.ImageProxy
+import androidx.camera.core.ImageCaptureException
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
+import android.media.MediaActionSound
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.Matrix
+import android.content.ContentValues
+import android.provider.MediaStore
+import android.os.Build
+import android.net.Uri
+import java.io.OutputStream
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.WritableArray
 import com.facebook.react.bridge.WritableMap
@@ -32,11 +44,14 @@ class CameraEngine(private val context: Context, private val lifecycleOwner: Lif
         fun onExposureUpdate(iso: Int, shutterSpeed: Double, focusDistance: Float)
         fun onCapabilitiesUpdate(capabilities: WritableMap)
         fun onCameraResolutionDetected(width: Int, height: Int)
+        fun onPhotoCaptured(uri: String)
     }
 
     private var cameraProvider: ProcessCameraProvider? = null
     private var camera: Camera? = null
+    private var imageCapture: ImageCapture? = null
     private var currentSurfaceTexture: android.graphics.SurfaceTexture? = null
+    private val shutterSound = MediaActionSound()
 
     // Manual Camera Props
     @Volatile var isoAuto: Boolean = true
@@ -51,6 +66,20 @@ class CameraEngine(private val context: Context, private val lifecycleOwner: Lif
     @Volatile var torchStrength: Int = 1
     
     @Volatile var cameraId: String? = null
+
+    // Effect Props for capture
+    @Volatile var saturation: Float = 1.0f
+    @Volatile var contrast: Float = 1.0f
+    @Volatile var grainIntensity: Float = 0.0f
+    @Volatile var grainChroma: Float = 0.0f
+    @Volatile var grainSize: Float = 1.0f
+    @Volatile var grainEnabled: Boolean = true
+    @Volatile var aberration: Float = 0.0f
+    @Volatile var aberrationDirection: Int = 0
+    @Volatile var whiteBalance: Float = 5000.0f
+
+    @Volatile var viewportWidth: Float = 1080f
+    @Volatile var viewportHeight: Float = 1920f
 
     private var lastExposureUpdateTime = 0L
 
@@ -91,7 +120,14 @@ class CameraEngine(private val context: Context, private val lifecycleOwner: Lif
             
             val (selector, targetZoomRatio) = calculateCameraSelector()
             
-            camera = provider.bindToLifecycle(lifecycleOwner, selector, preview)
+            // Build ImageCapture
+            imageCapture = ImageCapture.Builder()
+                .setCaptureMode(ImageCapture.CAPTURE_MODE_MAXIMIZE_QUALITY)
+                .build()
+            
+            shutterSound.load(MediaActionSound.SHUTTER_CLICK)
+
+            camera = provider.bindToLifecycle(lifecycleOwner, selector, preview, imageCapture)
             
             targetZoomRatio?.let {
                 camera?.cameraControl?.setZoomRatio(it)
@@ -333,10 +369,106 @@ class CameraEngine(private val context: Context, private val lifecycleOwner: Lif
         list.pushMap(map)
     }
 
+    fun takePicture() {
+        val capture = imageCapture ?: return
+        
+        // Play system shutter sound
+        shutterSound.play(MediaActionSound.SHUTTER_CLICK)
+        
+        // Capture parameters for the background thread
+        val params = OffscreenFilmProcessor.Parameters(
+            saturation = saturation,
+            contrast = contrast,
+            aberration = aberration,
+            aberrationDirection = aberrationDirection,
+            grainIntensity = grainIntensity,
+            grainChroma = grainChroma,
+            grainSize = grainSize,
+            grainEnabled = grainEnabled,
+            ev = ev,
+            whiteBalance = whiteBalance,
+            time = (System.currentTimeMillis() % 10000) / 1000f,
+            viewportWidth = viewportWidth,
+            viewportHeight = viewportHeight
+        )
+
+        capture.takePicture(ContextCompat.getMainExecutor(context), object : ImageCapture.OnImageCapturedCallback() {
+            override fun onCaptureSuccess(image: ImageProxy) {
+                val rotation = image.imageInfo.rotationDegrees
+                val buffer = image.planes[0].buffer
+                val bytes = ByteArray(buffer.remaining())
+                buffer.get(bytes)
+                
+                // Process in background thread to not block UI
+                Thread {
+                    try {
+                        var bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
+                        
+                        // Fix orientation
+                        if (rotation != 0) {
+                            val matrix = Matrix()
+                            matrix.postRotate(rotation.toFloat())
+                            val rotated = Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
+                            bitmap.recycle()
+                            bitmap = rotated
+                        }
+
+                        // Apply Film Effects
+                        val processor = OffscreenFilmProcessor()
+                        val processed = processor.process(bitmap, params)
+                        bitmap.recycle()
+
+                        // Save to MediaStore
+                        val uri = saveToGallery(processed)
+                        processed.recycle()
+
+                        uri?.let {
+                            listener.onPhotoCaptured(it.toString())
+                        }
+
+                        Log.i(TAG, "Photo saved to gallery: $uri")
+                    } catch (e: Exception) {
+                        Log.e(TAG, "Failed to process photo", e)
+                    } finally {
+                        image.close()
+                    }
+                }.start()
+            }
+
+            override fun onError(exception: ImageCaptureException) {
+                Log.e(TAG, "Photo capture failed", exception)
+            }
+        })
+    }
+
+    private fun saveToGallery(bitmap: Bitmap): Uri? {
+        val filename = "Grovkornet_${System.currentTimeMillis()}.jpg"
+        val contentValues = ContentValues().apply {
+            put(MediaStore.MediaColumns.DISPLAY_NAME, filename)
+            put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg")
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                put(MediaStore.MediaColumns.RELATIVE_PATH, "Pictures/Grovkornet")
+            }
+        }
+
+        val resolver = context.contentResolver
+        val uri = resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues)
+        
+        uri?.let {
+            resolver.openOutputStream(it).use { outputStream ->
+                if (outputStream != null) {
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 95, outputStream)
+                }
+            }
+        }
+        return uri
+    }
+
     fun release() {
         cameraProvider?.unbindAll()
         cameraProvider = null
         camera = null
+        imageCapture = null
         currentSurfaceTexture = null
     }
 }

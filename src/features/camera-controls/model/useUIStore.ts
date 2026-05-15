@@ -9,6 +9,7 @@ export const useUIStore = create<UIStore>((set, get) => ({
   activeSubParameter: 'none',
   isDebugEnabled: false,
   isSubPanelOpen: false,
+  isCapturing: false,
 
   lastActiveParameters: {
     none: 'none',
@@ -58,5 +59,13 @@ export const useUIStore = create<UIStore>((set, get) => ({
 
   setActiveSubParameter: (param: SubParameterType) => {
     set({ activeSubParameter: param });
+  },
+
+  triggerCapture: () => {
+    set({ isCapturing: true });
+    // Reset after animation
+    setTimeout(() => {
+      set({ isCapturing: false });
+    }, 200);
   },
 }));

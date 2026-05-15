@@ -7,20 +7,27 @@ object FilmShader {
         uniform mat4 u_TransformMatrix;
         uniform mat4 u_ScaleMatrix;
         varying vec2 v_TexCoord;
+        varying vec2 v_AberrationDirX;
+        varying vec2 v_AberrationDirY;
         void main() {
             gl_Position = u_ScaleMatrix * a_Position;
             v_TexCoord = (u_TransformMatrix * a_TexCoord).xy;
+            v_AberrationDirX = (u_TransformMatrix * vec4(1.0, 0.0, 0.0, 0.0)).xy;
+            v_AberrationDirY = (u_TransformMatrix * vec4(0.0, 1.0, 0.0, 0.0)).xy;
         }
     """
 
     const val FRAGMENT_SHADER = """
         precision highp float;
         varying vec2 v_TexCoord;
+        varying vec2 v_AberrationDirX;
+        varying vec2 v_AberrationDirY;
         uniform sampler2D u_Texture;
         
         uniform float u_Saturation;
         uniform float u_Contrast;
         uniform float u_AberrationIntensity;
+        uniform int u_AberrationDirectionType;
         uniform float u_GrainIntensity;
         uniform float u_GrainChroma;
         uniform float u_GrainSize;
@@ -40,8 +47,16 @@ object FilmShader {
             // 1. Chromatic Aberration
             float caAmount = u_AberrationIntensity * 0.01; // Scaled for normalized coords
             if (caAmount > 0.0001) {
-                float r = texture2D(u_Texture, vec2(v_TexCoord.x - caAmount, v_TexCoord.y)).r;
-                float b = texture2D(u_Texture, vec2(v_TexCoord.x + caAmount, v_TexCoord.y)).b;
+                vec2 dir;
+                if (u_AberrationDirectionType == 0) {
+                    dir = v_AberrationDirX;
+                } else if (u_AberrationDirectionType == 1) {
+                    dir = v_AberrationDirY;
+                } else {
+                    dir = normalize(v_TexCoord - vec2(0.5, 0.5));
+                }
+                float r = texture2D(u_Texture, v_TexCoord - dir * caAmount).r;
+                float b = texture2D(u_Texture, v_TexCoord + dir * caAmount).b;
                 color.r = r;
                 color.b = b;
             }
@@ -90,11 +105,14 @@ object FilmShader {
         #extension GL_OES_EGL_image_external : require
         precision highp float;
         varying vec2 v_TexCoord;
+        varying vec2 v_AberrationDirX;
+        varying vec2 v_AberrationDirY;
         uniform samplerExternalOES u_Texture;
         
         uniform float u_Saturation;
         uniform float u_Contrast;
         uniform float u_AberrationIntensity;
+        uniform int u_AberrationDirectionType;
         uniform float u_GrainIntensity;
         uniform float u_GrainChroma;
         uniform float u_GrainSize;
@@ -113,8 +131,16 @@ object FilmShader {
             
             float caAmount = u_AberrationIntensity * 0.01;
             if (caAmount > 0.0001) {
-                float r = texture2D(u_Texture, vec2(v_TexCoord.x - caAmount, v_TexCoord.y)).r;
-                float b = texture2D(u_Texture, vec2(v_TexCoord.x + caAmount, v_TexCoord.y)).b;
+                vec2 dir;
+                if (u_AberrationDirectionType == 0) {
+                    dir = v_AberrationDirX;
+                } else if (u_AberrationDirectionType == 1) {
+                    dir = v_AberrationDirY;
+                } else {
+                    dir = normalize(v_TexCoord - vec2(0.5, 0.5));
+                }
+                float r = texture2D(u_Texture, v_TexCoord - dir * caAmount).r;
+                float b = texture2D(u_Texture, v_TexCoord + dir * caAmount).b;
                 color.r = r;
                 color.b = b;
             }

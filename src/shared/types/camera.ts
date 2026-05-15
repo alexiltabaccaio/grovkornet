@@ -3,7 +3,7 @@ import { SharedValue } from 'react-native-reanimated';
 export type SectionType = 'system' | 'lens' | 'body' | 'film' | 'none';
 export type ModuleType = 'preferences' | 'optics' | 'flaws' | 'exposure' | 'lighting' | 'capture' | 'development' | 'texture' | 'none';
 export type ParameterType = 'language' | 'debug' | 'camera_selection' | 'focus' | 'chromatic_aberration' | 'iso' | 'shutter_speed' | 'ev' | 'torch' | 'torch_strength' | 'aspect_ratio' | 'resolution_setting' | 'fps_setting' | 'temperature' | 'saturation' | 'contrast' | 'grain' | 'none';
-export type SubParameterType = 'grain_size' | 'grain_chroma' | 'torch_strength' | 'none';
+export type SubParameterType = 'grain_size' | 'grain_chroma' | 'torch_strength' | 'aberration_direction' | 'none';
 
 
 export interface CameraCapabilities {
@@ -26,6 +26,7 @@ interface EffectSharedValues {
   saturation: SharedValue<number>;
   contrast: SharedValue<number>;
   chromaticAberration: SharedValue<number>;
+  aberrationDirection: SharedValue<number>;
   grainEnabled: SharedValue<boolean>;
   fps: SharedValue<number>;
   hwFps: SharedValue<number>;
@@ -56,6 +57,7 @@ interface EffectHandlers {
   setSaturation: (value: number) => void;
   setContrast: (value: number) => void;
   setChromaticAberration: (value: number) => void;
+  setAberrationDirection: (value: number) => void;
   setGrainEnabled: (value: boolean) => void;
   resetTool: (tool: 'grain' | ParameterType) => void;
   setDebugInfo: (fps: number, resolution: string, hwFps: number) => void;
@@ -86,6 +88,7 @@ export interface UIState {
   activeSubParameter: SubParameterType;
   isDebugEnabled: boolean;
   isSubPanelOpen: boolean;
+  isCapturing: boolean;
   lastActiveParameters: Record<ModuleType, ParameterType>;
 }
 
@@ -97,6 +100,7 @@ export interface UIActions {
   setActiveSubParameter: (param: SubParameterType) => void;
   setIsDebugEnabled: (enabled: boolean) => void;
   setIsSubPanelOpen: (open: boolean) => void;
+  triggerCapture: () => void;
 }
 
 

@@ -27,6 +27,7 @@ class FilmRenderer(private val listener: Listener) : GLSurfaceView.Renderer, Sur
     @Volatile var grainSize: Float = 1.0f
     @Volatile var grainEnabled: Boolean = true
     @Volatile var aberration: Float = 0.0f
+    @Volatile var aberrationDirection: Int = 0
     @Volatile var ev: Float = 0.0f
     @Volatile var whiteBalance: Float = 5000.0f
     @Volatile var whiteBalanceAuto: Boolean = true
@@ -41,6 +42,7 @@ class FilmRenderer(private val listener: Listener) : GLSurfaceView.Renderer, Sur
     private var uSaturationLoc = -1
     private var uContrastLoc = -1
     private var uAberrationLoc = -1
+    private var uAberrationDirectionLoc = -1
     private var uGrainIntensityLoc = -1
     private var uGrainChromaLoc = -1
     private var uGrainSizeLoc = -1
@@ -105,6 +107,7 @@ class FilmRenderer(private val listener: Listener) : GLSurfaceView.Renderer, Sur
         uSaturationLoc = GLES20.glGetUniformLocation(program, "u_Saturation")
         uContrastLoc = GLES20.glGetUniformLocation(program, "u_Contrast")
         uAberrationLoc = GLES20.glGetUniformLocation(program, "u_AberrationIntensity")
+        uAberrationDirectionLoc = GLES20.glGetUniformLocation(program, "u_AberrationDirectionType")
         uGrainIntensityLoc = GLES20.glGetUniformLocation(program, "u_GrainIntensity")
         uGrainChromaLoc = GLES20.glGetUniformLocation(program, "u_GrainChroma")
         uGrainSizeLoc = GLES20.glGetUniformLocation(program, "u_GrainSize")
@@ -162,6 +165,7 @@ class FilmRenderer(private val listener: Listener) : GLSurfaceView.Renderer, Sur
         GLES20.glUniform1f(uSaturationLoc, saturation)
         GLES20.glUniform1f(uContrastLoc, contrast)
         GLES20.glUniform1f(uAberrationLoc, aberration)
+        GLES20.glUniform1i(uAberrationDirectionLoc, aberrationDirection)
         GLES20.glUniform1f(uGrainIntensityLoc, grainIntensity)
         GLES20.glUniform1f(uGrainChromaLoc, grainChroma)
         GLES20.glUniform1f(uGrainSizeLoc, grainSize)

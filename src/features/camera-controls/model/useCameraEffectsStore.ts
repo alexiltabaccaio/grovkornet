@@ -20,6 +20,7 @@ export const useCameraEffectsStore = create<CameraState>((set, get) => ({
   saturation: makeMutable(DEFAULT_SATURATION),
   contrast: makeMutable(DEFAULT_CONTRAST),
   chromaticAberration: makeMutable(DEFAULT_CHROMATIC_ABERRATION),
+  aberrationDirection: makeMutable(0), // 0: Vertical, 1: Horizontal, 2: Radial
   grainEnabled: makeMutable(false),
   fps: makeMutable(0),
   hwFps: makeMutable(0),
@@ -73,6 +74,10 @@ export const useCameraEffectsStore = create<CameraState>((set, get) => ({
 
   setChromaticAberration: (value) => {
     get().chromaticAberration.value = value;
+  },
+
+  setAberrationDirection: (value) => {
+    get().aberrationDirection.value = value;
   },
 
   setGrainEnabled: (value) => {
@@ -168,10 +173,10 @@ export const useCameraEffectsStore = create<CameraState>((set, get) => ({
 
   resetTool: (tool) => {
     const { 
-      grainIntensity, saturation, contrast, chromaticAberration,
+      grainIntensity, saturation, contrast, chromaticAberration, aberrationDirection,
       iso, ev, shutterSpeed, temperature,
       isoAuto, evAuto, shutterSpeedAuto, temperatureAuto,
-      setGrainIntensity, setSaturation, setContrast, setChromaticAberration,
+      setGrainIntensity, setSaturation, setContrast, setChromaticAberration, setAberrationDirection
     } = get();
 
     if (tool === 'grain') {
@@ -187,7 +192,9 @@ export const useCameraEffectsStore = create<CameraState>((set, get) => ({
       setContrast(DEFAULT_CONTRAST);
     } else if (tool === 'chromatic_aberration') {
       chromaticAberration.value = DEFAULT_CHROMATIC_ABERRATION;
+      aberrationDirection.value = 0;
       setChromaticAberration(DEFAULT_CHROMATIC_ABERRATION);
+      setAberrationDirection(0);
     } else if (tool === 'iso') {
       iso.value = DEFAULT_ISO;
       isoAuto.value = true;

@@ -1,17 +1,28 @@
 import React from 'react';
 import { StyleSheet } from 'react-native';
 import { useCameraEffectsStore } from '../model/useCameraEffectsStore';
-import { NativeFilmCamera } from '@entities/camera/ui/NativeFilmCamera';
+import { NativeFilmCamera, NativeFilmCameraRef } from '@entities/camera/ui/NativeFilmCamera';
 import { useEvent } from 'react-native-reanimated';
+import { useUIStore } from '../model/useUIStore';
 
 interface ConnectedFilmCameraProps {
   cameraKey?: number;
 }
 
 import { updateSharedValue } from '@shared/lib/reanimated/safeUpdate';
+import { FlashOverlay } from './FlashOverlay';
 
 export const ConnectedFilmCamera = ({ cameraKey }: ConnectedFilmCameraProps) => {
   const store = useCameraEffectsStore();
+  const cameraRef = React.useRef<NativeFilmCameraRef>(null);
+  const isCapturing = useUIStore(state => state.isCapturing);
+
+  // Trigger scatto nativo quando lo store UI cambia
+  React.useEffect(() => {
+    if (isCapturing && cameraRef.current) {
+      cameraRef.current.takePhoto();
+    }
+  }, [isCapturing]);
 
   const exposureHandler = useEvent((event: any) => {
     'worklet';
@@ -36,35 +47,40 @@ export const ConnectedFilmCamera = ({ cameraKey }: ConnectedFilmCameraProps) => 
   }, ['onDebugUpdate']);
 
   return (
-    <NativeFilmCamera
-      key={`camera-${cameraKey}`}
-      style={StyleSheet.absoluteFill}
-      saturation={store.saturation}
-      contrast={store.contrast}
-      chromaticAberration={store.chromaticAberration}
-      grainIntensity={store.grainIntensity}
-      grainChroma={store.grainChroma}
-      grainSize={store.grainSize}
-      grainEnabled={store.grainEnabled}
-      iso={store.iso}
-      exposureTime={store.shutterSpeed}
-      ev={store.ev}
-      whiteBalance={store.temperature}
-      isoAuto={store.isoAuto}
-      shutterSpeedAuto={store.shutterSpeedAuto}
-      whiteBalanceAuto={store.temperatureAuto}
-      autoFocus={store.focusAuto}
-      focusDistance={store.focusDistance}
-      cameraId={store.cameraId}
-      torchState={store.torchState}
-      torchStrength={store.torchStrength}
-      onCapabilitiesUpdate={(event) => {
-        if (event.nativeEvent) {
-          store.setCapabilities(event.nativeEvent);
-        }
-      }}
-      onDebugUpdate={debugHandler}
-      onExposureUpdate={exposureHandler}
-    />
+    <>
+      <NativeFilmCamera
+        ref={cameraRef}
+        key={`camera-${cameraKey}`}
+        style={StyleSheet.absoluteFill}
+        saturation={store.saturation}
+        contrast={store.contrast}
+        chromaticAberration={store.chromaticAberration}
+        aberrationDirection={store.aberrationDirection}
+        grainIntensity={store.grainIntensity}
+        grainChroma={store.grainChroma}
+        grainSize={store.grainSize}
+        grainEnabled={store.grainEnabled}
+        iso={store.iso}
+        exposureTime={store.shutterSpeed}
+        ev={store.ev}
+        whiteBalance={store.temperature}
+        isoAuto={store.isoAuto}
+        shutterSpeedAuto={store.shutterSpeedAuto}
+        whiteBalanceAuto={store.temperatureAuto}
+        autoFocus={store.focusAuto}
+        focusDistance={store.focusDistance}
+        cameraId={store.cameraId}
+        torchState={store.torchState}
+        torchStrength={store.torchStrength}
+        onCapabilitiesUpdate={(event) => {
+          if (event.nativeEvent) {
+            store.setCapabilities(event.nativeEvent);
+          }
+        }}
+        onDebugUpdate={debugHandler}
+        onExposureUpdate={exposureHandler}
+      />
+      <FlashOverlay />
+    </>
   );
 };

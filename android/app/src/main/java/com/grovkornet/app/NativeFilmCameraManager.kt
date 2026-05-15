@@ -16,6 +16,7 @@ class NativeFilmCameraManager : SimpleViewManager<NativeFilmCameraView>() {
             .put("onDebugUpdate", MapBuilder.of("registrationName", "onDebugUpdate"))
             .put("onExposureUpdate", MapBuilder.of("registrationName", "onExposureUpdate"))
             .put("onCapabilitiesUpdate", MapBuilder.of("registrationName", "onCapabilitiesUpdate"))
+            .put("onPhotoCaptured", MapBuilder.of("registrationName", "onPhotoCaptured"))
             .build()
     }
 
@@ -56,6 +57,11 @@ class NativeFilmCameraManager : SimpleViewManager<NativeFilmCameraView>() {
     @ReactProp(name = "chromaticAberration", defaultFloat = 0.0f)
     fun setChromaticAberration(view: NativeFilmCameraView, aberration: Float) {
         view.aberration = aberration
+    }
+
+    @ReactProp(name = "aberrationDirection", defaultInt = 0)
+    fun setAberrationDirection(view: NativeFilmCameraView, direction: Int) {
+        view.aberrationDirection = direction
     }
 
     @ReactProp(name = "isoAuto", defaultBoolean = true)
@@ -118,5 +124,11 @@ class NativeFilmCameraManager : SimpleViewManager<NativeFilmCameraView>() {
     @ReactProp(name = "torchStrength", defaultFloat = 1.0f)
     fun setTorchStrength(view: NativeFilmCameraView, torchStrength: Float) {
         view.torchStrength = torchStrength.toInt()
+    }
+
+    override fun receiveCommand(view: NativeFilmCameraView, commandId: String?, args: com.facebook.react.bridge.ReadableArray?) {
+        when (commandId) {
+            "takePhoto" -> view.takePhoto()
+        }
     }
 }

@@ -14,14 +14,19 @@ import Animated, { useSharedValue, useAnimatedStyle, withSpring, useAnimatedProp
 const AnimatedTextInput = Animated.createAnimatedComponent(TextInput);
 
 
-export const Footer = () => {
+interface FooterProps {
+  translateY?: Animated.SharedValue<number>;
+}
+
+export const Footer = ({ translateY: externalTranslateY }: FooterProps) => {
   const { activeSection, isDebugEnabled } = useUIStore(useShallow(state => ({
     activeSection: state.activeSection,
     isDebugEnabled: state.isDebugEnabled,
   })));
 
 
-  const translateY = useSharedValue(0);
+  const localTranslateY = useSharedValue(0);
+  const translateY = externalTranslateY || localTranslateY;
   const startY = useSharedValue(0);
 
   useEffect(() => {

@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, View, AppState, AppStateStatus, PermissionsAndroid, Platform } from 'react-native';
+import { useSharedValue } from 'react-native-reanimated';
 
 import { useTranslation } from 'react-i18next';
 
 import { useShallow } from 'zustand/react/shallow';
-import { useUIStore, GestureController, Footer, DebugOverlay, ConnectedFilmCamera } from '@features/camera-controls';
+import { useUIStore, GestureController, Footer, DebugOverlay, ConnectedFilmCamera, ShutterButton } from '@features/camera-controls';
 
 
 export const CameraScreen = () => {
@@ -15,9 +16,12 @@ export const CameraScreen = () => {
 
 const CameraScreenContent = () => {
   const { t } = useTranslation();
-  const { isDebugEnabled } = useUIStore(useShallow(state => ({
+  const { isDebugEnabled, triggerCapture } = useUIStore(useShallow(state => ({
     isDebugEnabled: state.isDebugEnabled,
+    triggerCapture: state.triggerCapture,
   })));
+
+  const footerTranslateY = useSharedValue(0);
 
   const [cameraKey, setCameraKey] = useState(0);
 
@@ -65,8 +69,12 @@ const CameraScreenContent = () => {
       <GestureController />
 
       {isDebugEnabled && <DebugOverlay />}
+      
+      <View style={styles.shutterContainer} pointerEvents="box-none">
+        <ShutterButton onPress={triggerCapture} translateY={footerTranslateY} />
+      </View>
 
-      <Footer />
+      <Footer translateY={footerTranslateY} />
     </View>
   );
 };
@@ -75,6 +83,15 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: 'black',
+  },
+  shutterContainer: {
+    position: 'absolute',
+    bottom: 200,
+    left: 0,
+    right: 0,
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 50, // Sotto il footer (100)
   },
   center: {
     flex: 1,

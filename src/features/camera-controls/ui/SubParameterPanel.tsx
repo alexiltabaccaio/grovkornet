@@ -29,6 +29,8 @@ export const SubParameterPanel = ({ translateY }: SubParameterPanelProps) => {
     setGrainSize,
     torchStrength,
     setTorchStrength,
+    aberrationDirection,
+    setAberrationDirection,
   } = useCameraEffectsStore(useShallow(state => ({
     grainChroma: state.grainChroma,
     setGrainChroma: state.setGrainChroma,
@@ -36,6 +38,8 @@ export const SubParameterPanel = ({ translateY }: SubParameterPanelProps) => {
     setGrainSize: state.setGrainSize,
     torchStrength: state.torchStrength,
     setTorchStrength: state.setTorchStrength,
+    aberrationDirection: state.aberrationDirection,
+    setAberrationDirection: state.setAberrationDirection,
   })));
 
   const animatedStyle = useAnimatedStyle(() => {
@@ -107,6 +111,32 @@ export const SubParameterPanel = ({ translateY }: SubParameterPanelProps) => {
               valueFormatter={(v) => {
                 'worklet';
                 return `${(v * 100).toFixed(0)}%`;
+              }}
+            />
+          </Animated.View>
+        );
+      case 'chromatic_aberration':
+        return (
+          <Animated.View style={[styles.container, animatedStyle]}>
+            <ParameterControl
+              label={t('parameters.direction')}
+              isActive={activeSubParameter === 'aberration_direction'}
+              onPress={() => {
+                setActiveSubParameter('aberration_direction');
+                const nextDir = (aberrationDirection.value + 1) % 3;
+                setAberrationDirection(nextDir);
+              }}
+              value={aberrationDirection}
+              renderValue={true}
+              variant="text"
+              valueFormatter={(v) => {
+                'worklet';
+                switch (v) {
+                  case 0: return 'STD'; // Standard (Vertical visual on portrait)
+                  case 1: return 'HOR'; // Horizontal
+                  case 2: return 'RAD'; // Radial
+                  default: return 'STD';
+                }
               }}
             />
           </Animated.View>
