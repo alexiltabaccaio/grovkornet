@@ -167,17 +167,19 @@ export const FooterParameterControl = ({
           {variant === 'square' && <Animated.View style={[styles.progressFill, animatedBgStyle]} />}
           
           {isShowingValue && value ? (
-            <AnimatedTextInput
-              pointerEvents="none"
-              underlineColorAndroid="transparent"
-              editable={false}
-              style={[
-                styles.valueText, 
-                variant === 'text' && styles.valueTextLarge,
-                animatedTextStyle
-              ]}
-              animatedProps={animatedTextProps}
-            />
+            <View pointerEvents="none" style={[StyleSheet.absoluteFill, { justifyContent: 'center', alignItems: 'center' }]}>
+              <AnimatedTextInput
+                pointerEvents="none"
+                underlineColorAndroid="transparent"
+                editable={false}
+                style={[
+                  styles.valueText, 
+                  variant === 'text' && styles.valueTextLarge,
+                  animatedTextStyle
+                ]}
+                animatedProps={animatedTextProps}
+              />
+            </View>
           ) : staticText ? (
             <Text 
               style={[
@@ -226,7 +228,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   textVariantPlaceholder: {
-    backgroundColor: 'transparent',
+    backgroundColor: 'rgba(0, 0, 0, 0.01)', // Quasi invisibile ma registrabile dal touch
     overflow: 'visible',
   },
   filterPlaceholderActive: {
