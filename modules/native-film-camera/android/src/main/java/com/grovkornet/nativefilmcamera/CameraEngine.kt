@@ -43,7 +43,7 @@ class CameraEngine(private val context: Context, private val lifecycleOwner: Lif
     private val TAG = "CameraEngine"
 
     interface Listener {
-        fun onExposureUpdate(iso: Int, shutterSpeed: Double, focusDistance: Float)
+        fun onExposureUpdate(iso: Int, shutterSpeed: Double, focusDistance: Float, noiseReduction: Int)
         fun onCapabilitiesUpdate(capabilities: WritableMap)
         fun onCameraResolutionDetected(width: Int, height: Int)
         fun onPhotoCaptured(uri: String)
@@ -79,6 +79,8 @@ class CameraEngine(private val context: Context, private val lifecycleOwner: Lif
     @Volatile var aberration: Float = 0.0f
     @Volatile var aberrationDirection: Int = 0
     @Volatile var whiteBalance: Float = 5000.0f
+    @Volatile var noiseReductionMode: Int = 1 // 1 = FAST (default)
+    @Volatile var sharpening: Float = 0.0f
 
     @Volatile var viewportWidth: Float = 1080f
     @Volatile var viewportHeight: Float = 1920f
@@ -194,9 +196,10 @@ class CameraEngine(private val context: Context, private val lifecycleOwner: Lif
                     val currentIso = result.get(CaptureResult.SENSOR_SENSITIVITY) ?: return
                     val currentShutter = result.get(CaptureResult.SENSOR_EXPOSURE_TIME) ?: return
                     val currentFocus = result.get(CaptureResult.LENS_FOCUS_DISTANCE) ?: 0.0f
+                    val currentNR = result.get(CaptureResult.NOISE_REDUCTION_MODE) ?: 1
                     val shutterDenominator = 1_000_000_000.0 / currentShutter.toDouble()
                     
-                    listener.onExposureUpdate(currentIso, shutterDenominator, currentFocus)
+                    listener.onExposureUpdate(currentIso, shutterDenominator, currentFocus, currentNR)
                     lastExposureUpdateTime = now
                 }
             }
@@ -282,6 +285,12 @@ class CameraEngine(private val context: Context, private val lifecycleOwner: Lif
                 builder.setCaptureRequestOption(CaptureRequest.SENSOR_EXPOSURE_TIME, exposureTime)
             }
 
+            // Consolidated hardware processing (Noise Reduction and Edge Enhancement)
+            if (noiseReductionMode != -1) {
+                builder.setCaptureRequestOption(CaptureRequest.NOISE_REDUCTION_MODE, noiseReductionMode)
+                builder.setCaptureRequestOption(CaptureRequest.EDGE_MODE, noiseReductionMode)
+            }
+
             builder.setCaptureRequestOption(CaptureRequest.CONTROL_AWB_MODE, if (whiteBalanceAuto) CaptureRequest.CONTROL_AWB_MODE_AUTO else CaptureRequest.CONTROL_AWB_MODE_OFF)
             
             if (autoFocus) {
@@ -360,6 +369,18 @@ class CameraEngine(private val context: Context, private val lifecycleOwner: Lif
                 event.putInt("isoMin", range.lower)
                 event.putInt("isoMax", range.upper)
             }
+
+            info.getCameraCharacteristic(CameraCharacteristics.NOISE_REDUCTION_AVAILABLE_NOISE_REDUCTION_MODES)?.let { modes ->
+                val modesArray = Arguments.createArray()
+                for (mode in modes) modesArray.pushInt(mode)
+                event.putArray("availableNoiseReductionModes", modesArray)
+            }
+
+            info.getCameraCharacteristic(CameraCharacteristics.EDGE_AVAILABLE_EDGE_MODES)?.let { modes ->
+                val modesArray = Arguments.createArray()
+                for (mode in modes) modesArray.pushInt(mode)
+                event.putArray("availableEdgeModes", modesArray)
+            }
         }
         
         listener.onCapabilitiesUpdate(event)
@@ -400,6 +421,7 @@ class CameraEngine(private val context: Context, private val lifecycleOwner: Lif
             grainEnabled = grainEnabled,
             ev = ev,
             whiteBalance = whiteBalance,
+            sharpening = sharpening,
             time = (System.currentTimeMillis() % 10000) / 1000f,
             viewportWidth = viewportWidth,
             viewportHeight = viewportHeight

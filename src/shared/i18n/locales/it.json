@@ -40,7 +40,11 @@
       "torch_dimmer": "INTENSITÀ",
       "aspect_ratio": "FORMATO",
       "resolution_setting": "RISOLUZIONE",
-      "fps_setting": "FPS"
+      "fps_setting": "FPS",
+      "noise_reduction": "RIDUZIONE RUMORE",
+      "noise_reduction_mode": "ALGORITMO",
+      "sharpening": "NITIDEZZA",
+      "sharpening_mode": "ALGORITMO"
     },
     "footer": {
       "coming_soon": "IN ARRIVO"

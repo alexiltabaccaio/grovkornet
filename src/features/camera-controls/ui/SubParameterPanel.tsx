@@ -29,6 +29,9 @@ export const SubParameterPanel = ({ translateY }: SubParameterPanelProps) => {
     setTorchStrength,
     aberrationDirection,
     setAberrationDirection,
+    noiseReductionMode,
+    setNoiseReductionMode,
+    capabilities,
   } = useCameraEffectsStore(useShallow(state => ({
     grainChroma: state.grainChroma,
     setGrainChroma: state.setGrainChroma,
@@ -38,6 +41,9 @@ export const SubParameterPanel = ({ translateY }: SubParameterPanelProps) => {
     setTorchStrength: state.setTorchStrength,
     aberrationDirection: state.aberrationDirection,
     setAberrationDirection: state.setAberrationDirection,
+    noiseReductionMode: state.noiseReductionMode,
+    setNoiseReductionMode: state.setNoiseReductionMode,
+    capabilities: state.capabilities,
   })));
 
   const animatedStyle = useAnimatedStyle(() => {
@@ -140,6 +146,7 @@ export const SubParameterPanel = ({ translateY }: SubParameterPanelProps) => {
             />
           </Animated.View>
         );
+
       default:
         return null;
     }

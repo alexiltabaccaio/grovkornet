@@ -34,6 +34,7 @@ class OffscreenFilmProcessor {
         val grainEnabled: Boolean,
         val ev: Float,
         val whiteBalance: Float,
+        val sharpening: Float,
         val time: Float = 0.5f,
         val viewportWidth: Float = 1080f,
         val viewportHeight: Float = 1920f
@@ -116,6 +117,7 @@ class OffscreenFilmProcessor {
             GLES20.glUniform2f(GLES20.glGetUniformLocation(program, "u_Resolution"), params.viewportWidth, params.viewportHeight)
             GLES20.glUniform1f(GLES20.glGetUniformLocation(program, "u_Ev"), params.ev)
             GLES20.glUniform1f(GLES20.glGetUniformLocation(program, "u_WhiteBalance"), params.whiteBalance)
+            GLES20.glUniform1f(GLES20.glGetUniformLocation(program, "u_Sharpening"), params.sharpening)
 
             // Draw
             GLES20.glViewport(0, 0, width, height)

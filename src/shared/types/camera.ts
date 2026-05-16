@@ -2,8 +2,8 @@ import { SharedValue } from 'react-native-reanimated';
 
 export type SectionType = 'system' | 'lens' | 'body' | 'film' | 'none';
 export type ModuleType = 'preferences' | 'optics' | 'flaws' | 'exposure' | 'lighting' | 'capture' | 'development' | 'texture' | 'none';
-export type ParameterType = 'language' | 'debug' | 'camera_selection' | 'focus' | 'chromatic_aberration' | 'iso' | 'shutter_speed' | 'ev' | 'torch' | 'torch_strength' | 'aspect_ratio' | 'resolution_setting' | 'fps_setting' | 'temperature' | 'saturation' | 'contrast' | 'grain' | 'none';
-export type SubParameterType = 'grain_size' | 'grain_chroma' | 'torch_strength' | 'aberration_direction' | 'none';
+export type ParameterType = 'language' | 'debug' | 'camera_selection' | 'focus' | 'chromatic_aberration' | 'iso' | 'shutter_speed' | 'ev' | 'torch' | 'torch_strength' | 'aspect_ratio' | 'resolution_setting' | 'fps_setting' | 'temperature' | 'saturation' | 'contrast' | 'grain' | 'noise_reduction' | 'sharpening' | 'none';
+export type SubParameterType = 'grain_size' | 'grain_chroma' | 'torch_strength' | 'aberration_direction' | 'noise_reduction_mode' | 'none';
 
 
 export interface CameraCapabilities {
@@ -17,6 +17,8 @@ export interface CameraCapabilities {
     focalLength: number;
     focalLength35mm: number;
   }>;
+  availableNoiseReductionModes?: number[];
+  availableEdgeModes?: number[];
 }
 
 interface EffectSharedValues {
@@ -48,6 +50,9 @@ interface EffectSharedValues {
   aspectRatio: SharedValue<number>;
   resolutionSetting: SharedValue<number>;
   fpsSetting: SharedValue<number>;
+  noiseReductionAuto: SharedValue<boolean>;
+  noiseReductionMode: SharedValue<number>;
+  sharpening: SharedValue<number>;
 }
 
 interface EffectHandlers {
@@ -78,6 +83,9 @@ interface EffectHandlers {
   setAspectRatio: (value: number) => void;
   setResolutionSetting: (value: number) => void;
   setFpsSetting: (value: number) => void;
+  setNoiseReductionAuto: (value: boolean) => void;
+  setNoiseReductionMode: (mode: number) => void;
+  setSharpening: (value: number) => void;
   setCapabilities: (capabilities: CameraCapabilities) => void;
 }
 

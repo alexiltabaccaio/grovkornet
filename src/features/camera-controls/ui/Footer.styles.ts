@@ -17,6 +17,11 @@ export const footerStyles = StyleSheet.create({
     alignItems: 'center',
     width: '100%',
   },
+  scrollContainer: {
+    paddingHorizontal: 20,
+    alignItems: 'center',
+    gap: 25,
+  },
   infoText: {
     color: '#666',
     fontSize: 10,

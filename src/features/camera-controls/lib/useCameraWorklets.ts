@@ -24,6 +24,7 @@ export const useCameraWorklets = (
   temperatureAuto: SharedValue<boolean>,
   focusDistance: SharedValue<number>,
   focusAuto: SharedValue<boolean>,
+  sharpening: SharedValue<number>,
 ) => {
   /**
    * Updates the grain intensity and automatically toggles the enabled state.
@@ -91,6 +92,11 @@ export const useCameraWorklets = (
     updateSharedValue(focusAuto, false);
   };
 
+  const updateSharpening = (value: number) => {
+    'worklet';
+    updateSharedValue(sharpening, value);
+  };
+
   return {
     updateGrain,
     updateGrainChroma,
@@ -103,6 +109,7 @@ export const useCameraWorklets = (
     updateShutterSpeed,
     updateTemperature,
     updateFocusDistance,
+    updateSharpening,
   };
 };
 

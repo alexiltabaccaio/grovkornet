@@ -75,6 +75,12 @@ export const FooterParameters = () => {
     setResolutionSetting: state.setResolutionSetting,
     fpsSetting: state.fpsSetting,
     setFpsSetting: state.setFpsSetting,
+    noiseReductionAuto: state.noiseReductionAuto,
+    setNoiseReductionAuto: state.setNoiseReductionAuto,
+    noiseReductionMode: state.noiseReductionMode,
+    setNoiseReductionMode: state.setNoiseReductionMode,
+    sharpening: state.sharpening,
+    setSharpening: state.setSharpening,
     resetTool: state.resetTool,
   })));
 
@@ -106,6 +112,12 @@ export const FooterParameters = () => {
             setTemperature={cameraStore.setTemperature}
             temperatureAuto={cameraStore.temperatureAuto}
             setTemperatureAuto={cameraStore.setTemperatureAuto}
+            noiseReductionAuto={cameraStore.noiseReductionAuto}
+            setNoiseReductionAuto={cameraStore.setNoiseReductionAuto}
+            noiseReductionMode={cameraStore.noiseReductionMode}
+            setNoiseReductionMode={cameraStore.setNoiseReductionMode}
+            sharpening={cameraStore.sharpening}
+            setSharpening={cameraStore.setSharpening}
             handlePressWithDouble={handlePressWithDouble}
           />
         );

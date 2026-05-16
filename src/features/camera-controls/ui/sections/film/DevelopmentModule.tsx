@@ -1,6 +1,7 @@
 import React from 'react';
 import { View } from 'react-native';
-import Animated from 'react-native-reanimated';
+import { ScrollView } from 'react-native-gesture-handler';
+import Animated, { useDerivedValue } from 'react-native-reanimated';
 import { useTranslation } from 'react-i18next';
 import { SharedValue } from 'react-native-reanimated';
 import { ParameterType } from '@shared/types/camera';
@@ -23,6 +24,12 @@ interface DevelopmentModuleProps {
   setTemperature: (value: number) => void;
   temperatureAuto: SharedValue<boolean>;
   setTemperatureAuto: (value: boolean) => void;
+  noiseReductionAuto: SharedValue<boolean>;
+  setNoiseReductionAuto: (value: boolean) => void;
+  noiseReductionMode: SharedValue<number>;
+  setNoiseReductionMode: (value: number) => void;
+  sharpening: SharedValue<number>;
+  setSharpening: (value: number) => void;
   handlePressWithDouble: (param: ParameterType, action: () => void) => void;
 }
 
@@ -37,13 +44,27 @@ export const DevelopmentModule = ({
   setTemperature,
   temperatureAuto,
   setTemperatureAuto,
+  noiseReductionAuto,
+  setNoiseReductionAuto,
+  noiseReductionMode,
+  setNoiseReductionMode,
+  sharpening,
+  setSharpening,
   handlePressWithDouble,
 }: DevelopmentModuleProps) => {
   const { t } = useTranslation();
 
+  const noiseReductionNum = useDerivedValue(() => {
+    return noiseReductionMode.value;
+  });
+
   return (
     <Animated.View style={footerStyles.tabContent}>
-      <View style={footerStyles.imageToolsContainer}>
+      <ScrollView 
+        horizontal 
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={footerStyles.scrollContainer}
+      >
         <ParameterControl
           label={t('parameters.saturation')}
           isActive={activeParameter === 'saturation'}
@@ -77,7 +98,45 @@ export const DevelopmentModule = ({
           hideValueInAuto={true}
           autoValueText="AWB"
         />
-      </View>
+        <ParameterControl
+          label={t('parameters.noise_reduction')}
+          isActive={activeParameter === 'noise_reduction'}
+          onPress={() => handlePressWithDouble('noise_reduction', () => setActiveParameter('noise_reduction'))}
+          value={noiseReductionNum as any}
+          minValue={0}
+          maxValue={2}
+          onChange={(v) => {
+            const rounded = Math.round(v);
+            setNoiseReductionMode(rounded);
+          }}
+          isAuto={noiseReductionAuto}
+          onLongPress={() => setNoiseReductionAuto(true)}
+          variant="text"
+          renderValue={true}
+          valueFormatter={(v) => {
+            'worklet';
+            const mode = Math.round(v);
+            if (mode === 0) return 'OFF';
+            if (mode === 1) return 'FAST';
+            if (mode === 2) return 'HQ';
+            return 'OFF';
+          }}
+        />
+        <ParameterControl
+          label={t('parameters.sharpening')}
+          isActive={activeParameter === 'sharpening'}
+          onPress={() => setActiveParameter('sharpening')}
+          value={sharpening}
+          minValue={0}
+          maxValue={1}
+          onChange={setSharpening}
+          icon="sparkles-outline"
+          valueFormatter={(v) => {
+            'worklet';
+            return `${Math.round(v * 100)}%`;
+          }}
+        />
+      </ScrollView>
     </Animated.View>
   );
 };

@@ -40,6 +40,12 @@ describe('DevelopmentModule', () => {
     setTemperature: jest.fn(),
     temperatureAuto: { value: true } as unknown as import('react-native-reanimated').SharedValue<boolean>,
     setTemperatureAuto: jest.fn(),
+    noiseReductionAuto: { value: true } as unknown as import('react-native-reanimated').SharedValue<boolean>,
+    setNoiseReductionAuto: jest.fn(),
+    noiseReductionMode: { value: 1 } as unknown as import('react-native-reanimated').SharedValue<number>,
+    setNoiseReductionMode: jest.fn(),
+    sharpening: { value: 0 } as unknown as import('react-native-reanimated').SharedValue<number>,
+    setSharpening: jest.fn(),
     handlePressWithDouble: jest.fn(),
   };
 

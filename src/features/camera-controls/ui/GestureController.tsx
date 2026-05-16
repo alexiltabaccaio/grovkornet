@@ -37,6 +37,9 @@ export const GestureController = () => {
     temperatureAuto,
     focusDistance,
     focusAuto,
+    noiseReductionMode,
+    sharpening,
+    capabilities,
   } = useCameraEffectsStore(useShallow(state => ({
     grainIntensity: state.grainIntensity,
     grainChroma: state.grainChroma,
@@ -55,6 +58,9 @@ export const GestureController = () => {
     temperatureAuto: state.temperatureAuto,
     focusDistance: state.focusDistance,
     focusAuto: state.focusAuto,
+    noiseReductionMode: state.noiseReductionMode,
+    sharpening: state.sharpening,
+    capabilities: state.capabilities,
   })));
 
   const {
@@ -69,6 +75,7 @@ export const GestureController = () => {
     updateShutterSpeed,
     updateTemperature,
     updateFocusDistance,
+    updateSharpening,
   } = useCameraWorklets(
     grainIntensity,
     grainChroma,
@@ -87,11 +94,13 @@ export const GestureController = () => {
     temperatureAuto,
     focusDistance,
     focusAuto,
+    sharpening,
   );
 
   const startVal = useSharedValue(0);
 
   const gesture = Gesture.Pan()
+    .activeOffsetY([-10, 10]) // Only activate on vertical swipe to not conflict with horizontal ScrollViews
     .onStart(() => {
       const activeParam = activeSubParameter !== 'none' ? activeSubParameter : activeParameter;
       switch (activeParam as string) {
@@ -130,6 +139,12 @@ export const GestureController = () => {
           break;
         case 'focus':
           startVal.value = focusDistance.value / 10.0;
+          break;
+        case 'noise_reduction':
+          startVal.value = noiseReductionMode.value / 2.0;
+          break;
+        case 'sharpening':
+          startVal.value = sharpening.value;
           break;
         default:
           startVal.value = -1;
@@ -184,6 +199,12 @@ export const GestureController = () => {
         case 'focus':
           updateFocusDistance(normalizedValue * 10.0);
           break;
+        case 'noise_reduction':
+          useCameraEffectsStore.getState().setNoiseReductionMode(Math.round(normalizedValue * 2.0));
+          break;
+        case 'sharpening':
+          updateSharpening(normalizedValue);
+          break;
       }
     });
 
@@ -191,7 +212,7 @@ export const GestureController = () => {
   const swipeableParams = [
     'grain', 'grain_chroma', 'grain_size', 'saturation', 'contrast',
     'chromatic_aberration', 'iso', 'ev', 'shutter_speed', 'temperature',
-    'white_balance', 'focus'
+    'white_balance', 'focus', 'noise_reduction', 'sharpening'
   ];
 
   const currentParam = activeSubParameter !== 'none' ? activeSubParameter : activeParameter;

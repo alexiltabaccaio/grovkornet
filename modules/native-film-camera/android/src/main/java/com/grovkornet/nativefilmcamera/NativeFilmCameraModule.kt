@@ -69,6 +69,12 @@ class NativeFilmCameraModule : Module() {
       Prop("focusDistance") { view: NativeFilmCameraView, focusDistance: Float ->
         view.focusDistance = focusDistance
       }
+      Prop("noiseReduction") { view: NativeFilmCameraView, noiseReduction: Int ->
+        view.noiseReduction = noiseReduction
+      }
+      Prop("sharpening") { view: NativeFilmCameraView, sharpening: Float ->
+        view.sharpening = sharpening
+      }
       Prop("cameraId") { view: NativeFilmCameraView, cameraId: String? ->
         view.cameraId = cameraId
       }

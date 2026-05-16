@@ -59,6 +59,26 @@ class NativeFilmCameraView(context: Context) : GLSurfaceView(context) {
     var whiteBalance: Float = 5000.0f
         set(value) { if (field != value) { field = value; if (::renderer.isInitialized) renderer.whiteBalance = value; if (::cameraEngine.isInitialized) cameraEngine.whiteBalance = value } }
 
+    var noiseReduction: Int = 1
+        set(value) {
+            if (field != value) {
+                field = value
+                if (::cameraEngine.isInitialized) {
+                    cameraEngine.noiseReductionMode = value
+                    scheduleCameraUpdate()
+                }
+            }
+        }
+
+    var sharpening: Float = 0.0f
+        set(value) {
+            if (field != value) {
+                field = value
+                if (::renderer.isInitialized) renderer.sharpening = value
+                if (::cameraEngine.isInitialized) cameraEngine.sharpening = value
+            }
+        }
+
     var isoAuto: Boolean = true
         set(value) { if (field != value) { field = value; if (::cameraEngine.isInitialized) { cameraEngine.isoAuto = value; scheduleCameraUpdate() } } }
     var shutterSpeedAuto: Boolean = true
@@ -179,11 +199,12 @@ class NativeFilmCameraView(context: Context) : GLSurfaceView(context) {
         }
 
         val cameraListener = object : CameraEngine.Listener {
-            override fun onExposureUpdate(iso: Int, shutterSpeed: Double, focusDistance: Float) {
+            override fun onExposureUpdate(iso: Int, shutterSpeed: Double, focusDistance: Float, noiseReduction: Int) {
                 onExposureUpdate(mapOf(
                     "iso" to iso,
                     "shutterSpeed" to shutterSpeed,
-                    "focusDistance" to focusDistance.toDouble()
+                    "focusDistance" to focusDistance.toDouble(),
+                    "noiseReduction" to noiseReduction
                 ))
             }
 
@@ -219,6 +240,8 @@ class NativeFilmCameraView(context: Context) : GLSurfaceView(context) {
         cameraEngine.aberrationDirection = aberrationDirection
         cameraEngine.whiteBalance = whiteBalance
         cameraEngine.ev = ev
+        cameraEngine.noiseReductionMode = noiseReduction
+        cameraEngine.sharpening = sharpening
     }
 
     fun takePhoto() {

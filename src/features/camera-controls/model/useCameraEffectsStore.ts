@@ -42,6 +42,9 @@ export const useCameraEffectsStore = create<CameraState>((set, get) => ({
   aspectRatio: makeMutable(0), // 0: 4:3, 1: 16:9, 2: 1:1, 3: 3:2, 4: 65:24
   resolutionSetting: makeMutable(1), // 0: 720p, 1: 1080p, 2: 4K
   fpsSetting: makeMutable(1), // 0: 24, 1: 30, 2: 60
+  noiseReductionAuto: makeMutable(true),
+  noiseReductionMode: makeMutable(1), // 0=OFF, 1=FAST, 2=HQ
+  sharpening: makeMutable(0.0),
   capabilities: {
     supportsFocus: true,
     hasTorch: false,
@@ -166,6 +169,19 @@ export const useCameraEffectsStore = create<CameraState>((set, get) => ({
   setFpsSetting: (value: number) => {
     get().fpsSetting.value = value;
   },
+  
+  setNoiseReductionAuto: (value: boolean) => {
+    get().noiseReductionAuto.value = value;
+  },
+
+  setNoiseReductionMode: (mode: number) => {
+    get().noiseReductionMode.value = mode;
+    get().noiseReductionAuto.value = false;
+  },
+
+  setSharpening: (value: number) => {
+    get().sharpening.value = value;
+  },
 
   setCapabilities: (caps) => {
     set({ capabilities: caps });
@@ -221,6 +237,11 @@ export const useCameraEffectsStore = create<CameraState>((set, get) => ({
       get().resolutionSetting.value = 1;
     } else if (tool === 'fps_setting') {
       get().fpsSetting.value = 1;
+    } else if (tool === 'noise_reduction') {
+      get().noiseReductionAuto.value = true;
+      get().noiseReductionMode.value = 1; // Default to FAST
+    } else if (tool === 'sharpening') {
+      get().sharpening.value = 0.0;
     }
   },
 }));

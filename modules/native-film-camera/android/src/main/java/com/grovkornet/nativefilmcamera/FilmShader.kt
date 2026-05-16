@@ -36,13 +36,30 @@ object FilmShader {
         uniform vec2 u_Resolution;
         uniform float u_Ev;
         uniform float u_WhiteBalance;
+        uniform float u_Sharpening;
 
         float hash(vec2 p) {
             return fract(sin(dot(p, vec2(12.9898, 78.233))) * 43758.5453);
         }
 
         void main() {
-            vec4 color = texture2D(u_Texture, v_TexCoord);
+            vec4 color;
+            
+            if (u_Sharpening > 0.0) {
+                // Use a larger radius (e.g. 2.0 or 3.0) for high-res displays
+                vec2 texel = 3.0 / u_Resolution;
+                vec3 col = texture2D(u_Texture, v_TexCoord).rgb;
+                vec3 colU = texture2D(u_Texture, v_TexCoord + vec2(0.0, -texel.y)).rgb;
+                vec3 colD = texture2D(u_Texture, v_TexCoord + vec2(0.0, texel.y)).rgb;
+                vec3 colL = texture2D(u_Texture, v_TexCoord + vec2(-texel.x, 0.0)).rgb;
+                vec3 colR = texture2D(u_Texture, v_TexCoord + vec2(texel.x, 0.0)).rgb;
+                
+                vec3 sharpened = col * 5.0 - colU - colD - colL - colR;
+                // Allow much stronger mix for visibility
+                color = vec4(mix(col, sharpened, u_Sharpening * 1.5), 1.0);
+            } else {
+                color = texture2D(u_Texture, v_TexCoord);
+            }
             
             // 1. Chromatic Aberration
             float caAmount = u_AberrationIntensity * 0.01; // Scaled for normalized coords
@@ -121,13 +138,30 @@ object FilmShader {
         uniform vec2 u_Resolution;
         uniform float u_Ev;
         uniform float u_WhiteBalance;
+        uniform float u_Sharpening;
 
         float hash(vec2 p) {
             return fract(sin(dot(p, vec2(12.9898, 78.233))) * 43758.5453);
         }
 
         void main() {
-            vec4 color = texture2D(u_Texture, v_TexCoord);
+            vec4 color;
+            
+            if (u_Sharpening > 0.0) {
+                // Use a larger radius (e.g. 2.0 or 3.0) for high-res displays
+                vec2 texel = 3.0 / u_Resolution;
+                vec3 col = texture2D(u_Texture, v_TexCoord).rgb;
+                vec3 colU = texture2D(u_Texture, v_TexCoord + vec2(0.0, -texel.y)).rgb;
+                vec3 colD = texture2D(u_Texture, v_TexCoord + vec2(0.0, texel.y)).rgb;
+                vec3 colL = texture2D(u_Texture, v_TexCoord + vec2(-texel.x, 0.0)).rgb;
+                vec3 colR = texture2D(u_Texture, v_TexCoord + vec2(texel.x, 0.0)).rgb;
+                
+                vec3 sharpened = col * 5.0 - colU - colD - colL - colR;
+                // Allow much stronger mix for visibility
+                color = vec4(mix(col, sharpened, u_Sharpening * 1.5), 1.0);
+            } else {
+                color = texture2D(u_Texture, v_TexCoord);
+            }
             
             float caAmount = u_AberrationIntensity * 0.01;
             if (caAmount > 0.0001) {
