@@ -32,7 +32,7 @@ class FilmRenderer(private val listener: Listener) : GLSurfaceView.Renderer, Sur
     @Volatile var whiteBalance: Float = 5000.0f
     @Volatile var whiteBalanceAuto: Boolean = true
     @Volatile var sharpening: Float = 0.0f
-    @Volatile var aspectRatio: Int = 0
+    @Volatile var aspectRatio: Int = 1
 
     private var program = 0
     private var cameraTextureId = 0

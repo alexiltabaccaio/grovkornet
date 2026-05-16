@@ -29,7 +29,7 @@ data class CameraConfiguration(
     var torchEnabled: Boolean = false,
     var torchStrength: Int = 1,
     var cameraId: String? = null,
-    var aspectRatio: Int = 0,
+    var aspectRatio: Int = 1,
 
     // Viewport Props
     var viewportWidth: Float = 1080f,

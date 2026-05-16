@@ -27,7 +27,7 @@ export const useHardwareStore = create<HardwareStore>((set, get) => ({
   cameraAuto: true,
   torchState: makeMutable(0),
   torchStrength: makeMutable(1),
-  aspectRatio: makeMutable(0), // 0: 4:3, 1: 16:9, 2: 1:1, 3: 3:2, 4: 65:24
+  aspectRatio: makeMutable(1), // 0: 4:3, 1: 16:9, 2: 1:1, 3: 3:2, 4: 65:24
   resolutionSetting: makeMutable(1), // 0: 720p, 1: 1080p, 2: 4K
   fpsSetting: makeMutable(1), // 0: 24, 1: 30, 2: 60
   capabilities: {

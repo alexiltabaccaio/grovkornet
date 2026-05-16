@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import { ScrollView, TouchableOpacity } from 'react-native-gesture-handler';
 import { useTranslation } from 'react-i18next';
 
@@ -7,22 +7,26 @@ import { useShallow } from 'zustand/react/shallow';
 import { useUIStore } from '../model/useUIStore';
 
 export const FooterModules = () => {
-  const { activeSection, activeModule, setActiveModule } = useUIStore(useShallow(state => ({
+  const { activeSection, activeModule, setActiveModule, isDebugEnabled } = useUIStore(useShallow(state => ({
     activeSection: state.activeSection,
     activeModule: state.activeModule,
-    setActiveModule: state.setActiveModule
+    setActiveModule: state.setActiveModule,
+    isDebugEnabled: state.isDebugEnabled
   })));
   const { t } = useTranslation();
 
   if (activeSection === 'none') return null;
 
   return (
-    <ScrollView 
-      horizontal 
-      showsHorizontalScrollIndicator={false} 
-      contentContainerStyle={styles.pillMenuContainer}
-      style={styles.pillMenuWrapper}
-    >
+    <>
+      <Text style={[styles.sectionTitle, isDebugEnabled && styles.debugTitle]}>{t(`sections.${activeSection}`)}</Text>
+      <View style={styles.container}>
+        <ScrollView 
+          horizontal 
+          showsHorizontalScrollIndicator={false} 
+          contentContainerStyle={styles.pillMenuContainer}
+          style={styles.pillMenuWrapper}
+        >
       {activeSection === 'system' && (
         <>
           <TouchableOpacity style={[styles.pill, activeModule === 'preferences' && styles.pillActive]} onPress={() => setActiveModule('preferences')} hitSlop={10}>
@@ -63,15 +67,31 @@ export const FooterModules = () => {
           </TouchableOpacity>
         </>
       )}
-    </ScrollView>
+      </ScrollView>
+    </View>
+    </>
   );
 };
 
 const styles = StyleSheet.create({
+  container: {
+    paddingHorizontal: 16,
+    paddingTop: 12,
+    marginBottom: 10,
+  },
+  sectionTitle: {
+    color: '#FFF',
+    fontSize: 11,
+    fontWeight: '900',
+    letterSpacing: 2.5,
+    textTransform: 'uppercase',
+    textAlign: 'center',
+    backgroundColor: 'transparent',
+    paddingVertical: 12,
+    width: '100%',
+  },
   pillMenuWrapper: {
     maxHeight: 35,
-    marginBottom: 10,
-    paddingHorizontal: 16,
   },
   pillMenuContainer: {
     alignItems: 'center',
@@ -80,7 +100,7 @@ const styles = StyleSheet.create({
   pill: {
     paddingHorizontal: 16,
     paddingVertical: 8,
-    borderRadius: 20,
+    borderRadius: 4,
     backgroundColor: '#222',
     marginRight: 8,
   },
@@ -94,5 +114,10 @@ const styles = StyleSheet.create({
   },
   pillTextActive: {
     color: '#000',
+  },
+  debugTitle: {
+    borderWidth: 1,
+    borderColor: 'magenta',
+    backgroundColor: 'rgba(255, 0, 255, 0.2)',
   },
 });

@@ -5,7 +5,7 @@ import { useUIStore } from '../model/useUIStore';
 import { FooterSections } from './FooterSections';
 import { FooterModules } from './FooterModules';
 import { FooterParameters } from './FooterParameters';
-import { BottomSheetHandle } from './BottomSheetHandle';
+
 import { SubParameterPanel } from './SubParameterPanel';
 
 import { GestureDetector, Gesture } from 'react-native-gesture-handler';
@@ -103,9 +103,7 @@ export const Footer = ({ translateY: externalTranslateY }: FooterProps) => {
           <GestureDetector gesture={panGesture}>
             <View>
               <View style={styles.topFooter}>
-                <View style={styles.handleWrapper} hitSlop={{ top: 20, bottom: 20, left: 100, right: 100 }}>
-                  <BottomSheetHandle />
-                </View>
+
                 <FooterModules />
                 <FooterParameters />
               </View>
@@ -148,7 +146,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     left: 0,
     right: 0,
-    backgroundColor: 'rgba(0, 0, 0, 0.85)',
+    backgroundColor: '#000',
   },
   unifiedBackgroundClosed: {
     top: 0,
@@ -156,7 +154,7 @@ const styles = StyleSheet.create({
   },
   unifiedBackgroundOpen: {
     bottom: -1000,
-    height: 1180, // 1000 + 180 (topFooter height)
+    height: 1250, 
   },
 
   topFooterContainer: {
@@ -166,18 +164,12 @@ const styles = StyleSheet.create({
   },
 
   topFooter: {
-    paddingTop: 10,
-    height: 120,
+    paddingTop: 0,
+    height: 160,
     justifyContent: 'flex-end',
   },
 
-  handleWrapper: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    zIndex: 10,
-  },
+
   expandedBackground: {
     height: 400, // Altezza abbondante per coprire il buco
   },

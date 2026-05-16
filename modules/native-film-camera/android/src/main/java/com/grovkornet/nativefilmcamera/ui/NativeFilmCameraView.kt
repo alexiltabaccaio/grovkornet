@@ -76,7 +76,7 @@ class NativeFilmCameraView(context: Context) : GLSurfaceView(context) {
         set(value) { field = value; cameraEngine.config.torchStrength = value; scheduleCameraUpdate() }
     var cameraId: String? = null
         set(value) { field = value; cameraEngine.config.cameraId = value; scheduleCameraUpdate() }
-    var aspectRatio: Int = 0
+    var aspectRatio: Int = 1
         set(value) { 
             if (field != value) {
                 field = value
