@@ -49,6 +49,7 @@ export const ParameterControl = ({
   invertDrag = false,
   hideValueInAuto = false,
   autoValueText = 'AUTO',
+  onChange,
 }: ParameterControlProps) => {
   const startVal = useSharedValue(minValue);
   const isDebugEnabled = useUIStore((s) => s.isDebugEnabled);
@@ -61,9 +62,10 @@ export const ParameterControl = ({
         minValue,
         maxValue,
         invertDrag,
+        onChange,
       });
     }
-  }, [isActive, value, minValue, maxValue, invertDrag, setGestureConfig]);
+  }, [isActive, value, minValue, maxValue, invertDrag, setGestureConfig, onChange]);
 
   const longPressGesture = Gesture.LongPress()
     .onStart(() => {
@@ -91,6 +93,10 @@ export const ParameterControl = ({
       const newValue = Math.min(Math.max(startVal.value + delta, minValue), maxValue);
       
       updateSharedValue(value, newValue);
+      
+      if (onChange) {
+        runOnJS(onChange)(newValue);
+      }
       
       // Handle AUTO mode deactivation natively on UI thread
       if (isAuto && isAuto.value) {

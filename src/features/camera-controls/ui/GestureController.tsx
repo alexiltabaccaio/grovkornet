@@ -1,6 +1,6 @@
 import React, { ReactNode } from 'react';
 import { StyleSheet, View, Dimensions } from 'react-native';
-import { useSharedValue } from 'react-native-reanimated';
+import { useSharedValue, runOnJS } from 'react-native-reanimated';
 import { GestureDetector, Gesture } from 'react-native-gesture-handler';
 import { useUIStore } from '../model/useUIStore';
 import { useShallow } from 'zustand/react/shallow';
@@ -39,17 +39,19 @@ export const GestureController = ({ children }: GestureControllerProps) => {
     .onUpdate((e) => {
       if (!gestureConfig || startVal.value === -1) return;
 
-      const { value, minValue, maxValue, invertDrag } = gestureConfig;
+      const { value, minValue, maxValue, invertDrag, onChange } = gestureConfig;
       const range = maxValue - minValue;
       
-      // Vertical translation is inverted in UI coordinates (up is negative)
-      // We want UP to increase the value, so we negate translationY.
       const direction = invertDrag ? -1 : 1;
       const delta = -(e.translationY / SLIDER_HEIGHT) * range * direction;
       
       const newValue = Math.min(Math.max(startVal.value + delta, minValue), maxValue);
       
       updateSharedValue(value, newValue);
+      
+      if (onChange) {
+        runOnJS(onChange)(newValue);
+      }
     });
 
   const tapGesture = Gesture.Tap()

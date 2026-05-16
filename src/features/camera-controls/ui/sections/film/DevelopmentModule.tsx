@@ -53,9 +53,7 @@ export const DevelopmentModule = ({ handlePressWithDouble }: DevelopmentModulePr
     setTemperatureAuto: s.setTemperatureAuto,
   })));
 
-  const noiseReductionNum = useDerivedValue(() => {
-    return noiseReductionMode.value;
-  });
+
 
   return (
     <Animated.View style={footerStyles.tabContent}>
@@ -101,7 +99,7 @@ export const DevelopmentModule = ({ handlePressWithDouble }: DevelopmentModulePr
           label={t('parameters.noise_reduction')}
           isActive={activeParameter === 'noise_reduction'}
           onPress={() => handlePressWithDouble('noise_reduction', () => setActiveParameter('noise_reduction'))}
-          value={noiseReductionNum}
+          value={noiseReductionMode}
           minValue={0}
           maxValue={2}
           onChange={(v) => {
@@ -124,7 +122,7 @@ export const DevelopmentModule = ({ handlePressWithDouble }: DevelopmentModulePr
         <ParameterControl
           label={t('parameters.sharpening')}
           isActive={activeParameter === 'sharpening'}
-          onPress={() => setActiveParameter('sharpening')}
+          onPress={() => handlePressWithDouble('sharpening', () => setActiveParameter('sharpening'))}
           value={sharpening}
           minValue={0}
           maxValue={1}

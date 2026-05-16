@@ -10,6 +10,7 @@ export interface GestureConfig {
   minValue: number;
   maxValue: number;
   invertDrag?: boolean;
+  onChange?: (val: number) => void;
 }
 
 
