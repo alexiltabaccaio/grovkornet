@@ -4,7 +4,8 @@ import { useSharedValue } from 'react-native-reanimated';
 import { GestureDetector, Gesture } from 'react-native-gesture-handler';
 
 import { useShallow } from 'zustand/react/shallow';
-import { useCameraEffectsStore } from '../model/useCameraEffectsStore';
+import { useHardwareStore } from '../model/useHardwareStore';
+import { useStylesStore } from '../model/useStylesStore';
 import { useUIStore } from '../model/useUIStore';
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
@@ -27,6 +28,21 @@ export const GestureController = () => {
     contrast,
     chromaticAberration,
     grainEnabled,
+    noiseReductionMode,
+    sharpening,
+  } = useStylesStore(useShallow(state => ({
+    grainIntensity: state.grainIntensity,
+    grainChroma: state.grainChroma,
+    grainSize: state.grainSize,
+    saturation: state.saturation,
+    contrast: state.contrast,
+    chromaticAberration: state.chromaticAberration,
+    grainEnabled: state.grainEnabled,
+    noiseReductionMode: state.noiseReductionMode,
+    sharpening: state.sharpening,
+  })));
+
+  const {
     iso,
     ev,
     shutterSpeed,
@@ -37,17 +53,7 @@ export const GestureController = () => {
     temperatureAuto,
     focusDistance,
     focusAuto,
-    noiseReductionMode,
-    sharpening,
-    capabilities,
-  } = useCameraEffectsStore(useShallow(state => ({
-    grainIntensity: state.grainIntensity,
-    grainChroma: state.grainChroma,
-    grainSize: state.grainSize,
-    saturation: state.saturation,
-    contrast: state.contrast,
-    chromaticAberration: state.chromaticAberration,
-    grainEnabled: state.grainEnabled,
+  } = useHardwareStore(useShallow(state => ({
     iso: state.iso,
     ev: state.ev,
     shutterSpeed: state.shutterSpeed,
@@ -58,9 +64,6 @@ export const GestureController = () => {
     temperatureAuto: state.temperatureAuto,
     focusDistance: state.focusDistance,
     focusAuto: state.focusAuto,
-    noiseReductionMode: state.noiseReductionMode,
-    sharpening: state.sharpening,
-    capabilities: state.capabilities,
   })));
 
   const {
@@ -200,7 +203,7 @@ export const GestureController = () => {
           updateFocusDistance(normalizedValue * 10.0);
           break;
         case 'noise_reduction':
-          useCameraEffectsStore.getState().setNoiseReductionMode(Math.round(normalizedValue * 2.0));
+          useStylesStore.getState().setNoiseReductionMode(Math.round(normalizedValue * 2.0));
           break;
         case 'sharpening':
           updateSharpening(normalizedValue);

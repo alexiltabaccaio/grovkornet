@@ -13,16 +13,7 @@ jest.mock('react-i18next', () => ({
   }),
 }));
 
-jest.mock('react-native-reanimated', () => {
-  const { View } = jest.requireActual('react-native');
-  return {
-    useSharedValue: jest.fn((val) => ({ value: val })),
-    useAnimatedStyle: jest.fn(() => ({})),
-    FadeIn: { duration: jest.fn().mockReturnThis() },
-    FadeOut: { duration: jest.fn().mockReturnThis() },
-    View: View,
-  };
-});
+// Reanimated is mocked in jest.setup.ts
 
 jest.mock('../../ParameterControl', () => ({
   ParameterControl: 'ParameterControl',

@@ -1,7 +1,6 @@
 import { requireNativeViewManager } from 'expo-modules-core';
 import * as React from 'react';
 import { ViewProps } from 'react-native';
-import { SharedValue } from 'react-native-reanimated';
 
 export interface NativeFilmCameraViewProps extends ViewProps {
   saturation?: number;

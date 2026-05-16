@@ -11,7 +11,7 @@
     "build": "expo run:android --variant release",
     "web": "expo start --web",
     "test": "jest",
-    "lint": "eslint .",
+    "lint": "npx tsc --noEmit && eslint .",
     "lint:fix": "eslint . --fix"
   },
   "jest": {

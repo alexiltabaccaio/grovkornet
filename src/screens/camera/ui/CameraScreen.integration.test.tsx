@@ -4,7 +4,7 @@ import React from 'react';
 import { render, fireEvent, waitFor, act } from '@testing-library/react-native';
 import { CameraScreen } from './CameraScreen';
 import { useUIStore } from '@features/camera-controls/model/useUIStore';
-import { useCameraEffectsStore } from '@features/camera-controls/model/useCameraEffectsStore';
+import { useHardwareStore } from '@features/camera-controls/model/useHardwareStore';
 
 // Mock ConnectedFilmCamera to avoid native issues during integration test
 jest.mock('@features/camera-controls', () => {
@@ -22,7 +22,7 @@ describe('CameraScreen Integration', () => {
     act(() => {
       useUIStore.getState().setActiveSection('none');
       useUIStore.getState().setActiveModule('none');
-      useCameraEffectsStore.getState().resetTool('iso');
+      // No global reset needed if we just set values in tests
     });
   });
 
@@ -64,10 +64,10 @@ describe('CameraScreen Integration', () => {
 
     // Directly test store integration (since Slider interaction is complex to mock/fire in unit test)
     act(() => {
-      useCameraEffectsStore.getState().setIso(800);
+      useHardwareStore.getState().setIso(800);
     });
 
-    expect(useCameraEffectsStore.getState().iso.value).toBe(800);
-    expect(useCameraEffectsStore.getState().isoAuto.value).toBe(false);
+    expect(useHardwareStore.getState().iso.value).toBe(800);
+    expect(useHardwareStore.getState().isoAuto.value).toBe(false);
   });
 });

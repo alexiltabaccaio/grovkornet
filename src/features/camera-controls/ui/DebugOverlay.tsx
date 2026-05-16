@@ -1,13 +1,13 @@
 import React from 'react';
 import { StyleSheet, View, TextInput } from 'react-native';
 import Animated, { useAnimatedProps, SharedValue } from 'react-native-reanimated';
-import { useCameraEffectsStore } from '../model/useCameraEffectsStore';
+import { useHardwareStore } from '../model/useHardwareStore';
 
 const AnimatedTextInput = Animated.createAnimatedComponent(TextInput);
 
 export const DebugOverlay = () => {
-  const fps = useCameraEffectsStore(state => state.fps);
-  const resolution = useCameraEffectsStore(state => state.resolution);
+  const fps = useHardwareStore(state => state.fps);
+  const resolution = useHardwareStore(state => state.resolution);
 
   return (
     <View style={styles.container} pointerEvents="none">
@@ -23,7 +23,7 @@ export const DebugOverlay = () => {
         <View style={styles.separator} />
         <ReanimatedValueText
           label="HW"
-          value={useCameraEffectsStore(state => state.hwFps)}
+          value={useHardwareStore(state => state.hwFps)}
           formatter={(v: number) => {
             'worklet';
             return Math.round(v).toString() + 'hz';

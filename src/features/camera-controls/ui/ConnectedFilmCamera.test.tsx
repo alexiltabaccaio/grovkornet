@@ -3,7 +3,8 @@
 import React from 'react';
 import { render } from '@testing-library/react-native';
 import { ConnectedFilmCamera } from './ConnectedFilmCamera';
-import { useCameraEffectsStore } from '../model/useCameraEffectsStore';
+import { useHardwareStore } from '../model/useHardwareStore';
+import { useStylesStore } from '../model/useStylesStore';
 
 // Mock NativeFilmCamera
 jest.mock('@entities/camera/ui/NativeFilmCamera', () => {
@@ -15,11 +16,12 @@ jest.mock('@entities/camera/ui/NativeFilmCamera', () => {
 
 describe('ConnectedFilmCamera', () => {
   it('correctly maps store values to NativeFilmCamera props', () => {
-    const store = useCameraEffectsStore.getState();
+    const hwStore = useHardwareStore.getState();
+    const styleStore = useStylesStore.getState();
     
     // Set some values in store
-    store.saturation.value = 1.5;
-    store.iso.value = 400;
+    styleStore.saturation.value = 1.5;
+    hwStore.iso.value = 400;
 
     const { getByTestId } = render(<ConnectedFilmCamera />);
     const nativeCamera = getByTestId('native-camera');
@@ -30,7 +32,7 @@ describe('ConnectedFilmCamera', () => {
   });
 
   it('handles debug update events', () => {
-    const store = useCameraEffectsStore.getState();
+    const hwStore = useHardwareStore.getState();
 
     const { getByTestId } = render(<ConnectedFilmCamera />);
     const nativeCamera = getByTestId('native-camera');
@@ -44,14 +46,14 @@ describe('ConnectedFilmCamera', () => {
       }
     });
 
-    expect(store.fps.value).toBe(60);
-    expect(store.hwFps.value).toBe(15);
-    expect(store.resolution.value).toBe('1080p');
+    expect(hwStore.fps.value).toBe(60);
+    expect(hwStore.hwFps.value).toBe(15);
+    expect(hwStore.resolution.value).toBe('1080p');
   });
 
   it('updates store values on exposure update when in auto mode', () => {
-    const store = useCameraEffectsStore.getState();
-    store.isoAuto.value = true;
+    const hwStore = useHardwareStore.getState();
+    hwStore.isoAuto.value = true;
     
     const { getByTestId } = render(<ConnectedFilmCamera />);
     const nativeCamera = getByTestId('native-camera');
@@ -64,6 +66,6 @@ describe('ConnectedFilmCamera', () => {
       }
     });
 
-    expect(store.iso.value).toBe(800);
+    expect(hwStore.iso.value).toBe(800);
   });
 });

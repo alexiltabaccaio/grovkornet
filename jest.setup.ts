@@ -1,30 +1,86 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import 'react-native-gesture-handler/jestSetup';
-import { Gesture } from 'react-native-gesture-handler';
 
-// Patch Gesture Handler mocks
-
-const panInstance = Gesture.Pan();
-const panProto = Object.getPrototypeOf(panInstance);
-if (panProto) {
-  panProto.hitSlop = function() { return this; };
-}
-
-
-// Mock Reanimated
+// Patch Gesture Handler// Mock Reanimated
 jest.mock('react-native-reanimated', () => {
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   const Reanimated = require('react-native-reanimated/mock');
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-  Reanimated.makeMutable = <T>(initialValue: T) => ({
-    value: initialValue,
-  });
-  Reanimated.useEvent = (handler: (event: any) => void) => {
-    return (event: any) => handler(event);
+  
+  return {
+    ...Reanimated,
+    makeMutable: (val: any) => ({ value: val }),
+    useSharedValue: (val: any) => ({ value: val }),
+    runOnJS: (fn: any) => fn,
+    useEvent: (handler: any) => (event: any) => handler(event),
+    useDerivedValue: (cb: any) => ({ value: cb() }),
+    useAnimatedReaction: jest.fn(),
+    useAnimatedStyle: (cb: any) => cb(),
+    useAnimatedProps: (cb: any) => cb(),
+    interpolate: (val: any, input: any, output: any) => output[0],
+    interpolateColor: (val: any, input: any, output: any) => output[0],
+    withTiming: (val: any) => val,
+    withSpring: (val: any) => val,
   };
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-  return Reanimated;
+}, { virtual: true });
+
+// Mock Gesture Handler
+const mockGesture = {
+  Pan: () => ({
+    hitSlop: jest.fn().mockReturnThis(),
+    activeOffsetY: jest.fn().mockReturnThis(),
+    activeOffsetX: jest.fn().mockReturnThis(),
+    onStart: jest.fn().mockReturnThis(),
+    onUpdate: jest.fn().mockReturnThis(),
+    onEnd: jest.fn().mockReturnThis(),
+    onFinalize: jest.fn().mockReturnThis(),
+    minDistance: jest.fn().mockReturnThis(),
+    enabled: jest.fn().mockReturnThis(),
+    toGestureArray: function() { return [this]; },
+    initialize: jest.fn(),
+    prepare: jest.fn(),
+  }),
+  Tap: () => ({
+    onEnd: jest.fn().mockReturnThis(),
+    onFinalize: jest.fn().mockReturnThis(),
+    toGestureArray: function() { return [this]; },
+    initialize: jest.fn(),
+    prepare: jest.fn(),
+  }),
+  LongPress: () => ({
+    onStart: jest.fn().mockReturnThis(),
+    onFinalize: jest.fn().mockReturnThis(),
+    toGestureArray: function() { return [this]; },
+    initialize: jest.fn(),
+    prepare: jest.fn(),
+  }),
+  Race: jest.fn().mockImplementation((...gestures: any[]) => ({
+    gestures,
+    toGestureArray: function() { return this.gestures; },
+    initialize: jest.fn(),
+    prepare: jest.fn(),
+  })),
+  Exclusive: jest.fn().mockImplementation((...gestures: any[]) => ({
+    gestures,
+    toGestureArray: function() { return this.gestures; },
+    initialize: jest.fn(),
+    prepare: jest.fn(),
+  })),
+  Simultaneous: jest.fn().mockImplementation((...gestures: any[]) => ({
+    gestures,
+    toGestureArray: function() { return this.gestures; },
+    initialize: jest.fn(),
+    prepare: jest.fn(),
+  })),
+};
+
+jest.mock('react-native-gesture-handler', () => {
+  const actual = jest.requireActual('react-native-gesture-handler');
+  return {
+    ...actual,
+    GestureDetector: ({ children }: any) => children,
+    Gesture: mockGesture,
+    runOnJS: (fn: any) => fn,
+  };
 });
 
 // Mock i18next

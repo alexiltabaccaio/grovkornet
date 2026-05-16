@@ -1,5 +1,4 @@
 import React from 'react';
-import { View } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import Animated, { useDerivedValue } from 'react-native-reanimated';
 import { useTranslation } from 'react-i18next';
@@ -102,7 +101,7 @@ export const DevelopmentModule = ({
           label={t('parameters.noise_reduction')}
           isActive={activeParameter === 'noise_reduction'}
           onPress={() => handlePressWithDouble('noise_reduction', () => setActiveParameter('noise_reduction'))}
-          value={noiseReductionNum as any}
+          value={noiseReductionNum}
           minValue={0}
           maxValue={2}
           onChange={(v) => {

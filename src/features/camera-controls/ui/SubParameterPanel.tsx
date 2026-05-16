@@ -3,7 +3,8 @@ import { StyleSheet } from 'react-native';
 import { useShallow } from 'zustand/react/shallow';
 import { useTranslation } from 'react-i18next';
 import { useUIStore } from '../model/useUIStore';
-import { useCameraEffectsStore } from '../model/useCameraEffectsStore';
+import { useHardwareStore } from '../model/useHardwareStore';
+import { useStylesStore } from '../model/useStylesStore';
 import { ParameterControl } from './ParameterControl';
 import Animated, { SharedValue, useAnimatedStyle, interpolate, Extrapolation } from 'react-native-reanimated';
 
@@ -25,25 +26,23 @@ export const SubParameterPanel = ({ translateY }: SubParameterPanelProps) => {
     setGrainChroma,
     grainSize,
     setGrainSize,
-    torchStrength,
-    setTorchStrength,
     aberrationDirection,
     setAberrationDirection,
-    noiseReductionMode,
-    setNoiseReductionMode,
-    capabilities,
-  } = useCameraEffectsStore(useShallow(state => ({
+  } = useStylesStore(useShallow(state => ({
     grainChroma: state.grainChroma,
     setGrainChroma: state.setGrainChroma,
     grainSize: state.grainSize,
     setGrainSize: state.setGrainSize,
-    torchStrength: state.torchStrength,
-    setTorchStrength: state.setTorchStrength,
     aberrationDirection: state.aberrationDirection,
     setAberrationDirection: state.setAberrationDirection,
-    noiseReductionMode: state.noiseReductionMode,
-    setNoiseReductionMode: state.setNoiseReductionMode,
-    capabilities: state.capabilities,
+  })));
+
+  const {
+    torchStrength,
+    setTorchStrength,
+  } = useHardwareStore(useShallow(state => ({
+    torchStrength: state.torchStrength,
+    setTorchStrength: state.setTorchStrength,
   })));
 
   const animatedStyle = useAnimatedStyle(() => {
