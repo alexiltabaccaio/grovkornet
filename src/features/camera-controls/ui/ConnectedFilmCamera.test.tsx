@@ -22,6 +22,7 @@ describe('ConnectedFilmCamera', () => {
     // Set some values in store
     styleStore.saturation.value = 1.5;
     hwStore.iso.value = 400;
+    hwStore.aspectRatio.value = 1; // 16:9
 
     const { getByTestId } = render(<ConnectedFilmCamera />);
     const nativeCamera = getByTestId('native-camera');
@@ -29,6 +30,7 @@ describe('ConnectedFilmCamera', () => {
     // Check if props match store values
     expect(nativeCamera.props.saturation.value).toBe(1.5);
     expect(nativeCamera.props.iso.value).toBe(400);
+    expect(nativeCamera.props.aspectRatio.value).toBe(1);
   });
 
   it('handles debug update events', () => {

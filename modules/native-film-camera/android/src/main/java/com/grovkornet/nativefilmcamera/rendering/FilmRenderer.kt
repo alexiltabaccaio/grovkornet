@@ -32,6 +32,7 @@ class FilmRenderer(private val listener: Listener) : GLSurfaceView.Renderer, Sur
     @Volatile var whiteBalance: Float = 5000.0f
     @Volatile var whiteBalanceAuto: Boolean = true
     @Volatile var sharpening: Float = 0.0f
+    @Volatile var aspectRatio: Int = 0
 
     private var program = 0
     private var cameraTextureId = 0
@@ -40,6 +41,7 @@ class FilmRenderer(private val listener: Listener) : GLSurfaceView.Renderer, Sur
     // Cached Locations
     private var uTransformMatrixLoc = -1
     private var uScaleMatrixLoc = -1
+    private var uCropMatrixLoc = -1
     private var uSaturationLoc = -1
     private var uContrastLoc = -1
     private var uAberrationLoc = -1
@@ -62,6 +64,7 @@ class FilmRenderer(private val listener: Listener) : GLSurfaceView.Renderer, Sur
 
     private val transformMatrix = FloatArray(16)
     private val scaleMatrix = FloatArray(16)
+    private val cropMatrix = FloatArray(16)
 
     private var viewportWidth = 0
     private var viewportHeight = 0
@@ -106,6 +109,7 @@ class FilmRenderer(private val listener: Listener) : GLSurfaceView.Renderer, Sur
         // Cache locations once
         uTransformMatrixLoc = GLES20.glGetUniformLocation(program, "u_TransformMatrix")
         uScaleMatrixLoc = GLES20.glGetUniformLocation(program, "u_ScaleMatrix")
+        uCropMatrixLoc = GLES20.glGetUniformLocation(program, "u_CropMatrix")
         uSaturationLoc = GLES20.glGetUniformLocation(program, "u_Saturation")
         uContrastLoc = GLES20.glGetUniformLocation(program, "u_Contrast")
         uAberrationLoc = GLES20.glGetUniformLocation(program, "u_AberrationIntensity")
@@ -163,6 +167,7 @@ class FilmRenderer(private val listener: Listener) : GLSurfaceView.Renderer, Sur
 
         calculateScaleMatrix()
         GLES20.glUniformMatrix4fv(uScaleMatrixLoc, 1, false, scaleMatrix, 0)
+        GLES20.glUniformMatrix4fv(uCropMatrixLoc, 1, false, cropMatrix, 0)
 
         // Setup Uniforms using cached IDs
         GLES20.glUniform1f(uSaturationLoc, saturation)
@@ -207,6 +212,8 @@ class FilmRenderer(private val listener: Listener) : GLSurfaceView.Renderer, Sur
     private fun calculateScaleMatrix() {
         var scaleX = 1.0f
         var scaleY = 1.0f
+        var cropX = 1.0f
+        var cropY = 1.0f
 
         if (cameraWidth > 0 && cameraHeight > 0 && viewportWidth > 0 && viewportHeight > 0) {
             val isViewPortrait = viewportWidth < viewportHeight
@@ -216,18 +223,49 @@ class FilmRenderer(private val listener: Listener) : GLSurfaceView.Renderer, Sur
             val effCamHeight = if (isViewPortrait == isCameraPortrait) cameraHeight.toFloat() else cameraWidth.toFloat()
 
             val viewAspect = viewportWidth.toFloat() / viewportHeight.toFloat()
+            val targetAspect = when (aspectRatio) {
+                0 -> 4f / 3f
+                1 -> 16f / 9f
+                2 -> 1f / 1f
+                3 -> 3f / 2f
+                4 -> 65f / 24f
+                else -> 4f / 3f
+            }
+            
             val camAspect = effCamWidth / effCamHeight
 
-            if (viewAspect > camAspect) {
-                scaleY = viewAspect / camAspect
+            // First: Scale the GEOMETRY to fit the target aspect ratio into the viewport (Letterbox/Fill)
+            val finalTargetAspect = if (isViewPortrait) 1f / targetAspect else targetAspect
+            
+            if (viewAspect > finalTargetAspect) {
+                // Viewport is wider than target -> Letterbox on sides (scaleX < 1)
+                scaleX = finalTargetAspect / viewAspect
             } else {
-                scaleX = camAspect / viewAspect
+                // Viewport is taller than target -> Letterbox on top/bottom (scaleY < 1)
+                scaleY = viewAspect / finalTargetAspect
+            }
+            
+            // Second: Crop the TEXTURE to match the target aspect ratio
+            if (finalTargetAspect > camAspect) {
+                // Target is wider than camera. Crop camera vertically.
+                // e.g. camera is 0.75 (4:3), target is 1.0 (1:1). We need to shrink the height we sample.
+                cropY = camAspect / finalTargetAspect
+            } else {
+                // Target is taller than camera. Crop camera horizontally.
+                cropX = finalTargetAspect / camAspect
             }
         }
 
         Matrix.setIdentityM(scaleMatrix, 0)
         Matrix.scaleM(scaleMatrix, 0, scaleX, scaleY, 1.0f)
+
+        Matrix.setIdentityM(cropMatrix, 0)
+        // Texture coords are 0 to 1. To crop the center, translate to center (0.5), scale down, translate back.
+        Matrix.translateM(cropMatrix, 0, 0.5f, 0.5f, 0.0f)
+        Matrix.scaleM(cropMatrix, 0, cropX, cropY, 1.0f)
+        Matrix.translateM(cropMatrix, 0, -0.5f, -0.5f, 0.0f)
     }
+
 
     override fun onFrameAvailable(surfaceTexture: SurfaceTexture?) {
         // This is called from the GL thread or a background thread depending on how SurfaceTexture is configured.

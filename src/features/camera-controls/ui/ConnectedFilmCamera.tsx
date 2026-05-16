@@ -106,6 +106,7 @@ export const ConnectedFilmCamera = ({ cameraKey }: ConnectedFilmCameraProps) => 
         torchStrength={hwStore.torchStrength as unknown as SharedValue<number | undefined>}
         noiseReduction={resolvedNoiseReduction as unknown as SharedValue<number | undefined>}
         sharpening={styleStore.sharpening as unknown as SharedValue<number | undefined>}
+        aspectRatio={hwStore.aspectRatio as unknown as SharedValue<number | undefined>}
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         onCapabilitiesUpdate={(event: any) => {
           // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access

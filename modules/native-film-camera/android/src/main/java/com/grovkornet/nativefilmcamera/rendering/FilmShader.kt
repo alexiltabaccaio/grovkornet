@@ -6,12 +6,14 @@ object FilmShader {
         attribute vec4 a_TexCoord;
         uniform mat4 u_TransformMatrix;
         uniform mat4 u_ScaleMatrix;
+        uniform mat4 u_CropMatrix;
         varying vec2 v_TexCoord;
         varying vec2 v_AberrationDirX;
         varying vec2 v_AberrationDirY;
         void main() {
             gl_Position = u_ScaleMatrix * a_Position;
-            v_TexCoord = (u_TransformMatrix * a_TexCoord).xy;
+            vec4 croppedTexCoord = u_CropMatrix * a_TexCoord;
+            v_TexCoord = (u_TransformMatrix * croppedTexCoord).xy;
             v_AberrationDirX = (u_TransformMatrix * vec4(1.0, 0.0, 0.0, 0.0)).xy;
             v_AberrationDirY = (u_TransformMatrix * vec4(0.0, 1.0, 0.0, 0.0)).xy;
         }

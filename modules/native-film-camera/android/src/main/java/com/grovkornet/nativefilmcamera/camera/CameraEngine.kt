@@ -38,12 +38,27 @@ class CameraEngine(
 
     private var activeCamera: Camera? = null
     private var activeImageCapture: ImageCapture? = null
+    
+    private var lastBoundCameraId: String? = null
+    private var lastBoundAspectRatio: Int = -1
+    private var currentSurfaceTexture: SurfaceTexture? = null
 
     fun start(surfaceTexture: SurfaceTexture) {
+        currentSurfaceTexture = surfaceTexture
+        lastBoundCameraId = config.cameraId
+        lastBoundAspectRatio = config.aspectRatio
         sessionManager.start(surfaceTexture, controlManager.createCaptureCallback())
     }
 
     fun updateCameraControls() {
+        if (config.cameraId != lastBoundCameraId || config.aspectRatio != lastBoundAspectRatio) {
+            lastBoundCameraId = config.cameraId
+            lastBoundAspectRatio = config.aspectRatio
+            currentSurfaceTexture?.let { 
+                sessionManager.bindCameraUseCases(it, controlManager.createCaptureCallback())
+            }
+            return
+        }
         activeCamera?.let { controlManager.updateControls(it) }
     }
 

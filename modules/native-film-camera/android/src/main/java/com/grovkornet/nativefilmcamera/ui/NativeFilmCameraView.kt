@@ -76,6 +76,15 @@ class NativeFilmCameraView(context: Context) : GLSurfaceView(context) {
         set(value) { field = value; cameraEngine.config.torchStrength = value; scheduleCameraUpdate() }
     var cameraId: String? = null
         set(value) { field = value; cameraEngine.config.cameraId = value; scheduleCameraUpdate() }
+    var aspectRatio: Int = 0
+        set(value) { 
+            if (field != value) {
+                field = value
+                cameraEngine.config.aspectRatio = value
+                if (::renderer.isInitialized) renderer.aspectRatio = value
+                scheduleCameraUpdate() 
+            }
+        }
 
     private val cameraUpdateRunnable = Runnable {
         isCameraUpdatePending = false
@@ -186,6 +195,8 @@ class NativeFilmCameraView(context: Context) : GLSurfaceView(context) {
         c.torchEnabled = torchState > 0.5f
         c.torchStrength = torchStrength
         c.cameraId = cameraId
+        c.aspectRatio = aspectRatio
+        if (::renderer.isInitialized) renderer.aspectRatio = aspectRatio
     }
 
     fun takePhoto() {

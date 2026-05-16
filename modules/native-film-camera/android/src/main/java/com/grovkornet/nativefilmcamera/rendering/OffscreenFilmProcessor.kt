@@ -104,6 +104,7 @@ class OffscreenFilmProcessor {
             // Uniforms
             GLES20.glUniformMatrix4fv(GLES20.glGetUniformLocation(program, "u_TransformMatrix"), 1, false, FloatArray(16).apply { Matrix.setIdentityM(this, 0) }, 0)
             GLES20.glUniformMatrix4fv(GLES20.glGetUniformLocation(program, "u_ScaleMatrix"), 1, false, FloatArray(16).apply { Matrix.setIdentityM(this, 0) }, 0)
+            GLES20.glUniformMatrix4fv(GLES20.glGetUniformLocation(program, "u_CropMatrix"), 1, false, FloatArray(16).apply { Matrix.setIdentityM(this, 0) }, 0)
             
             GLES20.glUniform1f(GLES20.glGetUniformLocation(program, "u_Saturation"), params.saturation)
             GLES20.glUniform1f(GLES20.glGetUniformLocation(program, "u_Contrast"), params.contrast)

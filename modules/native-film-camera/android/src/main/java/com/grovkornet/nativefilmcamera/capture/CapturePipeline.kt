@@ -12,6 +12,7 @@ import androidx.camera.core.ImageProxy
 import androidx.core.content.ContextCompat
 import com.grovkornet.nativefilmcamera.rendering.OffscreenFilmProcessor
 import com.grovkornet.nativefilmcamera.managers.GalleryManager
+import com.grovkornet.nativefilmcamera.logic.ImageUtils
 import com.grovkornet.nativefilmcamera.state.CameraConfiguration
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -78,6 +79,13 @@ class CapturePipeline(
                 val rotated = Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
                 bitmap.recycle()
                 bitmap = rotated
+            }
+
+            // Crop to target aspect ratio
+            val cropped = ImageUtils.cropToAspectRatio(bitmap, config.aspectRatio)
+            if (cropped != bitmap) {
+                bitmap.recycle()
+                bitmap = cropped
             }
 
             val params = OffscreenFilmProcessor.Parameters(

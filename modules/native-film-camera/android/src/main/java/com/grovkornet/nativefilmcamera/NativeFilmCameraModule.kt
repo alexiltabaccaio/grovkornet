@@ -9,6 +9,7 @@ import expo.modules.kotlin.viewevent.EventDispatcher
 import com.grovkornet.nativefilmcamera.rendering.FilmRenderer
 import com.grovkornet.nativefilmcamera.camera.CameraEngine
 import com.grovkornet.nativefilmcamera.ui.NativeFilmCameraView
+import kotlin.math.roundToInt
 
 class NativeFilmCameraModule : Module() {
   override fun definition() = ModuleDefinition {
@@ -89,6 +90,9 @@ class NativeFilmCameraModule : Module() {
       }
       Prop("torchStrength") { view: NativeFilmCameraView, torchStrength: Float ->
         view.torchStrength = torchStrength.toInt()
+      }
+      Prop("aspectRatio") { view: NativeFilmCameraView, aspectRatio: Float ->
+        view.aspectRatio = aspectRatio.roundToInt()
       }
 
       AsyncFunction("takePhoto") { view: NativeFilmCameraView ->

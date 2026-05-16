@@ -5,10 +5,12 @@ import android.graphics.SurfaceTexture
 import android.util.Log
 import android.util.Size
 import android.view.Surface
+import androidx.camera.core.AspectRatio
 import androidx.camera.core.Camera
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageCapture
 import androidx.camera.core.Preview
+import androidx.camera.core.resolutionselector.AspectRatioStrategy
 import androidx.camera.core.resolutionselector.ResolutionSelector
 import androidx.camera.core.resolutionselector.ResolutionStrategy
 import androidx.camera.lifecycle.ProcessCameraProvider
@@ -45,17 +47,13 @@ class CameraSessionManager(
     fun bindCameraUseCases(surfaceTexture: SurfaceTexture, captureCallback: android.hardware.camera2.CameraCaptureSession.CaptureCallback? = null) {
         val provider = cameraProvider ?: return
 
+        val targetAspectRatio = if (config.aspectRatio == 1) AspectRatio.RATIO_16_9 else AspectRatio.RATIO_4_3
+        val resolutionSelector = ResolutionSelector.Builder()
+            .setAspectRatioStrategy(AspectRatioStrategy(targetAspectRatio, AspectRatioStrategy.FALLBACK_RULE_AUTO))
+            .build()
+
         val previewBuilder = Preview.Builder()
-            .setResolutionSelector(
-                ResolutionSelector.Builder()
-                    .setResolutionStrategy(
-                        ResolutionStrategy(
-                            Size(1920, 1080),
-                            ResolutionStrategy.FALLBACK_RULE_CLOSEST_HIGHER_THEN_LOWER
-                        )
-                    )
-                    .build()
-            )
+            .setResolutionSelector(resolutionSelector)
         
         captureCallback?.let {
             androidx.camera.camera2.interop.Camera2Interop.Extender(previewBuilder)
@@ -79,6 +77,7 @@ class CameraSessionManager(
 
             imageCapture = ImageCapture.Builder()
                 .setCaptureMode(ImageCapture.CAPTURE_MODE_MAXIMIZE_QUALITY)
+                .setResolutionSelector(resolutionSelector)
                 .build()
 
             camera = provider.bindToLifecycle(lifecycleOwner, selector, preview, imageCapture)
