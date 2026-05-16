@@ -33,4 +33,6 @@ dependencies {
   implementation "androidx.camera:camera-lifecycle:${camerax_version}"
   implementation "androidx.camera:camera-view:${camerax_version}"
   implementation "androidx.lifecycle:lifecycle-process:2.6.2"
+
+  testImplementation 'junit:junit:4.13.2'
 }

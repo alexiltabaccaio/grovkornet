@@ -15,8 +15,8 @@
     "ios": {
       "supportsTablet": true,
       "infoPlist": {
-        "NSCameraUsageDescription": "Grovkornet needs camera access to apply the filter.",
-        "NSMicrophoneUsageDescription": "Grovkornet needs microphone access to record video audio."
+        "NSCameraUsageDescription": "Grovkornet needs camera access to capture cinematic footage with real-time analog film emulation.",
+        "NSMicrophoneUsageDescription": "Grovkornet needs microphone access to record high-quality audio for your cinematic videos."
       }
     },
     "android": {

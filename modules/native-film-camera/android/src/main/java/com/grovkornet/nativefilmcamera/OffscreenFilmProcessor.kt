@@ -13,6 +13,15 @@ class OffscreenFilmProcessor {
     private var eglDisplay = EGL14.EGL_NO_DISPLAY
     private var eglContext = EGL14.EGL_NO_CONTEXT
     private var eglSurface = EGL14.EGL_NO_SURFACE
+    private var program = 0
+    private var textureId = IntArray(1) { 0 }
+    
+    private var isPrepared = false
+    private var currentWidth = 0
+    private var currentHeight = 0
+
+    private var vertexBuffer: FloatBuffer? = null
+    private var texCoordBuffer: FloatBuffer? = null
 
     data class Parameters(
         val saturation: Float,
@@ -30,34 +39,60 @@ class OffscreenFilmProcessor {
         val viewportHeight: Float = 1920f
     )
 
+    fun prepare(width: Int, height: Int) {
+        if (isPrepared && currentWidth == width && currentHeight == height) return
+        
+        val startTime = System.currentTimeMillis()
+        Log.i(TAG, "Preparing EGL context and Shaders for ${width}x${height}...")
+
+        try {
+            if (isPrepared) release()
+
+            initEGL(width, height)
+            
+            program = GLUtils.createProgram(FilmShader.VERTEX_SHADER, FilmShader.FRAGMENT_SHADER)
+            GLES20.glGenTextures(1, textureId, 0)
+            
+            vertexBuffer = createFloatBuffer(floatArrayOf(-1f, -1f, 1f, -1f, -1f, 1f, 1f, 1f))
+            texCoordBuffer = createFloatBuffer(floatArrayOf(0f, 0f, 1f, 0f, 0f, 1f, 1f, 1f))
+
+            currentWidth = width
+            currentHeight = height
+            isPrepared = true
+            
+            Log.i(TAG, "Preparation complete in ${System.currentTimeMillis() - startTime}ms")
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to prepare OffscreenProcessor", e)
+            isPrepared = false
+        }
+    }
+
     fun process(input: Bitmap, params: Parameters): Bitmap {
+        if (!isPrepared) {
+            Log.w(TAG, "Processor not prepared, preparing now (this will cause lag)...")
+            prepare(input.width, input.height)
+        }
+        
+        // If resolution changed, we need to re-prepare
+        if (input.width != currentWidth || input.height != currentHeight) {
+            Log.i(TAG, "Resolution changed from ${currentWidth}x${currentHeight} to ${input.width}x${input.height}. Re-preparing...")
+            prepare(input.width, input.height)
+        }
+
+        val startTime = System.currentTimeMillis()
         val width = input.width
         val height = input.height
 
         try {
-            initEGL(width, height)
-            
-            val program = GLUtils.createProgram(FilmShader.VERTEX_SHADER, FilmShader.FRAGMENT_SHADER)
             GLES20.glUseProgram(program)
 
-            // Setup buffers
-            val vertexBuffer = createFloatBuffer(floatArrayOf(
-                -1f, -1f, 1f, -1f, -1f, 1f, 1f, 1f
-            ))
-            val texCoordBuffer = createFloatBuffer(floatArrayOf(
-                0f, 0f, 1f, 0f, 0f, 1f, 1f, 1f
-            ))
-
             // Upload texture
-            val textureId = IntArray(1)
-            GLES20.glGenTextures(1, textureId, 0)
             GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureId[0])
             GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR)
             GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR)
-            GLUtils.checkGlError("glTexParameteri")
             android.opengl.GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, input, 0)
 
-            // Setup attributes and uniforms
+            // Setup attributes
             val aPos = GLES20.glGetAttribLocation(program, "a_Position")
             val aTex = GLES20.glGetAttribLocation(program, "a_TexCoord")
             GLES20.glEnableVertexAttribArray(aPos)
@@ -91,21 +126,16 @@ class OffscreenFilmProcessor {
             val outBuffer = ByteBuffer.allocateDirect(width * height * 4)
             outBuffer.order(ByteOrder.LITTLE_ENDIAN)
             GLES20.glReadPixels(0, 0, width, height, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE, outBuffer)
-            GLUtils.checkGlError("glReadPixels")
-
+            
             val outputBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
             outBuffer.rewind()
             outputBitmap.copyPixelsFromBuffer(outBuffer)
             
-            GLES20.glDeleteTextures(1, textureId, 0)
-            GLES20.glDeleteProgram(program)
-
+            Log.i(TAG, "Frame processed in ${System.currentTimeMillis() - startTime}ms")
             return outputBitmap
         } catch (e: Exception) {
             Log.e(TAG, "Offscreen processing failed", e)
             return input
-        } finally {
-            releaseEGL()
         }
     }
 
@@ -146,17 +176,27 @@ class OffscreenFilmProcessor {
         EGL14.eglMakeCurrent(eglDisplay, eglSurface, eglSurface, eglContext)
     }
 
-    private fun releaseEGL() {
+    fun release() {
+        if (!isPrepared) return
+        
+        Log.i(TAG, "Releasing EGL context and resources...")
         if (eglDisplay != EGL14.EGL_NO_DISPLAY) {
             EGL14.eglMakeCurrent(eglDisplay, EGL14.EGL_NO_SURFACE, EGL14.EGL_NO_SURFACE, EGL14.EGL_NO_CONTEXT)
-            EGL14.eglDestroySurface(eglDisplay, eglSurface)
-            EGL14.eglDestroyContext(eglDisplay, eglContext)
+            if (eglSurface != EGL14.EGL_NO_SURFACE) EGL14.eglDestroySurface(eglDisplay, eglSurface)
+            if (eglContext != EGL14.EGL_NO_CONTEXT) EGL14.eglDestroyContext(eglDisplay, eglContext)
             EGL14.eglReleaseThread()
             EGL14.eglTerminate(eglDisplay)
         }
+        
+        if (program != 0) GLES20.glDeleteProgram(program)
+        if (textureId[0] != 0) GLES20.glDeleteTextures(1, textureId, 0)
+        
         eglDisplay = EGL14.EGL_NO_DISPLAY
         eglContext = EGL14.EGL_NO_CONTEXT
         eglSurface = EGL14.EGL_NO_SURFACE
+        program = 0
+        textureId[0] = 0
+        isPrepared = false
     }
 
     private fun createFloatBuffer(coords: FloatArray): FloatBuffer {

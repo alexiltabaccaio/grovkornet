@@ -35,6 +35,8 @@ import java.io.OutputStream
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.WritableArray
 import com.facebook.react.bridge.WritableMap
+import android.os.Handler
+import android.os.HandlerThread
 
 class CameraEngine(private val context: Context, private val lifecycleOwner: LifecycleOwner, private val listener: Listener) {
 
@@ -81,10 +83,21 @@ class CameraEngine(private val context: Context, private val lifecycleOwner: Lif
     @Volatile var viewportWidth: Float = 1080f
     @Volatile var viewportHeight: Float = 1920f
 
+    private val offscreenProcessor = OffscreenFilmProcessor()
+    private var processingThread: HandlerThread? = null
+    private var processingHandler: Handler? = null
+
     private var lastExposureUpdateTime = 0L
 
     fun start(surfaceTexture: android.graphics.SurfaceTexture) {
         currentSurfaceTexture = surfaceTexture
+        
+        // Start persistent processing thread
+        if (processingThread == null) {
+            processingThread = HandlerThread("GrovkornetImageProcessor").apply { start() }
+            processingHandler = Handler(processingThread!!.looper)
+        }
+
         val cameraProviderFuture = ProcessCameraProvider.getInstance(context)
         cameraProviderFuture.addListener({
             cameraProvider = cameraProviderFuture.get()
@@ -400,7 +413,8 @@ class CameraEngine(private val context: Context, private val lifecycleOwner: Lif
                 buffer.get(bytes)
                 
                 // Process in background thread to not block UI
-                Thread {
+                processingHandler?.post {
+                    val procStartTime = System.currentTimeMillis()
                     try {
                         var bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
                         
@@ -413,9 +427,8 @@ class CameraEngine(private val context: Context, private val lifecycleOwner: Lif
                             bitmap = rotated
                         }
 
-                        // Apply Film Effects
-                        val processor = OffscreenFilmProcessor()
-                        val processed = processor.process(bitmap, params)
+                        // Apply Film Effects (Processor is already initialized in this thread)
+                        val processed = offscreenProcessor.process(bitmap, params)
                         bitmap.recycle()
 
                         // Save to MediaStore
@@ -426,13 +439,13 @@ class CameraEngine(private val context: Context, private val lifecycleOwner: Lif
                             listener.onPhotoCaptured(it.toString())
                         }
 
-                        Log.i(TAG, "Photo saved to gallery: $uri")
+                        Log.i(TAG, "Photo saved to gallery in ${System.currentTimeMillis() - procStartTime}ms: $uri")
                     } catch (e: Exception) {
                         Log.e(TAG, "Failed to process photo", e)
                     } finally {
                         image.close()
                     }
-                }.start()
+                }
             }
 
             override fun onError(exception: ImageCaptureException) {
@@ -465,6 +478,13 @@ class CameraEngine(private val context: Context, private val lifecycleOwner: Lif
     }
 
     fun release() {
+        processingHandler?.post {
+            offscreenProcessor.release()
+            processingThread?.quitSafely()
+            processingThread = null
+            processingHandler = null
+        }
+        
         cameraProvider?.unbindAll()
         cameraProvider = null
         camera = null

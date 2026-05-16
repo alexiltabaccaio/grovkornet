@@ -18,6 +18,7 @@ class NativeFilmCameraView(context: Context) : GLSurfaceView(context) {
 
     private val mainHandler = Handler(Looper.getMainLooper())
     private var isCameraUpdatePending = false
+    private var lastCameraUpdateTime = 0L
     private val hardwareUpdateCount = java.util.concurrent.atomic.AtomicInteger(0)
     private var lastDebugTime = 0L
 
@@ -118,17 +119,30 @@ class NativeFilmCameraView(context: Context) : GLSurfaceView(context) {
         }
 
     private val cameraUpdateRunnable = Runnable {
+        isCameraUpdatePending = false
+        lastCameraUpdateTime = System.currentTimeMillis()
         if (::cameraEngine.isInitialized) {
             cameraEngine.updateCameraControls()
             hardwareUpdateCount.incrementAndGet()
         }
-        isCameraUpdatePending = false
     }
 
     private fun scheduleCameraUpdate() {
-        if (!isCameraUpdatePending) {
+        val now = System.currentTimeMillis()
+        val minInterval = 33L // ~30 FPS
+
+        if (now - lastCameraUpdateTime >= minInterval) {
+            // Apply immediately if enough time has passed (Leading-edge)
+            lastCameraUpdateTime = now
+            if (::cameraEngine.isInitialized) {
+                cameraEngine.updateCameraControls()
+                hardwareUpdateCount.incrementAndGet()
+            }
+        } else if (!isCameraUpdatePending) {
+            // Schedule for later to maintain throttle
             isCameraUpdatePending = true
-            mainHandler.postDelayed(cameraUpdateRunnable, 66)
+            val delay = minInterval - (now - lastCameraUpdateTime)
+            mainHandler.postDelayed(cameraUpdateRunnable, delay)
         }
     }
 
