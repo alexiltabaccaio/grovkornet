@@ -2,7 +2,9 @@ import React from 'react';
 import { View } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { useTranslation } from 'react-i18next';
-import { SharedValue } from 'react-native-reanimated';
+import { useShallow } from 'zustand/react/shallow';
+import { useUIStore } from '../../../model/useUIStore';
+import { useHardwareStore } from '../../../model/useHardwareStore';
 import { ParameterType } from '@shared/types/camera';
 import { ParameterControl } from '../../ParameterControl';
 import { footerStyles } from '../../Footer.styles';
@@ -18,41 +20,35 @@ const formatShutterSpeed = (v: number) => {
 };
 
 interface ExposureModuleProps {
-  activeParameter: ParameterType;
-  setActiveParameter: (param: ParameterType) => void;
-  iso: SharedValue<number>;
-  setIso: (value: number) => void;
-  isoAuto: SharedValue<boolean>;
-  setIsoAuto: (value: boolean) => void;
-  ev: SharedValue<number>;
-  setEv: (value: number) => void;
-  evAuto: SharedValue<boolean>;
-  setEvAuto: (value: boolean) => void;
-  shutterSpeed: SharedValue<number>;
-  setShutterSpeed: (value: number) => void;
-  shutterSpeedAuto: SharedValue<boolean>;
-  setShutterSpeedAuto: (value: boolean) => void;
   handlePressWithDouble: (param: ParameterType, action: () => void) => void;
 }
 
-export const ExposureModule = ({
-  activeParameter,
-  setActiveParameter,
-  iso,
-  setIso,
-  isoAuto,
-  setIsoAuto,
-  ev,
-  setEv,
-  evAuto,
-  setEvAuto,
-  shutterSpeed,
-  setShutterSpeed,
-  shutterSpeedAuto,
-  setShutterSpeedAuto,
-  handlePressWithDouble,
-}: ExposureModuleProps) => {
+export const ExposureModule = ({ handlePressWithDouble }: ExposureModuleProps) => {
   const { t } = useTranslation();
+
+  const { activeParameter, setActiveParameter } = useUIStore(useShallow(s => ({
+    activeParameter: s.activeParameter,
+    setActiveParameter: s.setActiveParameter,
+  })));
+
+  const {
+    iso, setIso, isoAuto, setIsoAuto,
+    ev, setEv, evAuto, setEvAuto,
+    shutterSpeed, setShutterSpeed, shutterSpeedAuto, setShutterSpeedAuto
+  } = useHardwareStore(useShallow(s => ({
+    iso: s.iso,
+    setIso: s.setIso,
+    isoAuto: s.isoAuto,
+    setIsoAuto: s.setIsoAuto,
+    ev: s.ev,
+    setEv: s.setEv,
+    evAuto: s.evAuto,
+    setEvAuto: s.setEvAuto,
+    shutterSpeed: s.shutterSpeed,
+    setShutterSpeed: s.setShutterSpeed,
+    shutterSpeedAuto: s.shutterSpeedAuto,
+    setShutterSpeedAuto: s.setShutterSpeedAuto,
+  })));
 
   return (
     <Animated.View style={footerStyles.tabContent}>

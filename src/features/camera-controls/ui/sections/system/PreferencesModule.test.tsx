@@ -31,10 +31,7 @@ jest.mock('@shared/ui', () => ({
 describe('PreferencesModule', () => {
   it('renders correctly', () => {
     const { toJSON } = render(
-      <PreferencesModule 
-        isDebugEnabled={false} 
-        setIsDebugEnabled={jest.fn()} 
-      />
+      <PreferencesModule />
     );
     expect(toJSON()).toBeDefined();
   });

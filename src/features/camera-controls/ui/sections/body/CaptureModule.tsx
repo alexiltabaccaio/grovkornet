@@ -2,20 +2,14 @@ import React from 'react';
 import { View } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { useTranslation } from 'react-i18next';
+import { useShallow } from 'zustand/react/shallow';
+import { useUIStore } from '../../../model/useUIStore';
+import { useHardwareStore } from '../../../model/useHardwareStore';
 import { ParameterType } from '@shared/types/camera';
 import { ParameterControl } from '../../ParameterControl';
 import { footerStyles } from '../../Footer.styles';
-import { SharedValue } from 'react-native-reanimated';
 
 interface CaptureModuleProps {
-  activeParameter: ParameterType;
-  setActiveParameter: (param: ParameterType) => void;
-  aspectRatio: SharedValue<number>;
-  setAspectRatio: (value: number) => void;
-  resolutionSetting: SharedValue<number>;
-  setResolutionSetting: (value: number) => void;
-  fpsSetting: SharedValue<number>;
-  setFpsSetting: (value: number) => void;
   handlePressWithDouble: (param: ParameterType, action: () => void) => void;
 }
 
@@ -23,18 +17,26 @@ const ASPECT_RATIOS = ['4:3', '16:9', '1:1', '3:2', '65:24'];
 const RESOLUTIONS = ['720p', '1080p', '4K'];
 const FPS_VALUES = ['24', '30', '60'];
 
-export const CaptureModule = ({
-  activeParameter,
-  setActiveParameter,
-  aspectRatio,
-  setAspectRatio,
-  resolutionSetting,
-  setResolutionSetting,
-  fpsSetting,
-  setFpsSetting,
-  handlePressWithDouble,
-}: CaptureModuleProps) => {
+export const CaptureModule = ({ handlePressWithDouble }: CaptureModuleProps) => {
   const { t } = useTranslation();
+
+  const { activeParameter, setActiveParameter } = useUIStore(useShallow(s => ({
+    activeParameter: s.activeParameter,
+    setActiveParameter: s.setActiveParameter,
+  })));
+
+  const {
+    aspectRatio, setAspectRatio,
+    resolutionSetting, setResolutionSetting,
+    fpsSetting, setFpsSetting
+  } = useHardwareStore(useShallow(s => ({
+    aspectRatio: s.aspectRatio,
+    setAspectRatio: s.setAspectRatio,
+    resolutionSetting: s.resolutionSetting,
+    setResolutionSetting: s.setResolutionSetting,
+    fpsSetting: s.fpsSetting,
+    setFpsSetting: s.setFpsSetting,
+  })));
 
   return (
     <Animated.View style={footerStyles.tabContent}>

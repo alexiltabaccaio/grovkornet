@@ -5,6 +5,13 @@ export type ModuleType = 'preferences' | 'optics' | 'flaws' | 'exposure' | 'ligh
 export type ParameterType = 'language' | 'debug' | 'camera_selection' | 'focus' | 'chromatic_aberration' | 'iso' | 'shutter_speed' | 'ev' | 'torch' | 'torch_strength' | 'aspect_ratio' | 'resolution_setting' | 'fps_setting' | 'temperature' | 'saturation' | 'contrast' | 'grain' | 'noise_reduction' | 'sharpening' | 'none';
 export type SubParameterType = 'grain_size' | 'grain_chroma' | 'torch_strength' | 'aberration_direction' | 'noise_reduction_mode' | 'none';
 
+export interface GestureConfig {
+  value: SharedValue<number>;
+  minValue: number;
+  maxValue: number;
+  invertDrag?: boolean;
+}
+
 
 export interface CameraCapabilities {
   supportsFocus: boolean;
@@ -98,6 +105,7 @@ export interface UIState {
   isSubPanelOpen: boolean;
   isCapturing: boolean;
   lastActiveParameters: Record<ModuleType, ParameterType>;
+  gestureConfig: GestureConfig | null;
 }
 
 
@@ -109,6 +117,7 @@ export interface UIActions {
   setIsDebugEnabled: (enabled: boolean) => void;
   setIsSubPanelOpen: (open: boolean) => void;
   triggerCapture: () => void;
+  setGestureConfig: (config: GestureConfig | null) => void;
 }
 
 

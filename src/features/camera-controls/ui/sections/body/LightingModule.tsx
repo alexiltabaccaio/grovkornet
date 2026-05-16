@@ -2,29 +2,30 @@ import React from 'react';
 import { View } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { useTranslation } from 'react-i18next';
-import { ParameterType, CameraCapabilities } from '@shared/types/camera';
+import { useShallow } from 'zustand/react/shallow';
+import { useUIStore } from '../../../model/useUIStore';
+import { useHardwareStore } from '../../../model/useHardwareStore';
+import { ParameterType } from '@shared/types/camera';
 import { ParameterControl } from '../../ParameterControl';
 import { footerStyles } from '../../Footer.styles';
-import { SharedValue } from 'react-native-reanimated';
 
 interface LightingModuleProps {
-  activeParameter: ParameterType;
-  setActiveParameter: (param: ParameterType) => void;
-  capabilities: CameraCapabilities;
-  torchState: SharedValue<number>;
-  setTorchState: (value: number) => void;
   handlePressWithDouble: (param: ParameterType, action: () => void) => void;
 }
 
-export const LightingModule = ({
-  activeParameter,
-  setActiveParameter,
-  capabilities,
-  torchState,
-  setTorchState,
-  handlePressWithDouble,
-}: LightingModuleProps) => {
+export const LightingModule = ({ handlePressWithDouble }: LightingModuleProps) => {
   const { t } = useTranslation();
+
+  const { activeParameter, setActiveParameter } = useUIStore(useShallow(s => ({
+    activeParameter: s.activeParameter,
+    setActiveParameter: s.setActiveParameter,
+  })));
+
+  const { capabilities, torchState, setTorchState } = useHardwareStore(useShallow(s => ({
+    capabilities: s.capabilities,
+    torchState: s.torchState,
+    setTorchState: s.setTorchState,
+  })));
   
   return (
     <Animated.View style={footerStyles.tabContent}>

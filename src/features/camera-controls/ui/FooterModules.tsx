@@ -1,10 +1,11 @@
-import React, { useRef } from 'react';
+import React, { useState } from 'react';
 import { StyleSheet, Text, View, Pressable } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import { useTranslation } from 'react-i18next';
 
 import { useShallow } from 'zustand/react/shallow';
 import { useUIStore } from '../model/useUIStore';
+import { SectionType, ModuleType } from '@shared/types/camera';
 
 export const FooterModules = () => {
   const { activeSection, activeModule, setActiveModule, isDebugEnabled } = useUIStore(useShallow(state => ({
@@ -15,18 +16,18 @@ export const FooterModules = () => {
   })));
   const { t } = useTranslation();
 
-  const lastActiveSection = useRef(activeSection);
-  const lastActiveModule = useRef(activeModule);
+  const [lastActiveSection, setLastActiveSection] = useState<SectionType>(activeSection);
+  const [lastActiveModule, setLastActiveModule] = useState<ModuleType>(activeModule);
 
-  if (activeSection !== 'none') {
-    lastActiveSection.current = activeSection;
+  if (activeSection !== 'none' && activeSection !== lastActiveSection) {
+    setLastActiveSection(activeSection);
   }
-  if (activeModule !== 'none') {
-    lastActiveModule.current = activeModule;
+  if (activeModule !== 'none' && activeModule !== lastActiveModule) {
+    setLastActiveModule(activeModule);
   }
 
-  const renderSection = activeSection === 'none' ? lastActiveSection.current : activeSection;
-  const renderModule = activeModule === 'none' ? lastActiveModule.current : activeModule;
+  const renderSection = activeSection === 'none' ? lastActiveSection : activeSection;
+  const renderModule = activeModule === 'none' ? lastActiveModule : activeModule;
 
   if (renderSection === 'none') return null;
 

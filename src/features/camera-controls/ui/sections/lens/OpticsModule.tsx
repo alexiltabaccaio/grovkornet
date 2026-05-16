@@ -1,11 +1,13 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { View } from 'react-native';
-import Animated, { SharedValue } from 'react-native-reanimated';
+import Animated, { useSharedValue } from 'react-native-reanimated';
 import { useTranslation } from 'react-i18next';
-import { ParameterType, CameraCapabilities } from '@shared/types/camera';
+import { useShallow } from 'zustand/react/shallow';
+import { useUIStore } from '../../../model/useUIStore';
+import { useHardwareStore } from '../../../model/useHardwareStore';
+import { ParameterType } from '@shared/types/camera';
 import { ParameterControl } from '../../ParameterControl';
 import { footerStyles } from '../../Footer.styles';
-import { useSharedValue } from 'react-native-reanimated';
 
 const formatFocus = (v: number) => {
   'worklet';
@@ -20,38 +22,34 @@ const formatFocus = (v: number) => {
 };
 
 interface OpticsModuleProps {
-  activeParameter: ParameterType;
-  setActiveParameter: (param: ParameterType) => void;
-  focusDistance: SharedValue<number>;
-  setFocusDistance: (value: number) => void;
-  focusAuto: SharedValue<boolean>;
-  setFocusAuto: (value: boolean) => void;
-  capabilities: CameraCapabilities;
-  cameraId: string;
-  setCameraId: (id: string) => void;
-  cameraAuto: boolean;
-  setCameraAuto: (auto: boolean) => void;
   handlePressWithDouble: (param: ParameterType, action: () => void) => void;
 }
 
-export const OpticsModule = ({
-  activeParameter,
-  setActiveParameter,
-  focusDistance,
-  setFocusDistance,
-  focusAuto,
-  setFocusAuto,
-  capabilities,
-  cameraId,
-  setCameraId,
-  cameraAuto,
-  setCameraAuto,
-  handlePressWithDouble,
-}: OpticsModuleProps) => {
+export const OpticsModule = ({ handlePressWithDouble }: OpticsModuleProps) => {
   const { t } = useTranslation();
 
+  const { activeParameter, setActiveParameter } = useUIStore(useShallow(s => ({
+    activeParameter: s.activeParameter,
+    setActiveParameter: s.setActiveParameter,
+  })));
+
+  const {
+    focusDistance, setFocusDistance, focusAuto, setFocusAuto,
+    capabilities, cameraId, setCameraId, cameraAuto, setCameraAuto
+  } = useHardwareStore(useShallow(s => ({
+    focusDistance: s.focusDistance,
+    setFocusDistance: s.setFocusDistance,
+    focusAuto: s.focusAuto,
+    setFocusAuto: s.setFocusAuto,
+    capabilities: s.capabilities,
+    cameraId: s.cameraId,
+    setCameraId: s.setCameraId,
+    cameraAuto: s.cameraAuto,
+    setCameraAuto: s.setCameraAuto,
+  })));
+
   const autoShared = useSharedValue(cameraAuto);
-  React.useEffect(() => {
+  useEffect(() => {
     autoShared.value = cameraAuto;
   }, [cameraAuto, autoShared]);
 

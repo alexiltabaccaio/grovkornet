@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { StyleSheet, Text, View, TextInput } from 'react-native';
 import Animated, { SharedValue, useAnimatedStyle, useAnimatedProps, interpolateColor, useSharedValue, runOnJS } from 'react-native-reanimated';
 import { GestureDetector, Gesture } from 'react-native-gesture-handler';
@@ -52,6 +52,18 @@ export const ParameterControl = ({
 }: ParameterControlProps) => {
   const startVal = useSharedValue(minValue);
   const isDebugEnabled = useUIStore((s) => s.isDebugEnabled);
+  const setGestureConfig = useUIStore((s) => s.setGestureConfig);
+
+  useEffect(() => {
+    if (isActive && value) {
+      setGestureConfig({
+        value,
+        minValue,
+        maxValue,
+        invertDrag,
+      });
+    }
+  }, [isActive, value, minValue, maxValue, invertDrag, setGestureConfig]);
 
   const longPressGesture = Gesture.LongPress()
     .onStart(() => {

@@ -1,12 +1,12 @@
-import React, { useRef } from 'react';
+import React, { useState } from 'react';
 import { Text, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useShallow } from 'zustand/react/shallow';
-import { useHardwareStore } from '../model/useHardwareStore';
 import { useStylesStore } from '../model/useStylesStore';
 import { useUIStore } from '../model/useUIStore';
 import { useDoublePress } from '@shared/lib/hooks/useDoublePress';
 import { footerStyles } from './Footer.styles';
+import { ModuleType } from '@shared/types/camera';
 
 // Import modules
 import { TextureModule } from './sections/film/TextureModule';
@@ -18,207 +18,53 @@ import { CaptureModule } from './sections/body/CaptureModule';
 import { OpticsModule } from './sections/lens/OpticsModule';
 import { PreferencesModule } from './sections/system/PreferencesModule';
 
+/**
+ * FooterParameters acts as a router for the different camera control modules.
+ * It has been simplified to follow the Single Responsibility Principle, 
+ * moving state consumption into the individual modules.
+ */
 export const FooterParameters = () => {
-  const uiStore = useUIStore(useShallow(state => ({
+  const { activeModule } = useUIStore(useShallow(state => ({
     activeModule: state.activeModule,
-    activeParameter: state.activeParameter,
-    setActiveParameter: state.setActiveParameter,
-    isDebugEnabled: state.isDebugEnabled,
-    setIsDebugEnabled: state.setIsDebugEnabled,
   })));
 
-  const hwStore = useHardwareStore(useShallow(state => ({
-    iso: state.iso,
-    ev: state.ev,
-    shutterSpeed: state.shutterSpeed,
-    temperature: state.temperature,
-    isoAuto: state.isoAuto,
-    shutterSpeedAuto: state.shutterSpeedAuto,
-    temperatureAuto: state.temperatureAuto,
-    evAuto: state.evAuto,
-    setIso: state.setIso,
-    setEv: state.setEv,
-    setShutterSpeed: state.setShutterSpeed,
-    setTemperature: state.setTemperature,
-    setIsoAuto: state.setIsoAuto,
-    setShutterSpeedAuto: state.setShutterSpeedAuto,
-    setTemperatureAuto: state.setTemperatureAuto,
-    setEvAuto: state.setEvAuto,
-    focusDistance: state.focusDistance,
-    setFocusDistance: state.setFocusDistance,
-    focusAuto: state.focusAuto,
-    setFocusAuto: state.setFocusAuto,
-    capabilities: state.capabilities,
-    cameraId: state.cameraId,
-    setCameraId: state.setCameraId,
-    cameraAuto: state.cameraAuto,
-    setCameraAuto: state.setCameraAuto,
-    torchState: state.torchState,
-    setTorchState: state.setTorchState,
-    torchStrength: state.torchStrength,
-    setTorchStrength: state.setTorchStrength,
-    aspectRatio: state.aspectRatio,
-    setAspectRatio: state.setAspectRatio,
-    resolutionSetting: state.resolutionSetting,
-    setResolutionSetting: state.setResolutionSetting,
-    fpsSetting: state.fpsSetting,
-    setFpsSetting: state.setFpsSetting,
-  })));
-
-  const styleStore = useStylesStore(useShallow(state => ({
-    grainIntensity: state.grainIntensity,
-    saturation: state.saturation,
-    contrast: state.contrast,
-    chromaticAberration: state.chromaticAberration,
-    grainChroma: state.grainChroma,
-    grainSize: state.grainSize,
-    setGrainIntensity: state.setGrainIntensity,
-    setGrainChroma: state.setGrainChroma,
-    setGrainSize: state.setGrainSize,
-    setSaturation: state.setSaturation,
-    setContrast: state.setContrast,
-    setChromaticAberration: state.setChromaticAberration,
-    noiseReductionAuto: state.noiseReductionAuto,
-    setNoiseReductionAuto: state.setNoiseReductionAuto,
-    noiseReductionMode: state.noiseReductionMode,
-    setNoiseReductionMode: state.setNoiseReductionMode,
-    sharpening: state.sharpening,
-    setSharpening: state.setSharpening,
-    resetEffect: state.resetEffect,
-  })));
-
-  const cameraStore = { ...hwStore, ...styleStore };
-
+  const resetEffect = useStylesStore(s => s.resetEffect);
   const { t } = useTranslation();
   
   const resetTool = (tool: string) => {
-    // Basic implementation for double press reset
-    styleStore.resetEffect(tool);
-    // Add hardware reset logic here if needed
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any, @typescript-eslint/no-unnecessary-type-assertion
+    resetEffect(tool as any); 
   };
 
   const { handlePressWithDouble } = useDoublePress(resetTool);
 
-  const lastActiveModule = useRef(uiStore.activeModule);
-  if (uiStore.activeModule !== 'none') {
-    lastActiveModule.current = uiStore.activeModule;
+  const [lastActive, setLastActive] = useState<ModuleType>(activeModule);
+  
+  // Adjust state during render to track the last non-none module
+  if (activeModule !== 'none' && activeModule !== lastActive) {
+    setLastActive(activeModule);
   }
-  const renderActiveModule = uiStore.activeModule === 'none' ? lastActiveModule.current : uiStore.activeModule;
 
-  const renderModule = () => {
+  const renderActiveModule = activeModule === 'none' ? lastActive : activeModule;
+
+  const renderModuleContent = () => {
     switch (renderActiveModule) {
       case 'texture':
-        return (
-          <TextureModule
-            activeParameter={uiStore.activeParameter}
-            setActiveParameter={uiStore.setActiveParameter}
-            grainIntensity={cameraStore.grainIntensity}
-            setGrainIntensity={cameraStore.setGrainIntensity}
-            handlePressWithDouble={handlePressWithDouble}
-          />
-        );
+        return <TextureModule handlePressWithDouble={handlePressWithDouble} />;
       case 'development':
-        return (
-          <DevelopmentModule
-            activeParameter={uiStore.activeParameter}
-            setActiveParameter={uiStore.setActiveParameter}
-            saturation={cameraStore.saturation}
-            setSaturation={cameraStore.setSaturation}
-            contrast={cameraStore.contrast}
-            setContrast={cameraStore.setContrast}
-            temperature={cameraStore.temperature}
-            setTemperature={cameraStore.setTemperature}
-            temperatureAuto={cameraStore.temperatureAuto}
-            setTemperatureAuto={cameraStore.setTemperatureAuto}
-            noiseReductionAuto={cameraStore.noiseReductionAuto}
-            setNoiseReductionAuto={cameraStore.setNoiseReductionAuto}
-            noiseReductionMode={cameraStore.noiseReductionMode}
-            setNoiseReductionMode={cameraStore.setNoiseReductionMode}
-            sharpening={cameraStore.sharpening}
-            setSharpening={cameraStore.setSharpening}
-            handlePressWithDouble={handlePressWithDouble}
-          />
-        );
+        return <DevelopmentModule handlePressWithDouble={handlePressWithDouble} />;
       case 'flaws':
-        return (
-          <FlawsModule
-            activeParameter={uiStore.activeParameter}
-            setActiveParameter={uiStore.setActiveParameter}
-            chromaticAberration={cameraStore.chromaticAberration}
-            setChromaticAberration={cameraStore.setChromaticAberration}
-            handlePressWithDouble={handlePressWithDouble}
-          />
-        );
+        return <FlawsModule handlePressWithDouble={handlePressWithDouble} />;
       case 'exposure':
-        return (
-          <ExposureModule
-            activeParameter={uiStore.activeParameter}
-            setActiveParameter={uiStore.setActiveParameter}
-            iso={cameraStore.iso}
-            setIso={cameraStore.setIso}
-            isoAuto={cameraStore.isoAuto}
-            setIsoAuto={cameraStore.setIsoAuto}
-            ev={cameraStore.ev}
-            setEv={cameraStore.setEv}
-            evAuto={cameraStore.evAuto}
-            setEvAuto={cameraStore.setEvAuto}
-            shutterSpeed={cameraStore.shutterSpeed}
-            setShutterSpeed={cameraStore.setShutterSpeed}
-            shutterSpeedAuto={cameraStore.shutterSpeedAuto}
-            setShutterSpeedAuto={cameraStore.setShutterSpeedAuto}
-            handlePressWithDouble={handlePressWithDouble}
-          />
-        );
+        return <ExposureModule handlePressWithDouble={handlePressWithDouble} />;
       case 'optics':
-        return (
-          <OpticsModule
-            activeParameter={uiStore.activeParameter}
-            setActiveParameter={uiStore.setActiveParameter}
-            focusDistance={cameraStore.focusDistance}
-            setFocusDistance={cameraStore.setFocusDistance}
-            focusAuto={cameraStore.focusAuto}
-            setFocusAuto={cameraStore.setFocusAuto}
-            capabilities={cameraStore.capabilities}
-            cameraId={cameraStore.cameraId}
-            setCameraId={cameraStore.setCameraId}
-            cameraAuto={cameraStore.cameraAuto}
-            setCameraAuto={cameraStore.setCameraAuto}
-            handlePressWithDouble={handlePressWithDouble}
-          />
-        );
+        return <OpticsModule handlePressWithDouble={handlePressWithDouble} />;
       case 'lighting':
-        return (
-          <LightingModule
-            activeParameter={uiStore.activeParameter}
-            setActiveParameter={uiStore.setActiveParameter}
-            capabilities={cameraStore.capabilities}
-            torchState={cameraStore.torchState}
-            setTorchState={cameraStore.setTorchState}
-            handlePressWithDouble={handlePressWithDouble}
-          />
-        );
+        return <LightingModule handlePressWithDouble={handlePressWithDouble} />;
       case 'capture':
-        return (
-          <CaptureModule
-            activeParameter={uiStore.activeParameter}
-            setActiveParameter={uiStore.setActiveParameter}
-            aspectRatio={cameraStore.aspectRatio}
-            setAspectRatio={cameraStore.setAspectRatio}
-            resolutionSetting={cameraStore.resolutionSetting}
-            setResolutionSetting={cameraStore.setResolutionSetting}
-            fpsSetting={cameraStore.fpsSetting}
-            setFpsSetting={cameraStore.setFpsSetting}
-            handlePressWithDouble={handlePressWithDouble}
-          />
-        );
+        return <CaptureModule handlePressWithDouble={handlePressWithDouble} />;
       case 'preferences':
-        // For now, mapping language and debug to preferences
-        return (
-          <PreferencesModule
-            isDebugEnabled={uiStore.isDebugEnabled}
-            setIsDebugEnabled={uiStore.setIsDebugEnabled}
-          />
-        );
+        return <PreferencesModule />;
       case 'none':
         return null;
       default:
@@ -232,7 +78,7 @@ export const FooterParameters = () => {
 
   return (
     <View style={footerStyles.tabContentWrapper}>
-      {renderModule()}
+      {renderModuleContent()}
     </View>
   );
 };

@@ -2,16 +2,18 @@ import React from 'react';
 import { View } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { useTranslation } from 'react-i18next';
+import { useShallow } from 'zustand/react/shallow';
+import { useUIStore } from '../../../model/useUIStore';
 import { LanguageThumb, DebugThumb } from '@shared/ui';
 import { footerStyles } from '../../Footer.styles';
 
-interface PreferencesModuleProps {
-  isDebugEnabled: boolean;
-  setIsDebugEnabled: (enabled: boolean) => void;
-}
-
-export const PreferencesModule = ({ isDebugEnabled, setIsDebugEnabled }: PreferencesModuleProps) => {
+export const PreferencesModule = () => {
   const { i18n, t } = useTranslation();
+  
+  const { isDebugEnabled, setIsDebugEnabled } = useUIStore(useShallow(s => ({
+    isDebugEnabled: s.isDebugEnabled,
+    setIsDebugEnabled: s.setIsDebugEnabled,
+  })));
 
   return (
     <Animated.View style={footerStyles.tabContent}>

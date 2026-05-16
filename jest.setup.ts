@@ -2,84 +2,53 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import 'react-native-gesture-handler/jestSetup';
 
-// Patch Gesture Handler// Mock Reanimated
+// Mock Reanimated
 jest.mock('react-native-reanimated', () => {
   const Reanimated = require('react-native-reanimated/mock');
-  
+  Reanimated.makeMutable = jest.fn((val: any) => ({ value: val }));
+  Reanimated.useSharedValue = jest.fn((val: any) => ({ value: val }));
+  // Reanimated mock usually has createAnimatedComponent, but let's ensure it's there
+  if (!Reanimated.createAnimatedComponent) {
+    Reanimated.createAnimatedComponent = jest.fn((comp: any) => comp);
+  }
   return {
+    __esModule: true,
     ...Reanimated,
-    makeMutable: (val: any) => ({ value: val }),
-    useSharedValue: (val: any) => ({ value: val }),
-    runOnJS: (fn: any) => fn,
-    useEvent: (handler: any) => (event: any) => handler(event),
-    useDerivedValue: (cb: any) => ({ value: cb() }),
-    useAnimatedReaction: jest.fn(),
-    useAnimatedStyle: (cb: any) => cb(),
-    useAnimatedProps: (cb: any) => cb(),
-    interpolate: (val: any, input: any, output: any) => output[0],
-    interpolateColor: (val: any, input: any, output: any) => output[0],
-    withTiming: (val: any) => val,
-    withSpring: (val: any) => val,
+    default: Reanimated,
   };
-}, { virtual: true });
+});
 
-// Mock Gesture Handler
-const mockGesture = {
-  Pan: () => ({
-    hitSlop: jest.fn().mockReturnThis(),
-    activeOffsetY: jest.fn().mockReturnThis(),
-    activeOffsetX: jest.fn().mockReturnThis(),
-    onStart: jest.fn().mockReturnThis(),
-    onUpdate: jest.fn().mockReturnThis(),
-    onEnd: jest.fn().mockReturnThis(),
-    onFinalize: jest.fn().mockReturnThis(),
-    minDistance: jest.fn().mockReturnThis(),
-    enabled: jest.fn().mockReturnThis(),
-    toGestureArray: function() { return [this]; },
-    initialize: jest.fn(),
-    prepare: jest.fn(),
-  }),
-  Tap: () => ({
-    onEnd: jest.fn().mockReturnThis(),
-    onFinalize: jest.fn().mockReturnThis(),
-    toGestureArray: function() { return [this]; },
-    initialize: jest.fn(),
-    prepare: jest.fn(),
-  }),
-  LongPress: () => ({
-    onStart: jest.fn().mockReturnThis(),
-    onFinalize: jest.fn().mockReturnThis(),
-    toGestureArray: function() { return [this]; },
-    initialize: jest.fn(),
-    prepare: jest.fn(),
-  }),
-  Race: jest.fn().mockImplementation((...gestures: any[]) => ({
-    gestures,
-    toGestureArray: function() { return this.gestures; },
-    initialize: jest.fn(),
-    prepare: jest.fn(),
-  })),
-  Exclusive: jest.fn().mockImplementation((...gestures: any[]) => ({
-    gestures,
-    toGestureArray: function() { return this.gestures; },
-    initialize: jest.fn(),
-    prepare: jest.fn(),
-  })),
-  Simultaneous: jest.fn().mockImplementation((...gestures: any[]) => ({
-    gestures,
-    toGestureArray: function() { return this.gestures; },
-    initialize: jest.fn(),
-    prepare: jest.fn(),
-  })),
-};
-
+// Mock Gesture Handler - we don't need to 'require' it here, just mock the specific parts that fail
 jest.mock('react-native-gesture-handler', () => {
   const actual = jest.requireActual('react-native-gesture-handler');
+  
+  const createChainable = () => {
+    const obj: any = {};
+    obj.hitSlop = jest.fn(() => obj);
+    obj.activeOffsetY = jest.fn(() => obj);
+    obj.activeOffsetX = jest.fn(() => obj);
+    obj.failOffsetX = jest.fn(() => obj);
+    obj.failOffsetY = jest.fn(() => obj);
+    obj.onStart = jest.fn(() => obj);
+    obj.onUpdate = jest.fn(() => obj);
+    obj.onEnd = jest.fn(() => obj);
+    obj.onFinalize = jest.fn(() => obj);
+    obj.minDistance = jest.fn(() => obj);
+    obj.enabled = jest.fn(() => obj);
+    obj.runOnJS = jest.fn(() => obj);
+    obj.toGestureArray = jest.fn(() => [obj]);
+    return obj;
+  };
+
   return {
     ...actual,
     GestureDetector: ({ children }: any) => children,
-    Gesture: mockGesture,
-    runOnJS: (fn: any) => fn,
+    Gesture: {
+      ...actual.Gesture,
+      Pan: () => createChainable(),
+      Tap: () => createChainable(),
+      LongPress: () => createChainable(),
+    },
   };
 });
 
@@ -101,23 +70,11 @@ jest.mock('react-i18next', () => ({
 // Mock react-native
 jest.mock('react-native', () => {
   const RN = jest.requireActual('react-native');
-  
-  const mockRN = Object.setPrototypeOf({
-    LogBox: {
-      ignoreAllLogs: jest.fn(),
-      ignoreLogs: jest.fn(),
-      install: jest.fn(),
-      uninstall: jest.fn(),
-    },
-    PermissionsAndroid: {
-      request: jest.fn().mockResolvedValue('granted'),
-      check: jest.fn().mockResolvedValue(true),
-      RESULTS: { GRANTED: 'granted' },
-      PERMISSIONS: { CAMERA: 'android.permission.CAMERA' },
-    },
-  }, RN as object);
-
-  return mockRN;
+  RN.LogBox = {
+    ignoreAllLogs: jest.fn(),
+    ignoreLogs: jest.fn(),
+  };
+  return RN;
 });
 
 // Mock Expo Vector Icons
