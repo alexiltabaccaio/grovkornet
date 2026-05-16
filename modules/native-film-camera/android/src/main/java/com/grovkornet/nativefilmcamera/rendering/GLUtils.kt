@@ -1,4 +1,4 @@
-package com.grovkornet.nativefilmcamera
+package com.grovkornet.nativefilmcamera.rendering
 
 import android.opengl.GLES20
 import android.util.Log

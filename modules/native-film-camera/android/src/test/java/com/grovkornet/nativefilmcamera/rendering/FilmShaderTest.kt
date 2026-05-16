@@ -1,4 +1,7 @@
-package com.grovkornet.nativefilmcamera
+package com.grovkornet.nativefilmcamera.rendering
+
+import com.grovkornet.nativefilmcamera.rendering.FilmShader
+
 
 import org.junit.Test
 import org.junit.Assert.*

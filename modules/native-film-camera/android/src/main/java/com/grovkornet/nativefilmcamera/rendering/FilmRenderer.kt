@@ -1,4 +1,4 @@
-package com.grovkornet.nativefilmcamera
+package com.grovkornet.nativefilmcamera.rendering
 
 import android.graphics.SurfaceTexture
 import android.opengl.GLES11Ext
