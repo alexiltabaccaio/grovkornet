@@ -1,0 +1,9 @@
+# Build artifacts
+build/
+android/build/
+android/.gradle/
+android/.cxx/
+ios/build/
+
+# Dependencies
+node_modules/

@@ -117,9 +117,7 @@ android {
             crunchPngs (findProperty('android.enablePngCrunchInReleaseBuilds')?.toBoolean() ?: true)
         }
     }
-    packagingOptions {
-        pickFirst "**/libc++_shared.so"
-    }
+
     packaging {
         jniLibs {
             useLegacyPackaging (findProperty('expo.useLegacyPackaging')?.toBoolean() ?: false)
@@ -165,14 +163,6 @@ dependencies {
     } else {
         implementation jscFlavor
     }
-
-    // CameraX dependencies per NativeFilmCamera
-    def camerax_version = "1.5.0"
-    implementation "androidx.camera:camera-core:${camerax_version}"
-    implementation "androidx.camera:camera-camera2:${camerax_version}"
-    implementation "androidx.camera:camera-lifecycle:${camerax_version}"
-    implementation "androidx.camera:camera-view:${camerax_version}"
-    implementation "androidx.lifecycle:lifecycle-process:2.6.2"
 
     // Testing dependencies
     testImplementation 'junit:junit:4.13.2'

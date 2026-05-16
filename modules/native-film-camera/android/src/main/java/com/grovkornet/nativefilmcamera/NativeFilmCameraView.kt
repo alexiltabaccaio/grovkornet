@@ -1,4 +1,4 @@
-package com.grovkornet.app
+package com.grovkornet.nativefilmcamera
 
 import android.content.Context
 import android.graphics.SurfaceTexture
@@ -6,10 +6,10 @@ import android.opengl.GLSurfaceView
 import android.os.Handler
 import android.os.Looper
 import androidx.lifecycle.ProcessLifecycleOwner
+import androidx.lifecycle.LifecycleOwner
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.WritableMap
-import com.facebook.react.uimanager.ThemedReactContext
-import com.facebook.react.uimanager.events.RCTEventEmitter
+import expo.modules.kotlin.viewevent.EventDispatcher
 
 class NativeFilmCameraView(context: Context) : GLSurfaceView(context) {
 
@@ -21,7 +21,13 @@ class NativeFilmCameraView(context: Context) : GLSurfaceView(context) {
     private val hardwareUpdateCount = java.util.concurrent.atomic.AtomicInteger(0)
     private var lastDebugTime = 0L
 
-    // Props from React Native
+    // Event Dispatchers (Expo Modules API)
+    val onDebugUpdate by EventDispatcher()
+    val onExposureUpdate by EventDispatcher()
+    val onCapabilitiesUpdate by EventDispatcher()
+    val onPhotoCaptured by EventDispatcher()
+
+    // Props
     var saturation: Float = 1.0f
         set(value) { if (field != value) { field = value; if (::renderer.isInitialized) renderer.saturation = value; if (::cameraEngine.isInitialized) cameraEngine.saturation = value } }
     var contrast: Float = 1.0f
@@ -52,7 +58,6 @@ class NativeFilmCameraView(context: Context) : GLSurfaceView(context) {
     var whiteBalance: Float = 5000.0f
         set(value) { if (field != value) { field = value; if (::renderer.isInitialized) renderer.whiteBalance = value; if (::cameraEngine.isInitialized) cameraEngine.whiteBalance = value } }
 
-    // Manual Camera Props
     var isoAuto: Boolean = true
         set(value) { if (field != value) { field = value; if (::cameraEngine.isInitialized) { cameraEngine.isoAuto = value; scheduleCameraUpdate() } } }
     var shutterSpeedAuto: Boolean = true
@@ -107,7 +112,6 @@ class NativeFilmCameraView(context: Context) : GLSurfaceView(context) {
                 field = value
                 if (::cameraEngine.isInitialized) {
                     cameraEngine.cameraId = value
-                    // Cambiamento camera è pesante, meglio triggerare subito ma con throttling per sicurezza se chiamato in rapida successione
                     scheduleCameraUpdate()
                 }
             }
@@ -124,7 +128,7 @@ class NativeFilmCameraView(context: Context) : GLSurfaceView(context) {
     private fun scheduleCameraUpdate() {
         if (!isCameraUpdatePending) {
             isCameraUpdatePending = true
-            mainHandler.postDelayed(cameraUpdateRunnable, 66) // ~15 FPS throttler
+            mainHandler.postDelayed(cameraUpdateRunnable, 66)
         }
     }
 
@@ -148,12 +152,11 @@ class NativeFilmCameraView(context: Context) : GLSurfaceView(context) {
                 }
                 lastDebugTime = now
 
-                val event = Arguments.createMap().apply {
-                    putInt("fps", fps)
-                    putString("resolution", resolution)
-                    putInt("hwFps", hwFps)
-                }
-                emitEvent("onDebugUpdate", event)
+                onDebugUpdate(mapOf(
+                    "fps" to fps,
+                    "resolution" to resolution,
+                    "hwFps" to hwFps
+                ))
             }
 
             override fun requestRender() {
@@ -163,16 +166,17 @@ class NativeFilmCameraView(context: Context) : GLSurfaceView(context) {
 
         val cameraListener = object : CameraEngine.Listener {
             override fun onExposureUpdate(iso: Int, shutterSpeed: Double, focusDistance: Float) {
-                val event = Arguments.createMap().apply {
-                    putInt("iso", iso)
-                    putDouble("shutterSpeed", shutterSpeed)
-                    putDouble("focusDistance", focusDistance.toDouble())
-                }
-                emitEvent("onExposureUpdate", event)
+                onExposureUpdate(mapOf(
+                    "iso" to iso,
+                    "shutterSpeed" to shutterSpeed,
+                    "focusDistance" to focusDistance.toDouble()
+                ))
             }
 
             override fun onCapabilitiesUpdate(capabilities: WritableMap) {
-                emitEvent("onCapabilitiesUpdate", capabilities)
+                // Adapt WritableMap to Map if possible, or just pass it if Expo supports it
+                // For simplicity, let's pass it as map
+                onCapabilitiesUpdate(capabilities.toHashMap())
             }
 
             override fun onCameraResolutionDetected(width: Int, height: Int) {
@@ -181,10 +185,7 @@ class NativeFilmCameraView(context: Context) : GLSurfaceView(context) {
             }
 
             override fun onPhotoCaptured(uri: String) {
-                val event = Arguments.createMap().apply {
-                    putString("uri", uri)
-                }
-                emitEvent("onPhotoCaptured", event)
+                onPhotoCaptured(mapOf("uri" to uri))
             }
         }
 
@@ -194,7 +195,6 @@ class NativeFilmCameraView(context: Context) : GLSurfaceView(context) {
         setRenderer(renderer)
         renderMode = RENDERMODE_WHEN_DIRTY
 
-        // Sync initial parameters to cameraEngine for high-res capture
         cameraEngine.saturation = saturation
         cameraEngine.contrast = contrast
         cameraEngine.grainIntensity = grainIntensity
@@ -213,11 +213,6 @@ class NativeFilmCameraView(context: Context) : GLSurfaceView(context) {
         }
     }
 
-    private fun emitEvent(name: String, event: WritableMap) {
-        val reactContext = context as? ThemedReactContext
-        reactContext?.getJSModule(RCTEventEmitter::class.java)?.receiveEvent(id, name, event)
-    }
-
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
         if (::cameraEngine.isInitialized) {
@@ -226,8 +221,7 @@ class NativeFilmCameraView(context: Context) : GLSurfaceView(context) {
         }
     }
 
-    override fun onDetachedFromWindow() {
-        super.onDetachedFromWindow()
+    fun release() {
         mainHandler.removeCallbacks(cameraUpdateRunnable)
         if (::cameraEngine.isInitialized) cameraEngine.release()
         if (::renderer.isInitialized) renderer.release()

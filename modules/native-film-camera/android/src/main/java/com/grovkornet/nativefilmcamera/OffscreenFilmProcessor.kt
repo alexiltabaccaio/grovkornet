@@ -1,4 +1,4 @@
-package com.grovkornet.app
+package com.grovkornet.nativefilmcamera
 
 import android.graphics.Bitmap
 import android.opengl.*

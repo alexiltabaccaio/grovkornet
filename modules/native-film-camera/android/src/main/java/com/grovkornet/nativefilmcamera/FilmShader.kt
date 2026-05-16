@@ -1,4 +1,4 @@
-package com.grovkornet.app
+package com.grovkornet.nativefilmcamera
 
 object FilmShader {
     const val VERTEX_SHADER = """

@@ -1,59 +1,26 @@
 import React, { forwardRef, useImperativeHandle, useRef } from 'react';
-import { requireNativeComponent, ViewProps, UIManager, findNodeHandle } from 'react-native';
-import Animated, { SharedValue } from 'react-native-reanimated';
+import Animated from 'react-native-reanimated';
+import { NativeFilmCameraView, NativeFilmCameraViewProps } from '../../../../modules/native-film-camera';
 
-interface NativeFilmCameraProps extends ViewProps {
-  saturation: number | SharedValue<number>;
-  contrast: number | SharedValue<number>;
-  grainIntensity: number | SharedValue<number>;
-  grainChroma: number | SharedValue<number>;
-  grainSize: number | SharedValue<number>;
-  grainEnabled: boolean | SharedValue<boolean>;
-  chromaticAberration: number | SharedValue<number>;
-  aberrationDirection: number | SharedValue<number>;
-  isoAuto?: boolean | SharedValue<boolean>;
-  shutterSpeedAuto?: boolean | SharedValue<boolean>;
-  whiteBalanceAuto?: boolean | SharedValue<boolean>;
-  autoFocus?: boolean | SharedValue<boolean>;
-  iso?: number | SharedValue<number>;
-  exposureTime?: number | SharedValue<number>;
-  ev?: number | SharedValue<number>;
-  whiteBalance?: number | SharedValue<number>;
-  focusDistance?: number | SharedValue<number>;
-  cameraId?: string | SharedValue<string>;
-  torchState?: number | SharedValue<number>;
-  torchStrength?: number | SharedValue<number>;
-  onDebugUpdate?: (event: { nativeEvent: { fps: number; hwFps: number; resolution: string } }) => void;
-  onExposureUpdate?: (event: { nativeEvent: { iso: number; shutterSpeed: number; focusDistance?: number } }) => void;
-  onCapabilitiesUpdate?: (event: { nativeEvent: { 
-    supportsFocus: boolean; 
-    isoMin?: number; 
-    isoMax?: number;
-    availableCameras: Array<{ id: string; focalLength: number; focalLength35mm: number }>;
-  } }) => void;
-  onPhotoCaptured?: (event: { nativeEvent: { uri: string } }) => void;
-}
-
-const NativeFilmCameraBase = requireNativeComponent<NativeFilmCameraProps>('NativeFilmCamera');
-const AnimatedNativeFilmCamera = Animated.createAnimatedComponent(NativeFilmCameraBase);
+const AnimatedNativeFilmCamera = Animated.createAnimatedComponent(NativeFilmCameraView);
 
 export interface NativeFilmCameraRef {
   takePhoto: () => void;
 }
 
-export const NativeFilmCamera = forwardRef<NativeFilmCameraRef, NativeFilmCameraProps>((props, ref) => {
-  const nativeRef = useRef(null);
+export const NativeFilmCamera = forwardRef<NativeFilmCameraRef, NativeFilmCameraViewProps>((props, ref) => {
+  const nativeRef = useRef<any>(null);
 
   useImperativeHandle(ref, () => ({
     takePhoto: () => {
-      const handle = findNodeHandle(nativeRef.current);
-      if (handle) {
-        UIManager.dispatchViewManagerCommand(handle, 'takePhoto', []);
-      }
+      // In Expo Modules, we can call functions directly if exported as AsyncFunction
+      // But for a View component, we might need a ref to the view instance.
+      // In Expo Modules API, we can use the 'nativeRef' to call functions.
+      nativeRef.current?.takePhoto();
     },
   }));
 
-  return <AnimatedNativeFilmCamera {...props} ref={nativeRef} />;
+  return <AnimatedNativeFilmCamera {...(props as any)} ref={nativeRef} />;
 });
 
 NativeFilmCamera.displayName = 'NativeFilmCamera';

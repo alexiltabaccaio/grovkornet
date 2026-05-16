@@ -1,4 +1,4 @@
-package com.grovkornet.app
+package com.grovkornet.nativefilmcamera
 
 import android.content.Context
 import android.hardware.camera2.CameraCharacteristics

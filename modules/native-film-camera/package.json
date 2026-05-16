@@ -1,0 +1,29 @@
+{
+  "name": "native-film-camera",
+  "version": "1.0.0",
+  "description": "Local expo module for custom film camera with Uber Shader",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "scripts": {
+    "build": "expo-module build",
+    "clean": "expo-module clean",
+    "test": "expo-module test",
+    "typecheck": "tsc --noEmit"
+  },
+  "keywords": [
+    "react-native",
+    "expo",
+    "native-film-camera"
+  ],
+  "author": "alexg",
+  "license": "MIT",
+  "devDependencies": {
+    "expo-module-scripts": "^4.0.0",
+    "typescript": "^5.3.3"
+  },
+  "peerDependencies": {
+    "expo": "*",
+    "react": "*",
+    "react-native": "*"
+  }
+}
