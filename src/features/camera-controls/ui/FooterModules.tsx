@@ -78,7 +78,7 @@ export const FooterModules = () => {
 const styles = StyleSheet.create({
   container: {
     paddingHorizontal: 16,
-    paddingTop: 12,
+    paddingTop: 0,
     marginBottom: 10,
   },
   sectionHeaderFrame: {
@@ -87,11 +87,11 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.1)',
     marginTop: 0,
-    marginBottom: 4,
+    marginBottom: 0,
     paddingVertical: 10,
   },
   sectionTitle: {
-    color: '#FFF',
+    color: '#FF9500',
     fontSize: 14,
     lineHeight: 18,
     fontWeight: '900',
@@ -110,9 +110,9 @@ const styles = StyleSheet.create({
   pill: {
     paddingHorizontal: 16,
     paddingVertical: 8,
-    borderRadius: 4,
+    borderRadius: 0,
     backgroundColor: '#222',
-    marginRight: 8,
+    marginRight: 0,
   },
   pillActive: {
     backgroundColor: '#FFF',

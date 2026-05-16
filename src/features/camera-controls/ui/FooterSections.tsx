@@ -100,6 +100,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   tabLabelActive: {
-    color: '#FFF',
+    color: '#FF9500',
   },
 });
