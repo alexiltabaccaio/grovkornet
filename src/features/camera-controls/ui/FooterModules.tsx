@@ -1,6 +1,6 @@
-import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-import { ScrollView, TouchableOpacity } from 'react-native-gesture-handler';
+import React, { useRef } from 'react';
+import { StyleSheet, Text, View, Pressable } from 'react-native';
+import { ScrollView } from 'react-native-gesture-handler';
 import { useTranslation } from 'react-i18next';
 
 import { useShallow } from 'zustand/react/shallow';
@@ -15,58 +15,71 @@ export const FooterModules = () => {
   })));
   const { t } = useTranslation();
 
-  if (activeSection === 'none') return null;
+  const lastActiveSection = useRef(activeSection);
+  const lastActiveModule = useRef(activeModule);
+
+  if (activeSection !== 'none') {
+    lastActiveSection.current = activeSection;
+  }
+  if (activeModule !== 'none') {
+    lastActiveModule.current = activeModule;
+  }
+
+  const renderSection = activeSection === 'none' ? lastActiveSection.current : activeSection;
+  const renderModule = activeModule === 'none' ? lastActiveModule.current : activeModule;
+
+  if (renderSection === 'none') return null;
 
   return (
     <>
-      <View style={[styles.sectionHeaderFrame, isDebugEnabled && styles.debugFrame]}>
-        <Text style={styles.sectionTitle}>{t(`sections.${activeSection}`)}</Text>
-      </View>
-      <View style={styles.container}>
+    <View style={[styles.sectionHeaderFrame, isDebugEnabled && styles.debugFrame]}>
+        <Text style={styles.sectionTitle}>{t(`sections.${renderSection}`)}</Text>
+    </View>
+    <View style={styles.container}>
         <ScrollView 
           horizontal 
           showsHorizontalScrollIndicator={false} 
           contentContainerStyle={styles.pillMenuContainer}
           style={styles.pillMenuWrapper}
         >
-      {activeSection === 'system' && (
+      {renderSection === 'system' && (
         <>
-          <TouchableOpacity style={[styles.pill, activeModule === 'preferences' && styles.pillActive]} onPress={() => setActiveModule('preferences')} hitSlop={10}>
-            <Text style={[styles.pillText, activeModule === 'preferences' && styles.pillTextActive]}>{t('modules.preferences')}</Text>
-          </TouchableOpacity>
+          <Pressable style={[styles.pill, renderModule === 'preferences' && styles.pillActive]} onPress={() => setActiveModule('preferences')} hitSlop={10}>
+            <Text style={[styles.pillText, renderModule === 'preferences' && styles.pillTextActive]}>{t('modules.preferences')}</Text>
+          </Pressable>
         </>
       )}
-      {activeSection === 'lens' && (
+      {renderSection === 'lens' && (
         <>
-          <TouchableOpacity style={[styles.pill, activeModule === 'optics' && styles.pillActive]} onPress={() => setActiveModule('optics')} hitSlop={10}>
-            <Text style={[styles.pillText, activeModule === 'optics' && styles.pillTextActive]}>{t('modules.optics')}</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={[styles.pill, activeModule === 'flaws' && styles.pillActive]} onPress={() => setActiveModule('flaws')} hitSlop={10}>
-            <Text style={[styles.pillText, activeModule === 'flaws' && styles.pillTextActive]}>{t('modules.flaws')}</Text>
-          </TouchableOpacity>
+          <Pressable style={[styles.pill, renderModule === 'optics' && styles.pillActive]} onPress={() => setActiveModule('optics')} hitSlop={10}>
+            <Text style={[styles.pillText, renderModule === 'optics' && styles.pillTextActive]}>{t('modules.optics')}</Text>
+          </Pressable>
+          <Pressable style={[styles.pill, renderModule === 'flaws' && styles.pillActive]} onPress={() => setActiveModule('flaws')} hitSlop={10}>
+            <Text style={[styles.pillText, renderModule === 'flaws' && styles.pillTextActive]}>{t('modules.flaws')}</Text>
+          </Pressable>
         </>
       )}
-      {activeSection === 'body' && (
+      {renderSection === 'body' && (
         <>
-          <TouchableOpacity style={[styles.pill, activeModule === 'exposure' && styles.pillActive]} onPress={() => setActiveModule('exposure')} hitSlop={10}>
-            <Text style={[styles.pillText, activeModule === 'exposure' && styles.pillTextActive]}>{t('modules.exposure')}</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={[styles.pill, activeModule === 'lighting' && styles.pillActive]} onPress={() => setActiveModule('lighting')} hitSlop={10}>
-            <Text style={[styles.pillText, activeModule === 'lighting' && styles.pillTextActive]}>{t('modules.lighting')}</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={[styles.pill, activeModule === 'capture' && styles.pillActive]} onPress={() => setActiveModule('capture')} hitSlop={10}>
-            <Text style={[styles.pillText, activeModule === 'capture' && styles.pillTextActive]}>{t('modules.capture')}</Text>
-          </TouchableOpacity>
+          <Pressable style={[styles.pill, renderModule === 'exposure' && styles.pillActive]} onPress={() => setActiveModule('exposure')} hitSlop={10}>
+            <Text style={[styles.pillText, renderModule === 'exposure' && styles.pillTextActive]}>{t('modules.exposure')}</Text>
+          </Pressable>
+          <Pressable style={[styles.pill, renderModule === 'lighting' && styles.pillActive]} onPress={() => setActiveModule('lighting')} hitSlop={10}>
+            <Text style={[styles.pillText, renderModule === 'lighting' && styles.pillTextActive]}>{t('modules.lighting')}</Text>
+          </Pressable>
+          <Pressable style={[styles.pill, renderModule === 'capture' && styles.pillActive]} onPress={() => setActiveModule('capture')} hitSlop={10}>
+            <Text style={[styles.pillText, renderModule === 'capture' && styles.pillTextActive]}>{t('modules.capture')}</Text>
+          </Pressable>
         </>
       )}
-      {activeSection === 'film' && (
+      {renderSection === 'film' && (
         <>
-          <TouchableOpacity style={[styles.pill, activeModule === 'development' && styles.pillActive]} onPress={() => setActiveModule('development')} hitSlop={10}>
-            <Text style={[styles.pillText, activeModule === 'development' && styles.pillTextActive]}>{t('modules.development')}</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={[styles.pill, activeModule === 'texture' && styles.pillActive]} onPress={() => setActiveModule('texture')} hitSlop={10}>
-            <Text style={[styles.pillText, activeModule === 'texture' && styles.pillTextActive]}>{t('modules.texture')}</Text>
-          </TouchableOpacity>
+          <Pressable style={[styles.pill, renderModule === 'development' && styles.pillActive]} onPress={() => setActiveModule('development')} hitSlop={10}>
+            <Text style={[styles.pillText, renderModule === 'development' && styles.pillTextActive]}>{t('modules.development')}</Text>
+          </Pressable>
+          <Pressable style={[styles.pill, renderModule === 'texture' && styles.pillActive]} onPress={() => setActiveModule('texture')} hitSlop={10}>
+            <Text style={[styles.pillText, renderModule === 'texture' && styles.pillTextActive]}>{t('modules.texture')}</Text>
+          </Pressable>
         </>
       )}
       </ScrollView>

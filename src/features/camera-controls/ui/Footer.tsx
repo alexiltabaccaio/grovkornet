@@ -9,7 +9,7 @@ import { FooterParameters } from './FooterParameters';
 import { SubParameterPanel } from './SubParameterPanel';
 
 import { GestureDetector, Gesture } from 'react-native-gesture-handler';
-import Animated, { useSharedValue, useAnimatedStyle, withSpring, useAnimatedProps } from 'react-native-reanimated';
+import Animated, { useSharedValue, useAnimatedStyle, withTiming, withSpring, useAnimatedProps } from 'react-native-reanimated';
 
 const AnimatedTextInput = Animated.createAnimatedComponent(TextInput);
 
@@ -28,13 +28,18 @@ export const Footer = ({ translateY: externalTranslateY }: FooterProps) => {
   const localTranslateY = useSharedValue(0);
   const translateY = externalTranslateY || localTranslateY;
   const startY = useSharedValue(0);
+  const drawerAnimation = useSharedValue(220); // 220px is the height of the drawer, starting closed
 
   useEffect(() => {
-    // Reset only when closing the sheet (none section)
     if (activeSection === 'none') {
-      translateY.value = 0;
+      // Chiudi il cassetto
+      translateY.value = 0; // reset the pan gesture
+      drawerAnimation.value = withTiming(250, { duration: 300 }); // push it down to hide
+    } else {
+      // Apri il cassetto
+      drawerAnimation.value = withTiming(0, { duration: 300 });
     }
-  }, [activeSection, translateY]);
+  }, [activeSection, translateY, drawerAnimation]);
 
   const MAX_UP = -250; // Massima altezza (aperto)
 
@@ -74,14 +79,13 @@ export const Footer = ({ translateY: externalTranslateY }: FooterProps) => {
 
   const animatedBackgroundStyle = useAnimatedStyle(() => {
     return {
-      transform: [{ translateY: translateY.value }],
+      transform: [{ translateY: translateY.value + drawerAnimation.value }],
     };
   });
 
-
   const animatedTopFooterStyle = useAnimatedStyle(() => {
     return {
-      transform: [{ translateY: translateY.value }],
+      transform: [{ translateY: translateY.value + drawerAnimation.value }],
     };
   });
 
@@ -89,43 +93,37 @@ export const Footer = ({ translateY: externalTranslateY }: FooterProps) => {
 
   return (
     <View style={styles.container} pointerEvents="box-none">
+      <View style={[styles.unifiedBackgroundBase, styles.unifiedBackgroundClosed]} pointerEvents="none" />
       <Animated.View 
         style={[
           styles.unifiedBackgroundBase,
-          isSheetVisible ? styles.unifiedBackgroundOpen : styles.unifiedBackgroundClosed,
+          styles.unifiedBackgroundOpen,
           animatedBackgroundStyle
         ]} 
         pointerEvents="none" 
       />
-      <Animated.View style={[styles.topFooterContainer, animatedTopFooterStyle]} pointerEvents="box-none">
-
-        {isSheetVisible && (
-          <GestureDetector gesture={panGesture}>
-            <View>
-              <View style={styles.topFooter}>
-
-                <FooterModules />
-                <FooterParameters />
-              </View>
-              {isDebugEnabled && (
-                <View style={styles.debugContainer} pointerEvents="none">
-                  <AnimatedTextInput
-                    style={styles.debugText}
-                    animatedProps={debugTextProps}
-                    editable={false}
-                  />
-                </View>
-              )}
-              {/* Area espansa che riempie il vuoto sotto quando si tira su */}
-
-              <View style={styles.expandedBackground}>
-                <SubParameterPanel translateY={translateY} />
-              </View>
-
-
+      <Animated.View style={[styles.topFooterContainer, animatedTopFooterStyle]} pointerEvents={isSheetVisible ? "box-none" : "none"}>
+        <GestureDetector gesture={panGesture}>
+          <View>
+            <View style={styles.topFooter}>
+              <FooterModules />
+              <FooterParameters />
             </View>
-          </GestureDetector>
-        )}
+            {isDebugEnabled && (
+              <View style={styles.debugContainer} pointerEvents="none">
+                <AnimatedTextInput
+                  style={styles.debugText}
+                  animatedProps={debugTextProps}
+                  editable={false}
+                />
+              </View>
+            )}
+            {/* Area espansa che riempie il vuoto sotto quando si tira su */}
+            <View style={styles.expandedBackground}>
+              <SubParameterPanel translateY={translateY} />
+            </View>
+          </View>
+        </GestureDetector>
       </Animated.View>
 
       <FooterSections />

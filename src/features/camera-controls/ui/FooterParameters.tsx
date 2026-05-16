@@ -1,6 +1,5 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { Text, View } from 'react-native';
-import Animated from 'react-native-reanimated';
 import { useTranslation } from 'react-i18next';
 import { useShallow } from 'zustand/react/shallow';
 import { useHardwareStore } from '../model/useHardwareStore';
@@ -100,8 +99,14 @@ export const FooterParameters = () => {
 
   const { handlePressWithDouble } = useDoublePress(resetTool);
 
+  const lastActiveModule = useRef(uiStore.activeModule);
+  if (uiStore.activeModule !== 'none') {
+    lastActiveModule.current = uiStore.activeModule;
+  }
+  const renderActiveModule = uiStore.activeModule === 'none' ? lastActiveModule.current : uiStore.activeModule;
+
   const renderModule = () => {
-    switch (uiStore.activeModule) {
+    switch (renderActiveModule) {
       case 'texture':
         return (
           <TextureModule
@@ -218,9 +223,9 @@ export const FooterParameters = () => {
         return null;
       default:
         return (
-          <Animated.View style={footerStyles.tabContent}>
+          <View style={footerStyles.tabContent}>
             <Text style={footerStyles.infoText}>{t('footer.coming_soon')}</Text>
-          </Animated.View>
+          </View>
         );
     }
   };

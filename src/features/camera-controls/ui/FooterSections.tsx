@@ -62,6 +62,7 @@ const styles = StyleSheet.create({
   bottomFooterWrapper: {
     paddingTop: 16,
     paddingBottom: 16,
+    backgroundColor: '#000',
   },
 
   scrollContent: {
