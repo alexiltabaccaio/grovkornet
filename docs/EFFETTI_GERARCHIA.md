@@ -5,10 +5,11 @@ Questa struttura definisce l'interfaccia utente, organizzata simulando fedelment
 ## 🗺️ UX Design Pattern (Modello a Bottom Sheet)
 Il sistema è progettato per essere rapido da usare con una mano (run-and-gun), nascondendo la complessità ai principianti ma lasciandola accessibile ai professionisti.
 
-1. **[Section] Section:** Le sezioni fisiche principali (es. System, Lens, Body).
-2. **[Module] Module:** Il sottomenù o famiglia di effetti (es. Esposizione, Texture).
-3. **[Parameter] Parameter:** Il parametro più importante e usato (es. Intensità della Grana), immediatamente visibile come box a scorrimento.
-4. **[SubParameter] SubParameter:** Accessibile tramite un Long Press o Doppio Tap. Fa scivolare un pannello con le regolazioni di fino.
+1. **[Section] Section:** I bottoni di navigazione in basso per le sezioni fisiche principali (es. System, Lens, Body).
+2. **[Section Header] Section Header:** La grande scritta in alto nel pannello aperto che identifica la sezione attiva.
+3. **[Module] Module:** Il sottomenù o famiglia di effetti all'interno della sezione (es. Esposizione, Texture).
+4. **[Parameter] Parameter:** Il parametro più importante e usato (es. Intensità della Grana), immediatamente visibile come box a scorrimento.
+5. **[SubParameter] SubParameter:** Accessibile tramite un Long Press o Doppio Tap. Fa scivolare un pannello con le regolazioni di fino.
 
 ---
 

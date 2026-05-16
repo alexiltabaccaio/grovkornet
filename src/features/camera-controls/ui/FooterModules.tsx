@@ -19,7 +19,9 @@ export const FooterModules = () => {
 
   return (
     <>
-      <Text style={[styles.sectionTitle, isDebugEnabled && styles.debugTitle]}>{t(`sections.${activeSection}`)}</Text>
+      <View style={[styles.sectionHeaderFrame, isDebugEnabled && styles.debugFrame]}>
+        <Text style={styles.sectionTitle}>{t(`sections.${activeSection}`)}</Text>
+      </View>
       <View style={styles.container}>
         <ScrollView 
           horizontal 
@@ -79,16 +81,24 @@ const styles = StyleSheet.create({
     paddingTop: 12,
     marginBottom: 10,
   },
+  sectionHeaderFrame: {
+    width: '100%',
+    borderBottomWidth: 1,
+    borderTopWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+    marginTop: 0,
+    marginBottom: 4,
+    paddingVertical: 10,
+  },
   sectionTitle: {
     color: '#FFF',
-    fontSize: 11,
+    fontSize: 14,
+    lineHeight: 18,
     fontWeight: '900',
-    letterSpacing: 2.5,
+    letterSpacing: 2,
     textTransform: 'uppercase',
     textAlign: 'center',
     backgroundColor: 'transparent',
-    paddingVertical: 12,
-    width: '100%',
   },
   pillMenuWrapper: {
     maxHeight: 35,
@@ -115,7 +125,7 @@ const styles = StyleSheet.create({
   pillTextActive: {
     color: '#000',
   },
-  debugTitle: {
+  debugFrame: {
     borderWidth: 1,
     borderColor: 'magenta',
     backgroundColor: 'rgba(255, 0, 255, 0.2)',

@@ -154,7 +154,7 @@ const styles = StyleSheet.create({
   },
   unifiedBackgroundOpen: {
     bottom: -1000,
-    height: 1250, 
+    height: 1220, 
   },
 
   topFooterContainer: {
@@ -166,7 +166,6 @@ const styles = StyleSheet.create({
   topFooter: {
     paddingTop: 0,
     height: 160,
-    justifyContent: 'flex-end',
   },
 
 
