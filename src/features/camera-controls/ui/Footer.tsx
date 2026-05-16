@@ -30,6 +30,7 @@ export const Footer = ({ translateY: externalTranslateY }: FooterProps) => {
   const startY = useSharedValue(0);
   const drawerAnimation = useSharedValue(220); // 220px is the height of the drawer, starting closed
 
+  // eslint-disable-next-line react-hooks/immutability
   useEffect(() => {
     if (activeSection === 'none') {
       // Chiudi il cassetto
@@ -53,6 +54,7 @@ export const Footer = ({ translateY: externalTranslateY }: FooterProps) => {
       // Clamp tra aperto e chiuso
       if (newY < MAX_UP) newY = MAX_UP;
       if (newY > 0) newY = 0;
+      // eslint-disable-next-line react-hooks/immutability
       translateY.value = newY;
     })
     .onEnd((e) => {
@@ -63,6 +65,7 @@ export const Footer = ({ translateY: externalTranslateY }: FooterProps) => {
         Math.abs(curr - estimatedY) < Math.abs(prev - estimatedY) ? curr : prev
       );
 
+      // eslint-disable-next-line react-hooks/immutability
       translateY.value = withSpring(targetY, {
         damping: 20,
         stiffness: 200,

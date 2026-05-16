@@ -1,24 +1,80 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
 /* eslint-disable @typescript-eslint/no-explicit-any */
+
+// Mock Reanimated BEFORE everything else
+jest.mock('react-native-reanimated', () => {
+  const { View, Text, TextInput } = require('react-native');
+  
+  const val = (v: any) => ({ value: v });
+  
+  const mockReanimated = {
+    __esModule: true,
+    makeMutable: jest.fn(val),
+    useSharedValue: jest.fn(val),
+    useEvent: jest.fn((h: any) => h),
+    useDerivedValue: jest.fn((cb: any) => ({ value: cb() })),
+    withSpring: jest.fn((v: any) => v),
+    withTiming: jest.fn((v: any) => v),
+    withSequence: jest.fn((...args: any[]) => args[args.length - 1]),
+    useAnimatedStyle: jest.fn((cb: any) => cb()),
+    useAnimatedProps: jest.fn((cb: any) => cb()),
+    createAnimatedComponent: jest.fn((comp: any) => comp),
+    interpolate: jest.fn((v, i, o) => v),
+    Extrapolation: {
+      CLAMP: 'clamp',
+    },
+    runOnJS: jest.fn((f: any) => f),
+    interpolateColor: jest.fn((v, i, o) => '#FFFFFF'),
+    FadeIn: { duration: jest.fn().mockReturnThis(), delay: jest.fn().mockReturnThis() },
+    FadeOut: { duration: jest.fn().mockReturnThis(), delay: jest.fn().mockReturnThis() },
+    LinearTransition: { duration: jest.fn().mockReturnThis() },
+    default: {
+      View,
+      Text,
+      TextInput,
+      createAnimatedComponent: jest.fn((comp: any) => comp),
+    },
+  };
+  
+  (mockReanimated.default as any).View = View;
+  (mockReanimated.default as any).Text = Text;
+  (mockReanimated.default as any).TextInput = TextInput;
+  
+  return mockReanimated;
+});
+
 import 'react-native-gesture-handler/jestSetup';
 
-// Mock Reanimated
-jest.mock('react-native-reanimated', () => {
-  const Reanimated = require('react-native-reanimated/mock');
-  Reanimated.makeMutable = jest.fn((val: any) => ({ value: val }));
-  Reanimated.useSharedValue = jest.fn((val: any) => ({ value: val }));
-  // Reanimated mock usually has createAnimatedComponent, but let's ensure it's there
-  if (!Reanimated.createAnimatedComponent) {
-    Reanimated.createAnimatedComponent = jest.fn((comp: any) => comp);
-  }
+// Mock Expo Haptics
+jest.mock('expo-haptics', () => ({
+  impactAsync: jest.fn(),
+  notificationAsync: jest.fn(),
+  selectionAsync: jest.fn(),
+  ImpactFeedbackStyle: {
+    Light: 'light',
+    Medium: 'medium',
+    Heavy: 'heavy',
+  },
+  NotificationFeedbackType: {
+    Success: 'success',
+    Warning: 'warning',
+    Error: 'error',
+  },
+}));
+
+// Mock Expo Modules Core
+jest.mock('expo-modules-core', () => {
+  const actual = jest.requireActual('expo-modules-core');
   return {
-    __esModule: true,
-    ...Reanimated,
-    default: Reanimated,
+    ...actual,
+    requireNativeViewManager: jest.fn(() => {
+      const { View } = require('react-native');
+      return View;
+    }),
   };
 });
 
-// Mock Gesture Handler - we don't need to 'require' it here, just mock the specific parts that fail
+// Mock Gesture Handler extensions
 jest.mock('react-native-gesture-handler', () => {
   const actual = jest.requireActual('react-native-gesture-handler');
   
@@ -70,10 +126,15 @@ jest.mock('react-i18next', () => ({
 // Mock react-native
 jest.mock('react-native', () => {
   const RN = jest.requireActual('react-native');
-  RN.LogBox = {
-    ignoreAllLogs: jest.fn(),
-    ignoreLogs: jest.fn(),
-  };
+  
+  Object.defineProperty(RN, 'LogBox', {
+    value: {
+      ignoreAllLogs: jest.fn(),
+      ignoreLogs: jest.fn(),
+    },
+    writable: true,
+  });
+  
   return RN;
 });
 

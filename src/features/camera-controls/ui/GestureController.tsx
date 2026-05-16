@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { ReactNode } from 'react';
 import { StyleSheet, View, Dimensions } from 'react-native';
 import { useSharedValue } from 'react-native-reanimated';
 import { GestureDetector, Gesture } from 'react-native-gesture-handler';
 import { useUIStore } from '../model/useUIStore';
+import { useShallow } from 'zustand/react/shallow';
 import { updateSharedValue } from '@shared/lib/reanimated/safeUpdate';
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
@@ -13,11 +14,19 @@ const SLIDER_HEIGHT = SCREEN_HEIGHT * 0.3;
  * It is now generic and follows the Open-Closed Principle by consuming a GestureConfig 
  * provided by the active ParameterControl.
  */
-export const GestureController = () => {
-  const gestureConfig = useUIStore((s) => s.gestureConfig);
+interface GestureControllerProps {
+  children?: ReactNode;
+}
+
+export const GestureController = ({ children }: GestureControllerProps) => {
+  const { gestureConfig, activeSection, setActiveSection } = useUIStore(useShallow((s) => ({
+    gestureConfig: s.gestureConfig,
+    activeSection: s.activeSection,
+    setActiveSection: s.setActiveSection,
+  })));
   const startVal = useSharedValue(0);
 
-  const gesture = Gesture.Pan()
+  const panGesture = Gesture.Pan()
     .activeOffsetY([-10, 10]) // Only activate on vertical swipe to not conflict with horizontal ScrollViews
     .failOffsetX([-10, 10]) // Fail if there is horizontal movement, allowing scroll
     .onStart(() => {
@@ -43,22 +52,24 @@ export const GestureController = () => {
       updateSharedValue(value, newValue);
     });
 
-  // If no parameter is active or gesture-enabled, don't render the gesture area
-  if (!gestureConfig) {
-    return null;
-  }
+  const tapGesture = Gesture.Tap()
+    .runOnJS(true)
+    .onEnd(() => {
+      if (activeSection !== 'none') {
+        setActiveSection('none');
+      }
+    });
+
+  const composedGesture = Gesture.Exclusive(panGesture, tapGesture);
 
   return (
-    <GestureDetector gesture={gesture}>
-      <AnimatedViewWithStyles />
+    <GestureDetector gesture={composedGesture}>
+      <View style={styles.container} pointerEvents="auto">
+        {children}
+      </View>
     </GestureDetector>
   );
 };
-
-// Extracted View to keep the main component clean
-const AnimatedViewWithStyles = () => (
-  <View style={styles.container} pointerEvents="box-none" />
-);
 
 const styles = StyleSheet.create({
   container: {

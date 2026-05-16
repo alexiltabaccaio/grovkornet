@@ -1,5 +1,6 @@
 import React from 'react';
 import { render } from '@testing-library/react-native';
+import { View } from 'react-native';
 import { GestureController } from './GestureController';
 import { useUIStore } from '../model/useUIStore';
 
@@ -21,9 +22,13 @@ describe('GestureController', () => {
     });
   });
 
-  it('should render null when gestureConfig is null', () => {
-    const { toJSON } = render(<GestureController />);
-    expect(toJSON()).toBeNull();
+  it('should render children even when gestureConfig is null', () => {
+    const { getByTestId } = render(
+      <GestureController>
+        <View testID="test-child" />
+      </GestureController>
+    );
+    expect(getByTestId('test-child')).toBeDefined();
   });
 
   it('should render correctly when gestureConfig is provided', () => {
@@ -38,7 +43,11 @@ describe('GestureController', () => {
       return selector ? selector(state) : state;
     });
 
-    const { toJSON } = render(<GestureController />);
-    expect(toJSON()).not.toBeNull();
+    const { getByTestId } = render(
+      <GestureController>
+        <View testID="test-child" />
+      </GestureController>
+    );
+    expect(getByTestId('test-child')).toBeDefined();
   });
 });

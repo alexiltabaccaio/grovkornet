@@ -64,9 +64,9 @@ const CameraScreenContent = () => {
 
   return (
     <View style={styles.container}>
-      <ConnectedFilmCamera cameraKey={cameraKey} />
-
-      <GestureController />
+      <GestureController>
+        <ConnectedFilmCamera cameraKey={cameraKey} />
+      </GestureController>
 
       {isDebugEnabled && <DebugOverlay />}
       
