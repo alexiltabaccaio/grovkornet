@@ -99,11 +99,11 @@ class NativeFilmCameraView(context: Context) : GLSurfaceView(context) {
     var autoFocus: Boolean = false
         set(value) { if (field != value) { field = value; if (::cameraEngine.isInitialized) { cameraEngine.autoFocus = value; scheduleCameraUpdate() } } }
     var iso: Int = 400
-        set(value) { if (field != value) { field = value; if (::cameraEngine.isInitialized) { cameraEngine.iso = value; scheduleCameraUpdate() } } }
+        set(value) { if (field != value) { field = value; if (::cameraEngine.isInitialized) { cameraEngine.iso = value; if (!isoAuto) scheduleCameraUpdate() } } }
     var exposureTime: Long = 1000000000L / 60
-        set(value) { if (field != value) { field = value; if (::cameraEngine.isInitialized) { cameraEngine.exposureTime = value; scheduleCameraUpdate() } } }
+        set(value) { if (field != value) { field = value; if (::cameraEngine.isInitialized) { cameraEngine.exposureTime = value; if (!shutterSpeedAuto) scheduleCameraUpdate() } } }
     var focusDistance: Float = 0.0f
-        set(value) { if (field != value) { field = value; if (::cameraEngine.isInitialized) { cameraEngine.focusDistance = value; scheduleCameraUpdate() } } }
+        set(value) { if (field != value) { field = value; if (::cameraEngine.isInitialized) { cameraEngine.focusDistance = value; if (!autoFocus) scheduleCameraUpdate() } } }
     
     var torchState: Float = 0.0f
         set(value) {

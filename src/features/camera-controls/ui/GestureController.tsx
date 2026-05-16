@@ -104,6 +104,7 @@ export const GestureController = () => {
 
   const gesture = Gesture.Pan()
     .activeOffsetY([-10, 10]) // Only activate on vertical swipe to not conflict with horizontal ScrollViews
+    .failOffsetX([-10, 10]) // Fail if there is horizontal movement, allowing scroll
     .onStart(() => {
       const activeParam = activeSubParameter !== 'none' ? activeSubParameter : activeParameter;
       switch (activeParam as string) {

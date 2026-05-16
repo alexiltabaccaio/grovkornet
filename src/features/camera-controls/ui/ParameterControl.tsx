@@ -4,6 +4,7 @@ import Animated, { SharedValue, useAnimatedStyle, useAnimatedProps, interpolateC
 import { GestureDetector, Gesture } from 'react-native-gesture-handler';
 import { Ionicons } from '@expo/vector-icons';
 import { useUIStore } from '../model/useUIStore';
+import * as Haptics from 'expo-haptics';
 
 
 const AnimatedIcon = Animated.createAnimatedComponent(Ionicons);
@@ -55,6 +56,7 @@ export const ParameterControl = ({
   const longPressGesture = Gesture.LongPress()
     .onStart(() => {
       if (onLongPress) {
+        runOnJS(Haptics.impactAsync)(Haptics.ImpactFeedbackStyle.Medium);
         runOnJS(onLongPress)();
       }
     });
@@ -62,6 +64,7 @@ export const ParameterControl = ({
   const panGesture = Gesture.Pan()
     .hitSlop(20)
     .activeOffsetY([-2, 2]) // Si attiva prima del [-5, 5] del parent
+    .failOffsetX([-10, 10]) // Fallisce se c'è un movimento orizzontale, permettendo lo scroll
     .onStart(() => {
       if (!value) return;
       startVal.value = value.value;
