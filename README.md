@@ -1,5 +1,8 @@
 # Grovkornet 🎞️
 
+> [!IMPORTANT]
+> **Proprietary Software**: This repository is private. Unauthorized use, copying, or distribution is strictly prohibited.
+
 A high-performance cinematic camera application for Android built with React Native and a custom C++/Kotlin native rendering engine (**Uber Shader**) for real-time analog film emulation.
 
 ## 🚀 Overview
