@@ -21,6 +21,8 @@ export interface ParameterThumbViewProps {
   hideValueInAuto?: boolean;
   autoValueText?: string;
   isDebugEnabled?: boolean;
+  disabled?: SharedValue<boolean>;
+  hideAutoBadge?: boolean;
 }
 
 export const ParameterThumbView = forwardRef<View, ParameterThumbViewProps>(({
@@ -38,6 +40,8 @@ export const ParameterThumbView = forwardRef<View, ParameterThumbViewProps>(({
   hideValueInAuto = false,
   autoValueText = 'AUTO',
   isDebugEnabled = false,
+  disabled,
+  hideAutoBadge = false,
 }, ref) => {
   const animatedBgStyle = useAnimatedStyle(() => {
     if (!value || variant === 'text') return { height: '0%' };
@@ -83,6 +87,9 @@ export const ParameterThumbView = forwardRef<View, ParameterThumbViewProps>(({
   });
 
   const animatedTextStyle = useAnimatedStyle(() => {
+    if (disabled && disabled.value) {
+      return { color: '#666666' };
+    }
     if (!value) return { color: isActive ? "#FFF" : "#666" };
     if (variant === 'text') {
       return { color: isActive ? "#FFF" : "#666" };
@@ -95,10 +102,30 @@ export const ParameterThumbView = forwardRef<View, ParameterThumbViewProps>(({
     };
   });
 
-  const animatedAutoBadgeStyle = useAnimatedStyle(() => {
-    return {
-      opacity: isAuto && isAuto.value ? 1 : 0
-    };
+  const animatedBadgeProps = useAnimatedProps(() => {
+    if (disabled && disabled.value) {
+      /* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unnecessary-type-assertion */
+      return { text: 'OFF', defaultValue: 'OFF' } as any;
+      /* eslint-enable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unnecessary-type-assertion */
+    }
+    if (isAuto && isAuto.value && !hideAutoBadge) {
+      /* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unnecessary-type-assertion */
+      return { text: 'AUTO', defaultValue: 'AUTO' } as any;
+      /* eslint-enable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unnecessary-type-assertion */
+    }
+    /* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unnecessary-type-assertion */
+    return { text: '', defaultValue: '' } as any;
+    /* eslint-enable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unnecessary-type-assertion */
+  });
+
+  const animatedBadgeStyle = useAnimatedStyle(() => {
+    if (disabled && disabled.value) {
+      return { opacity: 1, color: '#666666' };
+    }
+    if (isAuto && isAuto.value && !hideAutoBadge) {
+      return { opacity: 1, color: '#FF3B30' };
+    }
+    return { opacity: 0, color: '#FF3B30' };
   });
 
   const isShowingValue = renderValue || variant === 'text';
@@ -148,10 +175,14 @@ export const ParameterThumbView = forwardRef<View, ParameterThumbViewProps>(({
           <AnimatedIcon name={icon} size={24} style={{ zIndex: 1 }} animatedProps={animatedIconProps} />
         ) : null}
         
-        {isAuto && (
-          <Animated.Text style={[styles.autoBadge, animatedAutoBadgeStyle]}>
-            AUTO
-          </Animated.Text>
+        {(isAuto || disabled) && (
+          <AnimatedTextInput
+            pointerEvents="none"
+            underlineColorAndroid="transparent"
+            editable={false}
+            style={[styles.autoBadge, { padding: 0, margin: 0, textAlign: 'center' }, animatedBadgeStyle]}
+            animatedProps={animatedBadgeProps}
+          />
         )}
         
 

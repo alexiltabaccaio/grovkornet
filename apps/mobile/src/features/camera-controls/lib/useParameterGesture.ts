@@ -15,6 +15,7 @@ interface UseParameterGestureParams {
   onPress: () => void;
   onLongPress?: () => void;
   isAuto?: SharedValue<boolean>;
+  disabled?: SharedValue<boolean>;
 }
 
 export const useParameterGesture = ({
@@ -27,6 +28,7 @@ export const useParameterGesture = ({
   onPress,
   onLongPress,
   isAuto,
+  disabled,
 }: UseParameterGestureParams) => {
   const startVal = useSharedValue(minValue);
   const isDebugEnabled = useUIStore((s) => s.isDebugEnabled);
@@ -47,6 +49,7 @@ export const useParameterGesture = ({
   const combinedGesture = useMemo(() => {
     const longPress = Gesture.LongPress()
       .onStart(() => {
+        if (disabled && disabled.value) return;
         if (onLongPress) {
           runOnJS(Haptics.impactAsync)(Haptics.ImpactFeedbackStyle.Medium);
           runOnJS(onLongPress)();
@@ -58,11 +61,13 @@ export const useParameterGesture = ({
       .activeOffsetY([-2, 2])
       .failOffsetX([-10, 10])
       .onStart(() => {
+        if (disabled && disabled.value) return;
         if (!value) return;
         startVal.value = value.value;
         runOnJS(onPress)();
       })
       .onUpdate((e) => {
+        if (disabled && disabled.value) return;
         if (!value) return;
         const THUMB_SENSITIVITY = 150;
         const range = maxValue - minValue;
@@ -85,11 +90,12 @@ export const useParameterGesture = ({
 
     const tap = Gesture.Tap()
       .onEnd(() => {
+        if (disabled && disabled.value) return;
         runOnJS(onPress)();
       });
 
     return Gesture.Race(longPress, tap, pan);
-  }, [onLongPress, onPress, value, startVal, minValue, maxValue, invertDrag, onChange, isAuto]);
+  }, [onLongPress, onPress, value, startVal, minValue, maxValue, invertDrag, onChange, isAuto, disabled]);
 
   return {
     combinedGesture,

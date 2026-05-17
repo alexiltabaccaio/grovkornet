@@ -19,6 +19,8 @@ class CameraControlManager(
 ) {
     private val TAG = "CameraControlManager"
     private var lastExposureUpdateTime = 0L
+    private var lastAutoIso = 400
+    private var lastAutoShutter = 1000000000L / 60
 
     interface Listener {
         fun onExposureUpdate(iso: Int, shutterSpeed: Double, focusDistance: Float, noiseReduction: Int)
@@ -36,8 +38,12 @@ class CameraControlManager(
                 builder.setCaptureRequestOption(CaptureRequest.CONTROL_AE_EXPOSURE_COMPENSATION, config.ev.toInt())
             } else {
                 builder.setCaptureRequestOption(CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_AE_MODE_OFF)
-                builder.setCaptureRequestOption(CaptureRequest.SENSOR_SENSITIVITY, config.iso)
-                builder.setCaptureRequestOption(CaptureRequest.SENSOR_EXPOSURE_TIME, config.exposureTime)
+                
+                val isoToApply = if (!config.isoAuto) config.iso else lastAutoIso
+                val shutterToApply = if (!config.shutterSpeedAuto) config.exposureTime else lastAutoShutter
+                
+                builder.setCaptureRequestOption(CaptureRequest.SENSOR_SENSITIVITY, isoToApply)
+                builder.setCaptureRequestOption(CaptureRequest.SENSOR_EXPOSURE_TIME, shutterToApply)
             }
 
             if (config.noiseReduction != -1) {
@@ -79,6 +85,12 @@ class CameraControlManager(
                 if (now - lastExposureUpdateTime >= 250) {
                     val currentIso = result.get(CaptureResult.SENSOR_SENSITIVITY) ?: return
                     val currentShutter = result.get(CaptureResult.SENSOR_EXPOSURE_TIME) ?: return
+                    
+                    if (config.isoAuto && config.shutterSpeedAuto) {
+                        lastAutoIso = currentIso
+                        lastAutoShutter = currentShutter
+                    }
+                    
                     val currentFocus = result.get(CaptureResult.LENS_FOCUS_DISTANCE) ?: 0.0f
                     val currentNR = result.get(CaptureResult.NOISE_REDUCTION_MODE) ?: 1
                     val shutterDenominator = 1_000_000_000.0 / currentShutter.toDouble()

@@ -49,14 +49,22 @@ export const useHardwareStore = create<HardwareStore>((set, get) => ({
     logger.debug('HardwareStore', `Setting ISO: ${value}`);
     get().iso.value = value;
     get().isoAuto.value = false;
+    get().shutterSpeedAuto.value = false;
+    get().evAuto.value = true;
+    get().ev.value = DEFAULT_EV;
   },
   setEv: (value) => {
     get().ev.value = value;
     get().evAuto.value = false;
+    get().isoAuto.value = true;
+    get().shutterSpeedAuto.value = true;
   },
   setShutterSpeed: (value) => {
     get().shutterSpeed.value = value;
     get().shutterSpeedAuto.value = false;
+    get().isoAuto.value = false;
+    get().evAuto.value = true;
+    get().ev.value = DEFAULT_EV;
   },
   setTemperature: (value) => {
     get().temperature.value = value;
@@ -64,15 +72,27 @@ export const useHardwareStore = create<HardwareStore>((set, get) => ({
   },
   setIsoAuto: (value) => {
     get().isoAuto.value = value;
+    get().shutterSpeedAuto.value = value;
+    if (value) {
+      get().iso.value = DEFAULT_ISO;
+      get().shutterSpeed.value = DEFAULT_SHUTTER_SPEED;
+    }
   },
   setShutterSpeedAuto: (value) => {
     get().shutterSpeedAuto.value = value;
+    get().isoAuto.value = value;
+    if (value) {
+      get().shutterSpeed.value = DEFAULT_SHUTTER_SPEED;
+      get().iso.value = DEFAULT_ISO;
+    }
   },
   setTemperatureAuto: (value) => {
     get().temperatureAuto.value = value;
+    if (value) get().temperature.value = DEFAULT_TEMPERATURE;
   },
   setEvAuto: (value) => {
     get().evAuto.value = value;
+    if (value) get().ev.value = DEFAULT_EV;
   },
   setFocusDistance: (value) => {
     get().focusDistance.value = value;

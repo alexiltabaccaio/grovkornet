@@ -1,6 +1,6 @@
 import React from 'react';
 import { View } from 'react-native';
-import Animated from 'react-native-reanimated';
+import Animated, { useDerivedValue } from 'react-native-reanimated';
 import { useTranslation } from 'react-i18next';
 import { useShallow } from 'zustand/react/shallow';
 import { useUIStore } from '../../../model/useUIStore';
@@ -50,6 +50,10 @@ export const ExposureModule = ({ handlePressWithDouble }: ExposureModuleProps) =
     setShutterSpeedAuto: s.setShutterSpeedAuto,
   })));
 
+  const isEvDisabled = useDerivedValue(() => {
+    return !isoAuto.value && !shutterSpeedAuto.value;
+  });
+
   return (
     <Animated.View style={footerStyles.tabContent}>
       <View style={footerStyles.imageToolsContainer}>
@@ -66,19 +70,6 @@ export const ExposureModule = ({ handlePressWithDouble }: ExposureModuleProps) =
           onLongPress={() => setIsoAuto(!isoAuto.value)}
         />
         <ParameterControl
-          label={t('parameters.ev')}
-          isActive={activeParameter === 'ev'}
-          onPress={() => handlePressWithDouble('ev', () => setActiveParameter('ev'))}
-          value={ev}
-          minValue={-2.0}
-          maxValue={2.0}
-          onChange={setEv}
-          variant="text"
-          isAuto={evAuto}
-          onLongPress={() => setEvAuto(!evAuto.value)}
-          valueFormatter={formatEv}
-        />
-        <ParameterControl
           label={t('parameters.shutter_speed')}
           isActive={activeParameter === 'shutter_speed'}
           onPress={() => handlePressWithDouble('shutter_speed', () => setActiveParameter('shutter_speed'))}
@@ -90,6 +81,21 @@ export const ExposureModule = ({ handlePressWithDouble }: ExposureModuleProps) =
           isAuto={shutterSpeedAuto}
           onLongPress={() => setShutterSpeedAuto(!shutterSpeedAuto.value)}
           valueFormatter={formatShutterSpeed}
+        />
+        <ParameterControl
+          label={t('parameters.ev')}
+          isActive={activeParameter === 'ev'}
+          onPress={() => handlePressWithDouble('ev', () => setActiveParameter('ev'))}
+          value={ev}
+          minValue={-2.0}
+          maxValue={2.0}
+          onChange={setEv}
+          variant="text"
+          isAuto={evAuto}
+          onLongPress={() => setEvAuto(!evAuto.value)}
+          valueFormatter={formatEv}
+          disabled={isEvDisabled}
+          hideAutoBadge={true}
         />
       </View>
     </Animated.View>

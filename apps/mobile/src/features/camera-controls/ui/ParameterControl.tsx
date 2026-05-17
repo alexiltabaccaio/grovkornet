@@ -23,6 +23,8 @@ interface ParameterControlProps {
   invertDrag?: boolean;
   hideValueInAuto?: boolean;
   autoValueText?: string;
+  disabled?: SharedValue<boolean>;
+  hideAutoBadge?: boolean;
 }
 
 export const ParameterControl = ({
@@ -43,6 +45,8 @@ export const ParameterControl = ({
   hideValueInAuto = false,
   autoValueText = 'AUTO',
   onChange,
+  disabled,
+  hideAutoBadge = false,
 }: ParameterControlProps) => {
   const { combinedGesture, isDebugEnabled } = useParameterGesture({
     isActive,
@@ -54,6 +58,7 @@ export const ParameterControl = ({
     onPress,
     onLongPress,
     isAuto,
+    disabled,
   });
 
   return (
@@ -73,6 +78,8 @@ export const ParameterControl = ({
         hideValueInAuto={hideValueInAuto}
         autoValueText={autoValueText}
         isDebugEnabled={isDebugEnabled}
+        disabled={disabled}
+        hideAutoBadge={hideAutoBadge}
       />
     </GestureDetector>
   );
