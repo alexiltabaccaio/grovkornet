@@ -30,20 +30,11 @@ export const DevelopmentModule = ({ handlePressWithDouble }: DevelopmentModulePr
   const { 
     saturation, setSaturation, 
     contrast, setContrast, 
-    noiseReductionAuto, setNoiseReductionAuto,
-    noiseReductionMode, setNoiseReductionMode,
-    sharpening, setSharpening 
   } = useStylesStore(useShallow(s => ({
     saturation: s.saturation,
     setSaturation: s.setSaturation,
     contrast: s.contrast,
     setContrast: s.setContrast,
-    noiseReductionAuto: s.noiseReductionAuto,
-    setNoiseReductionAuto: s.setNoiseReductionAuto,
-    noiseReductionMode: s.noiseReductionMode,
-    setNoiseReductionMode: s.setNoiseReductionMode,
-    sharpening: s.sharpening,
-    setSharpening: s.setSharpening,
   })));
 
   const { temperature, setTemperature, temperatureAuto, setTemperatureAuto } = useHardwareStore(useShallow(s => ({
@@ -63,24 +54,6 @@ export const DevelopmentModule = ({ handlePressWithDouble }: DevelopmentModulePr
         contentContainerStyle={footerStyles.scrollContainer}
       >
         <ParameterControl
-          label={t('parameters.saturation')}
-          isActive={activeParameter === 'saturation'}
-          onPress={() => handlePressWithDouble('saturation', () => setActiveParameter('saturation'))}
-          value={saturation}
-          maxValue={2.0}
-          onChange={setSaturation}
-          icon="color-filter-outline"
-        />
-        <ParameterControl
-          label={t('parameters.contrast')}
-          isActive={activeParameter === 'contrast'}
-          onPress={() => handlePressWithDouble('contrast', () => setActiveParameter('contrast'))}
-          value={contrast}
-          maxValue={2.0}
-          onChange={setContrast}
-          icon="contrast-outline"
-        />
-        <ParameterControl
           label={t('parameters.temperature')}
           isActive={activeParameter === 'temperature'}
           onPress={() => handlePressWithDouble('temperature', () => setActiveParameter('temperature'))}
@@ -96,42 +69,22 @@ export const DevelopmentModule = ({ handlePressWithDouble }: DevelopmentModulePr
           autoValueText="AWB"
         />
         <ParameterControl
-          label={t('parameters.noise_reduction')}
-          isActive={activeParameter === 'noise_reduction'}
-          onPress={() => handlePressWithDouble('noise_reduction', () => setActiveParameter('noise_reduction'))}
-          value={noiseReductionMode}
-          minValue={0}
-          maxValue={2}
-          onChange={(v) => {
-            const rounded = Math.round(v);
-            setNoiseReductionMode(rounded);
-          }}
-          isAuto={noiseReductionAuto}
-          onLongPress={() => setNoiseReductionAuto(true)}
-          variant="text"
-          renderValue={true}
-          valueFormatter={(v) => {
-            'worklet';
-            const mode = Math.round(v);
-            if (mode === 0) return 'OFF';
-            if (mode === 1) return 'FAST';
-            if (mode === 2) return 'HQ';
-            return 'OFF';
-          }}
+          label={t('parameters.contrast')}
+          isActive={activeParameter === 'contrast'}
+          onPress={() => handlePressWithDouble('contrast', () => setActiveParameter('contrast'))}
+          value={contrast}
+          maxValue={2.0}
+          onChange={setContrast}
+          icon="contrast-outline"
         />
         <ParameterControl
-          label={t('parameters.sharpening')}
-          isActive={activeParameter === 'sharpening'}
-          onPress={() => handlePressWithDouble('sharpening', () => setActiveParameter('sharpening'))}
-          value={sharpening}
-          minValue={0}
-          maxValue={1}
-          onChange={setSharpening}
-          icon="sparkles-outline"
-          valueFormatter={(v) => {
-            'worklet';
-            return `${Math.round(v * 100)}%`;
-          }}
+          label={t('parameters.saturation')}
+          isActive={activeParameter === 'saturation'}
+          onPress={() => handlePressWithDouble('saturation', () => setActiveParameter('saturation'))}
+          value={saturation}
+          maxValue={2.0}
+          onChange={setSaturation}
+          icon="color-filter-outline"
         />
       </ScrollView>
     </Animated.View>

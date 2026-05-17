@@ -27,12 +27,6 @@ jest.mock('../../../model/useStylesStore', () => ({
     setSaturation: jest.fn(),
     contrast: { value: 1.0 },
     setContrast: jest.fn(),
-    noiseReductionAuto: { value: true },
-    setNoiseReductionAuto: jest.fn(),
-    noiseReductionMode: { value: 1 },
-    setNoiseReductionMode: jest.fn(),
-    sharpening: { value: 0 },
-    setSharpening: jest.fn(),
   })),
 }));
 
@@ -59,13 +53,13 @@ describe('DevelopmentModule', () => {
     expect(toJSON()).toBeDefined();
   });
 
-  it('passes handlePressWithDouble to Sharpening control', () => {
+  it('passes handlePressWithDouble to Contrast control', () => {
     const { UNSAFE_getAllByType } = render(<DevelopmentModule {...mockProps} />);
     const controls = UNSAFE_getAllByType('ParameterControl' as any);
-    const sharpeningControl = controls.find((c: any) => c.props.label === 'parameters.sharpening');
+    const contrastControl = controls.find((c: any) => c.props.label === 'parameters.contrast');
     
-    expect(sharpeningControl).toBeDefined();
-    sharpeningControl.props.onPress();
-    expect(mockProps.handlePressWithDouble).toHaveBeenCalledWith('sharpening', expect.any(Function));
+    expect(contrastControl).toBeDefined();
+    contrastControl.props.onPress();
+    expect(mockProps.handlePressWithDouble).toHaveBeenCalledWith('contrast', expect.any(Function));
   });
 });

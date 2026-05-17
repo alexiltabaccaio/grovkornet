@@ -21,14 +21,63 @@ export const TextureModule = ({ handlePressWithDouble }: TextureModuleProps) => 
     setActiveParameter: s.setActiveParameter,
   })));
 
-  const { grainIntensity, setGrainIntensity } = useStylesStore(useShallow(s => ({
+  const { 
+    grainIntensity, setGrainIntensity,
+    noiseReductionAuto, setNoiseReductionAuto,
+    noiseReductionMode, setNoiseReductionMode,
+    sharpening, setSharpening 
+  } = useStylesStore(useShallow(s => ({
     grainIntensity: s.grainIntensity,
     setGrainIntensity: s.setGrainIntensity,
+    noiseReductionAuto: s.noiseReductionAuto,
+    setNoiseReductionAuto: s.setNoiseReductionAuto,
+    noiseReductionMode: s.noiseReductionMode,
+    setNoiseReductionMode: s.setNoiseReductionMode,
+    sharpening: s.sharpening,
+    setSharpening: s.setSharpening,
   })));
 
   return (
     <Animated.View style={footerStyles.tabContent}>
       <View style={footerStyles.imageToolsContainer}>
+        <ParameterControl
+          label={t('parameters.noise_reduction')}
+          isActive={activeParameter === 'noise_reduction'}
+          onPress={() => handlePressWithDouble('noise_reduction', () => setActiveParameter('noise_reduction'))}
+          value={noiseReductionMode}
+          minValue={0}
+          maxValue={2}
+          onChange={(v) => {
+            const rounded = Math.round(v);
+            setNoiseReductionMode(rounded);
+          }}
+          isAuto={noiseReductionAuto}
+          onLongPress={() => setNoiseReductionAuto(true)}
+          variant="text"
+          renderValue={true}
+          valueFormatter={(v) => {
+            'worklet';
+            const mode = Math.round(v);
+            if (mode === 0) return 'OFF';
+            if (mode === 1) return 'FAST';
+            if (mode === 2) return 'HQ';
+            return 'OFF';
+          }}
+        />
+        <ParameterControl
+          label={t('parameters.sharpening')}
+          isActive={activeParameter === 'sharpening'}
+          onPress={() => handlePressWithDouble('sharpening', () => setActiveParameter('sharpening'))}
+          value={sharpening}
+          minValue={0}
+          maxValue={1}
+          onChange={setSharpening}
+          icon="sparkles-outline"
+          valueFormatter={(v) => {
+            'worklet';
+            return `${Math.round(v * 100)}%`;
+          }}
+        />
         <ParameterControl
           label={t('parameters.grain')}
           isActive={activeParameter === 'grain'}
