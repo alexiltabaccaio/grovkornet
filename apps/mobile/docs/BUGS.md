@@ -8,8 +8,8 @@ Questo documento traccia i bug noti riscontrati nell'applicazione, suddivisi per
 
 ### 1. Aberrazione Cromatica anomala in fase di scatto
 * **Sintomo / Comportamento:** Quando si scatta una foto, viene generata un'evidente aberrazione cromatica ai lati dell'immagine finale catturata. Questo difetto non si manifesta durante la live preview.
-* **Causa Ipotizzata:** Disallineamento o discrepanza nei parametri/coordinate di rendering tra la pipeline della live preview e il processore offscreen che elabora lo scatto finale.
-* **Stato:** 🔴 Da indagare e uniformare.
+* **Causa Ipotizzata / Reale:** Mancanza dei parametri di wrapping (`GL_CLAMP_TO_EDGE`) nel processore offscreen (`OffscreenFilmProcessor.kt`). In assenza di questi, OpenGL ES 2.0 applica il default `GL_REPEAT`, causando il wrap-around dei pixel dal lato opposto dell'immagine durante lo shift di campionamento dell'aberrazione cromatica.
+* **Stato:** 🟢 Risolto (impostato `GL_CLAMP_TO_EDGE` su `WRAP_S` e `WRAP_T` in `OffscreenFilmProcessor.kt`).
 
 ---
 

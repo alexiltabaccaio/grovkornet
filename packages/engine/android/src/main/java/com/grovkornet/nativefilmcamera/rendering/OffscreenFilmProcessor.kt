@@ -82,6 +82,8 @@ class OffscreenFilmProcessor {
             GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureId[0])
             GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR)
             GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR)
+            GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_S, GLES20.GL_CLAMP_TO_EDGE)
+            GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_CLAMP_TO_EDGE)
             android.opengl.GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, input, 0)
 
             // Setup attributes and uniforms
