@@ -1,0 +1,36 @@
+appId: com.grovkornet.app
+---
+- launchApp:
+    clearState: true
+    # Concede automaticamente i permessi di sistema (Fotocamera e Microfono) all'avvio.
+    # Questo è l'approccio consigliato in Maestro per evitare la fragilità legata alle
+    # differenze di lingua (es. "Consenti" vs "Allow") e di versione del sistema operativo Android/iOS.
+    permissions:
+      camera: grant
+      microphone: grant
+
+# Verifica che l'app abbia superato la fase di controllo permessi (CameraScreen.tsx)
+# e abbia renderizzato con successo i controlli della fotocamera (FooterSections.tsx).
+# 1. Su emulatori Android 15+ con supporto alle pagine di memoria da 16 kB, all'avvio di app
+# React Native con librerie native C++ (Reanimated, Skia, ecc.) appare il popup di sistema:
+# "Compatibilità delle app per Android - Questa app non è compatibile con dimensioni pagina di 16 kB".
+# Accettiamo il popup premendo su "Ok" (o "OK").
+- tapOn:
+    text: "[Oo][Kk]"
+    optional: true
+
+# 2. Su alcune versioni di Android/iOS o con client di sviluppo Expo, i permessi di sistema
+# richiesti a runtime (PermissionsAndroid.request) mostrano comunque il popup di sistema.
+# Intercettiamo e accettiamo il popup supportando sia l'italiano che l'inglese in modo opzionale.
+- tapOn:
+    text: "(Mentre usi l'app|While using the app|Consenti|Allow).*"
+    optional: true
+
+# Aggiungiamo un'attesa estesa (fino a 30 secondi) sulla prima asserzione per dare tempo
+# al bundler Metro di caricare il bundle Javascript quando si esegue il test in modalità di sviluppo.
+- extendedWaitUntil:
+    visible: "SISTEMA"
+    timeout: 30000
+- assertVisible: "OBIETTIVO"
+- assertVisible: "CORPO"
+- assertVisible: "PELLICOLA"

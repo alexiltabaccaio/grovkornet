@@ -1,4 +1,4 @@
-import React, { ReactNode } from 'react';
+import React, { ReactNode, useMemo } from 'react';
 import { StyleSheet, View, Dimensions } from 'react-native';
 import { useSharedValue, runOnJS } from 'react-native-reanimated';
 import { GestureDetector, Gesture } from 'react-native-gesture-handler';
@@ -26,43 +26,45 @@ export const GestureController = ({ children }: GestureControllerProps) => {
   })));
   const startVal = useSharedValue(0);
 
-  const panGesture = Gesture.Pan()
-    .activeOffsetY([-10, 10]) // Only activate on vertical swipe to not conflict with horizontal ScrollViews
-    .failOffsetX([-10, 10]) // Fail if there is horizontal movement, allowing scroll
-    .onStart(() => {
-      if (!gestureConfig) {
-        startVal.value = -1;
-        return;
-      }
-      startVal.value = gestureConfig.value.value;
-    })
-    .onUpdate((e) => {
-      if (!gestureConfig || startVal.value === -1) return;
+  const composedGesture = useMemo(() => {
+    const pan = Gesture.Pan()
+      .activeOffsetY([-10, 10]) // Only activate on vertical swipe to not conflict with horizontal ScrollViews
+      .failOffsetX([-10, 10]) // Fail if there is horizontal movement, allowing scroll
+      .onStart(() => {
+        if (!gestureConfig) {
+          startVal.value = -1;
+          return;
+        }
+        startVal.value = gestureConfig.value.value;
+      })
+      .onUpdate((e) => {
+        if (!gestureConfig || startVal.value === -1) return;
 
-      const { value, minValue, maxValue, invertDrag, onChange } = gestureConfig;
-      const range = maxValue - minValue;
-      
-      const direction = invertDrag ? -1 : 1;
-      const delta = -(e.translationY / SLIDER_HEIGHT) * range * direction;
-      
-      const newValue = Math.min(Math.max(startVal.value + delta, minValue), maxValue);
-      
-      updateSharedValue(value, newValue);
-      
-      if (onChange) {
-        runOnJS(onChange)(newValue);
-      }
-    });
+        const { value, minValue, maxValue, invertDrag, onChange } = gestureConfig;
+        const range = maxValue - minValue;
+        
+        const direction = invertDrag ? -1 : 1;
+        const delta = -(e.translationY / SLIDER_HEIGHT) * range * direction;
+        
+        const newValue = Math.min(Math.max(startVal.value + delta, minValue), maxValue);
+        
+        updateSharedValue(value, newValue);
+        
+        if (onChange) {
+          runOnJS(onChange)(newValue);
+        }
+      });
 
-  const tapGesture = Gesture.Tap()
-    .runOnJS(true)
-    .onEnd(() => {
-      if (activeSection !== 'none') {
-        setActiveSection('none');
-      }
-    });
+    const tap = Gesture.Tap()
+      .runOnJS(true)
+      .onEnd(() => {
+        if (activeSection !== 'none') {
+          setActiveSection('none');
+        }
+      });
 
-  const composedGesture = Gesture.Exclusive(panGesture, tapGesture);
+    return Gesture.Exclusive(pan, tap);
+  }, [gestureConfig, startVal, activeSection, setActiveSection]);
 
   return (
     <GestureDetector gesture={composedGesture}>

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { StyleSheet, Text, View, TextInput } from 'react-native';
 import Animated, { SharedValue, useAnimatedStyle, useAnimatedProps, interpolateColor, useSharedValue, runOnJS } from 'react-native-reanimated';
 import { GestureDetector, Gesture } from 'react-native-gesture-handler';
@@ -67,42 +67,7 @@ export const ParameterControl = ({
     }
   }, [isActive, value, minValue, maxValue, invertDrag, setGestureConfig, onChange]);
 
-  const longPressGesture = Gesture.LongPress()
-    .onStart(() => {
-      if (onLongPress) {
-        runOnJS(Haptics.impactAsync)(Haptics.ImpactFeedbackStyle.Medium);
-        runOnJS(onLongPress)();
-      }
-    });
-
-  const panGesture = Gesture.Pan()
-    .hitSlop(20)
-    .activeOffsetY([-2, 2]) // Si attiva prima del [-5, 5] del parent
-    .failOffsetX([-10, 10]) // Fallisce se c'è un movimento orizzontale, permettendo lo scroll
-    .onStart(() => {
-      if (!value) return;
-      startVal.value = value.value;
-      runOnJS(onPress)();
-    })
-    .onUpdate((e) => {
-      if (!value) return;
-      const THUMB_SENSITIVITY = 150;
-      const range = maxValue - minValue;
-      const direction = invertDrag ? -1 : 1;
-      const delta = -(e.translationY / THUMB_SENSITIVITY) * range * direction;
-      const newValue = Math.min(Math.max(startVal.value + delta, minValue), maxValue);
-      
-      updateSharedValue(value, newValue);
-      
-      if (onChange) {
-        runOnJS(onChange)(newValue);
-      }
-      
-      // Handle AUTO mode deactivation natively on UI thread
-      if (isAuto && isAuto.value) {
-        updateSharedValue(isAuto, false);
-      }
-    });
+  // Le gesture sono memoizzate sotto in combinedGesture
 
   const animatedBgStyle = useAnimatedStyle(() => {
     if (!value || variant === 'text') return { height: '0%' };
@@ -168,12 +133,51 @@ export const ParameterControl = ({
 
   const isShowingValue = renderValue || variant === 'text';
 
-  const tapGesture = Gesture.Tap()
-    .onEnd(() => {
-      runOnJS(onPress)();
-    });
+  const combinedGesture = useMemo(() => {
+    const longPress = Gesture.LongPress()
+      .onStart(() => {
+        if (onLongPress) {
+          runOnJS(Haptics.impactAsync)(Haptics.ImpactFeedbackStyle.Medium);
+          runOnJS(onLongPress)();
+        }
+      });
 
-  const combinedGesture = Gesture.Race(longPressGesture, tapGesture, panGesture);
+    const pan = Gesture.Pan()
+      .hitSlop(20)
+      .activeOffsetY([-2, 2]) // Si attiva prima del [-5, 5] del parent
+      .failOffsetX([-10, 10]) // Fallisce se c'è un movimento orizzontale, permettendo lo scroll
+      .onStart(() => {
+        if (!value) return;
+        startVal.value = value.value;
+        runOnJS(onPress)();
+      })
+      .onUpdate((e) => {
+        if (!value) return;
+        const THUMB_SENSITIVITY = 150;
+        const range = maxValue - minValue;
+        const direction = invertDrag ? -1 : 1;
+        const delta = -(e.translationY / THUMB_SENSITIVITY) * range * direction;
+        const newValue = Math.min(Math.max(startVal.value + delta, minValue), maxValue);
+        
+        updateSharedValue(value, newValue);
+        
+        if (onChange) {
+          runOnJS(onChange)(newValue);
+        }
+        
+        // Handle AUTO mode deactivation natively on UI thread
+        if (isAuto && isAuto.value) {
+          updateSharedValue(isAuto, false);
+        }
+      });
+
+    const tap = Gesture.Tap()
+      .onEnd(() => {
+        runOnJS(onPress)();
+      });
+
+    return Gesture.Race(longPress, tap, pan);
+  }, [onLongPress, onPress, value, startVal, minValue, maxValue, invertDrag, onChange, isAuto]);
 
   return (
     <GestureDetector gesture={combinedGesture}>

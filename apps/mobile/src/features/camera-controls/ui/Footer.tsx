@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { StyleSheet, View, TextInput } from 'react-native';
 import { useShallow } from 'zustand/react/shallow';
 import { useUIStore } from '../model/useUIStore';
@@ -44,34 +44,36 @@ export const Footer = ({ translateY: externalTranslateY }: FooterProps) => {
 
   const MAX_UP = -250; // Massima altezza (aperto)
 
-  const panGesture = Gesture.Pan()
-    .activeOffsetY([-5, 5]) // Evita conflitti con scroll orizzontali
-    .onStart(() => {
-      startY.value = translateY.value;
-    })
-    .onUpdate((e) => {
-      let newY = startY.value + e.translationY;
-      // Clamp tra aperto e chiuso
-      if (newY < MAX_UP) newY = MAX_UP;
-      if (newY > 0) newY = 0;
-      // eslint-disable-next-line react-hooks/immutability
-      translateY.value = newY;
-    })
-    .onEnd((e) => {
-      const estimatedY = translateY.value + e.velocityY * 0.1;
-      const snapPoints = [0, -75, MAX_UP];
-      
-      const targetY = snapPoints.reduce((prev, curr) => 
-        Math.abs(curr - estimatedY) < Math.abs(prev - estimatedY) ? curr : prev
-      );
+  const panGesture = useMemo(() => {
+    return Gesture.Pan()
+      .activeOffsetY([-5, 5]) // Evita conflitti con scroll orizzontali
+      .onStart(() => {
+        startY.value = translateY.value;
+      })
+      .onUpdate((e) => {
+        let newY = startY.value + e.translationY;
+        // Clamp tra aperto e chiuso
+        if (newY < MAX_UP) newY = MAX_UP;
+        if (newY > 0) newY = 0;
+        // eslint-disable-next-line react-hooks/immutability
+        translateY.value = newY;
+      })
+      .onEnd((e) => {
+        const estimatedY = translateY.value + e.velocityY * 0.1;
+        const snapPoints = [0, -75, MAX_UP];
+        
+        const targetY = snapPoints.reduce((prev, curr) => 
+          Math.abs(curr - estimatedY) < Math.abs(prev - estimatedY) ? curr : prev
+        );
 
-      // eslint-disable-next-line react-hooks/immutability
-      translateY.value = withSpring(targetY, {
-        damping: 20,
-        stiffness: 200,
-        mass: 1,
+        // eslint-disable-next-line react-hooks/immutability
+        translateY.value = withSpring(targetY, {
+          damping: 20,
+          stiffness: 200,
+          mass: 1,
+        });
       });
-    });
+  }, [startY, translateY]);
 
   const debugTextProps = useAnimatedProps(() => {
     return {
