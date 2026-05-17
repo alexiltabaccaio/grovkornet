@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
-/* eslint-disable @typescript-eslint/no-explicit-any */
+ 
 import React from 'react';
 import { render, fireEvent, waitFor, act } from '@testing-library/react-native';
 import { CameraScreen } from './CameraScreen';
@@ -8,11 +8,11 @@ import { useHardwareStore } from '@features/camera-controls/model/useHardwareSto
 
 // Mock ConnectedFilmCamera to avoid native issues during integration test
 jest.mock('@features/camera-controls', () => {
-  const actual = jest.requireActual('@features/camera-controls');
-  const { View } = require('react-native');
+  const actual = jest.requireActual<{ ConnectedFilmCamera: unknown }>('@features/camera-controls');
+  const { View } = require('react-native') as typeof import('react-native');
   return {
     ...actual,
-    ConnectedFilmCamera: (_props: any) => <View testID="connected-camera" />,
+    ConnectedFilmCamera: (_props: unknown) => <View testID="connected-camera" />,
   };
 });
 
@@ -33,7 +33,7 @@ describe('CameraScreen Integration', () => {
     await waitFor(() => expect(queryByText('camera.requesting_permissions')).toBeNull());
 
     // Check if Footer sections are present
-    const exposureSection = getByText(/sections\.body/i);
+    const exposureSection = getByText(/sections\.body/i) as unknown as { props: unknown };
     expect(exposureSection).toBeDefined();
 
     // Click on Exposure section
@@ -52,11 +52,11 @@ describe('CameraScreen Integration', () => {
     
     // Switch to exposure section
     act(() => {
-      fireEvent.press(getByText(/sections\.body/i));
+      fireEvent.press(getByText(/sections\.body/i) as unknown);
     });
 
     // Find ISO control
-    const isoControl = getByText(/parameters\.iso/i);
+    const isoControl = getByText(/parameters\.iso/i) as unknown as { props: unknown };
     
     // Simulate press on ISO control to make it active
     fireEvent.press(isoControl);

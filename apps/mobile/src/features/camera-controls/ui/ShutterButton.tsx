@@ -22,13 +22,13 @@ export const ShutterButton = ({ onPress, disabled, translateY }: ShutterButtonPr
 
   const handlePressIn = () => {
     if (disabled || (translateY && translateY.value < -50)) return;
-    // eslint-disable-next-line react-hooks/immutability
+     
     scale.value = withSpring(0.9, { damping: 10, stiffness: 300 });
     void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
   };
 
   const handlePressOut = () => {
-    // eslint-disable-next-line react-hooks/immutability
+     
     scale.value = withSpring(1, { damping: 10, stiffness: 300 });
   };
 

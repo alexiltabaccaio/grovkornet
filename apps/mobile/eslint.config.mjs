@@ -36,6 +36,7 @@ export default [
       ...tsPlugin.configs['recommended-requiring-type-checking'].rules,
       ...reactPlugin.configs.recommended.rules,
       ...reactHooksPlugin.configs.recommended.rules,
+      'react-hooks/immutability': 'off',
       '@typescript-eslint/no-explicit-any': 'error',
       '@typescript-eslint/no-unused-vars': 'off',
       'unused-imports/no-unused-imports': 'error',
@@ -94,9 +95,48 @@ export default [
       }],
     }
   },
+  {
+    files: ['src/features/**/*.{ts,tsx}'],
+    rules: {
+      'no-restricted-imports': ['error', {
+        patterns: [
+          {
+            group: ['@app/**', '@screens/**', '@widgets/**'],
+            message: 'The "features" layer cannot import from higher layers.',
+          }
+        ]
+      }],
+    }
+  },
+  {
+    files: ['src/widgets/**/*.{ts,tsx}'],
+    rules: {
+      'no-restricted-imports': ['error', {
+        patterns: [
+          {
+            group: ['@app/**', '@screens/**'],
+            message: 'The "widgets" layer cannot import from higher layers.',
+          }
+        ]
+      }],
+    }
+  },
+  {
+    files: ['src/screens/**/*.{ts,tsx}'],
+    rules: {
+      'no-restricted-imports': ['error', {
+        patterns: [
+          {
+            group: ['@app/**'],
+            message: 'The "screens" layer cannot import from higher layers.',
+          }
+        ]
+      }],
+    }
+  },
   // --- TEST FILES: RELAXED TYPE CHECKING FOR MOCKS ---
   {
-    files: ['**/*.test.{ts,tsx}', '**/__tests__/**', 'jest.setup.ts', '**/__mocks__/**'],
+    files: ['**/*.test.{ts,tsx}', '**/__tests__/**', '**/__mocks__/**'],
     rules: {
       '@typescript-eslint/no-unsafe-assignment': 'warn',
       '@typescript-eslint/no-unsafe-member-access': 'warn',
@@ -104,6 +144,18 @@ export default [
       '@typescript-eslint/no-unsafe-return': 'warn',
       '@typescript-eslint/no-explicit-any': 'warn',
       '@typescript-eslint/no-unsafe-argument': 'warn',
+    },
+  },
+  {
+    files: ['jest.setup.ts'],
+    rules: {
+      '@typescript-eslint/no-unsafe-assignment': 'off',
+      '@typescript-eslint/no-unsafe-member-access': 'off',
+      '@typescript-eslint/no-unsafe-call': 'off',
+      '@typescript-eslint/no-unsafe-return': 'off',
+      '@typescript-eslint/no-explicit-any': 'off',
+      '@typescript-eslint/no-unsafe-argument': 'off',
+      'unused-imports/no-unused-vars': 'off',
     },
   },
 ];

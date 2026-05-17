@@ -45,6 +45,7 @@ firebase-export-*
 **/ios/*.xcworkspace/xcuserdata/
 
 # OS / Misc
+.vscode/
 .env*.local
 .env
 .DS_Store
@@ -54,6 +55,7 @@ Thumbs.db
 coverage/
 web-build/
 .next/
+out/
 *.jsbundle
 *.bundle
 *.bundle.map

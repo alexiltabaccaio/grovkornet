@@ -45,7 +45,7 @@ export const useCameraEvents = (
     const nativeEvent = (event.nativeEvent || event) as DebugUpdatePayload;
     updateSharedValue(hwStore.fps, nativeEvent.fps);
     updateSharedValue(hwStore.hwFps, nativeEvent.hwFps);
-    // eslint-disable-next-line react-hooks/immutability
+     
     hwStore.resolution.value = nativeEvent.resolution;
   }, ['onDebugUpdate']);
 

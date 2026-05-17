@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
-/* eslint-disable @typescript-eslint/no-explicit-any */
+ 
 import React from 'react';
 import { render } from '@testing-library/react-native';
 import { ConnectedFilmCamera } from './ConnectedFilmCamera';
@@ -8,11 +8,21 @@ import { useStylesStore } from '../model/useStylesStore';
 
 // Mock NativeFilmCamera
 jest.mock('@entities/camera/ui/NativeFilmCamera', () => {
-  const { View } = require('react-native');
+  const { View } = require('react-native') as typeof import('react-native');
   return {
-    NativeFilmCamera: (props: any) => <View testID="native-camera" {...props} />,
+    NativeFilmCamera: (props: unknown) => <View testID="native-camera" {...(props as Record<string, unknown>)} />,
   };
 });
+
+interface MockCameraInstance {
+  props: {
+    saturation: { value: number };
+    iso: { value: number };
+    aspectRatio: { value: number };
+    onDebugUpdate: (event: { nativeEvent: { fps: number; hwFps: number; resolution: string } }) => void;
+    onExposureUpdate: (event: { nativeEvent: { iso: number; shutterSpeed: number } }) => void;
+  };
+}
 
 describe('ConnectedFilmCamera', () => {
   it('correctly maps store values to NativeFilmCamera props', () => {
@@ -25,7 +35,7 @@ describe('ConnectedFilmCamera', () => {
     hwStore.aspectRatio.value = 1; // 16:9
 
     const { getByTestId } = render(<ConnectedFilmCamera />);
-    const nativeCamera = getByTestId('native-camera');
+    const nativeCamera = getByTestId('native-camera') as unknown as MockCameraInstance;
 
     // Check if props match store values
     expect(nativeCamera.props.saturation.value).toBe(1.5);
@@ -37,7 +47,7 @@ describe('ConnectedFilmCamera', () => {
     const hwStore = useHardwareStore.getState();
 
     const { getByTestId } = render(<ConnectedFilmCamera />);
-    const nativeCamera = getByTestId('native-camera');
+    const nativeCamera = getByTestId('native-camera') as unknown as MockCameraInstance;
 
     // Simulate native event
     nativeCamera.props.onDebugUpdate({
@@ -58,7 +68,7 @@ describe('ConnectedFilmCamera', () => {
     hwStore.isoAuto.value = true;
     
     const { getByTestId } = render(<ConnectedFilmCamera />);
-    const nativeCamera = getByTestId('native-camera');
+    const nativeCamera = getByTestId('native-camera') as unknown as MockCameraInstance;
 
     // Simulate exposure update from native side
     nativeCamera.props.onExposureUpdate({

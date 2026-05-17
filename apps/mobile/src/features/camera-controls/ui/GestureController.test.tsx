@@ -8,13 +8,13 @@ import { useUIStore } from '../model/useUIStore';
 jest.mock('../model/useUIStore');
 
 describe('GestureController', () => {
-  const mockUIStore = {
+  const _mockUIStore = {
     gestureConfig: null,
   };
 
   beforeEach(() => {
     jest.clearAllMocks();
-    (useUIStore as unknown as jest.Mock).mockImplementation((selector) => {
+    (useUIStore as unknown as jest.Mock).mockImplementation((selector?: (state: { gestureConfig: unknown }) => unknown) => {
       const state = {
         gestureConfig: null,
       };
@@ -32,7 +32,7 @@ describe('GestureController', () => {
   });
 
   it('should render correctly when gestureConfig is provided', () => {
-    (useUIStore as unknown as jest.Mock).mockImplementation((selector) => {
+    (useUIStore as unknown as jest.Mock).mockImplementation((selector?: (state: { gestureConfig: unknown }) => unknown) => {
       const state = {
         gestureConfig: {
           value: { value: 0.5 },
