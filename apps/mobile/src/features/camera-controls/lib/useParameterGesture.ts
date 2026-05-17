@@ -70,14 +70,16 @@ export const useParameterGesture = ({
         const delta = -(e.translationY / THUMB_SENSITIVITY) * range * direction;
         const newValue = Math.min(Math.max(startVal.value + delta, minValue), maxValue);
         
-        updateSharedValue(value, newValue);
-        
-        if (onChange) {
-          runOnJS(onChange)(newValue);
-        }
-        
-        if (isAuto && isAuto.value) {
-          updateSharedValue(isAuto, false);
+        if (newValue !== value.value) {
+          updateSharedValue(value, newValue);
+          
+          if (onChange) {
+            runOnJS(onChange)(newValue);
+          }
+          
+          if (isAuto && isAuto.value) {
+            updateSharedValue(isAuto, false);
+          }
         }
       });
 

@@ -48,10 +48,12 @@ export const GestureController = ({ children }: GestureControllerProps) => {
         
         const newValue = Math.min(Math.max(startVal.value + delta, minValue), maxValue);
         
-        updateSharedValue(value, newValue);
-        
-        if (onChange) {
-          runOnJS(onChange)(newValue);
+        if (newValue !== value.value) {
+          updateSharedValue(value, newValue);
+          
+          if (onChange) {
+            runOnJS(onChange)(newValue);
+          }
         }
       });
 
