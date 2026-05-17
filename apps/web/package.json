@@ -12,7 +12,8 @@
     "react": "19.0.0",
     "react-dom": "19.0.0",
     "next": "15.3.9",
-    "@grovkornet/shared": "file:../../packages/shared"
+    "@grovkornet/shared": "file:../../packages/shared",
+    "@vercel/analytics": "^1.4.0"
   },
   "devDependencies": {
     "typescript": "^5.3.3",
