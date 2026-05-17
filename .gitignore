@@ -4,23 +4,40 @@ dist/
 npm-debug.*
 yarn-debug.*
 yarn-error.*
+*.log
+.eslintcache
+*.tsbuildinfo
+
+# Turbo
+.turbo/
+
+# Security / Secrets
+*.pem
+*.cer
+*.p12
+*.jks
+*.keystore
+*.key
+!debug.keystore
+
 # Android
-android/.gradle
-android/build/
-android/app/build/
-android/app/.cxx/
-android/local.properties
+**/android/.gradle
+**/android/build/
+**/android/app/build/
+**/android/app/.cxx/
+**/android/.cxx/
+**/android/local.properties
 *.iml
 .idea/
 *.apk
 *.aab
 
 # iOS
-ios/Pods/
-ios/build/
+**/ios/Pods/
+**/ios/build/
 *.xcworkspace/xcuserdata/
 *.xcodeproj/xcuserdata/
-ios/*.xcworkspace/xcuserdata/
+**/ios/*.xcworkspace/xcuserdata/
 
 # OS / Misc
 .env*.local
@@ -30,7 +47,6 @@ Thumbs.db
 
 # Testing / Build
 coverage/
-dist/
 web-build/
 .next/
 *.jsbundle
