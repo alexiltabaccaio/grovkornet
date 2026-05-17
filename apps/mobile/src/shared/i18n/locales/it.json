@@ -30,6 +30,7 @@
       "saturation": "SATURAZIONE",
       "contrast": "CONTRASTO",
       "chromatic_aberration": "ABERRAZIONE CROMATICA",
+      "direction": "DIREZIONE",
       "iso": "ISO",
       "ev": "EV",
       "shutter_speed": "TEMPI",

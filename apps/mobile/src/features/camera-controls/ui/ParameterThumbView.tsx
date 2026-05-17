@@ -191,7 +191,7 @@ export const ParameterThumbView = forwardRef<View, ParameterThumbViewProps>(({
         )}
       </View>
       <Text style={[styles.filterText, isActive && styles.filterTextActive]}>
-        {label.toUpperCase()}
+        {label.toUpperCase().split(' ').join('\n')}
       </Text>
     </Animated.View>
   );
@@ -248,6 +248,7 @@ const styles = StyleSheet.create({
     fontSize: 11,
     fontWeight: '700',
     letterSpacing: 0.5,
+    textAlign: 'center',
   },
   filterTextActive: {
     color: '#FFF',
