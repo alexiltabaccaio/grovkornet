@@ -32,6 +32,7 @@ Thumbs.db
 coverage/
 dist/
 web-build/
+.next/
 *.jsbundle
 *.bundle
 *.bundle.map
