@@ -11,10 +11,14 @@
     "hoistingLimits": "workspaces"
   },
   "scripts": {
-    "build": "turbo run build",
     "dev": "turbo run dev",
-    "dev:mobile": "turbo run dev --filter=@grovkornet/mobile",
     "dev:web": "turbo run dev --filter=@grovkornet/web",
+    "dev:android": "turbo run dev --filter=@grovkornet/mobile",
+    "dev:mobile": "turbo run dev --filter=@grovkornet/mobile",
+    "build": "turbo run build",
+    "build:web": "turbo run build --filter=@grovkornet/web",
+    "build:android": "turbo run build --filter=@grovkornet/mobile",
+    "build:mobile": "turbo run build --filter=@grovkornet/mobile",
     "lint": "turbo run lint"
   },
   "devDependencies": {
