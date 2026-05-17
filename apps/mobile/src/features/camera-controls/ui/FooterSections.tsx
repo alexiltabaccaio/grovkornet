@@ -45,7 +45,7 @@ export const FooterSections = () => {
             key={section.id}
             style={[styles.tabButton, isDebugEnabled && styles.debugTabButton]}
             onPress={() => handleSectionChange(section.id)}
-            hitSlop={{ top: 20, bottom: 20, left: 0, right: 0 }}
+            hitSlop={{ top: 0, bottom: 0, left: 0, right: 0 }}
           >
             {isDebugEnabled && (
               <View style={styles.debugHitbox} pointerEvents="none" />
@@ -60,8 +60,8 @@ export const FooterSections = () => {
 
 const styles = StyleSheet.create({
   bottomFooterWrapper: {
-    paddingTop: 16,
-    paddingBottom: 16,
+    paddingTop: 0,
+    paddingBottom: 0,
     backgroundColor: '#000',
   },
 
@@ -76,7 +76,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 4,
+    paddingVertical: 20,
   },
   debugTabButton: {
     borderWidth: 1,
@@ -84,8 +84,8 @@ const styles = StyleSheet.create({
   },
   debugHitbox: {
     position: 'absolute',
-    top: -20,
-    bottom: -20,
+    top: 0,
+    bottom: 0,
     left: 0,
     right: 0,
     borderWidth: 1,

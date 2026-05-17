@@ -60,9 +60,9 @@ export const Footer = ({ translateY: externalTranslateY }: FooterProps) => {
       })
       .onEnd((e) => {
         const estimatedY = translateY.value + e.velocityY * 0.1;
-        const snapPoints = [0, -90, MAX_UP];
-        
-        const targetY = snapPoints.reduce((prev, curr) => 
+        const snapPoints = [0, -75, MAX_UP];
+
+        const targetY = snapPoints.reduce((prev, curr) =>
           Math.abs(curr - estimatedY) < Math.abs(prev - estimatedY) ? curr : prev
         );
 
@@ -99,13 +99,13 @@ export const Footer = ({ translateY: externalTranslateY }: FooterProps) => {
   return (
     <View style={styles.container} pointerEvents="box-none">
       <View style={[styles.unifiedBackgroundBase, styles.unifiedBackgroundClosed]} pointerEvents="none" />
-      <Animated.View 
+      <Animated.View
         style={[
           styles.unifiedBackgroundBase,
           styles.unifiedBackgroundOpen,
           animatedBackgroundStyle
-        ]} 
-        pointerEvents="none" 
+        ]}
+        pointerEvents="none"
       />
       <Animated.View style={[styles.topFooterContainer, animatedTopFooterStyle]} pointerEvents={isSheetVisible ? "box-none" : "none"}>
         <GestureDetector gesture={panGesture}>
@@ -157,7 +157,7 @@ const styles = StyleSheet.create({
   },
   unifiedBackgroundOpen: {
     bottom: -1000,
-    height: 1220, 
+    height: 1220,
   },
 
   topFooterContainer: {

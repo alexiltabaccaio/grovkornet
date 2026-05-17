@@ -14,7 +14,7 @@ interface SubParameterPanelProps {
 
 export const SubParameterPanel = ({ translateY }: SubParameterPanelProps) => {
   const { t } = useTranslation();
-  
+
   const { activeParameter, activeSubParameter, setActiveSubParameter } = useUIStore(useShallow(state => ({
     activeParameter: state.activeParameter,
     activeSubParameter: state.activeSubParameter,
@@ -50,7 +50,7 @@ export const SubParameterPanel = ({ translateY }: SubParameterPanelProps) => {
 
     const opacity = interpolate(
       translateY.value,
-      [-90, -25, 0],
+      [-75, -25, 0],
       [1, 0, 0],
       Extrapolation.CLAMP
     );

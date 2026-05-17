@@ -67,7 +67,7 @@ export const ParameterThumbView = forwardRef<View, ParameterThumbViewProps>(({
   const animatedTextProps = useAnimatedProps(() => {
     const isShowingValue = renderValue || variant === 'text';
     if (!value || !isShowingValue) return { text: '' };
-    
+
     if (isAuto && isAuto.value && hideValueInAuto) {
       /* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unnecessary-type-assertion */
       return {
@@ -131,12 +131,12 @@ export const ParameterThumbView = forwardRef<View, ParameterThumbViewProps>(({
   const isShowingValue = renderValue || variant === 'text';
 
   return (
-    <Animated.View 
+    <Animated.View
       ref={ref}
       style={[
         styles.filterThumb,
         isDebugEnabled && { backgroundColor: 'rgba(0, 255, 0, 0.2)', borderWidth: 1, borderColor: 'green' }
-      ]} 
+      ]}
       hitSlop={{ top: 20, bottom: 20, left: 20, right: 20 }}
     >
       <View style={[
@@ -147,7 +147,7 @@ export const ParameterThumbView = forwardRef<View, ParameterThumbViewProps>(({
         isDebugEnabled && variant === 'text' && { backgroundColor: 'rgba(255,0,0,0.2)', borderWidth: 1, borderColor: 'red' }
       ]}>
         {variant === 'square' && <Animated.View style={[styles.progressFill, animatedBgStyle]} />}
-        
+
         {isShowingValue && value ? (
           <View pointerEvents="none" style={[StyleSheet.absoluteFill, { justifyContent: 'center', alignItems: 'center' }]}>
             <AnimatedTextInput
@@ -155,7 +155,7 @@ export const ParameterThumbView = forwardRef<View, ParameterThumbViewProps>(({
               underlineColorAndroid="transparent"
               editable={false}
               style={[
-                styles.valueText, 
+                styles.valueText,
                 variant === 'text' && styles.valueTextLarge,
                 animatedTextStyle
               ]}
@@ -163,18 +163,18 @@ export const ParameterThumbView = forwardRef<View, ParameterThumbViewProps>(({
             />
           </View>
         ) : staticText ? (
-          <Text 
+          <Text
             style={[
-            styles.valueText, 
-            variant === 'text' && styles.valueTextLarge,
-            { color: isActive ? "#FFF" : "#666" }
-          ]}>
+              styles.valueText,
+              variant === 'text' && styles.valueTextLarge,
+              { color: isActive ? "#FFF" : "#666" }
+            ]}>
             {staticText}
           </Text>
         ) : icon ? (
           <AnimatedIcon name={icon} size={24} style={{ zIndex: 1 }} animatedProps={animatedIconProps} />
         ) : null}
-        
+
         {(isAuto || disabled) && (
           <AnimatedTextInput
             pointerEvents="none"
@@ -184,16 +184,13 @@ export const ParameterThumbView = forwardRef<View, ParameterThumbViewProps>(({
             animatedProps={animatedBadgeProps}
           />
         )}
-        
+
 
         {variant === 'square' && (
           <View style={[styles.borderOverlay, isActive && styles.borderOverlayActive]} pointerEvents="none" />
         )}
       </View>
-      <Text 
-        style={[styles.filterText, isActive && styles.filterTextActive]}
-        numberOfLines={2}
-      >
+      <Text style={[styles.filterText, isActive && styles.filterTextActive]}>
         {label.toUpperCase()}
       </Text>
     </Animated.View>
@@ -251,8 +248,6 @@ const styles = StyleSheet.create({
     fontSize: 11,
     fontWeight: '700',
     letterSpacing: 0.5,
-    textAlign: 'center',
-    maxWidth: 90,
   },
   filterTextActive: {
     color: '#FFF',
