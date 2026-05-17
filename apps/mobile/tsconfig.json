@@ -5,6 +5,7 @@
     "baseUrl": ".",
     "paths": {
       "@grovkornet/shared": ["../../packages/shared/src"],
+      "@grovkornet/engine": ["../../packages/engine/src"],
       "@app/*": ["src/app/*"],
       "@screens/*": ["src/screens/*"],
       "@widgets/*": ["src/widgets/*"],

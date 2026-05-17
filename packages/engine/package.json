@@ -1,5 +1,5 @@
 {
-  "name": "native-film-camera",
+  "name": "@grovkornet/engine",
   "version": "1.0.0",
   "description": "Local expo module for custom film camera with Uber Shader",
   "main": "src/index.ts",

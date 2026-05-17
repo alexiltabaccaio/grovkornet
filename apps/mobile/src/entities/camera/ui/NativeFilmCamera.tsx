@@ -1,6 +1,6 @@
 import React, { forwardRef, useImperativeHandle, useRef } from 'react';
 import Animated, { AnimateProps } from 'react-native-reanimated';
-import { NativeFilmCameraView, NativeFilmCameraViewProps } from '../../../../modules/native-film-camera';
+import { NativeFilmCameraView, NativeFilmCameraViewProps } from '@grovkornet/engine';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-assignment
 const AnimatedNativeFilmCamera = Animated.createAnimatedComponent(NativeFilmCameraView) as any;
