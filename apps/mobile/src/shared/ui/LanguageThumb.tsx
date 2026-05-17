@@ -1,5 +1,6 @@
 import React from 'react';
-import { StyleSheet, Text, View, Pressable } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 import { Image, ImageSourcePropType } from 'react-native';
 
 // eslint-disable-next-line @typescript-eslint/no-require-imports
@@ -23,7 +24,7 @@ export const LanguageThumb = ({
   const imageSource = languageCode === 'en' ? enFlag : itFlag;
 
   return (
-    <Pressable style={styles.container} onPress={onPress}>
+    <TouchableOpacity style={styles.container} onPress={onPress} activeOpacity={0.7}>
       <View style={[
         styles.placeholder,
         isActive && styles.placeholderActive
@@ -37,7 +38,7 @@ export const LanguageThumb = ({
       <Text style={[styles.text, isActive && styles.textActive]}>
         {label.toUpperCase()}
       </Text>
-    </Pressable>
+    </TouchableOpacity>
   );
 };
 

@@ -47,6 +47,7 @@ export const Footer = ({ translateY: externalTranslateY }: FooterProps) => {
   const panGesture = useMemo(() => {
     return Gesture.Pan()
       .activeOffsetY([-5, 5]) // Evita conflitti con scroll orizzontali
+      .failOffsetX([-5, 5]) // Fa fallire la gesture se ci si muove orizzontalmente, sbloccando i tocchi
       .onStart(() => {
         startY.value = translateY.value;
       })
