@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { View } from 'react-native';
 import Animated, { useSharedValue } from 'react-native-reanimated';
 import { useTranslation } from 'react-i18next';
@@ -53,24 +53,51 @@ export const OpticsModule = ({ handlePressWithDouble }: OpticsModuleProps) => {
     autoShared.value = cameraAuto;
   }, [cameraAuto, autoShared]);
 
+  const currentIndex = capabilities.availableCameras.findIndex(c => c.id === cameraId);
+  const selectedIndex = currentIndex === -1 ? 0 : currentIndex;
+  
+  const indexShared = useSharedValue(selectedIndex);
+  useEffect(() => {
+    indexShared.value = selectedIndex;
+  }, [selectedIndex, indexShared]);
+
+  const handleIndexChange = (val: number) => {
+    const intVal = Math.round(val);
+    const cam = capabilities.availableCameras[intVal];
+    if (cam && cam.id !== cameraId) {
+      setCameraId(cam.id);
+    }
+  };
+
+  const focalLengths = useMemo(() => capabilities.availableCameras.map(c => c.focalLength35mm), [capabilities.availableCameras]);
+
+  const formatLens = (val: number) => {
+    'worklet';
+    const index = Math.round(val);
+    if (index >= 0 && index < focalLengths.length) {
+      return `${focalLengths[index]}mm`;
+    }
+    return '';
+  };
+
   return (
     <Animated.View style={footerStyles.tabContent}>
       <View style={footerStyles.imageToolsContainer}>
-        {capabilities.availableCameras.map((cam) => (
+        {capabilities.availableCameras.length > 0 && (
           <ParameterControl
-            key={cam.id}
             label={t('parameters.lens')}
-            isActive={activeParameter === 'camera_selection' && cameraId === cam.id}
-            onPress={() => handlePressWithDouble('camera_selection', () => {
-                setCameraId(cam.id);
-                setActiveParameter('camera_selection');
-            })}
+            isActive={activeParameter === 'camera_selection'}
+            onPress={() => handlePressWithDouble('camera_selection', () => setActiveParameter('camera_selection'))}
+            value={indexShared}
+            minValue={0}
+            maxValue={Math.max(0, capabilities.availableCameras.length - 1)}
+            onChange={handleIndexChange}
             variant="text"
             isAuto={autoShared}
             onLongPress={() => setCameraAuto(true)}
-            staticText={`${cam.focalLength35mm}mm`}
+            valueFormatter={formatLens}
           />
-        ))}
+        )}
         <ParameterControl
           label={t('parameters.focus')}
           isActive={activeParameter === 'focus'}

@@ -60,7 +60,7 @@ export const Footer = ({ translateY: externalTranslateY }: FooterProps) => {
       })
       .onEnd((e) => {
         const estimatedY = translateY.value + e.velocityY * 0.1;
-        const snapPoints = [0, -75, MAX_UP];
+        const snapPoints = [0, -90, MAX_UP];
         
         const targetY = snapPoints.reduce((prev, curr) => 
           Math.abs(curr - estimatedY) < Math.abs(prev - estimatedY) ? curr : prev

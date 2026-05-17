@@ -190,7 +190,10 @@ export const ParameterThumbView = forwardRef<View, ParameterThumbViewProps>(({
           <View style={[styles.borderOverlay, isActive && styles.borderOverlayActive]} pointerEvents="none" />
         )}
       </View>
-      <Text style={[styles.filterText, isActive && styles.filterTextActive]}>
+      <Text 
+        style={[styles.filterText, isActive && styles.filterTextActive]}
+        numberOfLines={2}
+      >
         {label.toUpperCase()}
       </Text>
     </Animated.View>
@@ -248,6 +251,8 @@ const styles = StyleSheet.create({
     fontSize: 11,
     fontWeight: '700',
     letterSpacing: 0.5,
+    textAlign: 'center',
+    maxWidth: 90,
   },
   filterTextActive: {
     color: '#FFF',

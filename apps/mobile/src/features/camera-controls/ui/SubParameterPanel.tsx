@@ -50,7 +50,7 @@ export const SubParameterPanel = ({ translateY }: SubParameterPanelProps) => {
 
     const opacity = interpolate(
       translateY.value,
-      [-75, -25, 0],
+      [-90, -25, 0],
       [1, 0, 0],
       Extrapolation.CLAMP
     );
