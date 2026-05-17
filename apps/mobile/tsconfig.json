@@ -4,7 +4,7 @@
     "strict": true,
     "baseUrl": ".",
     "paths": {
-      "@grovkornet/shared": ["./packages/shared/src"],
+      "@grovkornet/shared": ["../../packages/shared/src"],
       "@app/*": ["src/app/*"],
       "@screens/*": ["src/screens/*"],
       "@widgets/*": ["src/widgets/*"],
@@ -14,5 +14,5 @@
       "@/*": ["src/*"]
     }
   },
-  "exclude": ["node_modules", "apps/**/*"]
+  "exclude": ["node_modules"]
 }

@@ -1,7 +1,6 @@
 import React from 'react';
 import { render } from '@testing-library/react-native';
 import { TextureModule } from './TextureModule';
-import { ParameterType } from '@shared/types/camera';
 
 jest.mock('../../../model/useUIStore', () => ({
   useUIStore: jest.fn((fn) => fn({

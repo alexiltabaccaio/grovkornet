@@ -1,6 +1,6 @@
 import React from 'react';
 import { ScrollView } from 'react-native-gesture-handler';
-import Animated, { useDerivedValue } from 'react-native-reanimated';
+import Animated from 'react-native-reanimated';
 import { useTranslation } from 'react-i18next';
 import { useShallow } from 'zustand/react/shallow';
 import { useUIStore } from '../../../model/useUIStore';

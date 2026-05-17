@@ -1,0 +1,142 @@
+
+> @grovkornet/mobile@1.0.0 lint
+> npx tsc --noEmit && eslint .
+
+
+C:\Users\alexg\Documents\grovkornet\apps\mobile\jest.setup.ts
+    6:9   warning  Unsafe assignment of an `any` value                                  @typescript-eslint/no-unsafe-assignment
+    8:30  warning  Unsafe assignment of an `any` value                                  @typescript-eslint/no-unsafe-assignment
+   14:35  warning  Unsafe return of a value of type `any`                               @typescript-eslint/no-unsafe-return
+   15:46  warning  Unsafe assignment of an `any` value                                  @typescript-eslint/no-unsafe-assignment
+   15:53  warning  Unsafe call of an `any` typed value                                  @typescript-eslint/no-unsafe-call
+   16:37  warning  Unsafe return of a value of type `any`                               @typescript-eslint/no-unsafe-return
+   17:37  warning  Unsafe return of a value of type `any`                               @typescript-eslint/no-unsafe-return
+   18:47  warning  Unsafe return of a value of type `any`                               @typescript-eslint/no-unsafe-return
+   19:44  warning  Unsafe return of a value of type `any`                               @typescript-eslint/no-unsafe-return
+   19:44  warning  Unsafe call of an `any` typed value                                  @typescript-eslint/no-unsafe-call
+   20:44  warning  Unsafe return of a value of type `any`                               @typescript-eslint/no-unsafe-return
+   20:44  warning  Unsafe call of an `any` typed value                                  @typescript-eslint/no-unsafe-call
+   21:53  warning  Unsafe return of a value of type `any`                               @typescript-eslint/no-unsafe-return
+   22:30  warning  'i' is defined but never used. Allowed unused args must match /^_/u  unused-imports/no-unused-vars
+   22:33  warning  'o' is defined but never used. Allowed unused args must match /^_/u  unused-imports/no-unused-vars
+   22:39  warning  Unsafe return of a value of type `any`                               @typescript-eslint/no-unsafe-return
+   26:34  warning  Unsafe return of a value of type `any`                               @typescript-eslint/no-unsafe-return
+   27:32  warning  'v' is defined but never used. Allowed unused args must match /^_/u  unused-imports/no-unused-vars
+   27:35  warning  'i' is defined but never used. Allowed unused args must match /^_/u  unused-imports/no-unused-vars
+   27:38  warning  'o' is defined but never used. Allowed unused args must match /^_/u  unused-imports/no-unused-vars
+   32:7   warning  Unsafe assignment of an `any` value                                  @typescript-eslint/no-unsafe-assignment
+   33:7   warning  Unsafe assignment of an `any` value                                  @typescript-eslint/no-unsafe-assignment
+   34:7   warning  Unsafe assignment of an `any` value                                  @typescript-eslint/no-unsafe-assignment
+   35:55  warning  Unsafe return of a value of type `any`                               @typescript-eslint/no-unsafe-return
+   39:3   warning  Unsafe assignment of an `any` value                                  @typescript-eslint/no-unsafe-assignment
+   39:35  warning  Unsafe member access .View on an `any` value                         @typescript-eslint/no-unsafe-member-access
+   40:3   warning  Unsafe assignment of an `any` value                                  @typescript-eslint/no-unsafe-assignment
+   40:35  warning  Unsafe member access .Text on an `any` value                         @typescript-eslint/no-unsafe-member-access
+   41:3   warning  Unsafe assignment of an `any` value                                  @typescript-eslint/no-unsafe-assignment
+   41:35  warning  Unsafe member access .TextInput on an `any` value                    @typescript-eslint/no-unsafe-member-access
+   67:9   warning  Unsafe assignment of an `any` value                                  @typescript-eslint/no-unsafe-assignment
+   68:3   warning  Unsafe return of a value of type `any`                               @typescript-eslint/no-unsafe-return
+   71:13  warning  Unsafe assignment of an `any` value                                  @typescript-eslint/no-unsafe-assignment
+   72:7   warning  Unsafe return of a value of type `any`                               @typescript-eslint/no-unsafe-return
+   79:9   warning  Unsafe assignment of an `any` value                                  @typescript-eslint/no-unsafe-assignment
+   83:9   warning  Unsafe member access .hitSlop on an `any` value                      @typescript-eslint/no-unsafe-member-access
+   83:33  warning  Unsafe return of a value of type `any`                               @typescript-eslint/no-unsafe-return
+   84:9   warning  Unsafe member access .activeOffsetY on an `any` value                @typescript-eslint/no-unsafe-member-access
+   84:39  warning  Unsafe return of a value of type `any`                               @typescript-eslint/no-unsafe-return
+   85:9   warning  Unsafe member access .activeOffsetX on an `any` value                @typescript-eslint/no-unsafe-member-access
+   85:39  warning  Unsafe return of a value of type `any`                               @typescript-eslint/no-unsafe-return
+   86:9   warning  Unsafe member access .failOffsetX on an `any` value                  @typescript-eslint/no-unsafe-member-access
+   86:37  warning  Unsafe return of a value of type `any`                               @typescript-eslint/no-unsafe-return
+   87:9   warning  Unsafe member access .failOffsetY on an `any` value                  @typescript-eslint/no-unsafe-member-access
+   87:37  warning  Unsafe return of a value of type `any`                               @typescript-eslint/no-unsafe-return
+   88:9   warning  Unsafe member access .onStart on an `any` value                      @typescript-eslint/no-unsafe-member-access
+   88:33  warning  Unsafe return of a value of type `any`                               @typescript-eslint/no-unsafe-return
+   89:9   warning  Unsafe member access .onUpdate on an `any` value                     @typescript-eslint/no-unsafe-member-access
+   89:34  warning  Unsafe return of a value of type `any`                               @typescript-eslint/no-unsafe-return
+   90:9   warning  Unsafe member access .onEnd on an `any` value                        @typescript-eslint/no-unsafe-member-access
+   90:31  warning  Unsafe return of a value of type `any`                               @typescript-eslint/no-unsafe-return
+   91:9   warning  Unsafe member access .onFinalize on an `any` value                   @typescript-eslint/no-unsafe-member-access
+   91:36  warning  Unsafe return of a value of type `any`                               @typescript-eslint/no-unsafe-return
+   92:9   warning  Unsafe member access .minDistance on an `any` value                  @typescript-eslint/no-unsafe-member-access
+   92:37  warning  Unsafe return of a value of type `any`                               @typescript-eslint/no-unsafe-return
+   93:9   warning  Unsafe member access .enabled on an `any` value                      @typescript-eslint/no-unsafe-member-access
+   93:33  warning  Unsafe return of a value of type `any`                               @typescript-eslint/no-unsafe-return
+   94:9   warning  Unsafe member access .runOnJS on an `any` value                      @typescript-eslint/no-unsafe-member-access
+   94:33  warning  Unsafe return of a value of type `any`                               @typescript-eslint/no-unsafe-return
+   95:9   warning  Unsafe member access .toGestureArray on an `any` value               @typescript-eslint/no-unsafe-member-access
+   95:40  warning  Unsafe return of a value of type `any[]`                             @typescript-eslint/no-unsafe-return
+   96:5   warning  Unsafe return of a value of type `any`                               @typescript-eslint/no-unsafe-return
+   99:3   warning  Unsafe return of a value of type `any`                               @typescript-eslint/no-unsafe-return
+  101:45  warning  Unsafe return of a value of type `any`                               @typescript-eslint/no-unsafe-return
+  102:5   warning  Unsafe assignment of an `any` value                                  @typescript-eslint/no-unsafe-assignment
+  103:17  warning  Unsafe member access .Gesture on an `any` value                      @typescript-eslint/no-unsafe-member-access
+  104:18  warning  Unsafe return of a value of type `any`                               @typescript-eslint/no-unsafe-return
+  105:18  warning  Unsafe return of a value of type `any`                               @typescript-eslint/no-unsafe-return
+  106:24  warning  Unsafe return of a value of type `any`                               @typescript-eslint/no-unsafe-return
+  128:9   warning  Unsafe assignment of an `any` value                                  @typescript-eslint/no-unsafe-assignment
+  138:3   warning  Unsafe return of a value of type `any`                               @typescript-eslint/no-unsafe-return
+
+C:\Users\alexg\Documents\grovkornet\apps\mobile\src\features\camera-controls\ui\ConnectedFilmCamera.test.tsx
+  11:9   warning  Unsafe assignment of an `any` value                            @typescript-eslint/no-unsafe-assignment
+  28:11  warning  Unsafe assignment of an error typed value                      @typescript-eslint/no-unsafe-assignment
+  31:25  warning  Unsafe member access .props on a type that cannot be resolved  @typescript-eslint/no-unsafe-member-access
+  32:25  warning  Unsafe member access .props on a type that cannot be resolved  @typescript-eslint/no-unsafe-member-access
+  33:25  warning  Unsafe member access .props on a type that cannot be resolved  @typescript-eslint/no-unsafe-member-access
+  40:11  warning  Unsafe assignment of an error typed value                      @typescript-eslint/no-unsafe-assignment
+  43:5   warning  Unsafe call of a type that could not be resolved               @typescript-eslint/no-unsafe-call
+  43:18  warning  Unsafe member access .props on a type that cannot be resolved  @typescript-eslint/no-unsafe-member-access
+  61:11  warning  Unsafe assignment of an error typed value                      @typescript-eslint/no-unsafe-assignment
+  64:5   warning  Unsafe call of a type that could not be resolved               @typescript-eslint/no-unsafe-call
+  64:18  warning  Unsafe member access .props on a type that cannot be resolved  @typescript-eslint/no-unsafe-member-access
+
+C:\Users\alexg\Documents\grovkornet\apps\mobile\src\features\camera-controls\ui\FooterParameters.test.tsx
+   8:9   warning  Unsafe assignment of an `any` value               @typescript-eslint/no-unsafe-assignment
+  12:9   warning  Unsafe assignment of an `any` value               @typescript-eslint/no-unsafe-assignment
+  16:9   warning  Unsafe assignment of an `any` value               @typescript-eslint/no-unsafe-assignment
+  20:9   warning  Unsafe assignment of an `any` value               @typescript-eslint/no-unsafe-assignment
+  24:9   warning  Unsafe assignment of an `any` value               @typescript-eslint/no-unsafe-assignment
+  29:9   warning  Unsafe assignment of an `any` value               @typescript-eslint/no-unsafe-assignment
+  33:9   warning  Unsafe assignment of an `any` value               @typescript-eslint/no-unsafe-assignment
+  43:22  warning  Unsafe member access .children on an `any` value  @typescript-eslint/no-unsafe-member-access
+
+C:\Users\alexg\Documents\grovkornet\apps\mobile\src\features\camera-controls\ui\GestureController.test.tsx
+  11:9   warning  'mockUIStore' is assigned a value but never used. Allowed unused vars must match /^_/u  unused-imports/no-unused-vars
+  21:7   warning  Unsafe return of a value of type `any`                                                  @typescript-eslint/no-unsafe-return
+  21:25  warning  Unsafe call of an `any` typed value                                                     @typescript-eslint/no-unsafe-call
+  43:7   warning  Unsafe return of a value of type `any`                                                  @typescript-eslint/no-unsafe-return
+  43:25  warning  Unsafe call of an `any` typed value                                                     @typescript-eslint/no-unsafe-call
+
+C:\Users\alexg\Documents\grovkornet\apps\mobile\src\features\camera-controls\ui\sections\film\DevelopmentModule.test.tsx
+  18:31  warning  Unsafe return of a value of type `any`                                                  @typescript-eslint/no-unsafe-return
+  18:31  warning  Unsafe call of an `any` typed value                                                     @typescript-eslint/no-unsafe-call
+  25:35  warning  Unsafe return of a value of type `any`                                                  @typescript-eslint/no-unsafe-return
+  25:35  warning  Unsafe call of an `any` typed value                                                     @typescript-eslint/no-unsafe-call
+  40:37  warning  Unsafe return of a value of type `any`                                                  @typescript-eslint/no-unsafe-return
+  40:37  warning  Unsafe call of an `any` typed value                                                     @typescript-eslint/no-unsafe-call
+  64:42  warning  Unsafe argument of type `any` assigned to a parameter of type `ComponentType<unknown>`  @typescript-eslint/no-unsafe-argument
+  64:64  warning  Unexpected any. Specify a different type                                                @typescript-eslint/no-explicit-any
+  65:11  warning  Unsafe assignment of an `any` value                                                     @typescript-eslint/no-unsafe-assignment
+  65:49  warning  Unexpected any. Specify a different type                                                @typescript-eslint/no-explicit-any
+  65:59  warning  Unsafe member access .props on an `any` value                                           @typescript-eslint/no-unsafe-member-access
+  68:5   warning  Unsafe call of an `any` typed value                                                     @typescript-eslint/no-unsafe-call
+  68:23  warning  Unsafe member access .props on an `any` value                                           @typescript-eslint/no-unsafe-member-access
+
+C:\Users\alexg\Documents\grovkornet\apps\mobile\src\features\camera-controls\ui\sections\film\TextureModule.test.tsx
+   6:31  warning  Unsafe return of a value of type `any`                                                  @typescript-eslint/no-unsafe-return
+   6:31  warning  Unsafe call of an `any` typed value                                                     @typescript-eslint/no-unsafe-call
+  13:35  warning  Unsafe return of a value of type `any`                                                  @typescript-eslint/no-unsafe-return
+  13:35  warning  Unsafe call of an `any` typed value                                                     @typescript-eslint/no-unsafe-call
+  35:11  warning  Unsafe assignment of an error typed value                                               @typescript-eslint/no-unsafe-assignment
+  35:38  warning  Unsafe argument of type `any` assigned to a parameter of type `ComponentType<unknown>`  @typescript-eslint/no-unsafe-argument
+  35:60  warning  Unexpected any. Specify a different type                                                @typescript-eslint/no-explicit-any
+  36:20  warning  Unsafe member access .props on a type that cannot be resolved                           @typescript-eslint/no-unsafe-member-access
+
+C:\Users\alexg\Documents\grovkornet\apps\mobile\src\screens\camera\ui\CameraScreen.integration.test.tsx
+  11:9   warning  Unsafe assignment of an `any` value        @typescript-eslint/no-unsafe-assignment
+  12:9   warning  Unsafe assignment of an `any` value        @typescript-eslint/no-unsafe-assignment
+  13:3   warning  Unsafe return of a value of type `any`     @typescript-eslint/no-unsafe-return
+  36:11  warning  Unsafe assignment of an error typed value  @typescript-eslint/no-unsafe-assignment
+  59:11  warning  Unsafe assignment of an error typed value  @typescript-eslint/no-unsafe-assignment
+
+✖ 121 problems (0 errors, 121 warnings)
+

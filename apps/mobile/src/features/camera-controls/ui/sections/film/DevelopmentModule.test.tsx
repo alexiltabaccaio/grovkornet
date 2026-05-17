@@ -1,7 +1,6 @@
 import React from 'react';
 import { render } from '@testing-library/react-native';
 import { DevelopmentModule } from './DevelopmentModule';
-import { ParameterType } from '@shared/types/camera';
 
 jest.mock('react-i18next', () => ({
   useTranslation: () => ({
