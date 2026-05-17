@@ -20,6 +20,11 @@ yarn-error.*
 *.key
 !debug.keystore
 
+# Firebase
+*-firebase-adminsdk-*.json
+*serviceAccount*.json
+firebase-export-*
+
 # Android
 **/android/.gradle
 **/android/build/
