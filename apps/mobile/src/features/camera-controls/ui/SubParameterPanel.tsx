@@ -114,7 +114,7 @@ export const SubParameterPanel = ({ translateY }: SubParameterPanelProps) => {
               renderValue={true}
               valueFormatter={(v) => {
                 'worklet';
-                return `${(v * 100).toFixed(0)}%`;
+                return `${(v * 100).toFixed(0)}`;
               }}
             />
           </Animated.View>

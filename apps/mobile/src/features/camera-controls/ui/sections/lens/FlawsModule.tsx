@@ -38,7 +38,7 @@ export const FlawsModule = ({ handlePressWithDouble }: FlawsModuleProps) => {
         variant="text"
         valueFormatter={(v) => {
           'worklet';
-          return `${v.toFixed(1)}%`;
+          return `${Math.round(v * 100)}`;
         }}
       />
     </Animated.View>

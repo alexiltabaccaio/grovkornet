@@ -73,9 +73,11 @@ export const TextureModule = ({ handlePressWithDouble }: TextureModuleProps) => 
           maxValue={1}
           onChange={setSharpening}
           icon="sparkles-outline"
+          variant="text"
+          renderValue={true}
           valueFormatter={(v) => {
             'worklet';
-            return `${Math.round(v * 100)}%`;
+            return `${Math.round(v * 100)}`;
           }}
         />
         <ParameterControl
@@ -89,7 +91,7 @@ export const TextureModule = ({ handlePressWithDouble }: TextureModuleProps) => 
           variant="text"
           valueFormatter={(v) => {
             'worklet';
-            return `${Math.round(v * 100)}%`;
+            return `${Math.round(v * 100)}`;
           }}
         />
       </View>

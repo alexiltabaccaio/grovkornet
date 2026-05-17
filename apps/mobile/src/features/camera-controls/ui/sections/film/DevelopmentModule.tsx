@@ -76,6 +76,13 @@ export const DevelopmentModule = ({ handlePressWithDouble }: DevelopmentModulePr
           maxValue={2.0}
           onChange={setContrast}
           icon="contrast-outline"
+          variant="text"
+          renderValue={true}
+          valueFormatter={(v) => {
+            'worklet';
+            const val = Math.round((v - 1) * 100);
+            return val > 0 ? `+${val}` : `${val}`;
+          }}
         />
         <ParameterControl
           label={t('parameters.saturation')}
@@ -85,6 +92,13 @@ export const DevelopmentModule = ({ handlePressWithDouble }: DevelopmentModulePr
           maxValue={2.0}
           onChange={setSaturation}
           icon="color-filter-outline"
+          variant="text"
+          renderValue={true}
+          valueFormatter={(v) => {
+            'worklet';
+            const val = Math.round((v - 1) * 100);
+            return val > 0 ? `+${val}` : `${val}`;
+          }}
         />
       </ScrollView>
     </Animated.View>
