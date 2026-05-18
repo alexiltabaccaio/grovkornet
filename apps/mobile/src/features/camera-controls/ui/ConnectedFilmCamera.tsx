@@ -22,6 +22,10 @@ export const ConnectedFilmCamera = ({ cameraKey }: ConnectedFilmCameraProps) => 
     return styleStore.noiseReductionAuto.value ? -1 : styleStore.noiseReductionMode.value;
   });
 
+  const resolvedTorchStrength = useDerivedValue(() => {
+    return Math.max(1, Math.round(hwStore.torchStrength.value * (hwStore.capabilities.maxTorchStrength ?? 1)));
+  });
+
   return (
     <>
       <NativeFilmCamera
@@ -47,7 +51,7 @@ export const ConnectedFilmCamera = ({ cameraKey }: ConnectedFilmCameraProps) => 
         focusDistance={hwStore.focusDistance as unknown as SharedValue<number | undefined>}
         cameraId={hwStore.cameraId}
         torchState={hwStore.torchState as unknown as SharedValue<number | undefined>}
-        torchStrength={hwStore.torchStrength as unknown as SharedValue<number | undefined>}
+        torchStrength={resolvedTorchStrength as unknown as SharedValue<number | undefined>}
         noiseReduction={resolvedNoiseReduction as unknown as SharedValue<number | undefined>}
         sharpening={styleStore.sharpening as unknown as SharedValue<number | undefined>}
         aspectRatio={hwStore.aspectRatio as unknown as SharedValue<number | undefined>}
