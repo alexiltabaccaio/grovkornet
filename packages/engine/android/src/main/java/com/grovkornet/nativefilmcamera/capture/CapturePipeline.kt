@@ -89,25 +89,7 @@ class CapturePipeline(
                 bitmap = cropped
             }
 
-            val params = OffscreenFilmProcessor.Parameters(
-                saturation = config.saturation,
-                contrast = config.contrast,
-                aberration = config.aberration,
-                aberrationDirection = config.aberrationDirection,
-                grainIntensity = config.grainIntensity,
-                grainChroma = config.grainChroma,
-                grainSize = config.grainSize,
-                grainEnabled = config.grainEnabled,
-                ev = config.ev,
-                whiteBalance = config.whiteBalance,
-                tint = config.tint,
-                sharpening = config.sharpening,
-                time = (System.currentTimeMillis() % 10000) / 1000f,
-                viewportWidth = config.viewportWidth,
-                viewportHeight = config.viewportHeight
-            )
-
-            val processed = offscreenProcessor.process(bitmap, params)
+            val processed = offscreenProcessor.process(bitmap, config)
             bitmap.recycle()
 
             val watermarked = WatermarkEngine.embedSignature(processed)

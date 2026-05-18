@@ -7,6 +7,7 @@ import android.os.Handler
 import android.os.HandlerThread
 import android.opengl.*
 import android.util.Log
+import com.grovkornet.nativefilmcamera.state.CameraConfiguration
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.suspendCancellableCoroutine
@@ -29,24 +30,6 @@ class OffscreenFilmProcessor {
     private var isPrepared = false
     private var currentWidth = 0
     private var currentHeight = 0
-
-    data class Parameters(
-        val saturation: Float,
-        val contrast: Float,
-        val aberration: Float,
-        val aberrationDirection: Int,
-        val grainIntensity: Float,
-        val grainChroma: Float,
-        val grainSize: Float,
-        val grainEnabled: Boolean,
-        val ev: Float,
-        val whiteBalance: Float,
-        val tint: Float,
-        val sharpening: Float,
-        val time: Float = 0.5f,
-        val viewportWidth: Float = 1080f,
-        val viewportHeight: Float = 1920f
-    )
 
     fun prepare(width: Int, height: Int) {
         if (isPrepared && currentWidth == width && currentHeight == height) return
@@ -80,7 +63,7 @@ class OffscreenFilmProcessor {
         }
     }
 
-    suspend fun process(input: Bitmap, params: Parameters): Bitmap = processMutex.withLock {
+    suspend fun process(input: Bitmap, params: CameraConfiguration): Bitmap = processMutex.withLock {
         if (!isPrepared) {
             Log.w(TAG, "Processor not prepared, preparing now (this will cause lag)...")
             prepare(input.width, input.height)

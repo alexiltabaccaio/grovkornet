@@ -2,6 +2,7 @@ package com.grovkornet.nativefilmcamera.rendering
 
 import android.opengl.GLES20
 import android.opengl.Matrix
+import com.grovkornet.nativefilmcamera.state.CameraConfiguration
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.nio.FloatBuffer
@@ -26,7 +27,7 @@ class FilmShaderController {
         texCoordBuffer = createFloatBuffer(floatArrayOf(0f, 1f, 1f, 1f, 0f, 0f, 1f, 0f))
     }
 
-    fun setupAndBind(params: OffscreenFilmProcessor.Parameters) {
+    fun setupAndBind(params: CameraConfiguration) {
         if (!isInitialized) {
             throw IllegalStateException("FilmShaderController not initialized")
         }
@@ -55,7 +56,7 @@ class FilmShaderController {
         GLES20.glUniform1f(GLES20.glGetUniformLocation(program, "u_GrainChroma"), params.grainChroma)
         GLES20.glUniform1f(GLES20.glGetUniformLocation(program, "u_GrainSize"), params.grainSize)
         GLES20.glUniform1f(GLES20.glGetUniformLocation(program, "u_GrainEnabled"), if (params.grainEnabled) 1.0f else 0.0f)
-        GLES20.glUniform1f(GLES20.glGetUniformLocation(program, "u_Time"), params.time)
+        GLES20.glUniform1f(GLES20.glGetUniformLocation(program, "u_Time"), (System.currentTimeMillis() % 10000) / 1000f)
         GLES20.glUniform2f(GLES20.glGetUniformLocation(program, "u_Resolution"), params.viewportWidth, params.viewportHeight)
         GLES20.glUniform1f(GLES20.glGetUniformLocation(program, "u_Ev"), params.ev)
         GLES20.glUniform1f(GLES20.glGetUniformLocation(program, "u_WhiteBalance"), params.whiteBalance)

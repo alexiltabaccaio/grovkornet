@@ -15,6 +15,7 @@ import com.grovkornet.nativefilmcamera.state.CameraConfiguration
 class CameraEngine(
     private val context: Context,
     private val lifecycleOwner: LifecycleOwner,
+    val config: CameraConfiguration,
     private val listener: Listener
 ) : CameraSessionManager.Listener, CameraControlManager.Listener, CapturePipeline.Listener {
 
@@ -26,9 +27,6 @@ class CameraEngine(
         fun onCameraResolutionDetected(width: Int, height: Int)
         fun onPhotoCaptured(uri: String)
     }
-
-    // Single source of truth
-    val config = CameraConfiguration()
 
     // Specialized Managers
     private val sessionManager = CameraSessionManager(context, lifecycleOwner, config, this)

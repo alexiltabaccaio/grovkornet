@@ -10,8 +10,12 @@ import java.nio.ByteOrder
 import java.nio.FloatBuffer
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
+import com.grovkornet.nativefilmcamera.state.CameraConfiguration
 
-class FilmRenderer(private val listener: Listener) : GLSurfaceView.Renderer, SurfaceTexture.OnFrameAvailableListener {
+class FilmRenderer(
+    @Volatile private var config: CameraConfiguration,
+    private val listener: Listener
+) : GLSurfaceView.Renderer, SurfaceTexture.OnFrameAvailableListener {
 
     interface Listener {
         fun onSurfaceTextureCreated(surfaceTexture: SurfaceTexture)
@@ -19,21 +23,9 @@ class FilmRenderer(private val listener: Listener) : GLSurfaceView.Renderer, Sur
         fun requestRender()
     }
 
-    // Uniforms (Volatile for thread-safety between UI and GL threads)
-    @Volatile var saturation: Float = 1.0f
-    @Volatile var contrast: Float = 1.0f
-    @Volatile var grainIntensity: Float = 0.0f
-    @Volatile var grainChroma: Float = 0.0f
-    @Volatile var grainSize: Float = 1.0f
-    @Volatile var grainEnabled: Boolean = true
-    @Volatile var aberration: Float = 0.0f
-    @Volatile var aberrationDirection: Int = 0
-    @Volatile var ev: Float = 0.0f
-    @Volatile var whiteBalance: Float = 5000.0f
-    @Volatile var tint: Float = 0.0f
-    @Volatile var whiteBalanceAuto: Boolean = true
-    @Volatile var sharpening: Float = 0.0f
-    @Volatile var aspectRatio: Int = 1
+    fun updateConfig(newConfig: CameraConfiguration) {
+        config = newConfig.copy()
+    }
 
     private var program = 0
     private var cameraTextureId = 0
@@ -86,7 +78,6 @@ class FilmRenderer(private val listener: Listener) : GLSurfaceView.Renderer, Sur
     
     @Volatile var cameraWidth = 0
     @Volatile var cameraHeight = 0
-    @Volatile var targetFps = 60
 
     private var framesCount = 0
     private var fboFramesCount = 0
@@ -233,7 +224,8 @@ class FilmRenderer(private val listener: Listener) : GLSurfaceView.Renderer, Sur
         val dt = now - lastUpdateTime
         lastUpdateTime = now
 
-        val interval = 1000L / if (targetFps > 0) targetFps else 60
+        val currentConfig = config
+        val interval = 1000L / if (currentConfig.targetFps > 0) currentConfig.targetFps else 60
         timeAccumulator += dt
 
         // We use a margin of 3ms to ensure we don't skip a frame just because it arrived 1 or 2ms early
@@ -290,20 +282,20 @@ class FilmRenderer(private val listener: Listener) : GLSurfaceView.Renderer, Sur
         GLES20.glUniformMatrix4fv(uCropMatrixLoc, 1, false, cropMatrix, 0)
 
         // Setup Uniforms
-        GLES20.glUniform1f(uSaturationLoc, saturation)
-        GLES20.glUniform1f(uContrastLoc, contrast)
-        GLES20.glUniform1f(uAberrationLoc, aberration)
-        GLES20.glUniform1i(uAberrationDirectionLoc, aberrationDirection)
-        GLES20.glUniform1f(uGrainIntensityLoc, grainIntensity)
-        GLES20.glUniform1f(uGrainChromaLoc, grainChroma)
-        GLES20.glUniform1f(uGrainSizeLoc, grainSize)
-        GLES20.glUniform1f(uGrainEnabledLoc, if (grainEnabled) 1.0f else 0.0f)
+        GLES20.glUniform1f(uSaturationLoc, currentConfig.saturation)
+        GLES20.glUniform1f(uContrastLoc, currentConfig.contrast)
+        GLES20.glUniform1f(uAberrationLoc, currentConfig.aberration)
+        GLES20.glUniform1i(uAberrationDirectionLoc, currentConfig.aberrationDirection)
+        GLES20.glUniform1f(uGrainIntensityLoc, currentConfig.grainIntensity)
+        GLES20.glUniform1f(uGrainChromaLoc, currentConfig.grainChroma)
+        GLES20.glUniform1f(uGrainSizeLoc, currentConfig.grainSize)
+        GLES20.glUniform1f(uGrainEnabledLoc, if (currentConfig.grainEnabled) 1.0f else 0.0f)
         GLES20.glUniform1f(uTimeLoc, (System.currentTimeMillis() % 10000) / 1000f)
         GLES20.glUniform2f(uResolutionLoc, viewportWidth.toFloat(), viewportHeight.toFloat())
-        GLES20.glUniform1f(uEvLoc, ev)
-        GLES20.glUniform1f(uWhiteBalanceLoc, if (whiteBalanceAuto) 5000.0f else whiteBalance)
-        GLES20.glUniform1f(uTintLoc, if (whiteBalanceAuto) 0.0f else tint)
-        GLES20.glUniform1f(uSharpeningLoc, sharpening)
+        GLES20.glUniform1f(uEvLoc, currentConfig.ev)
+        GLES20.glUniform1f(uWhiteBalanceLoc, if (currentConfig.whiteBalanceAuto) 5000.0f else currentConfig.whiteBalance)
+        GLES20.glUniform1f(uTintLoc, if (currentConfig.whiteBalanceAuto) 0.0f else currentConfig.tint)
+        GLES20.glUniform1f(uSharpeningLoc, currentConfig.sharpening)
 
         GLES20.glEnableVertexAttribArray(aPositionLoc)
         GLES20.glVertexAttribPointer(aPositionLoc, 2, GLES20.GL_FLOAT, false, 0, vertexBuffer)
@@ -347,7 +339,7 @@ class FilmRenderer(private val listener: Listener) : GLSurfaceView.Renderer, Sur
             val effCamHeight = if (isViewPortrait == isCameraPortrait) cameraHeight.toFloat() else cameraWidth.toFloat()
 
             val viewAspect = viewportWidth.toFloat() / viewportHeight.toFloat()
-            val targetAspect = when (aspectRatio) {
+            val targetAspect = when (config.aspectRatio) {
                 0 -> 4f / 3f
                 1 -> 16f / 9f
                 2 -> 1f / 1f
