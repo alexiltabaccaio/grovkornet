@@ -13,7 +13,7 @@ interface SubParameterPanelProps {
 }
 
 export const SubParameterPanel = ({ translateY }: SubParameterPanelProps) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   const { activeParameter, activeSubParameter, setActiveSubParameter } = useUIStore(useShallow(state => ({
     activeParameter: state.activeParameter,
@@ -146,6 +146,39 @@ export const SubParameterPanel = ({ translateY }: SubParameterPanelProps) => {
           </Animated.View>
         );
 
+      case 'language': {
+        // eslint-disable-next-line @typescript-eslint/no-require-imports
+        const enFlag = require('../../../../assets/flags/en.png') as import('react-native').ImageSourcePropType;
+        // eslint-disable-next-line @typescript-eslint/no-require-imports
+        const itFlag = require('../../../../assets/flags/it.png') as import('react-native').ImageSourcePropType;
+
+        return (
+          <Animated.View style={[styles.container, animatedStyle]}>
+            <ParameterControl
+              label="English"
+              isActive={activeSubParameter === 'lang_en' || i18n.language.startsWith('en')}
+              onPress={() => {
+                setActiveSubParameter('lang_en');
+                void i18n.changeLanguage('en').catch(error => {
+                  console.error('Failed to change language to en:', error);
+                });
+              }}
+              imageSource={enFlag}
+            />
+            <ParameterControl
+              label="Italiano"
+              isActive={activeSubParameter === 'lang_it' || i18n.language.startsWith('it')}
+              onPress={() => {
+                setActiveSubParameter('lang_it');
+                void i18n.changeLanguage('it').catch(error => {
+                  console.error('Failed to change language to it:', error);
+                });
+              }}
+              imageSource={itFlag}
+            />
+          </Animated.View>
+        );
+      }
       default:
         return null;
     }

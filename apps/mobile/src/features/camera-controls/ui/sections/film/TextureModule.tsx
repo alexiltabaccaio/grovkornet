@@ -52,7 +52,6 @@ export const TextureModule = ({ handlePressWithDouble }: TextureModuleProps) => 
             setNoiseReductionMode(rounded);
           }}
           isAuto={noiseReductionAuto}
-          onLongPress={() => setNoiseReductionAuto(true)}
           variant="text"
           renderValue={true}
           valueFormatter={(v) => {

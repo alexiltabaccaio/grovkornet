@@ -22,6 +22,7 @@
       "debug": "Debug"
     },
     "parameters": {
+      "language": "LINGUA",
       "amount": "QUANTITÀ",
       "grain": "GRANA",
 

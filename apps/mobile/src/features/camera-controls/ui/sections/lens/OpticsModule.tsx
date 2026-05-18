@@ -94,7 +94,6 @@ export const OpticsModule = ({ handlePressWithDouble }: OpticsModuleProps) => {
             onChange={handleIndexChange}
             variant="text"
             isAuto={autoShared}
-            onLongPress={() => setCameraAuto(true)}
             valueFormatter={formatLens}
           />
         )}
@@ -108,7 +107,6 @@ export const OpticsModule = ({ handlePressWithDouble }: OpticsModuleProps) => {
           onChange={setFocusDistance}
           variant="text"
           isAuto={focusAuto}
-          onLongPress={() => setFocusAuto(!focusAuto.value)}
           valueFormatter={formatFocus}
           invertDrag={true}
         />

@@ -13,7 +13,6 @@ interface UseParameterGestureParams {
   invertDrag?: boolean;
   onChange?: (val: number) => void;
   onPress: () => void;
-  onLongPress?: () => void;
   isAuto?: SharedValue<boolean>;
   disabled?: SharedValue<boolean>;
 }
@@ -26,7 +25,6 @@ export const useParameterGesture = ({
   invertDrag = false,
   onChange,
   onPress,
-  onLongPress,
   isAuto,
   disabled,
 }: UseParameterGestureParams) => {
@@ -46,18 +44,7 @@ export const useParameterGesture = ({
     }
   }, [isActive, value, minValue, maxValue, invertDrag, setGestureConfig, onChange]);
 
-  const combinedGesture = useMemo(() => {
-    const longPress = Gesture.LongPress()
-      .onStart(() => {
-        if (disabled && disabled.value) return;
-        if (onLongPress) {
-          runOnJS(Haptics.impactAsync)(Haptics.ImpactFeedbackStyle.Medium);
-          runOnJS(onLongPress)();
-        }
-      });
-
-    const pan = Gesture.Pan()
-      .hitSlop(20)
+  const combinedGesture = useMemo(() => {    const pan = Gesture.Pan()
       .activeOffsetY([-2, 2])
       .failOffsetX([-10, 10])
       .onStart(() => {
@@ -94,8 +81,8 @@ export const useParameterGesture = ({
         runOnJS(onPress)();
       });
 
-    return Gesture.Race(longPress, tap, pan);
-  }, [onLongPress, onPress, value, startVal, minValue, maxValue, invertDrag, onChange, isAuto, disabled]);
+    return Gesture.Race(tap, pan);
+  }, [onPress, value, startVal, minValue, maxValue, invertDrag, onChange, isAuto, disabled]);
 
   return {
     combinedGesture,

@@ -30,7 +30,7 @@ export const Footer = ({ translateY: externalTranslateY }: FooterProps) => {
   const startY = useSharedValue(0);
   const drawerAnimation = useSharedValue(220); // 220px is the height of the drawer, starting closed
 
-   
+
   useEffect(() => {
     if (activeSection === 'none') {
       // Chiudi il cassetto
@@ -46,8 +46,8 @@ export const Footer = ({ translateY: externalTranslateY }: FooterProps) => {
 
   const panGesture = useMemo(() => {
     return Gesture.Pan()
-      .activeOffsetY([-5, 5]) // Evita conflitti con scroll orizzontali
-      .failOffsetX([-5, 5]) // Fa fallire la gesture se ci si muove orizzontalmente, sbloccando i tocchi
+      .activeOffsetY([-15, 15]) // Aumentato per evitare che piccoli movimenti (wiggle) durante il tap rubino l'evento
+      .failOffsetX([-15, 15]) // Fa fallire la gesture se ci si muove orizzontalmente, sbloccando i tocchi
       .onStart(() => {
         startY.value = translateY.value;
       })
@@ -56,7 +56,7 @@ export const Footer = ({ translateY: externalTranslateY }: FooterProps) => {
         // Clamp tra aperto e chiuso
         if (newY < MAX_UP) newY = MAX_UP;
         if (newY > 0) newY = 0;
-         
+
         translateY.value = newY;
       })
       .onEnd((e) => {
@@ -67,7 +67,7 @@ export const Footer = ({ translateY: externalTranslateY }: FooterProps) => {
           Math.abs(curr - estimatedY) < Math.abs(prev - estimatedY) ? curr : prev
         );
 
-         
+
         translateY.value = withSpring(targetY, {
           damping: 20,
           stiffness: 200,
@@ -169,6 +169,7 @@ const styles = StyleSheet.create({
 
   topFooter: {
     paddingTop: 0,
+    height: 160,
   },
 
 

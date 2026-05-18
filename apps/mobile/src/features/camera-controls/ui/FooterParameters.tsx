@@ -8,6 +8,8 @@ import { useDoublePress } from '@shared/lib/hooks/useDoublePress';
 import { footerStyles } from './Footer.styles';
 import { ModuleType } from '@shared/types/camera';
 
+import { useHardwareStore } from '../model/useHardwareStore';
+
 // Import modules
 import { TextureModule } from './sections/film/TextureModule';
 import { DevelopmentModule } from './sections/film/DevelopmentModule';
@@ -29,11 +31,39 @@ export const FooterParameters = () => {
   })));
 
   const resetEffect = useStylesStore(s => s.resetEffect);
+  const { 
+    setEvAuto, setIsoAuto, setShutterSpeedAuto, setFocusAuto, setTemperatureAuto, setCameraAuto,
+    setTorchState, setFpsSetting, capabilities
+  } = useHardwareStore(useShallow(s => ({
+    setEvAuto: s.setEvAuto,
+    setIsoAuto: s.setIsoAuto,
+    setShutterSpeedAuto: s.setShutterSpeedAuto,
+    setFocusAuto: s.setFocusAuto,
+    setTemperatureAuto: s.setTemperatureAuto,
+    setCameraAuto: s.setCameraAuto,
+    setTorchState: s.setTorchState,
+    setFpsSetting: s.setFpsSetting,
+    capabilities: s.capabilities,
+  })));
+  
   const { t } = useTranslation();
   
   const resetTool = (tool: string) => {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any, @typescript-eslint/no-unnecessary-type-assertion
-    resetEffect(tool as any); 
+    if (tool === 'ev') setEvAuto(true);
+    else if (tool === 'iso') setIsoAuto(true);
+    else if (tool === 'shutter_speed') setShutterSpeedAuto(true);
+    else if (tool === 'focus') setFocusAuto(true);
+    else if (tool === 'temperature') setTemperatureAuto(true);
+    else if (tool === 'camera_selection') setCameraAuto(true);
+    else if (tool === 'torch') setTorchState(0);
+    else if (tool === 'fps_setting') {
+      const maxFps = capabilities.maxFps ?? 60;
+      setFpsSetting(maxFps >= 60 ? 60 : 30);
+    }
+    else {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any, @typescript-eslint/no-unnecessary-type-assertion
+      resetEffect(tool as any); 
+    }
   };
 
   const { handlePressWithDouble } = useDoublePress(resetTool);

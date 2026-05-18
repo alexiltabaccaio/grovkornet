@@ -67,7 +67,6 @@ export const ExposureModule = ({ handlePressWithDouble }: ExposureModuleProps) =
           onChange={setIso}
           variant="text"
           isAuto={isoAuto}
-          onLongPress={() => setIsoAuto(!isoAuto.value)}
         />
         <ParameterControl
           label={t('parameters.shutter_speed')}
@@ -79,7 +78,6 @@ export const ExposureModule = ({ handlePressWithDouble }: ExposureModuleProps) =
           onChange={setShutterSpeed}
           variant="text"
           isAuto={shutterSpeedAuto}
-          onLongPress={() => setShutterSpeedAuto(!shutterSpeedAuto.value)}
           valueFormatter={formatShutterSpeed}
         />
         <ParameterControl
@@ -92,7 +90,6 @@ export const ExposureModule = ({ handlePressWithDouble }: ExposureModuleProps) =
           onChange={setEv}
           variant="text"
           isAuto={evAuto}
-          onLongPress={() => setEvAuto(!evAuto.value)}
           valueFormatter={formatEv}
           disabled={isEvDisabled}
           hideAutoBadge={true}

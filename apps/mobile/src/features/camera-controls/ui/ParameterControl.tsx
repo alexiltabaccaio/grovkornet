@@ -20,7 +20,6 @@ interface ParameterControlProps {
   valueFormatter?: (val: number) => string;
   variant?: 'square' | 'text';
   isAuto?: SharedValue<boolean>;
-  onLongPress?: () => void;
   staticText?: string;
   invertDrag?: boolean;
   hideValueInAuto?: boolean;
@@ -42,7 +41,6 @@ export const ParameterControl = ({
   valueFormatter,
   variant = 'square',
   isAuto,
-  onLongPress,
   staticText,
   invertDrag = false,
   hideValueInAuto = false,
@@ -59,7 +57,6 @@ export const ParameterControl = ({
     invertDrag,
     onChange,
     onPress,
-    onLongPress,
     isAuto,
     disabled,
   });

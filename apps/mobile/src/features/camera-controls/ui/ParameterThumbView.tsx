@@ -139,7 +139,6 @@ export const ParameterThumbView = forwardRef<View, ParameterThumbViewProps>(({
         styles.filterThumb,
         isDebugEnabled && { backgroundColor: 'rgba(0, 255, 0, 0.2)', borderWidth: 1, borderColor: 'green' }
       ]}
-      hitSlop={{ top: 20, bottom: 20, left: 20, right: 20 }}
     >
       <View style={[
         styles.filterPlaceholder,
@@ -175,7 +174,7 @@ export const ParameterThumbView = forwardRef<View, ParameterThumbViewProps>(({
             {staticText}
           </Text>
         ) : imageSource ? (
-          <Image source={imageSource} style={styles.imageSource} resizeMode="cover" />
+          <Image source={imageSource} style={[styles.imageSource, !isActive && { opacity: 0.3 }]} resizeMode="cover" />
         ) : icon ? (
           <AnimatedIcon name={icon} size={24} style={{ zIndex: 1 }} animatedProps={animatedIconProps} />
         ) : null}
@@ -191,11 +190,15 @@ export const ParameterThumbView = forwardRef<View, ParameterThumbViewProps>(({
         )}
 
 
-        {variant === 'square' && (
+        {variant === 'square' && !imageSource && (
           <View style={[styles.borderOverlay, isActive && styles.borderOverlayActive]} pointerEvents="none" />
         )}
       </View>
-      <Text style={[styles.filterText, isActive && styles.filterTextActive]}>
+      <Text style={[
+        styles.filterText, 
+        isActive && styles.filterTextActive,
+        !isActive && !!imageSource && { opacity: 0.3 }
+      ]}>
         {label.toUpperCase().split(' ').join('\n')}
       </Text>
     </Animated.View>

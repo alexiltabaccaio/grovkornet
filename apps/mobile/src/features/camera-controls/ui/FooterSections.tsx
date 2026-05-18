@@ -39,7 +39,6 @@ export const FooterSections = () => {
             key={section.id}
             style={[styles.tabButton, isDebugEnabled && styles.debugTabButton]}
             onPress={() => handleSectionChange(section.id)}
-            hitSlop={{ top: 0, bottom: 0, left: 0, right: 0 }}
           >
             {isDebugEnabled && (
               <View style={styles.debugHitbox} pointerEvents="none" />
@@ -70,7 +69,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 15,
+    paddingVertical: 20,
   },
   debugTabButton: {
     borderWidth: 1,

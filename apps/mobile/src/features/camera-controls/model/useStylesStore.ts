@@ -78,6 +78,12 @@ export const useStylesStore = create<EffectsStore>((set, get) => ({
         state.chromaticAberration.value = DEFAULT_CHROMATIC_ABERRATION;
         state.aberrationDirection.value = 0;
         break;
+      case 'sharpening':
+        state.sharpening.value = 0.0;
+        break;
+      case 'noise_reduction':
+        state.noiseReductionAuto.value = true;
+        break;
     }
   },
 }));

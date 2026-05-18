@@ -63,7 +63,6 @@ export const DevelopmentModule = ({ handlePressWithDouble }: DevelopmentModulePr
           onChange={setTemperature}
           variant="text"
           isAuto={temperatureAuto}
-          onLongPress={() => setTemperatureAuto(!temperatureAuto.value)}
           valueFormatter={formatTemperature}
           hideValueInAuto={true}
           autoValueText="AWB"
