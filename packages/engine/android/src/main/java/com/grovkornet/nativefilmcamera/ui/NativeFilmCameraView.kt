@@ -13,11 +13,11 @@ import expo.modules.kotlin.viewevent.EventDispatcher
 
 class NativeFilmCameraView(context: Context) : GLSurfaceView(context) {
 
-    private lateinit var renderer: FilmRenderer
-    private lateinit var cameraEngine: CameraEngine
+    private var renderer: FilmRenderer? = null
+    private var cameraEngine: CameraEngine? = null
 
-    private lateinit var updateScheduler: CameraUpdateScheduler
-    private lateinit var propSynchronizer: CameraPropSynchronizer
+    private var updateScheduler: CameraUpdateScheduler? = null
+    private var propSynchronizer: CameraPropSynchronizer? = null
     private var lastDebugTime = 0L
 
     // Event Dispatchers (Expo Modules API)
@@ -28,68 +28,68 @@ class NativeFilmCameraView(context: Context) : GLSurfaceView(context) {
 
     // Props
     var saturation: Float = 1.0f
-        set(value) { field = value; if (::propSynchronizer.isInitialized) propSynchronizer.saturation = value }
+        set(value) { field = value; propSynchronizer?.saturation = value }
     var contrast: Float = 1.0f
-        set(value) { field = value; if (::propSynchronizer.isInitialized) propSynchronizer.contrast = value }
+        set(value) { field = value; propSynchronizer?.contrast = value }
     var grainIntensity: Float = 0.0f
-        set(value) { field = value; if (::propSynchronizer.isInitialized) propSynchronizer.grainIntensity = value }
+        set(value) { field = value; propSynchronizer?.grainIntensity = value }
     var grainChroma: Float = 0.0f
-        set(value) { field = value; if (::propSynchronizer.isInitialized) propSynchronizer.grainChroma = value }
+        set(value) { field = value; propSynchronizer?.grainChroma = value }
     var grainSize: Float = 1.0f
-        set(value) { field = value; if (::propSynchronizer.isInitialized) propSynchronizer.grainSize = value }
+        set(value) { field = value; propSynchronizer?.grainSize = value }
     var grainEnabled: Boolean = true
-        set(value) { field = value; if (::propSynchronizer.isInitialized) propSynchronizer.grainEnabled = value }
+        set(value) { field = value; propSynchronizer?.grainEnabled = value }
     var aberration: Float = 0.0f
-        set(value) { field = value; if (::propSynchronizer.isInitialized) propSynchronizer.aberration = value }
+        set(value) { field = value; propSynchronizer?.aberration = value }
     var aberrationDirection: Int = 0
-        set(value) { field = value; if (::propSynchronizer.isInitialized) propSynchronizer.aberrationDirection = value }
+        set(value) { field = value; propSynchronizer?.aberrationDirection = value }
     var ev: Float = 0.0f
-        set(value) { field = value; if (::propSynchronizer.isInitialized) propSynchronizer.ev = value }
+        set(value) { field = value; propSynchronizer?.ev = value }
     var whiteBalance: Float = 5000.0f
-        set(value) { field = value; if (::propSynchronizer.isInitialized) propSynchronizer.whiteBalance = value }
+        set(value) { field = value; propSynchronizer?.whiteBalance = value }
     var noiseReduction: Int = 1
-        set(value) { field = value; if (::propSynchronizer.isInitialized) propSynchronizer.noiseReduction = value }
+        set(value) { field = value; propSynchronizer?.noiseReduction = value }
     var sharpening: Float = 0.0f
-        set(value) { field = value; if (::propSynchronizer.isInitialized) propSynchronizer.sharpening = value }
+        set(value) { field = value; propSynchronizer?.sharpening = value }
 
     // Hardware Props
     var isoAuto: Boolean = true
-        set(value) { field = value; if (::propSynchronizer.isInitialized) propSynchronizer.isoAuto = value }
+        set(value) { field = value; propSynchronizer?.isoAuto = value }
     var shutterSpeedAuto: Boolean = true
-        set(value) { field = value; if (::propSynchronizer.isInitialized) propSynchronizer.shutterSpeedAuto = value }
+        set(value) { field = value; propSynchronizer?.shutterSpeedAuto = value }
     var whiteBalanceAuto: Boolean = true
-        set(value) { field = value; if (::propSynchronizer.isInitialized) propSynchronizer.whiteBalanceAuto = value }
+        set(value) { field = value; propSynchronizer?.whiteBalanceAuto = value }
     var autoFocus: Boolean = false
-        set(value) { field = value; if (::propSynchronizer.isInitialized) propSynchronizer.autoFocus = value }
+        set(value) { field = value; propSynchronizer?.autoFocus = value }
     var iso: Int = 400
-        set(value) { field = value; if (::propSynchronizer.isInitialized) propSynchronizer.iso = value }
+        set(value) { field = value; propSynchronizer?.iso = value }
     var exposureTime: Long = 1000000000L / 60
-        set(value) { field = value; if (::propSynchronizer.isInitialized) propSynchronizer.exposureTime = value }
+        set(value) { field = value; propSynchronizer?.exposureTime = value }
     var focusDistance: Float = 0.0f
-        set(value) { field = value; if (::propSynchronizer.isInitialized) propSynchronizer.focusDistance = value }
+        set(value) { field = value; propSynchronizer?.focusDistance = value }
     
     var torchState: Float = 0.0f
-        set(value) { field = value; if (::propSynchronizer.isInitialized) propSynchronizer.torchState = value }
+        set(value) { field = value; propSynchronizer?.torchState = value }
     var torchStrength: Int = 1
-        set(value) { field = value; if (::propSynchronizer.isInitialized) propSynchronizer.torchStrength = value }
+        set(value) { field = value; propSynchronizer?.torchStrength = value }
     var cameraId: String? = null
-        set(value) { field = value; if (::propSynchronizer.isInitialized) propSynchronizer.cameraId = value }
+        set(value) { field = value; propSynchronizer?.cameraId = value }
     var aspectRatio: Int = 1
         set(value) { 
             if (field != value) {
                 field = value
-                if (::propSynchronizer.isInitialized) propSynchronizer.aspectRatio = value
+                propSynchronizer?.aspectRatio = value
             }
         }
     var targetFps: Int = 60
-        set(value) { field = value; if (::propSynchronizer.isInitialized) propSynchronizer.targetFps = value }
+        set(value) { field = value; propSynchronizer?.targetFps = value }
 
     init {
         setEGLContextClientVersion(2)
         
         val rendererListener = object : FilmRenderer.Listener {
             override fun onSurfaceTextureCreated(surfaceTexture: SurfaceTexture) {
-                post { cameraEngine.start(surfaceTexture) }
+                post { cameraEngine?.start(surfaceTexture) }
             }
 
             override fun onFpsUpdate(fps: Int, stampedFps: Int, resolution: String) {
@@ -120,8 +120,8 @@ class NativeFilmCameraView(context: Context) : GLSurfaceView(context) {
             }
 
             override fun onCameraResolutionDetected(width: Int, height: Int) {
-                renderer.cameraWidth = width
-                renderer.cameraHeight = height
+                renderer?.cameraWidth = width
+                renderer?.cameraHeight = height
             }
 
             override fun onPhotoCaptured(uri: String) {
@@ -133,36 +133,32 @@ class NativeFilmCameraView(context: Context) : GLSurfaceView(context) {
         cameraEngine = CameraEngine(context, ProcessLifecycleOwner.get(), cameraListener)
         updateScheduler = CameraUpdateScheduler(
             onUpdateCameraControls = {
-                if (::cameraEngine.isInitialized) {
-                    cameraEngine.updateCameraControls()
-                }
+                cameraEngine?.updateCameraControls()
             }
         )
-        propSynchronizer = CameraPropSynchronizer(cameraEngine.config, renderer, updateScheduler)
+        propSynchronizer = CameraPropSynchronizer(cameraEngine!!.config, renderer!!, updateScheduler!!)
 
         setRenderer(renderer)
         renderMode = RENDERMODE_WHEN_DIRTY
 
         // Initialize engine config with current view props
-        propSynchronizer.syncConfig()
+        propSynchronizer?.syncConfig()
     }
 
 
     fun takePhoto() {
-        if (::cameraEngine.isInitialized) cameraEngine.takePicture()
+        cameraEngine?.takePicture()
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
-        if (::cameraEngine.isInitialized) {
-            cameraEngine.config.viewportWidth = w.toFloat()
-            cameraEngine.config.viewportHeight = h.toFloat()
-        }
+        cameraEngine?.config?.viewportWidth = w.toFloat()
+        cameraEngine?.config?.viewportHeight = h.toFloat()
     }
 
     fun release() {
-        if (::updateScheduler.isInitialized) updateScheduler.release()
-        if (::cameraEngine.isInitialized) cameraEngine.release()
-        if (::renderer.isInitialized) renderer.release()
+        updateScheduler?.release()
+        cameraEngine?.release()
+        renderer?.release()
     }
 }

@@ -107,6 +107,7 @@ export interface UIState {
   isSubPanelOpen: boolean;
   isCapturing: boolean;
   latestCapturedUri: string | null;
+  lastActiveModules: Record<SectionType, ModuleType>;
   lastActiveParameters: Record<ModuleType, ParameterType>;
   gestureConfig: GestureConfig | null;
 }

@@ -7,21 +7,15 @@ import { useShallow } from 'zustand/react/shallow';
 import { useUIStore } from '../model/useUIStore';
 
 export const FooterSections = () => {
-  const { activeSection, setActiveSection, setActiveModule, isDebugEnabled } = useUIStore(useShallow(state => ({
+  const { activeSection, setActiveSection, isDebugEnabled } = useUIStore(useShallow(state => ({
     activeSection: state.activeSection,
     setActiveSection: state.setActiveSection,
-    setActiveModule: state.setActiveModule,
     isDebugEnabled: state.isDebugEnabled,
   })));
   const { t } = useTranslation();
 
   const handleSectionChange = (section: SectionType) => {
     const newSection = activeSection === section ? 'none' : section;
-    if (newSection === 'system') setActiveModule('preferences');
-    else if (newSection === 'lens') setActiveModule('optics');
-    else if (newSection === 'body') setActiveModule('exposure');
-    else if (newSection === 'film') setActiveModule('development');
-    else setActiveModule('none');
     setActiveSection(newSection);
   };
 

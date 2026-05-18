@@ -2,12 +2,31 @@ import { useUIStore } from './useUIStore';
 
 describe('useUIStore', () => {
   beforeEach(() => {
-    const state = useUIStore.getState();
-    state.setActiveSection('none');
-    state.setActiveModule('none');
-    state.setActiveParameter('none');
-    state.setActiveSubParameter('none');
-    state.setIsDebugEnabled(false);
+    useUIStore.setState({
+      activeSection: 'none',
+      activeModule: 'none',
+      activeParameter: 'none',
+      activeSubParameter: 'none',
+      isDebugEnabled: false,
+      lastActiveModules: {
+        none: 'none',
+        system: 'preferences',
+        lens: 'optics',
+        body: 'exposure',
+        film: 'development',
+      },
+      lastActiveParameters: {
+        none: 'none',
+        preferences: 'language',
+        optics: 'camera_selection',
+        flaws: 'chromatic_aberration',
+        exposure: 'iso',
+        lighting: 'torch',
+        development: 'temperature',
+        texture: 'grain',
+        capture: 'aspect_ratio',
+      },
+    });
   });
 
   it('initializes with default values', () => {
@@ -78,6 +97,33 @@ describe('useUIStore', () => {
 
     setLatestCapturedUri(null);
     expect(useUIStore.getState().latestCapturedUri).toBeNull();
+  });
+
+  it('memorizes last active module and parameter across section changes', () => {
+    const { setActiveSection, setActiveModule, setActiveParameter } = useUIStore.getState();
+
+    // 1. Go to film section
+    setActiveSection('film');
+    expect(useUIStore.getState().activeSection).toBe('film');
+    expect(useUIStore.getState().activeModule).toBe('development');
+    expect(useUIStore.getState().activeParameter).toBe('temperature');
+
+    // 2. Change module to texture and parameter to sharpening
+    setActiveModule('texture');
+    setActiveParameter('sharpening');
+    expect(useUIStore.getState().activeModule).toBe('texture');
+    expect(useUIStore.getState().activeParameter).toBe('sharpening');
+
+    // 3. Switch to body section
+    setActiveSection('body');
+    expect(useUIStore.getState().activeSection).toBe('body');
+    expect(useUIStore.getState().activeModule).toBe('exposure');
+
+    // 4. Switch back to film section
+    setActiveSection('film');
+    expect(useUIStore.getState().activeSection).toBe('film');
+    expect(useUIStore.getState().activeModule).toBe('texture');
+    expect(useUIStore.getState().activeParameter).toBe('sharpening');
   });
 });
 

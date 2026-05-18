@@ -13,6 +13,14 @@ export const useUIStore = create<UIStore>((set, get) => ({
   latestCapturedUri: null,
   gestureConfig: null,
 
+  lastActiveModules: {
+    none: 'none',
+    system: 'preferences',
+    lens: 'optics',
+    body: 'exposure',
+    film: 'development',
+  },
+
   lastActiveParameters: {
     none: 'none',
     preferences: 'language',
@@ -27,16 +35,28 @@ export const useUIStore = create<UIStore>((set, get) => ({
 
   // Actions
   setActiveSection: (section: SectionType) => {
-    set({ activeSection: section });
+    const { lastActiveModules, lastActiveParameters } = get();
+    const module = lastActiveModules[section] || 'none';
+    const parameter = lastActiveParameters[module] || 'none';
+    set({ 
+      activeSection: section,
+      activeModule: module,
+      activeParameter: parameter,
+      activeSubParameter: 'none'
+    });
   },
   
   setActiveModule: (module: ModuleType) => {
-    const { lastActiveParameters } = get();
-    set({ 
+    const { lastActiveParameters, activeSection } = get();
+    set((state) => ({ 
       activeModule: module, 
       activeParameter: lastActiveParameters[module] || 'none',
-      activeSubParameter: 'none'
-    });
+      activeSubParameter: 'none',
+      lastActiveModules: {
+        ...state.lastActiveModules,
+        [activeSection]: module,
+      }
+    }));
   },
 
   setActiveParameter: (param: ParameterType) => {
