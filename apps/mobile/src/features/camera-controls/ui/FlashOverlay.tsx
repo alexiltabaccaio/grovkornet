@@ -6,7 +6,7 @@ import Animated, {
   withTiming, 
   withSequence,
 } from 'react-native-reanimated';
-import { useUIStore } from '../model/useUIStore';
+import { useUIStore } from '@features/camera-controls/model/useUIStore';
 
 export const FlashOverlay = () => {
   const isCapturing = useUIStore(state => state.isCapturing);

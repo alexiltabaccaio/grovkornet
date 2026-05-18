@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, View, TextInput } from 'react-native';
 import Animated, { useAnimatedProps, SharedValue } from 'react-native-reanimated';
-import { useHardwareStore } from '../model/useHardwareStore';
+import { useHardwareStore } from '@features/camera-controls/model/useHardwareStore';
 
 const AnimatedTextInput = Animated.createAnimatedComponent(TextInput);
 

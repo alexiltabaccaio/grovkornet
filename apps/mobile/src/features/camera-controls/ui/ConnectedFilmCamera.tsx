@@ -1,13 +1,13 @@
 import React from 'react';
 import { StyleSheet } from 'react-native';
-import { useHardwareStore } from '../model/useHardwareStore';
-import { useStylesStore } from '../model/useStylesStore';
-import { useUIStore } from '../model/useUIStore';
+import { useHardwareStore } from '@features/camera-controls/model/useHardwareStore';
+import { useStylesStore } from '@features/camera-controls/model/useStylesStore';
+import { useUIStore } from '@features/camera-controls/model/useUIStore';
 import { NativeFilmCamera } from '@entities/camera/ui/NativeFilmCamera';
 import { useDerivedValue, SharedValue } from 'react-native-reanimated';
 import { FlashOverlay } from './FlashOverlay';
-import { useCameraCapture } from '../lib/useCameraCapture';
-import { useCameraEvents } from '../lib/useCameraEvents';
+import { useCameraCapture } from '@features/camera-controls/lib/useCameraCapture';
+import { useCameraEvents } from '@features/camera-controls/lib/useCameraEvents';
 
 interface ConnectedFilmCameraProps {
   cameraKey?: number;

@@ -1,7 +1,7 @@
 import { renderHook } from '@testing-library/react-native';
 import { useCameraEvents } from './useCameraEvents';
-import { useHardwareStore } from '../model/useHardwareStore';
-import { useStylesStore } from '../model/useStylesStore';
+import { useHardwareStore } from '@features/camera-controls/model/useHardwareStore';
+import { useStylesStore } from '@features/camera-controls/model/useStylesStore';
 
 describe('useCameraEvents', () => {
   it('handles debug update events', () => {

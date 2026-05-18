@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { NativeFilmCameraRef } from '@entities/camera/ui/NativeFilmCamera';
-import { useUIStore } from '../model/useUIStore';
-import { useStylesStore } from '../model/useStylesStore';
+import { useUIStore } from '@features/camera-controls/model/useUIStore';
+import { useStylesStore } from '@features/camera-controls/model/useStylesStore';
 import { updateSharedValue } from '@shared/lib/reanimated/safeUpdate';
 
 export const useCameraCapture = () => {

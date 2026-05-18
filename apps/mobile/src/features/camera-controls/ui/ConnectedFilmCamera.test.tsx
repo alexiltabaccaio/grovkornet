@@ -3,8 +3,8 @@
 import React from 'react';
 import { render } from '@testing-library/react-native';
 import { ConnectedFilmCamera } from './ConnectedFilmCamera';
-import { useHardwareStore } from '../model/useHardwareStore';
-import { useStylesStore } from '../model/useStylesStore';
+import { useHardwareStore } from '@features/camera-controls/model/useHardwareStore';
+import { useStylesStore } from '@features/camera-controls/model/useStylesStore';
 
 // Mock NativeFilmCamera
 jest.mock('@entities/camera/ui/NativeFilmCamera', () => {

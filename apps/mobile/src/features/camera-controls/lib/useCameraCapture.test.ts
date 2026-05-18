@@ -1,7 +1,7 @@
 import { renderHook } from '@testing-library/react-native';
 import { useCameraCapture } from './useCameraCapture';
-import { useUIStore } from '../model/useUIStore';
-import { useStylesStore } from '../model/useStylesStore';
+import { useUIStore } from '@features/camera-controls/model/useUIStore';
+import { useStylesStore } from '@features/camera-controls/model/useStylesStore';
 
 describe('useCameraCapture', () => {
   it('triggers takePhoto and updates noiseReductionMode when isCapturing becomes true', () => {

@@ -2,7 +2,7 @@ import React, { ReactNode, useMemo } from 'react';
 import { StyleSheet, View, Dimensions } from 'react-native';
 import { useSharedValue, runOnJS } from 'react-native-reanimated';
 import { GestureDetector, Gesture } from 'react-native-gesture-handler';
-import { useUIStore } from '../model/useUIStore';
+import { useUIStore } from '@features/camera-controls/model/useUIStore';
 import { useShallow } from 'zustand/react/shallow';
 import { updateSharedValue } from '@shared/lib/reanimated/safeUpdate';
 

@@ -1,8 +1,8 @@
 import { useEffect, useMemo } from 'react';
 import { SharedValue, useSharedValue, runOnJS } from 'react-native-reanimated';
 import { Gesture } from 'react-native-gesture-handler';
-import * as Haptics from 'expo-haptics';
-import { useUIStore } from '../model/useUIStore';
+
+import { useUIStore } from '@features/camera-controls/model/useUIStore';
 import { updateSharedValue } from '@shared/lib/reanimated/safeUpdate';
 
 interface UseParameterGestureParams {

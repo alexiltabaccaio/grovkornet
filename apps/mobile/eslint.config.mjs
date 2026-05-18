@@ -55,6 +55,14 @@ export default [
       'react/prop-types': 'off', // We use TypeScript
       'react-native/no-unused-styles': 'warn',
       'react-native/no-single-element-style-arrays': 'warn',
+      'no-restricted-imports': ['error', {
+        patterns: [
+          {
+            group: ['../*'],
+            message: 'Relative parent imports (../) are not allowed. Please use path aliases (@features/, @shared/, etc.) instead.',
+          }
+        ]
+      }],
     },
     settings: {
       react: {
@@ -77,6 +85,10 @@ export default [
           {
             group: ['@app/**', '@screens/**', '@widgets/**', '@features/**', '@entities/**'],
             message: 'The "shared" layer cannot import from higher layers.',
+          },
+          {
+            group: ['../*'],
+            message: 'Relative parent imports (../) are not allowed. Please use path aliases (@features/, @shared/, etc.) instead.',
           }
         ]
       }],
@@ -90,6 +102,10 @@ export default [
           {
             group: ['@app/**', '@screens/**', '@widgets/**', '@features/**'],
             message: 'The "entities" layer cannot import from higher layers.',
+          },
+          {
+            group: ['../*'],
+            message: 'Relative parent imports (../) are not allowed. Please use path aliases (@features/, @shared/, etc.) instead.',
           }
         ]
       }],
@@ -103,6 +119,10 @@ export default [
           {
             group: ['@app/**', '@screens/**', '@widgets/**'],
             message: 'The "features" layer cannot import from higher layers.',
+          },
+          {
+            group: ['../*'],
+            message: 'Relative parent imports (../) are not allowed. Please use path aliases (@features/, @shared/, etc.) instead.',
           }
         ]
       }],
@@ -116,6 +136,10 @@ export default [
           {
             group: ['@app/**', '@screens/**'],
             message: 'The "widgets" layer cannot import from higher layers.',
+          },
+          {
+            group: ['../*'],
+            message: 'Relative parent imports (../) are not allowed. Please use path aliases (@features/, @shared/, etc.) instead.',
           }
         ]
       }],
@@ -129,6 +153,10 @@ export default [
           {
             group: ['@app/**'],
             message: 'The "screens" layer cannot import from higher layers.',
+          },
+          {
+            group: ['../*'],
+            message: 'Relative parent imports (../) are not allowed. Please use path aliases (@features/, @shared/, etc.) instead.',
           }
         ]
       }],

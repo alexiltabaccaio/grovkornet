@@ -2,7 +2,7 @@ import React from 'react';
 import { render } from '@testing-library/react-native';
 import { View } from 'react-native';
 import { GestureController } from './GestureController';
-import { useUIStore } from '../model/useUIStore';
+import { useUIStore } from '@features/camera-controls/model/useUIStore';
 
 // Mock the stores
 jest.mock('../model/useUIStore');
