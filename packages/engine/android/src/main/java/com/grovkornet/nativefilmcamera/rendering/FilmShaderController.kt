@@ -23,7 +23,7 @@ class FilmShaderController {
         }
 
         vertexBuffer = createFloatBuffer(floatArrayOf(-1f, -1f, 1f, -1f, -1f, 1f, 1f, 1f))
-        texCoordBuffer = createFloatBuffer(floatArrayOf(0f, 0f, 1f, 0f, 0f, 1f, 1f, 1f))
+        texCoordBuffer = createFloatBuffer(floatArrayOf(0f, 1f, 1f, 1f, 0f, 0f, 1f, 0f))
     }
 
     fun setupAndBind(params: OffscreenFilmProcessor.Parameters) {

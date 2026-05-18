@@ -16,6 +16,7 @@ import androidx.camera.core.resolutionselector.ResolutionStrategy
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
+import android.view.OrientationEventListener
 import com.grovkornet.nativefilmcamera.logic.CameraLogicUtils
 import com.grovkornet.nativefilmcamera.state.CameraConfiguration
 
@@ -35,6 +36,21 @@ class CameraSessionManager(
     private var cameraProvider: ProcessCameraProvider? = null
     private var camera: Camera? = null
     private var imageCapture: ImageCapture? = null
+
+    private val orientationEventListener by lazy {
+        object : OrientationEventListener(context) {
+            override fun onOrientationChanged(orientation: Int) {
+                if (orientation == ORIENTATION_UNKNOWN) return
+                val rotation = when (orientation) {
+                    in 45..134 -> Surface.ROTATION_270 // Reverse landscape
+                    in 135..224 -> Surface.ROTATION_180 // Reverse portrait
+                    in 225..314 -> Surface.ROTATION_90 // Landscape
+                    else -> Surface.ROTATION_0 // Portrait
+                }
+                imageCapture?.targetRotation = rotation
+            }
+        }
+    }
 
     fun start(surfaceTexture: SurfaceTexture, captureCallback: android.hardware.camera2.CameraCaptureSession.CaptureCallback? = null) {
         val cameraProviderFuture = ProcessCameraProvider.getInstance(context)
@@ -90,6 +106,7 @@ class CameraSessionManager(
                 listener.onCameraReady(it, imageCapture!!)
             }
             
+            orientationEventListener.enable()
             Log.i(TAG, "CameraX bound successfully to cameraId: ${config.cameraId}")
         } catch (e: Exception) {
             Log.e(TAG, "Use case binding failed", e)
@@ -142,6 +159,7 @@ class CameraSessionManager(
     }
 
     fun release() {
+        orientationEventListener.disable()
         cameraProvider?.unbindAll()
         cameraProvider = null
         camera = null

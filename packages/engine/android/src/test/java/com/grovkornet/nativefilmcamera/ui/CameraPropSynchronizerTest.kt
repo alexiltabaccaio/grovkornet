@@ -22,7 +22,7 @@ class CameraPropSynchronizerTest {
 
         val rendererListener = object : FilmRenderer.Listener {
             override fun onSurfaceTextureCreated(surfaceTexture: SurfaceTexture) {}
-            override fun onFpsUpdate(fps: Int, resolution: String) {}
+            override fun onFpsUpdate(fps: Int, stampedFps: Int, resolution: String) {}
             override fun requestRender() {}
         }
 
@@ -53,7 +53,7 @@ class CameraPropSynchronizerTest {
 
         val rendererListener = object : FilmRenderer.Listener {
             override fun onSurfaceTextureCreated(surfaceTexture: SurfaceTexture) {}
-            override fun onFpsUpdate(fps: Int, resolution: String) {}
+            override fun onFpsUpdate(fps: Int, stampedFps: Int, resolution: String) {}
             override fun requestRender() {}
         }
 
