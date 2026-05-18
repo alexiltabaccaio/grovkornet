@@ -2,6 +2,7 @@ import React from 'react';
 import { StyleSheet } from 'react-native';
 import { useHardwareStore } from '../model/useHardwareStore';
 import { useStylesStore } from '../model/useStylesStore';
+import { useUIStore } from '../model/useUIStore';
 import { NativeFilmCamera } from '@entities/camera/ui/NativeFilmCamera';
 import { useDerivedValue, SharedValue } from 'react-native-reanimated';
 import { FlashOverlay } from './FlashOverlay';
@@ -15,8 +16,13 @@ interface ConnectedFilmCameraProps {
 export const ConnectedFilmCamera = ({ cameraKey }: ConnectedFilmCameraProps) => {
   const hwStore = useHardwareStore();
   const styleStore = useStylesStore();
+  const setLatestCapturedUri = useUIStore(state => state.setLatestCapturedUri);
   const cameraRef = useCameraCapture();
   const { exposureHandler, debugHandler, capabilitiesHandler } = useCameraEvents(hwStore, styleStore);
+
+  const photoHandler = React.useCallback((event: { nativeEvent: { uri: string } }) => {
+    setLatestCapturedUri(event.nativeEvent.uri);
+  }, [setLatestCapturedUri]);
 
   const resolvedNoiseReduction = useDerivedValue(() => {
     return styleStore.noiseReductionAuto.value ? -1 : styleStore.noiseReductionMode.value;
@@ -59,6 +65,7 @@ export const ConnectedFilmCamera = ({ cameraKey }: ConnectedFilmCameraProps) => 
         onCapabilitiesUpdate={capabilitiesHandler}
         onDebugUpdate={debugHandler}
         onExposureUpdate={exposureHandler}
+        onPhotoCaptured={photoHandler}
       />
       <FlashOverlay />
     </>

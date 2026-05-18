@@ -5,7 +5,8 @@ import { useSharedValue } from 'react-native-reanimated';
 import { useTranslation } from 'react-i18next';
 
 import { useShallow } from 'zustand/react/shallow';
-import { useUIStore, GestureController, Footer, DebugOverlay, ConnectedFilmCamera, ShutterButton } from '@features/camera-controls';
+import { useUIStore, GestureController, Footer, DebugOverlay, ConnectedFilmCamera, ShutterButton, CaptureThumbnail } from '@features/camera-controls';
+import { VerifiedGallery } from '@features/gallery';
 
 
 export const CameraScreen = () => {
@@ -16,14 +17,16 @@ export const CameraScreen = () => {
 
 const CameraScreenContent = () => {
   const { t } = useTranslation();
-  const { isDebugEnabled, triggerCapture } = useUIStore(useShallow(state => ({
+  const { isDebugEnabled, triggerCapture, latestCapturedUri } = useUIStore(useShallow(state => ({
     isDebugEnabled: state.isDebugEnabled,
     triggerCapture: state.triggerCapture,
+    latestCapturedUri: state.latestCapturedUri,
   })));
 
   const footerTranslateY = useSharedValue(0);
 
   const [cameraKey, setCameraKey] = useState(0);
+  const [isGalleryOpen, setIsGalleryOpen] = useState(false);
 
   useEffect(() => {
     const subscription = AppState.addEventListener('change', (nextAppState: AppStateStatus) => {
@@ -74,7 +77,13 @@ const CameraScreenContent = () => {
         <ShutterButton onPress={triggerCapture} translateY={footerTranslateY} />
       </View>
 
+      <View style={styles.thumbnailContainer} pointerEvents="box-none">
+        <CaptureThumbnail onPress={() => setIsGalleryOpen(true)} />
+      </View>
+
       <Footer translateY={footerTranslateY} />
+
+      {isGalleryOpen && <VerifiedGallery onClose={() => setIsGalleryOpen(false)} initialUri={latestCapturedUri} />}
     </View>
   );
 };
@@ -91,7 +100,13 @@ const styles = StyleSheet.create({
     right: 0,
     alignItems: 'center',
     justifyContent: 'center',
-    zIndex: 50, // Sotto il footer (100)
+    zIndex: 50,
+  },
+  thumbnailContainer: {
+    position: 'absolute',
+    bottom: 217,
+    left: 30,
+    zIndex: 60,
   },
   center: {
     flex: 1,

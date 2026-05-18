@@ -70,5 +70,14 @@ describe('useUIStore', () => {
     setActiveModule('none');
     expect(useUIStore.getState().activeSubParameter).toBe('none');
   });
+
+  it('sets latest captured uri correctly', () => {
+    const { setLatestCapturedUri } = useUIStore.getState();
+    setLatestCapturedUri('file:///test/image.jpg');
+    expect(useUIStore.getState().latestCapturedUri).toBe('file:///test/image.jpg');
+
+    setLatestCapturedUri(null);
+    expect(useUIStore.getState().latestCapturedUri).toBeNull();
+  });
 });
 

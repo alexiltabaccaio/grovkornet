@@ -13,6 +13,7 @@ import androidx.core.content.ContextCompat
 import com.grovkornet.nativefilmcamera.rendering.OffscreenFilmProcessor
 import com.grovkornet.nativefilmcamera.managers.GalleryManager
 import com.grovkornet.nativefilmcamera.logic.ImageUtils
+import com.grovkornet.nativefilmcamera.logic.WatermarkEngine
 import com.grovkornet.nativefilmcamera.state.CameraConfiguration
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -108,8 +109,25 @@ class CapturePipeline(
             val processed = offscreenProcessor.process(bitmap, params)
             bitmap.recycle()
 
-            val uri = galleryManager.saveToGallery(processed)
-            processed.recycle()
+            val watermarked = WatermarkEngine.embedSignature(processed)
+            if (watermarked != processed) {
+                processed.recycle()
+            }
+
+            val tempFile = java.io.File(context.cacheDir, "temp_capture_${System.currentTimeMillis()}.jpg")
+            tempFile.outputStream().use { os ->
+                watermarked.compress(Bitmap.CompressFormat.JPEG, 95, os)
+            }
+
+            // Inject EXIF into the temporary file
+            val exif = android.media.ExifInterface(tempFile.absolutePath)
+            exif.setAttribute(android.media.ExifInterface.TAG_SOFTWARE, "Grovkornet")
+            exif.saveAttributes()
+
+            // Save the file with EXIF to the gallery
+            val uri = galleryManager.saveFileToGallery(tempFile)
+            watermarked.recycle()
+            tempFile.delete()
 
             uri?.let { 
                 withContext(Dispatchers.Main) {

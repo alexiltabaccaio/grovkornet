@@ -15,6 +15,11 @@ class NativeFilmCameraModule : Module() {
   override fun definition() = ModuleDefinition {
     Name("NativeFilmCamera")
 
+    AsyncFunction("verifyGrovkornetAuthenticity") { uriString: String ->
+      val uri = android.net.Uri.parse(uriString)
+      com.grovkornet.nativefilmcamera.logic.WatermarkEngine.verifyGrovkornetAuthenticity(appContext.reactContext ?: throw Exception("React context is null"), uri)
+    }
+
     View(NativeFilmCameraView::class) {
       Events(
         "onDebugUpdate",

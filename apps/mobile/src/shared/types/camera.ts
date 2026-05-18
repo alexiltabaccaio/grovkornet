@@ -106,6 +106,7 @@ export interface UIState {
   isDebugEnabled: boolean;
   isSubPanelOpen: boolean;
   isCapturing: boolean;
+  latestCapturedUri: string | null;
   lastActiveParameters: Record<ModuleType, ParameterType>;
   gestureConfig: GestureConfig | null;
 }
@@ -119,6 +120,7 @@ export interface UIActions {
   setIsDebugEnabled: (enabled: boolean) => void;
   setIsSubPanelOpen: (open: boolean) => void;
   triggerCapture: () => void;
+  setLatestCapturedUri: (uri: string | null) => void;
   setGestureConfig: (config: GestureConfig | null) => void;
 }
 

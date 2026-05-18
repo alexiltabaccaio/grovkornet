@@ -1,4 +1,4 @@
-import { requireNativeViewManager } from 'expo-modules-core';
+import { requireNativeViewManager, requireNativeModule } from 'expo-modules-core';
 import * as React from 'react';
 import { ViewProps } from 'react-native';
 
@@ -40,5 +40,20 @@ export interface NativeFilmCameraViewProps extends ViewProps {
 
 const NativeFilmCameraView: React.ComponentType<NativeFilmCameraViewProps> =
   requireNativeViewManager('NativeFilmCamera');
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+let NativeFilmCameraModule: any;
+try {
+  NativeFilmCameraModule = requireNativeModule('NativeFilmCamera');
+} catch {
+  NativeFilmCameraModule = {
+    verifyGrovkornetAuthenticity: async () => Promise.resolve(true),
+  };
+}
+
+export async function verifyGrovkornetAuthenticity(uri: string): Promise<boolean> {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access
+  return await NativeFilmCameraModule.verifyGrovkornetAuthenticity(uri);
+}
 
 export { NativeFilmCameraView };

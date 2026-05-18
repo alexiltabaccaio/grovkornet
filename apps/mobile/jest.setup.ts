@@ -16,6 +16,8 @@ jest.mock('react-native-reanimated', () => {
     withSpring: jest.fn((v: any) => v),
     withTiming: jest.fn((v: any) => v),
     withSequence: jest.fn((...args: any[]) => args[args.length - 1]),
+    withRepeat: jest.fn((v: any) => v),
+    Easing: { linear: jest.fn() },
     useAnimatedStyle: jest.fn((cb: any) => cb()),
     useAnimatedProps: jest.fn((cb: any) => cb()),
     createAnimatedComponent: jest.fn((comp: any) => comp),
@@ -71,6 +73,9 @@ jest.mock('expo-modules-core', () => {
       const { View } = require('react-native');
       return View;
     }),
+    requireNativeModule: jest.fn(() => ({
+      verifyGrovkornetAuthenticity: jest.fn(() => Promise.resolve(true)),
+    })),
   };
 });
 
@@ -141,6 +146,41 @@ jest.mock('react-native', () => {
 // Mock Expo Vector Icons
 jest.mock('@expo/vector-icons', () => ({
   Ionicons: () => null,
+}));
+
+// Mock react-native-share
+jest.mock('react-native-share', () => ({
+  __esModule: true,
+  default: {
+    shareSingle: jest.fn(),
+    open: jest.fn(),
+  },
+  Social: {
+    InstagramStories: 'instagramstories',
+  },
+}));
+
+// Mock expo-media-library
+jest.mock('expo-media-library', () => ({
+  requestPermissionsAsync: jest.fn(() => Promise.resolve({ status: 'granted' })),
+  getAlbumAsync: jest.fn(() => Promise.resolve({ id: 'album-id', title: 'Grovkornet' })),
+  getAssetsAsync: jest.fn(() => Promise.resolve({
+    assets: [
+      { id: '1', uri: 'file:///test/1.jpg' },
+      { id: '2', uri: 'file:///test/2.jpg' },
+    ],
+  })),
+  MediaType: {
+    photo: 'photo',
+  },
+  SortBy: {
+    creationTime: 'creationTime',
+  },
+}));
+
+// Mock expo-localization
+jest.mock('expo-localization', () => ({
+  getLocales: jest.fn(() => [{ languageCode: 'en' }]),
 }));
 
 // Silence some warnings

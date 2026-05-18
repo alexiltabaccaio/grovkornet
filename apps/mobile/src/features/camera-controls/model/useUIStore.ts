@@ -10,6 +10,7 @@ export const useUIStore = create<UIStore>((set, get) => ({
   isDebugEnabled: false,
   isSubPanelOpen: false,
   isCapturing: false,
+  latestCapturedUri: null,
   gestureConfig: null,
 
   lastActiveParameters: {
@@ -68,6 +69,10 @@ export const useUIStore = create<UIStore>((set, get) => ({
     setTimeout(() => {
       set({ isCapturing: false });
     }, 200);
+  },
+  
+  setLatestCapturedUri: (uri) => {
+    set({ latestCapturedUri: uri });
   },
   
   setGestureConfig: (config) => {

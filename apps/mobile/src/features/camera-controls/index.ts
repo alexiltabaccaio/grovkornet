@@ -6,3 +6,5 @@ export * from './ui/GestureController';
 export * from './ui/DebugOverlay';
 export * from './ui/ConnectedFilmCamera';
 export * from './ui/ShutterButton';
+export * from './ui/CaptureThumbnail';
+export * from './ui/ShareButton';
