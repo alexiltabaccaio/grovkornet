@@ -12,10 +12,8 @@ jest.mock('react-i18next', () => ({
   }),
 }));
 
-
-jest.mock('@shared/ui', () => ({
-  LanguageThumb: 'LanguageThumb',
-  DebugThumb: 'DebugThumb',
+jest.mock('../../ParameterControl', () => ({
+  ParameterControl: 'ParameterControl',
 }));
 
 describe('PreferencesModule', () => {

@@ -30,10 +30,6 @@ jest.mock('./FooterParameters', () => ({
   FooterParameters: 'FooterParameters',
 }));
 
-jest.mock('@shared/ui', () => ({
-  LanguageThumb: 'LanguageThumb',
-  DebugThumb: 'DebugThumb',
-}));
 
 jest.mock('../model/useHardwareStore', () => ({
   useHardwareStore: jest.fn()

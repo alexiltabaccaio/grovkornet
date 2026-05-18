@@ -1,2 +1,2 @@
-export * from './LanguageThumb';
-export * from './DebugThumb';
+// File intentionally left empty
+export {};

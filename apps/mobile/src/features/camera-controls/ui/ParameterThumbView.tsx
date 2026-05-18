@@ -1,5 +1,5 @@
 import React, { forwardRef } from 'react';
-import { StyleSheet, Text, View, TextInput } from 'react-native';
+import { StyleSheet, Text, View, TextInput, Image, ImageSourcePropType } from 'react-native';
 import Animated, { SharedValue, useAnimatedStyle, useAnimatedProps, interpolateColor } from 'react-native-reanimated';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -13,6 +13,7 @@ export interface ParameterThumbViewProps {
   minValue?: number;
   maxValue?: number;
   icon?: keyof typeof Ionicons.glyphMap;
+  imageSource?: ImageSourcePropType;
   renderValue?: boolean;
   valueFormatter?: (val: number) => string;
   variant?: 'square' | 'text';
@@ -32,6 +33,7 @@ export const ParameterThumbView = forwardRef<View, ParameterThumbViewProps>(({
   minValue = 0,
   maxValue = 1,
   icon,
+  imageSource,
   renderValue,
   valueFormatter,
   variant = 'square',
@@ -171,6 +173,8 @@ export const ParameterThumbView = forwardRef<View, ParameterThumbViewProps>(({
             ]}>
             {staticText}
           </Text>
+        ) : imageSource ? (
+          <Image source={imageSource} style={styles.imageSource} resizeMode="cover" />
         ) : icon ? (
           <AnimatedIcon name={icon} size={24} style={{ zIndex: 1 }} animatedProps={animatedIconProps} />
         ) : null}
@@ -241,6 +245,11 @@ const styles = StyleSheet.create({
     bottom: -2,
     left: -2,
     right: -2,
+  },
+  imageSource: {
+    width: '100%',
+    height: '100%',
+    zIndex: 1,
   },
 
   filterText: {

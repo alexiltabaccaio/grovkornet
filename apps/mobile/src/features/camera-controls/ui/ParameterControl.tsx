@@ -1,5 +1,6 @@
 import React from 'react';
 import { SharedValue } from 'react-native-reanimated';
+import { ImageSourcePropType } from 'react-native';
 import { GestureDetector } from 'react-native-gesture-handler';
 import { Ionicons } from '@expo/vector-icons';
 import { useParameterGesture } from '../lib/useParameterGesture';
@@ -14,6 +15,7 @@ interface ParameterControlProps {
   maxValue?: number;
   onChange?: (val: number) => void;
   icon?: keyof typeof Ionicons.glyphMap;
+  imageSource?: ImageSourcePropType;
   renderValue?: boolean;
   valueFormatter?: (val: number) => string;
   variant?: 'square' | 'text';
@@ -35,6 +37,7 @@ export const ParameterControl = ({
   minValue = 0,
   maxValue = 1,
   icon,
+  imageSource,
   renderValue,
   valueFormatter,
   variant = 'square',
@@ -70,6 +73,7 @@ export const ParameterControl = ({
         minValue={minValue}
         maxValue={maxValue}
         icon={icon}
+        imageSource={imageSource}
         renderValue={renderValue}
         valueFormatter={valueFormatter}
         variant={variant}
