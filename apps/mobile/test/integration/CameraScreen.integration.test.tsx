@@ -2,7 +2,7 @@
  
 import React from 'react';
 import { render, fireEvent, waitFor, act } from '@testing-library/react-native';
-import { CameraScreen } from './CameraScreen';
+import { CameraScreen } from '@screens/camera/ui/CameraScreen';
 import { useUIStore } from '@features/camera-controls/model/useUIStore';
 import { useHardwareStore } from '@features/camera-controls/model/useHardwareStore';
 
