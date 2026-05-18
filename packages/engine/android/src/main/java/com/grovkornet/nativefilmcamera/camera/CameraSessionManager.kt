@@ -64,8 +64,18 @@ class CameraSessionManager(
         val provider = cameraProvider ?: return
 
         val targetAspectRatio = if (config.aspectRatio == 1) AspectRatio.RATIO_16_9 else AspectRatio.RATIO_4_3
+        
+        // If 60 FPS (or > 30) is requested, cap the target resolution to 1080p-equivalent.
+        // Full sensor resolution (default for 4:3) typically drops the hardware sensor to 30 FPS.
+        val resolutionStrategy = if (config.targetFps > 30) {
+            ResolutionStrategy(Size(1920, 1080), ResolutionStrategy.FALLBACK_RULE_CLOSEST_HIGHER_THEN_LOWER)
+        } else {
+            ResolutionStrategy.HIGHEST_AVAILABLE_STRATEGY
+        }
+
         val resolutionSelector = ResolutionSelector.Builder()
             .setAspectRatioStrategy(AspectRatioStrategy(targetAspectRatio, AspectRatioStrategy.FALLBACK_RULE_AUTO))
+            .setResolutionStrategy(resolutionStrategy)
             .build()
 
         val previewBuilder = Preview.Builder()
