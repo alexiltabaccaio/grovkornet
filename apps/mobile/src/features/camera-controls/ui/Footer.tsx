@@ -169,7 +169,6 @@ const styles = StyleSheet.create({
 
   topFooter: {
     paddingTop: 0,
-    height: 160,
   },
 
 
