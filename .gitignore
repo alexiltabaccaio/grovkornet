@@ -36,6 +36,7 @@ firebase-export-*
 .idea/
 *.apk
 *.aab
+*.hprof
 
 # iOS
 **/ios/Pods/
