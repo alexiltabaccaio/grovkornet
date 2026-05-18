@@ -125,5 +125,40 @@ describe('useUIStore', () => {
     expect(useUIStore.getState().activeModule).toBe('texture');
     expect(useUIStore.getState().activeParameter).toBe('sharpening');
   });
+
+  it('updates isSubPanelOpen correctly', () => {
+    const { setIsSubPanelOpen } = useUIStore.getState();
+    setIsSubPanelOpen(true);
+    expect(useUIStore.getState().isSubPanelOpen).toBe(true);
+  });
+
+  it('triggers capture and resets after timeout', () => {
+    jest.useFakeTimers();
+    const { triggerCapture } = useUIStore.getState();
+    
+    triggerCapture();
+    expect(useUIStore.getState().isCapturing).toBe(true);
+
+    jest.advanceTimersByTime(200);
+    expect(useUIStore.getState().isCapturing).toBe(false);
+    jest.useRealTimers();
+  });
+
+  it('sets gesture config correctly', () => {
+    const { setGestureConfig } = useUIStore.getState();
+    const mockConfig = { mode: 'focus' } as any;
+    setGestureConfig(mockConfig);
+    expect(useUIStore.getState().gestureConfig).toBe(mockConfig);
+  });
+
+  it('handles fallback values when unknown section or module is provided', () => {
+    const { setActiveSection, setActiveModule } = useUIStore.getState();
+    setActiveSection('unknown_section' as any);
+    expect(useUIStore.getState().activeModule).toBe('none');
+    expect(useUIStore.getState().activeParameter).toBe('none');
+
+    setActiveModule('unknown_module' as any);
+    expect(useUIStore.getState().activeParameter).toBe('none');
+  });
 });
 

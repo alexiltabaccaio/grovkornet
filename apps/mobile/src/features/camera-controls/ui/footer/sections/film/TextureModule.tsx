@@ -15,9 +15,9 @@ export const TextureModule = ({ handlePressWithDouble }: TextureModuleProps) => 
   return (
     <Animated.View style={footerStyles.tabContent}>
       <View style={footerStyles.imageToolsContainer}>
-        <NoiseReductionParam handlePressWithDouble={handlePressWithDouble} />
-        <SharpeningParam handlePressWithDouble={handlePressWithDouble} />
         <GrainParam handlePressWithDouble={handlePressWithDouble} />
+        <SharpeningParam handlePressWithDouble={handlePressWithDouble} />
+        <NoiseReductionParam handlePressWithDouble={handlePressWithDouble} />
       </View>
     </Animated.View>
   );

@@ -41,6 +41,7 @@ export const ShutterButton = ({ onPress, disabled, translateY }: ShutterButtonPr
 
   return (
     <Pressable
+      testID="shutter-button"
       onPressIn={handlePressIn}
       onPressOut={handlePressOut}
       onPress={handlePress}
