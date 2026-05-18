@@ -143,6 +143,7 @@ export const ParameterThumbView = forwardRef<View, ParameterThumbViewProps>(({
     >
       <View style={[
         styles.filterPlaceholder,
+        !!imageSource && { height: 32, marginTop: 8, marginBottom: 14 },
         variant === 'square' && isActive && styles.filterPlaceholderActive,
         variant === 'square' && styles.iconPlaceholder,
         variant === 'text' && styles.textVariantPlaceholder,
@@ -258,6 +259,7 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     letterSpacing: 0.5,
     textAlign: 'center',
+    minHeight: 28,
   },
   filterTextActive: {
     color: '#FFF',
