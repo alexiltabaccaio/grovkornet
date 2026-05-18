@@ -36,6 +36,7 @@
       "ev": "EV",
       "shutter_speed": "TEMPI",
       "temperature": "TEMPERATURA",
+      "tint": "TINTA",
       "focus": "FUOCO",
       "lens": "LENTE",
       "torch": "TORCIA",

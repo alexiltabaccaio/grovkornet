@@ -41,6 +41,7 @@ class OffscreenFilmProcessor {
         val grainEnabled: Boolean,
         val ev: Float,
         val whiteBalance: Float,
+        val tint: Float,
         val sharpening: Float,
         val time: Float = 0.5f,
         val viewportWidth: Float = 1080f,

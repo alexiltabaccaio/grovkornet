@@ -47,6 +47,8 @@ class NativeFilmCameraView(context: Context) : GLSurfaceView(context) {
         set(value) { field = value; propSynchronizer?.ev = value }
     var whiteBalance: Float = 5000.0f
         set(value) { field = value; propSynchronizer?.whiteBalance = value }
+    var tint: Float = 0.0f
+        set(value) { field = value; propSynchronizer?.tint = value }
     var noiseReduction: Int = 1
         set(value) { field = value; propSynchronizer?.noiseReduction = value }
     var sharpening: Float = 0.0f

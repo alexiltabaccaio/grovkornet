@@ -50,6 +50,7 @@ export const ConnectedFilmCamera = ({ cameraKey }: ConnectedFilmCameraProps) => 
         exposureTime={hwStore.shutterSpeed as unknown as SharedValue<number | undefined>}
         ev={hwStore.ev as unknown as SharedValue<number | undefined>}
         whiteBalance={hwStore.temperature as unknown as SharedValue<number | undefined>}
+        tint={hwStore.tint as unknown as SharedValue<number | undefined>}
         isoAuto={hwStore.isoAuto as unknown as SharedValue<boolean | undefined>}
         shutterSpeedAuto={hwStore.shutterSpeedAuto as unknown as SharedValue<boolean | undefined>}
         whiteBalanceAuto={hwStore.temperatureAuto as unknown as SharedValue<boolean | undefined>}

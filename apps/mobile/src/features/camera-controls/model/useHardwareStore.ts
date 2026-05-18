@@ -7,6 +7,7 @@ import {
   DEFAULT_EV,
   DEFAULT_SHUTTER_SPEED,
   DEFAULT_TEMPERATURE,
+  DEFAULT_TINT,
 } from '@shared/constants/videoProcessing';
 
 export const useHardwareStore = create<HardwareStore>((set, get) => ({
@@ -17,6 +18,7 @@ export const useHardwareStore = create<HardwareStore>((set, get) => ({
   ev: makeMutable(DEFAULT_EV),
   shutterSpeed: makeMutable(DEFAULT_SHUTTER_SPEED),
   temperature: makeMutable(DEFAULT_TEMPERATURE),
+  tint: makeMutable(DEFAULT_TINT),
   isoAuto: makeMutable(true),
   shutterSpeedAuto: makeMutable(true),
   temperatureAuto: makeMutable(true),
@@ -71,6 +73,10 @@ export const useHardwareStore = create<HardwareStore>((set, get) => ({
     get().temperature.value = value;
     get().temperatureAuto.value = false;
   },
+  setTint: (value) => {
+    get().tint.value = value;
+    get().temperatureAuto.value = false;
+  },
   setIsoAuto: (value) => {
     get().isoAuto.value = value;
     get().shutterSpeedAuto.value = value;
@@ -89,7 +95,10 @@ export const useHardwareStore = create<HardwareStore>((set, get) => ({
   },
   setTemperatureAuto: (value) => {
     get().temperatureAuto.value = value;
-    if (value) get().temperature.value = DEFAULT_TEMPERATURE;
+    if (value) {
+      get().temperature.value = DEFAULT_TEMPERATURE;
+      get().tint.value = DEFAULT_TINT;
+    }
   },
   setEvAuto: (value) => {
     get().evAuto.value = value;

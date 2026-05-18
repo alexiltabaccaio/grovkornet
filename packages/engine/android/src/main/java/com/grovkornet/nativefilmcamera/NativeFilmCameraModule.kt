@@ -78,6 +78,9 @@ class NativeFilmCameraModule : Module() {
       Prop("whiteBalance") { view: NativeFilmCameraView, whiteBalance: Float ->
         view.whiteBalance = whiteBalance
       }
+      Prop("tint") { view: NativeFilmCameraView, tint: Float ->
+        view.tint = tint
+      }
       Prop("focusDistance") { view: NativeFilmCameraView, focusDistance: Float ->
         view.focusDistance = focusDistance
       }

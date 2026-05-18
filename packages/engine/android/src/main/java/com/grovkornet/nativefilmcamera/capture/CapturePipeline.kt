@@ -100,6 +100,7 @@ class CapturePipeline(
                 grainEnabled = config.grainEnabled,
                 ev = config.ev,
                 whiteBalance = config.whiteBalance,
+                tint = config.tint,
                 sharpening = config.sharpening,
                 time = (System.currentTimeMillis() % 10000) / 1000f,
                 viewportWidth = config.viewportWidth,

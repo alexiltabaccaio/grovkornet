@@ -14,6 +14,7 @@ data class CameraConfiguration(
     var aberration: Float = 0.0f,
     var aberrationDirection: Int = 0,
     var whiteBalance: Float = 5000.0f,
+    var tint: Float = 0.0f,
     var sharpening: Float = 0.0f,
 
     // Hardware Props

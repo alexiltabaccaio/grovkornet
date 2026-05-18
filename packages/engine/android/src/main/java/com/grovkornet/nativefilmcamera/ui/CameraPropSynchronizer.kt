@@ -28,6 +28,8 @@ class CameraPropSynchronizer(
         set(value) { field = value; config.ev = value; renderer.ev = value; updateScheduler.schedule() }
     var whiteBalance: Float = 5000.0f
         set(value) { field = value; config.whiteBalance = value; renderer.whiteBalance = value }
+    var tint: Float = 0.0f
+        set(value) { field = value; config.tint = value; renderer.tint = value }
     var noiseReduction: Int = 1
         set(value) { field = value; config.noiseReduction = value; updateScheduler.schedule() }
     var sharpening: Float = 0.0f
@@ -77,6 +79,7 @@ class CameraPropSynchronizer(
         config.aberration = aberration
         config.aberrationDirection = aberrationDirection
         config.whiteBalance = whiteBalance
+        config.tint = tint
         config.ev = ev
         config.noiseReduction = noiseReduction
         config.sharpening = sharpening

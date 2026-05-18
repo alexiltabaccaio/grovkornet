@@ -19,6 +19,7 @@ export interface NativeFilmCameraViewProps extends ViewProps {
   exposureTime?: number;
   ev?: number;
   whiteBalance?: number;
+  tint?: number;
   focusDistance?: number;
   cameraId?: string;
   torchState?: number;

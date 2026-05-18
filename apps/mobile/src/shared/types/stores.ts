@@ -24,6 +24,7 @@ export interface HardwareState {
   ev: SharedValue<number>;
   shutterSpeed: SharedValue<number>;
   temperature: SharedValue<number>;
+  tint: SharedValue<number>;
   isoAuto: SharedValue<boolean>;
   shutterSpeedAuto: SharedValue<boolean>;
   temperatureAuto: SharedValue<boolean>;
@@ -46,6 +47,7 @@ export interface HardwareActions {
   setEv: (value: number) => void;
   setShutterSpeed: (value: number) => void;
   setTemperature: (value: number) => void;
+  setTint: (value: number) => void;
   setIsoAuto: (value: boolean) => void;
   setShutterSpeedAuto: (value: boolean) => void;
   setTemperatureAuto: (value: boolean) => void;

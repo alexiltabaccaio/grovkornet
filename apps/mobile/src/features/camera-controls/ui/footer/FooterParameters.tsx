@@ -53,7 +53,7 @@ export const FooterParameters = () => {
     else if (tool === 'iso') setIsoAuto(true);
     else if (tool === 'shutter_speed') setShutterSpeedAuto(true);
     else if (tool === 'focus') setFocusAuto(true);
-    else if (tool === 'temperature') setTemperatureAuto(true);
+    else if (tool === 'temperature' || tool === 'tint') setTemperatureAuto(true);
     else if (tool === 'camera_selection') setCameraAuto(true);
     else if (tool === 'torch') setTorchState(0);
     else if (tool === 'fps_setting') {

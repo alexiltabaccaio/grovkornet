@@ -36,6 +36,7 @@
       "ev": "EV",
       "shutter_speed": "SHUTTER",
       "temperature": "TEMPERATURE",
+      "tint": "TINT",
       "focus": "FOCUS",
       "lens": "LENS",
       "torch": "TORCH",

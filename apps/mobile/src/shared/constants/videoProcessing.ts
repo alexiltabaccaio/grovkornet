@@ -7,4 +7,5 @@ export const DEFAULT_ISO = 400;
 export const DEFAULT_EV = 0;
 export const DEFAULT_SHUTTER_SPEED = 60; // 1/60s
 export const DEFAULT_TEMPERATURE = 5000; // 5000K daylight
+export const DEFAULT_TINT = 0; // -100 to 100
 

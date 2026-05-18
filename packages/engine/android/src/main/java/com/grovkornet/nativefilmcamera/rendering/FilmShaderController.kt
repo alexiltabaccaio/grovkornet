@@ -59,6 +59,7 @@ class FilmShaderController {
         GLES20.glUniform2f(GLES20.glGetUniformLocation(program, "u_Resolution"), params.viewportWidth, params.viewportHeight)
         GLES20.glUniform1f(GLES20.glGetUniformLocation(program, "u_Ev"), params.ev)
         GLES20.glUniform1f(GLES20.glGetUniformLocation(program, "u_WhiteBalance"), params.whiteBalance)
+        GLES20.glUniform1f(GLES20.glGetUniformLocation(program, "u_Tint"), params.tint)
         GLES20.glUniform1f(GLES20.glGetUniformLocation(program, "u_Sharpening"), params.sharpening)
     }
 

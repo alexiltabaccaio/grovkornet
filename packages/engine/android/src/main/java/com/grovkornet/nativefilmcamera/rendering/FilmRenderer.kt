@@ -30,6 +30,7 @@ class FilmRenderer(private val listener: Listener) : GLSurfaceView.Renderer, Sur
     @Volatile var aberrationDirection: Int = 0
     @Volatile var ev: Float = 0.0f
     @Volatile var whiteBalance: Float = 5000.0f
+    @Volatile var tint: Float = 0.0f
     @Volatile var whiteBalanceAuto: Boolean = true
     @Volatile var sharpening: Float = 0.0f
     @Volatile var aspectRatio: Int = 1
@@ -54,6 +55,7 @@ class FilmRenderer(private val listener: Listener) : GLSurfaceView.Renderer, Sur
     private var uResolutionLoc = -1
     private var uEvLoc = -1
     private var uWhiteBalanceLoc = -1
+    private var uTintLoc = -1
     private var uSharpeningLoc = -1
     private var uTextureLoc = -1
     private var aPositionLoc = -1
@@ -140,6 +142,7 @@ class FilmRenderer(private val listener: Listener) : GLSurfaceView.Renderer, Sur
         uResolutionLoc = GLES20.glGetUniformLocation(program, "u_Resolution")
         uEvLoc = GLES20.glGetUniformLocation(program, "u_Ev")
         uWhiteBalanceLoc = GLES20.glGetUniformLocation(program, "u_WhiteBalance")
+        uTintLoc = GLES20.glGetUniformLocation(program, "u_Tint")
         uSharpeningLoc = GLES20.glGetUniformLocation(program, "u_Sharpening")
         uTextureLoc = GLES20.glGetUniformLocation(program, "u_Texture")
         
@@ -299,6 +302,7 @@ class FilmRenderer(private val listener: Listener) : GLSurfaceView.Renderer, Sur
         GLES20.glUniform2f(uResolutionLoc, viewportWidth.toFloat(), viewportHeight.toFloat())
         GLES20.glUniform1f(uEvLoc, ev)
         GLES20.glUniform1f(uWhiteBalanceLoc, if (whiteBalanceAuto) 5000.0f else whiteBalance)
+        GLES20.glUniform1f(uTintLoc, if (whiteBalanceAuto) 0.0f else tint)
         GLES20.glUniform1f(uSharpeningLoc, sharpening)
 
         GLES20.glEnableVertexAttribArray(aPositionLoc)

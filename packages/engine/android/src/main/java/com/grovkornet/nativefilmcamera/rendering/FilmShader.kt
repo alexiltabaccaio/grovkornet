@@ -59,6 +59,7 @@ object FilmShader {
         uniform vec2 u_Resolution;
         uniform float u_Ev;
         uniform float u_WhiteBalance;
+        uniform float u_Tint;
         uniform float u_Sharpening;
 
         float hash(vec2 p) {
@@ -132,9 +133,10 @@ object FilmShader {
             // Apply EV multiplier
             color.rgb *= pow(2.0, u_Ev);
 
-            // Apply White Balance
+            // Apply White Balance & Tint
             float temp = u_WhiteBalance / 5000.0;
-            vec3 wbMultiplier = vec3(temp, 1.0, 1.0 / temp);
+            float tintOffset = u_Tint / 100.0;
+            vec3 wbMultiplier = vec3(temp * (1.0 + tintOffset * 0.2), 1.0 - tintOffset * 0.2, (1.0 / temp) * (1.0 + tintOffset * 0.2));
             color.rgb *= wbMultiplier;
 
             gl_FragColor = color;
@@ -161,6 +163,7 @@ object FilmShader {
         uniform vec2 u_Resolution;
         uniform float u_Ev;
         uniform float u_WhiteBalance;
+        uniform float u_Tint;
         uniform float u_Sharpening;
 
         float hash(vec2 p) {
@@ -231,10 +234,10 @@ object FilmShader {
             // Apply EV multiplier (each 1 EV doubles/halves light)
             color.rgb *= pow(2.0, u_Ev);
 
-            // Apply White Balance (Kelvin mapping approximation)
-            // 5000 is neutral. Lower is cooler (blue), higher is warmer (orange/red).
+            // Apply White Balance & Tint
             float temp = u_WhiteBalance / 5000.0;
-            vec3 wbMultiplier = vec3(temp, 1.0, 1.0 / temp);
+            float tintOffset = u_Tint / 100.0;
+            vec3 wbMultiplier = vec3(temp * (1.0 + tintOffset * 0.2), 1.0 - tintOffset * 0.2, (1.0 / temp) * (1.0 + tintOffset * 0.2));
             color.rgb *= wbMultiplier;
 
             gl_FragColor = color;
