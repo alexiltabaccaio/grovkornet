@@ -13,6 +13,7 @@ export interface CameraCapabilities {
   }>;
   availableNoiseReductionModes?: number[];
   availableEdgeModes?: number[];
+  maxFps?: number;
 }
 
 export interface HardwareState {

@@ -8,9 +8,11 @@ import android.hardware.camera2.TotalCaptureResult
 import android.util.Log
 import android.util.Range
 import androidx.camera.camera2.interop.Camera2CameraControl
+import androidx.camera.camera2.interop.Camera2CameraInfo
 import androidx.camera.camera2.interop.CaptureRequestOptions
 import androidx.camera.core.Camera
 import com.grovkornet.nativefilmcamera.state.CameraConfiguration
+import android.hardware.camera2.CameraCharacteristics
 
 class CameraControlManager(
     private val context: Context,
@@ -29,9 +31,38 @@ class CameraControlManager(
     fun updateControls(camera: Camera) {
         try {
             val control = Camera2CameraControl.from(camera.cameraControl)
+            val info = Camera2CameraInfo.from(camera.cameraInfo)
             val builder = CaptureRequestOptions.Builder()
 
-            builder.setCaptureRequestOption(CaptureRequest.CONTROL_AE_TARGET_FPS_RANGE, Range(60, 60))
+            val availableFpsRanges = info.getCameraCharacteristic(CameraCharacteristics.CONTROL_AE_AVAILABLE_TARGET_FPS_RANGES)
+            var bestRange = Range(config.targetFps, config.targetFps)
+
+            if (availableFpsRanges != null) {
+                val target = config.targetFps
+                // Filter ranges that can at least hit the target FPS
+                val capableRanges = availableFpsRanges.filter { it.upper >= target }
+                
+                if (capableRanges.isNotEmpty()) {
+                    // Find the one with the smallest upper bound (closest to target but >= target)
+                    // If there's a tie on upper bound, prefer fixed ranges (where lower == upper)
+                    bestRange = capableRanges.minWithOrNull(Comparator { a, b ->
+                        if (a.upper != b.upper) {
+                            a.upper.compareTo(b.upper)
+                        } else {
+                            val aDiff = a.upper - a.lower
+                            val bDiff = b.upper - b.lower
+                            aDiff.compareTo(bDiff)
+                        }
+                    }) ?: capableRanges.first()
+                } else {
+                    // If no range can hit the target (e.g. phone max is 30, target is 60),
+                    // fallback to the absolute maximum supported by the hardware.
+                    bestRange = availableFpsRanges.maxByOrNull { it.upper } ?: availableFpsRanges.last()
+                }
+                Log.d(TAG, "Selected FPS range: $bestRange for target ${config.targetFps}")
+            }
+
+            builder.setCaptureRequestOption(CaptureRequest.CONTROL_AE_TARGET_FPS_RANGE, bestRange)
 
             if (config.isoAuto && config.shutterSpeedAuto) {
                 builder.setCaptureRequestOption(CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_AE_MODE_ON)

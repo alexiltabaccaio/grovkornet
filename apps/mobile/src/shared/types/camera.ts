@@ -27,6 +27,7 @@ export interface CameraCapabilities {
   }>;
   availableNoiseReductionModes?: number[];
   availableEdgeModes?: number[];
+  maxFps?: number;
 }
 
 interface EffectSharedValues {

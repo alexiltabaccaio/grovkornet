@@ -29,7 +29,7 @@ export const useHardwareStore = create<HardwareStore>((set, get) => ({
   torchStrength: makeMutable(1),
   aspectRatio: makeMutable(1), // 0: 4:3, 1: 16:9, 2: 1:1, 3: 3:2, 4: 65:24
   resolutionSetting: makeMutable(1), // 0: 720p, 1: 1080p, 2: 4K
-  fpsSetting: makeMutable(1), // 0: 24, 1: 30, 2: 60
+  fpsSetting: makeMutable(60), // 1 to 60
   capabilities: {
     supportsFocus: true,
     hasTorch: false,
@@ -37,6 +37,7 @@ export const useHardwareStore = create<HardwareStore>((set, get) => ({
     isoMin: 100,
     isoMax: 3200,
     availableCameras: [],
+    maxFps: 60,
   },
 
   setDebugInfo: (fpsVal, resVal, hwFpsVal) => {
@@ -125,6 +126,9 @@ export const useHardwareStore = create<HardwareStore>((set, get) => ({
   },
   setCapabilities: (capabilities) => {
     logger.info('HardwareStore', 'Hardware capabilities updated');
+    if (capabilities.maxFps && get().fpsSetting.value > capabilities.maxFps) {
+      get().fpsSetting.value = capabilities.maxFps;
+    }
     set({ capabilities });
   },
 }));

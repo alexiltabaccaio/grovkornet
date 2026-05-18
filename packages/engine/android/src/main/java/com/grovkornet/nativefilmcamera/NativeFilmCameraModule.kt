@@ -94,6 +94,9 @@ class NativeFilmCameraModule : Module() {
       Prop("aspectRatio") { view: NativeFilmCameraView, aspectRatio: Float ->
         view.aspectRatio = aspectRatio.roundToInt()
       }
+      Prop("targetFps") { view: NativeFilmCameraView, targetFps: Int ->
+        view.targetFps = targetFps
+      }
 
       AsyncFunction("takePhoto") { view: NativeFilmCameraView ->
         view.takePhoto()

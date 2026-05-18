@@ -104,6 +104,15 @@ class HardwareCapabilitiesManager(private val context: Context) {
                 for (mode in modes) modesArray.pushInt(mode)
                 event.putArray("availableEdgeModes", modesArray)
             }
+
+            // Max FPS
+            info.getCameraCharacteristic(CameraCharacteristics.CONTROL_AE_AVAILABLE_TARGET_FPS_RANGES)?.let { ranges ->
+                var maxFps = 30
+                for (range in ranges) {
+                    if (range.upper > maxFps) maxFps = range.upper
+                }
+                event.putInt("maxFps", maxFps)
+            }
         }
     }
 }

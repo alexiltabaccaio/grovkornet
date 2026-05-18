@@ -64,6 +64,8 @@ class CameraPropSynchronizer(
                 updateScheduler.schedule() 
             }
         }
+    var targetFps: Int = 60
+        set(value) { field = value; config.targetFps = value; renderer.targetFps = value; updateScheduler.schedule() }
 
     fun syncConfig() {
         config.saturation = saturation
@@ -89,6 +91,8 @@ class CameraPropSynchronizer(
         config.torchStrength = torchStrength
         config.cameraId = cameraId
         config.aspectRatio = aspectRatio
+        config.targetFps = targetFps
         renderer.aspectRatio = aspectRatio
+        renderer.targetFps = targetFps
     }
 }

@@ -55,6 +55,7 @@ export const ConnectedFilmCamera = ({ cameraKey }: ConnectedFilmCameraProps) => 
         noiseReduction={resolvedNoiseReduction as unknown as SharedValue<number | undefined>}
         sharpening={styleStore.sharpening as unknown as SharedValue<number | undefined>}
         aspectRatio={hwStore.aspectRatio as unknown as SharedValue<number | undefined>}
+        targetFps={hwStore.fpsSetting as unknown as SharedValue<number | undefined>}
         onCapabilitiesUpdate={capabilitiesHandler}
         onDebugUpdate={debugHandler}
         onExposureUpdate={exposureHandler}

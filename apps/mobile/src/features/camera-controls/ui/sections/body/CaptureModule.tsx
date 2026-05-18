@@ -28,7 +28,8 @@ export const CaptureModule = ({ handlePressWithDouble }: CaptureModuleProps) => 
   const {
     aspectRatio, setAspectRatio,
     resolutionSetting, setResolutionSetting,
-    fpsSetting, setFpsSetting
+    fpsSetting, setFpsSetting,
+    capabilities
   } = useHardwareStore(useShallow(s => ({
     aspectRatio: s.aspectRatio,
     setAspectRatio: s.setAspectRatio,
@@ -36,6 +37,7 @@ export const CaptureModule = ({ handlePressWithDouble }: CaptureModuleProps) => 
     setResolutionSetting: s.setResolutionSetting,
     fpsSetting: s.fpsSetting,
     setFpsSetting: s.setFpsSetting,
+    capabilities: s.capabilities,
   })));
 
   return (
@@ -82,16 +84,13 @@ export const CaptureModule = ({ handlePressWithDouble }: CaptureModuleProps) => 
           isActive={activeParameter === 'fps_setting'}
           onPress={() => handlePressWithDouble('fps_setting', () => setActiveParameter('fps_setting'))}
           value={fpsSetting}
-          minValue={0}
-          maxValue={FPS_VALUES.length - 1}
+          minValue={1}
+          maxValue={capabilities.maxFps ?? 60}
           onChange={setFpsSetting}
           variant="text"
           valueFormatter={(v) => {
             'worklet';
-            const index = Math.round(v);
-            if (index === 0) return '24';
-            if (index === 1) return '30';
-            return '60';
+            return Math.round(v).toString();
           }}
         />
       </View>

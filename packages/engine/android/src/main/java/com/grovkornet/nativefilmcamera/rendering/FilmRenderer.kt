@@ -15,7 +15,7 @@ class FilmRenderer(private val listener: Listener) : GLSurfaceView.Renderer, Sur
 
     interface Listener {
         fun onSurfaceTextureCreated(surfaceTexture: SurfaceTexture)
-        fun onFpsUpdate(fps: Int, resolution: String)
+        fun onFpsUpdate(fps: Int, stampedFps: Int, resolution: String)
         fun requestRender()
     }
 
@@ -59,21 +59,38 @@ class FilmRenderer(private val listener: Listener) : GLSurfaceView.Renderer, Sur
     private var aPositionLoc = -1
     private var aTexCoordLoc = -1
 
+    // FBO Variables
+    private var fboId = 0
+    private var fboTextureId = 0
+    private var fboWidth = 0
+    private var fboHeight = 0
+
+    private var copyProgram = 0
+    private var copyTransformMatrixLoc = -1
+    private var copyPositionLoc = -1
+    private var copyTexCoordLoc = -1
+    private var copyTextureLoc = -1
+
     private val vertexBuffer: FloatBuffer
     private val texCoordBuffer: FloatBuffer
 
     private val transformMatrix = FloatArray(16)
     private val scaleMatrix = FloatArray(16)
     private val cropMatrix = FloatArray(16)
+    private val identityMatrix = FloatArray(16).apply { android.opengl.Matrix.setIdentityM(this, 0) }
 
     private var viewportWidth = 0
     private var viewportHeight = 0
     
     @Volatile var cameraWidth = 0
     @Volatile var cameraHeight = 0
+    @Volatile var targetFps = 60
 
     private var framesCount = 0
+    private var fboFramesCount = 0
     private var lastLogTime = 0L
+    private var timeAccumulator = 0L
+    private var lastUpdateTime = 0L
 
     private val VERTICES = floatArrayOf(
         -1.0f, -1.0f,
@@ -90,21 +107,22 @@ class FilmRenderer(private val listener: Listener) : GLSurfaceView.Renderer, Sur
     )
 
     init {
-        vertexBuffer = ByteBuffer.allocateDirect(VERTICES.size * 4)
-            .order(ByteOrder.nativeOrder())
+        vertexBuffer = java.nio.ByteBuffer.allocateDirect(VERTICES.size * 4)
+            .order(java.nio.ByteOrder.nativeOrder())
             .asFloatBuffer()
             .put(VERTICES)
         vertexBuffer.position(0)
         
-        texCoordBuffer = ByteBuffer.allocateDirect(TEX_COORDS.size * 4)
-            .order(ByteOrder.nativeOrder())
+        texCoordBuffer = java.nio.ByteBuffer.allocateDirect(TEX_COORDS.size * 4)
+            .order(java.nio.ByteOrder.nativeOrder())
             .asFloatBuffer()
             .put(TEX_COORDS)
         texCoordBuffer.position(0)
     }
 
     override fun onSurfaceCreated(gl: GL10?, config: EGLConfig?) {
-        program = GLUtils.createProgram(FilmShader.VERTEX_SHADER, FilmShader.FRAGMENT_SHADER_OES)
+        program = GLUtils.createProgram(FilmShader.VERTEX_SHADER, FilmShader.FRAGMENT_SHADER) // Now uses sampler2D
+        copyProgram = GLUtils.createProgram(FilmShader.COPY_VERTEX_SHADER, FilmShader.COPY_FRAGMENT_SHADER_OES)
 
         // Cache locations once
         uTransformMatrixLoc = GLES20.glGetUniformLocation(program, "u_TransformMatrix")
@@ -127,6 +145,11 @@ class FilmRenderer(private val listener: Listener) : GLSurfaceView.Renderer, Sur
         
         aPositionLoc = GLES20.glGetAttribLocation(program, "a_Position")
         aTexCoordLoc = GLES20.glGetAttribLocation(program, "a_TexCoord")
+
+        copyTransformMatrixLoc = GLES20.glGetUniformLocation(copyProgram, "u_TransformMatrix")
+        copyTextureLoc = GLES20.glGetUniformLocation(copyProgram, "u_Texture")
+        copyPositionLoc = GLES20.glGetAttribLocation(copyProgram, "a_Position")
+        copyTexCoordLoc = GLES20.glGetAttribLocation(copyProgram, "a_TexCoord")
 
         val textures = IntArray(1)
         GLES20.glGenTextures(1, textures, 0)
@@ -152,24 +175,118 @@ class FilmRenderer(private val listener: Listener) : GLSurfaceView.Renderer, Sur
         GLES20.glViewport(0, 0, width, height)
     }
 
+    private fun initFboIfNeeded(width: Int, height: Int) {
+        if (width <= 0 || height <= 0) return
+        if (fboWidth == width && fboHeight == height && fboId != 0) return
+
+        if (fboId != 0) {
+            GLES20.glDeleteFramebuffers(1, intArrayOf(fboId), 0)
+            GLES20.glDeleteTextures(1, intArrayOf(fboTextureId), 0)
+        }
+
+        val fbos = IntArray(1)
+        val texs = IntArray(1)
+
+        GLES20.glGenFramebuffers(1, fbos, 0)
+        GLES20.glGenTextures(1, texs, 0)
+
+        fboId = fbos[0]
+        fboTextureId = texs[0]
+        fboWidth = width
+        fboHeight = height
+
+        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, fboTextureId)
+        GLES20.glTexImage2D(GLES20.GL_TEXTURE_2D, 0, GLES20.GL_RGBA, width, height, 0, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE, null)
+        GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR.toFloat())
+        GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR.toFloat())
+        GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_S, GLES20.GL_CLAMP_TO_EDGE)
+        GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_CLAMP_TO_EDGE)
+
+        GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, fboId)
+        GLES20.glFramebufferTexture2D(GLES20.GL_FRAMEBUFFER, GLES20.GL_COLOR_ATTACHMENT0, GLES20.GL_TEXTURE_2D, fboTextureId, 0)
+
+        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0)
+        GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0)
+    }
+
     override fun onDrawFrame(gl: GL10?) {
         val st = surfaceTexture ?: return
         st.updateTexImage()
         st.getTransformMatrix(transformMatrix)
-
+        
         updateFps()
 
+        if (cameraWidth <= 0 || cameraHeight <= 0 || viewportWidth <= 0 || viewportHeight <= 0) {
+            return
+        }
+
+        val isViewPortrait = viewportWidth < viewportHeight
+        val isCameraPortrait = cameraWidth < cameraHeight
+        val effCamWidth = if (isViewPortrait == isCameraPortrait) cameraWidth else cameraHeight
+        val effCamHeight = if (isViewPortrait == isCameraPortrait) cameraHeight else cameraWidth
+
+        val now = System.currentTimeMillis()
+        if (lastUpdateTime == 0L) lastUpdateTime = now
+        val dt = now - lastUpdateTime
+        lastUpdateTime = now
+
+        val interval = 1000L / if (targetFps > 0) targetFps else 60
+        timeAccumulator += dt
+
+        // We use a margin of 3ms to ensure we don't skip a frame just because it arrived 1 or 2ms early
+        // This is crucial when targetFps matches hwFps (e.g. 60 target on a 60hz screen).
+        var shouldCapture = false
+        if (timeAccumulator >= interval - 3) {
+            shouldCapture = true
+            // If we lagged severely (e.g. paused app), don't burst capture
+            if (timeAccumulator > interval * 3) {
+                timeAccumulator = 0
+            } else {
+                timeAccumulator -= interval
+            }
+        }
+
+        // Pass 1: OES -> FBO (Only when it's time to capture)
+        if (shouldCapture) {
+            fboFramesCount++
+            initFboIfNeeded(effCamWidth, effCamHeight)
+
+            if (fboId != 0) {
+                GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, fboId)
+                GLES20.glViewport(0, 0, fboWidth, fboHeight)
+                GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT)
+                
+                GLES20.glUseProgram(copyProgram)
+                GLES20.glUniformMatrix4fv(copyTransformMatrixLoc, 1, false, transformMatrix, 0)
+
+                GLES20.glEnableVertexAttribArray(copyPositionLoc)
+                GLES20.glVertexAttribPointer(copyPositionLoc, 2, GLES20.GL_FLOAT, false, 0, vertexBuffer)
+
+                GLES20.glEnableVertexAttribArray(copyTexCoordLoc)
+                GLES20.glVertexAttribPointer(copyTexCoordLoc, 2, GLES20.GL_FLOAT, false, 0, texCoordBuffer)
+
+                GLES20.glActiveTexture(GLES20.GL_TEXTURE0)
+                GLES20.glBindTexture(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, cameraTextureId)
+                GLES20.glUniform1i(copyTextureLoc, 0)
+
+                GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, 4)
+                GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0)
+            }
+        }
+
+        // Pass 2: FBO -> Screen (Always)
+        GLES20.glViewport(0, 0, viewportWidth, viewportHeight)
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT)
         GLES20.glUseProgram(program)
 
-        // Use cached locations for performance
-        GLES20.glUniformMatrix4fv(uTransformMatrixLoc, 1, false, transformMatrix, 0)
+        // The FBO texture is already correctly oriented, so we use Identity matrix for FilmShader
+        GLES20.glUniformMatrix4fv(uTransformMatrixLoc, 1, false, identityMatrix, 0)
 
         calculateScaleMatrix()
         GLES20.glUniformMatrix4fv(uScaleMatrixLoc, 1, false, scaleMatrix, 0)
         GLES20.glUniformMatrix4fv(uCropMatrixLoc, 1, false, cropMatrix, 0)
 
-        // Setup Uniforms using cached IDs
+        // Setup Uniforms
         GLES20.glUniform1f(uSaturationLoc, saturation)
         GLES20.glUniform1f(uContrastLoc, contrast)
         GLES20.glUniform1f(uAberrationLoc, aberration)
@@ -191,7 +308,8 @@ class FilmRenderer(private val listener: Listener) : GLSurfaceView.Renderer, Sur
         GLES20.glVertexAttribPointer(aTexCoordLoc, 2, GLES20.GL_FLOAT, false, 0, texCoordBuffer)
 
         GLES20.glActiveTexture(GLES20.GL_TEXTURE0)
-        GLES20.glBindTexture(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, cameraTextureId)
+        // Bind FBO texture (sampler2D) instead of OES texture
+        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, if (fboTextureId != 0) fboTextureId else cameraTextureId) 
         GLES20.glUniform1i(uTextureLoc, 0)
 
         GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, 4)
@@ -203,9 +321,11 @@ class FilmRenderer(private val listener: Listener) : GLSurfaceView.Renderer, Sur
         framesCount++
         if (now - lastLogTime >= 500) {
             val actualFps = (framesCount * 1000) / (now - lastLogTime)
-            listener.onFpsUpdate(actualFps.toInt(), "${cameraWidth}x${cameraHeight}")
+            val actualStampedFps = (fboFramesCount * 1000) / (now - lastLogTime)
+            listener.onFpsUpdate(actualFps.toInt(), actualStampedFps.toInt(), "${cameraWidth}x${cameraHeight}")
             lastLogTime = now
             framesCount = 0
+            fboFramesCount = 0
         }
     }
 
@@ -269,6 +389,8 @@ class FilmRenderer(private val listener: Listener) : GLSurfaceView.Renderer, Sur
 
     override fun onFrameAvailable(surfaceTexture: SurfaceTexture?) {
         // This is called from the GL thread or a background thread depending on how SurfaceTexture is configured.
+        // We MUST request render on every frame, otherwise updateTexImage is never called
+        // and the camera buffer queue fills up, permanently freezing the camera.
         listener.requestRender()
     }
     
@@ -277,9 +399,21 @@ class FilmRenderer(private val listener: Listener) : GLSurfaceView.Renderer, Sur
             GLES20.glDeleteProgram(program)
             program = 0
         }
+        if (copyProgram != 0) {
+            GLES20.glDeleteProgram(copyProgram)
+            copyProgram = 0
+        }
         if (cameraTextureId != 0) {
             GLES20.glDeleteTextures(1, intArrayOf(cameraTextureId), 0)
             cameraTextureId = 0
+        }
+        if (fboId != 0) {
+            GLES20.glDeleteFramebuffers(1, intArrayOf(fboId), 0)
+            fboId = 0
+        }
+        if (fboTextureId != 0) {
+            GLES20.glDeleteTextures(1, intArrayOf(fboTextureId), 0)
+            fboTextureId = 0
         }
         surfaceTexture?.release()
         surfaceTexture = null

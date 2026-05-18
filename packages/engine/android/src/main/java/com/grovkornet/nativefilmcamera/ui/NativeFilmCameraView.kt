@@ -81,6 +81,8 @@ class NativeFilmCameraView(context: Context) : GLSurfaceView(context) {
                 if (::propSynchronizer.isInitialized) propSynchronizer.aspectRatio = value
             }
         }
+    var targetFps: Int = 60
+        set(value) { field = value; if (::propSynchronizer.isInitialized) propSynchronizer.targetFps = value }
 
     init {
         setEGLContextClientVersion(2)
@@ -90,16 +92,12 @@ class NativeFilmCameraView(context: Context) : GLSurfaceView(context) {
                 post { cameraEngine.start(surfaceTexture) }
             }
 
-            override fun onFpsUpdate(fps: Int, resolution: String) {
+            override fun onFpsUpdate(fps: Int, stampedFps: Int, resolution: String) {
                 val now = System.currentTimeMillis()
-                var hwFps = 0
-                val count = if (::updateScheduler.isInitialized) updateScheduler.getAndResetUpdateCount() else 0
-                if (lastDebugTime > 0L) {
-                    val dt = now - lastDebugTime
-                    if (dt > 0) hwFps = ((count * 1000L) / dt).toInt()
-                }
                 lastDebugTime = now
-                onDebugUpdate(mapOf("fps" to fps, "resolution" to resolution, "hwFps" to hwFps))
+                // "fps" is what the user requested to see (stampedFps)
+                // "hwFps" is the real rendering/hardware camera loop rate
+                onDebugUpdate(mapOf("fps" to stampedFps, "resolution" to resolution, "hwFps" to fps))
             }
 
             override fun requestRender() {

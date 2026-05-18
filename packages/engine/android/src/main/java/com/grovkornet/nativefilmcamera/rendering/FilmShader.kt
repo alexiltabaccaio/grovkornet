@@ -1,6 +1,27 @@
 package com.grovkornet.nativefilmcamera.rendering
 
 object FilmShader {
+    const val COPY_VERTEX_SHADER = """
+        attribute vec4 a_Position;
+        attribute vec4 a_TexCoord;
+        uniform mat4 u_TransformMatrix;
+        varying vec2 v_TexCoord;
+        void main() {
+            gl_Position = a_Position;
+            v_TexCoord = (u_TransformMatrix * a_TexCoord).xy;
+        }
+    """
+
+    const val COPY_FRAGMENT_SHADER_OES = """
+        #extension GL_OES_EGL_image_external : require
+        precision highp float;
+        varying vec2 v_TexCoord;
+        uniform samplerExternalOES u_Texture;
+        void main() {
+            gl_FragColor = texture2D(u_Texture, v_TexCoord);
+        }
+    """
+
     const val VERTEX_SHADER = """
         attribute vec4 a_Position;
         attribute vec4 a_TexCoord;
