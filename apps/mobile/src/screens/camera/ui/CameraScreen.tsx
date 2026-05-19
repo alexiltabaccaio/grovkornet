@@ -5,7 +5,7 @@ import { useSharedValue } from 'react-native-reanimated';
 import { useTranslation } from 'react-i18next';
 
 import { useShallow } from 'zustand/react/shallow';
-import { useUIStore, GestureController, Footer, DebugOverlay, ConnectedFilmCamera, ShutterButton, CaptureThumbnail } from '@features/camera-controls';
+import { useUIStore, GestureController, Footer, DebugOverlay, ConnectedFilmCamera, ShutterButton, CaptureThumbnail, StatusBarHeader } from '@features/camera-controls';
 import { VerifiedGallery } from '@features/gallery';
 
 
@@ -70,6 +70,8 @@ const CameraScreenContent = () => {
       <GestureController>
         <ConnectedFilmCamera cameraKey={cameraKey} />
       </GestureController>
+
+      <StatusBarHeader />
 
       {isDebugEnabled && <DebugOverlay />}
       

@@ -8,3 +8,4 @@ export * from './ui/ConnectedFilmCamera';
 export * from './ui/ShutterButton';
 export * from './ui/CaptureThumbnail';
 export * from './ui/ShareButton';
+export * from './ui/StatusBarHeader';

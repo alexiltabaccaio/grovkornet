@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, Text, View, FlatList, Image, Pressable, ActivityIndicator, SafeAreaView } from 'react-native';
+import { StyleSheet, Text, View, FlatList, Image, Pressable, ActivityIndicator, Platform } from 'react-native';
 import * as MediaLibrary from 'expo-media-library';
 import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import { verifyGrovkornetAuthenticity } from '@grovkornet/engine';
-import { ShareButton } from '../../camera-controls/ui/ShareButton';
+import { ShareButton, StatusBarHeader } from '@features/camera-controls';
 
 interface VerifiedGalleryProps {
   onClose: () => void;
@@ -170,16 +170,13 @@ export const VerifiedGallery = ({ onClose, initialUri }: VerifiedGalleryProps) =
 
   return (
     <View style={styles.absoluteContainer}>
-      <SafeAreaView style={styles.safeArea}>
+      <StatusBarHeader />
+      <View style={styles.safeArea}>
         
-        {/* Header */}
-        <View style={styles.header}>
-          <Pressable onPress={onClose} style={styles.closeButton}>
-            <Ionicons name="close" size={28} color="#FFF" />
-          </Pressable>
-          <Text style={styles.headerTitle}>{t('gallery.title', 'Grovkornet Gallery')}</Text>
-          <View style={styles.placeholder} />
-        </View>
+        {/* Close Button */}
+        <Pressable onPress={onClose} style={styles.globalCloseButton}>
+          <Ionicons name="close" size={28} color="#FFF" />
+        </Pressable>
 
         {/* Loading Gallery View */}
         {loading ? (
@@ -195,11 +192,7 @@ export const VerifiedGallery = ({ onClose, initialUri }: VerifiedGalleryProps) =
               {selectedPhoto ? (
                 <View style={styles.previewWrapper}>
                   <Image source={{ uri: selectedPhoto.uri }} style={styles.previewImage} />
-                  
-                  {/* Close Button on top right of the image */}
-                  <Pressable onPress={onClose} style={styles.imageCloseButton}>
-                    <Ionicons name="close" size={24} color="#FFF" />
-                  </Pressable>
+
 
                   {/* Authenticity Badge */}
                   {verifying ? (
@@ -265,10 +258,9 @@ export const VerifiedGallery = ({ onClose, initialUri }: VerifiedGalleryProps) =
                 />
               </View>
             )}
-            
           </View>
         )}
-      </SafeAreaView>
+      </View>
     </View>
   );
 };
@@ -285,26 +277,19 @@ const styles = StyleSheet.create({
   },
   safeArea: {
     flex: 1,
+    paddingBottom: Platform.OS === 'ios' ? 34 : 0,
   },
-  header: {
-    flexDirection: 'row',
+  globalCloseButton: {
+    position: 'absolute',
+    top: 12,
+    right: 16,
+    zIndex: 1000,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    borderRadius: 20,
+    width: 40,
+    height: 40,
+    justifyContent: 'center',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 20,
-    paddingVertical: 15,
-    borderBottomWidth: 1,
-    borderBottomColor: '#222',
-  },
-  closeButton: {
-    padding: 4,
-  },
-  headerTitle: {
-    color: '#FFF',
-    fontSize: 18,
-    fontWeight: '700',
-  },
-  placeholder: {
-    width: 36,
   },
   center: {
     flex: 1,
@@ -356,18 +341,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#444',
   },
-  imageCloseButton: {
-    position: 'absolute',
-    top: 16,
-    right: 16,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    justifyContent: 'center',
-    alignItems: 'center',
-    zIndex: 10,
-  },
+
   badgeVerified: {
     borderColor: 'rgba(52, 199, 89, 0.5)',
     backgroundColor: 'rgba(20, 40, 20, 0.85)',
