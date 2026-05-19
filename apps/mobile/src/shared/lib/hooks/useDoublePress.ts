@@ -1,9 +1,9 @@
-import { useRef } from 'react';
+import { useRef, useCallback } from 'react';
 
 export const useDoublePress = <T extends string>(onReset: (tool: T) => void) => {
   const lastPressRef = useRef<{ [key: string]: number }>({});
 
-  const handlePressWithDouble = (toolName: T, onSingle: () => void) => {
+  const handlePressWithDouble = useCallback((toolName: T, onSingle: () => void) => {
     const time = new Date().getTime();
     const lastTime = lastPressRef.current[toolName] || 0;
     
@@ -16,7 +16,7 @@ export const useDoublePress = <T extends string>(onReset: (tool: T) => void) => 
       onSingle();
       lastPressRef.current[toolName] = time;
     }
-  };
+  }, [onReset]);
 
   return { handlePressWithDouble };
 };

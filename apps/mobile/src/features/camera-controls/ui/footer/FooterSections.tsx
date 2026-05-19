@@ -17,8 +17,7 @@ export const FooterSections = () => {
   const { t } = useTranslation();
 
   const handleSectionChange = (section: SectionType) => {
-    const newSection = activeSection === section ? 'none' : section;
-    setActiveSection(newSection);
+    setActiveSection(section);
   };
 
   const sections: { id: SectionType; icon: keyof typeof Ionicons.glyphMap }[] = [

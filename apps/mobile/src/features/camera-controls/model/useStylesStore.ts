@@ -7,7 +7,7 @@ import {
   DEFAULT_SATURATION, 
   DEFAULT_CONTRAST, 
   DEFAULT_CHROMATIC_ABERRATION,
-} from '@shared/constants/videoProcessing';
+} from '@grovkornet/shared';
 
 export const useStylesStore = create<EffectsStore>((set, get) => ({
   grainIntensity: makeMutable(DEFAULT_GRAIN_INTENSITY),

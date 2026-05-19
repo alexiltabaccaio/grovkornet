@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import Animated from 'react-native-reanimated';
 import { useShallow } from 'zustand/react/shallow';
 import { useUIStore } from '@features/camera-controls/model/useUIStore';
@@ -21,7 +21,7 @@ export const DevelopmentModule = ({ handlePressWithDouble }: DevelopmentModulePr
     }))
   );
 
-  const items: WheelItem[] = [
+  const items: WheelItem[] = useMemo(() => [
     {
       id: 'saturation',
       component: (
@@ -66,7 +66,7 @@ export const DevelopmentModule = ({ handlePressWithDouble }: DevelopmentModulePr
         />
       ),
     },
-  ];
+  ], [t, handlePressWithDouble]);
 
   return (
     <Animated.View style={footerStyles.tabContent}>

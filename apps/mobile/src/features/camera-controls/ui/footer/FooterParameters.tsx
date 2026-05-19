@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { Text, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useShallow } from 'zustand/react/shallow';
@@ -48,7 +48,7 @@ export const FooterParameters = () => {
   
   const { t } = useTranslation();
   
-  const resetTool = (tool: string) => {
+  const resetTool = useCallback((tool: string) => {
     if (tool === 'ev') setEvAuto(true);
     else if (tool === 'iso') setIsoAuto(true);
     else if (tool === 'shutter_speed') setShutterSpeedAuto(true);
@@ -64,7 +64,7 @@ export const FooterParameters = () => {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any, @typescript-eslint/no-unnecessary-type-assertion
       resetEffect(tool as any); 
     }
-  };
+  }, [setEvAuto, setIsoAuto, setShutterSpeedAuto, setFocusAuto, setTemperatureAuto, setCameraAuto, setTorchState, capabilities.maxFps, setFpsSetting, resetEffect]);
 
   const { handlePressWithDouble } = useDoublePress(resetTool);
 

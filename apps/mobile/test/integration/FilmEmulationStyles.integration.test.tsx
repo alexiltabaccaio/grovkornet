@@ -5,7 +5,7 @@ import { render, fireEvent, waitFor, act } from '@testing-library/react-native';
 import { CameraScreen } from '@screens/camera/ui/CameraScreen';
 import { useUIStore } from '@features/camera-controls/model/useUIStore';
 import { useStylesStore } from '@features/camera-controls/model/useStylesStore';
-import { DEFAULT_GRAIN_INTENSITY } from '@shared/constants/videoProcessing';
+import { DEFAULT_GRAIN_INTENSITY } from '@grovkornet/shared';
 
 // Mock ConnectedFilmCamera to avoid native issues during integration test
 jest.mock('@features/camera-controls', () => {

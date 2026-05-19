@@ -92,7 +92,7 @@ export const ParameterWheel = ({
       item.onPress();
     } else {
       handlePressWithDouble(item.id, () => {
-        setActiveParameter(activeParameter === item.id ? 'none' : item.id);
+        setActiveParameter(item.id);
       });
     }
   };

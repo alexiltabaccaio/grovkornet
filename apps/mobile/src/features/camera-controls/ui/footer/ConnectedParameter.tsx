@@ -1,5 +1,4 @@
-import React from 'react';
-import { useShallow } from 'zustand/react/shallow';
+import React, { memo } from 'react';
 import { useUIStore } from '@features/camera-controls/model/useUIStore';
 import { ParameterType } from '@shared/types/camera';
 import { ParameterControl } from './ParameterControl';
@@ -37,7 +36,7 @@ export interface ConnectedParameterProps {
   onToggleAuto?: (active: boolean) => void;
 }
 
-export const ConnectedParameter = ({
+export const ConnectedParameter = memo(({
   id,
   label,
   handlePressWithDouble,
@@ -45,20 +44,18 @@ export const ConnectedParameter = ({
   onPress,
   ...rest
 }: ConnectedParameterProps) => {
-  const { activeParameter, setActiveParameter } = useUIStore(useShallow(s => ({
-    activeParameter: s.activeParameter,
-    setActiveParameter: s.setActiveParameter,
-  })));
+  const isActiveSelected = useUIStore(s => s.activeParameter === id);
+  const setActiveParameter = useUIStore(s => s.setActiveParameter);
 
-  const finalIsActive = isActive !== undefined ? isActive : activeParameter === id;
+  const finalIsActive = isActive !== undefined ? isActive : isActiveSelected;
 
   const finalOnPress = onPress !== undefined ? onPress : () => {
     if (handlePressWithDouble) {
       handlePressWithDouble(id, () => {
-        setActiveParameter(activeParameter === id ? 'none' : id);
+        setActiveParameter(id);
       });
     } else {
-      setActiveParameter(activeParameter === id ? 'none' : id);
+      setActiveParameter(id);
     }
   };
 
@@ -70,4 +67,6 @@ export const ConnectedParameter = ({
       {...rest}
     />
   );
-};
+});
+
+ConnectedParameter.displayName = 'ConnectedParameter';

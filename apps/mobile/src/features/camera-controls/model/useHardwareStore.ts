@@ -8,7 +8,7 @@ import {
   DEFAULT_SHUTTER_SPEED,
   DEFAULT_TEMPERATURE,
   DEFAULT_TINT,
-} from '@shared/constants/videoProcessing';
+} from '@grovkornet/shared';
 
 export const useHardwareStore = create<HardwareStore>((set, get) => ({
   fps: makeMutable(0),

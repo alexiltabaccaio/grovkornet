@@ -4,7 +4,7 @@ import {
   DEFAULT_SATURATION, 
   DEFAULT_CONTRAST, 
   DEFAULT_CHROMATIC_ABERRATION,
-} from '@shared/constants/videoProcessing';
+} from '@grovkornet/shared';
 
 describe('useStylesStore', () => {
   it('sets Grain Intensity and updates enabled state', () => {

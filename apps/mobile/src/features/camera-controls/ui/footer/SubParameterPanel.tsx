@@ -145,7 +145,7 @@ export const SubParameterPanel = ({ translateY }: SubParameterPanelProps) => {
               label={t('parameters.direction')}
               isActive={activeSubParameter === 'aberration_direction'}
               onPress={() => {
-                setActiveSubParameter(activeSubParameter === 'aberration_direction' ? 'none' : 'aberration_direction');
+                setActiveSubParameter('aberration_direction');
               }}
               value={aberrationDirection}
               onChange={(v) => {
@@ -207,7 +207,7 @@ export const SubParameterPanel = ({ translateY }: SubParameterPanelProps) => {
         </View>
       );
     case 'language':
-      return <LanguageSubPanel animatedStyle={animatedStyle} />;
+      return <LanguageSubPanel animatedStyle={parameterExtensionAnimatedStyle} />;
     case 'debug':
       return <DebugSubPanel parameterExtensionAnimatedStyle={parameterExtensionAnimatedStyle} />;
     case 'camera_selection':

@@ -1,5 +1,5 @@
 import { useHardwareStore } from './useHardwareStore';
-import { DEFAULT_ISO, DEFAULT_EV, DEFAULT_SHUTTER_SPEED, DEFAULT_TEMPERATURE } from '@shared/constants/videoProcessing';
+import { DEFAULT_ISO, DEFAULT_EV, DEFAULT_SHUTTER_SPEED, DEFAULT_TEMPERATURE } from '@grovkornet/shared';
 
 describe('useHardwareStore', () => {
   it('initializes correctly', () => {

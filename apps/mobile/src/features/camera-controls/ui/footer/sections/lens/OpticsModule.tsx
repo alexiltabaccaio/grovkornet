@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import Animated from 'react-native-reanimated';
 import { useShallow } from 'zustand/react/shallow';
 import { useUIStore } from '@features/camera-controls/model/useUIStore';
@@ -28,33 +28,37 @@ export const OpticsModule = ({ handlePressWithDouble }: OpticsModuleProps) => {
     }))
   );
 
-  const items: WheelItem[] = [];
+  const items: WheelItem[] = useMemo(() => {
+    const arr: WheelItem[] = [];
 
-  if (capabilities.availableCameras.length > 0) {
-    items.push({
-      id: 'camera_selection',
+    if (capabilities.availableCameras.length > 0) {
+      arr.push({
+        id: 'camera_selection',
+        component: (
+          <ConnectedParameter
+            id="camera_selection"
+            label={t('parameters.lens')}
+            variant="text"
+            handlePressWithDouble={handlePressWithDouble}
+          />
+        ),
+      });
+    }
+
+    arr.push({
+      id: 'focus',
       component: (
-        <ConnectedParameter
-          id="camera_selection"
-          label={t('parameters.lens')}
-          variant="text"
-          handlePressWithDouble={handlePressWithDouble}
-        />
-      ),
-    });
-  }
-
-  items.push({
-    id: 'focus',
-    component: (
         <ConnectedParameter
           id="focus"
           label={t('parameters.focus')}
           variant="text"
           handlePressWithDouble={handlePressWithDouble}
         />
-    ),
-  });
+      ),
+    });
+
+    return arr;
+  }, [capabilities.availableCameras.length, t, handlePressWithDouble]);
 
   return (
     <Animated.View style={footerStyles.tabContent}>

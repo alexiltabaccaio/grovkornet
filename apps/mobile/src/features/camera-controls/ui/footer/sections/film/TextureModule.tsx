@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import Animated from 'react-native-reanimated';
 import { useShallow } from 'zustand/react/shallow';
 import { useUIStore } from '@features/camera-controls/model/useUIStore';
@@ -21,7 +21,7 @@ export const TextureModule = ({ handlePressWithDouble }: TextureModuleProps) => 
     }))
   );
 
-  const items: WheelItem[] = [
+  const items: WheelItem[] = useMemo(() => [
     {
       id: 'grain',
       component: (
@@ -55,7 +55,7 @@ export const TextureModule = ({ handlePressWithDouble }: TextureModuleProps) => 
         />
       ),
     },
-  ];
+  ], [t, handlePressWithDouble]);
 
   return (
     <Animated.View style={footerStyles.tabContent}>

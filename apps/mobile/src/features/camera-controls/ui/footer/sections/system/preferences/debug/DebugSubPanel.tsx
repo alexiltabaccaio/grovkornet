@@ -1,7 +1,6 @@
 import React from 'react';
 import { StyleSheet, StyleProp, ViewStyle } from 'react-native';
 import Animated from 'react-native-reanimated';
-import { useTranslation } from 'react-i18next';
 import { useShallow } from 'zustand/react/shallow';
 import { useUIStore } from '@features/camera-controls/model/useUIStore';
 import { ParameterControl } from '@features/camera-controls/ui/footer/ParameterControl';
@@ -11,7 +10,6 @@ interface DebugSubPanelProps {
 }
 
 export const DebugSubPanel = ({ parameterExtensionAnimatedStyle }: DebugSubPanelProps) => {
-  const { t } = useTranslation();
   const { isDebugEnabled, setIsDebugEnabled } = useUIStore(useShallow(state => ({
     isDebugEnabled: state.isDebugEnabled,
     setIsDebugEnabled: state.setIsDebugEnabled,
@@ -20,7 +18,7 @@ export const DebugSubPanel = ({ parameterExtensionAnimatedStyle }: DebugSubPanel
   return (
     <Animated.View style={[styles.parameterExtensionContainer, parameterExtensionAnimatedStyle]}>
       <ParameterControl
-        label={t('modules.debug')}
+        label=""
         isActive={isDebugEnabled}
         onPress={() => setIsDebugEnabled(!isDebugEnabled)}
         variant="text"
