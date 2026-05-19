@@ -1,14 +1,14 @@
 import { create } from 'zustand';
-import { UIStore, ModuleType, ParameterType, SectionType, SubParameterType } from '@shared/types/camera';
+import { UIStore, ModuleType, ParameterType, SectionType, ParameterExtensionType } from '@shared/types/camera';
 
 export const useUIStore = create<UIStore>((set, get) => ({
   // UI State
   activeSection: 'none',
   activeModule: 'none',
   activeParameter: 'none',
-  activeSubParameter: 'none',
+  activeExtension: 'none',
   isDebugEnabled: false,
-  isSubPanelOpen: false,
+  isExtensionOpen: false,
   isCapturing: false,
   latestCapturedUri: null,
   gestureConfig: null,
@@ -42,7 +42,7 @@ export const useUIStore = create<UIStore>((set, get) => ({
       activeSection: section,
       activeModule: module,
       activeParameter: parameter,
-      activeSubParameter: 'none'
+      activeExtension: 'none'
     });
   },
   
@@ -51,7 +51,7 @@ export const useUIStore = create<UIStore>((set, get) => ({
     set((state) => ({ 
       activeModule: module, 
       activeParameter: lastActiveParameters[module] || 'none',
-      activeSubParameter: 'none',
+      activeExtension: 'none',
       lastActiveModules: {
         ...state.lastActiveModules,
         [activeSection]: module,
@@ -63,7 +63,7 @@ export const useUIStore = create<UIStore>((set, get) => ({
     const { activeModule } = get();
     set((state) => ({
       activeParameter: param,
-      activeSubParameter: 'none',
+      activeExtension: 'none',
       lastActiveParameters: {
         ...state.lastActiveParameters,
         [activeModule]: param,
@@ -75,12 +75,12 @@ export const useUIStore = create<UIStore>((set, get) => ({
     set({ isDebugEnabled: enabled });
   },
 
-  setIsSubPanelOpen: (open: boolean) => {
-    set({ isSubPanelOpen: open });
+  setIsExtensionOpen: (open: boolean) => {
+    set({ isExtensionOpen: open });
   },
 
-  setActiveSubParameter: (param: SubParameterType) => {
-    set({ activeSubParameter: param });
+  setActiveExtension: (param: ParameterExtensionType) => {
+    set({ activeExtension: param });
   },
 
   triggerCapture: () => {

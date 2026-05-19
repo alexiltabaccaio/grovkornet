@@ -4,34 +4,38 @@ import { FooterParameters } from './FooterParameters';
 import { useUIStore } from '@features/camera-controls/model/useUIStore';
 
 // Mock the individual modules to simplify testing FooterParameters
-jest.mock('./sections/film/TextureModule', () => {
+jest.mock('./sections/film/texture', () => {
   const { Text: TextMock } = require('react-native') as typeof import('react-native');
   return { TextureModule: () => <TextMock>TextureModule</TextMock> };
 });
-jest.mock('./sections/film/DevelopmentModule', () => {
+jest.mock('./sections/film/development', () => {
   const { Text: TextMock } = require('react-native') as typeof import('react-native');
   return { DevelopmentModule: () => <TextMock>DevelopmentModule</TextMock> };
 });
-jest.mock('./sections/lens/FlawsModule', () => {
+jest.mock('./sections/lens/flaws', () => {
   const { Text: TextMock } = require('react-native') as typeof import('react-native');
   return { FlawsModule: () => <TextMock>FlawsModule</TextMock> };
 });
-jest.mock('./sections/body/ExposureModule', () => {
+jest.mock('./sections/body/exposure', () => {
   const { Text: TextMock } = require('react-native') as typeof import('react-native');
   return { ExposureModule: () => <TextMock>ExposureModule</TextMock> };
 });
-jest.mock('./sections/system/PreferencesModule', () => {
+jest.mock('./sections/system/preferences', () => {
   const { Text: TextMock } = require('react-native') as typeof import('react-native');
   return { PreferencesModule: () => <TextMock>PreferencesModule</TextMock> };
 });
 
-jest.mock('./sections/lens/OpticsModule', () => {
+jest.mock('./sections/lens/optics', () => {
   const { Text: TextMock } = require('react-native') as typeof import('react-native');
   return { OpticsModule: () => <TextMock>OpticsModule</TextMock> };
 });
-jest.mock('./sections/body/LightingModule', () => {
+jest.mock('./sections/body/lighting', () => {
   const { Text: TextMock } = require('react-native') as typeof import('react-native');
   return { LightingModule: () => <TextMock>LightingModule</TextMock> };
+});
+jest.mock('./sections/body/capture', () => {
+  const { Text: TextMock } = require('react-native') as typeof import('react-native');
+  return { CaptureModule: () => <TextMock>CaptureModule</TextMock> };
 });
 
 describe('FooterParameters', () => {

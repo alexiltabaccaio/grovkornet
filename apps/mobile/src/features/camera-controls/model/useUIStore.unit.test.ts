@@ -6,7 +6,7 @@ describe('useUIStore', () => {
       activeSection: 'none',
       activeModule: 'none',
       activeParameter: 'none',
-      activeSubParameter: 'none',
+      activeExtension: 'none',
       isDebugEnabled: false,
       lastActiveModules: {
         none: 'none',
@@ -34,7 +34,7 @@ describe('useUIStore', () => {
     expect(state.activeSection).toBe('none');
     expect(state.activeModule).toBe('none');
     expect(state.activeParameter).toBe('none');
-    expect(state.activeSubParameter).toBe('none');
+    expect(state.activeExtension).toBe('none');
   });
 
   it('sets active section correctly', () => {
@@ -73,21 +73,21 @@ describe('useUIStore', () => {
   });
 
   it('sets active sub parameter and resets correctly', () => {
-    const { setActiveSubParameter, setActiveParameter, setActiveModule } = useUIStore.getState();
+    const { setActiveExtension, setActiveParameter, setActiveModule } = useUIStore.getState();
     
-    setActiveSubParameter('grain_chroma');
-    expect(useUIStore.getState().activeSubParameter).toBe('grain_chroma');
+    setActiveExtension('grain_chroma');
+    expect(useUIStore.getState().activeExtension).toBe('grain_chroma');
 
     // Reset on parameter change
     setActiveParameter('grain');
-    expect(useUIStore.getState().activeSubParameter).toBe('none');
+    expect(useUIStore.getState().activeExtension).toBe('none');
 
-    setActiveSubParameter('grain_size');
-    expect(useUIStore.getState().activeSubParameter).toBe('grain_size');
+    setActiveExtension('grain_size');
+    expect(useUIStore.getState().activeExtension).toBe('grain_size');
 
     // Reset on module change
     setActiveModule('none');
-    expect(useUIStore.getState().activeSubParameter).toBe('none');
+    expect(useUIStore.getState().activeExtension).toBe('none');
   });
 
   it('sets latest captured uri correctly', () => {
@@ -126,10 +126,10 @@ describe('useUIStore', () => {
     expect(useUIStore.getState().activeParameter).toBe('sharpening');
   });
 
-  it('updates isSubPanelOpen correctly', () => {
-    const { setIsSubPanelOpen } = useUIStore.getState();
-    setIsSubPanelOpen(true);
-    expect(useUIStore.getState().isSubPanelOpen).toBe(true);
+  it('updates isExtensionOpen correctly', () => {
+    const { setIsExtensionOpen } = useUIStore.getState();
+    setIsExtensionOpen(true);
+    expect(useUIStore.getState().isExtensionOpen).toBe(true);
   });
 
   it('triggers capture and resets after timeout', () => {

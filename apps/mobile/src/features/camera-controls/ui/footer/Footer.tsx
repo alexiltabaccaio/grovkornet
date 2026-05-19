@@ -6,7 +6,7 @@ import { FooterSections } from './FooterSections';
 import { FooterModules } from './FooterModules';
 import { FooterParameters } from './FooterParameters';
 
-import { SubParameterPanel } from './SubParameterPanel';
+import { FooterParameterExtensions } from './FooterParameterExtensions';
 
 import { GestureDetector, Gesture } from 'react-native-gesture-handler';
 import Animated, { useSharedValue, useAnimatedStyle, withTiming, withSpring, useAnimatedProps } from 'react-native-reanimated';
@@ -132,7 +132,7 @@ export const Footer = ({ translateY: externalTranslateY, drawerAnimation: extern
             )}
             {/* Area espansa che riempie il vuoto sotto quando si tira su */}
             <View style={styles.expandedBackground}>
-              <SubParameterPanel translateY={translateY} />
+              <FooterParameterExtensions translateY={translateY} />
             </View>
           </View>
         </GestureDetector>

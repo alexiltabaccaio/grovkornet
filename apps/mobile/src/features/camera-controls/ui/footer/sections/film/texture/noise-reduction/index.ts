@@ -1,0 +1,1 @@
+export { NoiseReductionExtension } from './NoiseReductionExtension';

@@ -22,7 +22,7 @@ jest.mock('./FooterModules', () => ({
   FooterModules: 'FooterModules',
 }));
 
-jest.mock('./ParameterControl', () => ({
+jest.mock('./components/ParameterControl', () => ({
   ParameterControl: 'ParameterControl',
 }));
 

@@ -11,14 +11,14 @@ import { ModuleType } from '@shared/types/camera';
 import { useHardwareStore } from '@features/camera-controls/model/useHardwareStore';
 
 // Import modules
-import { TextureModule } from './sections/film/TextureModule';
-import { DevelopmentModule } from './sections/film/DevelopmentModule';
-import { FlawsModule } from './sections/lens/FlawsModule';
-import { ExposureModule } from './sections/body/ExposureModule';
-import { LightingModule } from './sections/body/LightingModule';
-import { CaptureModule } from './sections/body/CaptureModule';
-import { OpticsModule } from './sections/lens/OpticsModule';
-import { PreferencesModule } from './sections/system/PreferencesModule';
+import { TextureModule } from './sections/film/texture';
+import { DevelopmentModule } from './sections/film/development';
+import { FlawsModule } from './sections/lens/flaws';
+import { ExposureModule } from './sections/body/exposure';
+import { LightingModule } from './sections/body/lighting';
+import { CaptureModule } from './sections/body/capture';
+import { OpticsModule } from './sections/lens/optics';
+import { PreferencesModule } from './sections/system/preferences';
 
 /**
  * FooterParameters acts as a router for the different camera control modules.

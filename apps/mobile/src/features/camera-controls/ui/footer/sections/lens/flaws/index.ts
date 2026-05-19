@@ -1,0 +1,1 @@
+export { FlawsModule } from './FlawsModule';
