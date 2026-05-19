@@ -7,6 +7,7 @@ import { useHardwareStore } from '@features/camera-controls/model/useHardwareSto
 import { useUIStore } from '@features/camera-controls/model/useUIStore';
 import { ParameterControl } from './ParameterControl';
 import { ParameterType } from '@shared/types/camera';
+import { useCameraWorklets } from '@features/camera-controls/lib/useCameraWorklets';
 
 interface SliderExtensionProps {
   parameter: ParameterType;
@@ -72,11 +73,14 @@ export const SliderExtension = ({
     return !hw.isoAuto.value && !hw.shutterSpeedAuto.value;
   });
 
+  const worklets = useCameraWorklets();
+
   let value = stylesState.grainIntensity;
   let minValue = 0;
   let maxValue = 1;
   let centerValue: number | undefined = undefined;
   let onChange = stylesState.setGrainIntensity;
+  let onUpdateWorklet: ((val: number) => void) | undefined = undefined;
   let isAuto = undefined;
   let valueFormatter = (v: number) => {
     'worklet';
@@ -94,6 +98,7 @@ export const SliderExtension = ({
       minValue = 0;
       maxValue = 1.0;
       onChange = stylesState.setGrainIntensity;
+      onUpdateWorklet = worklets.updateGrain;
       valueFormatter = (v: number) => {
         'worklet';
         return `${Math.round(v * 100)}`;
@@ -105,6 +110,7 @@ export const SliderExtension = ({
       minValue = 0;
       maxValue = 1.0;
       onChange = stylesState.setSharpening;
+      onUpdateWorklet = worklets.updateSharpening;
       valueFormatter = (v: number) => {
         'worklet';
         return `${Math.round(v * 100)}`;
@@ -117,6 +123,7 @@ export const SliderExtension = ({
       maxValue = 2.0;
       centerValue = 1.0;
       onChange = stylesState.setSaturation;
+      onUpdateWorklet = worklets.updateSaturation;
       valueFormatter = (v: number) => {
         'worklet';
         const val = Math.round((v - 1) * 100);
@@ -130,6 +137,7 @@ export const SliderExtension = ({
       maxValue = 2.0;
       centerValue = 1.0;
       onChange = stylesState.setContrast;
+      onUpdateWorklet = worklets.updateContrast;
       valueFormatter = (v: number) => {
         'worklet';
         const val = Math.round((v - 1) * 100);
@@ -142,6 +150,7 @@ export const SliderExtension = ({
       minValue = 0.0;
       maxValue = 2.0;
       onChange = stylesState.setChromaticAberration;
+      onUpdateWorklet = worklets.updateChromaticAberration;
       valueFormatter = (v: number) => {
         'worklet';
         return `${Math.round(v * 100)}`;
@@ -153,6 +162,7 @@ export const SliderExtension = ({
       minValue = 2000;
       maxValue = 10000;
       onChange = hw.setTemperature;
+      onUpdateWorklet = worklets.updateTemperature;
       isAuto = hw.temperatureAuto;
       valueFormatter = (v: number) => {
         'worklet';
@@ -169,6 +179,7 @@ export const SliderExtension = ({
       maxValue = 100;
       centerValue = 0;
       onChange = hw.setTint;
+      onUpdateWorklet = worklets.updateTint;
       isAuto = hw.temperatureAuto;
       valueFormatter = (v: number) => {
         'worklet';
@@ -186,6 +197,7 @@ export const SliderExtension = ({
       maxValue = 2.0;
       centerValue = 0.0;
       onChange = hw.setEv;
+      onUpdateWorklet = worklets.updateEv;
       valueFormatter = (v: number) => {
         'worklet';
         return v >= 0 ? `+${v.toFixed(1)}` : v.toFixed(1);
@@ -198,6 +210,7 @@ export const SliderExtension = ({
       minValue = hw.capabilities.isoMin ?? 50;
       maxValue = hw.capabilities.isoMax ?? 3200;
       onChange = hw.setIso;
+      onUpdateWorklet = worklets.updateIso;
       isAuto = hw.isoAuto;
       valueFormatter = (v: number) => {
         'worklet';
@@ -213,6 +226,7 @@ export const SliderExtension = ({
       minValue = 1;
       maxValue = 1000;
       onChange = hw.setShutterSpeed;
+      onUpdateWorklet = worklets.updateShutterSpeed;
       isAuto = hw.shutterSpeedAuto;
       valueFormatter = (v: number) => {
         'worklet';
@@ -228,6 +242,7 @@ export const SliderExtension = ({
       minValue = 0;
       maxValue = 10;
       onChange = hw.setFocusDistance;
+      onUpdateWorklet = worklets.updateFocusDistance;
       isAuto = hw.focusAuto;
       valueFormatter = (v: number) => {
         'worklet';
@@ -266,6 +281,7 @@ export const SliderExtension = ({
         maxValue={maxValue}
         centerValue={centerValue}
         onChange={onChange}
+        onUpdateWorklet={onUpdateWorklet}
         variant="slider"
         isAuto={isAuto}
         valueFormatter={valueFormatter}

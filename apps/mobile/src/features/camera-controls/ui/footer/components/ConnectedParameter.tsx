@@ -18,6 +18,7 @@ export interface ConnectedParameterProps {
   minValue?: number;
   maxValue?: number;
   onChange?: (val: number) => void;
+  onUpdateWorklet?: (val: number) => void;
   icon?: keyof typeof Ionicons.glyphMap;
   imageSource?: ImageSourcePropType;
   renderValue?: boolean;

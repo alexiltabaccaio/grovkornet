@@ -9,6 +9,7 @@ import Animated from 'react-native-reanimated';
 import { useTranslation } from 'react-i18next';
 import { ParameterControl } from './components/ParameterControl';
 import { SliderExtension } from './components/SliderExtension';
+import { useCameraWorklets } from '@features/camera-controls/lib/useCameraWorklets';
 import { ParameterExtensionWrapper } from './components/ParameterExtensionWrapper';
 
 import { LanguageExtension } from './sections/system/preferences/language';
@@ -25,6 +26,7 @@ interface FooterParameterExtensionsProps {
 
 export const FooterParameterExtensions = ({ translateY }: FooterParameterExtensionsProps) => {
   const { t } = useTranslation();
+  const worklets = useCameraWorklets();
   
   const { activeParameter, activeExtension, setActiveExtension } = useUIStore(useShallow(state => ({
     activeParameter: state.activeParameter,
@@ -124,6 +126,7 @@ export const FooterParameterExtensions = ({ translateY }: FooterParameterExtensi
               minValue={1.0}
               maxValue={4.0}
               onChange={setGrainSize}
+              onUpdateWorklet={worklets.updateGrainSize}
               renderValue={true}
               valueFormatter={(v) => {
                 'worklet';
@@ -198,6 +201,7 @@ export const FooterParameterExtensions = ({ translateY }: FooterParameterExtensi
               minValue={0.1}
               maxValue={1}
               onChange={setTorchStrength}
+              onUpdateWorklet={worklets.updateTorchStrength}
               variant="text"
               renderValue={true}
               valueFormatter={(v) => {

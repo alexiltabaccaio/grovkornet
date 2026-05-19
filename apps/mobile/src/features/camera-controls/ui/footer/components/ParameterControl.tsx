@@ -14,6 +14,7 @@ interface ParameterControlProps {
   minValue?: number;
   maxValue?: number;
   onChange?: (val: number) => void;
+  onUpdateWorklet?: (val: number) => void;
   icon?: keyof typeof Ionicons.glyphMap;
   imageSource?: ImageSourcePropType;
   renderValue?: boolean;
@@ -51,6 +52,7 @@ export const ParameterControl = ({
   hideValueInAuto = false,
   autoValueText = 'AUTO',
   onChange,
+  onUpdateWorklet,
   disabled,
   hideAutoBadge = false,
   isToggle = false,
@@ -66,6 +68,7 @@ export const ParameterControl = ({
     maxValue,
     invertDrag,
     onChange,
+    onUpdateWorklet,
     onPress,
     isAuto,
     disabled,

@@ -1,100 +1,105 @@
-import { SharedValue } from 'react-native-reanimated';
+import { useStylesStore } from '../model/useStylesStore';
+import { useHardwareStore } from '../model/useHardwareStore';
 import { updateSharedValue } from '@shared/lib/reanimated/safeUpdate';
+import { 
+  DEFAULT_ISO,
+  DEFAULT_EV,
+  DEFAULT_SHUTTER_SPEED,
+} from '@grovkornet/shared';
 
-/**
- * Safety Guardrail: A worklet-friendly way to update Reanimated SharedValues.
- * This ensures that mutations are encapsulated and can include validation logic.
- */
+export const useCameraWorklets = () => {
+  const styles = useStylesStore();
+  const hw = useHardwareStore();
 
-export const useCameraWorklets = (
-  grainIntensity: SharedValue<number>,
-  grainChroma: SharedValue<number>,
-  grainSize: SharedValue<number>,
-  grainEnabled: SharedValue<boolean>,
-  saturation: SharedValue<number>,
-  contrast: SharedValue<number>,
-  chromaticAberration: SharedValue<number>,
-  iso: SharedValue<number>,
-  ev: SharedValue<number>,
-  shutterSpeed: SharedValue<number>,
-  temperature: SharedValue<number>,
-  isoAuto: SharedValue<boolean>,
-  evAuto: SharedValue<boolean>,
-  shutterSpeedAuto: SharedValue<boolean>,
-  temperatureAuto: SharedValue<boolean>,
-  focusDistance: SharedValue<number>,
-  focusAuto: SharedValue<boolean>,
-  sharpening: SharedValue<number>,
-) => {
-  /**
-   * Updates the grain intensity and automatically toggles the enabled state.
-   * @param value Normalized value 0-1
-   */
   const updateGrain = (value: number) => {
     'worklet';
     const safeValue = Math.min(Math.max(value, 0), 1);
-    updateSharedValue(grainIntensity, safeValue);
-    updateSharedValue(grainEnabled, safeValue > 0);
+    updateSharedValue(styles.grainIntensity, safeValue);
+    updateSharedValue(styles.grainEnabled, safeValue > 0);
   };
   
   const updateGrainChroma = (value: number) => {
     'worklet';
-    updateSharedValue(grainChroma, value);
+    updateSharedValue(styles.grainChroma, value);
   };
   
   const updateGrainSize = (value: number) => {
     'worklet';
-    updateSharedValue(grainSize, value);
+    updateSharedValue(styles.grainSize, value);
   };
 
   const updateSaturation = (value: number) => {
     'worklet';
-    updateSharedValue(saturation, value);
+    updateSharedValue(styles.saturation, value);
   };
 
   const updateContrast = (value: number) => {
     'worklet';
-    updateSharedValue(contrast, value);
+    updateSharedValue(styles.contrast, value);
   };
 
   const updateChromaticAberration = (value: number) => {
     'worklet';
-    updateSharedValue(chromaticAberration, value);
+    updateSharedValue(styles.chromaticAberration, value);
+  };
+
+  const updateAberrationDirection = (value: number) => {
+    'worklet';
+    updateSharedValue(styles.aberrationDirection, value);
   };
 
   const updateIso = (value: number) => {
     'worklet';
-    updateSharedValue(iso, value);
-    updateSharedValue(isoAuto, false);
+    updateSharedValue(hw.iso, value);
+    updateSharedValue(hw.isoAuto, false);
+    updateSharedValue(hw.shutterSpeedAuto, false);
+    updateSharedValue(hw.evAuto, true);
+    updateSharedValue(hw.ev, DEFAULT_EV);
   };
 
   const updateEv = (value: number) => {
     'worklet';
-    updateSharedValue(ev, value);
-    updateSharedValue(evAuto, false);
+    updateSharedValue(hw.ev, value);
+    updateSharedValue(hw.evAuto, false);
+    updateSharedValue(hw.isoAuto, true);
+    updateSharedValue(hw.shutterSpeedAuto, true);
   };
 
   const updateShutterSpeed = (value: number) => {
     'worklet';
-    updateSharedValue(shutterSpeed, value);
-    updateSharedValue(shutterSpeedAuto, false);
+    updateSharedValue(hw.shutterSpeed, value);
+    updateSharedValue(hw.shutterSpeedAuto, false);
+    updateSharedValue(hw.isoAuto, false);
+    updateSharedValue(hw.evAuto, true);
+    updateSharedValue(hw.ev, DEFAULT_EV);
   };
 
   const updateTemperature = (value: number) => {
     'worklet';
-    updateSharedValue(temperature, value);
-    updateSharedValue(temperatureAuto, false);
+    updateSharedValue(hw.temperature, value);
+    updateSharedValue(hw.temperatureAuto, false);
+  };
+
+  const updateTint = (value: number) => {
+    'worklet';
+    updateSharedValue(hw.tint, value);
+    updateSharedValue(hw.temperatureAuto, false);
   };
 
   const updateFocusDistance = (value: number) => {
     'worklet';
-    updateSharedValue(focusDistance, value);
-    updateSharedValue(focusAuto, false);
+    updateSharedValue(hw.focusDistance, value);
+    updateSharedValue(hw.focusAuto, false);
   };
 
   const updateSharpening = (value: number) => {
     'worklet';
-    updateSharedValue(sharpening, value);
+    updateSharedValue(styles.sharpening, value);
+  };
+
+  const updateTorchStrength = (value: number) => {
+    'worklet';
+    updateSharedValue(hw.torchStrength, value);
   };
 
   return {
@@ -104,12 +109,14 @@ export const useCameraWorklets = (
     updateSaturation,
     updateContrast,
     updateChromaticAberration,
+    updateAberrationDirection,
     updateIso,
     updateEv,
     updateShutterSpeed,
     updateTemperature,
+    updateTint,
     updateFocusDistance,
     updateSharpening,
+    updateTorchStrength,
   };
 };
-

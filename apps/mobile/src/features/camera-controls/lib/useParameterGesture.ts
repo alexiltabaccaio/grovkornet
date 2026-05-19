@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react';
+import { useEffect } from 'react';
 import { SharedValue, useSharedValue, runOnJS } from 'react-native-reanimated';
 import { Gesture } from 'react-native-gesture-handler';
 import { useWindowDimensions } from 'react-native';
@@ -13,6 +13,7 @@ interface UseParameterGestureParams {
   maxValue?: number;
   invertDrag?: boolean;
   onChange?: (val: number) => void;
+  onUpdateWorklet?: (val: number) => void;
   onPress: () => void;
   isAuto?: SharedValue<boolean>;
   disabled?: SharedValue<boolean>;
@@ -26,6 +27,7 @@ export const useParameterGesture = ({
   maxValue = 1,
   invertDrag = false,
   onChange,
+  onUpdateWorklet,
   onPress,
   isAuto,
   disabled,
@@ -48,82 +50,84 @@ export const useParameterGesture = ({
     }
   }, [isActive, value, minValue, maxValue, invertDrag, setGestureConfig, onChange]);
 
-  const combinedGesture = useMemo(() => {
-    const isSlider = variant === 'slider';
-    let pan = Gesture.Pan();
-    
-    if (isSlider) {
-      pan = pan.activeOffsetX([-2, 2]).failOffsetY([-10, 10]);
-    } else {
-      pan = pan.activeOffsetY([-2, 2]).failOffsetX([-10, 10]);
-    }
+  const isSlider = variant === 'slider';
+  let pan = Gesture.Pan();
+  
+  if (isSlider) {
+    pan = pan.activeOffsetX([-2, 2]).failOffsetY([-10, 10]);
+  } else {
+    pan = pan.activeOffsetY([-2, 2]).failOffsetX([-10, 10]);
+  }
 
-    pan = pan
-      .onStart((e) => {
-        'worklet';
-        if (disabled && disabled.value) return;
-        if (!value) return;
+  pan = pan
+    .onStart((e) => {
+      'worklet';
+      if (disabled && disabled.value) return;
+      if (!value) return;
+      
+      if (isSlider) {
+        const paddingHorizontal = 24;
+        const thumbSize = 12;
+        const travel = (SCREEN_WIDTH - paddingHorizontal * 2) - thumbSize;
         
-        if (isSlider) {
-          const paddingHorizontal = 24;
-          const thumbSize = 12;
-          const travel = (SCREEN_WIDTH - paddingHorizontal * 2) - thumbSize;
-          
-          // Calcola il valore in base alla posizione esatta del tocco (salto assoluto)
-          const percentage = Math.max(0, Math.min(1, (e.x - paddingHorizontal) / travel));
-          const newValue = minValue + percentage * (maxValue - minValue);
-          
-          updateSharedValue(value, newValue);
-          startVal.value = newValue;
+        // Calcola il valore in base alla posizione esatta del tocco (salto assoluto)
+        const percentage = Math.max(0, Math.min(1, (e.x - paddingHorizontal) / travel));
+        const newValue = minValue + percentage * (maxValue - minValue);
+        
+        updateSharedValue(value, newValue);
+        startVal.value = newValue;
+      } else {
+        startVal.value = value.value;
+      }
+      runOnJS(onPress)();
+    })
+    .onUpdate((e) => {
+      'worklet';
+      if (disabled && disabled.value) return;
+      if (!value) return;
+      
+      const range = maxValue - minValue;
+      const direction = invertDrag ? -1 : 1;
+      
+      let delta = 0;
+      if (isSlider) {
+        const travel = (SCREEN_WIDTH - 48) - 12; // 48 is padding, 12 is thumb size
+        delta = (e.translationX / travel) * range * direction;
+      } else {
+        const THUMB_SENSITIVITY = 150;
+        delta = -(e.translationY / THUMB_SENSITIVITY) * range * direction;
+      }
+        
+      const newValue = Math.min(Math.max(startVal.value + delta, minValue), maxValue);
+      
+      if (newValue !== value.value) {
+        if (onUpdateWorklet) {
+          onUpdateWorklet(newValue);
         } else {
-          startVal.value = value.value;
-        }
-        runOnJS(onPress)();
-      })
-      .onUpdate((e) => {
-        'worklet';
-        if (disabled && disabled.value) return;
-        if (!value) return;
-        
-        const range = maxValue - minValue;
-        const direction = invertDrag ? -1 : 1;
-        
-        let delta = 0;
-        if (isSlider) {
-          const travel = (SCREEN_WIDTH - 48) - 12; // 48 is padding, 12 is thumb size
-          delta = (e.translationX / travel) * range * direction;
-        } else {
-          const THUMB_SENSITIVITY = 150;
-          delta = -(e.translationY / THUMB_SENSITIVITY) * range * direction;
-        }
-          
-        const newValue = Math.min(Math.max(startVal.value + delta, minValue), maxValue);
-        
-        if (newValue !== value.value) {
           updateSharedValue(value, newValue);
           
           if (isAuto && isAuto.value) {
             updateSharedValue(isAuto, false);
           }
         }
-      })
-      .onEnd(() => {
-        'worklet';
-        if (disabled && disabled.value) return;
-        if (value && onChange) {
-          runOnJS(onChange)(value.value);
-        }
-      });
+      }
+    })
+    .onEnd(() => {
+      'worklet';
+      if (disabled && disabled.value) return;
+      if (value && onChange) {
+        runOnJS(onChange)(value.value);
+      }
+    });
 
-    const tap = Gesture.Tap()
-      .onEnd(() => {
-        'worklet';
-        if (disabled && disabled.value) return;
-        runOnJS(onPress)();
-      });
+  const tap = Gesture.Tap()
+    .onEnd(() => {
+      'worklet';
+      if (disabled && disabled.value) return;
+      runOnJS(onPress)();
+    });
 
-    return Gesture.Race(tap, pan);
-  }, [onPress, value, startVal, minValue, maxValue, invertDrag, onChange, isAuto, disabled, variant, SCREEN_WIDTH]);
+  const combinedGesture = Gesture.Race(tap, pan);
 
   return {
     combinedGesture,
