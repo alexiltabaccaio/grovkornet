@@ -82,7 +82,8 @@ export const ParameterThumbView = forwardRef<View, ParameterThumbViewProps>((pro
       <View style={[
         styles.filterPlaceholder,
         { marginBottom: 0 },
-        !!imageSource && { height: 32, marginTop: 8, marginBottom: 14 },
+        !!imageSource && { height: 32 },
+        !!imageSource && !!label && { marginTop: 8, marginBottom: 14 },
         variant === 'square' && isActive && styles.filterPlaceholderActive,
         variant === 'square' && styles.iconPlaceholder,
         variant === 'text' && styles.textVariantPlaceholder,

@@ -25,10 +25,11 @@ interface SubParameterPanelProps {
 export const SubParameterPanel = ({ translateY }: SubParameterPanelProps) => {
   const { t } = useTranslation();
   
-  const { activeParameter, activeSubParameter, setActiveSubParameter } = useUIStore(useShallow(state => ({
+  const { activeParameter, activeSubParameter, setActiveSubParameter, isDebugEnabled } = useUIStore(useShallow(state => ({
     activeParameter: state.activeParameter,
     activeSubParameter: state.activeSubParameter,
     setActiveSubParameter: state.setActiveSubParameter,
+    isDebugEnabled: state.isDebugEnabled,
   })));
 
   const {
@@ -171,21 +172,27 @@ export const SubParameterPanel = ({ translateY }: SubParameterPanelProps) => {
       return (
         <View style={styles.container}>
           <Animated.View style={[styles.parameterExtensionContainer, parameterExtensionAnimatedStyle]}>
-            <ParameterControl
-              label=""
-              isActive={false}
-              onPress={() => {
-                setTorchState(torchState.value === 0 ? 1 : 0);
-              }}
-              value={torchState}
-              variant="text"
-              renderValue={true}
-              isToggle={true}
-              valueFormatter={(v) => {
-                'worklet';
-                return v === 0 ? 'OFF' : 'ON';
-              }}
-            />
+            <View style={[
+              styles.debugWrapper,
+              isDebugEnabled && { backgroundColor: 'rgba(0, 255, 0, 0.2)', borderWidth: 1, borderColor: 'green' }
+            ]}>
+              <ParameterControl
+                label=""
+                isActive={false}
+                hideDebugRectangles={true}
+                onPress={() => {
+                  setTorchState(torchState.value === 0 ? 1 : 0);
+                }}
+                value={torchState}
+                variant="text"
+                renderValue={true}
+                isToggle={true}
+                valueFormatter={(v) => {
+                  'worklet';
+                  return v === 0 ? 'OFF' : 'ON';
+                }}
+              />
+            </View>
           </Animated.View>
           <Animated.View style={[styles.childSubContainer, animatedStyle]}>
             <ParameterControl
@@ -254,6 +261,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     width: '100%',
+    paddingTop: 5,
+    paddingBottom: 5,
+  },
+  debugWrapper: {
+    width: '100%',
+    justifyContent: 'center',
   },
   childSubContainer: {
     flexDirection: 'row',

@@ -6,8 +6,8 @@ export const styles = StyleSheet.create({
     backgroundColor: 'transparent',
   },
   filterPlaceholder: {
-    width: 48,
-    height: 48,
+    width: 38,
+    height: 38,
     backgroundColor: '#22',
     marginBottom: 6,
     overflow: 'hidden',

@@ -3,6 +3,7 @@ import { StyleSheet, StyleProp, ViewStyle, View, Pressable } from 'react-native'
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 import { useShallow } from 'zustand/react/shallow';
 import { useHardwareStore } from '@features/camera-controls/model/useHardwareStore';
+import { useUIStore } from '@features/camera-controls/model/useUIStore';
 
 interface LensSelectionSubPanelProps {
   parameterExtensionAnimatedStyle?: StyleProp<ViewStyle>;
@@ -36,7 +37,7 @@ const AutoButton = ({ cameraAuto, setCameraAuto }: AutoButtonProps) => {
       }}
       style={styles.autoPressable}
     >
-      <Animated.View style={[styles.pillButton, animatedStyle]}>
+      <Animated.View style={[styles.pillButton, { width: 32 }, animatedStyle]}>
         <Animated.Text style={[styles.pillText, animatedTextStyle]}>
           A
         </Animated.Text>
@@ -88,6 +89,7 @@ const CamButton = ({ cam, cameraAuto, cameraId, setCameraId, setCameraAuto }: Ca
 };
 
 export const LensSelectionSubPanel = ({ parameterExtensionAnimatedStyle }: LensSelectionSubPanelProps) => {
+  const isDebugEnabled = useUIStore(state => state.isDebugEnabled);
   const { capabilities, cameraId, setCameraId, cameraAuto, setCameraAuto } = useHardwareStore(useShallow(state => ({
     capabilities: state.capabilities,
     cameraId: state.cameraId,
@@ -98,19 +100,29 @@ export const LensSelectionSubPanel = ({ parameterExtensionAnimatedStyle }: LensS
 
   return (
     <View style={styles.container}>
-      <Animated.View style={[styles.parameterExtensionContainer, parameterExtensionAnimatedStyle]}>
-        <View style={styles.buttonRow}>
-          <AutoButton cameraAuto={cameraAuto} setCameraAuto={setCameraAuto} />
-          {capabilities.availableCameras.map(cam => (
-            <CamButton
-              key={cam.id}
-              cam={cam}
-              cameraAuto={cameraAuto}
-              cameraId={cameraId}
-              setCameraId={setCameraId}
-              setCameraAuto={setCameraAuto}
-            />
-          ))}
+      <Animated.View 
+        style={[
+          styles.parameterExtensionContainer, 
+          parameterExtensionAnimatedStyle,
+        ]}
+      >
+        <View style={[
+          styles.debugWrapper,
+          isDebugEnabled && { backgroundColor: 'rgba(0, 255, 0, 0.2)', borderWidth: 1, borderColor: 'green' }
+        ]}>
+          <View style={styles.buttonRow}>
+            <AutoButton cameraAuto={cameraAuto} setCameraAuto={setCameraAuto} />
+            {capabilities.availableCameras.map(cam => (
+              <CamButton
+                key={cam.id}
+                cam={cam}
+                cameraAuto={cameraAuto}
+                cameraId={cameraId}
+                setCameraId={setCameraId}
+                setCameraAuto={setCameraAuto}
+              />
+            ))}
+          </View>
         </View>
       </Animated.View>
     </View>
@@ -127,6 +139,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     width: '100%',
+    paddingTop: 5,
+    paddingBottom: 5,
+  },
+  debugWrapper: {
+    width: '100%',
+    justifyContent: 'center',
   },
   buttonRow: {
     flexDirection: 'row',
@@ -137,7 +155,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
   },
   autoPressable: {
-    width: 40,
+    width: 32,
   },
   pressable: {
     flex: 1,

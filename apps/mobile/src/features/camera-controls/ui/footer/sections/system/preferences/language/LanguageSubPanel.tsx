@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, StyleProp, ViewStyle, ImageSourcePropType } from 'react-native';
+import { StyleSheet, StyleProp, ViewStyle, ImageSourcePropType, View } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { useTranslation } from 'react-i18next';
 import { useShallow } from 'zustand/react/shallow';
@@ -18,46 +18,79 @@ interface LanguageSubPanelProps {
 export const LanguageSubPanel = ({ animatedStyle }: LanguageSubPanelProps) => {
   const { i18n } = useTranslation();
 
-  const { activeSubParameter, setActiveSubParameter } = useUIStore(useShallow(state => ({
+  const { activeSubParameter, setActiveSubParameter, isDebugEnabled } = useUIStore(useShallow(state => ({
     activeSubParameter: state.activeSubParameter,
     setActiveSubParameter: state.setActiveSubParameter,
+    isDebugEnabled: state.isDebugEnabled,
   })));
 
   return (
-    <Animated.View style={[styles.container, animatedStyle]}>
-      <ParameterControl
-        label="English"
-        isActive={activeSubParameter === 'lang_en' || i18n.language.startsWith('en')}
-        onPress={() => {
-          setActiveSubParameter('lang_en');
-          void i18n.changeLanguage('en').catch(error => {
-            console.error('Failed to change language to en:', error);
-          });
-        }}
-        imageSource={enFlag}
-      />
-      <ParameterControl
-        label="Italiano"
-        isActive={activeSubParameter === 'lang_it' || i18n.language.startsWith('it')}
-        onPress={() => {
-          setActiveSubParameter('lang_it');
-          void i18n.changeLanguage('it').catch(error => {
-            console.error('Failed to change language to it:', error);
-          });
-        }}
-        imageSource={itFlag}
-      />
-    </Animated.View>
+    <View style={styles.container}>
+      <Animated.View 
+        style={[
+          styles.parameterExtensionContainer, 
+          animatedStyle,
+        ]}
+      >
+        <View style={[
+          styles.debugWrapper,
+          isDebugEnabled && { backgroundColor: 'rgba(0, 255, 0, 0.2)', borderWidth: 1, borderColor: 'green' }
+        ]}>
+          <View style={styles.buttonRow}>
+            <ParameterControl
+              label=""
+              isActive={activeSubParameter === 'lang_en' || i18n.language.startsWith('en')}
+              hideDebugRectangles={true}
+              onPress={() => {
+                setActiveSubParameter('lang_en');
+                void i18n.changeLanguage('en').catch(error => {
+                  console.error('Failed to change language to en:', error);
+                });
+              }}
+              imageSource={enFlag}
+            />
+            <ParameterControl
+              label=""
+              isActive={activeSubParameter === 'lang_it' || i18n.language.startsWith('it')}
+              hideDebugRectangles={true}
+              onPress={() => {
+                setActiveSubParameter('lang_it');
+                void i18n.changeLanguage('it').catch(error => {
+                  console.error('Failed to change language to it:', error);
+                });
+              }}
+              imageSource={itFlag}
+            />
+          </View>
+        </View>
+      </Animated.View>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flexDirection: 'row',
+    flexDirection: 'column',
+    alignItems: 'center',
+    width: '100%',
+  },
+  parameterExtensionContainer: {
     justifyContent: 'center',
     alignItems: 'center',
-    paddingVertical: 10,
     width: '100%',
+    paddingTop: 5,
+    paddingBottom: 5,
+  },
+  debugWrapper: {
+    width: '100%',
+    justifyContent: 'center',
+  },
+  buttonRow: {
+    flexDirection: 'row',
     gap: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '100%',
+    paddingHorizontal: 24,
   },
 });

@@ -3,6 +3,7 @@ import { StyleSheet, StyleProp, ViewStyle, View, Pressable } from 'react-native'
 import Animated, { useAnimatedStyle, SharedValue } from 'react-native-reanimated';
 import { useShallow } from 'zustand/react/shallow';
 import { useStylesStore } from '@features/camera-controls/model/useStylesStore';
+import { useUIStore } from '@features/camera-controls/model/useUIStore';
 
 interface NoiseReductionSubPanelProps {
   parameterExtensionAnimatedStyle?: StyleProp<ViewStyle>;
@@ -36,7 +37,7 @@ const AutoButton = ({ noiseReductionAuto, setNoiseReductionAuto }: AutoButtonPro
       }}
       style={styles.autoPressable}
     >
-      <Animated.View style={[styles.pillButton, animatedStyle]}>
+      <Animated.View style={[styles.pillButton, { width: 32 }, animatedStyle]}>
         <Animated.Text style={[styles.pillText, animatedTextStyle]}>
           A
         </Animated.Text>
@@ -98,6 +99,7 @@ const ModeButton = ({
 };
 
 export const NoiseReductionSubPanel = ({ parameterExtensionAnimatedStyle }: NoiseReductionSubPanelProps) => {
+  const isDebugEnabled = useUIStore(state => state.isDebugEnabled);
   const { noiseReductionMode, setNoiseReductionMode, noiseReductionAuto, setNoiseReductionAuto } = useStylesStore(useShallow(state => ({
     noiseReductionMode: state.noiseReductionMode,
     setNoiseReductionMode: state.setNoiseReductionMode,
@@ -108,36 +110,46 @@ export const NoiseReductionSubPanel = ({ parameterExtensionAnimatedStyle }: Nois
   return (
     <View style={styles.container}>
       {/* Parameter Extension: Righe dei pulsanti di selezione (sempre visibili a -35px) */}
-      <Animated.View style={[styles.parameterExtensionContainer, parameterExtensionAnimatedStyle]}>
-        <View style={styles.buttonRow}>
-          <AutoButton
-            noiseReductionAuto={noiseReductionAuto}
-            setNoiseReductionAuto={setNoiseReductionAuto}
-          />
-          <ModeButton
-            label="OFF"
-            modeValue={0}
-            noiseReductionMode={noiseReductionMode}
-            noiseReductionAuto={noiseReductionAuto}
-            setNoiseReductionMode={setNoiseReductionMode}
-            setNoiseReductionAuto={setNoiseReductionAuto}
-          />
-          <ModeButton
-            label="FAST"
-            modeValue={1}
-            noiseReductionMode={noiseReductionMode}
-            noiseReductionAuto={noiseReductionAuto}
-            setNoiseReductionMode={setNoiseReductionMode}
-            setNoiseReductionAuto={setNoiseReductionAuto}
-          />
-          <ModeButton
-            label="HQ"
-            modeValue={2}
-            noiseReductionMode={noiseReductionMode}
-            noiseReductionAuto={noiseReductionAuto}
-            setNoiseReductionMode={setNoiseReductionMode}
-            setNoiseReductionAuto={setNoiseReductionAuto}
-          />
+      <Animated.View 
+        style={[
+          styles.parameterExtensionContainer, 
+          parameterExtensionAnimatedStyle,
+        ]}
+      >
+        <View style={[
+          styles.debugWrapper,
+          isDebugEnabled && { backgroundColor: 'rgba(0, 255, 0, 0.2)', borderWidth: 1, borderColor: 'green' }
+        ]}>
+          <View style={styles.buttonRow}>
+            <AutoButton
+              noiseReductionAuto={noiseReductionAuto}
+              setNoiseReductionAuto={setNoiseReductionAuto}
+            />
+            <ModeButton
+              label="OFF"
+              modeValue={0}
+              noiseReductionMode={noiseReductionMode}
+              noiseReductionAuto={noiseReductionAuto}
+              setNoiseReductionMode={setNoiseReductionMode}
+              setNoiseReductionAuto={setNoiseReductionAuto}
+            />
+            <ModeButton
+              label="FAST"
+              modeValue={1}
+              noiseReductionMode={noiseReductionMode}
+              noiseReductionAuto={noiseReductionAuto}
+              setNoiseReductionMode={setNoiseReductionMode}
+              setNoiseReductionAuto={setNoiseReductionAuto}
+            />
+            <ModeButton
+              label="HQ"
+              modeValue={2}
+              noiseReductionMode={noiseReductionMode}
+              noiseReductionAuto={noiseReductionAuto}
+              setNoiseReductionMode={setNoiseReductionMode}
+              setNoiseReductionAuto={setNoiseReductionAuto}
+            />
+          </View>
         </View>
       </Animated.View>
     </View>
@@ -154,6 +166,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     width: '100%',
+    paddingTop: 5,
+    paddingBottom: 5,
+  },
+  debugWrapper: {
+    width: '100%',
+    justifyContent: 'center',
   },
   buttonRow: {
     flexDirection: 'row',
@@ -164,7 +182,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
   },
   autoPressable: {
-    width: 40,
+    width: 32,
   },
   pressable: {
     flex: 1,

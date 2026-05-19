@@ -3,6 +3,7 @@ import { StyleSheet, StyleProp, ViewStyle, View, Pressable } from 'react-native'
 import Animated, { useAnimatedStyle, SharedValue } from 'react-native-reanimated';
 import { useShallow } from 'zustand/react/shallow';
 import { useHardwareStore } from '@features/camera-controls/model/useHardwareStore';
+import { useUIStore } from '@features/camera-controls/model/useUIStore';
 
 interface ResolutionSubPanelProps {
   parameterExtensionAnimatedStyle?: StyleProp<ViewStyle>;
@@ -50,6 +51,7 @@ const ResolutionButton = ({ label, index, resolutionSetting, setResolutionSettin
 };
 
 export const ResolutionSubPanel = ({ parameterExtensionAnimatedStyle }: ResolutionSubPanelProps) => {
+  const isDebugEnabled = useUIStore(state => state.isDebugEnabled);
   const { resolutionSetting, setResolutionSetting } = useHardwareStore(useShallow(state => ({
     resolutionSetting: state.resolutionSetting,
     setResolutionSetting: state.setResolutionSetting,
@@ -57,17 +59,27 @@ export const ResolutionSubPanel = ({ parameterExtensionAnimatedStyle }: Resoluti
 
   return (
     <View style={styles.container}>
-      <Animated.View style={[styles.parameterExtensionContainer, parameterExtensionAnimatedStyle]}>
-        <View style={styles.buttonRow}>
-          {RESOLUTIONS.map((label, index) => (
-            <ResolutionButton
-              key={index}
-              label={label}
-              index={index}
-              resolutionSetting={resolutionSetting}
-              setResolutionSetting={setResolutionSetting}
-            />
-          ))}
+      <Animated.View 
+        style={[
+          styles.parameterExtensionContainer, 
+          parameterExtensionAnimatedStyle,
+        ]}
+      >
+        <View style={[
+          styles.debugWrapper,
+          isDebugEnabled && { backgroundColor: 'rgba(0, 255, 0, 0.2)', borderWidth: 1, borderColor: 'green' }
+        ]}>
+          <View style={styles.buttonRow}>
+            {RESOLUTIONS.map((label, index) => (
+              <ResolutionButton
+                key={index}
+                label={label}
+                index={index}
+                resolutionSetting={resolutionSetting}
+                setResolutionSetting={setResolutionSetting}
+              />
+            ))}
+          </View>
         </View>
       </Animated.View>
     </View>
@@ -84,6 +96,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     width: '100%',
+    paddingTop: 5,
+    paddingBottom: 5,
+  },
+  debugWrapper: {
+    width: '100%',
+    justifyContent: 'center',
   },
   buttonRow: {
     flexDirection: 'row',
