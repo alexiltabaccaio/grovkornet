@@ -1,7 +1,7 @@
 import { useEffect, useMemo } from 'react';
-import { SharedValue, useSharedValue } from 'react-native-reanimated';
+import { SharedValue, useSharedValue, runOnJS } from 'react-native-reanimated';
 import { Gesture } from 'react-native-gesture-handler';
-import { Dimensions } from 'react-native';
+import { useWindowDimensions } from 'react-native';
 
 import { useUIStore } from '@features/camera-controls/model/useUIStore';
 import { updateSharedValue } from '@shared/lib/reanimated/safeUpdate';
@@ -34,6 +34,7 @@ export const useParameterGesture = ({
   const startVal = useSharedValue(minValue);
   const isDebugEnabled = useUIStore((s) => s.isDebugEnabled);
   const setGestureConfig = useUIStore((s) => s.setGestureConfig);
+  const { width: SCREEN_WIDTH } = useWindowDimensions();
 
   useEffect(() => {
     if (isActive && value) {
@@ -58,13 +59,12 @@ export const useParameterGesture = ({
     }
 
     pan = pan
-      .runOnJS(true)
       .onStart((e) => {
+        'worklet';
         if (disabled && disabled.value) return;
         if (!value) return;
         
         if (isSlider) {
-          const SCREEN_WIDTH = Dimensions.get('window').width;
           const paddingHorizontal = 24;
           const thumbSize = 12;
           const travel = (SCREEN_WIDTH - paddingHorizontal * 2) - thumbSize;
@@ -74,16 +74,14 @@ export const useParameterGesture = ({
           const newValue = minValue + percentage * (maxValue - minValue);
           
           updateSharedValue(value, newValue);
-          if (onChange) {
-            onChange(newValue);
-          }
           startVal.value = newValue;
         } else {
           startVal.value = value.value;
         }
-        onPress();
+        runOnJS(onPress)();
       })
       .onUpdate((e) => {
+        'worklet';
         if (disabled && disabled.value) return;
         if (!value) return;
         
@@ -92,7 +90,6 @@ export const useParameterGesture = ({
         
         let delta = 0;
         if (isSlider) {
-          const SCREEN_WIDTH = Dimensions.get('window').width;
           const travel = (SCREEN_WIDTH - 48) - 12; // 48 is padding, 12 is thumb size
           delta = (e.translationX / travel) * range * direction;
         } else {
@@ -105,25 +102,28 @@ export const useParameterGesture = ({
         if (newValue !== value.value) {
           updateSharedValue(value, newValue);
           
-          if (onChange) {
-            onChange(newValue);
-          }
-          
           if (isAuto && isAuto.value) {
             updateSharedValue(isAuto, false);
           }
         }
+      })
+      .onEnd(() => {
+        'worklet';
+        if (disabled && disabled.value) return;
+        if (value && onChange) {
+          runOnJS(onChange)(value.value);
+        }
       });
 
     const tap = Gesture.Tap()
-      .runOnJS(true)
       .onEnd(() => {
+        'worklet';
         if (disabled && disabled.value) return;
-        onPress();
+        runOnJS(onPress)();
       });
 
     return Gesture.Race(tap, pan);
-  }, [onPress, value, startVal, minValue, maxValue, invertDrag, onChange, isAuto, disabled, variant]);
+  }, [onPress, value, startVal, minValue, maxValue, invertDrag, onChange, isAuto, disabled, variant, SCREEN_WIDTH]);
 
   return {
     combinedGesture,
