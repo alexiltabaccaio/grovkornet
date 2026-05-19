@@ -9,6 +9,7 @@ import Animated from 'react-native-reanimated';
 import { useTranslation } from 'react-i18next';
 import { ParameterControl } from './ParameterControl';
 import { SliderExtension } from './SliderExtension';
+import { ParameterExtensionWrapper } from './ParameterExtensionWrapper';
 
 import { LanguageSubPanel } from './sections/system/preferences/language/LanguageSubPanel';
 import { DebugSubPanel } from './sections/system/preferences/debug/DebugSubPanel';
@@ -25,11 +26,10 @@ interface SubParameterPanelProps {
 export const SubParameterPanel = ({ translateY }: SubParameterPanelProps) => {
   const { t } = useTranslation();
   
-  const { activeParameter, activeSubParameter, setActiveSubParameter, isDebugEnabled } = useUIStore(useShallow(state => ({
+  const { activeParameter, activeSubParameter, setActiveSubParameter } = useUIStore(useShallow(state => ({
     activeParameter: state.activeParameter,
     activeSubParameter: state.activeSubParameter,
     setActiveSubParameter: state.setActiveSubParameter,
-    isDebugEnabled: state.isDebugEnabled,
   })));
 
   const {
@@ -171,29 +171,24 @@ export const SubParameterPanel = ({ translateY }: SubParameterPanelProps) => {
     case 'torch':
       return (
         <View style={styles.container}>
-          <Animated.View style={[styles.parameterExtensionContainer, parameterExtensionAnimatedStyle]}>
-            <View style={[
-              styles.debugWrapper,
-              isDebugEnabled && { backgroundColor: 'rgba(0, 255, 0, 0.2)', borderWidth: 1, borderColor: 'green' }
-            ]}>
-              <ParameterControl
-                label=""
-                isActive={false}
-                hideDebugRectangles={true}
-                onPress={() => {
-                  setTorchState(torchState.value === 0 ? 1 : 0);
-                }}
-                value={torchState}
-                variant="text"
-                renderValue={true}
-                isToggle={true}
-                valueFormatter={(v) => {
-                  'worklet';
-                  return v === 0 ? 'OFF' : 'ON';
-                }}
-              />
-            </View>
-          </Animated.View>
+          <ParameterExtensionWrapper animatedStyle={parameterExtensionAnimatedStyle}>
+            <ParameterControl
+              label=""
+              isActive={false}
+              hideDebugRectangles={true}
+              onPress={() => {
+                setTorchState(torchState.value === 0 ? 1 : 0);
+              }}
+              value={torchState}
+              variant="text"
+              renderValue={true}
+              isToggle={true}
+              valueFormatter={(v) => {
+                'worklet';
+                return v === 0 ? 'OFF' : 'ON';
+              }}
+            />
+          </ParameterExtensionWrapper>
           <Animated.View style={[styles.childSubContainer, animatedStyle]}>
             <ParameterControl
               label={t('parameters.torch_dimmer')}
@@ -256,17 +251,6 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     alignItems: 'center',
     width: '100%',
-  },
-  parameterExtensionContainer: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    width: '100%',
-    paddingTop: 5,
-    paddingBottom: 5,
-  },
-  debugWrapper: {
-    width: '100%',
-    justifyContent: 'center',
   },
   childSubContainer: {
     flexDirection: 'row',

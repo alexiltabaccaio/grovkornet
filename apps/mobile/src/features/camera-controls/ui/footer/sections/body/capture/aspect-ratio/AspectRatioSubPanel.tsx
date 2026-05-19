@@ -1,9 +1,9 @@
 import React from 'react';
-import { StyleSheet, StyleProp, ViewStyle, View, Pressable } from 'react-native';
+import { StyleSheet, StyleProp, ViewStyle, Pressable } from 'react-native';
 import Animated, { useAnimatedStyle, SharedValue } from 'react-native-reanimated';
 import { useShallow } from 'zustand/react/shallow';
 import { useHardwareStore } from '@features/camera-controls/model/useHardwareStore';
-import { useUIStore } from '@features/camera-controls/model/useUIStore';
+import { ParameterExtensionWrapper } from '@features/camera-controls/ui/footer/ParameterExtensionWrapper';
 
 interface AspectRatioSubPanelProps {
   parameterExtensionAnimatedStyle?: StyleProp<ViewStyle>;
@@ -51,66 +51,31 @@ const RatioButton = ({ label, index, aspectRatio, setAspectRatio }: RatioButtonP
 };
 
 export const AspectRatioSubPanel = ({ parameterExtensionAnimatedStyle }: AspectRatioSubPanelProps) => {
-  const isDebugEnabled = useUIStore(state => state.isDebugEnabled);
   const { aspectRatio, setAspectRatio } = useHardwareStore(useShallow(state => ({
     aspectRatio: state.aspectRatio,
     setAspectRatio: state.setAspectRatio,
   })));
 
   return (
-    <View style={styles.container}>
-      <Animated.View 
-        style={[
-          styles.parameterExtensionContainer, 
-          parameterExtensionAnimatedStyle,
-        ]}
-      >
-        <View style={[
-          styles.debugWrapper,
-          isDebugEnabled && { backgroundColor: 'rgba(0, 255, 0, 0.2)', borderWidth: 1, borderColor: 'green' }
-        ]}>
-          <View style={styles.buttonRow}>
-            {ASPECT_RATIOS.map((label, index) => (
-              <RatioButton
-                key={index}
-                label={label}
-                index={index}
-                aspectRatio={aspectRatio}
-                setAspectRatio={setAspectRatio}
-              />
-            ))}
-          </View>
-        </View>
-      </Animated.View>
-    </View>
+    <ParameterExtensionWrapper
+      animatedStyle={parameterExtensionAnimatedStyle}
+      gap={8}
+      paddingHorizontal={16}
+    >
+      {ASPECT_RATIOS.map((label, index) => (
+        <RatioButton
+          key={index}
+          label={label}
+          index={index}
+          aspectRatio={aspectRatio}
+          setAspectRatio={setAspectRatio}
+        />
+      ))}
+    </ParameterExtensionWrapper>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flexDirection: 'column',
-    alignItems: 'center',
-    width: '100%',
-  },
-  parameterExtensionContainer: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    width: '100%',
-    paddingTop: 5,
-    paddingBottom: 5,
-  },
-  debugWrapper: {
-    width: '100%',
-    justifyContent: 'center',
-  },
-  buttonRow: {
-    flexDirection: 'row',
-    gap: 8,
-    justifyContent: 'center',
-    alignItems: 'center',
-    width: '100%',
-    paddingHorizontal: 16,
-  },
   pressable: {
     flex: 1,
     maxWidth: 65,

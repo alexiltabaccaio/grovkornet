@@ -1,9 +1,9 @@
 import React from 'react';
-import { StyleSheet, StyleProp, ViewStyle, View, Pressable } from 'react-native';
+import { StyleSheet, StyleProp, ViewStyle, Pressable } from 'react-native';
 import Animated, { useAnimatedStyle, SharedValue } from 'react-native-reanimated';
 import { useShallow } from 'zustand/react/shallow';
 import { useStylesStore } from '@features/camera-controls/model/useStylesStore';
-import { useUIStore } from '@features/camera-controls/model/useUIStore';
+import { ParameterExtensionWrapper } from '@features/camera-controls/ui/footer/ParameterExtensionWrapper';
 
 interface NoiseReductionSubPanelProps {
   parameterExtensionAnimatedStyle?: StyleProp<ViewStyle>;
@@ -99,7 +99,6 @@ const ModeButton = ({
 };
 
 export const NoiseReductionSubPanel = ({ parameterExtensionAnimatedStyle }: NoiseReductionSubPanelProps) => {
-  const isDebugEnabled = useUIStore(state => state.isDebugEnabled);
   const { noiseReductionMode, setNoiseReductionMode, noiseReductionAuto, setNoiseReductionAuto } = useStylesStore(useShallow(state => ({
     noiseReductionMode: state.noiseReductionMode,
     setNoiseReductionMode: state.setNoiseReductionMode,
@@ -108,79 +107,40 @@ export const NoiseReductionSubPanel = ({ parameterExtensionAnimatedStyle }: Nois
   })));
 
   return (
-    <View style={styles.container}>
-      {/* Parameter Extension: Righe dei pulsanti di selezione (sempre visibili a -35px) */}
-      <Animated.View 
-        style={[
-          styles.parameterExtensionContainer, 
-          parameterExtensionAnimatedStyle,
-        ]}
-      >
-        <View style={[
-          styles.debugWrapper,
-          isDebugEnabled && { backgroundColor: 'rgba(0, 255, 0, 0.2)', borderWidth: 1, borderColor: 'green' }
-        ]}>
-          <View style={styles.buttonRow}>
-            <AutoButton
-              noiseReductionAuto={noiseReductionAuto}
-              setNoiseReductionAuto={setNoiseReductionAuto}
-            />
-            <ModeButton
-              label="OFF"
-              modeValue={0}
-              noiseReductionMode={noiseReductionMode}
-              noiseReductionAuto={noiseReductionAuto}
-              setNoiseReductionMode={setNoiseReductionMode}
-              setNoiseReductionAuto={setNoiseReductionAuto}
-            />
-            <ModeButton
-              label="FAST"
-              modeValue={1}
-              noiseReductionMode={noiseReductionMode}
-              noiseReductionAuto={noiseReductionAuto}
-              setNoiseReductionMode={setNoiseReductionMode}
-              setNoiseReductionAuto={setNoiseReductionAuto}
-            />
-            <ModeButton
-              label="HQ"
-              modeValue={2}
-              noiseReductionMode={noiseReductionMode}
-              noiseReductionAuto={noiseReductionAuto}
-              setNoiseReductionMode={setNoiseReductionMode}
-              setNoiseReductionAuto={setNoiseReductionAuto}
-            />
-          </View>
-        </View>
-      </Animated.View>
-    </View>
+    <ParameterExtensionWrapper animatedStyle={parameterExtensionAnimatedStyle}>
+      <AutoButton
+        noiseReductionAuto={noiseReductionAuto}
+        setNoiseReductionAuto={setNoiseReductionAuto}
+      />
+      <ModeButton
+        label="OFF"
+        modeValue={0}
+        noiseReductionMode={noiseReductionMode}
+        noiseReductionAuto={noiseReductionAuto}
+        setNoiseReductionMode={setNoiseReductionMode}
+        setNoiseReductionAuto={setNoiseReductionAuto}
+      />
+      <ModeButton
+        label="FAST"
+        modeValue={1}
+        noiseReductionMode={noiseReductionMode}
+        noiseReductionAuto={noiseReductionAuto}
+        setNoiseReductionMode={setNoiseReductionMode}
+        setNoiseReductionAuto={setNoiseReductionAuto}
+      />
+      <ModeButton
+        label="HQ"
+        modeValue={2}
+        noiseReductionMode={noiseReductionMode}
+        noiseReductionAuto={noiseReductionAuto}
+        setNoiseReductionMode={setNoiseReductionMode}
+        setNoiseReductionAuto={setNoiseReductionAuto}
+      />
+    </ParameterExtensionWrapper>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flexDirection: 'column',
-    alignItems: 'center',
-    width: '100%',
-  },
-  parameterExtensionContainer: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    width: '100%',
-    paddingTop: 5,
-    paddingBottom: 5,
-  },
-  debugWrapper: {
-    width: '100%',
-    justifyContent: 'center',
-  },
-  buttonRow: {
-    flexDirection: 'row',
-    gap: 12,
-    justifyContent: 'center',
-    alignItems: 'center',
-    width: '100%',
-    paddingHorizontal: 24,
-  },
   autoPressable: {
     width: 32,
   },
