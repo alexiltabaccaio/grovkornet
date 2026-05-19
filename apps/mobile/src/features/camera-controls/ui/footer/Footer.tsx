@@ -37,7 +37,7 @@ export const Footer = ({ translateY: externalTranslateY, drawerAnimation: extern
   useEffect(() => {
     if (activeSection === 'none') {
       // Chiudi il cassetto
-      translateY.value = 0; // reset the pan gesture
+      translateY.value = withTiming(0, { duration: 300 }); // reset the pan gesture con animazione
       drawerAnimation.value = withTiming(250, { duration: 300 }); // push it down to hide
     } else {
       // Apri il cassetto
@@ -157,6 +157,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     backgroundColor: 'transparent',
+    zIndex: 1,
   },
   unifiedBackgroundClosed: {
     top: 0,
@@ -171,6 +172,8 @@ const styles = StyleSheet.create({
     width: '100%',
     position: 'absolute',
     bottom: -340, // -400 + 60px (altezza tab)
+    zIndex: 5,
+    elevation: 5,
   },
 
   topFooter: {

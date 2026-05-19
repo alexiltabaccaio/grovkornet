@@ -44,6 +44,8 @@ export const FooterSections = () => {
               key={section.id}
               style={[styles.tabButton, isDebugEnabled && styles.debugTabButton]}
               onPress={() => handleSectionChange(section.id)}
+              accessibilityLabel={t(`sections.${section.id}`)}
+              accessibilityRole="tab"
             >
               {isDebugEnabled && (
                 <View style={styles.debugHitbox} pointerEvents="none" />
@@ -65,23 +67,27 @@ export const FooterSections = () => {
 
 const styles = StyleSheet.create({
   bottomFooterWrapper: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
     height: 80,
-    backgroundColor: 'transparent',
+    backgroundColor: 'black',
     borderTopWidth: 1,
     borderTopColor: '#222',
     justifyContent: 'center',
     overflow: 'hidden',
+    zIndex: 10,
+    elevation: 10,
   },
 
   scrollContent: {
     flexDirection: 'row',
-    justifyContent: 'space-around',
-    alignItems: 'center',
-    minWidth: '100%',
-    paddingHorizontal: 10,
+    flexGrow: 1,
   },
   tabButton: {
     flex: 1,
+    height: '100%',
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -97,7 +103,7 @@ const styles = StyleSheet.create({
   },
   debugTabButton: {
     borderWidth: 1,
-    borderColor: 'yellow',
+    borderColor: 'orange',
   },
   debugHitbox: {
     position: 'absolute',

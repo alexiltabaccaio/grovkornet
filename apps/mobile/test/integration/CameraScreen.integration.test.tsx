@@ -27,13 +27,13 @@ describe('CameraScreen Integration', () => {
   });
 
   it('renders correctly and handles section switching', async () => {
-    const { getByText, queryByText } = render(<CameraScreen />);
+    const { getByLabelText, getByText, queryByText } = render(<CameraScreen />);
 
     // Wait for permissions to be resolved (mocked as granted)
     await waitFor(() => expect(queryByText('camera.requesting_permissions')).toBeNull());
 
     // Check if Footer sections are present
-    const exposureSection = getByText(/sections\.body/i) as unknown as { props: unknown };
+    const exposureSection = getByLabelText(/sections\.body/i) as unknown as { props: unknown };
     expect(exposureSection).toBeDefined();
 
     // Click on Exposure section
@@ -48,11 +48,11 @@ describe('CameraScreen Integration', () => {
   });
 
   it('updates camera store when interaction happens', () => {
-    const { getByText } = render(<CameraScreen />);
+    const { getByLabelText, getByText } = render(<CameraScreen />);
     
     // Switch to exposure section
     act(() => {
-      fireEvent.press(getByText(/sections\.body/i) as unknown);
+      fireEvent.press(getByLabelText(/sections\.body/i) as unknown);
     });
 
     // Find ISO control

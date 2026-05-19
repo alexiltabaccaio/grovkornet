@@ -28,13 +28,13 @@ describe('FilmEmulationStyles Integration', () => {
   });
 
   it('navigates to Film section and synchronizes grain styles correctly', async () => {
-    const { getByText, queryByText } = render(<CameraScreen />);
+    const { getByLabelText, getByText, queryByText } = render(<CameraScreen />);
 
     // Wait for permissions to be resolved
     await waitFor(() => expect(queryByText('camera.requesting_permissions')).toBeNull());
 
     // Click on Film section in Footer
-    const filmSection = getByText(/sections\.film/i) as unknown as { props: unknown };
+    const filmSection = getByLabelText(/sections\.film/i) as unknown as { props: unknown };
     expect(filmSection).toBeDefined();
 
     act(() => {
