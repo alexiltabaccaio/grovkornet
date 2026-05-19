@@ -77,7 +77,7 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   parameterExtensionContainer: {
-    marginTop: -35, // Sposta il pulsante ulteriormente verso l'alto per avvicinarlo a TORCIA
+    // Sposta il pulsante ulteriormente verso l'alto per avvicinarlo a TORCIA
     justifyContent: 'center',
     alignItems: 'center',
     width: '100%',

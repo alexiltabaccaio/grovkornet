@@ -2,7 +2,6 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useShallow } from 'zustand/react/shallow';
 import { useUIStore } from '@features/camera-controls/model/useUIStore';
-import { useHardwareStore } from '@features/camera-controls/model/useHardwareStore';
 import { ParameterType } from '@shared/types/camera';
 import { ParameterControl } from '@features/camera-controls/ui/footer/ParameterControl';
 

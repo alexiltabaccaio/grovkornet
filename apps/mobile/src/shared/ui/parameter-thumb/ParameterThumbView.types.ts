@@ -26,4 +26,5 @@ export interface ParameterThumbViewProps {
   centerValue?: number;
   onReset?: () => void;
   onToggleAuto?: (active: boolean) => void;
+  onPress?: () => void;
 }

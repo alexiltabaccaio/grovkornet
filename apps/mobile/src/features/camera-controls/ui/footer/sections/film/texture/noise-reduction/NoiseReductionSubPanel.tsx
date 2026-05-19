@@ -1,12 +1,101 @@
 import React from 'react';
 import { StyleSheet, StyleProp, ViewStyle, View, Pressable } from 'react-native';
-import Animated, { useAnimatedStyle } from 'react-native-reanimated';
+import Animated, { useAnimatedStyle, SharedValue } from 'react-native-reanimated';
 import { useShallow } from 'zustand/react/shallow';
 import { useStylesStore } from '@features/camera-controls/model/useStylesStore';
 
 interface NoiseReductionSubPanelProps {
   parameterExtensionAnimatedStyle?: StyleProp<ViewStyle>;
 }
+
+interface AutoButtonProps {
+  noiseReductionAuto: SharedValue<boolean>;
+  setNoiseReductionAuto: (auto: boolean) => void;
+}
+
+const AutoButton = ({ noiseReductionAuto, setNoiseReductionAuto }: AutoButtonProps) => {
+  const animatedStyle = useAnimatedStyle(() => {
+    const isAuto = noiseReductionAuto.value;
+    return {
+      borderColor: isAuto ? '#FF453A' : '#333',
+      backgroundColor: isAuto ? 'rgba(255, 69, 58, 0.15)' : 'rgba(255, 255, 255, 0.04)',
+    };
+  });
+
+  const animatedTextStyle = useAnimatedStyle(() => {
+    const isAuto = noiseReductionAuto.value;
+    return {
+      color: isAuto ? '#FF453A' : '#888',
+    };
+  });
+
+  return (
+    <Pressable
+      onPress={() => {
+        setNoiseReductionAuto(!noiseReductionAuto.value);
+      }}
+      style={styles.autoPressable}
+    >
+      <Animated.View style={[styles.pillButton, animatedStyle]}>
+        <Animated.Text style={[styles.pillText, animatedTextStyle]}>
+          A
+        </Animated.Text>
+      </Animated.View>
+    </Pressable>
+  );
+};
+
+interface ModeButtonProps {
+  label: string;
+  modeValue: number;
+  noiseReductionMode: SharedValue<number>;
+  noiseReductionAuto: SharedValue<boolean>;
+  setNoiseReductionMode: (mode: number) => void;
+  setNoiseReductionAuto: (auto: boolean) => void;
+}
+
+const ModeButton = ({
+  label,
+  modeValue,
+  noiseReductionMode,
+  noiseReductionAuto,
+  setNoiseReductionMode,
+  setNoiseReductionAuto,
+}: ModeButtonProps) => {
+  const animatedStyle = useAnimatedStyle(() => {
+    const isAuto = noiseReductionAuto.value;
+    const isSelected = !isAuto && noiseReductionMode.value === modeValue;
+    return {
+      borderColor: isSelected ? '#FFF' : '#333',
+      backgroundColor: isSelected ? 'rgba(255, 255, 255, 0.12)' : 'rgba(255, 255, 255, 0.04)',
+      opacity: isAuto ? 0.4 : 1,
+    };
+  });
+
+  const animatedTextStyle = useAnimatedStyle(() => {
+    const isAuto = noiseReductionAuto.value;
+    const isSelected = !isAuto && noiseReductionMode.value === modeValue;
+    return {
+      color: isSelected ? '#FFF' : '#888',
+    };
+  });
+
+  return (
+    <Pressable
+      onPress={() => {
+        setNoiseReductionAuto(false);
+        setNoiseReductionMode(modeValue);
+      }}
+      style={styles.pressable}
+    >
+      <Animated.View style={[styles.pillButton, animatedStyle]}>
+        <Animated.Text style={[styles.pillText, animatedTextStyle]}>
+          {label}
+        </Animated.Text>
+      </Animated.View>
+    </Pressable>
+  );
+};
 
 export const NoiseReductionSubPanel = ({ parameterExtensionAnimatedStyle }: NoiseReductionSubPanelProps) => {
   const { noiseReductionMode, setNoiseReductionMode, noiseReductionAuto, setNoiseReductionAuto } = useStylesStore(useShallow(state => ({
@@ -16,83 +105,39 @@ export const NoiseReductionSubPanel = ({ parameterExtensionAnimatedStyle }: Nois
     setNoiseReductionAuto: state.setNoiseReductionAuto,
   })));
 
-  const renderAutoButton = () => {
-    const animatedStyle = useAnimatedStyle(() => {
-      const isAuto = noiseReductionAuto.value;
-      return {
-        borderColor: isAuto ? '#FF453A' : '#333',
-        backgroundColor: isAuto ? 'rgba(255, 69, 58, 0.15)' : 'rgba(255, 255, 255, 0.04)',
-      };
-    });
-
-    const animatedTextStyle = useAnimatedStyle(() => {
-      const isAuto = noiseReductionAuto.value;
-      return {
-        color: isAuto ? '#FF453A' : '#888',
-      };
-    });
-
-    return (
-      <Pressable
-        onPress={() => {
-          setNoiseReductionAuto(!noiseReductionAuto.value);
-        }}
-        style={styles.autoPressable}
-      >
-        <Animated.View style={[styles.pillButton, animatedStyle]}>
-          <Animated.Text style={[styles.pillText, animatedTextStyle]}>
-            A
-          </Animated.Text>
-        </Animated.View>
-      </Pressable>
-    );
-  };
-
-  const renderButton = (label: string, modeValue: number) => {
-    const animatedStyle = useAnimatedStyle(() => {
-      const isAuto = noiseReductionAuto.value;
-      const isSelected = !isAuto && noiseReductionMode.value === modeValue;
-      return {
-        borderColor: isSelected ? '#FFF' : '#333',
-        backgroundColor: isSelected ? 'rgba(255, 255, 255, 0.12)' : 'rgba(255, 255, 255, 0.04)',
-        opacity: isAuto ? 0.4 : 1,
-      };
-    });
-
-    const animatedTextStyle = useAnimatedStyle(() => {
-      const isAuto = noiseReductionAuto.value;
-      const isSelected = !isAuto && noiseReductionMode.value === modeValue;
-      return {
-        color: isSelected ? '#FFF' : '#888',
-      };
-    });
-
-    return (
-      <Pressable
-        onPress={() => {
-          setNoiseReductionAuto(false);
-          setNoiseReductionMode(modeValue);
-        }}
-        style={styles.pressable}
-      >
-        <Animated.View style={[styles.pillButton, animatedStyle]}>
-          <Animated.Text style={[styles.pillText, animatedTextStyle]}>
-            {label}
-          </Animated.Text>
-        </Animated.View>
-      </Pressable>
-    );
-  };
-
   return (
     <View style={styles.container}>
       {/* Parameter Extension: Righe dei pulsanti di selezione (sempre visibili a -35px) */}
       <Animated.View style={[styles.parameterExtensionContainer, parameterExtensionAnimatedStyle]}>
         <View style={styles.buttonRow}>
-          {renderAutoButton()}
-          {renderButton('OFF', 0)}
-          {renderButton('FAST', 1)}
-          {renderButton('HQ', 2)}
+          <AutoButton
+            noiseReductionAuto={noiseReductionAuto}
+            setNoiseReductionAuto={setNoiseReductionAuto}
+          />
+          <ModeButton
+            label="OFF"
+            modeValue={0}
+            noiseReductionMode={noiseReductionMode}
+            noiseReductionAuto={noiseReductionAuto}
+            setNoiseReductionMode={setNoiseReductionMode}
+            setNoiseReductionAuto={setNoiseReductionAuto}
+          />
+          <ModeButton
+            label="FAST"
+            modeValue={1}
+            noiseReductionMode={noiseReductionMode}
+            noiseReductionAuto={noiseReductionAuto}
+            setNoiseReductionMode={setNoiseReductionMode}
+            setNoiseReductionAuto={setNoiseReductionAuto}
+          />
+          <ModeButton
+            label="HQ"
+            modeValue={2}
+            noiseReductionMode={noiseReductionMode}
+            noiseReductionAuto={noiseReductionAuto}
+            setNoiseReductionMode={setNoiseReductionMode}
+            setNoiseReductionAuto={setNoiseReductionAuto}
+          />
         </View>
       </Animated.View>
     </View>
@@ -106,7 +151,6 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   parameterExtensionContainer: {
-    marginTop: -35,
     justifyContent: 'center',
     alignItems: 'center',
     width: '100%',

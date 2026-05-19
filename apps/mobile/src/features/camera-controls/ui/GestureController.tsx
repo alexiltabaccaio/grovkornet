@@ -1,10 +1,9 @@
 import React, { ReactNode, useMemo } from 'react';
 import { StyleSheet, View, Dimensions } from 'react-native';
-import { useSharedValue, runOnJS } from 'react-native-reanimated';
+import { useSharedValue } from 'react-native-reanimated';
 import { GestureDetector, Gesture } from 'react-native-gesture-handler';
 import { useUIStore } from '@features/camera-controls/model/useUIStore';
 import { useShallow } from 'zustand/react/shallow';
-import { updateSharedValue } from '@shared/lib/reanimated/safeUpdate';
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 const SLIDER_HEIGHT = SCREEN_HEIGHT * 0.3;

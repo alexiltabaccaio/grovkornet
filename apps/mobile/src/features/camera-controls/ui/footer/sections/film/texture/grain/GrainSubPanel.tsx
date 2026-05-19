@@ -95,7 +95,7 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   parameterExtensionContainer: {
-    marginTop: -35, // Avvicina lo slider al pulsante superiore GRAIN
+    // Avvicina lo slider al pulsante superiore GRAIN
     justifyContent: 'center',
     alignItems: 'center',
     width: '100%',

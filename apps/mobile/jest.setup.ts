@@ -82,6 +82,7 @@ jest.mock('expo-modules-core', () => {
 // Mock Gesture Handler extensions
 jest.mock('react-native-gesture-handler', () => {
   const actual = jest.requireActual('react-native-gesture-handler');
+  const React = require('react');
   
   const createChainable = () => {
     const obj: any = {};
@@ -90,10 +91,10 @@ jest.mock('react-native-gesture-handler', () => {
     obj.activeOffsetX = jest.fn(() => obj);
     obj.failOffsetX = jest.fn(() => obj);
     obj.failOffsetY = jest.fn(() => obj);
-    obj.onStart = jest.fn(() => obj);
-    obj.onUpdate = jest.fn(() => obj);
-    obj.onEnd = jest.fn(() => obj);
-    obj.onFinalize = jest.fn(() => obj);
+    obj.onStart = jest.fn((cb) => { obj._onStart = cb; return obj; });
+    obj.onUpdate = jest.fn((cb) => { obj._onUpdate = cb; return obj; });
+    obj.onEnd = jest.fn((cb) => { obj._onEnd = cb; return obj; });
+    obj.onFinalize = jest.fn((cb) => { obj._onFinalize = cb; return obj; });
     obj.minDistance = jest.fn(() => obj);
     obj.numberOfTaps = jest.fn(() => obj);
     obj.enabled = jest.fn(() => obj);
@@ -104,12 +105,36 @@ jest.mock('react-native-gesture-handler', () => {
 
   return {
     ...actual,
-    GestureDetector: ({ children }: any) => children,
+    GestureDetector: ({ children, gesture }: any) => {
+      const findHandler = (g: any): (() => void) | undefined => {
+        if (!g) return undefined;
+        if (typeof g._onEnd === 'function') return g._onEnd;
+        if (typeof g._onStart === 'function') return g._onStart;
+        if (g.gestures && Array.isArray(g.gestures)) {
+          for (const sub of g.gestures) {
+            const h = findHandler(sub);
+            if (h) return h;
+          }
+        }
+        return undefined;
+      };
+
+      const handler = findHandler(gesture);
+      if (handler && React.isValidElement(children)) {
+        return React.cloneElement(children as React.ReactElement<any>, {
+          onPress: handler,
+        });
+      }
+      return children;
+    },
     Gesture: {
       ...actual.Gesture,
       Pan: () => createChainable(),
       Tap: () => createChainable(),
       LongPress: () => createChainable(),
+      Race: (...gestures: any[]) => ({ gestures, type: 'race' }),
+      Simultaneous: (...gestures: any[]) => ({ gestures, type: 'simultaneous' }),
+      Exclusive: (...gestures: any[]) => ({ gestures, type: 'exclusive' }),
     },
   };
 });

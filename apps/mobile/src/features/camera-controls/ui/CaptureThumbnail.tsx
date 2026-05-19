@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { StyleSheet, View, Pressable, Image, ActivityIndicator } from 'react-native';
 import Animated, { useSharedValue, useAnimatedStyle, withRepeat, withTiming, Easing, withSpring } from 'react-native-reanimated';
-import { useUIStore } from '../model/useUIStore';
+import { useUIStore } from '@features/camera-controls/model/useUIStore';
 import { useShallow } from 'zustand/react/shallow';
 import * as MediaLibrary from 'expo-media-library';
 

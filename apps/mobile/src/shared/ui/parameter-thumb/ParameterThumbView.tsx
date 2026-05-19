@@ -20,22 +20,28 @@ export const ParameterThumbView = forwardRef<View, ParameterThumbViewProps>((pro
     value,
     staticText,
     icon,
+    onPress,
+    renderValue,
+    isToggle,
   } = props;
 
   const hasValue = !!value || !!staticText || !!imageSource || !!icon;
+  const isMainParameter = !renderValue && variant !== 'slider' && !isToggle;
 
   if (variant === 'text' && !hasValue) {
     return (
       <Animated.View
         ref={ref}
+        {...({ onPress } as Record<string, unknown>)}
         style={[
           styles.filterThumb,
-          { justifyContent: 'center', height: 48 },
+          isMainParameter && { flex: 1 },
+          { justifyContent: 'center', height: 82 },
           isDebugEnabled && { backgroundColor: 'rgba(0, 255, 0, 0.2)', borderWidth: 1, borderColor: 'green' }
         ]}
       >
         <Text style={[
-          styles.filterText, 
+          styles.filterText,
           isActive && styles.filterTextActive,
           { fontSize: 13, fontWeight: '800', textAlign: 'center', minHeight: undefined }
         ]}>
@@ -48,15 +54,17 @@ export const ParameterThumbView = forwardRef<View, ParameterThumbViewProps>((pro
   return (
     <Animated.View
       ref={ref}
+      {...({ onPress } as Record<string, unknown>)}
       style={[
         styles.filterThumb,
+        isMainParameter && { flex: 1 },
         variant === 'slider' && { width: '100%', alignItems: 'center' },
         isDebugEnabled && { backgroundColor: 'rgba(0, 255, 0, 0.2)', borderWidth: 1, borderColor: 'green' }
       ]}
     >
       {!!label && (
         <Text style={[
-          styles.filterText, 
+          styles.filterText,
           isActive && styles.filterTextActive,
           !isActive && !!imageSource && { opacity: 0.3 },
           { marginBottom: 6, minHeight: undefined },

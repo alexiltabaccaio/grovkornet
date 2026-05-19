@@ -35,7 +35,7 @@ jest.mock('../../ParameterControl', () => ({
 interface MockControlInstance {
   props: {
     label: string;
-    value: { value: number };
+    onPress: () => void;
   };
 }
 
@@ -49,11 +49,13 @@ describe('TextureModule', () => {
     expect(toJSON()).toBeDefined();
   });
 
-  it('passes grainIntensity to Grain ParameterControl', () => {
+  it('passes handlePressWithDouble to Grain control', () => {
     const { UNSAFE_getAllByType } = render(<TextureModule {...mockProps} />);
     const controls = UNSAFE_getAllByType('ParameterControl' as unknown as React.ComponentType);
     const grainControl = controls.find((c) => (c as unknown as MockControlInstance).props.label === 'parameters.grain') as unknown as MockControlInstance | undefined;
+    
     expect(grainControl).toBeDefined();
-    expect(grainControl!.props.value).toEqual({ value: 0.5 });
+    grainControl!.props.onPress();
+    expect(mockProps.handlePressWithDouble).toHaveBeenCalledWith('grain', expect.any(Function));
   });
 });

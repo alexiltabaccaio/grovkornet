@@ -1,5 +1,4 @@
-import React, { useEffect, useMemo } from 'react';
-import { useSharedValue } from 'react-native-reanimated';
+import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useShallow } from 'zustand/react/shallow';
 import { useUIStore } from '@features/camera-controls/model/useUIStore';

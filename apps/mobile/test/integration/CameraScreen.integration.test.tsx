@@ -58,6 +58,11 @@ describe('CameraScreen Integration', () => {
     // Find ISO control
     const isoControl = getByText(/parameters\.iso/i) as unknown as { props: unknown };
     
+    // Reset active parameter to none to test activation on press
+    act(() => {
+      useUIStore.getState().setActiveParameter('none');
+    });
+
     // Simulate press on ISO control to make it active
     fireEvent.press(isoControl);
     expect(useUIStore.getState().activeParameter).toBe('iso');

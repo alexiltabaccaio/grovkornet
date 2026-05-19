@@ -3,7 +3,6 @@ import { StyleSheet } from 'react-native';
 export const styles = StyleSheet.create({
   filterThumb: {
     alignItems: 'center',
-    marginHorizontal: 12,
     backgroundColor: 'transparent',
   },
   filterPlaceholder: {
@@ -83,9 +82,9 @@ export const styles = StyleSheet.create({
     zIndex: 2,
   },
   pillButton: {
-    borderRadius: 14,
+    height: 32,
+    borderRadius: 16,
     paddingHorizontal: 12,
-    paddingVertical: 5,
     borderWidth: 1,
     minWidth: 56,
     justifyContent: 'center',

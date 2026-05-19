@@ -94,6 +94,7 @@ export const ParameterControl = ({
         centerValue={centerValue}
         onReset={onReset}
         onToggleAuto={onToggleAuto}
+        onPress={onPress}
       />
     </GestureDetector>
   );

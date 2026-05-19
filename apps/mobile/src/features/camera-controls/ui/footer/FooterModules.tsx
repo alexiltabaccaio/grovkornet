@@ -93,7 +93,7 @@ const styles = StyleSheet.create({
   container: {
     paddingHorizontal: 16,
     paddingTop: 0,
-    marginBottom: 10,
+    marginBottom: 0,
   },
   sectionHeaderFrame: {
     width: '100%',

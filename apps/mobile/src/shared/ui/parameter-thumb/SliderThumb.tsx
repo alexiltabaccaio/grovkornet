@@ -1,9 +1,9 @@
 import { View, StyleSheet, TextInput, Pressable } from 'react-native';
-import Animated, { 
-  useAnimatedStyle, 
-  useAnimatedProps, 
-  useSharedValue, 
-  interpolate, 
+import Animated, {
+  useAnimatedStyle,
+  useAnimatedProps,
+  useSharedValue,
+  interpolate,
   Extrapolation,
   runOnJS
 } from 'react-native-reanimated';
@@ -35,13 +35,13 @@ export const SliderThumb = ({
       }
     });
 
-  const animatedTextProps = useAnimatedProps(() => {
+  const animatedTextProps = useAnimatedProps((): Record<string, unknown> => {
     if (!value) return { text: '' };
     const val = valueFormatter ? valueFormatter(value.value) : Math.round(value.value).toString();
     return {
       text: val,
       defaultValue: val,
-    } as any;
+    };
   });
 
   const animatedFillStyle = useAnimatedStyle(() => {
@@ -143,7 +143,7 @@ export const SliderThumb = ({
   return (
     <View style={styles.container}>
       {isAuto && (onReset || onToggleAuto) && (
-        <Pressable 
+        <Pressable
           onPress={() => {
             const active = isAuto.value;
             if (active) {
@@ -170,7 +170,7 @@ export const SliderThumb = ({
         </Pressable>
       )}
 
-      <View 
+      <View
         style={styles.trackContainer}
         onLayout={(e) => {
           trackWidth.value = e.nativeEvent.layout.width;
@@ -180,7 +180,7 @@ export const SliderThumb = ({
         <Animated.View style={[styles.trackFill, animatedFillStyle, animatedFillBgStyle]} />
         <Animated.View style={[styles.thumb, animatedThumbStyle]} />
       </View>
-      
+
       <GestureDetector gesture={doubleTap}>
         <Animated.View style={styles.valueTextContainer}>
           <AnimatedTextInput
@@ -201,6 +201,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     width: '100%',
     paddingHorizontal: 24,
+    height: 32,
   },
   trackContainer: {
     flex: 1,

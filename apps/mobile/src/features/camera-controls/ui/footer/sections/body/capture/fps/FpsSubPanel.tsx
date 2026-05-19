@@ -1,12 +1,50 @@
 import React from 'react';
 import { StyleSheet, StyleProp, ViewStyle, View, Pressable } from 'react-native';
-import Animated, { useAnimatedStyle } from 'react-native-reanimated';
+import Animated, { useAnimatedStyle, SharedValue } from 'react-native-reanimated';
 import { useShallow } from 'zustand/react/shallow';
 import { useHardwareStore } from '@features/camera-controls/model/useHardwareStore';
 
 interface FpsSubPanelProps {
   parameterExtensionAnimatedStyle?: StyleProp<ViewStyle>;
 }
+
+interface FpsButtonProps {
+  val: number;
+  fpsSetting: SharedValue<number>;
+  setFpsSetting: (val: number) => void;
+}
+
+const FpsButton = ({ val, fpsSetting, setFpsSetting }: FpsButtonProps) => {
+  const animatedStyle = useAnimatedStyle(() => {
+    const isSelected = Math.round(fpsSetting.value) === val;
+    return {
+      borderColor: isSelected ? '#FFF' : '#333',
+      backgroundColor: isSelected ? 'rgba(255, 255, 255, 0.12)' : 'rgba(255, 255, 255, 0.04)',
+    };
+  });
+
+  const animatedTextStyle = useAnimatedStyle(() => {
+    const isSelected = Math.round(fpsSetting.value) === val;
+    return {
+      color: isSelected ? '#FFF' : '#888',
+    };
+  });
+
+  return (
+    <Pressable
+      onPress={() => {
+        setFpsSetting(val);
+      }}
+      style={styles.pressable}
+    >
+      <Animated.View style={[styles.pillButton, animatedStyle]}>
+        <Animated.Text style={[styles.pillText, animatedTextStyle]}>
+          {val}
+        </Animated.Text>
+      </Animated.View>
+    </Pressable>
+  );
+};
 
 export const FpsSubPanel = ({ parameterExtensionAnimatedStyle }: FpsSubPanelProps) => {
   const { fpsSetting, setFpsSetting, capabilities } = useHardwareStore(useShallow(state => ({
@@ -18,44 +56,18 @@ export const FpsSubPanel = ({ parameterExtensionAnimatedStyle }: FpsSubPanelProp
   const maxFps = capabilities.maxFps ?? 60;
   const fpsOptions = [24, 30, 60].filter(f => f <= maxFps);
 
-  const renderButton = (val: number) => {
-    const animatedStyle = useAnimatedStyle(() => {
-      const isSelected = Math.round(fpsSetting.value) === val;
-      return {
-        borderColor: isSelected ? '#FFF' : '#333',
-        backgroundColor: isSelected ? 'rgba(255, 255, 255, 0.12)' : 'rgba(255, 255, 255, 0.04)',
-      };
-    });
-
-    const animatedTextStyle = useAnimatedStyle(() => {
-      const isSelected = Math.round(fpsSetting.value) === val;
-      return {
-        color: isSelected ? '#FFF' : '#888',
-      };
-    });
-
-    return (
-      <Pressable
-        key={val}
-        onPress={() => {
-          setFpsSetting(val);
-        }}
-        style={styles.pressable}
-      >
-        <Animated.View style={[styles.pillButton, animatedStyle]}>
-          <Animated.Text style={[styles.pillText, animatedTextStyle]}>
-            {val}
-          </Animated.Text>
-        </Animated.View>
-      </Pressable>
-    );
-  };
-
   return (
     <View style={styles.container}>
       <Animated.View style={[styles.parameterExtensionContainer, parameterExtensionAnimatedStyle]}>
         <View style={styles.buttonRow}>
-          {fpsOptions.map(renderButton)}
+          {fpsOptions.map(val => (
+            <FpsButton
+              key={val}
+              val={val}
+              fpsSetting={fpsSetting}
+              setFpsSetting={setFpsSetting}
+            />
+          ))}
         </View>
       </Animated.View>
     </View>
@@ -69,7 +81,6 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   parameterExtensionContainer: {
-    marginTop: -35,
     justifyContent: 'center',
     alignItems: 'center',
     width: '100%',

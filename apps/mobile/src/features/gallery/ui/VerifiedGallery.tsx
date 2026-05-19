@@ -66,16 +66,16 @@ export const VerifiedGallery = ({ onClose, initialUri }: VerifiedGalleryProps) =
         setPermissionGranted(true);
 
         console.log('[Gallery] Fetching Grovkornet album with timeout...');
-        const albumTimeout = new Promise<any>((_, reject) => 
+        const albumTimeout = new Promise<never>((_, reject) => 
           setTimeout(() => reject(new Error('ALBUM_TIMEOUT')), 2500)
         );
         const album = await Promise.race([
           MediaLibrary.getAlbumAsync('Grovkornet'),
           albumTimeout
-        ]) as any;
+        ]);
 
         let media: MediaLibrary.Asset[] = [];
-        const assetsTimeout = new Promise<any>((_, reject) => 
+        const assetsTimeout = new Promise<never>((_, reject) => 
           setTimeout(() => reject(new Error('ASSETS_TIMEOUT')), 3000)
         );
 
@@ -88,7 +88,7 @@ export const VerifiedGallery = ({ onClose, initialUri }: VerifiedGalleryProps) =
               mediaType: MediaLibrary.MediaType.photo,
             }),
             assetsTimeout
-          ]) as any;
+          ]);
           media = result.assets;
         } else {
           const result = await Promise.race([
@@ -98,7 +98,7 @@ export const VerifiedGallery = ({ onClose, initialUri }: VerifiedGalleryProps) =
               mediaType: MediaLibrary.MediaType.photo,
             }),
             assetsTimeout
-          ]) as any;
+          ]);
           media = result.assets;
         }
 

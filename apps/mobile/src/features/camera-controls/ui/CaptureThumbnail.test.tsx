@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, fireEvent } from '@testing-library/react-native';
 import { CaptureThumbnail } from './CaptureThumbnail';
-import { useUIStore } from '../model/useUIStore';
+import { useUIStore } from '@features/camera-controls/model/useUIStore';
 
 describe('CaptureThumbnail', () => {
   beforeEach(() => {

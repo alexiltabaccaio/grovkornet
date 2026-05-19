@@ -171,14 +171,14 @@ const styles = StyleSheet.create({
   topFooterContainer: {
     width: '100%',
     position: 'absolute',
-    bottom: -340, // -400 + 60px (altezza tab)
+    bottom: -323, // Calcolato matematicamente per combaciare perfettamente con le sezioni rosse
     zIndex: 5,
     elevation: 5,
   },
 
   topFooter: {
     paddingTop: 0,
-    height: 160,
+    height: 147,
   },
 
 
