@@ -73,12 +73,12 @@ const CameraScreenContent = () => {
 
       {isDebugEnabled && <DebugOverlay />}
       
-      <View style={styles.shutterContainer} pointerEvents="box-none">
+      <View style={styles.bottomControlsContainer} pointerEvents="box-none">
+        <View style={styles.sideControl} pointerEvents="box-none">
+          <CaptureThumbnail onPress={() => setIsGalleryOpen(true)} />
+        </View>
         <ShutterButton onPress={triggerCapture} translateY={footerTranslateY} />
-      </View>
-
-      <View style={styles.thumbnailContainer} pointerEvents="box-none">
-        <CaptureThumbnail onPress={() => setIsGalleryOpen(true)} />
+        <View style={styles.sideControl} pointerEvents="box-none" />
       </View>
 
       <Footer translateY={footerTranslateY} />
@@ -93,20 +93,20 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: 'black',
   },
-  shutterContainer: {
+  bottomControlsContainer: {
     position: 'absolute',
     bottom: 100,
     left: 0,
     right: 0,
+    flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     zIndex: 50,
   },
-  thumbnailContainer: {
-    position: 'absolute',
-    bottom: 217,
-    left: 30,
-    zIndex: 60,
+  sideControl: {
+    width: 80,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   center: {
     flex: 1,

@@ -2,6 +2,7 @@ package com.grovkornet.nativefilmcamera.logic
 
 import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.BitmapRegionDecoder
 import android.graphics.Color
 import android.graphics.Rect
@@ -137,6 +138,7 @@ object WatermarkEngine {
      */
     fun addExifMetadata(context: Context, uri: Uri) {
         try {
+            // Android 10+ requires using FileDescriptor for editing EXIF on MediaStore URIs
             context.contentResolver.openFileDescriptor(uri, "rw")?.use { pfd ->
                 val exif = ExifInterface(pfd.fileDescriptor)
                 exif.setAttribute(ExifInterface.TAG_SOFTWARE, "Grovkornet")
@@ -153,44 +155,33 @@ object WatermarkEngine {
      * Uses EXIF fast-pass first, falls back to DCT deep-pass.
      */
     fun verifyGrovkornetAuthenticity(context: Context, uri: Uri): Boolean {
+        Log.i(TAG, "Starting verifyGrovkornetAuthenticity for $uri")
         try {
-            // 1. Fast Pass: Check EXIF
-            var isExifVerified = false
-            context.contentResolver.openFileDescriptor(uri, "r")?.use { pfd ->
-                try {
-                    val exif = ExifInterface(pfd.fileDescriptor)
-                    if (exif.getAttribute(ExifInterface.TAG_SOFTWARE) == "Grovkornet") {
-                        Log.i(TAG, "Authenticity verified via EXIF fast-pass")
-                        isExifVerified = true
+            val tempFile = java.io.File(context.cacheDir, "temp_verify_${System.currentTimeMillis()}.jpg")
+            Log.i(TAG, "Created temp file at ${tempFile.absolutePath}")
+            try {
+                Log.i(TAG, "Opening input stream from ContentResolver")
+                context.contentResolver.openInputStream(uri)?.use { input ->
+                    Log.i(TAG, "Input stream opened, copying to temp file")
+                    tempFile.outputStream().use { output ->
+                        input.copyTo(output)
                     }
-                } catch (e: Exception) {
-                    Log.w(TAG, "EXIF read failed", e)
-                }
-                Unit
-            }
-            if (isExifVerified) return true
-
-            // 2. Deep Pass: Check DCT Watermark
-            // We open a fresh FileDescriptor because ExifInterface advanced the file pointer,
-            // which can cause BitmapRegionDecoder to hang infinitely in native code.
-            context.contentResolver.openFileDescriptor(uri, "r")?.use { pfd ->
-                val decoder = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                    BitmapRegionDecoder.newInstance(pfd.fileDescriptor, false)
-                } else {
-                    @Suppress("DEPRECATION")
-                    BitmapRegionDecoder.newInstance(pfd.fileDescriptor, false)
+                    Log.i(TAG, "Copy complete")
                 }
 
-                if (decoder == null || decoder.width < 64 || decoder.height < 64) {
-                    decoder?.recycle()
+                Log.i(TAG, "Decoding full bitmap to avoid BitmapRegionDecoder hang")
+                val options = BitmapFactory.Options()
+                options.inPreferredConfig = Bitmap.Config.ARGB_8888
+                val bitmap = BitmapFactory.decodeFile(tempFile.absolutePath, options)
+                Log.i(TAG, "BitmapFactory decoded: $bitmap")
+
+                if (bitmap == null || bitmap.width < 64 || bitmap.height < 64) {
+                    Log.w(TAG, "Decoder returned null or image too small")
+                    bitmap?.recycle()
                     return false
                 }
 
-                val bitmap = decoder.decodeRegion(Rect(0, 0, 64, 64), null)
-                decoder.recycle()
-
-                if (bitmap == null) return false
-
+                Log.i(TAG, "Extracting 64x64 region")
                 val pixels = IntArray(64 * 64)
                 bitmap.getPixels(pixels, 0, 64, 0, 0, 64, 64)
                 bitmap.recycle()
@@ -229,6 +220,10 @@ object WatermarkEngine {
 
                 Log.i(TAG, "DCT Verification: $matchingBits / 64 bits matched")
                 return matchingBits >= MATCH_THRESHOLD
+            } finally {
+                if (tempFile.exists()) {
+                    tempFile.delete()
+                }
             }
         } catch (e: Exception) {
             Log.e(TAG, "Authenticity verification failed with exception", e)

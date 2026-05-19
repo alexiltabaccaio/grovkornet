@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, Text, View, FlatList, Image, Pressable, ActivityIndicator, SafeAreaView, Modal } from 'react-native';
+import { StyleSheet, Text, View, FlatList, Image, Pressable, ActivityIndicator, SafeAreaView } from 'react-native';
 import * as MediaLibrary from 'expo-media-library';
 import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
@@ -25,40 +25,94 @@ export const VerifiedGallery = ({ onClose, initialUri }: VerifiedGalleryProps) =
   const [verifying, setVerifying] = useState(false);
   const [permissionGranted, setPermissionGranted] = useState(false);
 
+  // Load photos from MediaLibrary safely
   useEffect(() => {
     const loadPhotos = async () => {
       try {
-        const { status } = await MediaLibrary.requestPermissionsAsync();
+        console.log('[Gallery] Checking MediaLibrary permissions...');
+        const checkPerms = async () => {
+          const current = await MediaLibrary.getPermissionsAsync();
+          if (current.granted) return 'granted';
+          if (current.canAskAgain) {
+            const req = await MediaLibrary.requestPermissionsAsync();
+            return req.status;
+          }
+          return current.status;
+        };
+
+        // Fallback timeout just in case it hangs natively
+        const permTimeout = new Promise<string>((_, reject) => 
+          setTimeout(() => reject(new Error('PERM_TIMEOUT')), 15000)
+        );
+
+        let status = 'denied';
+        try {
+          status = await Promise.race([checkPerms(), permTimeout]);
+        } catch (e) {
+          console.warn('[Gallery] Permissions timeout or error:', e);
+        }
+
         if (status !== 'granted') {
+          console.warn('[Gallery] MediaLibrary permissions not granted or timed out');
+          setPermissionGranted(false);
           setLoading(false);
+          // Fallback: show the captured photo only
+          if (initialUri) {
+            void handleSelectPhoto({ id: 'initial', uri: initialUri });
+          }
           return;
         }
+
         setPermissionGranted(true);
 
-        const album = await MediaLibrary.getAlbumAsync('Grovkornet');
+        console.log('[Gallery] Fetching Grovkornet album with timeout...');
+        const albumTimeout = new Promise<any>((_, reject) => 
+          setTimeout(() => reject(new Error('ALBUM_TIMEOUT')), 2500)
+        );
+        const album = await Promise.race([
+          MediaLibrary.getAlbumAsync('Grovkornet'),
+          albumTimeout
+        ]) as any;
+
         let media: MediaLibrary.Asset[] = [];
+        const assetsTimeout = new Promise<any>((_, reject) => 
+          setTimeout(() => reject(new Error('ASSETS_TIMEOUT')), 3000)
+        );
 
         if (album) {
-          const result = await MediaLibrary.getAssetsAsync({
-            album,
-            first: 50,
-            sortBy: [[MediaLibrary.SortBy.creationTime, false]],
-            mediaType: MediaLibrary.MediaType.photo,
-          });
+          const result = await Promise.race([
+            MediaLibrary.getAssetsAsync({
+              album,
+              first: 50,
+              sortBy: [[MediaLibrary.SortBy.creationTime, false]],
+              mediaType: MediaLibrary.MediaType.photo,
+            }),
+            assetsTimeout
+          ]) as any;
           media = result.assets;
         } else {
-          const result = await MediaLibrary.getAssetsAsync({
-            first: 50,
-            sortBy: [[MediaLibrary.SortBy.creationTime, false]],
-            mediaType: MediaLibrary.MediaType.photo,
-          });
+          const result = await Promise.race([
+            MediaLibrary.getAssetsAsync({
+              first: 50,
+              sortBy: [[MediaLibrary.SortBy.creationTime, false]],
+              mediaType: MediaLibrary.MediaType.photo,
+            }),
+            assetsTimeout
+          ]) as any;
           media = result.assets;
         }
 
-        const items = media.map(asset => ({ id: asset.id, uri: asset.uri }));
+        const items: GalleryItem[] = media.map(asset => ({ id: asset.id, uri: asset.uri }));
+
+        // Insert initialUri (low-res preview or recently captured photo) if not already indexed
+        if (initialUri && !items.find(item => item.uri === initialUri)) {
+          items.unshift({ id: 'preview-temp', uri: initialUri });
+        }
+
         setPhotos(items);
         setLoading(false);
 
+        // Select the initialUri if provided, otherwise the first photo
         if (initialUri) {
           const found = items.find(item => item.uri === initialUri);
           if (found) {
@@ -70,8 +124,9 @@ export const VerifiedGallery = ({ onClose, initialUri }: VerifiedGalleryProps) =
           void handleSelectPhoto(items[0]);
         }
       } catch (error) {
-        console.error('Failed to load photos:', error);
+        console.error('[Gallery] Failed to load photos (graceful fallback):', error);
         setLoading(false);
+        setPermissionGranted(false);
         if (initialUri) {
           void handleSelectPhoto({ id: 'initial', uri: initialUri });
         }
@@ -81,43 +136,43 @@ export const VerifiedGallery = ({ onClose, initialUri }: VerifiedGalleryProps) =
     void loadPhotos();
   }, [initialUri]);
 
+  // Handle image verification using the native call
   const handleSelectPhoto = async (item: GalleryItem) => {
+    console.log('[Gallery] handleSelectPhoto for:', item.uri);
     setSelectedPhoto(item);
-    if (item.isVerified !== undefined) return;
+    if (item.isVerified !== undefined) {
+      return;
+    }
 
     setVerifying(true);
     try {
-      const verified = await verifyGrovkornetAuthenticity(item.uri);
+      console.log('[Gallery] Running real verifyGrovkornetAuthenticity with 5s timeout...');
+      const verifyTimeout = new Promise<boolean>((_, reject) => 
+        setTimeout(() => reject(new Error('VERIFY_TIMEOUT')), 5000)
+      );
+
+      const verified = await Promise.race([
+        verifyGrovkornetAuthenticity(item.uri),
+        verifyTimeout
+      ]);
+
+      console.log('[Gallery] Verification result:', verified);
       setSelectedPhoto(prev => prev?.uri === item.uri ? { ...prev, isVerified: verified } : prev);
       setPhotos(prev => prev.map(p => p.uri === item.uri ? { ...p, isVerified: verified } : p));
     } catch (error) {
-      console.log('Verification error:', error);
+      console.error('[Gallery] Verification error or timeout:', error);
       setSelectedPhoto(prev => prev?.uri === item.uri ? { ...prev, isVerified: false } : prev);
+      setPhotos(prev => prev.map(p => p.uri === item.uri ? { ...p, isVerified: false } : p));
     } finally {
       setVerifying(false);
     }
   };
 
-  if (!permissionGranted && !loading) {
-    return (
-      <Modal visible={true} animationType="slide" transparent={false}>
-        <SafeAreaView style={styles.container}>
-          <View style={styles.header}>
-            <Pressable onPress={onClose} style={styles.closeButton}>
-              <Ionicons name="close" size={28} color="#FFF" />
-            </Pressable>
-          </View>
-          <View style={styles.center}>
-            <Text style={styles.title}>{t('gallery.permission_denied', 'Storage Permission Required')}</Text>
-          </View>
-        </SafeAreaView>
-      </Modal>
-    );
-  }
-
   return (
-    <Modal visible={true} animationType="slide" transparent={false}>
-      <SafeAreaView style={styles.container}>
+    <View style={styles.absoluteContainer}>
+      <SafeAreaView style={styles.safeArea}>
+        
+        {/* Header */}
         <View style={styles.header}>
           <Pressable onPress={onClose} style={styles.closeButton}>
             <Ionicons name="close" size={28} color="#FFF" />
@@ -126,16 +181,27 @@ export const VerifiedGallery = ({ onClose, initialUri }: VerifiedGalleryProps) =
           <View style={styles.placeholder} />
         </View>
 
+        {/* Loading Gallery View */}
         {loading ? (
           <View style={styles.center}>
             <ActivityIndicator size="large" color="#FF9500" />
+            <Text style={styles.loadingText}>{t('gallery.loading', 'Loading gallery...')}</Text>
           </View>
         ) : (
           <View style={styles.content}>
+            
+            {/* Main Preview Area */}
             <View style={styles.previewContainer}>
               {selectedPhoto ? (
                 <View style={styles.previewWrapper}>
-                  <Image source={{ uri: selectedPhoto.uri }} style={styles.previewImage} resizeMethod="resize" />
+                  <Image source={{ uri: selectedPhoto.uri }} style={styles.previewImage} />
+                  
+                  {/* Close Button on top right of the image */}
+                  <Pressable onPress={onClose} style={styles.imageCloseButton}>
+                    <Ionicons name="close" size={24} color="#FFF" />
+                  </Pressable>
+
+                  {/* Authenticity Badge */}
                   {verifying ? (
                     <View style={styles.badgeContainer}>
                       <ActivityIndicator size="small" color="#FF9500" />
@@ -164,48 +230,61 @@ export const VerifiedGallery = ({ onClose, initialUri }: VerifiedGalleryProps) =
               )}
             </View>
 
+            {/* Share Instagram Action */}
             {selectedPhoto && (
               <View style={styles.shareContainer}>
                 <ShareButton uri={selectedPhoto.uri} isVerified={selectedPhoto.isVerified ?? false} />
               </View>
             )}
 
-            <View style={styles.gridContainer}>
-              <FlatList
-                horizontal
-                data={photos}
-                keyExtractor={item => item.id}
-                showsHorizontalScrollIndicator={false}
-                contentContainerStyle={styles.gridContent}
-                renderItem={({ item }) => (
-                  <Pressable
-                    style={[
-                      styles.thumbnailWrapper,
-                      selectedPhoto?.uri === item.uri && styles.thumbnailSelected
-                    ]}
-                    onPress={() => void handleSelectPhoto(item)}
-                  >
-                    <Image source={{ uri: item.uri }} style={styles.thumbnailImage} resizeMethod="resize" />
-                    {item.isVerified === true && (
-                      <View style={styles.miniBadge}>
-                        <Ionicons name="checkmark-circle" size={12} color="#34C759" />
-                      </View>
-                    )}
-                  </Pressable>
-                )}
-              />
-            </View>
+            {/* Media Gallery Strip (only if permissions allowed it) */}
+            {permissionGranted && photos.length > 0 && (
+              <View style={styles.gridContainer}>
+                <FlatList
+                  horizontal
+                  data={photos}
+                  keyExtractor={item => item.id}
+                  showsHorizontalScrollIndicator={false}
+                  contentContainerStyle={styles.gridContent}
+                  renderItem={({ item }) => (
+                    <Pressable
+                      style={[
+                        styles.thumbnailWrapper,
+                        selectedPhoto?.uri === item.uri && styles.thumbnailSelected
+                      ]}
+                      onPress={() => void handleSelectPhoto(item)}
+                    >
+                      <Image source={{ uri: item.uri }} style={styles.thumbnailImage} />
+                      {item.isVerified === true && (
+                        <View style={styles.miniBadge}>
+                          <Ionicons name="checkmark-circle" size={12} color="#34C759" />
+                        </View>
+                      )}
+                    </Pressable>
+                  )}
+                />
+              </View>
+            )}
+            
           </View>
         )}
       </SafeAreaView>
-    </Modal>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
+  absoluteContainer: {
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
     backgroundColor: '#000',
+    zIndex: 999,
+  },
+  safeArea: {
+    flex: 1,
   },
   header: {
     flexDirection: 'row',
@@ -236,6 +315,11 @@ const styles = StyleSheet.create({
     color: '#666',
     fontSize: 16,
   },
+  loadingText: {
+    color: '#FFF',
+    marginTop: 10,
+    fontSize: 14,
+  },
   content: {
     flex: 1,
     justifyContent: 'space-between',
@@ -252,6 +336,7 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     overflow: 'hidden',
     backgroundColor: '#111',
+    position: 'relative',
   },
   previewImage: {
     width: '100%',
@@ -270,6 +355,18 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     borderWidth: 1,
     borderColor: '#444',
+  },
+  imageCloseButton: {
+    position: 'absolute',
+    top: 16,
+    right: 16,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 10,
   },
   badgeVerified: {
     borderColor: 'rgba(52, 199, 89, 0.5)',

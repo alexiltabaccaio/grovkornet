@@ -3,16 +3,53 @@ import { StyleSheet, View, Pressable, Image, ActivityIndicator } from 'react-nat
 import Animated, { useSharedValue, useAnimatedStyle, withRepeat, withTiming, Easing, withSpring } from 'react-native-reanimated';
 import { useUIStore } from '../model/useUIStore';
 import { useShallow } from 'zustand/react/shallow';
+import * as MediaLibrary from 'expo-media-library';
 
 interface CaptureThumbnailProps {
   onPress: () => void;
 }
 
 export const CaptureThumbnail = ({ onPress }: CaptureThumbnailProps) => {
-  const { isCapturing, latestCapturedUri } = useUIStore(useShallow(state => ({
+  const { isCapturing, latestCapturedUri, setLatestCapturedUri } = useUIStore(useShallow(state => ({
     isCapturing: state.isCapturing,
     latestCapturedUri: state.latestCapturedUri,
+    setLatestCapturedUri: state.setLatestCapturedUri,
   })));
+
+  useEffect(() => {
+    if (!latestCapturedUri) {
+      const loadInitialThumbnail = async () => {
+        try {
+          const perms = await MediaLibrary.getPermissionsAsync();
+          if (perms.granted) {
+            const album = await MediaLibrary.getAlbumAsync('Grovkornet');
+            let result;
+            if (album) {
+              result = await MediaLibrary.getAssetsAsync({
+                album,
+                first: 1,
+                sortBy: [[MediaLibrary.SortBy.creationTime, false]],
+                mediaType: MediaLibrary.MediaType.photo,
+              });
+            } else {
+              result = await MediaLibrary.getAssetsAsync({
+                first: 1,
+                sortBy: [[MediaLibrary.SortBy.creationTime, false]],
+                mediaType: MediaLibrary.MediaType.photo,
+              });
+            }
+
+            if (result && result.assets.length > 0) {
+              setLatestCapturedUri(result.assets[0].uri);
+            }
+          }
+        } catch (e) {
+          console.warn('[CaptureThumbnail] Failed to load initial thumbnail', e);
+        }
+      };
+      void loadInitialThumbnail();
+    }
+  }, []);
 
   const rotation = useSharedValue(0);
   const scale = useSharedValue(1);
@@ -39,22 +76,22 @@ export const CaptureThumbnail = ({ onPress }: CaptureThumbnailProps) => {
     transform: [{ scale: scale.value }],
   }));
 
-  if (!isCapturing && !latestCapturedUri) {
-    return <View style={styles.placeholder} />;
-  }
-
   return (
     <Pressable testID="capture-thumbnail" onPress={onPress} style={styles.wrapper}>
-      <Animated.View style={[styles.container, animatedContainerStyle]}>
-        {isCapturing ? (
-          <Animated.View style={[styles.spinnerContainer, animatedSpinnerStyle]}>
-            <View style={styles.spinnerRing} />
-            <ActivityIndicator size="small" color="#FF9500" />
-          </Animated.View>
-        ) : latestCapturedUri ? (
-          <Image source={{ uri: latestCapturedUri }} style={styles.image} />
-        ) : null}
-      </Animated.View>
+      {!isCapturing && !latestCapturedUri ? (
+        <View style={styles.placeholder} />
+      ) : (
+        <Animated.View style={[styles.container, animatedContainerStyle]}>
+          {isCapturing ? (
+            <Animated.View style={[styles.spinnerContainer, animatedSpinnerStyle]}>
+              <View style={styles.spinnerRing} />
+              <ActivityIndicator size="small" color="#FF9500" />
+            </Animated.View>
+          ) : latestCapturedUri ? (
+            <Image source={{ uri: latestCapturedUri }} style={styles.image} />
+          ) : null}
+        </Animated.View>
+      )}
     </Pressable>
   );
 };

@@ -89,6 +89,26 @@ class CapturePipeline(
                 bitmap = cropped
             }
 
+            // 1. Generate and emit a fast low-res preview
+            val previewScale = 512f / maxOf(bitmap.width, bitmap.height)
+            if (previewScale < 1f) {
+                val previewBitmap = Bitmap.createScaledBitmap(bitmap, (bitmap.width * previewScale).toInt(), (bitmap.height * previewScale).toInt(), true)
+                val previewProcessed = offscreenProcessor.process(previewBitmap, config)
+                previewBitmap.recycle()
+                
+                val previewFile = java.io.File(context.cacheDir, "preview_capture_${System.currentTimeMillis()}.jpg")
+                previewFile.outputStream().use { os ->
+                    previewProcessed.compress(Bitmap.CompressFormat.JPEG, 85, os)
+                }
+                previewProcessed.recycle()
+                
+                val previewUri = android.net.Uri.fromFile(previewFile).toString()
+                withContext(Dispatchers.Main) {
+                    listener.onPhotoCaptured(previewUri)
+                }
+            }
+
+            // 2. Process the full-resolution image
             val processed = offscreenProcessor.process(bitmap, config)
             bitmap.recycle()
 
@@ -102,12 +122,7 @@ class CapturePipeline(
                 watermarked.compress(Bitmap.CompressFormat.JPEG, 95, os)
             }
 
-            // Inject EXIF into the temporary file
-            val exif = android.media.ExifInterface(tempFile.absolutePath)
-            exif.setAttribute(android.media.ExifInterface.TAG_SOFTWARE, "Grovkornet")
-            exif.saveAttributes()
-
-            // Save the file with EXIF to the gallery
+            // Save the file to the gallery
             val uri = galleryManager.saveFileToGallery(tempFile)
             watermarked.recycle()
             tempFile.delete()
