@@ -10,15 +10,17 @@ import { SubParameterPanel } from './SubParameterPanel';
 
 import { GestureDetector, Gesture } from 'react-native-gesture-handler';
 import Animated, { useSharedValue, useAnimatedStyle, withTiming, withSpring, useAnimatedProps } from 'react-native-reanimated';
+import { BlurView } from 'expo-blur';
 
 const AnimatedTextInput = Animated.createAnimatedComponent(TextInput);
-
+const AnimatedBlurView = Animated.createAnimatedComponent(BlurView);
 
 interface FooterProps {
   translateY?: Animated.SharedValue<number>;
+  drawerAnimation?: Animated.SharedValue<number>;
 }
 
-export const Footer = ({ translateY: externalTranslateY }: FooterProps) => {
+export const Footer = ({ translateY: externalTranslateY, drawerAnimation: externalDrawerAnimation }: FooterProps) => {
   const { activeSection, isDebugEnabled } = useUIStore(useShallow(state => ({
     activeSection: state.activeSection,
     isDebugEnabled: state.isDebugEnabled,
@@ -28,7 +30,8 @@ export const Footer = ({ translateY: externalTranslateY }: FooterProps) => {
   const localTranslateY = useSharedValue(0);
   const translateY = externalTranslateY || localTranslateY;
   const startY = useSharedValue(0);
-  const drawerAnimation = useSharedValue(220); // 220px is the height of the drawer, starting closed
+  const localDrawerAnimation = useSharedValue(250);
+  const drawerAnimation = externalDrawerAnimation || localDrawerAnimation;
 
 
   useEffect(() => {
@@ -38,6 +41,7 @@ export const Footer = ({ translateY: externalTranslateY }: FooterProps) => {
       drawerAnimation.value = withTiming(250, { duration: 300 }); // push it down to hide
     } else {
       // Apri il cassetto
+      translateY.value = withTiming(-5, { duration: 300 }); // Imposta l'altezza base a -5px con animazione fluida
       drawerAnimation.value = withTiming(0, { duration: 300 });
     }
   }, [activeSection, translateY, drawerAnimation]);
@@ -53,15 +57,15 @@ export const Footer = ({ translateY: externalTranslateY }: FooterProps) => {
       })
       .onUpdate((e) => {
         let newY = startY.value + e.translationY;
-        // Clamp tra aperto e chiuso
+        // Clamp tra aperto e chiuso (ora limitato a -5px come base)
         if (newY < MAX_UP) newY = MAX_UP;
-        if (newY > 0) newY = 0;
+        if (newY > -5) newY = -5;
 
         translateY.value = newY;
       })
       .onEnd((e) => {
         const estimatedY = translateY.value + e.velocityY * 0.1;
-        const snapPoints = [0, -90, MAX_UP];
+        const snapPoints = [-5, -115, MAX_UP];
 
         const targetY = snapPoints.reduce((prev, curr) =>
           Math.abs(curr - estimatedY) < Math.abs(prev - estimatedY) ? curr : prev
@@ -99,8 +103,10 @@ export const Footer = ({ translateY: externalTranslateY }: FooterProps) => {
 
   return (
     <View style={styles.container} pointerEvents="box-none">
-      <View style={[styles.unifiedBackgroundBase, styles.unifiedBackgroundClosed]} pointerEvents="none" />
-      <Animated.View
+      <BlurView intensity={80} tint="dark" style={[styles.unifiedBackgroundBase, styles.unifiedBackgroundClosed]} pointerEvents="none" />
+      <AnimatedBlurView
+        intensity={80}
+        tint="dark"
         style={[
           styles.unifiedBackgroundBase,
           styles.unifiedBackgroundOpen,
@@ -150,7 +156,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     left: 0,
     right: 0,
-    backgroundColor: '#000',
+    backgroundColor: 'transparent',
   },
   unifiedBackgroundClosed: {
     top: 0,

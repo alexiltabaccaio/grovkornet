@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, View, AppState, AppStateStatus, PermissionsAndroid, Platform } from 'react-native';
-import { useSharedValue } from 'react-native-reanimated';
+import Animated, { useSharedValue, useAnimatedStyle, interpolate } from 'react-native-reanimated';
 
 import { useTranslation } from 'react-i18next';
 
@@ -24,6 +24,7 @@ const CameraScreenContent = () => {
   })));
 
   const footerTranslateY = useSharedValue(0);
+  const drawerAnimation = useSharedValue(250);
 
   const [cameraKey, setCameraKey] = useState(0);
   const [isGalleryOpen, setIsGalleryOpen] = useState(false);
@@ -57,6 +58,30 @@ const CameraScreenContent = () => {
     });
   }, []);
 
+  const animatedBottomControlsStyle = useAnimatedStyle(() => {
+    // drawerAnimation goes from 250 (closed) to 0 (open)
+    // footerTranslateY goes from 0 (open) to -250 (pulled up)
+    // Total goes from 250 (closed) to 0 (open) to -250 (pulled up)
+    // We want to fade out the controls as the drawer opens (total goes 250 -> 150)
+    const totalOffset = drawerAnimation.value + footerTranslateY.value;
+    const opacity = interpolate(
+      totalOffset,
+      [250, 150],
+      [1, 0],
+      'clamp'
+    );
+    const translateY = interpolate(
+      totalOffset,
+      [250, 150],
+      [0, 30],
+      'clamp'
+    );
+    return {
+      opacity,
+      transform: [{ translateY }],
+    };
+  });
+
   if (!hasPermission) {
     return (
       <View style={styles.center}>
@@ -75,15 +100,15 @@ const CameraScreenContent = () => {
 
       {isDebugEnabled && <DebugOverlay />}
       
-      <View style={styles.bottomControlsContainer} pointerEvents="box-none">
+      <Animated.View style={[styles.bottomControlsContainer, animatedBottomControlsStyle]} pointerEvents="box-none">
         <View style={styles.sideControl} pointerEvents="box-none">
           <CaptureThumbnail onPress={() => setIsGalleryOpen(true)} />
         </View>
         <ShutterButton onPress={triggerCapture} translateY={footerTranslateY} />
         <View style={styles.sideControl} pointerEvents="box-none" />
-      </View>
+      </Animated.View>
 
-      <Footer translateY={footerTranslateY} />
+      <Footer translateY={footerTranslateY} drawerAnimation={drawerAnimation} />
 
       {isGalleryOpen && <VerifiedGallery onClose={() => setIsGalleryOpen(false)} initialUri={latestCapturedUri} />}
     </View>

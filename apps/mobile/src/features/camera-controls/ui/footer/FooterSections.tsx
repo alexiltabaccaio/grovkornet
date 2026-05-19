@@ -1,7 +1,9 @@
 import React from 'react';
-import { StyleSheet, Text, View, Pressable, ScrollView } from 'react-native';
+import { StyleSheet, View, Pressable, ScrollView } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { SectionType } from '@shared/types/camera';
+import { Ionicons } from '@expo/vector-icons';
+import { BlurView } from 'expo-blur';
 
 import { useShallow } from 'zustand/react/shallow';
 import { useUIStore } from '@features/camera-controls/model/useUIStore';
@@ -19,33 +21,43 @@ export const FooterSections = () => {
     setActiveSection(newSection);
   };
 
-  const sections: { id: SectionType; label: string }[] = [
-    { id: 'system', label: t('sections.system') },
-    { id: 'lens', label: t('sections.lens') },
-    { id: 'body', label: t('sections.body') },
-    { id: 'film', label: t('sections.film') },
+  const sections: { id: SectionType; icon: keyof typeof Ionicons.glyphMap }[] = [
+    { id: 'system', icon: 'settings-outline' },
+    { id: 'lens', icon: 'aperture-outline' },
+    { id: 'body', icon: 'camera-outline' },
+    { id: 'film', icon: 'film-outline' },
   ];
 
   return (
     <View style={styles.bottomFooterWrapper}>
+      <BlurView intensity={80} tint="dark" style={StyleSheet.absoluteFill} />
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
         bounces={true}
       >
-        {sections.map((section) => (
-          <Pressable
-            key={section.id}
-            style={[styles.tabButton, isDebugEnabled && styles.debugTabButton]}
-            onPress={() => handleSectionChange(section.id)}
-          >
-            {isDebugEnabled && (
-              <View style={styles.debugHitbox} pointerEvents="none" />
-            )}
-            <Text style={[styles.tabLabel, activeSection === section.id && styles.tabLabelActive]}>{section.label}</Text>
-          </Pressable>
-        ))}
+        {sections.map((section) => {
+          const isActive = activeSection === section.id;
+          return (
+            <Pressable
+              key={section.id}
+              style={[styles.tabButton, isDebugEnabled && styles.debugTabButton]}
+              onPress={() => handleSectionChange(section.id)}
+            >
+              {isDebugEnabled && (
+                <View style={styles.debugHitbox} pointerEvents="none" />
+              )}
+              <View style={[styles.iconWrapper, isActive && styles.iconWrapperActive]}>
+                <Ionicons 
+                  name={section.icon} 
+                  size={24} 
+                  color={isActive ? '#FF9500' : '#888'} 
+                />
+              </View>
+            </Pressable>
+          );
+        })}
       </ScrollView>
     </View>
   );
@@ -53,9 +65,12 @@ export const FooterSections = () => {
 
 const styles = StyleSheet.create({
   bottomFooterWrapper: {
-    paddingTop: 0,
-    paddingBottom: 0,
-    backgroundColor: '#000',
+    height: 80,
+    backgroundColor: 'transparent',
+    borderTopWidth: 1,
+    borderTopColor: '#222',
+    justifyContent: 'center',
+    overflow: 'hidden',
   },
 
   scrollContent: {
@@ -63,13 +78,22 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
     alignItems: 'center',
     minWidth: '100%',
-    paddingHorizontal: 0,
+    paddingHorizontal: 10,
   },
   tabButton: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 20,
+  },
+  iconWrapper: {
+    paddingHorizontal: 24,
+    paddingVertical: 8,
+    borderRadius: 24,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  iconWrapperActive: {
+    backgroundColor: 'rgba(255, 149, 0, 0.15)',
   },
   debugTabButton: {
     borderWidth: 1,
@@ -84,16 +108,5 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'red',
     backgroundColor: 'rgba(255, 0, 0, 0.2)',
-  },
-  tabLabel: {
-    color: '#666',
-    fontSize: 10,
-    fontWeight: '800',
-    marginTop: 4,
-    letterSpacing: 1,
-    textAlign: 'center',
-  },
-  tabLabelActive: {
-    color: '#FF9500',
   },
 });
