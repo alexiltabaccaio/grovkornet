@@ -14,7 +14,8 @@
 - [ ] **Preview in Alta Definizione (Risoluzione):** Aggiungere un pulsante/sub-parametro al parametro "RISOLUZIONE" che permetta di attivare la preview in alta definizione (es. forzare il feed della fotocamera in 4K invece del Full HD di default). 
   - Aggiungere un popup/avviso: *"Attenzione: richiede alte prestazioni"*.
 - [ ] **Ristrutturazione UI Sub-Parametri:** I sub-parametri non devono più essere considerati come "gemelli" ma come veri e propri **controlli (pulsanti, leve, switch)**. Ogni parametro principale avrà un sub-parametro primario collegato (es. Il parametro "Torcia" avrà un sub-parametro con pulsanti `ON/OFF`).
-
+- [ ] **Adattamento formato**
+ - Attualmente il formato 65:24 non tiene conto della zona nascosta da footer ed header. Ottimizzare quindi i formati perchè siano perfettamente visibili escludendo footer e header dalla zona di visuale.
 ## 📜 Regole e Linee Guida di Progetto
 - **Target:** Play Store / Pubblicazione Ufficiale.
 - **Regola:** È obbligatorio verificare il rispetto del regolamento del Google Play Store e le best practice di sicurezza Android prima di procedere con modifiche (specialmente su permessi, background task e hardware).

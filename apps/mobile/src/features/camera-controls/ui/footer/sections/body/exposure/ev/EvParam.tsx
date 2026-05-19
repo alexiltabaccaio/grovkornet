@@ -24,9 +24,7 @@ export const EvParam = ({ handlePressWithDouble }: EvParamProps) => {
     setActiveParameter: s.setActiveParameter,
   })));
 
-  const { ev, setEv, evAuto, isoAuto, shutterSpeedAuto } = useHardwareStore(useShallow(s => ({
-    ev: s.ev,
-    setEv: s.setEv,
+  const { evAuto, isoAuto, shutterSpeedAuto } = useHardwareStore(useShallow(s => ({
     evAuto: s.evAuto,
     isoAuto: s.isoAuto,
     shutterSpeedAuto: s.shutterSpeedAuto,
@@ -40,16 +38,11 @@ export const EvParam = ({ handlePressWithDouble }: EvParamProps) => {
     <ParameterControl
       label={t('parameters.ev')}
       isActive={activeParameter === 'ev'}
-      onPress={() => handlePressWithDouble('ev', () => setActiveParameter('ev'))}
-      value={ev}
-      minValue={-2.0}
-      maxValue={2.0}
-      onChange={setEv}
+      onPress={() => handlePressWithDouble('ev', () => {
+        setActiveParameter(activeParameter === 'ev' ? 'none' : 'ev');
+      })}
       variant="text"
-      isAuto={evAuto}
-      valueFormatter={formatEv}
       disabled={isEvDisabled}
-      hideAutoBadge={true}
     />
   );
 };

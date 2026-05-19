@@ -27,18 +27,11 @@ export const SharpeningParam = ({ handlePressWithDouble }: SharpeningParamProps)
     <ParameterControl
       label={t('parameters.sharpening')}
       isActive={activeParameter === 'sharpening'}
-      onPress={() => handlePressWithDouble('sharpening', () => setActiveParameter('sharpening'))}
-      value={sharpening}
-      minValue={0}
-      maxValue={1}
-      onChange={setSharpening}
+      onPress={() => handlePressWithDouble('sharpening', () => {
+        setActiveParameter(activeParameter === 'sharpening' ? 'none' : 'sharpening');
+      })}
       icon="sparkles-outline"
       variant="text"
-      renderValue={true}
-      valueFormatter={(v) => {
-        'worklet';
-        return `${Math.round(v * 100)}`;
-      }}
     />
   );
 };

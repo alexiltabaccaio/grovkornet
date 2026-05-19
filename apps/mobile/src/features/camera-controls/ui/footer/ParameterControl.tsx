@@ -18,7 +18,7 @@ interface ParameterControlProps {
   imageSource?: ImageSourcePropType;
   renderValue?: boolean;
   valueFormatter?: (val: number) => string;
-  variant?: 'square' | 'text';
+  variant?: 'square' | 'text' | 'slider';
   isAuto?: SharedValue<boolean>;
   staticText?: string;
   invertDrag?: boolean;
@@ -26,6 +26,10 @@ interface ParameterControlProps {
   autoValueText?: string;
   disabled?: SharedValue<boolean>;
   hideAutoBadge?: boolean;
+  isToggle?: boolean;
+  centerValue?: number;
+  onReset?: () => void;
+  onToggleAuto?: (active: boolean) => void;
 }
 
 export const ParameterControl = ({
@@ -48,6 +52,10 @@ export const ParameterControl = ({
   onChange,
   disabled,
   hideAutoBadge = false,
+  isToggle = false,
+  centerValue,
+  onReset,
+  onToggleAuto,
 }: ParameterControlProps) => {
   const { combinedGesture, isDebugEnabled } = useParameterGesture({
     isActive,
@@ -59,6 +67,7 @@ export const ParameterControl = ({
     onPress,
     isAuto,
     disabled,
+    variant,
   });
 
   return (
@@ -81,6 +90,10 @@ export const ParameterControl = ({
         isDebugEnabled={isDebugEnabled}
         disabled={disabled}
         hideAutoBadge={hideAutoBadge}
+        isToggle={isToggle}
+        centerValue={centerValue}
+        onReset={onReset}
+        onToggleAuto={onToggleAuto}
       />
     </GestureDetector>
   );

@@ -18,25 +18,14 @@ export const AberrationParam = ({ handlePressWithDouble }: AberrationParamProps)
     setActiveParameter: s.setActiveParameter,
   })));
 
-  const { chromaticAberration, setChromaticAberration } = useStylesStore(useShallow(s => ({
-    chromaticAberration: s.chromaticAberration,
-    setChromaticAberration: s.setChromaticAberration,
-  })));
-
   return (
     <ParameterControl
       label={t('parameters.chromatic_aberration')}
       isActive={activeParameter === 'chromatic_aberration'}
-      onPress={() => handlePressWithDouble('chromatic_aberration', () => setActiveParameter('chromatic_aberration'))}
-      value={chromaticAberration}
-      maxValue={2.0}
-      onChange={setChromaticAberration}
-      renderValue={true}
+      onPress={() => handlePressWithDouble('chromatic_aberration', () => {
+        setActiveParameter(activeParameter === 'chromatic_aberration' ? 'none' : 'chromatic_aberration');
+      })}
       variant="text"
-      valueFormatter={(v) => {
-        'worklet';
-        return `${Math.round(v * 100)}`;
-      }}
     />
   );
 };

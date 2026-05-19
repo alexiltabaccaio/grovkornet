@@ -20,28 +20,14 @@ export const ResolutionParam = ({ handlePressWithDouble }: ResolutionParamProps)
     setActiveParameter: s.setActiveParameter,
   })));
 
-  const { resolutionSetting, setResolutionSetting } = useHardwareStore(useShallow(s => ({
-    resolutionSetting: s.resolutionSetting,
-    setResolutionSetting: s.setResolutionSetting,
-  })));
-
   return (
     <ParameterControl
       label={t('parameters.resolution_setting')}
       isActive={activeParameter === 'resolution_setting'}
-      onPress={() => handlePressWithDouble('resolution_setting', () => setActiveParameter('resolution_setting'))}
-      value={resolutionSetting}
-      minValue={0}
-      maxValue={RESOLUTIONS.length - 1}
-      onChange={setResolutionSetting}
+      onPress={() => handlePressWithDouble('resolution_setting', () => {
+        setActiveParameter(activeParameter === 'resolution_setting' ? 'none' : 'resolution_setting');
+      })}
       variant="text"
-      valueFormatter={(v) => {
-        'worklet';
-        const index = Math.round(v);
-        if (index === 0) return '720p';
-        if (index === 1) return '1080p';
-        return '4K';
-      }}
     />
   );
 };

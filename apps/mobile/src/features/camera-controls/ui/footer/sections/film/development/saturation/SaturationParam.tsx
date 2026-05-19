@@ -27,18 +27,11 @@ export const SaturationParam = ({ handlePressWithDouble }: SaturationParamProps)
     <ParameterControl
       label={t('parameters.saturation')}
       isActive={activeParameter === 'saturation'}
-      onPress={() => handlePressWithDouble('saturation', () => setActiveParameter('saturation'))}
-      value={saturation}
-      maxValue={2.0}
-      onChange={setSaturation}
+      onPress={() => handlePressWithDouble('saturation', () => {
+        setActiveParameter(activeParameter === 'saturation' ? 'none' : 'saturation');
+      })}
       icon="color-filter-outline"
       variant="text"
-      renderValue={true}
-      valueFormatter={(v) => {
-        'worklet';
-        const val = Math.round((v - 1) * 100);
-        return val > 0 ? `+${val}` : `${val}`;
-      }}
     />
   );
 };

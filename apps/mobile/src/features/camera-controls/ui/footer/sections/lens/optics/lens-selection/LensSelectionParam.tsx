@@ -19,44 +19,9 @@ export const LensSelectionParam = ({ handlePressWithDouble }: LensSelectionParam
     setActiveParameter: s.setActiveParameter,
   })));
 
-  const { capabilities, cameraId, setCameraId, cameraAuto } = useHardwareStore(useShallow(s => ({
+  const { capabilities } = useHardwareStore(useShallow(s => ({
     capabilities: s.capabilities,
-    cameraId: s.cameraId,
-    setCameraId: s.setCameraId,
-    cameraAuto: s.cameraAuto,
   })));
-
-  const autoShared = useSharedValue(cameraAuto);
-  useEffect(() => {
-    autoShared.value = cameraAuto;
-  }, [cameraAuto, autoShared]);
-
-  const currentIndex = capabilities.availableCameras.findIndex((c: { id: string; focalLength35mm: number }) => c.id === cameraId);
-  const selectedIndex = currentIndex === -1 ? 0 : currentIndex;
-  
-  const indexShared = useSharedValue(selectedIndex);
-  useEffect(() => {
-    indexShared.value = selectedIndex;
-  }, [selectedIndex, indexShared]);
-
-  const handleIndexChange = (val: number) => {
-    const intVal = Math.round(val);
-    const cam = capabilities.availableCameras[intVal];
-    if (cam && cam.id !== cameraId) {
-      setCameraId(cam.id);
-    }
-  };
-
-  const focalLengths = useMemo(() => capabilities.availableCameras.map((c: { id: string; focalLength35mm: number }) => c.focalLength35mm), [capabilities.availableCameras]);
-
-  const formatLens = (val: number) => {
-    'worklet';
-    const index = Math.round(val);
-    if (index >= 0 && index < focalLengths.length) {
-      return `${focalLengths[index]}mm`;
-    }
-    return '';
-  };
 
   if (capabilities.availableCameras.length === 0) return null;
 
@@ -64,14 +29,10 @@ export const LensSelectionParam = ({ handlePressWithDouble }: LensSelectionParam
     <ParameterControl
       label={t('parameters.lens')}
       isActive={activeParameter === 'camera_selection'}
-      onPress={() => handlePressWithDouble('camera_selection', () => setActiveParameter('camera_selection'))}
-      value={indexShared}
-      minValue={0}
-      maxValue={Math.max(0, capabilities.availableCameras.length - 1)}
-      onChange={handleIndexChange}
+      onPress={() => handlePressWithDouble('camera_selection', () => {
+        setActiveParameter(activeParameter === 'camera_selection' ? 'none' : 'camera_selection');
+      })}
       variant="text"
-      isAuto={autoShared}
-      valueFormatter={formatLens}
     />
   );
 };

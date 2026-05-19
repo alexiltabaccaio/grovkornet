@@ -18,26 +18,14 @@ export const FpsParam = ({ handlePressWithDouble }: FpsParamProps) => {
     setActiveParameter: s.setActiveParameter,
   })));
 
-  const { fpsSetting, setFpsSetting, capabilities } = useHardwareStore(useShallow(s => ({
-    fpsSetting: s.fpsSetting,
-    setFpsSetting: s.setFpsSetting,
-    capabilities: s.capabilities,
-  })));
-
   return (
     <ParameterControl
       label={t('parameters.fps_setting')}
       isActive={activeParameter === 'fps_setting'}
-      onPress={() => handlePressWithDouble('fps_setting', () => setActiveParameter('fps_setting'))}
-      value={fpsSetting}
-      minValue={1}
-      maxValue={capabilities.maxFps ?? 60}
-      onChange={setFpsSetting}
+      onPress={() => handlePressWithDouble('fps_setting', () => {
+        setActiveParameter(activeParameter === 'fps_setting' ? 'none' : 'fps_setting');
+      })}
       variant="text"
-      valueFormatter={(v) => {
-        'worklet';
-        return Math.round(v).toString();
-      }}
     />
   );
 };

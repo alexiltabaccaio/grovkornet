@@ -56,7 +56,7 @@ export const ConnectedFilmCamera = ({ cameraKey }: ConnectedFilmCameraProps) => 
         whiteBalanceAuto={hwStore.temperatureAuto as unknown as SharedValue<boolean | undefined>}
         autoFocus={hwStore.focusAuto as unknown as SharedValue<boolean | undefined>}
         focusDistance={hwStore.focusDistance as unknown as SharedValue<number | undefined>}
-        cameraId={hwStore.cameraId}
+        cameraId={hwStore.cameraAuto ? undefined : hwStore.cameraId}
         torchState={hwStore.torchState as unknown as SharedValue<number | undefined>}
         torchStrength={resolvedTorchStrength as unknown as SharedValue<number | undefined>}
         noiseReduction={resolvedNoiseReduction as unknown as SharedValue<number | undefined>}

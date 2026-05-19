@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, TextInput, StyleSheet } from 'react-native';
+import { View, Text, TextInput } from 'react-native';
 import Animated, { useAnimatedStyle, useAnimatedProps } from 'react-native-reanimated';
 import { ParameterThumbViewProps } from './ParameterThumbView.types';
 import { styles } from './ParameterThumbView.styles';
@@ -15,6 +15,7 @@ export const TextThumb = ({
   hideValueInAuto = false,
   autoValueText = 'AUTO',
   disabled,
+  isToggle,
 }: ParameterThumbViewProps) => {
   const animatedTextProps = useAnimatedProps(() => {
     if (!value) return { text: '' };
@@ -41,37 +42,52 @@ export const TextThumb = ({
     if (disabled && disabled.value) {
       return { color: '#666666' };
     }
-    return { color: isActive ? "#FFF" : "#666" };
+    const isHighlighted = isToggle && value ? (value.value === 1) : isActive;
+    return { color: isHighlighted ? "#FFF" : "#888" };
+  });
+
+  const animatedContainerStyle = useAnimatedStyle(() => {
+    if (disabled && disabled.value) {
+      return {
+        borderColor: '#222',
+        backgroundColor: 'rgba(255,255,255,0.01)',
+      };
+    }
+    const isHighlighted = isToggle && value ? (value.value === 1) : isActive;
+    return {
+      borderColor: isHighlighted ? '#FFF' : '#333',
+      backgroundColor: isHighlighted ? 'rgba(255,255,255,0.12)' : 'rgba(255,255,255,0.04)',
+    };
   });
 
   if (value) {
     return (
-      <View pointerEvents="none" style={[StyleSheet.absoluteFill, { justifyContent: 'center', alignItems: 'center' }]}>
+      <Animated.View style={[styles.pillButton, animatedContainerStyle]}>
         <AnimatedTextInput
           pointerEvents="none"
           underlineColorAndroid="transparent"
           editable={false}
           style={[
-            styles.valueText,
-            styles.valueTextLarge,
+            styles.pillValueText,
             animatedTextStyle
           ]}
           animatedProps={animatedTextProps}
         />
-      </View>
+      </Animated.View>
     );
   }
 
   if (staticText) {
     return (
-      <Text
-        style={[
-          styles.valueText,
-          styles.valueTextLarge,
-          { color: isActive ? "#FFF" : "#666" }
-        ]}>
-        {staticText}
-      </Text>
+      <View style={[styles.pillButton, isActive ? styles.pillButtonActive : styles.pillButtonInactive]}>
+        <Text
+          style={[
+            styles.pillValueText,
+            { color: isActive ? "#FFF" : "#888" }
+          ]}>
+          {staticText}
+        </Text>
+      </View>
     );
   }
 

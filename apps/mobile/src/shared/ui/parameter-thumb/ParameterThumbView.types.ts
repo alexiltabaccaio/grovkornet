@@ -2,7 +2,7 @@ import { ImageSourcePropType } from 'react-native';
 import { SharedValue } from 'react-native-reanimated';
 import { Ionicons } from '@expo/vector-icons';
 
-export type ThumbVariant = 'square' | 'text';
+export type ThumbVariant = 'square' | 'text' | 'slider';
 
 export interface ParameterThumbViewProps {
   label: string;
@@ -22,4 +22,8 @@ export interface ParameterThumbViewProps {
   isDebugEnabled?: boolean;
   disabled?: SharedValue<boolean>;
   hideAutoBadge?: boolean;
+  isToggle?: boolean;
+  centerValue?: number;
+  onReset?: () => void;
+  onToggleAuto?: (active: boolean) => void;
 }

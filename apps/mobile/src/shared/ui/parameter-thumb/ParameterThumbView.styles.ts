@@ -82,4 +82,30 @@ export const styles = StyleSheet.create({
     letterSpacing: 0.5,
     zIndex: 2,
   },
+  pillButton: {
+    borderRadius: 14,
+    paddingHorizontal: 12,
+    paddingVertical: 5,
+    borderWidth: 1,
+    minWidth: 56,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  pillButtonActive: {
+    backgroundColor: 'rgba(255, 255, 255, 0.12)',
+    borderColor: '#FFF',
+  },
+  pillButtonInactive: {
+    backgroundColor: 'rgba(255, 255, 255, 0.04)',
+    borderColor: '#333',
+  },
+  pillValueText: {
+    fontSize: 11,
+    fontWeight: '900',
+    color: '#FFF',
+    textAlign: 'center',
+    padding: 0,
+    margin: 0,
+    letterSpacing: 0.5,
+  },
 });

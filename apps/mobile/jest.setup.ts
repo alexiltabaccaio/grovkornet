@@ -95,6 +95,7 @@ jest.mock('react-native-gesture-handler', () => {
     obj.onEnd = jest.fn(() => obj);
     obj.onFinalize = jest.fn(() => obj);
     obj.minDistance = jest.fn(() => obj);
+    obj.numberOfTaps = jest.fn(() => obj);
     obj.enabled = jest.fn(() => obj);
     obj.runOnJS = jest.fn(() => obj);
     obj.toGestureArray = jest.fn(() => [obj]);

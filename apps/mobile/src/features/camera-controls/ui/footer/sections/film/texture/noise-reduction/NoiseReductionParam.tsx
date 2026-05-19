@@ -18,35 +18,14 @@ export const NoiseReductionParam = ({ handlePressWithDouble }: NoiseReductionPar
     setActiveParameter: s.setActiveParameter,
   })));
 
-  const { noiseReductionMode, setNoiseReductionMode, noiseReductionAuto } = useStylesStore(useShallow(s => ({
-    noiseReductionMode: s.noiseReductionMode,
-    setNoiseReductionMode: s.setNoiseReductionMode,
-    noiseReductionAuto: s.noiseReductionAuto,
-  })));
-
   return (
     <ParameterControl
       label={t('parameters.noise_reduction')}
       isActive={activeParameter === 'noise_reduction'}
-      onPress={() => handlePressWithDouble('noise_reduction', () => setActiveParameter('noise_reduction'))}
-      value={noiseReductionMode}
-      minValue={0}
-      maxValue={2}
-      onChange={(v) => {
-        const rounded = Math.round(v);
-        setNoiseReductionMode(rounded);
-      }}
-      isAuto={noiseReductionAuto}
+      onPress={() => handlePressWithDouble('noise_reduction', () => {
+        setActiveParameter(activeParameter === 'noise_reduction' ? 'none' : 'noise_reduction');
+      })}
       variant="text"
-      renderValue={true}
-      valueFormatter={(v) => {
-        'worklet';
-        const mode = Math.round(v);
-        if (mode === 0) return 'OFF';
-        if (mode === 1) return 'FAST';
-        if (mode === 2) return 'HQ';
-        return 'OFF';
-      }}
     />
   );
 };

@@ -30,25 +30,14 @@ export const FocusParam = ({ handlePressWithDouble }: FocusParamProps) => {
     setActiveParameter: s.setActiveParameter,
   })));
 
-  const { focusDistance, setFocusDistance, focusAuto } = useHardwareStore(useShallow(s => ({
-    focusDistance: s.focusDistance,
-    setFocusDistance: s.setFocusDistance,
-    focusAuto: s.focusAuto,
-  })));
-
   return (
     <ParameterControl
       label={t('parameters.focus')}
       isActive={activeParameter === 'focus'}
-      onPress={() => handlePressWithDouble('focus', () => setActiveParameter('focus'))}
-      value={focusDistance}
-      minValue={0}
-      maxValue={10}
-      onChange={setFocusDistance}
+      onPress={() => handlePressWithDouble('focus', () => {
+        setActiveParameter(activeParameter === 'focus' ? 'none' : 'focus');
+      })}
       variant="text"
-      isAuto={focusAuto}
-      valueFormatter={formatFocus}
-      invertDrag={true}
     />
   );
 };

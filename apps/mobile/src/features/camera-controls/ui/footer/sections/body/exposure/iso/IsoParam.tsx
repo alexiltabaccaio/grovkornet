@@ -18,23 +18,14 @@ export const IsoParam = ({ handlePressWithDouble }: IsoParamProps) => {
     setActiveParameter: s.setActiveParameter,
   })));
 
-  const { iso, setIso, isoAuto } = useHardwareStore(useShallow(s => ({
-    iso: s.iso,
-    setIso: s.setIso,
-    isoAuto: s.isoAuto,
-  })));
-
   return (
     <ParameterControl
       label={t('parameters.iso')}
       isActive={activeParameter === 'iso'}
-      onPress={() => handlePressWithDouble('iso', () => setActiveParameter('iso'))}
-      value={iso}
-      minValue={50}
-      maxValue={3200}
-      onChange={setIso}
+      onPress={() => handlePressWithDouble('iso', () => {
+        setActiveParameter(activeParameter === 'iso' ? 'none' : 'iso');
+      })}
       variant="text"
-      isAuto={isoAuto}
     />
   );
 };

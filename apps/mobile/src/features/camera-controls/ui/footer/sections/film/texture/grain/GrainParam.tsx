@@ -27,16 +27,10 @@ export const GrainParam = ({ handlePressWithDouble }: GrainParamProps) => {
     <ParameterControl
       label={t('parameters.grain')}
       isActive={activeParameter === 'grain'}
-      onPress={() => handlePressWithDouble('grain', () => setActiveParameter('grain'))}
-      value={grainIntensity}
-      maxValue={1.0}
-      onChange={setGrainIntensity}
-      renderValue={true}
+      onPress={() => handlePressWithDouble('grain', () => {
+        setActiveParameter(activeParameter === 'grain' ? 'none' : 'grain');
+      })}
       variant="text"
-      valueFormatter={(v) => {
-        'worklet';
-        return `${Math.round(v * 100)}`;
-      }}
     />
   );
 };

@@ -19,7 +19,7 @@ describe('StatusBarHeader Smoke Test', () => {
     expect(queryByText(/STATUS BAR/)).toBeNull();
   });
 
-  it('shows debug text when debug is enabled', () => {
+  it('does not show debug text even when debug is enabled', () => {
     const mockUIStore = useUIStore as unknown as jest.Mock;
     mockUIStore.mockImplementationOnce((selector: (state: Record<string, unknown>) => unknown) => 
       selector({
@@ -27,8 +27,8 @@ describe('StatusBarHeader Smoke Test', () => {
       })
     );
 
-    const { toJSON, getByText } = render(<StatusBarHeader />);
+    const { toJSON, queryByText } = render(<StatusBarHeader />);
     expect(toJSON()).toBeDefined();
-    expect(getByText(/STATUS BAR/)).toBeDefined();
+    expect(queryByText(/STATUS BAR/)).toBeNull();
   });
 });

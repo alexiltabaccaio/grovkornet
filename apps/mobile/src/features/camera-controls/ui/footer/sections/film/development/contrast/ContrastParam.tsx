@@ -27,18 +27,11 @@ export const ContrastParam = ({ handlePressWithDouble }: ContrastParamProps) => 
     <ParameterControl
       label={t('parameters.contrast')}
       isActive={activeParameter === 'contrast'}
-      onPress={() => handlePressWithDouble('contrast', () => setActiveParameter('contrast'))}
-      value={contrast}
-      maxValue={2.0}
-      onChange={setContrast}
+      onPress={() => handlePressWithDouble('contrast', () => {
+        setActiveParameter(activeParameter === 'contrast' ? 'none' : 'contrast');
+      })}
       icon="contrast-outline"
       variant="text"
-      renderValue={true}
-      valueFormatter={(v) => {
-        'worklet';
-        const val = Math.round((v - 1) * 100);
-        return val > 0 ? `+${val}` : `${val}`;
-      }}
     />
   );
 };

@@ -23,24 +23,14 @@ export const ShutterSpeedParam = ({ handlePressWithDouble }: ShutterSpeedParamPr
     setActiveParameter: s.setActiveParameter,
   })));
 
-  const { shutterSpeed, setShutterSpeed, shutterSpeedAuto } = useHardwareStore(useShallow(s => ({
-    shutterSpeed: s.shutterSpeed,
-    setShutterSpeed: s.setShutterSpeed,
-    shutterSpeedAuto: s.shutterSpeedAuto,
-  })));
-
   return (
     <ParameterControl
       label={t('parameters.shutter_speed')}
       isActive={activeParameter === 'shutter_speed'}
-      onPress={() => handlePressWithDouble('shutter_speed', () => setActiveParameter('shutter_speed'))}
-      value={shutterSpeed}
-      minValue={1}
-      maxValue={1000}
-      onChange={setShutterSpeed}
+      onPress={() => handlePressWithDouble('shutter_speed', () => {
+        setActiveParameter(activeParameter === 'shutter_speed' ? 'none' : 'shutter_speed');
+      })}
       variant="text"
-      isAuto={shutterSpeedAuto}
-      valueFormatter={formatShutterSpeed}
     />
   );
 };

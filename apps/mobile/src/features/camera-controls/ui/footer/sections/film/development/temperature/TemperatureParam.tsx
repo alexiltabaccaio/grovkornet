@@ -33,16 +33,11 @@ export const TemperatureParam = ({ handlePressWithDouble }: TemperatureParamProp
     <ParameterControl
       label={t('parameters.temperature')}
       isActive={activeParameter === 'temperature'}
-      onPress={() => handlePressWithDouble('temperature', () => setActiveParameter('temperature'))}
-      value={temperature}
-      minValue={2000}
-      maxValue={10000}
-      onChange={setTemperature}
+      onPress={() => handlePressWithDouble('temperature', () => {
+        setActiveParameter(activeParameter === 'temperature' ? 'none' : 'temperature');
+      })}
+      icon="thermometer-outline"
       variant="text"
-      isAuto={temperatureAuto}
-      valueFormatter={formatTemperature}
-      hideValueInAuto={true}
-      autoValueText="AWB"
     />
   );
 };

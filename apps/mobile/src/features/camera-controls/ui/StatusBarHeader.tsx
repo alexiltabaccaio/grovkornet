@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View, Text, Platform, StatusBar } from 'react-native';
+import { StyleSheet, View, Platform, StatusBar } from 'react-native';
 import { useUIStore } from '@features/camera-controls/model/useUIStore';
 
 // standard heights if native values are not available
@@ -22,13 +22,7 @@ export const StatusBarHeader = () => {
         isDebugEnabled && styles.statusBarHeaderDebug
       ]}
       pointerEvents="none"
-    >
-      {isDebugEnabled && (
-        <Text style={styles.debugText}>
-          STATUS BAR HEADER ({statusBarHeight}px)
-        </Text>
-      )}
-    </View>
+    />
   );
 };
 

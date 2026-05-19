@@ -8,8 +8,9 @@ Il sistema è progettato per essere rapido da usare con una mano (run-and-gun), 
 1. **[Section] Section:** I bottoni di navigazione in basso per le sezioni fisiche principali (es. System, Lens, Body).
 2. **[Section Header] Section Header:** La grande scritta in alto nel pannello aperto che identifica la sezione attiva.
 3. **[Module] Module:** Il sottomenù o famiglia di effetti all'interno della sezione (es. Esposizione, Texture).
-4. **[Parameter] Parameter:** Il parametro più importante e usato (es. Intensità della Grana), immediatamente visibile come box a scorrimento.
-5. **[SubParameter] SubParameter:** Accessibile tramite un Long Press o Doppio Tap. Fa scivolare un pannello con le regolazioni di fino.
+4. **[Parameter] Parameter:** L'etichetta del parametro (es. Grana, Torcia), visibile come pulsante nella riga dei controlli. La sua selezione attiva il parametro e apre la tendina inferiore.
+5. **[Parameter Extension] Estensione del Parametro (Core Slot / Dock):** Lo spazio a -35px che si crea immediatamente sotto il parametro appena selezionato. Ospita il controllo primario (l'interruttore ON/OFF o lo slider principale come l'Intensità della Grana) ancorato visivamente al parametro.
+6. **[SubParameter] SubParameter:** Regolazioni aggiuntive e di fino (es. Dimensione Grana, Chroma). Sono collocate nella parte più profonda del pannello (a -90px) e diventano visibili solo tirando attivamente su la bottom sheet.
 
 ---
 

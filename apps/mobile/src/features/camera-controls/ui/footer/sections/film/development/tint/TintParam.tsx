@@ -24,26 +24,14 @@ export const TintParam = ({ handlePressWithDouble }: TintParamProps) => {
     setActiveParameter: s.setActiveParameter,
   })));
 
-  const { tint, setTint, temperatureAuto } = useHardwareStore(useShallow(s => ({
-    tint: s.tint,
-    setTint: s.setTint,
-    temperatureAuto: s.temperatureAuto,
-  })));
-
   return (
     <ParameterControl
       label={t('parameters.tint')}
       isActive={activeParameter === 'tint'}
-      onPress={() => handlePressWithDouble('tint', () => setActiveParameter('tint'))}
-      value={tint}
-      minValue={-100}
-      maxValue={100}
-      onChange={setTint}
+      onPress={() => handlePressWithDouble('tint', () => {
+        setActiveParameter(activeParameter === 'tint' ? 'none' : 'tint');
+      })}
       variant="text"
-      isAuto={temperatureAuto}
-      valueFormatter={formatTint}
-      hideValueInAuto={true}
-      autoValueText="AWB"
     />
   );
 };

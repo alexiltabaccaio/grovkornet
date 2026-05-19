@@ -41,7 +41,7 @@ export const Footer = ({ translateY: externalTranslateY, drawerAnimation: extern
       drawerAnimation.value = withTiming(250, { duration: 300 }); // push it down to hide
     } else {
       // Apri il cassetto
-      translateY.value = withTiming(-5, { duration: 300 }); // Imposta l'altezza base a -5px con animazione fluida
+      translateY.value = withTiming(-35, { duration: 300 }); // Imposta l'altezza base a -35px con animazione fluida
       drawerAnimation.value = withTiming(0, { duration: 300 });
     }
   }, [activeSection, translateY, drawerAnimation]);
@@ -57,15 +57,15 @@ export const Footer = ({ translateY: externalTranslateY, drawerAnimation: extern
       })
       .onUpdate((e) => {
         let newY = startY.value + e.translationY;
-        // Clamp tra aperto e chiuso (ora limitato a -5px come base)
+        // Clamp tra aperto e chiuso (ora limitato a -35px come base)
         if (newY < MAX_UP) newY = MAX_UP;
-        if (newY > -5) newY = -5;
+        if (newY > -35) newY = -35;
 
         translateY.value = newY;
       })
       .onEnd((e) => {
         const estimatedY = translateY.value + e.velocityY * 0.1;
-        const snapPoints = [-5, -115, MAX_UP];
+        const snapPoints = [-35, -115, MAX_UP];
 
         const targetY = snapPoints.reduce((prev, curr) =>
           Math.abs(curr - estimatedY) < Math.abs(prev - estimatedY) ? curr : prev

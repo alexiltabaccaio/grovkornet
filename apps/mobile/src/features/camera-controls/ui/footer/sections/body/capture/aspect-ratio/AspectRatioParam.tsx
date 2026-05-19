@@ -20,30 +20,14 @@ export const AspectRatioParam = ({ handlePressWithDouble }: AspectRatioParamProp
     setActiveParameter: s.setActiveParameter,
   })));
 
-  const { aspectRatio, setAspectRatio } = useHardwareStore(useShallow(s => ({
-    aspectRatio: s.aspectRatio,
-    setAspectRatio: s.setAspectRatio,
-  })));
-
   return (
     <ParameterControl
       label={t('parameters.aspect_ratio')}
       isActive={activeParameter === 'aspect_ratio'}
-      onPress={() => handlePressWithDouble('aspect_ratio', () => setActiveParameter('aspect_ratio'))}
-      value={aspectRatio}
-      minValue={0}
-      maxValue={ASPECT_RATIOS.length - 1}
-      onChange={setAspectRatio}
+      onPress={() => handlePressWithDouble('aspect_ratio', () => {
+        setActiveParameter(activeParameter === 'aspect_ratio' ? 'none' : 'aspect_ratio');
+      })}
       variant="text"
-      valueFormatter={(v) => {
-        'worklet';
-        const index = Math.round(v);
-        if (index === 0) return '4:3';
-        if (index === 1) return '16:9';
-        if (index === 2) return '1:1';
-        if (index === 3) return '3:2';
-        return '65:24';
-      }}
     />
   );
 };
