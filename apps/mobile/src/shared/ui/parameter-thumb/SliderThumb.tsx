@@ -4,8 +4,7 @@ import Animated, {
   useAnimatedProps,
   useSharedValue,
   interpolate,
-  Extrapolation,
-  runOnJS
+  Extrapolation
 } from 'react-native-reanimated';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import { ParameterThumbViewProps } from './ParameterThumbView.types';
@@ -29,9 +28,10 @@ export const SliderThumb = ({
 
   const doubleTap = Gesture.Tap()
     .numberOfTaps(2)
+    .runOnJS(true)
     .onEnd(() => {
       if (onReset) {
-        runOnJS(onReset)();
+        onReset();
       }
     });
 
@@ -142,7 +142,7 @@ export const SliderThumb = ({
 
   return (
     <View style={styles.container}>
-      {isAuto && (onReset || onToggleAuto) && (
+      {isAuto && (onReset || onToggleAuto) ? (
         <Pressable
           onPress={() => {
             const active = isAuto.value;
@@ -168,6 +168,8 @@ export const SliderThumb = ({
             </Animated.Text>
           </Animated.View>
         </Pressable>
+      ) : (
+        <View style={styles.autoPlaceholder} />
       )}
 
       <View
@@ -250,6 +252,10 @@ const styles = StyleSheet.create({
     fontFamily: 'monospace',
   },
   autoPressable: {
+    marginRight: 12,
+  },
+  autoPlaceholder: {
+    width: 32,
     marginRight: 12,
   },
   autoButton: {

@@ -2,12 +2,8 @@ import React from 'react';
 import { render } from '@testing-library/react-native';
 import { OpticsModule } from './OpticsModule';
 
-jest.mock('./optics/lens-selection/LensSelectionParam', () => ({
-  LensSelectionParam: () => null,
-}));
-
-jest.mock('./optics/focus/FocusParam', () => ({
-  FocusParam: () => null,
+jest.mock('../../ConnectedParameter', () => ({
+  ConnectedParameter: 'ConnectedParameter',
 }));
 
 describe('OpticsModule', () => {

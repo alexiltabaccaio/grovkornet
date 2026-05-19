@@ -2,8 +2,8 @@ import React from 'react';
 import { render } from '@testing-library/react-native';
 import { LightingModule } from './LightingModule';
 
-jest.mock('./lighting/torch/TorchParam', () => ({
-  TorchParam: () => null,
+jest.mock('../../ConnectedParameter', () => ({
+  ConnectedParameter: 'ConnectedParameter',
 }));
 
 describe('LightingModule', () => {

@@ -67,6 +67,7 @@ export const TextThumb = ({
           pointerEvents="none"
           underlineColorAndroid="transparent"
           editable={false}
+          allowFontScaling={false}
           style={[
             styles.pillValueText,
             animatedTextStyle
@@ -81,6 +82,7 @@ export const TextThumb = ({
     return (
       <View style={[styles.pillButton, isActive ? styles.pillButtonActive : styles.pillButtonInactive]}>
         <Text
+          allowFontScaling={false}
           style={[
             styles.pillValueText,
             { color: isActive ? "#FFF" : "#888" }

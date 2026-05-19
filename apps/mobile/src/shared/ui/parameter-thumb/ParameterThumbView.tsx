@@ -40,11 +40,14 @@ export const ParameterThumbView = forwardRef<View, ParameterThumbViewProps>((pro
           isDebugEnabled && { backgroundColor: 'rgba(0, 255, 0, 0.2)', borderWidth: 1, borderColor: 'green' }
         ]}
       >
-        <Text style={[
-          styles.filterText,
-          isActive && styles.filterTextActive,
-          { fontSize: 13, fontWeight: '800', textAlign: 'center', minHeight: undefined }
-        ]}>
+        <Text 
+          allowFontScaling={false}
+          style={[
+            styles.filterText,
+            isActive && styles.filterTextActive,
+            { fontSize: 13, fontWeight: '800', textAlign: 'center', minHeight: undefined }
+          ]}
+        >
           {label.toUpperCase().split(' ').join('\n')}
         </Text>
       </Animated.View>
@@ -63,13 +66,16 @@ export const ParameterThumbView = forwardRef<View, ParameterThumbViewProps>((pro
       ]}
     >
       {!!label && (
-        <Text style={[
-          styles.filterText,
-          isActive && styles.filterTextActive,
-          !isActive && !!imageSource && { opacity: 0.3 },
-          { marginBottom: 6, minHeight: undefined },
-          variant === 'text' && { fontSize: 13, fontWeight: '800', marginBottom: 8 }
-        ]}>
+        <Text 
+          allowFontScaling={false}
+          style={[
+            styles.filterText,
+            isActive && styles.filterTextActive,
+            !isActive && !!imageSource && { opacity: 0.3 },
+            { marginBottom: 6, minHeight: undefined },
+            variant === 'text' && { fontSize: 13, fontWeight: '800', marginBottom: 8 }
+          ]}
+        >
           {label.toUpperCase().split(' ').join('\n')}
         </Text>
       )}

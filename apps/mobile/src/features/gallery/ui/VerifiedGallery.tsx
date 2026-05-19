@@ -67,7 +67,7 @@ export const VerifiedGallery = ({ onClose, initialUri }: VerifiedGalleryProps) =
 
         console.log('[Gallery] Fetching Grovkornet album with timeout...');
         const albumTimeout = new Promise<never>((_, reject) => 
-          setTimeout(() => reject(new Error('ALBUM_TIMEOUT')), 2500)
+          setTimeout(() => reject(new Error('ALBUM_TIMEOUT')), 10000)
         );
         const album = await Promise.race([
           MediaLibrary.getAlbumAsync('Grovkornet'),
@@ -76,13 +76,13 @@ export const VerifiedGallery = ({ onClose, initialUri }: VerifiedGalleryProps) =
 
         let media: MediaLibrary.Asset[] = [];
         const assetsTimeout = new Promise<never>((_, reject) => 
-          setTimeout(() => reject(new Error('ASSETS_TIMEOUT')), 3000)
+          setTimeout(() => reject(new Error('ASSETS_TIMEOUT')), 15000)
         );
 
         if (album) {
           const result = await Promise.race([
             MediaLibrary.getAssetsAsync({
-              album,
+              album: album.id,
               first: 50,
               sortBy: [[MediaLibrary.SortBy.creationTime, false]],
               mediaType: MediaLibrary.MediaType.photo,
@@ -91,15 +91,8 @@ export const VerifiedGallery = ({ onClose, initialUri }: VerifiedGalleryProps) =
           ]);
           media = result.assets;
         } else {
-          const result = await Promise.race([
-            MediaLibrary.getAssetsAsync({
-              first: 50,
-              sortBy: [[MediaLibrary.SortBy.creationTime, false]],
-              mediaType: MediaLibrary.MediaType.photo,
-            }),
-            assetsTimeout
-          ]);
-          media = result.assets;
+          console.log('[Gallery] Grovkornet album not found, returning empty list');
+          media = [];
         }
 
         const items: GalleryItem[] = media.map(asset => ({ id: asset.id, uri: asset.uri }));

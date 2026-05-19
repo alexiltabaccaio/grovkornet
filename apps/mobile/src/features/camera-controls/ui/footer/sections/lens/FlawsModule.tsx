@@ -1,22 +1,48 @@
 import React from 'react';
-import { View } from 'react-native';
 import Animated from 'react-native-reanimated';
+import { useShallow } from 'zustand/react/shallow';
+import { useUIStore } from '@features/camera-controls/model/useUIStore';
 import { ParameterType } from '@shared/types/camera';
 import { footerStyles } from '@features/camera-controls/ui/footer/Footer.styles';
-import { VignetteParam } from './flaws/vignette/VignetteParam';
-import { AberrationParam } from './flaws/aberration/AberrationParam';
+import { ConnectedParameter } from '@features/camera-controls/ui/footer/ConnectedParameter';
+import { ParameterWheel, WheelItem } from '@features/camera-controls/ui/footer/ParameterWheel';
+import { useTranslation } from 'react-i18next';
 
 interface FlawsModuleProps {
   handlePressWithDouble: (param: ParameterType, action: () => void) => void;
 }
 
 export const FlawsModule = ({ handlePressWithDouble }: FlawsModuleProps) => {
+  const { t } = useTranslation();
+  const { activeParameter, setActiveParameter } = useUIStore(
+    useShallow(s => ({
+      activeParameter: s.activeParameter,
+      setActiveParameter: s.setActiveParameter,
+    }))
+  );
+
+  const items: WheelItem[] = [
+    {
+      id: 'chromatic_aberration',
+      component: (
+        <ConnectedParameter
+          id="chromatic_aberration"
+          label={t('parameters.chromatic_aberration')}
+          variant="text"
+          handlePressWithDouble={handlePressWithDouble}
+        />
+      ),
+    },
+  ];
+
   return (
     <Animated.View style={footerStyles.tabContent}>
-      <View style={footerStyles.imageToolsContainer}>
-        <VignetteParam />
-        <AberrationParam handlePressWithDouble={handlePressWithDouble} />
-      </View>
+      <ParameterWheel
+        items={items}
+        activeParameter={activeParameter}
+        setActiveParameter={setActiveParameter}
+        handlePressWithDouble={handlePressWithDouble}
+      />
     </Animated.View>
   );
 };

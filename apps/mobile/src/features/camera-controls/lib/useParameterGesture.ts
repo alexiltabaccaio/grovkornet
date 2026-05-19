@@ -1,5 +1,5 @@
 import { useEffect, useMemo } from 'react';
-import { SharedValue, useSharedValue, runOnJS } from 'react-native-reanimated';
+import { SharedValue, useSharedValue } from 'react-native-reanimated';
 import { Gesture } from 'react-native-gesture-handler';
 import { Dimensions } from 'react-native';
 
@@ -58,6 +58,7 @@ export const useParameterGesture = ({
     }
 
     pan = pan
+      .runOnJS(true)
       .onStart((e) => {
         if (disabled && disabled.value) return;
         if (!value) return;
@@ -74,13 +75,13 @@ export const useParameterGesture = ({
           
           updateSharedValue(value, newValue);
           if (onChange) {
-            runOnJS(onChange)(newValue);
+            onChange(newValue);
           }
           startVal.value = newValue;
         } else {
           startVal.value = value.value;
         }
-        runOnJS(onPress)();
+        onPress();
       })
       .onUpdate((e) => {
         if (disabled && disabled.value) return;
@@ -105,7 +106,7 @@ export const useParameterGesture = ({
           updateSharedValue(value, newValue);
           
           if (onChange) {
-            runOnJS(onChange)(newValue);
+            onChange(newValue);
           }
           
           if (isAuto && isAuto.value) {
@@ -115,9 +116,10 @@ export const useParameterGesture = ({
       });
 
     const tap = Gesture.Tap()
+      .runOnJS(true)
       .onEnd(() => {
         if (disabled && disabled.value) return;
-        runOnJS(onPress)();
+        onPress();
       });
 
     return Gesture.Race(tap, pan);
