@@ -63,7 +63,7 @@ export const ConnectedFilmCamera = ({ cameraKey }: ConnectedFilmCameraProps) => 
         torchStrength={resolvedTorchStrength as unknown as SharedValue<number | undefined>}
         noiseReduction={resolvedNoiseReduction as unknown as SharedValue<number | undefined>}
         sharpening={styleStore.sharpening as unknown as SharedValue<number | undefined>}
-        aspectRatio={hwStore.aspectRatio as unknown as SharedValue<number | undefined>}
+        cameraAspectRatio={hwStore.aspectRatio as unknown as SharedValue<number | undefined>}
         resolutionSetting={hwStore.resolutionSetting as unknown as SharedValue<number | undefined>}
         targetFps={hwStore.fpsSetting as unknown as SharedValue<number | undefined>}
         onCapabilitiesUpdate={capabilitiesHandler}

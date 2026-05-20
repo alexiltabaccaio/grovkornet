@@ -107,7 +107,7 @@ class NativeFilmCameraModule : Module() {
         val strength = value.toInt()
         if (view.config.torchStrength != strength) view.updateHardware { torchStrength = strength }
       }
-      Prop("aspectRatio") { view: NativeFilmCameraView, value: Float ->
+      Prop("cameraAspectRatio") { view: NativeFilmCameraView, value: Float ->
         val aspectInt = value.roundToInt()
         if (view.config.aspectRatio != aspectInt) {
           view.updateBoth { aspectRatio = aspectInt }

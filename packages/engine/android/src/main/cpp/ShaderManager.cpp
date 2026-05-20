@@ -9,8 +9,13 @@ ShaderManager::ShaderManager() {}
 
 ShaderManager::~ShaderManager() {}
 
+static bool isFilamatInitialized = false;
+
 bool ShaderManager::init(filament::Engine& engine) {
-    filamat::MaterialBuilder::init();
+    if (!isFilamatInitialized) {
+        filamat::MaterialBuilder::init();
+        isFilamatInitialized = true;
+    }
     
     const char* shaderCode2D = R"SHADER(
         void material(inout MaterialInputs material) {
@@ -146,6 +151,17 @@ bool ShaderManager::init(filament::Engine& engine) {
             vec4 colG = texture(materialParams_u_Texture, gUv);
             vec4 colB = texture(materialParams_u_Texture, bUv);
             baseColor = vec4(colR.r, colG.g, colB.b, colG.a);
+
+            if (materialParams.u_Sharpening > 0.0) {
+                vec2 texel = materialParams.u_TexelSize;
+                vec3 colN = texture(materialParams_u_Texture, compositeUv + vec2(0.0, texel.y)).rgb;
+                vec3 colS = texture(materialParams_u_Texture, compositeUv - vec2(0.0, texel.y)).rgb;
+                vec3 colE = texture(materialParams_u_Texture, compositeUv + vec2(texel.x, 0.0)).rgb;
+                vec3 colW = texture(materialParams_u_Texture, compositeUv - vec2(texel.x, 0.0)).rgb;
+                
+                vec3 laplacian = 4.0 * baseColor.rgb - (colN + colS + colE + colW);
+                baseColor.rgb += laplacian * materialParams.u_Sharpening * 10.0;
+            }
 
             if (materialParams.u_VhsIntensity > 0.0) {
                 // Scanlines
@@ -331,6 +347,8 @@ bool ShaderManager::init(filament::Engine& engine) {
            .parameter("u_OverlayTexture", filamat::MaterialBuilder::SamplerType::SAMPLER_2D)
            .parameter("u_OverlayEnabled", filamat::MaterialBuilder::UniformType::FLOAT)
            .parameter("u_DrsScale", filamat::MaterialBuilder::UniformType::FLOAT)
+           .parameter("u_Sharpening", filamat::MaterialBuilder::UniformType::FLOAT)
+           .parameter("u_TexelSize", filamat::MaterialBuilder::UniformType::FLOAT2)
            .require(filament::VertexAttribute::UV0);
            
     filamat::Package packageComposite = builderComposite.build(engine.getJobSystem());

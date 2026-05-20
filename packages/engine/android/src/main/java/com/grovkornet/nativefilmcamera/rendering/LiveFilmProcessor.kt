@@ -43,23 +43,12 @@ class LiveFilmProcessor {
     private external fun nativeGetDrsScale(nativeEnginePtr: Long): Float
     private external fun nativeSetStream(nativeEnginePtr: Long, streamNativePtr: Long)
     private external fun nativeRenderLiveFrame(
-        nativeEnginePtr: Long,
-        swapchainPtr: Long,
-        saturation: Float,
-        contrast: Float,
-        grainIntensity: Float,
-        grainChroma: Float,
-        grainSize: Float,
-        vignetteIntensity: Float,
-        vhsIntensity: Float,
-        time: Float,
-        ev: Float,
-        whiteBalance: Float,
-        tint: Float,
-        bloomIntensity: Float,
-        chromaticAberration: Float,
-        aberrationDirection: Float,
-        uvMatrix: FloatArray
+        enginePtr: Long, swapchainPtr: Long,
+        saturation: Float, contrast: Float, grainIntensity: Float, grainChroma: Float,
+        grainSize: Float, vignetteIntensity: Float, vhsIntensity: Float, time: Float,
+        ev: Float, whiteBalance: Float, tint: Float, bloomIntensity: Float,
+        chromaticAberration: Float, aberrationDirection: Float, sharpening: Float,
+        uvMatrix: FloatArray, vpX: Int, vpY: Int, vpWidth: Int, vpHeight: Int
     )
     private external fun nativeSimulateFrameTime(nativeEnginePtr: Long, frameTimeMs: Float)
 
@@ -101,7 +90,7 @@ class LiveFilmProcessor {
         }
     }
 
-    fun renderLiveFrame(surface: Surface, params: CameraConfiguration, uvMatrix: FloatArray) {
+    fun renderLiveFrame(surface: Surface, params: CameraConfiguration, uvMatrix: FloatArray, vpX: Int, vpY: Int, vpWidth: Int, vpHeight: Int) {
         if (!isPrepared || nativeEnginePtr == 0L) {
             Log.w(TAG, "Cannot render live frame: LiveFilmProcessor not prepared")
             return
@@ -135,10 +124,12 @@ class LiveFilmProcessor {
                 if (params.bloomEnabled) params.bloomIntensity else 0.0f,
                 params.aberration,
                 params.aberrationDirection.toFloat(),
-                uvMatrix
+                params.sharpening,
+                uvMatrix,
+                vpX, vpY, vpWidth, vpHeight
             )
         } catch (e: Exception) {
-            Log.e(TAG, "Failed to render live frame", e)
+            Log.e(TAG, "Failed to render frame", e)
         }
     }
 

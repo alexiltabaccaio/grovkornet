@@ -242,6 +242,8 @@ bool GrovkornetEngine::init() {
     shaderManager.getMaterialInstanceComposite()->setParameter("u_VignetteIntensity", 0.0f);
     shaderManager.getMaterialInstanceComposite()->setParameter("u_VhsIntensity", 0.0f);
     shaderManager.getMaterialInstanceComposite()->setParameter("u_Time", 0.0f);
+    shaderManager.getMaterialInstanceComposite()->setParameter("u_Sharpening", 0.0f);
+    shaderManager.getMaterialInstanceComposite()->setParameter("u_TexelSize", filament::math::float2(1.0f / width, 1.0f / height));
 
     // Start background threads
     lutGenerator.start();
@@ -340,7 +342,12 @@ void GrovkornetEngine::updateDrsAndViewport() {
     viewDownsample->setViewport(filament::Viewport(0, 0, std::max(1, vWidth / 4), std::max(1, vHeight / 4)));
     viewBlurDown->setViewport(filament::Viewport(0, 0, std::max(1, vWidth / 8), std::max(1, vHeight / 8)));
     viewBlurUp->setViewport(filament::Viewport(0, 0, std::max(1, vWidth / 4), std::max(1, vHeight / 4)));
-    view->setViewport(filament::Viewport(0, 0, width, height));
+    
+    int finalVpX = viewportX;
+    int finalVpY = viewportY;
+    int finalVpW = viewportWidth > 0 ? viewportWidth : width;
+    int finalVpH = viewportHeight > 0 ? viewportHeight : height;
+    view->setViewport(filament::Viewport(finalVpX, finalVpY, finalVpW, finalVpH));
     
     shaderManager.getMaterialInstanceDownsample()->setParameter("u_DrsScale", currentDrsScale);
     shaderManager.getMaterialInstanceBlurDown()->setParameter("u_DrsScale", currentDrsScale);

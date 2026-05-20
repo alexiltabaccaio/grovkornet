@@ -28,7 +28,7 @@ export interface NativeFilmCameraViewProps extends ViewProps {
   torchStrength?: number;
   noiseReduction?: number;
   sharpening?: number;
-  aspectRatio?: number;
+  cameraAspectRatio?: number;
   resolutionSetting?: number;
   targetFps?: number;
   onDebugUpdate?: (event: { nativeEvent: { fps: number; hwFps: number; resolution: string } }) => void;

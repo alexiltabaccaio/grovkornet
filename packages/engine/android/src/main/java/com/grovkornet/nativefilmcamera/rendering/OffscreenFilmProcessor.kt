@@ -50,7 +50,8 @@ class OffscreenFilmProcessor {
         tint: Float,
         bloomIntensity: Float,
         chromaticAberration: Float,
-        aberrationDirection: Float
+        aberrationDirection: Float,
+        sharpening: Float
     )
     private external fun nativeProcessHardwareBuffer(
         nativeEnginePtr: Long,
@@ -68,7 +69,8 @@ class OffscreenFilmProcessor {
         tint: Float,
         bloomIntensity: Float,
         chromaticAberration: Float,
-        aberrationDirection: Float
+        aberrationDirection: Float,
+        sharpening: Float
     )
     private external fun nativeUpdateOverlay(
         nativeEnginePtr: Long,
@@ -151,11 +153,18 @@ class OffscreenFilmProcessor {
                 params.tint,
                 if (params.bloomEnabled) params.bloomIntensity else 0.0f,
                 params.aberration,
-                params.aberrationDirection.toFloat()
+                params.aberrationDirection.toFloat(),
+                params.sharpening
             )
 
+            // FIX: Filament reads pixels with a bottom-left origin, so the resulting bitmap is upside down.
+            // We must vertically flip the bitmap to match Android's top-left coordinate system.
+            val flipMatrix = android.graphics.Matrix().apply { postScale(1f, -1f) }
+            val flippedBitmap = Bitmap.createBitmap(outputBitmap, 0, 0, width, height, flipMatrix, true)
+            outputBitmap.recycle()
+
             Log.i(TAG, "Frame processed natively in ${System.currentTimeMillis() - startTime}ms")
-            return outputBitmap
+            return flippedBitmap
         } catch (e: Exception) {
             Log.e(TAG, "Offscreen native processing failed", e)
             return input
@@ -201,7 +210,8 @@ class OffscreenFilmProcessor {
                     params.tint,
                     if (params.bloomEnabled) params.bloomIntensity else 0.0f,
                     params.aberration,
-                    params.aberrationDirection.toFloat()
+                    params.aberrationDirection.toFloat(),
+                    params.sharpening
                 )
                 Log.i(TAG, "HardwareBuffer processed natively (zero-copy) in ${System.currentTimeMillis() - startTime}ms")
             } catch (e: Exception) {

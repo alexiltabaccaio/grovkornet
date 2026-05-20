@@ -19,14 +19,11 @@ class NativeFilmCameraView(context: Context) : SurfaceView(context), SurfaceHold
     @Volatile private var isReleased = false
 
     val config = CameraConfiguration()
-    private var liveProcessor: LiveFilmProcessor? = null
     private var cameraEngine: CameraEngine? = null
+    private var renderThread: com.grovkornet.nativefilmcamera.rendering.FilmRenderThread? = null
 
     private var updateScheduler: CameraUpdateScheduler? = null
-    private val timingController = FrameTimingController()
 
-    private var currentSurfaceTexture: SurfaceTexture? = null
-    private var isFrameAvailable = false
     private var surfaceWidth = 0
     private var surfaceHeight = 0
 
@@ -41,26 +38,21 @@ class NativeFilmCameraView(context: Context) : SurfaceView(context), SurfaceHold
 
     fun updateEffect(action: CameraConfiguration.() -> Unit) {
         config.action()
+        renderThread?.updateConfig(config)
     }
 
     fun updateHardware(action: CameraConfiguration.() -> Unit) {
         config.action()
+        renderThread?.updateConfig(config)
         Log.d("NativeFilmCameraView", "Hardware update scheduled for config change")
         updateScheduler?.schedule()
     }
 
     fun updateBoth(action: CameraConfiguration.() -> Unit) {
         config.action()
+        renderThread?.updateConfig(config)
         Log.d("NativeFilmCameraView", "Hardware+Effect update scheduled for config change")
         updateScheduler?.schedule()
-    }
-
-    private val frameCallback = object : Choreographer.FrameCallback {
-        override fun doFrame(frameTimeNanos: Long) {
-            if (isReleased) return
-            drawLiveFrame()
-            Choreographer.getInstance().postFrameCallback(this)
-        }
     }
 
     init {
@@ -86,6 +78,7 @@ class NativeFilmCameraView(context: Context) : SurfaceView(context), SurfaceHold
                 if (isReleased) return
                 cameraWidth = width
                 cameraHeight = height
+                renderThread?.updateCameraResolution(width, height)
             }
 
             override fun onPhotoCaptured(uri: String) {
@@ -102,80 +95,41 @@ class NativeFilmCameraView(context: Context) : SurfaceView(context), SurfaceHold
         )
     }
 
-    private fun setupProcessorIfNeeded() {
-        val width = surfaceWidth
-        val height = surfaceHeight
-        if (width <= 0 || height <= 0 || isReleased) return
-
-        if (liveProcessor == null) {
-            liveProcessor = LiveFilmProcessor()
-        }
-
-        if (currentSurfaceTexture == null) {
-            currentSurfaceTexture = SurfaceTexture(0).apply {
-                setDefaultBufferSize(width, height)
-                setOnFrameAvailableListener {
-                    isFrameAvailable = true
-                }
-            }
-            cameraEngine?.start(currentSurfaceTexture!!)
-        }
-
-        liveProcessor?.prepare(currentSurfaceTexture!!, width, height)
-    }
-
-    private fun drawLiveFrame() {
-        val st = currentSurfaceTexture ?: return
-        val surface = holder.surface ?: return
-        if (!surface.isValid) return
-
-        try {
-            // Filament handles SurfaceTexture updates internally on its render thread.
-            // Do NOT call st.updateTexImage() here as it lacks an EGL context!
-            if (isFrameAvailable) {
-                isFrameAvailable = false
-            }
-
-            timingController.updateFps { fps, stampedFps ->
-                if (!isReleased) {
-                    onDebugUpdate(mapOf(
-                        "fps" to stampedFps,
-                        "resolution" to "${cameraWidth}x${cameraHeight}",
-                        "hwFps" to fps
-                    ))
-                }
-            }
-
-            val shouldCapture = timingController.shouldCaptureFrame(config.targetFps)
-            if (shouldCapture) {
-                val matrix = FloatArray(16)
-                st.getTransformMatrix(matrix)
-                liveProcessor?.renderLiveFrame(surface, config, matrix)
-            }
-        } catch (e: Exception) {
-            Log.e("NativeFilmCameraView", "Error drawing live frame", e)
-        }
-    }
-
     fun takePhoto() {
         cameraEngine?.takePicture()
     }
 
     override fun surfaceCreated(holder: SurfaceHolder) {
         Log.i("NativeFilmCameraView", "Surface created")
-        Choreographer.getInstance().postFrameCallback(frameCallback)
+        
+        renderThread = com.grovkornet.nativefilmcamera.rendering.FilmRenderThread(
+            surfaceProvider = { holder.surface },
+            onSurfaceTextureReady = { st ->
+                cameraEngine?.start(st)
+            },
+            onDebugUpdate = { debugData ->
+                onDebugUpdate(debugData)
+            }
+        ).apply {
+            updateConfig(config)
+            start()
+            // Access looper to block until the thread is fully started and handler/looper are ready
+            val threadLooper = looper
+            updateDimensions(surfaceWidth, surfaceHeight)
+        }
     }
 
     override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {
         Log.i("NativeFilmCameraView", "Surface changed: ${width}x${height}")
         surfaceWidth = width
         surfaceHeight = height
-        setupProcessorIfNeeded()
+        renderThread?.updateDimensions(width, height)
     }
 
     override fun surfaceDestroyed(holder: SurfaceHolder) {
         Log.i("NativeFilmCameraView", "Surface destroyed")
-        Choreographer.getInstance().removeFrameCallback(frameCallback)
+        renderThread?.release()
+        renderThread = null
     }
 
     fun release() {
@@ -183,14 +137,10 @@ class NativeFilmCameraView(context: Context) : SurfaceView(context), SurfaceHold
         isReleased = true
         Log.i("NativeFilmCameraView", "Releasing NativeFilmCameraView...")
 
-        Choreographer.getInstance().removeFrameCallback(frameCallback)
         updateScheduler?.release()
         cameraEngine?.release()
         
-        liveProcessor?.release()
-        liveProcessor = null
-
-        currentSurfaceTexture?.release()
-        currentSurfaceTexture = null
+        renderThread?.release()
+        renderThread = null
     }
 }

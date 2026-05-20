@@ -68,20 +68,32 @@ class CapturePipeline(
 
     private suspend fun processAndSave(image: ImageProxy) = withContext(Dispatchers.Default) {
         val procStartTime = System.currentTimeMillis()
+        var bitmap: Bitmap? = null
+        
         try {
             val rotation = image.imageInfo.rotationDegrees
             val buffer = image.planes[0].buffer
             val bytes = ByteArray(buffer.remaining())
             buffer.get(bytes)
             
-            var bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
+            val rawBitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
             if (rotation != 0) {
                 val matrix = Matrix().apply { postRotate(rotation.toFloat()) }
-                val rotated = Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
-                bitmap.recycle()
-                bitmap = rotated
+                bitmap = Bitmap.createBitmap(rawBitmap, 0, 0, rawBitmap.width, rawBitmap.height, matrix, true)
+                rawBitmap.recycle()
+            } else {
+                bitmap = rawBitmap
             }
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to decode photo buffer", e)
+        } finally {
+            // Close image proxy immediately to unfreeze CameraX preview stream!
+            image.close()
+        }
 
+        if (bitmap == null) return@withContext
+
+        try {
             // Crop to target aspect ratio
             val cropped = ImageUtils.cropToAspectRatio(bitmap, config.aspectRatio)
             if (cropped != bitmap) {
@@ -111,17 +123,17 @@ class CapturePipeline(
             }
 
             // 1. Generate and emit a fast low-res preview
-            val previewScale = 512f / maxOf(finalInput.width, finalInput.height).toFloat()
+            val previewScale = 256f / maxOf(finalInput.width, finalInput.height).toFloat()
             if (previewScale < 1f) {
                 val previewBitmap = Bitmap.createScaledBitmap(finalInput, (finalInput.width * previewScale).toInt(), (finalInput.height * previewScale).toInt(), true)
-                val previewProcessed = offscreenProcessor.process(previewBitmap, config)
-                previewBitmap.recycle()
                 
+                // Skip native processing for the tiny thumbnail to avoid double EGL Context teardown
+                // and provide instantaneous UI feedback! Ultra-compressed for speed.
                 val previewFile = java.io.File(context.cacheDir, "preview_capture_${System.currentTimeMillis()}.jpg")
                 previewFile.outputStream().use { os ->
-                    previewProcessed.compress(Bitmap.CompressFormat.JPEG, 85, os)
+                    previewBitmap.compress(Bitmap.CompressFormat.JPEG, 50, os)
                 }
-                previewProcessed.recycle()
+                previewBitmap.recycle()
                 
                 val previewUri = android.net.Uri.fromFile(previewFile).toString()
                 withContext(Dispatchers.Main) {
@@ -156,8 +168,6 @@ class CapturePipeline(
             Log.i(TAG, "Processing complete in ${System.currentTimeMillis() - procStartTime}ms: $uri")
         } catch (e: Exception) {
             Log.e(TAG, "Failed to process photo", e)
-        } finally {
-            image.close()
         }
     }
 

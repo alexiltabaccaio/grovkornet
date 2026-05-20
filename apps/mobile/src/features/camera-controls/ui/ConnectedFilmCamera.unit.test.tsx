@@ -18,7 +18,7 @@ interface MockCameraInstance {
   props: {
     saturation: { value: number };
     iso: { value: number };
-    aspectRatio: { value: number };
+    cameraAspectRatio: { value: number };
     onDebugUpdate: (event: { nativeEvent: { fps: number; hwFps: number; resolution: string } }) => void;
     onExposureUpdate: (event: { nativeEvent: { iso: number; shutterSpeed: number } }) => void;
   };
@@ -40,7 +40,7 @@ describe('ConnectedFilmCamera', () => {
     // Check if props match store values
     expect(nativeCamera.props.saturation.value).toBe(1.5);
     expect(nativeCamera.props.iso.value).toBe(400);
-    expect(nativeCamera.props.aspectRatio.value).toBe(1);
+    expect(nativeCamera.props.cameraAspectRatio.value).toBe(1);
   });
 
   it('handles debug update events', () => {

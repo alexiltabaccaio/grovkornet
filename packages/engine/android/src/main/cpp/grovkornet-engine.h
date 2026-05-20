@@ -88,6 +88,10 @@ public:
     JavaVM* javaVm = nullptr;
     int width = 0;
     int height = 0;
+    int viewportX = 0;
+    int viewportY = 0;
+    int viewportWidth = 0;
+    int viewportHeight = 0;
 
     GrovkornetEngine(filament::Engine* sharedEngine, int w, int h);
     ~GrovkornetEngine();

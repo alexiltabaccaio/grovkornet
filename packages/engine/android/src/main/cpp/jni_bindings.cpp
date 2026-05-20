@@ -44,7 +44,7 @@ Java_com_grovkornet_nativefilmcamera_rendering_OffscreenFilmProcessor_nativeProc
         jfloat saturation, jfloat contrast, jfloat grain_intensity, jfloat grain_chroma,
         jfloat grain_size, jfloat vignette_intensity, jfloat vhs_intensity, jfloat time,
         jfloat ev, jfloat white_balance, jfloat tint, jfloat bloom_intensity,
-        jfloat chromatic_aberration, jfloat aberration_direction) {
+        jfloat chromatic_aberration, jfloat aberration_direction, jfloat sharpening) {
     
     GrovkornetEngine* enginePtr = reinterpret_cast<GrovkornetEngine*>(engine_ptr);
     if (!enginePtr) {
@@ -116,6 +116,10 @@ Java_com_grovkornet_nativefilmcamera_rendering_OffscreenFilmProcessor_nativeProc
     enginePtr->shaderManager.getMaterialInstanceComposite()->setParameter("u_ChromaticAberration", chromatic_aberration);
     enginePtr->shaderManager.getMaterialInstanceComposite()->setParameter("u_AberrationDirection", aberration_direction);
     enginePtr->shaderManager.getMaterialInstanceComposite()->setParameter("u_OverlayEnabled", enginePtr->overlayCompositor.isOverlayEnabled() ? 1.0f : 0.0f);
+    
+    filament::math::float2 texelSize{1.0f / enginePtr->width, 1.0f / enginePtr->height};
+    enginePtr->shaderManager.getMaterialInstanceComposite()->setParameter("u_TexelSize", texelSize);
+    enginePtr->shaderManager.getMaterialInstanceComposite()->setParameter("u_Sharpening", sharpening);
 
     enginePtr->updateDrsAndViewport();
 
@@ -161,7 +165,7 @@ Java_com_grovkornet_nativefilmcamera_rendering_OffscreenFilmProcessor_nativeProc
         jfloat saturation, jfloat contrast, jfloat grain_intensity, jfloat grain_chroma,
         jfloat grain_size, jfloat vignette_intensity, jfloat vhs_intensity, jfloat time,
         jfloat ev, jfloat white_balance, jfloat tint, jfloat bloom_intensity,
-        jfloat chromatic_aberration, jfloat aberration_direction) {
+        jfloat chromatic_aberration, jfloat aberration_direction, jfloat sharpening) {
     
     GrovkornetEngine* enginePtr = reinterpret_cast<GrovkornetEngine*>(engine_ptr);
     if (!enginePtr) {
@@ -226,6 +230,10 @@ Java_com_grovkornet_nativefilmcamera_rendering_OffscreenFilmProcessor_nativeProc
     enginePtr->shaderManager.getMaterialInstanceComposite()->setParameter("u_ChromaticAberration", chromatic_aberration);
     enginePtr->shaderManager.getMaterialInstanceComposite()->setParameter("u_AberrationDirection", aberration_direction);
     enginePtr->shaderManager.getMaterialInstanceComposite()->setParameter("u_OverlayEnabled", enginePtr->overlayCompositor.isOverlayEnabled() ? 1.0f : 0.0f);
+    
+    filament::math::float2 texelSize{1.0f / enginePtr->width, 1.0f / enginePtr->height};
+    enginePtr->shaderManager.getMaterialInstanceComposite()->setParameter("u_TexelSize", texelSize);
+    enginePtr->shaderManager.getMaterialInstanceComposite()->setParameter("u_Sharpening", sharpening);
 
     enginePtr->updateDrsAndViewport();
 
@@ -366,13 +374,20 @@ Java_com_grovkornet_nativefilmcamera_rendering_LiveFilmProcessor_nativeRenderLiv
         jfloat saturation, jfloat contrast, jfloat grain_intensity, jfloat grain_chroma,
         jfloat grain_size, jfloat vignette_intensity, jfloat vhs_intensity, jfloat time,
         jfloat ev, jfloat white_balance, jfloat tint, jfloat bloom_intensity,
-        jfloat chromatic_aberration, jfloat aberration_direction, jfloatArray uv_matrix) {
+        jfloat chromatic_aberration, jfloat aberration_direction, jfloat sharpening, jfloatArray uv_matrix,
+        jint vpX, jint vpY, jint vpWidth, jint vpHeight) {
     
     GrovkornetEngine* enginePtr = reinterpret_cast<GrovkornetEngine*>(engine_ptr);
     filament::SwapChain* liveSwapChain = reinterpret_cast<filament::SwapChain*>(swapchain_ptr);
     if (!enginePtr || !liveSwapChain || !uv_matrix) {
         return;
     }
+    
+    // Update viewport before render
+    enginePtr->viewportX = vpX;
+    enginePtr->viewportY = vpY;
+    enginePtr->viewportWidth = vpWidth;
+    enginePtr->viewportHeight = vpHeight;
     
     // Convert jfloatArray to filament::math::mat4f
     jfloat* matrixElements = env->GetFloatArrayElements(uv_matrix, 0);
@@ -414,6 +429,10 @@ Java_com_grovkornet_nativefilmcamera_rendering_LiveFilmProcessor_nativeRenderLiv
     enginePtr->shaderManager.getMaterialInstanceComposite()->setParameter("u_ChromaticAberration", chromatic_aberration);
     enginePtr->shaderManager.getMaterialInstanceComposite()->setParameter("u_AberrationDirection", aberration_direction);
     enginePtr->shaderManager.getMaterialInstanceComposite()->setParameter("u_OverlayEnabled", enginePtr->overlayCompositor.isOverlayEnabled() ? 1.0f : 0.0f);
+    
+    filament::math::float2 texelSize{1.0f / enginePtr->width, 1.0f / enginePtr->height};
+    enginePtr->shaderManager.getMaterialInstanceComposite()->setParameter("u_TexelSize", texelSize);
+    enginePtr->shaderManager.getMaterialInstanceComposite()->setParameter("u_Sharpening", sharpening);
     
     enginePtr->updateDrsAndViewport();
     
