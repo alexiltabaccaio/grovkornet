@@ -6,7 +6,6 @@ import com.facebook.react.bridge.WritableMap
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.kotlin.viewevent.EventDispatcher
-import com.grovkornet.nativefilmcamera.rendering.FilmRenderer
 import com.grovkornet.nativefilmcamera.camera.CameraEngine
 import com.grovkornet.nativefilmcamera.ui.NativeFilmCameraView
 import kotlin.math.roundToInt
@@ -45,6 +44,12 @@ class NativeFilmCameraModule : Module() {
       }
       Prop("grainEnabled") { view: NativeFilmCameraView, value: Boolean ->
         view.updateEffect { grainEnabled = value }
+      }
+      Prop("bloomEnabled") { view: NativeFilmCameraView, value: Boolean ->
+        view.updateEffect { bloomEnabled = value }
+      }
+      Prop("bloomIntensity") { view: NativeFilmCameraView, value: Float ->
+        view.updateEffect { bloomIntensity = value }
       }
       Prop("chromaticAberration") { view: NativeFilmCameraView, value: Float ->
         view.updateEffect { aberration = value }

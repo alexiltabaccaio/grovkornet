@@ -34,6 +34,18 @@ export const FlawsModule = ({ handlePressWithDouble }: FlawsModuleProps) => {
         />
       ),
     },
+    {
+      id: 'bloom',
+      component: (
+        <ConnectedParameter
+          id="bloom"
+          label={t('parameters.bloom')}
+          variant="text"
+          handlePressWithDouble={handlePressWithDouble}
+          disableGestures={true}
+        />
+      ),
+    },
   ], [t, handlePressWithDouble]);
 
   return (

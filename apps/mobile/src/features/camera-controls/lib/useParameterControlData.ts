@@ -19,6 +19,8 @@ export const useParameterControlData = (parameter: ParameterType) => {
       setContrast: s.setContrast,
       chromaticAberration: s.chromaticAberration,
       setChromaticAberration: s.setChromaticAberration,
+      bloomIntensity: s.bloomIntensity,
+      setBloomIntensity: s.setBloomIntensity,
     }))
   );
 
@@ -150,6 +152,25 @@ export const useParameterControlData = (parameter: ParameterType) => {
         hideValueInAuto: false,
         autoValueText: 'AUTO',
         onReset: () => stylesState.setChromaticAberration(0.0),
+        onToggleAuto: undefined,
+        disabled: undefined,
+      };
+    case 'bloom':
+      return {
+        value: stylesState.bloomIntensity,
+        minValue: 0.0,
+        maxValue: 1.0,
+        centerValue: undefined,
+        onChange: stylesState.setBloomIntensity,
+        onUpdateWorklet: worklets.updateBloomIntensity,
+        isAuto: undefined,
+        valueFormatter: (v: number) => {
+          'worklet';
+          return `${Math.round(v * 100)}`;
+        },
+        hideValueInAuto: false,
+        autoValueText: 'AUTO',
+        onReset: () => stylesState.setBloomIntensity(0.0),
         onToggleAuto: undefined,
         disabled: undefined,
       };

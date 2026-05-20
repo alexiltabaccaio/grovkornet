@@ -2,7 +2,7 @@
 #include "grovkornet-engine.h"
 
 TEST(GrovkornetEngineTest, BasicInitializationAndProperties) {
-    GrovkornetEngine engine(640, 480);
+    GrovkornetEngine engine(nullptr, 640, 480);
     
     // Verify properties are set correctly
     EXPECT_EQ(engine.width, 640);

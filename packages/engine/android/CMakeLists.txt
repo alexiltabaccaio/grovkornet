@@ -39,6 +39,11 @@ import_filament_lib(bluevk)
 # Define our shared library target
 add_library(grovkornet-engine SHARED
     src/main/cpp/grovkornet-engine.cpp
+    src/main/cpp/GeometryBuilder.cpp
+    src/main/cpp/LutGenerator.cpp
+    src/main/cpp/OverlayCompositor.cpp
+    src/main/cpp/ShaderManager.cpp
+    src/main/cpp/jni_bindings.cpp
 )
 
 # Locate standard Android NDK libraries
@@ -84,6 +89,10 @@ if (EXISTS "${ANDROID_NDK}/sources/third_party/googletest")
     add_executable(grovkornet-engine-tests
         src/test/cpp/engine_tests.cpp
         src/main/cpp/grovkornet-engine.cpp
+        src/main/cpp/GeometryBuilder.cpp
+        src/main/cpp/LutGenerator.cpp
+        src/main/cpp/OverlayCompositor.cpp
+        src/main/cpp/ShaderManager.cpp
     )
     
     # Include headers

@@ -46,6 +46,8 @@ export const ConnectedFilmCamera = ({ cameraKey }: ConnectedFilmCameraProps) => 
         grainChroma={styleStore.grainChroma as unknown as SharedValue<number | undefined>}
         grainSize={styleStore.grainSize as unknown as SharedValue<number | undefined>}
         grainEnabled={styleStore.grainEnabled as unknown as SharedValue<boolean | undefined>}
+        bloomEnabled={styleStore.bloomEnabled as unknown as SharedValue<boolean | undefined>}
+        bloomIntensity={styleStore.bloomIntensity as unknown as SharedValue<number | undefined>}
         iso={hwStore.iso as unknown as SharedValue<number | undefined>}
         exposureTime={hwStore.shutterSpeed as unknown as SharedValue<number | undefined>}
         ev={hwStore.ev as unknown as SharedValue<number | undefined>}

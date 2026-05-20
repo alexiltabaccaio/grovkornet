@@ -11,6 +11,7 @@ class OffscreenFilmProcessor {
     private val TAG = "OffscreenProcessor"
 
     private var nativeEnginePtr: Long = 0L
+    private var filamentEngine: com.google.android.filament.Engine? = null
     private val processMutex = Mutex()
 
     private var isPrepared = false
@@ -31,7 +32,7 @@ class OffscreenFilmProcessor {
     }
 
     // Native JNI methods
-    private external fun nativePrepare(width: Int, height: Int): Long
+    private external fun nativePrepare(engineNativePtr: Long, width: Int, height: Int): Long
     private external fun nativeProcessBitmap(
         nativeEnginePtr: Long,
         input: Bitmap,
@@ -46,7 +47,10 @@ class OffscreenFilmProcessor {
         time: Float,
         ev: Float,
         whiteBalance: Float,
-        tint: Float
+        tint: Float,
+        bloomIntensity: Float,
+        chromaticAberration: Float,
+        aberrationDirection: Float
     )
     private external fun nativeProcessHardwareBuffer(
         nativeEnginePtr: Long,
@@ -61,7 +65,10 @@ class OffscreenFilmProcessor {
         time: Float,
         ev: Float,
         whiteBalance: Float,
-        tint: Float
+        tint: Float,
+        bloomIntensity: Float,
+        chromaticAberration: Float,
+        aberrationDirection: Float
     )
     private external fun nativeUpdateOverlay(
         nativeEnginePtr: Long,
@@ -80,7 +87,12 @@ class OffscreenFilmProcessor {
         try {
             if (isPrepared) release()
 
-            nativeEnginePtr = nativePrepare(width, height)
+            if (filamentEngine == null) {
+                filamentEngine = com.google.android.filament.Engine.create()
+            }
+            val enginePtr = filamentEngine!!.nativeObject
+
+            nativeEnginePtr = nativePrepare(enginePtr, width, height)
             if (nativeEnginePtr == 0L) {
                 throw RuntimeException("nativePrepare returned 0 pointer")
             }
@@ -136,7 +148,10 @@ class OffscreenFilmProcessor {
                 time,
                 params.ev,
                 params.whiteBalance,
-                params.tint
+                params.tint,
+                if (params.bloomEnabled) params.bloomIntensity else 0.0f,
+                params.aberration,
+                params.aberrationDirection.toFloat()
             )
 
             Log.i(TAG, "Frame processed natively in ${System.currentTimeMillis() - startTime}ms")
@@ -183,7 +198,10 @@ class OffscreenFilmProcessor {
                     time,
                     params.ev,
                     params.whiteBalance,
-                    params.tint
+                    params.tint,
+                    if (params.bloomEnabled) params.bloomIntensity else 0.0f,
+                    params.aberration,
+                    params.aberrationDirection.toFloat()
                 )
                 Log.i(TAG, "HardwareBuffer processed natively (zero-copy) in ${System.currentTimeMillis() - startTime}ms")
             } catch (e: Exception) {
@@ -215,6 +233,11 @@ class OffscreenFilmProcessor {
         if (nativeEnginePtr != 0L) {
             nativeRelease(nativeEnginePtr)
             nativeEnginePtr = 0L
+        }
+
+        if (filamentEngine != null) {
+            filamentEngine!!.destroy()
+            filamentEngine = null
         }
         
         isPrepared = false

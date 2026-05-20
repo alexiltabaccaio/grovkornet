@@ -33,6 +33,7 @@
       "saturation": "SATURAZIONE",
       "contrast": "CONTRASTO",
       "chromatic_aberration": "ABERRAZIONE CROMATICA",
+      "bloom": "BLOOM",
       "direction": "DIREZIONE",
       "iso": "ISO",
       "ev": "EV",

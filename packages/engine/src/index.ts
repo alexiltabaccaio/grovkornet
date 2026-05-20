@@ -9,6 +9,8 @@ export interface NativeFilmCameraViewProps extends ViewProps {
   grainChroma?: number;
   grainSize?: number;
   grainEnabled?: boolean;
+  bloomEnabled?: boolean;
+  bloomIntensity?: number;
   chromaticAberration?: number;
   aberrationDirection?: number;
   isoAuto?: boolean;

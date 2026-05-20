@@ -78,6 +78,8 @@ export interface EffectsState {
   noiseReductionAuto: SharedValue<boolean>;
   noiseReductionMode: SharedValue<number>;
   sharpening: SharedValue<number>;
+  bloomEnabled: SharedValue<boolean>;
+  bloomIntensity: SharedValue<number>;
 }
 
 export interface EffectsActions {
@@ -92,6 +94,8 @@ export interface EffectsActions {
   setNoiseReductionAuto: (value: boolean) => void;
   setNoiseReductionMode: (mode: number) => void;
   setSharpening: (value: number) => void;
+  setBloomEnabled: (value: boolean) => void;
+  setBloomIntensity: (value: number) => void;
   resetEffect: (effect: string) => void;
 }
 

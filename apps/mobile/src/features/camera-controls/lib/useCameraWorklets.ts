@@ -100,6 +100,13 @@ export const useCameraWorklets = () => {
     updateSharedValue(hw.torchStrength, value);
   };
 
+  const updateBloomIntensity = (value: number) => {
+    'worklet';
+    const safeValue = Math.max(value, 0);
+    updateSharedValue(styles.bloomIntensity, safeValue);
+    updateSharedValue(styles.bloomEnabled, safeValue > 0);
+  };
+
   return {
     updateGrain,
     updateGrainChroma,
@@ -116,5 +123,6 @@ export const useCameraWorklets = () => {
     updateFocusDistance,
     updateSharpening,
     updateTorchStrength,
+    updateBloomIntensity,
   };
 };

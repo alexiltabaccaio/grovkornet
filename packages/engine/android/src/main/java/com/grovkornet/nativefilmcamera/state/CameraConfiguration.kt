@@ -18,6 +18,8 @@ data class CameraConfiguration(
     var sharpening: Float = 0.0f,
     var vignetteIntensity: Float = 0.0f,
     var vhsIntensity: Float = 0.0f,
+    var bloomEnabled: Boolean = false,
+    var bloomIntensity: Float = 0.35f,
 
     // Hardware Props
     var ev: Float = 0.0f,

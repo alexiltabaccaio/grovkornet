@@ -1,6 +1,7 @@
 #pragma once
 #include <jni.h>
 #include <chrono>
+#include <vector>
 
 #include <filament/Engine.h>
 #include <filament/Viewport.h>
@@ -15,10 +16,10 @@
 #include <filament/VertexBuffer.h>
 #include <filament/IndexBuffer.h>
 #include <utils/Entity.h>
-#include <thread>
-#include <mutex>
-#include <condition_variable>
-#include <vector>
+
+#include "ShaderManager.h"
+#include "LutGenerator.h"
+#include "OverlayCompositor.h"
 
 class GrovkornetEngine {
 public:
@@ -42,34 +43,14 @@ public:
     filament::View* viewBlurUp = nullptr;
     filament::Scene* sceneBlurUp = nullptr;
     
-    // Geometry for full-screen quads
+    // Geometry
     filament::VertexBuffer* vertexBuffer = nullptr;
     filament::IndexBuffer* indexBuffer = nullptr;
-    utils::Entity quadEntity;
     utils::Entity quadGrading;
     utils::Entity quadDownsample;
     utils::Entity quadBlurDown;
     utils::Entity quadBlurUp;
     utils::Entity quadComposite;
-    
-    // Materials
-    filament::Material* material2D = nullptr;
-    filament::MaterialInstance* materialInstance2D = nullptr;
-    
-    filament::Material* materialExternal = nullptr;
-    filament::MaterialInstance* materialInstanceExternal = nullptr;
-    
-    filament::Material* materialDownsample = nullptr;
-    filament::MaterialInstance* materialInstanceDownsample = nullptr;
-    
-    filament::Material* materialBlurDown = nullptr;
-    filament::MaterialInstance* materialInstanceBlurDown = nullptr;
-    
-    filament::Material* materialBlurUp = nullptr;
-    filament::MaterialInstance* materialInstanceBlurUp = nullptr;
-    
-    filament::Material* materialComposite = nullptr;
-    filament::MaterialInstance* materialInstanceComposite = nullptr;
     
     // Textures & Render Targets
     filament::Texture* inputTexture2D = nullptr;
@@ -90,25 +71,10 @@ public:
     
     filament::Texture* overlayTexture = nullptr;
     
-    // Background LUT generation thread
-    std::thread lutThread;
-    std::mutex lutMutex;
-    std::condition_variable lutCv;
-    bool lutThreadRunning = false;
-    bool lutParametersDirty = false;
-    bool lutDataReady = false;
-    
-    // Background compositing thread
-    std::thread compositingThread;
-    std::mutex compositingMutex;
-    std::condition_variable compositingCv;
-    bool compositingThreadRunning = false;
-    bool compositingInProgress = false;
-    bool compositingDataReady = false;
-    std::vector<uint8_t> overlayBuffer;
-    std::vector<jobject> pendingBitmaps;
-    JavaVM* javaVm = nullptr;
-    bool overlayEnabled = false;
+    // Subsystems
+    ShaderManager shaderManager;
+    LutGenerator lutGenerator;
+    OverlayCompositor overlayCompositor;
     
     // DRS (Dynamic Resolution Scaling)
     float currentDrsScale = 1.0f;
@@ -119,35 +85,11 @@ public:
     static constexpr size_t FRAME_TIME_WINDOW_SIZE = 10;
     static constexpr int DRS_COOLDOWN_FRAMES = 30;
     
-    // Sliders & Uniform parameters
-    float currentSaturation = 1.0f;
-    float currentContrast = 1.0f;
-    float currentEv = 0.0f;
-    float currentWhiteBalance = 5000.0f;
-    float currentTint = 0.0f;
-    
-    float currentGrainIntensity = 0.0f;
-    float currentGrainChroma = 0.0f;
-    float currentGrainSize = 1.0f;
-    float currentVignetteIntensity = 0.0f;
-    float currentVhsIntensity = 0.0f;
-    float currentTime = 0.0f;
-    
-    // Cache of active parameters mapped into GPU texture
-    float activeSaturation = -1.0f;
-    float activeContrast = -1.0f;
-    float activeEv = -1.0f;
-    float activeWhiteBalance = -1.0f;
-    float activeTint = -1.0f;
-    
-    // Grid size for 3D LUT
-    static constexpr int LUT_SIZE = 33;
-    std::vector<uint8_t> lutBuffer; // Size: LUT_SIZE * LUT_SIZE * LUT_SIZE * 4 (RGBA)
-    
+    JavaVM* javaVm = nullptr;
     int width = 0;
     int height = 0;
 
-    GrovkornetEngine(int w, int h);
+    GrovkornetEngine(filament::Engine* sharedEngine, int w, int h);
     ~GrovkornetEngine();
     
     bool init();
@@ -157,13 +99,9 @@ public:
     
     void triggerOverlayUpdate(std::vector<jobject>&& bitmaps, JNIEnv* env);
     void applyOverlayTextureUpdate();
+
+    void setExternalStream(filament::Stream* stream);
     
     void updateDrsAndViewport();
     void recordFrameTimeAndEvaluate(float frameTimeMs);
-    
-private:
-    bool initMaterials();
-    void initGeometry();
-    void lutGenerationLoop();
-    void compositingLoop();
 };
