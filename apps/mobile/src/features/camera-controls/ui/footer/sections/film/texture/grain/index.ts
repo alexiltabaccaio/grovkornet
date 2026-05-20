@@ -1,1 +1,1 @@
-export * from './GrainSubExtensions';
+export * from './GrainExtension';

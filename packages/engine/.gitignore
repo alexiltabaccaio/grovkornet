@@ -7,3 +7,7 @@ ios/build/
 
 # Dependencies
 node_modules/
+
+# Filament binaries & temp files
+android/filament/
+android/*.tgz

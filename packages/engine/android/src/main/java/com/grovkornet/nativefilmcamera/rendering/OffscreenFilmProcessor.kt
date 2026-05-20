@@ -38,6 +38,12 @@ class OffscreenFilmProcessor {
         output: Bitmap,
         saturation: Float,
         contrast: Float,
+        grainIntensity: Float,
+        grainChroma: Float,
+        grainSize: Float,
+        vignetteIntensity: Float,
+        vhsIntensity: Float,
+        time: Float,
         ev: Float,
         whiteBalance: Float,
         tint: Float
@@ -47,11 +53,23 @@ class OffscreenFilmProcessor {
         hardwareBuffer: android.hardware.HardwareBuffer,
         saturation: Float,
         contrast: Float,
+        grainIntensity: Float,
+        grainChroma: Float,
+        grainSize: Float,
+        vignetteIntensity: Float,
+        vhsIntensity: Float,
+        time: Float,
         ev: Float,
         whiteBalance: Float,
         tint: Float
     )
+    private external fun nativeUpdateOverlay(
+        nativeEnginePtr: Long,
+        bitmaps: Array<Bitmap>
+    )
     private external fun nativeRelease(nativeEnginePtr: Long)
+    private external fun nativeGetDrsScale(nativeEnginePtr: Long): Float
+    private external fun nativeSimulateFrameTime(nativeEnginePtr: Long, frameTimeMs: Float)
 
     fun prepare(width: Int, height: Int) {
         if (isPrepared && currentWidth == width && currentHeight == height) return
@@ -101,6 +119,7 @@ class OffscreenFilmProcessor {
 
         try {
             val outputBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+            val time = (System.currentTimeMillis() % 100000) / 1000f
             
             // Process pixels in C++
             nativeProcessBitmap(
@@ -109,6 +128,12 @@ class OffscreenFilmProcessor {
                 outputBitmap,
                 params.saturation,
                 params.contrast,
+                if (params.grainEnabled) params.grainIntensity else 0.0f,
+                params.grainChroma,
+                params.grainSize,
+                params.vignetteIntensity,
+                params.vhsIntensity,
+                time,
                 params.ev,
                 params.whiteBalance,
                 params.tint
@@ -143,12 +168,19 @@ class OffscreenFilmProcessor {
             }
 
             val startTime = System.currentTimeMillis()
+            val time = (System.currentTimeMillis() % 100000) / 1000f
             try {
                 nativeProcessHardwareBuffer(
                     nativeEnginePtr,
                     hardwareBuffer,
                     params.saturation,
                     params.contrast,
+                    if (params.grainEnabled) params.grainIntensity else 0.0f,
+                    params.grainChroma,
+                    params.grainSize,
+                    params.vignetteIntensity,
+                    params.vhsIntensity,
+                    time,
                     params.ev,
                     params.whiteBalance,
                     params.tint
@@ -157,6 +189,22 @@ class OffscreenFilmProcessor {
             } catch (e: Exception) {
                 Log.e(TAG, "Offscreen native HardwareBuffer processing failed", e)
             }
+        }
+    }
+
+    fun updateOverlay(bitmaps: Array<Bitmap>) {
+        if (nativeEnginePtr != 0L) {
+            nativeUpdateOverlay(nativeEnginePtr, bitmaps)
+        }
+    }
+
+    fun getDrsScale(): Float {
+        return if (nativeEnginePtr != 0L) nativeGetDrsScale(nativeEnginePtr) else 1.0f
+    }
+
+    fun simulateFrameTime(frameTimeMs: Float) {
+        if (nativeEnginePtr != 0L) {
+            nativeSimulateFrameTime(nativeEnginePtr, frameTimeMs)
         }
     }
 

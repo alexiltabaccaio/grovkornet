@@ -4,6 +4,7 @@ import android.graphics.Bitmap
 import android.graphics.Color
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.grovkornet.nativefilmcamera.state.CameraConfiguration
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.*
 import org.junit.Test
@@ -147,6 +148,152 @@ class OffscreenFilmProcessorTest {
         assertTrue("Bloom should bleed light into nearby black pixels: R=$rBleed, G=$gBleed, B=$bBleed",
             rBleed > 0 || gBleed > 0 || bBleed > 0)
             
+        processor.release()
+    }
+
+    @Test
+    fun testProceduralEffects() = runBlocking {
+        val processor = OffscreenFilmProcessor()
+        val width = 64
+        val height = 64
+        processor.prepare(width, height)
+        
+        val inputBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+        inputBitmap.eraseColor(Color.BLUE) // solid blue input
+        
+        // 1. Identity Render
+        val identityParams = CameraConfiguration(
+            saturation = 1.0f,
+            contrast = 1.0f,
+            ev = 0.0f,
+            whiteBalance = 5000.0f,
+            tint = 0.0f,
+            grainEnabled = false,
+            vignetteIntensity = 0.0f,
+            vhsIntensity = 0.0f
+        )
+        val outIdentity = processor.process(inputBitmap, identityParams)
+        val cornerIdentity = outIdentity.getPixel(2, 2)
+        
+        // 2. Render with vignette (center should be normal, but corners should be darker)
+        val vignetteParams = CameraConfiguration(
+            saturation = 1.0f,
+            contrast = 1.0f,
+            ev = 0.0f,
+            whiteBalance = 5000.0f,
+            tint = 0.0f,
+            grainEnabled = false,
+            vignetteIntensity = 1.0f,
+            vhsIntensity = 0.0f
+        )
+        val outVignette = processor.process(inputBitmap, vignetteParams)
+        val cornerVignette = outVignette.getPixel(2, 2)
+        
+        assertTrue("Vignette should darken the corners of the image: B_vignette (${Color.blue(cornerVignette)}) < B_identity (${Color.blue(cornerIdentity)})",
+            Color.blue(cornerVignette) < Color.blue(cornerIdentity))
+            
+        // 3. Render with high grain intensity
+        val grainParams = CameraConfiguration(
+            saturation = 1.0f,
+            contrast = 1.0f,
+            ev = 0.0f,
+            whiteBalance = 5000.0f,
+            tint = 0.0f,
+            grainEnabled = true,
+            grainIntensity = 0.5f,
+            grainChroma = 0.5f,
+            grainSize = 1.0f,
+            vignetteIntensity = 0.0f,
+            vhsIntensity = 0.0f
+        )
+        val outGrain = processor.process(inputBitmap, grainParams)
+        
+        // Grain is random noise, so nearby pixels in solid area should not be identical anymore
+        val pixel1 = outGrain.getPixel(width / 2, height / 2)
+        val pixel2 = outGrain.getPixel(width / 2 + 1, height / 2)
+        assertNotEquals("Grain should introduce pixel noise variance", pixel1, pixel2)
+        
+        processor.release()
+    }
+
+    @Test
+    fun testOverlayBlending() = runBlocking {
+        val processor = OffscreenFilmProcessor()
+        val width = 64
+        val height = 64
+        processor.prepare(width, height)
+        
+        val inputBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+        inputBitmap.eraseColor(Color.BLACK)
+        
+        // Create an overlay bitmap with a solid red dot in the center (transparent elsewhere)
+        val overlayBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+        overlayBitmap.eraseColor(Color.TRANSPARENT)
+        for (y in 20..30) {
+            for (x in 20..30) {
+                overlayBitmap.setPixel(x, y, Color.RED)
+            }
+        }
+        
+        // Pass to native overlay
+        processor.updateOverlay(arrayOf(overlayBitmap))
+        
+        // Give background thread a tiny moment to process the overlay blend before we render
+        delay(100)
+        
+        // Render
+        val params = CameraConfiguration(
+            saturation = 1.0f,
+            contrast = 1.0f,
+            ev = 0.0f,
+            whiteBalance = 5000.0f,
+            tint = 0.0f,
+            grainEnabled = false,
+            vignetteIntensity = 0.0f,
+            vhsIntensity = 0.0f
+        )
+        
+        val output = processor.process(inputBitmap, params)
+        
+        // Center-ish pixel (25, 25) should now be red
+        val pixelOver = output.getPixel(25, 25)
+        val r = Color.red(pixelOver)
+        val g = Color.green(pixelOver)
+        val b = Color.blue(pixelOver)
+        
+        assertTrue("Overlay should blend red color onto the black input image: R=$r, G=$g, B=$b", r > 100 && g < 50 && b < 50)
+        
+        processor.release()
+    }
+
+    @Test
+    fun testDynamicResolutionScaling() = runBlocking {
+        val processor = OffscreenFilmProcessor()
+        val width = 64
+        val height = 64
+        processor.prepare(width, height)
+        
+        // Initial DRS scale should be 1.0
+        assertEquals("Initial DRS scale should be 1.0f", 1.0f, processor.getDrsScale(), 0.001f)
+        
+        // Simulate high frame times (e.g. 20ms) to trigger resolution scale down.
+        // We need to send at least 10 frames to fill the moving window.
+        for (i in 1..10) {
+            processor.simulateFrameTime(20.0f)
+        }
+        
+        val scaleAfterHighLoad = processor.getDrsScale()
+        assertTrue("DRS scale should have decreased under high load (current: $scaleAfterHighLoad)", scaleAfterHighLoad < 1.0f)
+        
+        // Simulate low frame times (e.g. 5ms) to trigger resolution scale up.
+        // We need to send low frame times. We need to do it at least 35 times (exceeding 30 frame cooldown).
+        for (i in 1..35) {
+            processor.simulateFrameTime(5.0f)
+        }
+        
+        val scaleAfterRecovery = processor.getDrsScale()
+        assertTrue("DRS scale should have recovered/increased under low load (current: $scaleAfterRecovery)", scaleAfterRecovery > scaleAfterHighLoad)
+        
         processor.release()
     }
 }

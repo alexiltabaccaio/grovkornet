@@ -16,6 +16,8 @@ data class CameraConfiguration(
     var whiteBalance: Float = 5000.0f,
     var tint: Float = 0.0f,
     var sharpening: Float = 0.0f,
+    var vignetteIntensity: Float = 0.0f,
+    var vhsIntensity: Float = 0.0f,
 
     // Hardware Props
     var ev: Float = 0.0f,

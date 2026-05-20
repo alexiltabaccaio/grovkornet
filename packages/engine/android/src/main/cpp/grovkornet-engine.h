@@ -1,4 +1,6 @@
 #pragma once
+#include <jni.h>
+#include <chrono>
 
 #include <filament/Engine.h>
 #include <filament/Viewport.h>
@@ -86,6 +88,8 @@ public:
     filament::Texture* bloomTexUp = nullptr;
     filament::RenderTarget* bloomUpRenderTarget = nullptr;
     
+    filament::Texture* overlayTexture = nullptr;
+    
     // Background LUT generation thread
     std::thread lutThread;
     std::mutex lutMutex;
@@ -94,12 +98,40 @@ public:
     bool lutParametersDirty = false;
     bool lutDataReady = false;
     
-    // Sliders
+    // Background compositing thread
+    std::thread compositingThread;
+    std::mutex compositingMutex;
+    std::condition_variable compositingCv;
+    bool compositingThreadRunning = false;
+    bool compositingInProgress = false;
+    bool compositingDataReady = false;
+    std::vector<uint8_t> overlayBuffer;
+    std::vector<jobject> pendingBitmaps;
+    JavaVM* javaVm = nullptr;
+    bool overlayEnabled = false;
+    
+    // DRS (Dynamic Resolution Scaling)
+    float currentDrsScale = 1.0f;
+    std::vector<float> recentFrameTimes;
+    int framesSinceLastDrsScale = 0;
+    static constexpr float MIN_DRS_SCALE = 0.5f;
+    static constexpr float MAX_DRS_SCALE = 1.0f;
+    static constexpr size_t FRAME_TIME_WINDOW_SIZE = 10;
+    static constexpr int DRS_COOLDOWN_FRAMES = 30;
+    
+    // Sliders & Uniform parameters
     float currentSaturation = 1.0f;
     float currentContrast = 1.0f;
     float currentEv = 0.0f;
     float currentWhiteBalance = 5000.0f;
     float currentTint = 0.0f;
+    
+    float currentGrainIntensity = 0.0f;
+    float currentGrainChroma = 0.0f;
+    float currentGrainSize = 1.0f;
+    float currentVignetteIntensity = 0.0f;
+    float currentVhsIntensity = 0.0f;
+    float currentTime = 0.0f;
     
     // Cache of active parameters mapped into GPU texture
     float activeSaturation = -1.0f;
@@ -123,8 +155,15 @@ public:
     void triggerLutUpdate(float saturation, float contrast, float ev, float whiteBalance, float tint);
     void applyLutTextureUpdate();
     
+    void triggerOverlayUpdate(std::vector<jobject>&& bitmaps, JNIEnv* env);
+    void applyOverlayTextureUpdate();
+    
+    void updateDrsAndViewport();
+    void recordFrameTimeAndEvaluate(float frameTimeMs);
+    
 private:
     bool initMaterials();
     void initGeometry();
     void lutGenerationLoop();
+    void compositingLoop();
 };

@@ -20,7 +20,7 @@ import { AspectRatioExtension } from './sections/body/capture/aspect-ratio';
 import { FpsExtension } from './sections/body/capture/fps-setting';
 import { ResolutionExtension } from './sections/body/capture/resolution-setting';
 import { ChromaticAberrationExtension } from './sections/lens/flaws/aberration/ChromaticAberrationExtension';
-import { GrainSubExtensions } from './sections/film/texture/grain';
+import { GrainExtension } from './sections/film/texture/grain';
 interface FooterParameterExtensionsProps {
   translateY: SharedValue<number>;
 }
@@ -90,7 +90,7 @@ export const FooterParameterExtensions = ({ translateY }: FooterParameterExtensi
             parameterExtensionAnimatedStyle={parameterExtensionAnimatedStyle}
           />
           <Animated.View style={[styles.childSubContainer, animatedStyle]}>
-            <GrainSubExtensions />
+            <GrainExtension />
           </Animated.View>
         </View>
       );

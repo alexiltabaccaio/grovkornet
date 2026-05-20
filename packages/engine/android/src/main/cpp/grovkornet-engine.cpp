@@ -34,6 +34,7 @@
 GrovkornetEngine::GrovkornetEngine(int w, int h) : width(w), height(h) {
     lutBuffer.resize(LUT_SIZE * LUT_SIZE * LUT_SIZE * 4, 0);
     lutParametersDirty = true;
+    overlayBuffer.resize(width * height * 4, 0);
 }
 
 bool GrovkornetEngine::init() {
@@ -208,6 +209,20 @@ bool GrovkornetEngine::init() {
         return false;
     }
     
+    // Initialize 2D Overlay Texture
+    overlayTexture = filament::Texture::Builder()
+        .width(width)
+        .height(height)
+        .levels(1)
+        .sampler(filament::Texture::Sampler::SAMPLER_2D)
+        .format(filament::Texture::InternalFormat::RGBA8)
+        .build(*engine);
+        
+    if (!overlayTexture) {
+        LOGE("Failed to create Overlay Texture");
+        return false;
+    }
+    
     // 6. Bind static parameters on materials
     filament::TextureSampler samplerLinear(filament::TextureSampler::MinFilter::LINEAR, filament::TextureSampler::MagFilter::LINEAR);
     
@@ -225,10 +240,22 @@ bool GrovkornetEngine::init() {
     
     materialInstanceComposite->setParameter("u_Texture", gradedTexture, samplerLinear);
     materialInstanceComposite->setParameter("u_BloomTexture", bloomTexUp, samplerLinear);
+    materialInstanceComposite->setParameter("u_OverlayTexture", overlayTexture, samplerLinear);
+    materialInstanceComposite->setParameter("u_OverlayEnabled", 0.0f);
+    materialInstanceComposite->setParameter("u_GrainIntensity", 0.0f);
+    materialInstanceComposite->setParameter("u_GrainChroma", 0.0f);
+    materialInstanceComposite->setParameter("u_GrainSize", 1.0f);
+    materialInstanceComposite->setParameter("u_VignetteIntensity", 0.0f);
+    materialInstanceComposite->setParameter("u_VhsIntensity", 0.0f);
+    materialInstanceComposite->setParameter("u_Time", 0.0f);
 
     // Start background thread for LUT baking
     lutThreadRunning = true;
     lutThread = std::thread(&GrovkornetEngine::lutGenerationLoop, this);
+    
+    // Start background thread for overlay compositing
+    compositingThreadRunning = true;
+    compositingThread = std::thread(&GrovkornetEngine::compositingLoop, this);
     
     // Trigger initial LUT bake
     triggerLutUpdate(1.0f, 1.0f, 0.0f, 5000.0f, 0.0f);
@@ -248,6 +275,16 @@ GrovkornetEngine::~GrovkornetEngine() {
     }
     if (lutThread.joinable()) {
         lutThread.join();
+    }
+    
+    // Stop background compositing thread
+    {
+        std::unique_lock<std::mutex> lock(compositingMutex);
+        compositingThreadRunning = false;
+        compositingCv.notify_all();
+    }
+    if (compositingThread.joinable()) {
+        compositingThread.join();
     }
     
     if (engine) {
@@ -307,6 +344,7 @@ GrovkornetEngine::~GrovkornetEngine() {
         if (bloomTexDown) engine->destroy(bloomTexDown);
         if (bloomTexBlur) engine->destroy(bloomTexBlur);
         if (bloomTexUp) engine->destroy(bloomTexUp);
+        if (overlayTexture) engine->destroy(overlayTexture);
         
         if (swapChain) engine->destroy(swapChain);
         engine->destroy(view);
@@ -344,7 +382,7 @@ bool GrovkornetEngine::initMaterials() {
     const char* shaderDownsample = R"SHADER(
         void material(inout MaterialInputs material) {
             prepareMaterial(material);
-            vec2 uv = getUV0();
+            vec2 uv = getUV0() * materialParams.u_DrsScale;
             vec4 color = texture(materialParams_u_Texture, uv);
             
             // Extract luminance
@@ -362,7 +400,7 @@ bool GrovkornetEngine::initMaterials() {
     const char* shaderBlurDown = R"SHADER(
         void material(inout MaterialInputs material) {
             prepareMaterial(material);
-            vec2 uv = getUV0();
+            vec2 uv = getUV0() * materialParams.u_DrsScale;
             vec2 texelSize = materialParams.u_TexelSize;
             vec2 halfPixel = texelSize * 0.5;
             
@@ -379,7 +417,7 @@ bool GrovkornetEngine::initMaterials() {
     const char* shaderBlurUp = R"SHADER(
         void material(inout MaterialInputs material) {
             prepareMaterial(material);
-            vec2 uv = getUV0();
+            vec2 uv = getUV0() * materialParams.u_DrsScale;
             vec2 texelSize = materialParams.u_TexelSize;
             
             vec2 d1 = texelSize * 1.0;
@@ -401,15 +439,67 @@ bool GrovkornetEngine::initMaterials() {
     )SHADER";
 
     const char* shaderComposite = R"SHADER(
+        highp float rand(highp vec2 co) {
+            return fract(sin(dot(co, vec2(12.9898, 78.233))) * 43758.5453);
+        }
         void material(inout MaterialInputs material) {
             prepareMaterial(material);
             vec2 uv = getUV0();
-            vec4 baseColor = texture(materialParams_u_Texture, uv);
-            vec3 bloomColor = texture(materialParams_u_BloomTexture, uv).rgb;
+            vec2 baseUv = uv * materialParams.u_DrsScale;
+            vec2 compositeUv = baseUv;
+            vec4 baseColor;
+            
+            if (materialParams.u_VhsIntensity > 0.0) {
+                float jitter = sin(uv.y * 50.0 + materialParams.u_Time * 10.0) * 0.002 * materialParams.u_VhsIntensity;
+                compositeUv.x += jitter;
+                
+                float shift = 0.005 * materialParams.u_VhsIntensity;
+                vec4 colR = texture(materialParams_u_Texture, vec2(compositeUv.x - shift, compositeUv.y));
+                vec4 colG = texture(materialParams_u_Texture, compositeUv);
+                vec4 colB = texture(materialParams_u_Texture, vec2(compositeUv.x + shift, compositeUv.y));
+                baseColor = vec4(colR.r, colG.g, colB.b, colG.a);
+                
+                // Scanlines
+                float scanline = sin(uv.y * 800.0) * 0.04 * materialParams.u_VhsIntensity;
+                baseColor.rgb -= vec3(scanline);
+            } else {
+                baseColor = texture(materialParams_u_Texture, baseUv);
+            }
+            
+            vec3 bloomColor = texture(materialParams_u_BloomTexture, compositeUv).rgb;
             
             // Soft additive blend in linear space
             float bloomIntensity = 0.35;
             vec3 finalColor = baseColor.rgb + bloomColor * bloomIntensity;
+            
+            // Vignette
+            if (materialParams.u_VignetteIntensity > 0.0) {
+                vec2 d = abs(uv - 0.5) * materialParams.u_VignetteIntensity;
+                float vignette = 1.0 - dot(d, d);
+                finalColor *= clamp(vignette, 0.0, 1.0);
+            }
+            
+            // Grain (procedural)
+            if (materialParams.u_GrainIntensity > 0.0) {
+                highp float size = materialParams.u_GrainSize;
+                highp vec2 grainUv = floor(uv * (1080.0 / clamp(size, 0.1, 10.0))) * clamp(size, 0.1, 10.0) / 1080.0;
+                
+                highp float noiseR = fract(rand(grainUv) + materialParams.u_Time * 0.13);
+                highp float noiseG = fract(rand(grainUv + vec2(17.0, 31.0)) + materialParams.u_Time * 0.21);
+                highp float noiseB = fract(rand(grainUv + vec2(43.0, 71.0)) + materialParams.u_Time * 0.37);
+                
+                highp vec3 noise = vec3(noiseR, noiseG, noiseB);
+                highp float monoNoise = (noise.r + noise.g + noise.b) / 3.0;
+                highp vec3 finalNoise = mix(vec3(monoNoise), noise, materialParams.u_GrainChroma) - 0.5;
+                
+                finalColor += finalNoise * materialParams.u_GrainIntensity;
+            }
+            
+            // Overlay Texture (Dust & Scratch)
+            if (materialParams.u_OverlayEnabled > 0.0) {
+                vec4 overlay = texture(materialParams_u_OverlayTexture, uv);
+                finalColor = mix(finalColor, overlay.rgb, overlay.a);
+            }
             
             material.baseColor = vec4(finalColor, baseColor.a);
         }
@@ -471,6 +561,7 @@ bool GrovkornetEngine::initMaterials() {
            .platform(filamat::MaterialBuilder::Platform::MOBILE)
            .material(shaderDownsample)
            .parameter("u_Texture", filamat::MaterialBuilder::SamplerType::SAMPLER_2D)
+           .parameter("u_DrsScale", filamat::MaterialBuilder::UniformType::FLOAT)
            .require(filament::VertexAttribute::UV0);
            
     filamat::Package packageDownsample = builderDownsample.build(engine->getJobSystem());
@@ -493,6 +584,7 @@ bool GrovkornetEngine::initMaterials() {
            .material(shaderBlurDown)
            .parameter("u_Texture", filamat::MaterialBuilder::SamplerType::SAMPLER_2D)
            .parameter("u_TexelSize", filamat::MaterialBuilder::UniformType::FLOAT2)
+           .parameter("u_DrsScale", filamat::MaterialBuilder::UniformType::FLOAT)
            .require(filament::VertexAttribute::UV0);
            
     filamat::Package packageBlurDown = builderBlurDown.build(engine->getJobSystem());
@@ -515,6 +607,7 @@ bool GrovkornetEngine::initMaterials() {
            .material(shaderBlurUp)
            .parameter("u_Texture", filamat::MaterialBuilder::SamplerType::SAMPLER_2D)
            .parameter("u_TexelSize", filamat::MaterialBuilder::UniformType::FLOAT2)
+           .parameter("u_DrsScale", filamat::MaterialBuilder::UniformType::FLOAT)
            .require(filament::VertexAttribute::UV0);
            
     filamat::Package packageBlurUp = builderBlurUp.build(engine->getJobSystem());
@@ -537,6 +630,15 @@ bool GrovkornetEngine::initMaterials() {
            .material(shaderComposite)
            .parameter("u_Texture", filamat::MaterialBuilder::SamplerType::SAMPLER_2D)
            .parameter("u_BloomTexture", filamat::MaterialBuilder::SamplerType::SAMPLER_2D)
+           .parameter("u_GrainIntensity", filamat::MaterialBuilder::UniformType::FLOAT)
+           .parameter("u_GrainChroma", filamat::MaterialBuilder::UniformType::FLOAT)
+           .parameter("u_GrainSize", filamat::MaterialBuilder::UniformType::FLOAT)
+           .parameter("u_VignetteIntensity", filamat::MaterialBuilder::UniformType::FLOAT)
+           .parameter("u_VhsIntensity", filamat::MaterialBuilder::UniformType::FLOAT)
+           .parameter("u_Time", filamat::MaterialBuilder::UniformType::FLOAT)
+           .parameter("u_OverlayTexture", filamat::MaterialBuilder::SamplerType::SAMPLER_2D)
+           .parameter("u_OverlayEnabled", filamat::MaterialBuilder::UniformType::FLOAT)
+           .parameter("u_DrsScale", filamat::MaterialBuilder::UniformType::FLOAT)
            .require(filament::VertexAttribute::UV0);
            
     filamat::Package packageComposite = builderComposite.build(engine->getJobSystem());
@@ -782,6 +884,162 @@ void GrovkornetEngine::applyLutTextureUpdate() {
         ));
     }
 }
+void GrovkornetEngine::triggerOverlayUpdate(std::vector<jobject>&& bitmaps, JNIEnv* env) {
+    std::unique_lock<std::mutex> lock(compositingMutex);
+    for (jobject bmp : pendingBitmaps) {
+        env->DeleteGlobalRef(bmp);
+    }
+    pendingBitmaps.clear();
+    for (jobject bmp : bitmaps) {
+        pendingBitmaps.push_back(env->NewGlobalRef(bmp));
+    }
+    compositingInProgress = true;
+    compositingCv.notify_one();
+}
+
+void GrovkornetEngine::compositingLoop() {
+    while (true) {
+        std::vector<jobject> localBitmaps;
+        {
+            std::unique_lock<std::mutex> lock(compositingMutex);
+            compositingCv.wait(lock, [this]() { return !compositingThreadRunning || compositingInProgress; });
+            if (!compositingThreadRunning) {
+                if (javaVm) {
+                    JNIEnv* env = nullptr;
+                    javaVm->AttachCurrentThread(&env, nullptr);
+                    for (jobject bmp : pendingBitmaps) {
+                        env->DeleteGlobalRef(bmp);
+                    }
+                    javaVm->DetachCurrentThread();
+                }
+                pendingBitmaps.clear();
+                break;
+            }
+            localBitmaps = pendingBitmaps;
+            pendingBitmaps.clear();
+        }
+        if (localBitmaps.empty()) {
+            std::unique_lock<std::mutex> lock(compositingMutex);
+            compositingInProgress = false;
+            continue;
+        }
+        JNIEnv* env = nullptr;
+        if (javaVm && javaVm->AttachCurrentThread(&env, nullptr) == JNI_OK) {
+            std::vector<uint8_t> tempOverlay(width * height * 4, 0);
+            for (jobject bitmap : localBitmaps) {
+                AndroidBitmapInfo info;
+                void* pixels = nullptr;
+                if (AndroidBitmap_getInfo(env, bitmap, &info) >= 0 && 
+                    AndroidBitmap_lockPixels(env, bitmap, &pixels) >= 0) {
+                    uint8_t* dst = tempOverlay.data();
+                    uint8_t* src = static_cast<uint8_t*>(pixels);
+                    int bmpWidth = info.width;
+                    int bmpHeight = info.height;
+                    int minW = std::min(width, bmpWidth);
+                    int minH = std::min(height, bmpHeight);
+                    for (int y = 0; y < minH; ++y) {
+                        for (int x = 0; x < minW; ++x) {
+                            int dstIdx = (y * width + x) * 4;
+                            int srcIdx = (y * bmpWidth + x) * 4;
+                            float srcA = src[srcIdx + 3] / 255.0f;
+                            if (srcA > 0.0f) {
+                                float invA = 1.0f - srcA;
+                                dst[dstIdx + 0] = static_cast<uint8_t>(src[srcIdx + 0] * srcA + dst[dstIdx + 0] * invA);
+                                dst[dstIdx + 1] = static_cast<uint8_t>(src[srcIdx + 1] * srcA + dst[dstIdx + 1] * invA);
+                                dst[dstIdx + 2] = static_cast<uint8_t>(src[srcIdx + 2] * srcA + dst[dstIdx + 2] * invA);
+                                dst[dstIdx + 3] = static_cast<uint8_t>(src[srcIdx + 3] * srcA + dst[dstIdx + 3] * invA);
+                            }
+                        }
+                    }
+                    AndroidBitmap_unlockPixels(env, bitmap);
+                }
+                env->DeleteGlobalRef(bitmap);
+            }
+            javaVm->DetachCurrentThread();
+            {
+                std::unique_lock<std::mutex> lock(compositingMutex);
+                overlayBuffer = std::move(tempOverlay);
+                compositingDataReady = true;
+                compositingInProgress = false;
+                overlayEnabled = true;
+            }
+        } else {
+            std::unique_lock<std::mutex> lock(compositingMutex);
+            compositingInProgress = false;
+        }
+    }
+}
+
+void GrovkornetEngine::applyOverlayTextureUpdate() {
+    std::vector<uint8_t> localOverlay;
+    bool updateNeeded = false;
+    {
+        std::unique_lock<std::mutex> lock(compositingMutex);
+        if (compositingDataReady) {
+            localOverlay = overlayBuffer;
+            compositingDataReady = false;
+            updateNeeded = true;
+        }
+    }
+    if (updateNeeded && overlayTexture) {
+        auto* bufferCopy = new std::vector<uint8_t>(std::move(localOverlay));
+        overlayTexture->setImage(*engine, 0, filament::Texture::PixelBufferDescriptor(
+            bufferCopy->data(),
+            bufferCopy->size(),
+            filament::backend::PixelDataFormat::RGBA,
+            filament::backend::PixelDataType::UBYTE,
+            [](void* buffer, size_t size, void* user) {
+                delete static_cast<std::vector<uint8_t>*>(user);
+            },
+            bufferCopy
+        ));
+    }
+}
+
+void GrovkornetEngine::updateDrsAndViewport() {
+    int vWidth = std::max(1, static_cast<int>(width * currentDrsScale));
+    int vHeight = std::max(1, static_cast<int>(height * currentDrsScale));
+    
+    viewGrading->setViewport(filament::Viewport(0, 0, vWidth, vHeight));
+    viewDownsample->setViewport(filament::Viewport(0, 0, std::max(1, vWidth / 4), std::max(1, vHeight / 4)));
+    viewBlurDown->setViewport(filament::Viewport(0, 0, std::max(1, vWidth / 8), std::max(1, vHeight / 8)));
+    viewBlurUp->setViewport(filament::Viewport(0, 0, std::max(1, vWidth / 4), std::max(1, vHeight / 4)));
+    view->setViewport(filament::Viewport(0, 0, width, height));
+    
+    materialInstanceDownsample->setParameter("u_DrsScale", currentDrsScale);
+    materialInstanceBlurDown->setParameter("u_DrsScale", currentDrsScale);
+    materialInstanceBlurUp->setParameter("u_DrsScale", currentDrsScale);
+    materialInstanceComposite->setParameter("u_DrsScale", currentDrsScale);
+}
+
+void GrovkornetEngine::recordFrameTimeAndEvaluate(float frameTimeMs) {
+    recentFrameTimes.push_back(frameTimeMs);
+    if (recentFrameTimes.size() > FRAME_TIME_WINDOW_SIZE) {
+        recentFrameTimes.erase(recentFrameTimes.begin());
+    }
+    
+    framesSinceLastDrsScale++;
+    if (framesSinceLastDrsScale >= DRS_COOLDOWN_FRAMES && recentFrameTimes.size() == FRAME_TIME_WINDOW_SIZE) {
+        float avgFrameTime = 0.0f;
+        for (float t : recentFrameTimes) {
+            avgFrameTime += t;
+        }
+        avgFrameTime /= recentFrameTimes.size();
+        
+        float nextScale = currentDrsScale;
+        if (avgFrameTime > 15.0f) {
+            nextScale = std::max(MIN_DRS_SCALE, currentDrsScale - 0.1f);
+        } else if (avgFrameTime < 11.0f) {
+            nextScale = std::min(MAX_DRS_SCALE, currentDrsScale + 0.05f);
+        }
+        
+        if (nextScale != currentDrsScale) {
+            currentDrsScale = nextScale;
+            framesSinceLastDrsScale = 0;
+            LOGI("DRS Scale changed to %.2f (avg frame time: %.2f ms)", currentDrsScale, avgFrameTime);
+        }
+    }
+}
 
 extern "C" {
 
@@ -794,6 +1052,7 @@ JNIEXPORT jlong JNICALL
 Java_com_grovkornet_nativefilmcamera_rendering_OffscreenFilmProcessor_nativePrepare(
         JNIEnv* env, jobject thiz, jint width, jint height) {
     GrovkornetEngine* engine = new GrovkornetEngine(width, height);
+    env->GetJavaVM(&(engine->javaVm));
     if (!engine->init()) {
         delete engine;
         return 0;
@@ -804,13 +1063,17 @@ Java_com_grovkornet_nativefilmcamera_rendering_OffscreenFilmProcessor_nativePrep
 JNIEXPORT void JNICALL
 Java_com_grovkornet_nativefilmcamera_rendering_OffscreenFilmProcessor_nativeProcessBitmap(
         JNIEnv* env, jobject thiz, jlong engine_ptr, jobject bitmap_in, jobject bitmap_out,
-        jfloat saturation, jfloat contrast, jfloat ev, jfloat white_balance, jfloat tint) {
+        jfloat saturation, jfloat contrast, jfloat grain_intensity, jfloat grain_chroma,
+        jfloat grain_size, jfloat vignette_intensity, jfloat vhs_intensity, jfloat time,
+        jfloat ev, jfloat white_balance, jfloat tint) {
     
     GrovkornetEngine* enginePtr = reinterpret_cast<GrovkornetEngine*>(engine_ptr);
     if (!enginePtr) {
         LOGE("Invalid native engine pointer in nativeProcessBitmap");
         return;
     }
+    
+
 
     // 1. Lock bitmap pixels
     AndroidBitmapInfo infoIn;
@@ -857,6 +1120,7 @@ Java_com_grovkornet_nativefilmcamera_rendering_OffscreenFilmProcessor_nativeProc
     // 4. Trigger LUT calculation on CPU and apply it to GPU texture
     enginePtr->triggerLutUpdate(saturation, contrast, ev, white_balance, tint);
     enginePtr->applyLutTextureUpdate();
+    enginePtr->applyOverlayTextureUpdate();
 
     // Set material parameters
     filament::TextureSampler sampler2d(filament::TextureSampler::MinFilter::LINEAR, filament::TextureSampler::MagFilter::LINEAR);
@@ -864,6 +1128,18 @@ Java_com_grovkornet_nativefilmcamera_rendering_OffscreenFilmProcessor_nativeProc
     
     filament::TextureSampler sampler3d(filament::TextureSampler::MinFilter::LINEAR, filament::TextureSampler::MagFilter::LINEAR, filament::TextureSampler::WrapMode::CLAMP_TO_EDGE);
     enginePtr->materialInstance2D->setParameter("u_LutTexture", enginePtr->lutTexture, sampler3d);
+
+    enginePtr->materialInstanceComposite->setParameter("u_GrainIntensity", grain_intensity);
+    enginePtr->materialInstanceComposite->setParameter("u_GrainChroma", grain_chroma);
+    enginePtr->materialInstanceComposite->setParameter("u_GrainSize", grain_size);
+    enginePtr->materialInstanceComposite->setParameter("u_VignetteIntensity", vignette_intensity);
+    enginePtr->materialInstanceComposite->setParameter("u_VhsIntensity", vhs_intensity);
+    enginePtr->materialInstanceComposite->setParameter("u_Time", time);
+    enginePtr->materialInstanceComposite->setParameter("u_OverlayEnabled", enginePtr->overlayEnabled ? 1.0f : 0.0f);
+
+    enginePtr->updateDrsAndViewport();
+
+    auto start = std::chrono::high_resolution_clock::now();
 
     // 5. Render and readback inside frame boundary
     if (enginePtr->renderer->beginFrame(enginePtr->swapChain)) {
@@ -888,6 +1164,10 @@ Java_com_grovkornet_nativefilmcamera_rendering_OffscreenFilmProcessor_nativeProc
     // Flush commands and wait for GPU completion (includes rendering and readback)
     enginePtr->engine->flushAndWait();
 
+    auto end = std::chrono::high_resolution_clock::now();
+    float frameTimeMs = std::chrono::duration<float, std::milli>(end - start).count();
+    enginePtr->recordFrameTimeAndEvaluate(frameTimeMs);
+
     // 7. Unlock bitmap pixels
     AndroidBitmap_unlockPixels(env, bitmap_in);
     AndroidBitmap_unlockPixels(env, bitmap_out);
@@ -896,7 +1176,9 @@ Java_com_grovkornet_nativefilmcamera_rendering_OffscreenFilmProcessor_nativeProc
 JNIEXPORT void JNICALL
 Java_com_grovkornet_nativefilmcamera_rendering_OffscreenFilmProcessor_nativeProcessHardwareBuffer(
         JNIEnv* env, jobject thiz, jlong engine_ptr, jobject hardware_buffer_obj,
-        jfloat saturation, jfloat contrast, jfloat ev, jfloat white_balance, jfloat tint) {
+        jfloat saturation, jfloat contrast, jfloat grain_intensity, jfloat grain_chroma,
+        jfloat grain_size, jfloat vignette_intensity, jfloat vhs_intensity, jfloat time,
+        jfloat ev, jfloat white_balance, jfloat tint) {
     
     GrovkornetEngine* enginePtr = reinterpret_cast<GrovkornetEngine*>(engine_ptr);
     if (!enginePtr) {
@@ -938,6 +1220,7 @@ Java_com_grovkornet_nativefilmcamera_rendering_OffscreenFilmProcessor_nativeProc
     // 4. Trigger LUT calculation on CPU and apply it to GPU texture
     enginePtr->triggerLutUpdate(saturation, contrast, ev, white_balance, tint);
     enginePtr->applyLutTextureUpdate();
+    enginePtr->applyOverlayTextureUpdate();
 
     // Set material parameters
     filament::TextureSampler sampler2d(filament::TextureSampler::MinFilter::LINEAR, filament::TextureSampler::MagFilter::LINEAR);
@@ -945,6 +1228,18 @@ Java_com_grovkornet_nativefilmcamera_rendering_OffscreenFilmProcessor_nativeProc
     
     filament::TextureSampler sampler3d(filament::TextureSampler::MinFilter::LINEAR, filament::TextureSampler::MagFilter::LINEAR, filament::TextureSampler::WrapMode::CLAMP_TO_EDGE);
     enginePtr->materialInstanceExternal->setParameter("u_LutTexture", enginePtr->lutTexture, sampler3d);
+
+    enginePtr->materialInstanceComposite->setParameter("u_GrainIntensity", grain_intensity);
+    enginePtr->materialInstanceComposite->setParameter("u_GrainChroma", grain_chroma);
+    enginePtr->materialInstanceComposite->setParameter("u_GrainSize", grain_size);
+    enginePtr->materialInstanceComposite->setParameter("u_VignetteIntensity", vignette_intensity);
+    enginePtr->materialInstanceComposite->setParameter("u_VhsIntensity", vhs_intensity);
+    enginePtr->materialInstanceComposite->setParameter("u_Time", time);
+    enginePtr->materialInstanceComposite->setParameter("u_OverlayEnabled", enginePtr->overlayEnabled ? 1.0f : 0.0f);
+
+    enginePtr->updateDrsAndViewport();
+
+    auto start = std::chrono::high_resolution_clock::now();
 
     // 5. Render
     if (enginePtr->renderer->beginFrame(enginePtr->swapChain)) {
@@ -958,6 +1253,31 @@ Java_com_grovkornet_nativefilmcamera_rendering_OffscreenFilmProcessor_nativeProc
     
     // Flush commands and wait for GPU completion
     enginePtr->engine->flushAndWait();
+
+    auto end = std::chrono::high_resolution_clock::now();
+    float frameTimeMs = std::chrono::duration<float, std::milli>(end - start).count();
+    enginePtr->recordFrameTimeAndEvaluate(frameTimeMs);
+}
+
+JNIEXPORT void JNICALL
+Java_com_grovkornet_nativefilmcamera_rendering_OffscreenFilmProcessor_nativeUpdateOverlay(
+        JNIEnv* env, jobject thiz, jlong engine_ptr, jobjectArray bitmaps) {
+    GrovkornetEngine* enginePtr = reinterpret_cast<GrovkornetEngine*>(engine_ptr);
+    if (!enginePtr) {
+        LOGE("Invalid native engine pointer in nativeUpdateOverlay");
+        return;
+    }
+    std::vector<jobject> bitmapList;
+    if (bitmaps) {
+        jsize len = env->GetArrayLength(bitmaps);
+        for (jsize i = 0; i < len; ++i) {
+            jobject bmp = env->GetObjectArrayElement(bitmaps, i);
+            if (bmp) {
+                bitmapList.push_back(bmp);
+            }
+        }
+    }
+    enginePtr->triggerOverlayUpdate(std::move(bitmapList), env);
 }
 
 JNIEXPORT void JNICALL
@@ -969,4 +1289,21 @@ Java_com_grovkornet_nativefilmcamera_rendering_OffscreenFilmProcessor_nativeRele
     }
 }
 
+JNIEXPORT jfloat JNICALL
+Java_com_grovkornet_nativefilmcamera_rendering_OffscreenFilmProcessor_nativeGetDrsScale(
+        JNIEnv* env, jobject thiz, jlong engine_ptr) {
+    GrovkornetEngine* enginePtr = reinterpret_cast<GrovkornetEngine*>(engine_ptr);
+    return enginePtr ? enginePtr->currentDrsScale : 1.0f;
 }
+
+JNIEXPORT void JNICALL
+Java_com_grovkornet_nativefilmcamera_rendering_OffscreenFilmProcessor_nativeSimulateFrameTime(
+        JNIEnv* env, jobject thiz, jlong engine_ptr, jfloat frame_time_ms) {
+    GrovkornetEngine* enginePtr = reinterpret_cast<GrovkornetEngine*>(engine_ptr);
+    if (enginePtr) {
+        enginePtr->framesSinceLastDrsScale = GrovkornetEngine::DRS_COOLDOWN_FRAMES;
+        enginePtr->recordFrameTimeAndEvaluate(frame_time_ms);
+    }
+}
+
+} // extern "C"

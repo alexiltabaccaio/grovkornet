@@ -11,6 +11,9 @@
     "dev": {
       "cache": false,
       "persistent": true
+    },
+    "@grovkornet/engine#build": {
+      "outputs": []
     }
   }
 }

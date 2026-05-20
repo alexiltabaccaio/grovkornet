@@ -67,7 +67,7 @@ task downloadFilament {
         println "Extracting Filament tarball..."
         copy {
           from tarTree(resources.gzip(destFile))
-          into destDir
+          into projectDir
         }
         destFile.delete()
         println "Filament downloaded and extracted to ${destDir}."

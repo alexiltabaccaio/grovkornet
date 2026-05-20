@@ -2,8 +2,7 @@ cmake_minimum_required(VERSION 3.22.1)
 
 project(grovkornet-engine)
 
-# Note: The tarball extracts into a nested 'filament' folder, hence the 'filament/filament' path.
-set(FILAMENT_DIR "${CMAKE_CURRENT_SOURCE_DIR}/filament/filament")
+set(FILAMENT_DIR "${CMAKE_CURRENT_SOURCE_DIR}/filament")
 set(FILAMENT_INCLUDE_DIR "${FILAMENT_DIR}/include")
 set(FILAMENT_LIB_DIR "${FILAMENT_DIR}/lib/${ANDROID_ABI}")
 
