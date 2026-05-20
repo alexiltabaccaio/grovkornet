@@ -35,6 +35,7 @@ export interface ConnectedParameterProps {
   centerValue?: number;
   onReset?: () => void;
   onToggleAuto?: (active: boolean) => void;
+  disableGestures?: boolean;
 }
 
 export const ConnectedParameter = memo(({
@@ -65,6 +66,7 @@ export const ConnectedParameter = memo(({
       label={label}
       isActive={finalIsActive}
       onPress={finalOnPress}
+      disableGestures={rest.disableGestures}
       {...rest}
     />
   );

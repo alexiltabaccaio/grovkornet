@@ -40,6 +40,7 @@ export const OpticsModule = ({ handlePressWithDouble }: OpticsModuleProps) => {
             label={t('parameters.lens')}
             variant="text"
             handlePressWithDouble={handlePressWithDouble}
+            disableGestures={true}
           />
         ),
       });
@@ -53,6 +54,7 @@ export const OpticsModule = ({ handlePressWithDouble }: OpticsModuleProps) => {
           label={t('parameters.focus')}
           variant="text"
           handlePressWithDouble={handlePressWithDouble}
+          disableGestures={true}
         />
       ),
     });

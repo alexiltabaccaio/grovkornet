@@ -30,6 +30,7 @@ export const DevelopmentModule = ({ handlePressWithDouble }: DevelopmentModulePr
           label={t('parameters.saturation')}
           variant="text"
           handlePressWithDouble={handlePressWithDouble}
+          disableGestures={true}
         />
       ),
     },
@@ -41,6 +42,7 @@ export const DevelopmentModule = ({ handlePressWithDouble }: DevelopmentModulePr
           label={t('parameters.contrast')}
           variant="text"
           handlePressWithDouble={handlePressWithDouble}
+          disableGestures={true}
         />
       ),
     },
@@ -52,6 +54,7 @@ export const DevelopmentModule = ({ handlePressWithDouble }: DevelopmentModulePr
           label={t('parameters.temperature')}
           variant="text"
           handlePressWithDouble={handlePressWithDouble}
+          disableGestures={true}
         />
       ),
     },
@@ -63,6 +66,7 @@ export const DevelopmentModule = ({ handlePressWithDouble }: DevelopmentModulePr
           label={t('parameters.tint')}
           variant="text"
           handlePressWithDouble={handlePressWithDouble}
+          disableGestures={true}
         />
       ),
     },

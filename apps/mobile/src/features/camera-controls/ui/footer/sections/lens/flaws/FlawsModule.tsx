@@ -30,6 +30,7 @@ export const FlawsModule = ({ handlePressWithDouble }: FlawsModuleProps) => {
           label={t('parameters.chromatic_aberration')}
           variant="text"
           handlePressWithDouble={handlePressWithDouble}
+          disableGestures={true}
         />
       ),
     },

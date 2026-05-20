@@ -30,6 +30,7 @@ export const PreferencesModule = () => {
           label={t('parameters.language')}
           variant="text"
           handlePressWithDouble={handlePressWithDouble}
+          disableGestures={true}
         />
       ),
     },
@@ -41,6 +42,7 @@ export const PreferencesModule = () => {
           label={t('modules.debug')}
           variant="text"
           handlePressWithDouble={handlePressWithDouble}
+          disableGestures={true}
         />
       ),
     },

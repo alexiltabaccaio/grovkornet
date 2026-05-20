@@ -30,6 +30,7 @@ export const CaptureModule = ({ handlePressWithDouble }: CaptureModuleProps) => 
           label={t('parameters.aspect_ratio')}
           variant="text"
           handlePressWithDouble={handlePressWithDouble}
+          disableGestures={true}
         />
       ),
     },
@@ -41,6 +42,7 @@ export const CaptureModule = ({ handlePressWithDouble }: CaptureModuleProps) => 
           label={t('parameters.resolution_setting')}
           variant="text"
           handlePressWithDouble={handlePressWithDouble}
+          disableGestures={true}
         />
       ),
     },
@@ -52,6 +54,7 @@ export const CaptureModule = ({ handlePressWithDouble }: CaptureModuleProps) => 
           label={t('parameters.fps_setting')}
           variant="text"
           handlePressWithDouble={handlePressWithDouble}
+          disableGestures={true}
         />
       ),
     },

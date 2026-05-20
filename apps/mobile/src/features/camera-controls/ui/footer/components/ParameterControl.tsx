@@ -32,6 +32,7 @@ interface ParameterControlProps {
   onReset?: () => void;
   onToggleAuto?: (active: boolean) => void;
   hideDebugRectangles?: boolean;
+  disableGestures?: boolean;
 }
 
 export const ParameterControl = ({
@@ -60,6 +61,7 @@ export const ParameterControl = ({
   onReset,
   onToggleAuto,
   hideDebugRectangles = false,
+  disableGestures = false,
 }: ParameterControlProps) => {
   const { combinedGesture, isDebugEnabled } = useParameterGesture({
     isActive,
@@ -74,6 +76,35 @@ export const ParameterControl = ({
     disabled,
     variant,
   });
+
+  if (disableGestures) {
+    return (
+      <ParameterThumbView
+        label={label}
+        isActive={isActive}
+        value={value}
+        minValue={minValue}
+        maxValue={maxValue}
+        icon={icon}
+        imageSource={imageSource}
+        renderValue={renderValue}
+        valueFormatter={valueFormatter}
+        variant={variant}
+        isAuto={isAuto}
+        staticText={staticText}
+        hideValueInAuto={hideValueInAuto}
+        autoValueText={autoValueText}
+        isDebugEnabled={!hideDebugRectangles && isDebugEnabled}
+        disabled={disabled}
+        hideAutoBadge={hideAutoBadge}
+        isToggle={isToggle}
+        centerValue={centerValue}
+        onReset={onReset}
+        onToggleAuto={onToggleAuto}
+        onPress={onPress}
+      />
+    );
+  }
 
   return (
     <GestureDetector gesture={combinedGesture}>

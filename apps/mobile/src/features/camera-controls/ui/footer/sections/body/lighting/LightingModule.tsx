@@ -37,6 +37,7 @@ export const LightingModule = ({ handlePressWithDouble }: LightingModuleProps) =
           label={t('parameters.torch')}
           variant="text"
           handlePressWithDouble={handlePressWithDouble}
+          disableGestures={true}
         />
       ),
     },

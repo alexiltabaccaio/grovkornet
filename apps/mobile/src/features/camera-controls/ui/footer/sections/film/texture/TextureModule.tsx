@@ -30,6 +30,7 @@ export const TextureModule = ({ handlePressWithDouble }: TextureModuleProps) => 
           label={t('parameters.grain')}
           variant="text"
           handlePressWithDouble={handlePressWithDouble}
+          disableGestures={true}
         />
       ),
     },
@@ -41,6 +42,7 @@ export const TextureModule = ({ handlePressWithDouble }: TextureModuleProps) => 
           label={t('parameters.sharpening')}
           variant="text"
           handlePressWithDouble={handlePressWithDouble}
+          disableGestures={true}
         />
       ),
     },
@@ -52,6 +54,7 @@ export const TextureModule = ({ handlePressWithDouble }: TextureModuleProps) => 
           label={t('parameters.noise_reduction')}
           variant="text"
           handlePressWithDouble={handlePressWithDouble}
+          disableGestures={true}
         />
       ),
     },

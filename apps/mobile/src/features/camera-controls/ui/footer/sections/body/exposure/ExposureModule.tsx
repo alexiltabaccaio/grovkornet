@@ -30,6 +30,7 @@ export const ExposureModule = ({ handlePressWithDouble }: ExposureModuleProps) =
           label={t('parameters.iso')}
           variant="text"
           handlePressWithDouble={handlePressWithDouble}
+          disableGestures={true}
         />
       ),
     },
@@ -41,6 +42,7 @@ export const ExposureModule = ({ handlePressWithDouble }: ExposureModuleProps) =
           label={t('parameters.shutter_speed')}
           variant="text"
           handlePressWithDouble={handlePressWithDouble}
+          disableGestures={true}
         />
       ),
     },
@@ -52,6 +54,7 @@ export const ExposureModule = ({ handlePressWithDouble }: ExposureModuleProps) =
           label={t('parameters.ev')}
           variant="text"
           handlePressWithDouble={handlePressWithDouble}
+          disableGestures={true}
         />
       ),
     },
