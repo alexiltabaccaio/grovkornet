@@ -14,6 +14,8 @@ import expo.modules.kotlin.viewevent.EventDispatcher
 
 class NativeFilmCameraView(context: Context) : GLSurfaceView(context) {
 
+    @Volatile private var isReleased = false
+
     val config = CameraConfiguration()
     private var renderer: FilmRenderer? = null
     private var cameraEngine: CameraEngine? = null
@@ -50,10 +52,12 @@ class NativeFilmCameraView(context: Context) : GLSurfaceView(context) {
         
         val rendererListener = object : FilmRenderer.Listener {
             override fun onSurfaceTextureCreated(surfaceTexture: SurfaceTexture) {
+                if (isReleased) return
                 post { cameraEngine?.start(surfaceTexture) }
             }
 
             override fun onFpsUpdate(fps: Int, stampedFps: Int, resolution: String) {
+                if (isReleased) return
                 val now = System.currentTimeMillis()
                 lastDebugTime = now
                 // "fps" is what the user requested to see (stampedFps)
@@ -62,12 +66,14 @@ class NativeFilmCameraView(context: Context) : GLSurfaceView(context) {
             }
 
             override fun requestRender() {
+                if (isReleased) return
                 this@NativeFilmCameraView.requestRender()
             }
         }
 
         val cameraListener = object : CameraEngine.Listener {
             override fun onExposureUpdate(iso: Int, shutterSpeed: Double, focusDistance: Float, noiseReduction: Int) {
+                if (isReleased) return
                 onExposureUpdate(mapOf(
                     "iso" to iso,
                     "shutterSpeed" to shutterSpeed,
@@ -77,15 +83,18 @@ class NativeFilmCameraView(context: Context) : GLSurfaceView(context) {
             }
 
             override fun onCapabilitiesUpdate(capabilities: WritableMap) {
+                if (isReleased) return
                 onCapabilitiesUpdate(capabilities.toHashMap())
             }
 
             override fun onCameraResolutionDetected(width: Int, height: Int) {
+                if (isReleased) return
                 renderer?.cameraWidth = width
                 renderer?.cameraHeight = height
             }
 
             override fun onPhotoCaptured(uri: String) {
+                if (isReleased) return
                 onPhotoCaptured(mapOf("uri" to uri))
             }
         }
@@ -118,8 +127,13 @@ class NativeFilmCameraView(context: Context) : GLSurfaceView(context) {
     }
 
     fun release() {
+        if (isReleased) return
+        isReleased = true
+        
         updateScheduler?.release()
         cameraEngine?.release()
-        renderer?.release()
+        queueEvent {
+            renderer?.release()
+        }
     }
 }

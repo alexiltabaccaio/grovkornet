@@ -189,7 +189,8 @@ jest.mock('react-native-share', () => ({
 
 // Mock expo-media-library
 jest.mock('expo-media-library', () => ({
-  requestPermissionsAsync: jest.fn(() => Promise.resolve({ status: 'granted' })),
+  getPermissionsAsync: jest.fn(() => Promise.resolve({ status: 'granted', granted: true, canAskAgain: true })),
+  requestPermissionsAsync: jest.fn(() => Promise.resolve({ status: 'granted', granted: true })),
   getAlbumAsync: jest.fn(() => Promise.resolve({ id: 'album-id', title: 'Grovkornet' })),
   getAssetsAsync: jest.fn(() => Promise.resolve({
     assets: [

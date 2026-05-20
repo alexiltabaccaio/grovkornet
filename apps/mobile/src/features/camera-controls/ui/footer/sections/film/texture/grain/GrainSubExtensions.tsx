@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, StyleSheet, Pressable, Text } from 'react-native';
-import Animated, { useAnimatedStyle } from 'react-native-reanimated';
+import Animated, { useAnimatedStyle, SharedValue } from 'react-native-reanimated';
 import { useShallow } from 'zustand/react/shallow';
 import { useStylesStore } from '@features/camera-controls/model/useStylesStore';
 import { useCameraWorklets } from '@features/camera-controls/lib/useCameraWorklets';
@@ -10,12 +10,29 @@ import { useUIStore } from '@features/camera-controls/model/useUIStore';
 
 interface ChromaButtonProps {
   label: string;
-  isSelected: boolean;
+  grainChroma: SharedValue<number>;
+  targetValue: number;
   onPress: () => void;
 }
 
-const ChromaButton = ({ label, isSelected, onPress }: ChromaButtonProps) => {
+const ChromaButton = ({ label, grainChroma, targetValue, onPress }: ChromaButtonProps) => {
   const isDebugEnabled = useUIStore((s) => s.isDebugEnabled);
+
+  const animatedStyle = useAnimatedStyle(() => {
+    const isSelected = grainChroma.value === targetValue;
+    return {
+      borderColor: isSelected ? '#FFF' : '#333',
+      backgroundColor: isSelected ? 'rgba(255, 255, 255, 0.12)' : 'rgba(255, 255, 255, 0.04)',
+    };
+  });
+
+  const animatedTextStyle = useAnimatedStyle(() => {
+    const isSelected = grainChroma.value === targetValue;
+    return {
+      color: isSelected ? '#FFF' : '#888',
+    };
+  });
+
   return (
     <Pressable
       onPress={onPress}
@@ -23,15 +40,12 @@ const ChromaButton = ({ label, isSelected, onPress }: ChromaButtonProps) => {
     >
       <Animated.View style={[
         styles.pillButton,
-        {
-          borderColor: isSelected ? '#FFF' : '#333',
-          backgroundColor: isSelected ? 'rgba(255, 255, 255, 0.12)' : 'rgba(255, 255, 255, 0.04)',
-        },
+        animatedStyle,
         isDebugEnabled && { backgroundColor: 'rgba(0, 255, 0, 0.2)', borderWidth: 1, borderColor: 'green' }
       ]}>
         <Animated.Text style={[
           styles.pillText,
-          { color: isSelected ? '#FFF' : '#888' }
+          animatedTextStyle
         ]}>
           {label}
         </Animated.Text>
@@ -67,13 +81,21 @@ export const GrainSubExtensions = () => {
         <View style={styles.buttonRow}>
           <ChromaButton
             label="MONO"
-            isSelected={grainChroma.value === 0}
-            onPress={() => setGrainChroma(0)}
+            grainChroma={grainChroma}
+            targetValue={0}
+            onPress={() => {
+              setGrainChroma(0);
+              worklets.updateGrainChroma(0);
+            }}
           />
           <ChromaButton
             label="RGB"
-            isSelected={grainChroma.value === 1}
-            onPress={() => setGrainChroma(1)}
+            grainChroma={grainChroma}
+            targetValue={1}
+            onPress={() => {
+              setGrainChroma(1);
+              worklets.updateGrainChroma(1);
+            }}
           />
         </View>
       </View>
