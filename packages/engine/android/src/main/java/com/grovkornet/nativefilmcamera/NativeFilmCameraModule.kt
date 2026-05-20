@@ -53,27 +53,28 @@ class NativeFilmCameraModule : Module() {
         view.updateEffect { aberrationDirection = value }
       }
       Prop("isoAuto") { view: NativeFilmCameraView, value: Boolean ->
-        view.updateHardware { isoAuto = value }
+        if (view.config.isoAuto != value) view.updateHardware { isoAuto = value }
       }
       Prop("shutterSpeedAuto") { view: NativeFilmCameraView, value: Boolean ->
-        view.updateHardware { shutterSpeedAuto = value }
+        if (view.config.shutterSpeedAuto != value) view.updateHardware { shutterSpeedAuto = value }
       }
       Prop("whiteBalanceAuto") { view: NativeFilmCameraView, value: Boolean ->
-        view.updateBoth { whiteBalanceAuto = value }
+        if (view.config.whiteBalanceAuto != value) view.updateBoth { whiteBalanceAuto = value }
       }
       Prop("autoFocus") { view: NativeFilmCameraView, value: Boolean ->
-        view.updateHardware { autoFocus = value }
+        if (view.config.autoFocus != value) view.updateHardware { autoFocus = value }
       }
       Prop("iso") { view: NativeFilmCameraView, value: Int ->
-        view.updateHardware { iso = value }
+        if (view.config.iso != value) view.updateHardware { iso = value }
       }
       Prop("exposureTime") { view: NativeFilmCameraView, value: Double ->
         if (value > 0) {
-          view.updateHardware { exposureTime = (1_000_000_000.0 / value).toLong() }
+          val newTime = (1_000_000_000.0 / value).toLong()
+          if (view.config.exposureTime != newTime) view.updateHardware { exposureTime = newTime }
         }
       }
       Prop("ev") { view: NativeFilmCameraView, value: Float ->
-        view.updateBoth { ev = value }
+        if (view.config.ev != value) view.updateBoth { ev = value }
       }
       Prop("whiteBalance") { view: NativeFilmCameraView, value: Float ->
         view.updateEffect { whiteBalance = value }
@@ -82,22 +83,24 @@ class NativeFilmCameraModule : Module() {
         view.updateEffect { tint = value }
       }
       Prop("focusDistance") { view: NativeFilmCameraView, value: Float ->
-        view.updateHardware { focusDistance = value }
+        if (view.config.focusDistance != value) view.updateHardware { focusDistance = value }
       }
       Prop("noiseReduction") { view: NativeFilmCameraView, value: Int ->
-        view.updateHardware { noiseReduction = value }
+        if (view.config.noiseReduction != value) view.updateHardware { noiseReduction = value }
       }
       Prop("sharpening") { view: NativeFilmCameraView, value: Float ->
         view.updateEffect { sharpening = value }
       }
       Prop("cameraId") { view: NativeFilmCameraView, value: String? ->
-        view.updateHardware { cameraId = value }
+        if (view.config.cameraId != value) view.updateHardware { cameraId = value }
       }
       Prop("torchState") { view: NativeFilmCameraView, value: Float ->
-        view.updateHardware { torchEnabled = value > 0.5f }
+        val enabled = value > 0.5f
+        if (view.config.torchEnabled != enabled) view.updateHardware { torchEnabled = enabled }
       }
       Prop("torchStrength") { view: NativeFilmCameraView, value: Float ->
-        view.updateHardware { torchStrength = value.toInt() }
+        val strength = value.toInt()
+        if (view.config.torchStrength != strength) view.updateHardware { torchStrength = strength }
       }
       Prop("aspectRatio") { view: NativeFilmCameraView, value: Float ->
         val aspectInt = value.roundToInt()
@@ -106,7 +109,7 @@ class NativeFilmCameraModule : Module() {
         }
       }
       Prop("targetFps") { view: NativeFilmCameraView, value: Int ->
-        view.updateBoth { targetFps = value }
+        if (view.config.targetFps != value) view.updateBoth { targetFps = value }
       }
 
       AsyncFunction("takePhoto") { view: NativeFilmCameraView ->

@@ -62,6 +62,7 @@ export const useUIStore = create<UIStore>((set, get) => ({
   },
 
   setActiveParameter: (param: ParameterType) => {
+    logger.debug('UIStore', `setActiveParameter: ${param}`);
     const { activeModule } = get();
     set((state) => ({
       activeParameter: param,

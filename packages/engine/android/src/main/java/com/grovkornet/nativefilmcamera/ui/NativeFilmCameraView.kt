@@ -34,11 +34,13 @@ class NativeFilmCameraView(context: Context) : GLSurfaceView(context) {
 
     fun updateHardware(action: CameraConfiguration.() -> Unit) {
         config.action()
+        android.util.Log.d("NativeFilmCameraView", "Hardware update scheduled for config change")
         updateScheduler?.schedule()
     }
 
     fun updateBoth(action: CameraConfiguration.() -> Unit) {
         config.action()
+        android.util.Log.d("NativeFilmCameraView", "Hardware+Effect update scheduled for config change")
         renderer?.updateConfig(config)
         updateScheduler?.schedule()
     }

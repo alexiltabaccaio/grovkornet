@@ -1,4 +1,5 @@
-import { View, StyleSheet, TextInput, Pressable } from 'react-native';
+import React from 'react';
+import { View, StyleSheet, TextInput, Pressable, Dimensions } from 'react-native';
 import Animated, {
   useAnimatedStyle,
   useAnimatedProps,
@@ -8,6 +9,9 @@ import Animated, {
 } from 'react-native-reanimated';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import { ParameterThumbViewProps } from './ParameterThumbView.types';
+
+const SCREEN_WIDTH = Dimensions.get('window').width;
+const INITIAL_TRACK_WIDTH = SCREEN_WIDTH - 188;
 
 const AnimatedTextInput = Animated.createAnimatedComponent(TextInput);
 
@@ -24,7 +28,11 @@ export const SliderThumb = ({
   onReset,
   onToggleAuto,
 }: ParameterThumbViewProps) => {
-  const trackWidth = useSharedValue(0);
+  const trackWidth = useSharedValue(INITIAL_TRACK_WIDTH);
+  
+  React.useEffect(() => {
+    console.log(`[SliderThumb] Mounted for param with minValue=${minValue}, maxValue=${maxValue}`);
+  }, []);
 
   const doubleTap = Gesture.Tap()
     .numberOfTaps(2)
@@ -45,7 +53,7 @@ export const SliderThumb = ({
   });
 
   const animatedFillStyle = useAnimatedStyle(() => {
-    if (!value || trackWidth.value === 0) return { width: 0, left: 6 };
+    if (!value || trackWidth.value === 0) return { width: 0, left: 6, opacity: 0 };
     const totalTravel = trackWidth.value - 12;
     const percentage = interpolate(
       value.value,
@@ -82,7 +90,7 @@ export const SliderThumb = ({
   });
 
   const animatedThumbStyle = useAnimatedStyle(() => {
-    if (!value || trackWidth.value === 0) return { transform: [{ translateX: 0 }], opacity: 1 };
+    if (!value || trackWidth.value === 0) return { transform: [{ translateX: 0 }], opacity: 0 };
     const percentage = interpolate(
       value.value,
       [minValue, maxValue],

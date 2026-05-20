@@ -99,6 +99,7 @@ export const FooterParameterExtensions = ({ translateY }: FooterParameterExtensi
       return (
         <View style={styles.container}>
           <SliderExtension
+            key="grain"
             parameter="grain"
             parameterExtensionAnimatedStyle={parameterExtensionAnimatedStyle}
           />
@@ -141,6 +142,7 @@ export const FooterParameterExtensions = ({ translateY }: FooterParameterExtensi
       return (
         <View style={styles.container}>
           <SliderExtension
+            key="chromatic_aberration"
             parameter="chromatic_aberration"
             parameterExtensionAnimatedStyle={parameterExtensionAnimatedStyle}
           />
@@ -240,6 +242,7 @@ export const FooterParameterExtensions = ({ translateY }: FooterParameterExtensi
       return (
         <View style={styles.container}>
           <SliderExtension
+            key={activeParameter}
             parameter={activeParameter}
             parameterExtensionAnimatedStyle={parameterExtensionAnimatedStyle}
           />
