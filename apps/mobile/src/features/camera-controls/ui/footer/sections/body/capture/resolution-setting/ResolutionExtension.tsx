@@ -9,7 +9,7 @@ interface ResolutionExtensionProps {
   parameterExtensionAnimatedStyle?: StyleProp<ViewStyle>;
 }
 
-const RESOLUTIONS = ['720p', '1080p', '4K'];
+const RESOLUTIONS = ['4K', '1080p', '720p'];
 
 interface ResolutionButtonProps {
   label: string;

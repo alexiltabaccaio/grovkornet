@@ -92,7 +92,7 @@ class OffscreenFilmProcessor {
             android.opengl.GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, input, 0)
 
             // Setup attributes and uniforms
-            shaderController.setupAndBind(params, width.toFloat(), height.toFloat())
+            shaderController.setupAndBind(params)
 
             // Draw
             GLES20.glViewport(0, 0, width, height)

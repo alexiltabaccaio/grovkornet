@@ -19,6 +19,7 @@ import { LensSelectionExtension } from './sections/lens/optics/camera-selection'
 import { AspectRatioExtension } from './sections/body/capture/aspect-ratio';
 import { FpsExtension } from './sections/body/capture/fps-setting';
 import { ResolutionExtension } from './sections/body/capture/resolution-setting';
+import { ChromaticAberrationExtension } from './sections/lens/flaws/aberration';
 
 interface FooterParameterExtensionsProps {
   translateY: SharedValue<number>;
@@ -27,7 +28,7 @@ interface FooterParameterExtensionsProps {
 export const FooterParameterExtensions = ({ translateY }: FooterParameterExtensionsProps) => {
   const { t } = useTranslation();
   const worklets = useCameraWorklets();
-  
+
   const { activeParameter, activeExtension, setActiveExtension } = useUIStore(useShallow(state => ({
     activeParameter: state.activeParameter,
     activeExtension: state.activeExtension,
@@ -39,15 +40,11 @@ export const FooterParameterExtensions = ({ translateY }: FooterParameterExtensi
     setGrainChroma,
     grainSize,
     setGrainSize,
-    aberrationDirection,
-    setAberrationDirection,
   } = useStylesStore(useShallow(state => ({
     grainChroma: state.grainChroma,
     setGrainChroma: state.setGrainChroma,
     grainSize: state.grainSize,
     setGrainSize: state.setGrainSize,
-    aberrationDirection: state.aberrationDirection,
-    setAberrationDirection: state.setAberrationDirection,
   })));
 
   const {
@@ -145,29 +142,7 @@ export const FooterParameterExtensions = ({ translateY }: FooterParameterExtensi
             parameterExtensionAnimatedStyle={parameterExtensionAnimatedStyle}
           />
           <Animated.View style={[styles.childSubContainer, animatedStyle]}>
-            <ParameterControl
-              label={t('parameters.direction')}
-              isActive={activeExtension === 'aberration_direction'}
-              onPress={() => {
-                setActiveExtension('aberration_direction');
-              }}
-              value={aberrationDirection}
-              onChange={(v) => {
-                const nextDir = (Math.round(v) + 1) % 3;
-                setAberrationDirection(nextDir);
-              }}
-              variant="text"
-              renderValue={true}
-              valueFormatter={(v) => {
-                'worklet';
-                switch (Math.round(v)) {
-                  case 0: return 'STD';
-                  case 1: return 'HOR';
-                  case 2: return 'RAD';
-                  default: return 'STD';
-                }
-              }}
-            />
+            <ChromaticAberrationExtension />
           </Animated.View>
         </View>
       );
@@ -202,7 +177,7 @@ export const FooterParameterExtensions = ({ translateY }: FooterParameterExtensi
               maxValue={1}
               onChange={setTorchStrength}
               onUpdateWorklet={worklets.updateTorchStrength}
-              variant="text"
+              variant="slider"
               renderValue={true}
               valueFormatter={(v) => {
                 'worklet';

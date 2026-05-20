@@ -267,15 +267,15 @@ export const SliderExtension = ({
     isActiveOverride !== undefined
       ? isActiveOverride
       : parameter === 'grain'
-      ? activeExtension === 'grain_intensity'
-      : true;
+        ? activeExtension === 'grain_intensity'
+        : true;
 
   return (
     <Animated.View style={[styles.parameterExtensionContainer, parameterExtensionAnimatedStyle]}>
       <ParameterControl
         label=""
         isActive={finalIsActive}
-        onPress={() => {}}
+        onPress={() => { }}
         value={value}
         minValue={minValue}
         maxValue={maxValue}

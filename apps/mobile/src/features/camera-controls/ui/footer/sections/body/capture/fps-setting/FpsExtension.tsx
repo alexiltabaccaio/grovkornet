@@ -55,7 +55,7 @@ export const FpsExtension = ({ parameterExtensionAnimatedStyle }: FpsExtensionPr
   })));
 
   const maxFps = capabilities.maxFps ?? 60;
-  const fpsOptions = [24, 30, 60].filter(f => f <= maxFps);
+  const fpsOptions = [60, 30, 24].filter(f => f <= maxFps);
 
   return (
     <ParameterExtensionWrapper animatedStyle={parameterExtensionAnimatedStyle}>
