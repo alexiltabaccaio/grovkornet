@@ -65,7 +65,7 @@ export const ParameterControl = ({
   disableGestures = false,
   hideAutoPlaceholder,
 }: ParameterControlProps) => {
-  const { combinedGesture, isDebugEnabled } = useParameterGesture({
+  const { combinedGesture, isDebugEnabled, effectiveTrackWidth } = useParameterGesture({
     isActive,
     value,
     minValue,
@@ -77,6 +77,7 @@ export const ParameterControl = ({
     isAuto,
     disabled,
     variant,
+    hideAutoPlaceholder,
   });
 
   if (disableGestures) {
@@ -105,6 +106,7 @@ export const ParameterControl = ({
         onToggleAuto={onToggleAuto}
         onPress={onPress}
         hideAutoPlaceholder={hideAutoPlaceholder}
+        sliderTrackWidth={effectiveTrackWidth}
       />
     );
   }
@@ -135,6 +137,7 @@ export const ParameterControl = ({
         onToggleAuto={onToggleAuto}
         onPress={onPress}
         hideAutoPlaceholder={hideAutoPlaceholder}
+        sliderTrackWidth={effectiveTrackWidth}
       />
     </GestureDetector>
   );

@@ -28,8 +28,10 @@ export const SliderThumb = ({
   onReset,
   onToggleAuto,
   hideAutoPlaceholder,
+  sliderTrackWidth,
 }: ParameterThumbViewProps) => {
-  const trackWidth = useSharedValue(INITIAL_TRACK_WIDTH);
+  const internalTrackWidth = useSharedValue(INITIAL_TRACK_WIDTH);
+  const trackWidth = sliderTrackWidth || internalTrackWidth;
   
   React.useEffect(() => {
     console.log(`[SliderThumb] Mounted for param with minValue=${minValue}, maxValue=${maxValue}`);

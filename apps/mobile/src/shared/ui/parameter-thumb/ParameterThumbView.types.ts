@@ -28,4 +28,5 @@ export interface ParameterThumbViewProps {
   onToggleAuto?: (active: boolean) => void;
   onPress?: () => void;
   hideAutoPlaceholder?: boolean;
+  sliderTrackWidth?: SharedValue<number>;
 }

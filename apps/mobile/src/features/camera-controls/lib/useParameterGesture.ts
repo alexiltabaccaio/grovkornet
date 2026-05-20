@@ -18,6 +18,8 @@ interface UseParameterGestureParams {
   isAuto?: SharedValue<boolean>;
   disabled?: SharedValue<boolean>;
   variant?: 'square' | 'text' | 'slider';
+  hideAutoPlaceholder?: boolean;
+  sliderTrackWidth?: SharedValue<number>;
 }
 
 export const useParameterGesture = ({
@@ -32,8 +34,12 @@ export const useParameterGesture = ({
   isAuto,
   disabled,
   variant,
+  hideAutoPlaceholder,
+  sliderTrackWidth,
 }: UseParameterGestureParams) => {
   const startVal = useSharedValue(minValue);
+  const fallbackTrackWidth = useSharedValue(0);
+  const effectiveTrackWidth = sliderTrackWidth || fallbackTrackWidth;
   const isDebugEnabled = useUIStore((s) => s.isDebugEnabled);
   const setGestureConfig = useUIStore((s) => s.setGestureConfig);
   const { width: SCREEN_WIDTH } = useWindowDimensions();
@@ -66,12 +72,17 @@ export const useParameterGesture = ({
       if (!value) return;
       
       if (isSlider) {
-        const paddingHorizontal = 24;
+        let trackStartX = 94; // 24 (padding) + 54 (auto/placeholder width) + 16 (margin right)
+        
+        if (hideAutoPlaceholder) {
+          trackStartX = 8;
+        }
+
         const thumbSize = 12;
-        const travel = (SCREEN_WIDTH - paddingHorizontal * 2) - thumbSize;
+        const travel = effectiveTrackWidth.value - thumbSize;
         
         // Calcola il valore in base alla posizione esatta del tocco (salto assoluto)
-        const percentage = Math.max(0, Math.min(1, (e.x - paddingHorizontal) / travel));
+        const percentage = Math.max(0, Math.min(1, (e.x - trackStartX) / travel));
         const newValue = minValue + percentage * (maxValue - minValue);
         
         updateSharedValue(value, newValue);
@@ -91,7 +102,7 @@ export const useParameterGesture = ({
       
       let delta = 0;
       if (isSlider) {
-        const travel = (SCREEN_WIDTH - 48) - 12; // 48 is padding, 12 is thumb size
+        const travel = effectiveTrackWidth.value - 12; // 12 is thumb size
         delta = (e.translationX / travel) * range * direction;
       } else {
         const THUMB_SENSITIVITY = 150;
@@ -132,5 +143,6 @@ export const useParameterGesture = ({
   return {
     combinedGesture,
     isDebugEnabled,
+    effectiveTrackWidth,
   };
 };
