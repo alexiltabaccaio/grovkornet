@@ -64,18 +64,16 @@ const ModeButton = ({
   setNoiseReductionAuto,
 }: ModeButtonProps) => {
   const animatedStyle = useAnimatedStyle(() => {
-    const isAuto = noiseReductionAuto.value;
-    const isSelected = !isAuto && noiseReductionMode.value === modeValue;
+    const isSelected = noiseReductionMode.value === modeValue;
     return {
       borderColor: isSelected ? '#FFF' : '#333',
       backgroundColor: isSelected ? 'rgba(255, 255, 255, 0.12)' : 'rgba(255, 255, 255, 0.04)',
-      opacity: isAuto ? 0.4 : 1,
+      opacity: 1,
     };
   });
 
   const animatedTextStyle = useAnimatedStyle(() => {
-    const isAuto = noiseReductionAuto.value;
-    const isSelected = !isAuto && noiseReductionMode.value === modeValue;
+    const isSelected = noiseReductionMode.value === modeValue;
     return {
       color: isSelected ? '#FFF' : '#888',
     };

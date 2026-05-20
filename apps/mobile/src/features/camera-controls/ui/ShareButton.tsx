@@ -3,6 +3,8 @@ import { StyleSheet, Text, Pressable, Alert } from 'react-native';
 import Share, { Social } from 'react-native-share';
 import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
+import { CONFIG } from '@shared/config';
+import { logger } from '@shared/lib/logger';
 
 interface ShareButtonProps {
   uri: string;
@@ -24,21 +26,21 @@ export const ShareButton = ({ uri, isVerified }: ShareButtonProps) => {
     try {
       await Share.shareSingle({
         social: Social.InstagramStories,
-        appId: 'com.grovkornet.app',
+        appId: CONFIG.APP_ID,
         backgroundImage: uri,
         backgroundBottomColor: '#000000',
         backgroundTopColor: '#000000',
-        attributionURL: 'https://play.google.com/store/apps/details?id=com.grovkornet.app',
+        attributionURL: CONFIG.PLAY_STORE_URL,
       });
     } catch (error: unknown) {
-      console.log('Share error:', error);
+      logger.error('ShareButton', 'Share error', error);
       try {
         await Share.open({
           url: uri,
           title: t('gallery.share_title', 'Share Photo'),
         });
       } catch (fallbackError: unknown) {
-        console.log('Fallback share error:', fallbackError);
+        logger.error('ShareButton', 'Fallback share error', fallbackError);
       }
     }
   };

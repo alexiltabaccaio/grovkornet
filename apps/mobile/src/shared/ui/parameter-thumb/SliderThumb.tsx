@@ -252,11 +252,14 @@ const styles = StyleSheet.create({
     fontFamily: 'monospace',
   },
   autoPressable: {
-    marginRight: 12,
+    width: 54,
+    marginRight: 16,
+    justifyContent: 'center',
+    alignItems: 'flex-start',
   },
   autoPlaceholder: {
-    width: 32,
-    marginRight: 12,
+    width: 54,
+    marginRight: 16,
   },
   autoButton: {
     width: 32,

@@ -1,10 +1,8 @@
-import { useStylesStore } from '../model/useStylesStore';
-import { useHardwareStore } from '../model/useHardwareStore';
+import { useStylesStore } from '@features/camera-controls/model/useStylesStore';
+import { useHardwareStore } from '@features/camera-controls/model/useHardwareStore';
 import { updateSharedValue } from '@shared/lib/reanimated/safeUpdate';
 import { 
-  DEFAULT_ISO,
   DEFAULT_EV,
-  DEFAULT_SHUTTER_SPEED,
 } from '@grovkornet/shared';
 
 export const useCameraWorklets = () => {
