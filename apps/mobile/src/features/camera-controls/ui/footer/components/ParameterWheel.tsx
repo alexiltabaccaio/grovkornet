@@ -1,4 +1,4 @@
-import React, { useRef, useCallback } from 'react';
+import React, { useRef, useCallback, useMemo } from 'react';
 import { View, StyleSheet, Pressable } from 'react-native';
 import { GestureDetector, Gesture } from 'react-native-gesture-handler';
 import Animated, {
@@ -34,6 +34,18 @@ export const ParameterWheel = ({
   handlePressWithDouble,
 }: ParameterWheelProps) => {
   const itemsLength = items.length;
+  
+  const virtualItems = useMemo(() => {
+    if (items.length < 2) return items;
+    let duplicated = [...items];
+    while (duplicated.length < 5) {
+      duplicated = [...duplicated, ...items];
+    }
+    return duplicated;
+  }, [items]);
+
+  const virtualItemsLength = virtualItems.length;
+
   const initialIndex = Math.max(0, items.findIndex(item => item.id === activeParameter));
   
   const dragX = useSharedValue(-initialIndex * ITEM_WIDTH);
@@ -116,13 +128,13 @@ export const ParameterWheel = ({
   return (
     <GestureDetector gesture={panGesture}>
       <View style={styles.container}>
-        {items.map((item, i) => (
+        {virtualItems.map((item, i) => (
           <WheelItemComponent 
-            key={item.id}
+            key={`${item.id}-${i}`}
             item={item}
             index={i}
             dragX={dragX}
-            itemsLength={itemsLength}
+            virtualItemsLength={virtualItemsLength}
             handlePressWithDouble={handlePressWithDouble}
             setActiveParameter={setActiveParameter}
             updateState={updateState}
@@ -137,16 +149,16 @@ interface WheelItemComponentProps {
   item: WheelItem;
   index: number;
   dragX: Animated.SharedValue<number>;
-  itemsLength: number;
+  virtualItemsLength: number;
   handlePressWithDouble: (param: ParameterType, action: () => void) => void;
   setActiveParameter: (param: ParameterType | 'none') => void;
   updateState: (newIndex: number) => void;
 }
 
 const WheelItemComponent = ({ 
-  item, index, dragX, itemsLength, handlePressWithDouble, setActiveParameter, updateState 
+  item, index, dragX, virtualItemsLength, handlePressWithDouble, setActiveParameter, updateState 
 }: WheelItemComponentProps) => {
-  const totalWidth = itemsLength * ITEM_WIDTH;
+  const totalWidth = virtualItemsLength * ITEM_WIDTH;
   const halfWidth = totalWidth / 2;
 
   const animatedStyle = useAnimatedStyle(() => {
@@ -157,7 +169,12 @@ const WheelItemComponent = ({
     if (x > halfWidth) x -= totalWidth;
     
     const scale = interpolate(x, [-ITEM_WIDTH, 0, ITEM_WIDTH], [0.8, 1.15, 0.8], Extrapolation.CLAMP);
-    const opacity = interpolate(x, [-ITEM_WIDTH, 0, ITEM_WIDTH], [0.4, 1.0, 0.4], Extrapolation.CLAMP);
+    const opacity = interpolate(
+      x, 
+      [-ITEM_WIDTH * 1.5, -ITEM_WIDTH, 0, ITEM_WIDTH, ITEM_WIDTH * 1.5], 
+      [0, 0.4, 1.0, 0.4, 0], 
+      Extrapolation.CLAMP
+    );
 
     return {
       transform: [{ translateX: x }, { scale }],
@@ -168,11 +185,11 @@ const WheelItemComponent = ({
 
   const handleTap = () => {
     const currentCenterIdx = Math.round(-dragX.value / ITEM_WIDTH);
-    const normalizedCurrent = ((currentCenterIdx % itemsLength) + itemsLength) % itemsLength;
+    const normalizedCurrent = ((currentCenterIdx % virtualItemsLength) + virtualItemsLength) % virtualItemsLength;
     
     let diff = index - normalizedCurrent;
-    if (diff > itemsLength / 2) diff -= itemsLength;
-    if (diff < -itemsLength / 2) diff += itemsLength;
+    if (diff > virtualItemsLength / 2) diff -= virtualItemsLength;
+    if (diff < -virtualItemsLength / 2) diff += virtualItemsLength;
     
     const targetGlobalIdx = currentCenterIdx + diff;
     const targetX = -targetGlobalIdx * ITEM_WIDTH;
