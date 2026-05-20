@@ -4,6 +4,7 @@ import Animated, { useAnimatedStyle, SharedValue } from 'react-native-reanimated
 import { useShallow } from 'zustand/react/shallow';
 import { useStylesStore } from '@features/camera-controls/model/useStylesStore';
 import { ParameterExtensionWrapper } from '@features/camera-controls/ui/footer/components/ParameterExtensionWrapper';
+import { useUIStore } from '@features/camera-controls/model/useUIStore';
 
 interface NoiseReductionExtensionProps {
   parameterExtensionAnimatedStyle?: StyleProp<ViewStyle>;
@@ -15,6 +16,8 @@ interface AutoButtonProps {
 }
 
 const AutoButton = ({ noiseReductionAuto, setNoiseReductionAuto }: AutoButtonProps) => {
+  const isDebugEnabled = useUIStore((s) => s.isDebugEnabled);
+
   const animatedStyle = useAnimatedStyle(() => {
     const isAuto = noiseReductionAuto.value;
     return {
@@ -37,7 +40,12 @@ const AutoButton = ({ noiseReductionAuto, setNoiseReductionAuto }: AutoButtonPro
       }}
       style={styles.autoPressable}
     >
-      <Animated.View style={[styles.pillButton, { width: 32 }, animatedStyle]}>
+      <Animated.View style={[
+        styles.pillButton,
+        { width: 32 },
+        animatedStyle,
+        isDebugEnabled && { backgroundColor: 'rgba(0, 255, 0, 0.2)', borderWidth: 1, borderColor: 'green' }
+      ]}>
         <Animated.Text style={[styles.pillText, animatedTextStyle]}>
           A
         </Animated.Text>
@@ -63,6 +71,8 @@ const ModeButton = ({
   setNoiseReductionMode,
   setNoiseReductionAuto,
 }: ModeButtonProps) => {
+  const isDebugEnabled = useUIStore((s) => s.isDebugEnabled);
+
   const animatedStyle = useAnimatedStyle(() => {
     const isSelected = noiseReductionMode.value === modeValue;
     return {
@@ -87,7 +97,11 @@ const ModeButton = ({
       }}
       style={styles.pressable}
     >
-      <Animated.View style={[styles.pillButton, animatedStyle]}>
+      <Animated.View style={[
+        styles.pillButton,
+        animatedStyle,
+        isDebugEnabled && { backgroundColor: 'rgba(0, 255, 0, 0.2)', borderWidth: 1, borderColor: 'green' }
+      ]}>
         <Animated.Text style={[styles.pillText, animatedTextStyle]}>
           {label}
         </Animated.Text>

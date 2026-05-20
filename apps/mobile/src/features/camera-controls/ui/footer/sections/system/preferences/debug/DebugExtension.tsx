@@ -17,6 +17,8 @@ interface DebugToggleButtonProps {
 }
 
 const DebugToggleButton = ({ label, isActive, onPress }: DebugToggleButtonProps) => {
+  const isDebugEnabled = useUIStore((s) => s.isDebugEnabled);
+
   const animatedStyle = useAnimatedStyle(() => {
     return {
       borderColor: isActive ? '#FFF' : '#333',
@@ -32,7 +34,11 @@ const DebugToggleButton = ({ label, isActive, onPress }: DebugToggleButtonProps)
 
   return (
     <Pressable onPress={onPress} style={styles.pressable}>
-      <Animated.View style={[styles.pillButton, animatedStyle]}>
+      <Animated.View style={[
+        styles.pillButton,
+        animatedStyle,
+        isDebugEnabled && { backgroundColor: 'rgba(0, 255, 0, 0.2)', borderWidth: 1, borderColor: 'green' }
+      ]}>
         <Animated.Text style={[styles.pillText, animatedTextStyle]}>
           {label}
         </Animated.Text>

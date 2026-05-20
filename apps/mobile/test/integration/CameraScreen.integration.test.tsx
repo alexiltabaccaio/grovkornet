@@ -27,7 +27,7 @@ describe('CameraScreen Integration', () => {
   });
 
   it('renders correctly and handles section switching', async () => {
-    const { getByLabelText, getByText, queryByText } = render(<CameraScreen />);
+    const { getByLabelText, getByText, getAllByText, queryByText } = render(<CameraScreen />);
 
     // Wait for permissions to be resolved (mocked as granted)
     await waitFor(() => expect(queryByText('camera.requesting_permissions')).toBeNull());
@@ -44,11 +44,11 @@ describe('CameraScreen Integration', () => {
     expect(useUIStore.getState().activeModule).toBe('exposure');
 
     // Verify ManualExposureModule components appear
-    await waitFor(() => expect(getByText(/parameters\.iso/i)).toBeDefined());
+    await waitFor(() => expect(getAllByText(/parameters\.iso/i)[0]).toBeDefined());
   });
 
   it('updates camera store when interaction happens', () => {
-    const { getByLabelText, getByText } = render(<CameraScreen />);
+    const { getByLabelText, getAllByText } = render(<CameraScreen />);
     
     // Switch to exposure section
     act(() => {
@@ -56,7 +56,7 @@ describe('CameraScreen Integration', () => {
     });
 
     // Find ISO control
-    const isoControl = getByText(/parameters\.iso/i) as unknown as { props: unknown };
+    const isoControl = getAllByText(/parameters\.iso/i)[0] as unknown as { props: unknown };
     
     // Reset active parameter to none to test activation on press
     act(() => {

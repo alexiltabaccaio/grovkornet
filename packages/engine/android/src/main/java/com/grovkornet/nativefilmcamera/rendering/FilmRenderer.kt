@@ -169,7 +169,7 @@ class FilmRenderer(
         GLES20.glViewport(0, 0, width, height)
     }
 
-    private fun initFboIfNeeded(width: Int, height: Int) {
+    private fun initFboIfNeeded(width: Int, height: Int, useNearest: Boolean) {
         if (width <= 0 || height <= 0) return
         if (fboWidth == width && fboHeight == height && fboId != 0) return
 
@@ -189,10 +189,12 @@ class FilmRenderer(
         fboWidth = width
         fboHeight = height
 
+        val filter = if (useNearest) GLES20.GL_NEAREST.toFloat() else GLES20.GL_LINEAR.toFloat()
+
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, fboTextureId)
         GLES20.glTexImage2D(GLES20.GL_TEXTURE_2D, 0, GLES20.GL_RGBA, width, height, 0, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE, null)
-        GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR.toFloat())
-        GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR.toFloat())
+        GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, filter)
+        GLES20.glTexParameterf(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, filter)
         GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_S, GLES20.GL_CLAMP_TO_EDGE)
         GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_CLAMP_TO_EDGE)
 
@@ -228,6 +230,22 @@ class FilmRenderer(
         val interval = 1000L / if (currentConfig.targetFps > 0) currentConfig.targetFps else 60
         timeAccumulator += dt
 
+        val targetRes = when(currentConfig.resolutionSetting) {
+            0 -> 2160 // 4K
+            1 -> 1080 // 1080p
+            2 -> 720  // 720p
+            3 -> 480  // 480p
+            4 -> 360  // 360p
+            5 -> 240  // 240p
+            6 -> 144  // 144p
+            else -> 1080
+        }
+        
+        val scale = targetRes.toFloat() / Math.min(effCamWidth, effCamHeight).toFloat()
+        val fboW = if (scale < 1.0f) (effCamWidth * scale).toInt() else effCamWidth
+        val fboH = if (scale < 1.0f) (effCamHeight * scale).toInt() else effCamHeight
+        val useNearest = targetRes <= 480
+
         // We use a margin of 3ms to ensure we don't skip a frame just because it arrived 1 or 2ms early
         // This is crucial when targetFps matches hwFps (e.g. 60 target on a 60hz screen).
         var shouldCapture = false
@@ -244,7 +262,7 @@ class FilmRenderer(
         // Pass 1: OES -> FBO (Only when it's time to capture)
         if (shouldCapture) {
             fboFramesCount++
-            initFboIfNeeded(effCamWidth, effCamHeight)
+            initFboIfNeeded(fboW, fboH, useNearest)
 
             if (fboId != 0) {
                 GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, fboId)

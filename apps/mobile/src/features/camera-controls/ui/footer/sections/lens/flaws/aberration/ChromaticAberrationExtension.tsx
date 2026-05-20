@@ -4,6 +4,7 @@ import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 import { useShallow } from 'zustand/react/shallow';
 import { useStylesStore } from '@features/camera-controls/model/useStylesStore';
 import { useTranslation } from 'react-i18next';
+import { useUIStore } from '@features/camera-controls/model/useUIStore';
 
 interface DirectionButtonProps {
   label: string;
@@ -13,6 +14,8 @@ interface DirectionButtonProps {
 }
 
 const DirectionButton = ({ label, value, activeDirection, onPress }: DirectionButtonProps) => {
+  const isDebugEnabled = useUIStore((s) => s.isDebugEnabled);
+
   const animatedStyle = useAnimatedStyle(() => {
     const isSelected = activeDirection.value === value;
     return {
@@ -33,7 +36,11 @@ const DirectionButton = ({ label, value, activeDirection, onPress }: DirectionBu
       onPress={() => onPress(value)}
       style={styles.pressable}
     >
-      <Animated.View style={[styles.pillButton, animatedStyle]}>
+      <Animated.View style={[
+        styles.pillButton,
+        animatedStyle,
+        isDebugEnabled && { backgroundColor: 'rgba(0, 255, 0, 0.2)', borderWidth: 1, borderColor: 'green' }
+      ]}>
         <Animated.Text style={[styles.pillText, animatedTextStyle]}>
           {label}
         </Animated.Text>

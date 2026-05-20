@@ -4,6 +4,7 @@ import Animated, { useAnimatedStyle, SharedValue } from 'react-native-reanimated
 import { useShallow } from 'zustand/react/shallow';
 import { useHardwareStore } from '@features/camera-controls/model/useHardwareStore';
 import { ParameterExtensionWrapper } from '@features/camera-controls/ui/footer/components/ParameterExtensionWrapper';
+import { useUIStore } from '@features/camera-controls/model/useUIStore';
 
 interface FpsExtensionProps {
   parameterExtensionAnimatedStyle?: StyleProp<ViewStyle>;
@@ -16,6 +17,8 @@ interface FpsButtonProps {
 }
 
 const FpsButton = ({ val, fpsSetting, setFpsSetting }: FpsButtonProps) => {
+  const isDebugEnabled = useUIStore((s) => s.isDebugEnabled);
+
   const animatedStyle = useAnimatedStyle(() => {
     const isSelected = Math.round(fpsSetting.value) === val;
     return {
@@ -38,7 +41,11 @@ const FpsButton = ({ val, fpsSetting, setFpsSetting }: FpsButtonProps) => {
       }}
       style={styles.pressable}
     >
-      <Animated.View style={[styles.pillButton, animatedStyle]}>
+      <Animated.View style={[
+        styles.pillButton,
+        animatedStyle,
+        isDebugEnabled && { backgroundColor: 'rgba(0, 255, 0, 0.2)', borderWidth: 1, borderColor: 'green' }
+      ]}>
         <Animated.Text style={[styles.pillText, animatedTextStyle]}>
           {val}
         </Animated.Text>

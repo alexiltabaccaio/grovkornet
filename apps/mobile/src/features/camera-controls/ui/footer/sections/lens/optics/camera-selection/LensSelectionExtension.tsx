@@ -4,6 +4,7 @@ import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 import { useShallow } from 'zustand/react/shallow';
 import { useHardwareStore } from '@features/camera-controls/model/useHardwareStore';
 import { ParameterExtensionWrapper } from '@features/camera-controls/ui/footer/components/ParameterExtensionWrapper';
+import { useUIStore } from '@features/camera-controls/model/useUIStore';
 
 interface LensSelectionExtensionProps {
   parameterExtensionAnimatedStyle?: StyleProp<ViewStyle>;
@@ -15,6 +16,8 @@ interface AutoButtonProps {
 }
 
 const AutoButton = ({ cameraAuto, setCameraAuto }: AutoButtonProps) => {
+  const isDebugEnabled = useUIStore((s) => s.isDebugEnabled);
+
   const animatedStyle = useAnimatedStyle(() => {
     const isAuto = cameraAuto;
     return {
@@ -37,7 +40,12 @@ const AutoButton = ({ cameraAuto, setCameraAuto }: AutoButtonProps) => {
       }}
       style={styles.autoPressable}
     >
-      <Animated.View style={[styles.pillButton, { width: 32 }, animatedStyle]}>
+      <Animated.View style={[
+        styles.pillButton,
+        { width: 32 },
+        animatedStyle,
+        isDebugEnabled && { backgroundColor: 'rgba(0, 255, 0, 0.2)', borderWidth: 1, borderColor: 'green' }
+      ]}>
         <Animated.Text style={[styles.pillText, animatedTextStyle]}>
           A
         </Animated.Text>
@@ -55,6 +63,8 @@ interface CamButtonProps {
 }
 
 const CamButton = ({ cam, cameraAuto, cameraId, setCameraId, setCameraAuto }: CamButtonProps) => {
+  const isDebugEnabled = useUIStore((s) => s.isDebugEnabled);
+
   const animatedStyle = useAnimatedStyle(() => {
     const isSelected = !cameraAuto && cameraId === cam.id;
     return {
@@ -79,7 +89,11 @@ const CamButton = ({ cam, cameraAuto, cameraId, setCameraId, setCameraAuto }: Ca
       }}
       style={styles.pressable}
     >
-      <Animated.View style={[styles.pillButton, animatedStyle]}>
+      <Animated.View style={[
+        styles.pillButton,
+        animatedStyle,
+        isDebugEnabled && { backgroundColor: 'rgba(0, 255, 0, 0.2)', borderWidth: 1, borderColor: 'green' }
+      ]}>
         <Animated.Text style={[styles.pillText, animatedTextStyle]}>
           {`${cam.focalLength35mm}mm`}
         </Animated.Text>

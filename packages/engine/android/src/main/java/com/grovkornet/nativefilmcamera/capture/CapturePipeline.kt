@@ -89,10 +89,31 @@ class CapturePipeline(
                 bitmap = cropped
             }
 
+            var finalInput = bitmap
+            val targetRes = when(config.resolutionSetting) {
+                0 -> 2160
+                1 -> 1080
+                2 -> 720
+                3 -> 480
+                4 -> 360
+                5 -> 240
+                6 -> 144
+                else -> 1080
+            }
+            val scale = targetRes.toFloat() / minOf(finalInput.width, finalInput.height).toFloat()
+            if (scale < 1f) {
+                // scale down without filtering to maintain retro look if small
+                val scaled = Bitmap.createScaledBitmap(finalInput, (finalInput.width * scale).toInt(), (finalInput.height * scale).toInt(), targetRes > 480)
+                if (scaled != finalInput) {
+                    finalInput.recycle()
+                    finalInput = scaled
+                }
+            }
+
             // 1. Generate and emit a fast low-res preview
-            val previewScale = 512f / maxOf(bitmap.width, bitmap.height)
+            val previewScale = 512f / maxOf(finalInput.width, finalInput.height).toFloat()
             if (previewScale < 1f) {
-                val previewBitmap = Bitmap.createScaledBitmap(bitmap, (bitmap.width * previewScale).toInt(), (bitmap.height * previewScale).toInt(), true)
+                val previewBitmap = Bitmap.createScaledBitmap(finalInput, (finalInput.width * previewScale).toInt(), (finalInput.height * previewScale).toInt(), true)
                 val previewProcessed = offscreenProcessor.process(previewBitmap, config)
                 previewBitmap.recycle()
                 
@@ -109,8 +130,8 @@ class CapturePipeline(
             }
 
             // 2. Process the full-resolution image
-            val processed = offscreenProcessor.process(bitmap, config)
-            bitmap.recycle()
+            val processed = offscreenProcessor.process(finalInput, config)
+            finalInput.recycle()
 
             val watermarked = WatermarkEngine.embedSignature(processed)
             if (watermarked != processed) {

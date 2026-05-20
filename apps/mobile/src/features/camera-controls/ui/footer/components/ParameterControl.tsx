@@ -33,6 +33,7 @@ interface ParameterControlProps {
   onToggleAuto?: (active: boolean) => void;
   hideDebugRectangles?: boolean;
   disableGestures?: boolean;
+  hideAutoPlaceholder?: boolean;
 }
 
 export const ParameterControl = ({
@@ -62,6 +63,7 @@ export const ParameterControl = ({
   onToggleAuto,
   hideDebugRectangles = false,
   disableGestures = false,
+  hideAutoPlaceholder,
 }: ParameterControlProps) => {
   const { combinedGesture, isDebugEnabled } = useParameterGesture({
     isActive,
@@ -102,6 +104,7 @@ export const ParameterControl = ({
         onReset={onReset}
         onToggleAuto={onToggleAuto}
         onPress={onPress}
+        hideAutoPlaceholder={hideAutoPlaceholder}
       />
     );
   }
@@ -131,6 +134,7 @@ export const ParameterControl = ({
         onReset={onReset}
         onToggleAuto={onToggleAuto}
         onPress={onPress}
+        hideAutoPlaceholder={hideAutoPlaceholder}
       />
     </GestureDetector>
   );

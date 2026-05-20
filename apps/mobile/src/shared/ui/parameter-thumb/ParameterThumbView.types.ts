@@ -27,4 +27,5 @@ export interface ParameterThumbViewProps {
   onReset?: () => void;
   onToggleAuto?: (active: boolean) => void;
   onPress?: () => void;
+  hideAutoPlaceholder?: boolean;
 }

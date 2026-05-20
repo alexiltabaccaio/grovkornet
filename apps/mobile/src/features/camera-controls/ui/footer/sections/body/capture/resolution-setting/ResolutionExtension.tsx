@@ -4,12 +4,13 @@ import Animated, { useAnimatedStyle, SharedValue } from 'react-native-reanimated
 import { useShallow } from 'zustand/react/shallow';
 import { useHardwareStore } from '@features/camera-controls/model/useHardwareStore';
 import { ParameterExtensionWrapper } from '@features/camera-controls/ui/footer/components/ParameterExtensionWrapper';
+import { useUIStore } from '@features/camera-controls/model/useUIStore';
 
 interface ResolutionExtensionProps {
   parameterExtensionAnimatedStyle?: StyleProp<ViewStyle>;
 }
 
-const RESOLUTIONS = ['4K', '1080p', '720p'];
+const RESOLUTIONS = ['4K', '1080p', '720p', '480p', '360p', '240p', '144p'];
 
 interface ResolutionButtonProps {
   label: string;
@@ -19,6 +20,8 @@ interface ResolutionButtonProps {
 }
 
 const ResolutionButton = ({ label, index, resolutionSetting, setResolutionSetting }: ResolutionButtonProps) => {
+  const isDebugEnabled = useUIStore((s) => s.isDebugEnabled);
+
   const animatedStyle = useAnimatedStyle(() => {
     const isSelected = resolutionSetting.value === index;
     return {
@@ -41,7 +44,11 @@ const ResolutionButton = ({ label, index, resolutionSetting, setResolutionSettin
       }}
       style={styles.pressable}
     >
-      <Animated.View style={[styles.pillButton, animatedStyle]}>
+      <Animated.View style={[
+        styles.pillButton,
+        animatedStyle,
+        isDebugEnabled && { backgroundColor: 'rgba(0, 255, 0, 0.2)', borderWidth: 1, borderColor: 'green' }
+      ]}>
         <Animated.Text style={[styles.pillText, animatedTextStyle]}>
           {label}
         </Animated.Text>

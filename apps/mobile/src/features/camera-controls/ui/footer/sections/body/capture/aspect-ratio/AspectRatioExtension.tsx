@@ -4,6 +4,7 @@ import Animated, { useAnimatedStyle, SharedValue } from 'react-native-reanimated
 import { useShallow } from 'zustand/react/shallow';
 import { useHardwareStore } from '@features/camera-controls/model/useHardwareStore';
 import { ParameterExtensionWrapper } from '@features/camera-controls/ui/footer/components/ParameterExtensionWrapper';
+import { useUIStore } from '@features/camera-controls/model/useUIStore';
 
 interface AspectRatioExtensionProps {
   parameterExtensionAnimatedStyle?: StyleProp<ViewStyle>;
@@ -19,6 +20,8 @@ interface RatioButtonProps {
 }
 
 const RatioButton = ({ label, index, aspectRatio, setAspectRatio }: RatioButtonProps) => {
+  const isDebugEnabled = useUIStore((s) => s.isDebugEnabled);
+
   const animatedStyle = useAnimatedStyle(() => {
     const isSelected = aspectRatio.value === index;
     return {
@@ -41,7 +44,11 @@ const RatioButton = ({ label, index, aspectRatio, setAspectRatio }: RatioButtonP
       }}
       style={styles.pressable}
     >
-      <Animated.View style={[styles.pillButton, animatedStyle]}>
+      <Animated.View style={[
+        styles.pillButton,
+        animatedStyle,
+        isDebugEnabled && { backgroundColor: 'rgba(0, 255, 0, 0.2)', borderWidth: 1, borderColor: 'green' }
+      ]}>
         <Animated.Text style={[styles.pillText, animatedTextStyle]}>
           {label}
         </Animated.Text>

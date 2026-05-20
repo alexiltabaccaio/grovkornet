@@ -27,6 +27,7 @@ export const SliderThumb = ({
   autoValueText,
   onReset,
   onToggleAuto,
+  hideAutoPlaceholder,
 }: ParameterThumbViewProps) => {
   const trackWidth = useSharedValue(INITIAL_TRACK_WIDTH);
   
@@ -149,7 +150,7 @@ export const SliderThumb = ({
   });
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, hideAutoPlaceholder && { paddingHorizontal: 8 }]}>
       {isAuto && (onReset || onToggleAuto) ? (
         <Pressable
           onPress={() => {
@@ -176,7 +177,7 @@ export const SliderThumb = ({
             </Animated.Text>
           </Animated.View>
         </Pressable>
-      ) : (
+      ) : hideAutoPlaceholder ? null : (
         <View style={styles.autoPlaceholder} />
       )}
 
@@ -204,6 +205,7 @@ export const SliderThumb = ({
     </View>
   );
 };
+
 
 const styles = StyleSheet.create({
   container: {

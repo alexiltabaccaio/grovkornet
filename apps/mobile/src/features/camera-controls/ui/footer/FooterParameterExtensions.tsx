@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { useShallow } from 'zustand/react/shallow';
 import { useUIStore } from '@features/camera-controls/model/useUIStore';
-import { useStylesStore } from '@features/camera-controls/model/useStylesStore';
+
 import { useHardwareStore } from '@features/camera-controls/model/useHardwareStore';
 import { SharedValue, useAnimatedStyle, interpolate, Extrapolation } from 'react-native-reanimated';
 import Animated from 'react-native-reanimated';
@@ -19,8 +19,8 @@ import { LensSelectionExtension } from './sections/lens/optics/camera-selection'
 import { AspectRatioExtension } from './sections/body/capture/aspect-ratio';
 import { FpsExtension } from './sections/body/capture/fps-setting';
 import { ResolutionExtension } from './sections/body/capture/resolution-setting';
-import { ChromaticAberrationExtension } from './sections/lens/flaws/aberration';
-
+import { ChromaticAberrationExtension } from './sections/lens/flaws/aberration/ChromaticAberrationExtension';
+import { GrainSubExtensions } from './sections/film/texture/grain';
 interface FooterParameterExtensionsProps {
   translateY: SharedValue<number>;
 }
@@ -35,17 +35,7 @@ export const FooterParameterExtensions = ({ translateY }: FooterParameterExtensi
     setActiveExtension: state.setActiveExtension,
   })));
 
-  const {
-    grainChroma,
-    setGrainChroma,
-    grainSize,
-    setGrainSize,
-  } = useStylesStore(useShallow(state => ({
-    grainChroma: state.grainChroma,
-    setGrainChroma: state.setGrainChroma,
-    grainSize: state.grainSize,
-    setGrainSize: state.setGrainSize,
-  })));
+
 
   const {
     torchState,
@@ -100,37 +90,7 @@ export const FooterParameterExtensions = ({ translateY }: FooterParameterExtensi
             parameterExtensionAnimatedStyle={parameterExtensionAnimatedStyle}
           />
           <Animated.View style={[styles.childSubContainer, animatedStyle]}>
-            <ParameterControl
-              label={t('parameters.chroma')}
-              isActive={activeExtension === 'grain_chroma'}
-              onPress={() => {
-                setActiveExtension('grain_chroma');
-                setGrainChroma(grainChroma.value === 0 ? 1 : 0);
-              }}
-              value={grainChroma}
-              renderValue={true}
-              variant="text"
-              valueFormatter={(v) => {
-                'worklet';
-                return v === 0 ? 'MONO' : 'RGB';
-              }}
-            />
-            <ParameterControl
-              label={t('parameters.size')}
-              isActive={activeExtension === 'grain_size'}
-              onPress={() => setActiveExtension('grain_size')}
-              value={grainSize}
-              minValue={1.0}
-              maxValue={4.0}
-              onChange={setGrainSize}
-              onUpdateWorklet={worklets.updateGrainSize}
-              renderValue={true}
-              valueFormatter={(v) => {
-                'worklet';
-                return `${v.toFixed(1)}x`;
-              }}
-              variant="text"
-            />
+            <GrainSubExtensions />
           </Animated.View>
         </View>
       );
