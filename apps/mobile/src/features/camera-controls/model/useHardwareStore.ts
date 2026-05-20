@@ -57,12 +57,14 @@ export const useHardwareStore = create<HardwareStore>((set, get) => ({
     get().ev.value = DEFAULT_EV;
   },
   setEv: (value) => {
+    logger.debug('HardwareStore', `Setting EV: ${value}`);
     get().ev.value = value;
     get().evAuto.value = false;
     get().isoAuto.value = true;
     get().shutterSpeedAuto.value = true;
   },
   setShutterSpeed: (value) => {
+    logger.debug('HardwareStore', `Setting Shutter Speed: ${value}`);
     get().shutterSpeed.value = value;
     get().shutterSpeedAuto.value = false;
     get().isoAuto.value = false;
@@ -70,10 +72,12 @@ export const useHardwareStore = create<HardwareStore>((set, get) => ({
     get().ev.value = DEFAULT_EV;
   },
   setTemperature: (value) => {
+    logger.debug('HardwareStore', `Setting Temperature: ${value}`);
     get().temperature.value = value;
     get().temperatureAuto.value = false;
   },
   setTint: (value) => {
+    logger.debug('HardwareStore', `Setting Tint: ${value}`);
     get().tint.value = value;
     get().temperatureAuto.value = false;
   },
@@ -105,6 +109,7 @@ export const useHardwareStore = create<HardwareStore>((set, get) => ({
     if (value) get().ev.value = DEFAULT_EV;
   },
   setFocusDistance: (value) => {
+    logger.debug('HardwareStore', `Setting Focus Distance: ${value}`);
     get().focusDistance.value = value;
     get().focusAuto.value = false;
   },

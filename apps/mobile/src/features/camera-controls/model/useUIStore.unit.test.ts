@@ -8,6 +8,7 @@ describe('useUIStore', () => {
       activeParameter: 'none',
       activeExtension: 'none',
       isDebugEnabled: false,
+      isLogsEnabled: false,
       lastActiveModules: {
         none: 'none',
         system: 'preferences',
@@ -70,6 +71,12 @@ describe('useUIStore', () => {
     const { setIsDebugEnabled } = useUIStore.getState();
     setIsDebugEnabled(true);
     expect(useUIStore.getState().isDebugEnabled).toBe(true);
+  });
+
+  it('updates logs mode correctly', () => {
+    const { setIsLogsEnabled } = useUIStore.getState();
+    setIsLogsEnabled(true);
+    expect(useUIStore.getState().isLogsEnabled).toBe(true);
   });
 
   it('sets active sub parameter and resets correctly', () => {

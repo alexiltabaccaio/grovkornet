@@ -35,9 +35,11 @@ export const useStylesStore = create<EffectsStore>((set, get) => ({
     get().grainSize.value = value;
   },
   setSaturation: (value) => {
+    logger.debug('StylesStore', `Setting Saturation: ${value}`);
     get().saturation.value = value;
   },
   setContrast: (value) => {
+    logger.debug('StylesStore', `Setting Contrast: ${value}`);
     get().contrast.value = value;
   },
   setChromaticAberration: (value) => {
@@ -57,6 +59,7 @@ export const useStylesStore = create<EffectsStore>((set, get) => ({
     get().noiseReductionMode.value = mode;
   },
   setSharpening: (value) => {
+    logger.debug('StylesStore', `Setting Sharpening: ${value}`);
     get().sharpening.value = value;
   },
   resetEffect: (effect) => {

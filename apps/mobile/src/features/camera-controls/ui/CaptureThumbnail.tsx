@@ -4,6 +4,7 @@ import Animated, { useSharedValue, useAnimatedStyle, withRepeat, withTiming, Eas
 import { useUIStore } from '@features/camera-controls/model/useUIStore';
 import { useShallow } from 'zustand/react/shallow';
 import * as MediaLibrary from 'expo-media-library';
+import { logger } from '@shared/lib/logger';
 
 interface CaptureThumbnailProps {
   onPress: () => void;
@@ -44,7 +45,7 @@ export const CaptureThumbnail = ({ onPress }: CaptureThumbnailProps) => {
             }
           }
         } catch (e) {
-          console.warn('[CaptureThumbnail] Failed to load initial thumbnail', e);
+          logger.warn('CaptureThumbnail', 'Failed to load initial thumbnail', e);
         }
       };
       void loadInitialThumbnail();

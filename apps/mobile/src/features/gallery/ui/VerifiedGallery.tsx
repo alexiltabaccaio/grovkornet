@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import { verifyGrovkornetAuthenticity } from '@grovkornet/engine';
 import { ShareButton, StatusBarHeader } from '@features/camera-controls';
+import { logger } from '@shared/lib/logger';
 
 interface VerifiedGalleryProps {
   onClose: () => void;
@@ -29,7 +30,7 @@ export const VerifiedGallery = ({ onClose, initialUri }: VerifiedGalleryProps) =
   useEffect(() => {
     const loadPhotos = async () => {
       try {
-        console.log('[Gallery] Checking MediaLibrary permissions...');
+        logger.debug('Gallery', 'Checking MediaLibrary permissions...');
         const checkPerms = async () => {
           const current = await MediaLibrary.getPermissionsAsync();
           if (current.granted) return 'granted';
@@ -49,11 +50,11 @@ export const VerifiedGallery = ({ onClose, initialUri }: VerifiedGalleryProps) =
         try {
           status = await Promise.race([checkPerms(), permTimeout]);
         } catch (e) {
-          console.warn('[Gallery] Permissions timeout or error:', e);
+          logger.warn('Gallery', 'Permissions timeout or error', e);
         }
 
         if (status !== 'granted') {
-          console.warn('[Gallery] MediaLibrary permissions not granted or timed out');
+          logger.warn('Gallery', 'MediaLibrary permissions not granted or timed out');
           setPermissionGranted(false);
           setLoading(false);
           // Fallback: show the captured photo only
@@ -65,7 +66,7 @@ export const VerifiedGallery = ({ onClose, initialUri }: VerifiedGalleryProps) =
 
         setPermissionGranted(true);
 
-        console.log('[Gallery] Fetching Grovkornet album with timeout...');
+        logger.debug('Gallery', 'Fetching Grovkornet album with timeout...');
         const albumTimeout = new Promise<never>((_, reject) => 
           setTimeout(() => reject(new Error('ALBUM_TIMEOUT')), 10000)
         );
@@ -91,7 +92,7 @@ export const VerifiedGallery = ({ onClose, initialUri }: VerifiedGalleryProps) =
           ]);
           media = result.assets;
         } else {
-          console.log('[Gallery] Grovkornet album not found, returning empty list');
+          logger.debug('Gallery', 'Grovkornet album not found, returning empty list');
           media = [];
         }
 
@@ -117,7 +118,7 @@ export const VerifiedGallery = ({ onClose, initialUri }: VerifiedGalleryProps) =
           void handleSelectPhoto(items[0]);
         }
       } catch (error) {
-        console.error('[Gallery] Failed to load photos (graceful fallback):', error);
+        logger.error('Gallery', 'Failed to load photos (graceful fallback)', error);
         setLoading(false);
         setPermissionGranted(false);
         if (initialUri) {
@@ -131,7 +132,7 @@ export const VerifiedGallery = ({ onClose, initialUri }: VerifiedGalleryProps) =
 
   // Handle image verification using the native call
   const handleSelectPhoto = async (item: GalleryItem) => {
-    console.log('[Gallery] handleSelectPhoto for:', item.uri);
+    logger.debug('Gallery', `handleSelectPhoto for: ${item.uri}`);
     setSelectedPhoto(item);
     if (item.isVerified !== undefined) {
       return;
@@ -139,7 +140,7 @@ export const VerifiedGallery = ({ onClose, initialUri }: VerifiedGalleryProps) =
 
     setVerifying(true);
     try {
-      console.log('[Gallery] Running real verifyGrovkornetAuthenticity with 5s timeout...');
+      logger.debug('Gallery', 'Running real verifyGrovkornetAuthenticity with 5s timeout...');
       const verifyTimeout = new Promise<boolean>((_, reject) => 
         setTimeout(() => reject(new Error('VERIFY_TIMEOUT')), 5000)
       );
@@ -149,11 +150,11 @@ export const VerifiedGallery = ({ onClose, initialUri }: VerifiedGalleryProps) =
         verifyTimeout
       ]);
 
-      console.log('[Gallery] Verification result:', verified);
+      logger.debug('Gallery', `Verification result: ${verified}`);
       setSelectedPhoto(prev => prev?.uri === item.uri ? { ...prev, isVerified: verified } : prev);
       setPhotos(prev => prev.map(p => p.uri === item.uri ? { ...p, isVerified: verified } : p));
     } catch (error) {
-      console.error('[Gallery] Verification error or timeout:', error);
+      logger.error('Gallery', 'Verification error or timeout', error);
       setSelectedPhoto(prev => prev?.uri === item.uri ? { ...prev, isVerified: false } : prev);
       setPhotos(prev => prev.map(p => p.uri === item.uri ? { ...p, isVerified: false } : p));
     } finally {

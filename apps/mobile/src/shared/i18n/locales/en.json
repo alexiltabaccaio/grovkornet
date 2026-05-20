@@ -23,6 +23,8 @@
     },
     "parameters": {
       "language": "LANGUAGE",
+      "debug_ui": "UI OVERLAYS",
+      "debug_logs": "CONSOLE LOGS",
       "amount": "AMOUNT",
       "grain": "GRAIN",
 

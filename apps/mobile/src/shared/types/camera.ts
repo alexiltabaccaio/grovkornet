@@ -104,6 +104,7 @@ export interface UIState {
   activeParameter: ParameterType;
   activeExtension: ParameterExtensionType;
   isDebugEnabled: boolean;
+  isLogsEnabled: boolean;
   isExtensionOpen: boolean;
   isCapturing: boolean;
   latestCapturedUri: string | null;
@@ -119,6 +120,7 @@ export interface UIActions {
   setActiveParameter: (param: ParameterType) => void;
   setActiveExtension: (param: ParameterExtensionType) => void;
   setIsDebugEnabled: (enabled: boolean) => void;
+  setIsLogsEnabled: (enabled: boolean) => void;
   setIsExtensionOpen: (open: boolean) => void;
   triggerCapture: () => void;
   setLatestCapturedUri: (uri: string | null) => void;

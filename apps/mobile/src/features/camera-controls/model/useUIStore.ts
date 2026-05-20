@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { UIStore, ModuleType, ParameterType, SectionType, ParameterExtensionType } from '@shared/types/camera';
+import { logger } from '@shared/lib/logger';
 
 export const useUIStore = create<UIStore>((set, get) => ({
   // UI State
@@ -8,6 +9,7 @@ export const useUIStore = create<UIStore>((set, get) => ({
   activeParameter: 'none',
   activeExtension: 'none',
   isDebugEnabled: false,
+  isLogsEnabled: __DEV__,
   isExtensionOpen: false,
   isCapturing: false,
   latestCapturedUri: null,
@@ -73,6 +75,11 @@ export const useUIStore = create<UIStore>((set, get) => ({
 
   setIsDebugEnabled: (enabled: boolean) => {
     set({ isDebugEnabled: enabled });
+  },
+
+  setIsLogsEnabled: (enabled: boolean) => {
+    logger.setDebugEnabled(enabled);
+    set({ isLogsEnabled: enabled });
   },
 
   setIsExtensionOpen: (open: boolean) => {

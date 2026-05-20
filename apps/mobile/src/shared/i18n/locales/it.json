@@ -23,6 +23,8 @@
     },
     "parameters": {
       "language": "LINGUA",
+      "debug_ui": "OVERLAY UI",
+      "debug_logs": "LOG CONSOLE",
       "amount": "QUANTITÀ",
       "grain": "GRANA",
 
