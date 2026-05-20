@@ -110,7 +110,7 @@ class NativeFilmCameraModule : Module() {
       }
       Prop("resolutionSetting") { view: NativeFilmCameraView, value: Int ->
         if (view.config.resolutionSetting != value) {
-          view.updateEffect { resolutionSetting = value }
+          view.updateBoth { resolutionSetting = value }
         }
       }
       Prop("targetFps") { view: NativeFilmCameraView, value: Int ->

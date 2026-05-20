@@ -51,6 +51,7 @@ const DirectionButton = ({ label, value, activeDirection, onPress }: DirectionBu
 
 export const ChromaticAberrationExtension = () => {
   const { t } = useTranslation();
+  const isDebugEnabled = useUIStore((s) => s.isDebugEnabled);
   const { aberrationDirection, setAberrationDirection } = useStylesStore(
     useShallow((state) => ({
       aberrationDirection: state.aberrationDirection,
@@ -59,7 +60,10 @@ export const ChromaticAberrationExtension = () => {
   );
 
   return (
-    <View style={styles.container}>
+    <View style={[
+      styles.container,
+      isDebugEnabled && { backgroundColor: 'rgba(0, 255, 0, 0.2)', borderWidth: 1, borderColor: 'green' }
+    ]}>
       <Text allowFontScaling={false} style={styles.label}>
         {t('parameters.direction').toUpperCase()}
       </Text>

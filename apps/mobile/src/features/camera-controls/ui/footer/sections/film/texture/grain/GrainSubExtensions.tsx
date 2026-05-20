@@ -43,6 +43,7 @@ const ChromaButton = ({ label, isSelected, onPress }: ChromaButtonProps) => {
 
 export const GrainSubExtensions = () => {
   const { t } = useTranslation();
+  const isDebugEnabled = useUIStore((s) => s.isDebugEnabled);
   const { grainChroma, setGrainChroma, grainSize, setGrainSize } = useStylesStore(
     useShallow(state => ({
       grainChroma: state.grainChroma,
@@ -56,7 +57,10 @@ export const GrainSubExtensions = () => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.chromaContainer}>
+      <View style={[
+        styles.chromaContainer,
+        isDebugEnabled && { backgroundColor: 'rgba(0, 255, 0, 0.2)', borderWidth: 1, borderColor: 'green' }
+      ]}>
         <Text allowFontScaling={false} style={styles.label}>
           {t('parameters.chroma').toUpperCase()}
         </Text>

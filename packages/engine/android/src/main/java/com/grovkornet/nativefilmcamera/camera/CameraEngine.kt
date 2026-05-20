@@ -39,19 +39,22 @@ class CameraEngine(
     
     private var lastBoundCameraId: String? = null
     private var lastBoundAspectRatio: Int = -1
+    private var lastBoundResolutionSetting: Int = -1
     private var currentSurfaceTexture: SurfaceTexture? = null
 
     fun start(surfaceTexture: SurfaceTexture) {
         currentSurfaceTexture = surfaceTexture
         lastBoundCameraId = config.cameraId
         lastBoundAspectRatio = config.aspectRatio
+        lastBoundResolutionSetting = config.resolutionSetting
         sessionManager.start(surfaceTexture, controlManager.createCaptureCallback())
     }
 
     fun updateCameraControls() {
-        if (config.cameraId != lastBoundCameraId || config.aspectRatio != lastBoundAspectRatio) {
+        if (config.cameraId != lastBoundCameraId || config.aspectRatio != lastBoundAspectRatio || config.resolutionSetting != lastBoundResolutionSetting) {
             lastBoundCameraId = config.cameraId
             lastBoundAspectRatio = config.aspectRatio
+            lastBoundResolutionSetting = config.resolutionSetting
             currentSurfaceTexture?.let { 
                 sessionManager.bindCameraUseCases(it, controlManager.createCaptureCallback())
             }
