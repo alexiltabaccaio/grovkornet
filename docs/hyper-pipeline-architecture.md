@@ -10,7 +10,7 @@ Tutta la matematica della luce (LUT, Halation, Compositing) dovrà avvenire in u
 
 ---
 
-## Fase 1: Setup dell'Astrazione Grafica (Google Filament)
+## Fase 1: Setup dell'Astrazione Grafica (Google Filament) - [COMPLETATO]
 L'attuale `OffscreenFilmProcessor` nativo verrà refattorizzato per utilizzare **Google Filament** come motore di rendering C++.
 *   **Azione 1:** Integrare le librerie C++ di Filament nel progetto Android (JNI).
 *   **Azione 2 (Zero-Copy):** Gestire i frame video (da Vision Camera) tramite **HardwareBuffers** (`AHardwareBuffer`). È fondamentale iniettare i frame nella memoria video della GPU senza *mai* copiare l'array di pixel nella memoria della CPU.
@@ -18,7 +18,7 @@ L'attuale `OffscreenFilmProcessor` nativo verrà refattorizzato per utilizzare *
 
 ---
 
-## Fase 2: Pilastro 1 - L'Inganno dell'Infinito (3D LUT Baking)
+## Fase 2: Pilastro 1 - L'Inganno dell'Infinito (3D LUT Baking) - [COMPLETATO]
 Estrazione di tutta la logica matematica legata al colore dal Fragment Shader per spostarla sulla CPU in background.
 *   **Azione 1 (CPU):** Creare un thread asincrono che, al variare degli slider (Curve, Esposizione, Emulazioni pellicola), calcola una matrice di colori 33x33x33 e genera la Look-Up Table (LUT).
 *   **Azione 2 (GPU):** Caricare la LUT in memoria video come Texture 3D.
@@ -27,7 +27,7 @@ Estrazione di tutta la logica matematica legata al colore dal Fragment Shader pe
 
 ---
 
-## Fase 3: Pilastro 2 - Il Render Graph Spaziale (Halation/Bloom)
+## Fase 3: Pilastro 2 - Il Render Graph Spaziale (Halation/Bloom) - [COMPLETATO]
 Implementazione di un sistema multi-pass per gli effetti spaziali, necessario per abbattere l'enorme costo del Texture Fetching a piena risoluzione.
 *   **Azione 1 (Downsampling):** Sfruttare le API di Filament per creare Framebuffer (FBO) a bassa risoluzione (es. 1/4 o 1/8 del frame originale).
 *   **Azione 2 (Compute/Sfocatura):** Implementare l'algoritmo **Dual Kawase Blur** operando esclusivamente sulle miniature per isolare e sfocare le alte luci (Halation/Bloom).

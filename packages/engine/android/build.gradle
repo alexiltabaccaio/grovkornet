@@ -12,8 +12,29 @@ android {
   compileSdkVersion 35
 
   defaultConfig {
-    minSdkVersion 24
+    minSdkVersion 26
     targetSdkVersion 34
+    testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+    externalNativeBuild {
+      cmake {
+        cppFlags "-std=c++17"
+        arguments "-DANDROID_STL=c++_shared"
+      }
+    }
+    ndk {
+      abiFilters "arm64-v8a", "x86_64"
+    }
+  }
+
+  externalNativeBuild {
+    cmake {
+      path "CMakeLists.txt"
+    }
+  }
+
+  packagingOptions {
+    pickFirst 'lib/*/libc++_shared.so'
   }
 
   lintOptions {
@@ -21,10 +42,62 @@ android {
   }
 }
 
+// Custom task to download and extract Filament Android Native headers/libs
+task downloadFilament {
+  def version = "1.71.4"
+  // Note the '-native' suffix in the file name
+  def url = "https://github.com/google/filament/releases/download/v${version}/filament-v${version}-android-native.tgz"
+  def destDir = file("${projectDir}/filament")
+  def destFile = file("${projectDir}/filament.tgz")
+
+  inputs.property("version", version)
+  outputs.dir(destDir)
+
+  doLast {
+    // Gradle automatically creates destDir because it is registered as an output directory.
+    // Therefore, we check for a key header file rather than the directory itself.
+    def checkHeader = file("${destDir}/include/filament/Engine.h")
+    if (!checkHeader.exists()) {
+      println "Downloading Filament v${version} from ${url}..."
+      try {
+        destFile.parentFile.mkdirs()
+        new URL(url).withInputStream { i ->
+          destFile.withOutputStream { it << i }
+        }
+        println "Extracting Filament tarball..."
+        copy {
+          from tarTree(resources.gzip(destFile))
+          into destDir
+        }
+        destFile.delete()
+        println "Filament downloaded and extracted to ${destDir}."
+      } catch (Exception e) {
+        println "Failed to download/extract Filament: ${e.message}"
+        if (destFile.exists()) destFile.delete()
+        // If download failed, clean up the directory so we try again next time
+        if (destDir.exists()) destDir.deleteDir()
+        throw e
+      }
+    } else {
+      println "Filament headers already exist, skipping download."
+    }
+  }
+}
+
+// Hook CMake build to run after downloadFilament by binding it to preBuild
+afterEvaluate {
+  tasks.named('preBuild').configure {
+    dependsOn downloadFilament
+  }
+}
+
 dependencies {
   implementation project(':expo-modules-core')
   implementation "com.facebook.react:react-android"
   implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlinVersion"
+
+  // Filament Java API
+  implementation 'com.google.android.filament:filament-android:1.71.4'
 
   // CameraX dependencies
   def camerax_version = "1.5.0"
@@ -35,4 +108,9 @@ dependencies {
   implementation "androidx.lifecycle:lifecycle-process:2.6.2"
 
   testImplementation 'junit:junit:4.13.2'
+  
+  // Instrumented tests dependencies
+  androidTestImplementation 'androidx.test:runner:1.5.2'
+  androidTestImplementation 'androidx.test:rules:1.5.0'
+  androidTestImplementation 'androidx.test.ext:junit:1.1.5'
 }

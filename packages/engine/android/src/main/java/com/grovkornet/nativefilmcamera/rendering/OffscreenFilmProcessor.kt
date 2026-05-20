@@ -1,64 +1,79 @@
 package com.grovkornet.nativefilmcamera.rendering
 
 import android.graphics.Bitmap
-import android.graphics.PixelFormat
-import android.media.ImageReader
-import android.os.Handler
-import android.os.HandlerThread
-import android.opengl.*
 import android.util.Log
 import com.grovkornet.nativefilmcamera.state.CameraConfiguration
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import kotlinx.coroutines.suspendCancellableCoroutine
-import java.nio.ByteBuffer
-import kotlin.coroutines.resume
-import kotlin.coroutines.resumeWithException
+import com.google.android.filament.Filament
 
 class OffscreenFilmProcessor {
     private val TAG = "OffscreenProcessor"
 
-    private val eglCore = EglCore()
-    private val shaderController = FilmShaderController()
-    private var textureId = IntArray(1) { 0 }
-    private var imageReader: ImageReader? = null
-    
-    private var handlerThread: HandlerThread? = null
-    private var backgroundHandler: Handler? = null
+    private var nativeEnginePtr: Long = 0L
     private val processMutex = Mutex()
 
     private var isPrepared = false
     private var currentWidth = 0
     private var currentHeight = 0
 
+    companion object {
+        init {
+            try {
+                System.loadLibrary("grovkornet-engine")
+                Log.i("OffscreenProcessor", "Successfully loaded native grovkornet-engine library")
+                Filament.init()
+                Log.i("OffscreenProcessor", "Successfully initialized Google Filament")
+            } catch (e: Exception) {
+                Log.e("OffscreenProcessor", "Failed to load libraries or init Filament", e)
+            }
+        }
+    }
+
+    // Native JNI methods
+    private external fun nativePrepare(width: Int, height: Int): Long
+    private external fun nativeProcessBitmap(
+        nativeEnginePtr: Long,
+        input: Bitmap,
+        output: Bitmap,
+        saturation: Float,
+        contrast: Float,
+        ev: Float,
+        whiteBalance: Float,
+        tint: Float
+    )
+    private external fun nativeProcessHardwareBuffer(
+        nativeEnginePtr: Long,
+        hardwareBuffer: android.hardware.HardwareBuffer,
+        saturation: Float,
+        contrast: Float,
+        ev: Float,
+        whiteBalance: Float,
+        tint: Float
+    )
+    private external fun nativeRelease(nativeEnginePtr: Long)
+
     fun prepare(width: Int, height: Int) {
         if (isPrepared && currentWidth == width && currentHeight == height) return
         
         val startTime = System.currentTimeMillis()
-        Log.i(TAG, "Preparing EGL context and ImageReader for ${width}x${height}...")
+        Log.i(TAG, "Preparing native Filament engine for ${width}x${height}...")
 
         try {
             if (isPrepared) release()
 
-            if (handlerThread == null) {
-                handlerThread = HandlerThread("ImageReaderThread").apply { start() }
-                backgroundHandler = Handler(handlerThread!!.looper)
+            nativeEnginePtr = nativePrepare(width, height)
+            if (nativeEnginePtr == 0L) {
+                throw RuntimeException("nativePrepare returned 0 pointer")
             }
-
-            val reader = ImageReader.newInstance(width, height, PixelFormat.RGBA_8888, 2)
-            imageReader = reader
-            eglCore.init(reader.surface)
-            
-            shaderController.init()
-            GLES20.glGenTextures(1, textureId, 0)
 
             currentWidth = width
             currentHeight = height
             isPrepared = true
             
-            Log.i(TAG, "Preparation complete in ${System.currentTimeMillis() - startTime}ms")
+            Log.i(TAG, "Native preparation complete in ${System.currentTimeMillis() - startTime}ms")
         } catch (e: Exception) {
-            Log.e(TAG, "Failed to prepare OffscreenProcessor", e)
+            Log.e(TAG, "Failed to prepare OffscreenProcessor with Filament", e)
             isPrepared = false
         }
     }
@@ -75,95 +90,86 @@ class OffscreenFilmProcessor {
             prepare(input.width, input.height)
         }
 
+        if (nativeEnginePtr == 0L) {
+            Log.e(TAG, "Native engine pointer is null, returning original bitmap")
+            return input
+        }
+
         val startTime = System.currentTimeMillis()
         val width = input.width
         val height = input.height
 
         try {
-            // Ensure EGL context is current on this thread
-            eglCore.makeCurrent()
+            val outputBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+            
+            // Process pixels in C++
+            nativeProcessBitmap(
+                nativeEnginePtr,
+                input,
+                outputBitmap,
+                params.saturation,
+                params.contrast,
+                params.ev,
+                params.whiteBalance,
+                params.tint
+            )
 
-            // Upload texture
-            GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureId[0])
-            GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR)
-            GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR)
-            GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_S, GLES20.GL_CLAMP_TO_EDGE)
-            GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_CLAMP_TO_EDGE)
-            android.opengl.GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, input, 0)
-
-            // Setup attributes and uniforms
-            shaderController.setupAndBind(params)
-
-            // Draw
-            GLES20.glViewport(0, 0, width, height)
-            GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT)
-            GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, 4)
-
-            val reader = imageReader ?: throw RuntimeException("ImageReader is null")
-            val outputBitmap = suspendCancellableCoroutine<Bitmap> { cont ->
-                reader.setOnImageAvailableListener({ ir ->
-                    ir.setOnImageAvailableListener(null, null)
-                    try {
-                        val image = ir.acquireLatestImage()
-                        if (image == null) {
-                            cont.resumeWithException(RuntimeException("acquireLatestImage returned null"))
-                            return@setOnImageAvailableListener
-                        }
-                        image.use { img ->
-                            val plane = img.planes[0]
-                            val buffer = plane.buffer
-                            val pixelStride = plane.pixelStride
-                            val rowStride = plane.rowStride
-                            val rowPadding = rowStride - pixelStride * width
-
-                            val bmp = if (rowPadding == 0) {
-                                val cleanBmp = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
-                                cleanBmp.copyPixelsFromBuffer(buffer)
-                                cleanBmp
-                            } else {
-                                val paddedWidth = rowStride / pixelStride
-                                val paddedBmp = Bitmap.createBitmap(paddedWidth, height, Bitmap.Config.ARGB_8888)
-                                paddedBmp.copyPixelsFromBuffer(buffer)
-                                Bitmap.createBitmap(paddedBmp, 0, 0, width, height)
-                            }
-                            cont.resume(bmp)
-                        }
-                    } catch (e: Exception) {
-                        cont.resumeWithException(e)
-                    }
-                }, backgroundHandler)
-
-                // Submit frame to ImageReader
-                eglCore.swapBuffers()
-                
-                // Release EGL context from current thread before suspending
-                eglCore.makeNothingCurrent()
-            }
-
-            Log.i(TAG, "Frame processed asynchronously in ${System.currentTimeMillis() - startTime}ms")
+            Log.i(TAG, "Frame processed natively in ${System.currentTimeMillis() - startTime}ms")
             return outputBitmap
         } catch (e: Exception) {
-            Log.e(TAG, "Offscreen processing failed", e)
+            Log.e(TAG, "Offscreen native processing failed", e)
             return input
+        }
+    }
+
+    suspend fun processHardwareBuffer(
+        hardwareBuffer: android.hardware.HardwareBuffer,
+        params: CameraConfiguration
+    ) {
+        processMutex.withLock {
+            if (!isPrepared) {
+                Log.w(TAG, "Processor not prepared, preparing now...")
+                prepare(hardwareBuffer.width, hardwareBuffer.height)
+            }
+
+            if (hardwareBuffer.width != currentWidth || hardwareBuffer.height != currentHeight) {
+                Log.i(TAG, "Resolution changed from ${currentWidth}x${currentHeight} to ${hardwareBuffer.width}x${hardwareBuffer.height}. Re-preparing...")
+                prepare(hardwareBuffer.width, hardwareBuffer.height)
+            }
+
+            if (nativeEnginePtr == 0L) {
+                Log.e(TAG, "Native engine pointer is null, skipping hardware buffer processing")
+                return@withLock
+            }
+
+            val startTime = System.currentTimeMillis()
+            try {
+                nativeProcessHardwareBuffer(
+                    nativeEnginePtr,
+                    hardwareBuffer,
+                    params.saturation,
+                    params.contrast,
+                    params.ev,
+                    params.whiteBalance,
+                    params.tint
+                )
+                Log.i(TAG, "HardwareBuffer processed natively (zero-copy) in ${System.currentTimeMillis() - startTime}ms")
+            } catch (e: Exception) {
+                Log.e(TAG, "Offscreen native HardwareBuffer processing failed", e)
+            }
         }
     }
 
     fun release() {
         if (!isPrepared) return
         
-        Log.i(TAG, "Releasing EGL context and resources...")
-        eglCore.release()
+        Log.i(TAG, "Releasing native Filament engine...")
+        if (nativeEnginePtr != 0L) {
+            nativeRelease(nativeEnginePtr)
+            nativeEnginePtr = 0L
+        }
         
-        shaderController.release()
-        if (textureId[0] != 0) GLES20.glDeleteTextures(1, textureId, 0)
-        imageReader?.close()
-        imageReader = null
-        
-        handlerThread?.quitSafely()
-        handlerThread = null
-        backgroundHandler = null
-
-        textureId[0] = 0
         isPrepared = false
+        Log.i(TAG, "Release complete.")
     }
 }
