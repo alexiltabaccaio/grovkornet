@@ -75,6 +75,8 @@ class FilmRenderer(
 
     private var viewportWidth = 0
     private var viewportHeight = 0
+    private var renderedWidth = 0f
+    private var renderedHeight = 0f
     
     @Volatile var cameraWidth = 0
     @Volatile var cameraHeight = 0
@@ -291,7 +293,7 @@ class FilmRenderer(
         GLES20.glUniform1f(uGrainSizeLoc, currentConfig.grainSize)
         GLES20.glUniform1f(uGrainEnabledLoc, if (currentConfig.grainEnabled) 1.0f else 0.0f)
         GLES20.glUniform1f(uTimeLoc, (System.currentTimeMillis() % 10000) / 1000f)
-        GLES20.glUniform2f(uResolutionLoc, viewportWidth.toFloat(), viewportHeight.toFloat())
+        GLES20.glUniform2f(uResolutionLoc, renderedWidth, renderedHeight)
         GLES20.glUniform1f(uEvLoc, currentConfig.ev)
         GLES20.glUniform1f(uWhiteBalanceLoc, if (currentConfig.whiteBalanceAuto) 5000.0f else currentConfig.whiteBalance)
         GLES20.glUniform1f(uTintLoc, if (currentConfig.whiteBalanceAuto) 0.0f else currentConfig.tint)
@@ -380,6 +382,9 @@ class FilmRenderer(
         Matrix.translateM(cropMatrix, 0, 0.5f, 0.5f, 0.0f)
         Matrix.scaleM(cropMatrix, 0, cropX, cropY, 1.0f)
         Matrix.translateM(cropMatrix, 0, -0.5f, -0.5f, 0.0f)
+
+        renderedWidth = viewportWidth.toFloat() * scaleX
+        renderedHeight = viewportHeight.toFloat() * scaleY
     }
 
 

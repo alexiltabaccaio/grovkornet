@@ -27,7 +27,7 @@ class FilmShaderController {
         texCoordBuffer = createFloatBuffer(floatArrayOf(0f, 1f, 1f, 1f, 0f, 0f, 1f, 0f))
     }
 
-    fun setupAndBind(params: CameraConfiguration) {
+    fun setupAndBind(params: CameraConfiguration, width: Float, height: Float) {
         if (!isInitialized) {
             throw IllegalStateException("FilmShaderController not initialized")
         }
@@ -57,7 +57,7 @@ class FilmShaderController {
         GLES20.glUniform1f(GLES20.glGetUniformLocation(program, "u_GrainSize"), params.grainSize)
         GLES20.glUniform1f(GLES20.glGetUniformLocation(program, "u_GrainEnabled"), if (params.grainEnabled) 1.0f else 0.0f)
         GLES20.glUniform1f(GLES20.glGetUniformLocation(program, "u_Time"), (System.currentTimeMillis() % 10000) / 1000f)
-        GLES20.glUniform2f(GLES20.glGetUniformLocation(program, "u_Resolution"), params.viewportWidth, params.viewportHeight)
+        GLES20.glUniform2f(GLES20.glGetUniformLocation(program, "u_Resolution"), width, height)
         GLES20.glUniform1f(GLES20.glGetUniformLocation(program, "u_Ev"), params.ev)
         GLES20.glUniform1f(GLES20.glGetUniformLocation(program, "u_WhiteBalance"), params.whiteBalance)
         GLES20.glUniform1f(GLES20.glGetUniformLocation(program, "u_Tint"), params.tint)
