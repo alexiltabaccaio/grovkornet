@@ -1,14 +1,45 @@
 import React from 'react';
-import { StyleProp, ViewStyle } from 'react-native';
+import { StyleSheet, StyleProp, ViewStyle, Pressable } from 'react-native';
+import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 import { useShallow } from 'zustand/react/shallow';
 import { useUIStore } from '@features/camera-controls/model/useUIStore';
-import { ParameterControl } from '@features/camera-controls/ui/footer/components/ParameterControl';
 import { ParameterExtensionWrapper } from '@features/camera-controls/ui/footer/components/ParameterExtensionWrapper';
 import { useTranslation } from 'react-i18next';
 
 interface DebugExtensionProps {
   parameterExtensionAnimatedStyle?: StyleProp<ViewStyle>;
 }
+
+interface DebugToggleButtonProps {
+  label: string;
+  isActive: boolean;
+  onPress: () => void;
+}
+
+const DebugToggleButton = ({ label, isActive, onPress }: DebugToggleButtonProps) => {
+  const animatedStyle = useAnimatedStyle(() => {
+    return {
+      borderColor: isActive ? '#FFF' : '#333',
+      backgroundColor: isActive ? 'rgba(255, 255, 255, 0.12)' : 'rgba(255, 255, 255, 0.04)',
+    };
+  });
+
+  const animatedTextStyle = useAnimatedStyle(() => {
+    return {
+      color: isActive ? '#FFF' : '#888',
+    };
+  });
+
+  return (
+    <Pressable onPress={onPress} style={styles.pressable}>
+      <Animated.View style={[styles.pillButton, animatedStyle]}>
+        <Animated.Text style={[styles.pillText, animatedTextStyle]}>
+          {label}
+        </Animated.Text>
+      </Animated.View>
+    </Pressable>
+  );
+};
 
 export const DebugExtension = ({ parameterExtensionAnimatedStyle }: DebugExtensionProps) => {
   const { t } = useTranslation();
@@ -20,26 +51,37 @@ export const DebugExtension = ({ parameterExtensionAnimatedStyle }: DebugExtensi
   })));
 
   return (
-    <ParameterExtensionWrapper animatedStyle={parameterExtensionAnimatedStyle} gap={32}>
-      <ParameterControl
-        label={t('parameters.debug_ui')}
+    <ParameterExtensionWrapper animatedStyle={parameterExtensionAnimatedStyle} gap={16} paddingHorizontal={32}>
+      <DebugToggleButton
+        label={t('parameters.debug_ui').toUpperCase()}
         isActive={isDebugEnabled}
-        hideDebugRectangles={true}
         onPress={() => setIsDebugEnabled(!isDebugEnabled)}
-        variant="text"
-        staticText={isDebugEnabled ? 'ON' : 'OFF'}
-        isToggle={true}
       />
-      <ParameterControl
-        label={t('parameters.debug_logs')}
+      <DebugToggleButton
+        label={t('parameters.debug_logs').toUpperCase()}
         isActive={isLogsEnabled}
-        hideDebugRectangles={true}
         onPress={() => setIsLogsEnabled(!isLogsEnabled)}
-        variant="text"
-        staticText={isLogsEnabled ? 'ON' : 'OFF'}
-        isToggle={true}
       />
     </ParameterExtensionWrapper>
   );
 };
 
+const styles = StyleSheet.create({
+  pressable: {
+    flex: 1,
+    maxWidth: 140,
+  },
+  pillButton: {
+    height: 32,
+    borderRadius: 16,
+    borderWidth: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  pillText: {
+    fontSize: 11,
+    fontWeight: '800',
+    letterSpacing: 0.5,
+    textAlign: 'center',
+  },
+});

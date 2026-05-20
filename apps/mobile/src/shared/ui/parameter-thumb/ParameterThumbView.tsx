@@ -73,7 +73,7 @@ export const ParameterThumbView = forwardRef<View, ParameterThumbViewProps>((pro
             isActive && styles.filterTextActive,
             !isActive && !!imageSource && { opacity: 0.3 },
             { marginBottom: 6, minHeight: undefined },
-            variant === 'text' && { fontSize: 13, fontWeight: '800', marginBottom: 8 }
+            variant === 'text' && { fontSize: 13, fontWeight: '800', marginBottom: 4 }
           ]}
         >
           {label.toUpperCase().split(' ').join('\n')}

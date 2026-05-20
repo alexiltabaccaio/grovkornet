@@ -1,4 +1,4 @@
-import React, { useState, useLayoutEffect, useRef, useCallback } from 'react';
+import React, { useRef, useCallback } from 'react';
 import { View, StyleSheet, Pressable } from 'react-native';
 import { GestureDetector, Gesture } from 'react-native-gesture-handler';
 import Animated, {
@@ -8,7 +8,7 @@ import Animated, {
   Extrapolation,
   withTiming,
   runOnJS,
-  useDerivedValue,
+  useAnimatedReaction,
 } from 'react-native-reanimated';
 import { ParameterType } from '@shared/types/camera';
 
@@ -33,172 +33,170 @@ export const ParameterWheel = ({
   setActiveParameter,
   handlePressWithDouble,
 }: ParameterWheelProps) => {
-  const itemsKey = items.map(item => item.id).join(',');
-  const [centeredParam, setCenteredParam] = useState<ParameterType>(
-    activeParameter !== 'none' && items.some(i => i.id === activeParameter)
-      ? activeParameter
-      : items[0]?.id
-  );
+  const itemsLength = items.length;
+  const initialIndex = Math.max(0, items.findIndex(item => item.id === activeParameter));
+  
+  const dragX = useSharedValue(-initialIndex * ITEM_WIDTH);
+  const startX = useSharedValue(0);
 
-  const [prevActiveParameter, setPrevActiveParameter] = useState(activeParameter);
-  const [prevItemsKey, setPrevItemsKey] = useState(itemsKey);
-
-  if (activeParameter !== prevActiveParameter || itemsKey !== prevItemsKey) {
-    setPrevActiveParameter(activeParameter);
-    setPrevItemsKey(itemsKey);
-    if (activeParameter !== 'none' && items.some(i => i.id === activeParameter)) {
-      setCenteredParam(activeParameter);
-    } else if (items.length > 0 && !items.some(i => i.id === centeredParam)) {
-      setCenteredParam(items[0].id);
+  const lastActiveRef = useRef(activeParameter);
+  
+  // Sincronizza cambiamenti di stato esterni (es. click su bottoni di reset)
+  // eslint-disable-next-line react-hooks/refs
+  if (activeParameter !== lastActiveRef.current) {
+    // eslint-disable-next-line react-hooks/refs
+    lastActiveRef.current = activeParameter;
+    const newIdx = items.findIndex(item => item.id === activeParameter);
+    if (newIdx !== -1 && itemsLength > 0) {
+      const currentCenterIdx = Math.round(-dragX.value / ITEM_WIDTH);
+      const normalizedCurrent = ((currentCenterIdx % itemsLength) + itemsLength) % itemsLength;
+      
+      if (normalizedCurrent !== newIdx) {
+        let diff = newIdx - normalizedCurrent;
+        if (diff > itemsLength / 2) diff -= itemsLength;
+        if (diff < -itemsLength / 2) diff += itemsLength;
+        
+        dragX.value = withTiming(dragX.value - diff * ITEM_WIDTH, { duration: 250 });
+      }
     }
   }
 
-  const centerIndex = items.findIndex(item => item.id === centeredParam);
-  const leftIndex = items.length >= 2 ? (centerIndex - 1 + items.length) % items.length : -1;
-  const rightIndex = items.length >= 2 ? (centerIndex + 1) % items.length : -1;
-
-  const dragX = useSharedValue(0);
-  const pendingAnimation = useRef<number | null>(null);
-
-  // Reset dragX in perfetta sincronia con il commit di React per evitare il flicker visivo
-  useLayoutEffect(() => {
-    if (pendingAnimation.current !== null) {
-      dragX.value = pendingAnimation.current;
-      dragX.value = withTiming(0, { duration: 250 });
-      pendingAnimation.current = null;
-    } else {
-      dragX.value = 0;
+  const updateState = useCallback((newIndex: number) => {
+    if (itemsLength === 0) return;
+    const normalized = ((newIndex % itemsLength) + itemsLength) % itemsLength;
+    const param = items[normalized]?.id;
+    if (param && param !== lastActiveRef.current) {
+      console.log(`[ParameterWheel] 🔄 Aggiornamento in corsa: ${param}`);
+      lastActiveRef.current = param;
+      setActiveParameter(param);
     }
-  }, [itemsKey, centeredParam, dragX]);
+  }, [items, itemsLength, setActiveParameter]);
 
-  const performEarlySwap = useCallback((targetParam: ParameterType, startDragX: number) => {
-    pendingAnimation.current = startDragX;
-    setActiveParameter(targetParam);
-  }, [setActiveParameter]);
-
-  const handleTapLeft = () => {
-    if (leftIndex === -1) return;
-    performEarlySwap(items[leftIndex].id, -ITEM_WIDTH);
-  };
-
-  const handleTapRight = () => {
-    if (rightIndex === -1) return;
-    performEarlySwap(items[rightIndex].id, ITEM_WIDTH);
-  };
-
-  const handleTapCenter = () => {
-    const item = items[centerIndex];
-    if (item.onPress) {
-      item.onPress();
-    } else {
-      handlePressWithDouble(item.id, () => {
-        setActiveParameter(item.id);
-      });
+  // Trigger state update DURANTE la rotazione, appena si supera la metà di un parametro
+  useAnimatedReaction(
+    () => Math.round(-dragX.value / ITEM_WIDTH),
+    (currentIndex, previousIndex) => {
+      if (previousIndex !== null && currentIndex !== previousIndex) {
+        runOnJS(updateState)(currentIndex);
+      }
     }
-  };
+  );
 
   const panGesture = Gesture.Pan()
     .activeOffsetX([-10, 10])
     .failOffsetY([-10, 10])
-    .onUpdate((event) => {
-      if (items.length < 2) return;
-      dragX.value = Math.max(-ITEM_WIDTH, Math.min(ITEM_WIDTH, event.translationX));
+    .onStart(() => {
+      startX.value = dragX.value;
     })
-    // eslint-disable-next-line react-hooks/refs
+    .onUpdate((event) => {
+      if (itemsLength < 2) return;
+      dragX.value = startX.value + event.translationX;
+    })
     .onEnd((event) => {
-      if (items.length < 2) return;
-      const threshold = ITEM_WIDTH / 3;
+      if (itemsLength < 2) return;
       const velocity = event.velocityX;
+      const dx = dragX.value - startX.value;
+      
+      const startIndex = Math.round(-startX.value / ITEM_WIDTH);
+      let targetIndex = startIndex;
 
-      if (dragX.value < -threshold || velocity < -400) {
-        // Dragged left -> select Right item
-        runOnJS(performEarlySwap)(items[rightIndex].id, dragX.value + ITEM_WIDTH);
-      } else if (dragX.value > threshold || velocity > 400) {
-        // Dragged right -> select Left item
-        runOnJS(performEarlySwap)(items[leftIndex].id, dragX.value - ITEM_WIDTH);
-      } else {
-        dragX.value = withTiming(0, { duration: 200 });
+      // Se c'è un movimento o una velocità intenzionale, spostiamo esattamente di 1 parametro
+      if (dx < -30 || velocity < -400) {
+        targetIndex = startIndex + 1;
+      } else if (dx > 30 || velocity > 400) {
+        targetIndex = startIndex - 1;
       }
+
+      const targetX = -targetIndex * ITEM_WIDTH;
+      dragX.value = withTiming(targetX, { duration: 250 });
     });
 
-  // Calculate animated position for each slot
-  const leftPosition = useDerivedValue(() => -ITEM_WIDTH + dragX.value);
-  const centerPosition = useDerivedValue(() => dragX.value);
-  const rightPosition = useDerivedValue(() => ITEM_WIDTH + dragX.value);
-
-  const leftAnimatedStyle = useAnimatedStyle(() => {
-    const pos = leftPosition.value;
-    const scale = interpolate(pos, [-ITEM_WIDTH, 0, ITEM_WIDTH], [0.8, 1.15, 0.8], Extrapolation.CLAMP);
-    const opacity = interpolate(pos, [-ITEM_WIDTH, 0, ITEM_WIDTH], [0.4, 1.0, 0.4], Extrapolation.CLAMP);
-    return {
-      transform: [{ translateX: pos }, { scale }],
-      opacity,
-    };
-  });
-
-  const centerAnimatedStyle = useAnimatedStyle(() => {
-    const pos = centerPosition.value;
-    const scale = interpolate(pos, [-ITEM_WIDTH, 0, ITEM_WIDTH], [0.8, 1.15, 0.8], Extrapolation.CLAMP);
-    const opacity = interpolate(pos, [-ITEM_WIDTH, 0, ITEM_WIDTH], [0.4, 1.0, 0.4], Extrapolation.CLAMP);
-    return {
-      transform: [{ translateX: pos }, { scale }],
-      opacity,
-    };
-  });
-
-  const rightAnimatedStyle = useAnimatedStyle(() => {
-    const pos = rightPosition.value;
-    const scale = interpolate(pos, [-ITEM_WIDTH, 0, ITEM_WIDTH], [0.8, 1.15, 0.8], Extrapolation.CLAMP);
-    const opacity = interpolate(pos, [-ITEM_WIDTH, 0, ITEM_WIDTH], [0.4, 1.0, 0.4], Extrapolation.CLAMP);
-    return {
-      transform: [{ translateX: pos }, { scale }],
-      opacity,
-    };
-  });
-
-  if (items.length === 0) return null;
+  if (itemsLength === 0) return null;
 
   return (
     <GestureDetector gesture={panGesture}>
       <View style={styles.container}>
-        {leftIndex !== -1 && (
-          <Animated.View 
-            style={[styles.slot, leftAnimatedStyle]} 
-            pointerEvents="box-none"
-          >
-            <Pressable onPress={handleTapLeft} style={styles.pressable} pointerEvents="auto">
-              <View pointerEvents="none" style={styles.componentWrapper}>
-                {items[leftIndex].component}
-              </View>
-            </Pressable>
-          </Animated.View>
-        )}
-
-        <Animated.View 
-          style={[styles.slot, centerAnimatedStyle]} 
-          pointerEvents="box-none"
-        >
-          <Pressable onPress={handleTapCenter} style={styles.pressable} pointerEvents="auto">
-            <View pointerEvents="none" style={styles.componentWrapper}>
-              {items[centerIndex].component}
-            </View>
-          </Pressable>
-        </Animated.View>
-
-        {rightIndex !== -1 && (
-          <Animated.View 
-            style={[styles.slot, rightAnimatedStyle]} 
-            pointerEvents="box-none"
-          >
-            <Pressable onPress={handleTapRight} style={styles.pressable} pointerEvents="auto">
-              <View pointerEvents="none" style={styles.componentWrapper}>
-                {items[rightIndex].component}
-              </View>
-            </Pressable>
-          </Animated.View>
-        )}
+        {items.map((item, i) => (
+          <WheelItemComponent 
+            key={item.id}
+            item={item}
+            index={i}
+            dragX={dragX}
+            itemsLength={itemsLength}
+            handlePressWithDouble={handlePressWithDouble}
+            setActiveParameter={setActiveParameter}
+            updateState={updateState}
+          />
+        ))}
       </View>
     </GestureDetector>
+  );
+};
+
+interface WheelItemComponentProps {
+  item: WheelItem;
+  index: number;
+  dragX: Animated.SharedValue<number>;
+  itemsLength: number;
+  handlePressWithDouble: (param: ParameterType, action: () => void) => void;
+  setActiveParameter: (param: ParameterType | 'none') => void;
+  updateState: (newIndex: number) => void;
+}
+
+const WheelItemComponent = ({ 
+  item, index, dragX, itemsLength, handlePressWithDouble, setActiveParameter, updateState 
+}: WheelItemComponentProps) => {
+  const totalWidth = itemsLength * ITEM_WIDTH;
+  const halfWidth = totalWidth / 2;
+
+  const animatedStyle = useAnimatedStyle(() => {
+    const rawX = (index * ITEM_WIDTH + dragX.value) % totalWidth;
+    let x = rawX < 0 ? rawX + totalWidth : rawX;
+    
+    // Mappa le coordinate da [0, totalWidth] a [-halfWidth, halfWidth] per centrarle
+    if (x > halfWidth) x -= totalWidth;
+    
+    const scale = interpolate(x, [-ITEM_WIDTH, 0, ITEM_WIDTH], [0.8, 1.15, 0.8], Extrapolation.CLAMP);
+    const opacity = interpolate(x, [-ITEM_WIDTH, 0, ITEM_WIDTH], [0.4, 1.0, 0.4], Extrapolation.CLAMP);
+
+    return {
+      transform: [{ translateX: x }, { scale }],
+      opacity,
+      zIndex: x > -ITEM_WIDTH / 2 && x < ITEM_WIDTH / 2 ? 10 : 1,
+    };
+  });
+
+  const handleTap = () => {
+    const currentCenterIdx = Math.round(-dragX.value / ITEM_WIDTH);
+    const normalizedCurrent = ((currentCenterIdx % itemsLength) + itemsLength) % itemsLength;
+    
+    let diff = index - normalizedCurrent;
+    if (diff > itemsLength / 2) diff -= itemsLength;
+    if (diff < -itemsLength / 2) diff += itemsLength;
+    
+    const targetGlobalIdx = currentCenterIdx + diff;
+    const targetX = -targetGlobalIdx * ITEM_WIDTH;
+    
+    dragX.value = withTiming(targetX, { duration: 200 });
+    runOnJS(updateState)(targetGlobalIdx);
+    
+    if (diff === 0) {
+      if (item.onPress) {
+        item.onPress();
+      } else {
+        handlePressWithDouble(item.id, () => setActiveParameter(item.id));
+      }
+    }
+  };
+
+  return (
+    <Animated.View style={[styles.slot, animatedStyle]} pointerEvents="box-none">
+      <Pressable onPress={handleTap} style={styles.pressable} pointerEvents="auto">
+        <View pointerEvents="none" style={styles.componentWrapper}>
+          {item.component}
+        </View>
+      </Pressable>
+    </Animated.View>
   );
 };
 

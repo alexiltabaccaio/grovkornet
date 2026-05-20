@@ -99,7 +99,6 @@ export const FooterParameterExtensions = ({ translateY }: FooterParameterExtensi
       return (
         <View style={styles.container}>
           <SliderExtension
-            key="grain"
             parameter="grain"
             parameterExtensionAnimatedStyle={parameterExtensionAnimatedStyle}
           />
@@ -142,7 +141,6 @@ export const FooterParameterExtensions = ({ translateY }: FooterParameterExtensi
       return (
         <View style={styles.container}>
           <SliderExtension
-            key="chromatic_aberration"
             parameter="chromatic_aberration"
             parameterExtensionAnimatedStyle={parameterExtensionAnimatedStyle}
           />
@@ -242,7 +240,6 @@ export const FooterParameterExtensions = ({ translateY }: FooterParameterExtensi
       return (
         <View style={styles.container}>
           <SliderExtension
-            key={activeParameter}
             parameter={activeParameter}
             parameterExtensionAnimatedStyle={parameterExtensionAnimatedStyle}
           />
@@ -263,7 +260,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    paddingTop: 20,
+    paddingTop: 6,
     width: '100%',
     gap: 40,
   },
