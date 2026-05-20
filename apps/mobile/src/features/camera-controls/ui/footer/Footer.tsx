@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
 import { StyleSheet, View, TextInput } from 'react-native';
 import { useShallow } from 'zustand/react/shallow';
 import { useUIStore } from '@features/camera-controls/model/useUIStore';
@@ -26,23 +26,27 @@ export const Footer = ({ translateY: externalTranslateY, drawerAnimation: extern
     isDebugEnabled: state.isDebugEnabled,
   })));
 
-
   const localTranslateY = useSharedValue(0);
   const translateY = externalTranslateY || localTranslateY;
   const startY = useSharedValue(0);
   const localDrawerAnimation = useSharedValue(250);
   const drawerAnimation = externalDrawerAnimation || localDrawerAnimation;
 
+  const wasClosed = useRef(activeSection === 'none');
 
   useEffect(() => {
     if (activeSection === 'none') {
       // Chiudi il cassetto
       translateY.value = withTiming(0, { duration: 300 }); // reset the pan gesture con animazione
       drawerAnimation.value = withTiming(250, { duration: 300 }); // push it down to hide
+      wasClosed.current = true;
     } else {
       // Apri il cassetto
-      translateY.value = withTiming(-50, { duration: 300 }); // Imposta l'altezza base a -50px con animazione fluida
-      drawerAnimation.value = withTiming(0, { duration: 300 });
+      if (wasClosed.current) {
+        translateY.value = withTiming(-50, { duration: 300 }); // Imposta l'altezza base a -50px con animazione fluida
+        drawerAnimation.value = withTiming(0, { duration: 300 });
+        wasClosed.current = false;
+      }
     }
   }, [activeSection, translateY, drawerAnimation]);
 
