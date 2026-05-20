@@ -28,15 +28,16 @@
 #define LOGW(...) __android_log_print(ANDROID_LOG_WARN, LOG_TAG, __VA_ARGS__)
 #define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
 
-GrovkornetEngine::GrovkornetEngine(filament::Engine* sharedEngine, int w, int h) 
-    : engine(sharedEngine), width(w), height(h), overlayCompositor(w, h) {
+GrovkornetEngine::GrovkornetEngine(int w, int h) 
+    : width(w), height(h), overlayCompositor(w, h) {
 }
 
 bool GrovkornetEngine::init() {
     LOGI("Initializing GrovkornetEngine for size %dx%d...", width, height);
     
+    engine = filament::Engine::create();
     if (!engine) {
-        LOGE("Passed Filament Engine pointer is null!");
+        LOGE("Failed to create native Filament Engine!");
         return false;
     }
     
@@ -264,6 +265,15 @@ GrovkornetEngine::~GrovkornetEngine() {
     overlayCompositor.stop();
     
     if (engine) {
+        if (filamentStream) {
+            engine->destroy(filamentStream);
+            filamentStream = nullptr;
+        }
+        if (liveSwapChain) {
+            engine->destroy(liveSwapChain);
+            liveSwapChain = nullptr;
+        }
+
         // Destroy views
         if (viewGrading) engine->destroy(viewGrading);
         if (viewDownsample) engine->destroy(viewDownsample);
@@ -314,6 +324,9 @@ GrovkornetEngine::~GrovkornetEngine() {
         utils::EntityManager::get().destroy(cameraEntity);
         
         engine->destroy(renderer);
+        
+        filament::Engine::destroy(&engine);
+        engine = nullptr;
     }
     LOGI("Filament Engine resources destroyed.");
 }
@@ -380,6 +393,33 @@ void GrovkornetEngine::recordFrameTimeAndEvaluate(float frameTimeMs) {
             currentDrsScale = nextScale;
             framesSinceLastDrsScale = 0;
             LOGI("DRS Scale changed to %.2f (avg frame time: %.2f ms)", currentDrsScale, avgFrameTime);
+        }
+    }
+}
+
+void GrovkornetEngine::updateSwapChain(ANativeWindow* window) {
+    if (liveSwapChain) {
+        engine->destroy(liveSwapChain);
+        liveSwapChain = nullptr;
+    }
+    if (window) {
+        liveSwapChain = engine->createSwapChain(window);
+    }
+}
+
+void GrovkornetEngine::updateStream(jobject surfaceTexture, JNIEnv* env) {
+    if (filamentStream) {
+        engine->destroy(filamentStream);
+        filamentStream = nullptr;
+    }
+    if (surfaceTexture) {
+        filamentStream = filament::Stream::Builder()
+            .stream(reinterpret_cast<void*>(surfaceTexture))
+            .build(*engine);
+        if (filamentStream) {
+            setExternalStream(filamentStream);
+        } else {
+            LOGE("Failed to create native Stream from SurfaceTexture");
         }
     }
 }

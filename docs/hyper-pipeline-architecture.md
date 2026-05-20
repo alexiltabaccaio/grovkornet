@@ -36,7 +36,7 @@ Implementazione di un sistema multi-pass per gli effetti spaziali, necessario pe
 
 ---
 
-## Fase 4: Pilastro 3 - L'Uber-Shader Ottimizzato (Effetti Procedurali)
+## Fase 4: Pilastro 3 - L'Uber-Shader Ottimizzato (Effetti Procedurali) - [COMPLETATO]
 Sviluppo di un singolo shader finale per gli effetti screen-space, progettato per evitare lo stuttering su Mobile.
 *   **Azione 1 (Uniform Branching):** Scrivere l'Uber-Shader finale che applica effetti procedurali (Grana, Vignettatura, VHS). Attivare/disattivare i blocchi di codice usando *esclusivamente* flag `uniform`. Vietare la JIT Compilation (generazione di stringhe C++ al volo) per evitare blocchi dell'interfaccia.
 *   **Azione 2 (Texture Compositing):** Creare un sistema asincrono per fondere sequenzialmente molteplici texture (Polvere, Graffi) in un singolo livello "Overlay" in background.
@@ -44,7 +44,7 @@ Sviluppo di un singolo shader finale per gli effetti screen-space, progettato pe
 
 ---
 
-## Fase 5: Sistemi di Sicurezza (Retrocompatibilità)
+## Fase 5: Sistemi di Sicurezza (Retrocompatibilità) - [COMPLETATO]
 Implementazione dei salvavita termici e di memoria per i dispositivi con 4+ anni di vita.
 *   **Azione 1 (DRS - Dynamic Resolution Scaling):** Implementare un misuratore basato sui Timestamp hardware della GPU (Frame Time). Se il tempo di rendering supera il 90% del budget a causa del surriscaldamento (Thermal Throttling), abbassare istantaneamente la risoluzione interna di elaborazione degli effetti (es. da 1080p a 720p).
 *   **Azione 2 (Gestione OOM):** Assicurarsi che il Texture Compositing (Fase 4, Azione 2) avvenga in modo rigorosamente sequenziale (caricando e scaricando dalla RAM una singola texture alla volta) per evitare crash da Out of Memory su telefoni con soli 3GB/4GB di RAM.

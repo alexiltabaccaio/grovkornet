@@ -5,13 +5,11 @@ import android.util.Log
 import com.grovkornet.nativefilmcamera.state.CameraConfiguration
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import com.google.android.filament.Filament
 
 class OffscreenFilmProcessor {
     private val TAG = "OffscreenProcessor"
 
     private var nativeEnginePtr: Long = 0L
-    private var filamentEngine: com.google.android.filament.Engine? = null
     private val processMutex = Mutex()
 
     private var isPrepared = false
@@ -23,16 +21,14 @@ class OffscreenFilmProcessor {
             try {
                 System.loadLibrary("grovkornet-engine")
                 Log.i("OffscreenProcessor", "Successfully loaded native grovkornet-engine library")
-                Filament.init()
-                Log.i("OffscreenProcessor", "Successfully initialized Google Filament")
             } catch (e: Exception) {
-                Log.e("OffscreenProcessor", "Failed to load libraries or init Filament", e)
+                Log.e("OffscreenProcessor", "Failed to load engine library", e)
             }
         }
     }
 
     // Native JNI methods
-    private external fun nativePrepare(engineNativePtr: Long, width: Int, height: Int): Long
+    private external fun nativePrepare(width: Int, height: Int): Long
     private external fun nativeProcessBitmap(
         nativeEnginePtr: Long,
         input: Bitmap,
@@ -56,21 +52,7 @@ class OffscreenFilmProcessor {
     private external fun nativeProcessHardwareBuffer(
         nativeEnginePtr: Long,
         hardwareBuffer: android.hardware.HardwareBuffer,
-        saturation: Float,
-        contrast: Float,
-        grainIntensity: Float,
-        grainChroma: Float,
-        grainSize: Float,
-        vignetteIntensity: Float,
-        vhsIntensity: Float,
-        time: Float,
-        ev: Float,
-        whiteBalance: Float,
-        tint: Float,
-        bloomIntensity: Float,
-        chromaticAberration: Float,
-        aberrationDirection: Float,
-        sharpening: Float
+        params: FloatArray
     )
     private external fun nativeUpdateOverlay(
         nativeEnginePtr: Long,
@@ -89,12 +71,7 @@ class OffscreenFilmProcessor {
         try {
             if (isPrepared) release()
 
-            if (filamentEngine == null) {
-                filamentEngine = com.google.android.filament.Engine.create()
-            }
-            val enginePtr = filamentEngine!!.nativeObject
-
-            nativeEnginePtr = nativePrepare(enginePtr, width, height)
+            nativeEnginePtr = nativePrepare(width, height)
             if (nativeEnginePtr == 0L) {
                 throw RuntimeException("nativePrepare returned 0 pointer")
             }
@@ -194,24 +171,28 @@ class OffscreenFilmProcessor {
             val startTime = System.currentTimeMillis()
             val time = (System.currentTimeMillis() % 100000) / 1000f
             try {
+                val floatParams = FloatArray(15).apply {
+                    this[0] = params.saturation
+                    this[1] = params.contrast
+                    this[2] = if (params.grainEnabled) params.grainIntensity else 0.0f
+                    this[3] = params.grainChroma
+                    this[4] = params.grainSize
+                    this[5] = params.vignetteIntensity
+                    this[6] = params.vhsIntensity
+                    this[7] = time
+                    this[8] = params.ev
+                    this[9] = params.whiteBalance
+                    this[10] = params.tint
+                    this[11] = if (params.bloomEnabled) params.bloomIntensity else 0.0f
+                    this[12] = params.aberration
+                    this[13] = params.aberrationDirection.toFloat()
+                    this[14] = params.sharpening
+                }
+
                 nativeProcessHardwareBuffer(
                     nativeEnginePtr,
                     hardwareBuffer,
-                    params.saturation,
-                    params.contrast,
-                    if (params.grainEnabled) params.grainIntensity else 0.0f,
-                    params.grainChroma,
-                    params.grainSize,
-                    params.vignetteIntensity,
-                    params.vhsIntensity,
-                    time,
-                    params.ev,
-                    params.whiteBalance,
-                    params.tint,
-                    if (params.bloomEnabled) params.bloomIntensity else 0.0f,
-                    params.aberration,
-                    params.aberrationDirection.toFloat(),
-                    params.sharpening
+                    floatParams
                 )
                 Log.i(TAG, "HardwareBuffer processed natively (zero-copy) in ${System.currentTimeMillis() - startTime}ms")
             } catch (e: Exception) {
@@ -243,11 +224,6 @@ class OffscreenFilmProcessor {
         if (nativeEnginePtr != 0L) {
             nativeRelease(nativeEnginePtr)
             nativeEnginePtr = 0L
-        }
-
-        if (filamentEngine != null) {
-            filamentEngine!!.destroy()
-            filamentEngine = null
         }
         
         isPrepared = false

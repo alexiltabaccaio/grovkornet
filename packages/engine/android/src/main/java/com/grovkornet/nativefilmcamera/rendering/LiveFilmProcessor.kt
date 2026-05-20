@@ -4,19 +4,12 @@ import android.graphics.Bitmap
 import android.graphics.SurfaceTexture
 import android.util.Log
 import android.view.Surface
-import com.google.android.filament.Engine
-import com.google.android.filament.Filament
-import com.google.android.filament.Stream
-import com.google.android.filament.SwapChain
 import com.grovkornet.nativefilmcamera.state.CameraConfiguration
 
 class LiveFilmProcessor {
     private val TAG = "LiveFilmProcessor"
 
     private var nativeEnginePtr: Long = 0L
-    private var filamentEngine: Engine? = null
-    private var filamentStream: Stream? = null
-    private var filamentSwapChain: SwapChain? = null
     private var lastSurface: Surface? = null
 
     private var isPrepared = false
@@ -28,28 +21,29 @@ class LiveFilmProcessor {
             try {
                 System.loadLibrary("grovkornet-engine")
                 Log.i("LiveFilmProcessor", "Successfully loaded native grovkornet-engine library")
-                Filament.init()
-                Log.i("LiveFilmProcessor", "Successfully initialized Google Filament")
             } catch (e: Exception) {
-                Log.e("LiveFilmProcessor", "Failed to load libraries or init Filament", e)
+                Log.e("LiveFilmProcessor", "Failed to load engine library", e)
             }
         }
     }
 
     // Native JNI methods
-    private external fun nativePrepare(engineNativePtr: Long, width: Int, height: Int): Long
+    private external fun nativePrepare(width: Int, height: Int): Long
     private external fun nativeRelease(nativeEnginePtr: Long)
     private external fun nativeUpdateOverlay(nativeEnginePtr: Long, bitmaps: Array<Bitmap>)
     private external fun nativeGetDrsScale(nativeEnginePtr: Long): Float
-    private external fun nativeSetStream(nativeEnginePtr: Long, streamNativePtr: Long)
+    private external fun nativeSetStream(nativeEnginePtr: Long, surfaceTexture: SurfaceTexture)
+    private external fun nativeUpdateSwapChain(nativeEnginePtr: Long, surface: Surface?)
     private external fun nativeRenderLiveFrame(
-        enginePtr: Long, swapchainPtr: Long,
-        saturation: Float, contrast: Float, grainIntensity: Float, grainChroma: Float,
-        grainSize: Float, vignetteIntensity: Float, vhsIntensity: Float, time: Float,
-        ev: Float, whiteBalance: Float, tint: Float, bloomIntensity: Float,
-        chromaticAberration: Float, aberrationDirection: Float, sharpening: Float,
-        uvMatrix: FloatArray, vpX: Int, vpY: Int, vpWidth: Int, vpHeight: Int
-    )
+        enginePtr: Long,
+        params: FloatArray,
+        uvMatrixIn: FloatArray,
+        cameraWidth: Int,
+        cameraHeight: Int,
+        viewportWidth: Int,
+        viewportHeight: Int,
+        outFpsStats: IntArray
+    ): Boolean
     private external fun nativeSimulateFrameTime(nativeEnginePtr: Long, frameTimeMs: Float)
 
     fun prepare(surfaceTexture: SurfaceTexture, width: Int, height: Int) {
@@ -61,23 +55,13 @@ class LiveFilmProcessor {
         try {
             if (isPrepared) release()
 
-            if (filamentEngine == null) {
-                filamentEngine = Engine.create()
-            }
-
-            // Create Stream to ingest Camera SurfaceTexture frames
-            filamentStream = Stream.Builder()
-                .stream(surfaceTexture)
-                .build(filamentEngine!!)
-
-            val enginePtr = filamentEngine!!.nativeObject
-            nativeEnginePtr = nativePrepare(enginePtr, width, height)
+            nativeEnginePtr = nativePrepare(width, height)
             if (nativeEnginePtr == 0L) {
                 throw RuntimeException("nativePrepare returned 0 pointer")
             }
 
             // Bind the Stream to the Engine's inputTextureExternal
-            nativeSetStream(nativeEnginePtr, filamentStream!!.nativeObject)
+            nativeSetStream(nativeEnginePtr, surfaceTexture)
 
             currentWidth = width
             currentHeight = height
@@ -90,7 +74,16 @@ class LiveFilmProcessor {
         }
     }
 
-    fun renderLiveFrame(surface: Surface, params: CameraConfiguration, uvMatrix: FloatArray, vpX: Int, vpY: Int, vpWidth: Int, vpHeight: Int) {
+    fun renderLiveFrame(
+        surface: Surface,
+        params: CameraConfiguration,
+        uvMatrixIn: FloatArray,
+        cameraWidth: Int,
+        cameraHeight: Int,
+        viewportWidth: Int,
+        viewportHeight: Int,
+        onFpsUpdate: (actualFps: Int, stampedFps: Int) -> Unit
+    ) {
         if (!isPrepared || nativeEnginePtr == 0L) {
             Log.w(TAG, "Cannot render live frame: LiveFilmProcessor not prepared")
             return
@@ -98,36 +91,48 @@ class LiveFilmProcessor {
 
         try {
             // Re-create SwapChain if the output surface changes
-            if (filamentSwapChain == null || lastSurface != surface) {
-                if (filamentSwapChain != null && filamentEngine != null) {
-                    filamentEngine!!.destroySwapChain(filamentSwapChain!!)
-                }
-                filamentSwapChain = filamentEngine!!.createSwapChain(surface)
+            if (lastSurface != surface) {
+                nativeUpdateSwapChain(nativeEnginePtr, surface)
                 lastSurface = surface
             }
 
             val time = (System.currentTimeMillis() % 100000) / 1000f
-            nativeRenderLiveFrame(
+            
+            val floatParams = FloatArray(17).apply {
+                this[0] = params.saturation
+                this[1] = params.contrast
+                this[2] = if (params.grainEnabled) params.grainIntensity else 0.0f
+                this[3] = params.grainChroma
+                this[4] = params.grainSize
+                this[5] = params.vignetteIntensity
+                this[6] = params.vhsIntensity
+                this[7] = time
+                this[8] = params.ev
+                this[9] = params.whiteBalance
+                this[10] = params.tint
+                this[11] = if (params.bloomEnabled) params.bloomIntensity else 0.0f
+                this[12] = params.aberration
+                this[13] = params.aberrationDirection.toFloat()
+                this[14] = params.sharpening
+                this[15] = params.targetFps.toFloat()
+                this[16] = params.aspectRatio.toFloat()
+            }
+
+            val outFpsStats = IntArray(3) // [hasNewFps, actualFps, stampedFps]
+            val rendered = nativeRenderLiveFrame(
                 nativeEnginePtr,
-                filamentSwapChain!!.nativeObject,
-                params.saturation,
-                params.contrast,
-                if (params.grainEnabled) params.grainIntensity else 0.0f,
-                params.grainChroma,
-                params.grainSize,
-                params.vignetteIntensity,
-                params.vhsIntensity,
-                time,
-                params.ev,
-                params.whiteBalance,
-                params.tint,
-                if (params.bloomEnabled) params.bloomIntensity else 0.0f,
-                params.aberration,
-                params.aberrationDirection.toFloat(),
-                params.sharpening,
-                uvMatrix,
-                vpX, vpY, vpWidth, vpHeight
+                floatParams,
+                uvMatrixIn,
+                cameraWidth,
+                cameraHeight,
+                viewportWidth,
+                viewportHeight,
+                outFpsStats
             )
+
+            if (rendered && outFpsStats[0] != 0) {
+                onFpsUpdate(outFpsStats[1], outFpsStats[2])
+            }
         } catch (e: Exception) {
             Log.e(TAG, "Failed to render frame", e)
         }
@@ -156,22 +161,7 @@ class LiveFilmProcessor {
             nativeEnginePtr = 0L
         }
 
-        if (filamentSwapChain != null && filamentEngine != null) {
-            filamentEngine!!.destroySwapChain(filamentSwapChain!!)
-            filamentSwapChain = null
-            lastSurface = null
-        }
-
-        if (filamentStream != null && filamentEngine != null) {
-            filamentEngine!!.destroyStream(filamentStream!!)
-            filamentStream = null
-        }
-
-        if (filamentEngine != null) {
-            filamentEngine!!.destroy()
-            filamentEngine = null
-        }
-
+        lastSurface = null
         isPrepared = false
         Log.i(TAG, "LiveFilmProcessor release complete.")
     }

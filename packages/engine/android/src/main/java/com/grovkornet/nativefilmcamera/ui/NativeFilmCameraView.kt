@@ -10,7 +10,6 @@ import androidx.lifecycle.ProcessLifecycleOwner
 import com.facebook.react.bridge.WritableMap
 import com.grovkornet.nativefilmcamera.camera.CameraEngine
 import com.grovkornet.nativefilmcamera.rendering.LiveFilmProcessor
-import com.grovkornet.nativefilmcamera.rendering.utils.FrameTimingController
 import com.grovkornet.nativefilmcamera.state.CameraConfiguration
 import expo.modules.kotlin.viewevent.EventDispatcher
 

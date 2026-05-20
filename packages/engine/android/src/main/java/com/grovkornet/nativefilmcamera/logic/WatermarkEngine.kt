@@ -3,223 +3,81 @@ package com.grovkornet.nativefilmcamera.logic
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.graphics.BitmapRegionDecoder
-import android.graphics.Color
-import android.graphics.Rect
 import android.net.Uri
-import android.os.Build
-import android.os.ParcelFileDescriptor
 import android.media.ExifInterface
 import android.util.Log
-import kotlin.math.cos
-import kotlin.math.PI
-import kotlin.math.sqrt
 
 object WatermarkEngine {
     private const val TAG = "WatermarkEngine"
-    private const val SIGNATURE: Long = 0x47524F564B4F524E // "GROVKORN"
-    private const val ALPHA = 12.0 // Robustness strength for DCT coefficients
-    private const val MATCH_THRESHOLD = 54 // Allow up to 10 bit errors out of 64 for robustness
 
-    // Precomputed cosine tables for 8x8 DCT
-    private val cosTable = Array(8) { x ->
-        DoubleArray(8) { u ->
-            cos((2 * x + 1) * u * PI / 16.0)
+    init {
+        try {
+            System.loadLibrary("grovkornet-engine")
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to load grovkornet-engine library", e)
         }
     }
-    private val cTable = DoubleArray(8) { u ->
-        if (u == 0) 1.0 / sqrt(2.0) else 1.0
-    }
 
-    /**
-     * Embeds a 64-bit DCT watermark into the top-left 64x64 region of the bitmap.
-     */
+    @JvmStatic
+    private external fun nativeEmbedSignature(bitmap: Bitmap): Boolean
+
+    @JvmStatic
+    private external fun nativeVerifySignature(bitmap: Bitmap): Boolean
+
     fun embedSignature(bitmap: Bitmap): Bitmap {
-        val startTime = System.currentTimeMillis()
-        if (bitmap.width < 64 || bitmap.height < 64) {
-            Log.w(TAG, "Bitmap too small for DCT watermark")
-            return bitmap
+        val success = nativeEmbedSignature(bitmap)
+        if (!success) {
+            Log.e(TAG, "Failed to embed watermark signature natively")
         }
-
-        val output = if (bitmap.isMutable) bitmap else bitmap.copy(Bitmap.Config.ARGB_8888, true)
-        val pixels = IntArray(64 * 64)
-        output.getPixels(pixels, 0, 64, 0, 0, 64, 64)
-
-        // Process 64 blocks of 8x8
-        for (blockIndex in 0 until 64) {
-            val startX = (blockIndex % 8) * 8
-            val startY = (blockIndex / 8) * 8
-            val bit = (SIGNATURE ushr (63 - blockIndex)) and 1L
-
-            // 1. Extract Y (Luma) channel for 8x8 block
-            val luma = Array(8) { DoubleArray(8) }
-            val alphaCbCr = Array(8) { IntArray(8) } // Store A, Cb, Cr to reconstruct RGB later
-
-            for (y in 0 until 8) {
-                for (x in 0 until 8) {
-                    val color = pixels[(startY + y) * 64 + (startX + x)]
-                    val r = Color.red(color)
-                    val g = Color.green(color)
-                    val b = Color.blue(color)
-
-                    // Standard RGB to YCbCr (Y is Luma)
-                    luma[y][x] = 0.299 * r + 0.587 * g + 0.114 * b
-                    alphaCbCr[y][x] = color and 0xFF000000.toInt() // Store Alpha
-                }
-            }
-
-            // 2. Forward 8x8 DCT
-            val dct = Array(8) { DoubleArray(8) }
-            for (u in 0 until 8) {
-                for (v in 0 until 8) {
-                    var sum = 0.0
-                    for (y in 0 until 8) {
-                        for (x in 0 until 8) {
-                            sum += luma[y][x] * cosTable[x][u] * cosTable[y][v]
-                        }
-                    }
-                    dct[u][v] = 0.25 * cTable[u] * cTable[v] * sum
-                }
-            }
-
-            // 3. Modulate mid-frequency coefficients (u1=3, v1=4) and (u2=4, v2=3)
-            val u1 = 3; val v1 = 4
-            val u2 = 4; val v2 = 3
-
-            if (bit == 1L) {
-                if (dct[u1][v1] <= dct[u2][v2] + ALPHA) {
-                    val avg = (dct[u1][v1] + dct[u2][v2]) / 2.0
-                    dct[u1][v1] = avg + ALPHA / 2.0
-                    dct[u2][v2] = avg - ALPHA / 2.0
-                }
-            } else {
-                if (dct[u2][v2] <= dct[u1][v1] + ALPHA) {
-                    val avg = (dct[u1][v1] + dct[u2][v2]) / 2.0
-                    dct[u2][v2] = avg + ALPHA / 2.0
-                    dct[u1][v1] = avg - ALPHA / 2.0
-                }
-            }
-
-            // 4. Inverse 8x8 DCT
-            for (y in 0 until 8) {
-                for (x in 0 until 8) {
-                    var sum = 0.0
-                    for (u in 0 until 8) {
-                        for (v in 0 until 8) {
-                            sum += cTable[u] * cTable[v] * dct[u][v] * cosTable[x][u] * cosTable[y][v]
-                        }
-                    }
-                    val newY = (0.25 * sum).coerceIn(0.0, 255.0)
-
-                    // Reconstruct RGB from new Y and original color ratios
-                    val oldColor = pixels[(startY + y) * 64 + (startX + x)]
-                    val oldR = Color.red(oldColor)
-                    val oldG = Color.green(oldColor)
-                    val oldB = Color.blue(oldColor)
-                    val oldY = 0.299 * oldR + 0.587 * oldG + 0.114 * oldB
-
-                    val diff = newY - oldY
-                    val newR = (oldR + diff).toInt().coerceIn(0, 255)
-                    val newG = (oldG + diff).toInt().coerceIn(0, 255)
-                    val newB = (oldB + diff).toInt().coerceIn(0, 255)
-
-                    pixels[(startY + y) * 64 + (startX + x)] = alphaCbCr[y][x] or (newR shl 16) or (newG shl 8) or newB
-                }
-            }
-        }
-
-        output.setPixels(pixels, 0, 64, 0, 0, 64, 64)
-        Log.i(TAG, "DCT Watermark embedded in ${System.currentTimeMillis() - startTime}ms")
-        return output
+        return bitmap
     }
 
-    /**
-     * Injects EXIF metadata TAG_SOFTWARE = "Grovkornet" into the saved file URI.
-     */
     fun addExifMetadata(context: Context, uri: Uri) {
         try {
-            // Android 10+ requires using FileDescriptor for editing EXIF on MediaStore URIs
             context.contentResolver.openFileDescriptor(uri, "rw")?.use { pfd ->
                 val exif = ExifInterface(pfd.fileDescriptor)
                 exif.setAttribute(ExifInterface.TAG_SOFTWARE, "Grovkornet")
                 exif.saveAttributes()
-                Log.i(TAG, "EXIF metadata injected successfully into $uri")
             }
         } catch (e: Exception) {
             Log.e(TAG, "Failed to inject EXIF metadata", e)
         }
     }
 
-    /**
-     * Verifies if the image at the given URI is an authentic Grovkornet photo.
-     * Uses EXIF fast-pass first, falls back to DCT deep-pass.
-     */
     fun verifyGrovkornetAuthenticity(context: Context, uri: Uri): Boolean {
-        Log.i(TAG, "Starting verifyGrovkornetAuthenticity for $uri")
+        try {
+            // EXIF fast path: check software tag first
+            context.contentResolver.openInputStream(uri)?.use { input ->
+                val exif = ExifInterface(input)
+                val software = exif.getAttribute(ExifInterface.TAG_SOFTWARE)
+                if (software == "Grovkornet") {
+                    return true
+                }
+            }
+        } catch (e: Exception) {
+            Log.w(TAG, "EXIF fast path verification failed, trying deep DCT verification", e)
+        }
+
+        // DCT deep path: decode bitmap and verify signature natively
         try {
             val tempFile = java.io.File(context.cacheDir, "temp_verify_${System.currentTimeMillis()}.jpg")
-            Log.i(TAG, "Created temp file at ${tempFile.absolutePath}")
-            try {
-                Log.i(TAG, "Opening input stream from ContentResolver")
-                context.contentResolver.openInputStream(uri)?.use { input ->
-                    Log.i(TAG, "Input stream opened, copying to temp file")
-                    tempFile.outputStream().use { output ->
-                        input.copyTo(output)
-                    }
-                    Log.i(TAG, "Copy complete")
+            context.contentResolver.openInputStream(uri)?.use { input ->
+                tempFile.outputStream().use { output ->
+                    input.copyTo(output)
                 }
+            }
 
-                Log.i(TAG, "Decoding full bitmap to avoid BitmapRegionDecoder hang")
-                val options = BitmapFactory.Options()
-                options.inPreferredConfig = Bitmap.Config.ARGB_8888
+            try {
+                val options = BitmapFactory.Options().apply {
+                    inPreferredConfig = Bitmap.Config.ARGB_8888
+                }
                 val bitmap = BitmapFactory.decodeFile(tempFile.absolutePath, options)
-                Log.i(TAG, "BitmapFactory decoded: $bitmap")
-
-                if (bitmap == null || bitmap.width < 64 || bitmap.height < 64) {
-                    Log.w(TAG, "Decoder returned null or image too small")
-                    bitmap?.recycle()
+                if (bitmap == null) {
                     return false
                 }
-
-                Log.i(TAG, "Extracting 64x64 region")
-                val pixels = IntArray(64 * 64)
-                bitmap.getPixels(pixels, 0, 64, 0, 0, 64, 64)
+                val result = nativeVerifySignature(bitmap)
                 bitmap.recycle()
-
-                var matchingBits = 0
-                for (blockIndex in 0 until 64) {
-                    val startX = (blockIndex % 8) * 8
-                    val startY = (blockIndex / 8) * 8
-                    val expectedBit = (SIGNATURE ushr (63 - blockIndex)) and 1L
-
-                    val luma = Array(8) { DoubleArray(8) }
-                    for (y in 0 until 8) {
-                        for (x in 0 until 8) {
-                            val color = pixels[(startY + y) * 64 + (startX + x)]
-                            luma[y][x] = 0.299 * Color.red(color) + 0.587 * Color.green(color) + 0.114 * Color.blue(color)
-                        }
-                    }
-
-                    // We only need dct[3][4] and dct[4][3] for verification
-                    val u1 = 3; val v1 = 4
-                    val u2 = 4; val v2 = 3
-
-                    var sum1 = 0.0; var sum2 = 0.0
-                    for (y in 0 until 8) {
-                        for (x in 0 until 8) {
-                            sum1 += luma[y][x] * cosTable[x][u1] * cosTable[y][v1]
-                            sum2 += luma[y][x] * cosTable[x][u2] * cosTable[y][v2]
-                        }
-                    }
-                    val dct1 = 0.25 * cTable[u1] * cTable[v1] * sum1
-                    val dct2 = 0.25 * cTable[u2] * cTable[v2] * sum2
-
-                    val actualBit = if (dct1 > dct2) 1L else 0L
-                    if (actualBit == expectedBit) matchingBits++
-                }
-
-                Log.i(TAG, "DCT Verification: $matchingBits / 64 bits matched")
-                return matchingBits >= MATCH_THRESHOLD
+                return result
             } finally {
                 if (tempFile.exists()) {
                     tempFile.delete()

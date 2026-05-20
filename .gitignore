@@ -15,9 +15,11 @@ yarn-error.*
 *.pem
 *.cer
 *.p12
+*.p8
 *.jks
 *.keystore
 *.key
+*.mobileprovision
 !debug.keystore
 
 # Firebase
@@ -36,6 +38,7 @@ firebase-export-*
 .idea/
 *.apk
 *.aab
+*.ipa
 *.hprof
 
 # iOS
@@ -44,13 +47,20 @@ firebase-export-*
 *.xcworkspace/xcuserdata/
 *.xcodeproj/xcuserdata/
 **/ios/*.xcworkspace/xcuserdata/
+*.xcuserstate
 
 # OS / Misc
 .vscode/
+*.code-workspace
 .env*.local
 .env
+.env.*
+!.env.example
 .DS_Store
 Thumbs.db
+[Dd]esktop.ini
+*.swp
+*.swo
 
 # Testing / Build
 coverage/
@@ -60,3 +70,10 @@ out/
 *.jsbundle
 *.bundle
 *.bundle.map
+*.tgz
+
+# EAS / Expo
+.eas/
+eas-cli-local.json
+.metro/
+.metro-cache/

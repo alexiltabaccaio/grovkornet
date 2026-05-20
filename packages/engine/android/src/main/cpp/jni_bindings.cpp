@@ -3,6 +3,7 @@
 #include <android/bitmap.h>
 #include <android/hardware_buffer.h>
 #include <android/hardware_buffer_jni.h>
+#include <android/native_window_jni.h>
 #include <chrono>
 #include <vector>
 
@@ -13,23 +14,35 @@
 #include <filament/RenderableManager.h>
 
 #include "grovkornet-engine.h"
+#include "WatermarkEngine.h"
+#include "MatrixTransformCalculator.h"
 
 #define LOG_TAG "GrovkornetJNI"
 #define LOGI(...) __android_log_print(ANDROID_LOG_INFO, LOG_TAG, __VA_ARGS__)
 #define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
 
+namespace filament {
+class VirtualMachineEnv {
+public:
+    static jint JNI_OnLoad(JavaVM* vm) noexcept;
+};
+}
+
 extern "C" {
 
 JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm, void* reserved) {
     LOGI("Grovkornet Engine JNI Library Loaded Successfully");
+    
+    // Initialize Filament's JNI VirtualMachineEnv
+    filament::VirtualMachineEnv::JNI_OnLoad(vm);
+    
     return JNI_VERSION_1_6;
 }
 
 JNIEXPORT jlong JNICALL
 Java_com_grovkornet_nativefilmcamera_rendering_OffscreenFilmProcessor_nativePrepare(
-        JNIEnv* env, jobject thiz, jlong engine_native_ptr, jint width, jint height) {
-    filament::Engine* sharedEngine = reinterpret_cast<filament::Engine*>(engine_native_ptr);
-    GrovkornetEngine* engine = new GrovkornetEngine(sharedEngine, width, height);
+        JNIEnv* env, jobject thiz, jint width, jint height) {
+    GrovkornetEngine* engine = new GrovkornetEngine(width, height);
     env->GetJavaVM(&(engine->javaVm));
     if (!engine->init()) {
         delete engine;
@@ -161,27 +174,38 @@ Java_com_grovkornet_nativefilmcamera_rendering_OffscreenFilmProcessor_nativeProc
 
 JNIEXPORT void JNICALL
 Java_com_grovkornet_nativefilmcamera_rendering_OffscreenFilmProcessor_nativeProcessHardwareBuffer(
-        JNIEnv* env, jobject thiz, jlong engine_ptr, jobject hardware_buffer_obj,
-        jfloat saturation, jfloat contrast, jfloat grain_intensity, jfloat grain_chroma,
-        jfloat grain_size, jfloat vignette_intensity, jfloat vhs_intensity, jfloat time,
-        jfloat ev, jfloat white_balance, jfloat tint, jfloat bloom_intensity,
-        jfloat chromatic_aberration, jfloat aberration_direction, jfloat sharpening) {
-    
+        JNIEnv* env, jobject thiz, jlong engine_ptr, jobject hardwareBuffer, jfloatArray float_params) {
     GrovkornetEngine* enginePtr = reinterpret_cast<GrovkornetEngine*>(engine_ptr);
-    if (!enginePtr) {
-        LOGE("Invalid native engine pointer in nativeProcessHardwareBuffer");
+    if (!enginePtr || !hardwareBuffer || !float_params) {
         return;
     }
-
-    // 1. Get AHardwareBuffer from the Kotlin/Java HardwareBuffer object
-    AHardwareBuffer* hardwareBuffer = AHardwareBuffer_fromHardwareBuffer(env, hardware_buffer_obj);
-    if (!hardwareBuffer) {
+    
+    jfloat* params = env->GetFloatArrayElements(float_params, 0);
+    jfloat saturation = params[0];
+    jfloat contrast = params[1];
+    jfloat grain_intensity = params[2];
+    jfloat grain_chroma = params[3];
+    jfloat grain_size = params[4];
+    jfloat vignette_intensity = params[5];
+    jfloat vhs_intensity = params[6];
+    jfloat time = params[7];
+    jfloat ev = params[8];
+    jfloat white_balance = params[9];
+    jfloat tint = params[10];
+    jfloat bloom_intensity = params[11];
+    jfloat chromatic_aberration = params[12];
+    jfloat aberration_direction = params[13];
+    jfloat sharpening = params[14];
+    env->ReleaseFloatArrayElements(float_params, params, 0);
+    
+    AHardwareBuffer* ahb = AHardwareBuffer_fromHardwareBuffer(env, hardwareBuffer);
+    if (!ahb) {
         LOGE("Failed to get AHardwareBuffer from Java HardwareBuffer");
         return;
     }
 
     AHardwareBuffer_Desc desc;
-    AHardwareBuffer_describe(hardwareBuffer, &desc);
+    AHardwareBuffer_describe(ahb, &desc);
 
     // 2. Setup or update external input texture
     if (!enginePtr->inputTextureExternal) {
@@ -194,8 +218,8 @@ Java_com_grovkornet_nativefilmcamera_rendering_OffscreenFilmProcessor_nativeProc
             .build(*(enginePtr->engine));
     }
 
-    // Map the hardware buffer to our external texture
-    enginePtr->inputTextureExternal->setExternalImage(*(enginePtr->engine), hardwareBuffer);
+    // Bind the AHardwareBuffer to the external texture
+    enginePtr->inputTextureExternal->setExternalImage(*(enginePtr->engine), ahb);
 
     // 3. Update geometry to use the External material
     auto& rcm = enginePtr->engine->getRenderableManager();
@@ -312,9 +336,8 @@ Java_com_grovkornet_nativefilmcamera_rendering_OffscreenFilmProcessor_nativeSimu
 
 JNIEXPORT jlong JNICALL
 Java_com_grovkornet_nativefilmcamera_rendering_LiveFilmProcessor_nativePrepare(
-        JNIEnv* env, jobject thiz, jlong engine_native_ptr, jint width, jint height) {
-    filament::Engine* sharedEngine = reinterpret_cast<filament::Engine*>(engine_native_ptr);
-    GrovkornetEngine* engine = new GrovkornetEngine(sharedEngine, width, height);
+        JNIEnv* env, jobject thiz, jint width, jint height) {
+    GrovkornetEngine* engine = new GrovkornetEngine(width, height);
     env->GetJavaVM(&(engine->javaVm));
     if (!engine->init()) {
         delete engine;
@@ -360,58 +383,135 @@ Java_com_grovkornet_nativefilmcamera_rendering_LiveFilmProcessor_nativeGetDrsSca
 
 JNIEXPORT void JNICALL
 Java_com_grovkornet_nativefilmcamera_rendering_LiveFilmProcessor_nativeSetStream(
-        JNIEnv* env, jobject thiz, jlong engine_ptr, jlong stream_ptr) {
+        JNIEnv* env, jobject thiz, jlong engine_ptr, jobject surfaceTexture) {
     GrovkornetEngine* enginePtr = reinterpret_cast<GrovkornetEngine*>(engine_ptr);
-    filament::Stream* stream = reinterpret_cast<filament::Stream*>(stream_ptr);
-    if (enginePtr && stream) {
-        enginePtr->setExternalStream(stream);
+    if (enginePtr) {
+        enginePtr->updateStream(surfaceTexture, env);
     }
 }
 
 JNIEXPORT void JNICALL
+Java_com_grovkornet_nativefilmcamera_rendering_LiveFilmProcessor_nativeUpdateSwapChain(
+        JNIEnv* env, jobject thiz, jlong engine_ptr, jobject surface) {
+    GrovkornetEngine* enginePtr = reinterpret_cast<GrovkornetEngine*>(engine_ptr);
+    if (!enginePtr) return;
+    
+    if (surface) {
+        ANativeWindow* window = ANativeWindow_fromSurface(env, surface);
+        if (window) {
+            enginePtr->updateSwapChain(window);
+            ANativeWindow_release(window);
+        }
+    } else {
+        enginePtr->updateSwapChain(nullptr);
+    }
+}
+
+JNIEXPORT jboolean JNICALL
 Java_com_grovkornet_nativefilmcamera_rendering_LiveFilmProcessor_nativeRenderLiveFrame(
-        JNIEnv* env, jobject thiz, jlong engine_ptr, jlong swapchain_ptr,
-        jfloat saturation, jfloat contrast, jfloat grain_intensity, jfloat grain_chroma,
-        jfloat grain_size, jfloat vignette_intensity, jfloat vhs_intensity, jfloat time,
-        jfloat ev, jfloat white_balance, jfloat tint, jfloat bloom_intensity,
-        jfloat chromatic_aberration, jfloat aberration_direction, jfloat sharpening, jfloatArray uv_matrix,
-        jint vpX, jint vpY, jint vpWidth, jint vpHeight) {
+        JNIEnv* env, jobject thiz, jlong engine_ptr,
+        jfloatArray float_params, jfloatArray uv_matrix_in,
+        jint cameraWidth, jint cameraHeight, jint viewportWidth, jint viewportHeight,
+        jintArray out_fps_stats) {
     
     GrovkornetEngine* enginePtr = reinterpret_cast<GrovkornetEngine*>(engine_ptr);
-    filament::SwapChain* liveSwapChain = reinterpret_cast<filament::SwapChain*>(swapchain_ptr);
-    if (!enginePtr || !liveSwapChain || !uv_matrix) {
-        return;
+    if (!enginePtr || !enginePtr->liveSwapChain || !uv_matrix_in || !float_params) {
+        return JNI_FALSE;
     }
     
-    // Update viewport before render
+    // Extract parameters from float_params
+    jfloat* params = env->GetFloatArrayElements(float_params, 0);
+    jfloat saturation = params[0];
+    jfloat contrast = params[1];
+    jfloat grain_intensity = params[2];
+    jfloat grain_chroma = params[3];
+    jfloat grain_size = params[4];
+    jfloat vignette_intensity = params[5];
+    jfloat vhs_intensity = params[6];
+    jfloat time = params[7];
+    jfloat ev = params[8];
+    jfloat white_balance = params[9];
+    jfloat tint = params[10];
+    jfloat bloom_intensity = params[11];
+    jfloat chromatic_aberration = params[12];
+    jfloat aberration_direction = params[13];
+    jfloat sharpening = params[14];
+    int targetFps = static_cast<int>(params[15]);
+    int aspectRatioSetting = static_cast<int>(params[16]);
+    env->ReleaseFloatArrayElements(float_params, params, 0);
+
+    // 1. Run Frame Timing checks natively
+    bool shouldCapture = enginePtr->timingController.shouldCaptureFrame(targetFps);
+    
+    // Update FPS statistics
+    int actualFps = 0;
+    int stampedFps = 0;
+    bool fpsUpdated = false;
+    enginePtr->timingController.updateFps(actualFps, stampedFps, fpsUpdated);
+    
+    if (out_fps_stats) {
+        jint* fpsStats = env->GetIntArrayElements(out_fps_stats, 0);
+        fpsStats[0] = fpsUpdated ? 1 : 0;
+        fpsStats[1] = actualFps;
+        fpsStats[2] = stampedFps;
+        env->ReleaseIntArrayElements(out_fps_stats, fpsStats, 0);
+    }
+    
+    if (!shouldCapture) {
+        return JNI_FALSE;
+    }
+
+    // 2. Perform aspect ratio matrix calculations natively
+    float scaleMatrix[16];
+    float cropMatrix[16];
+    MatrixTransformCalculator::calculateScaleAndCrop(
+        cameraWidth, cameraHeight, viewportWidth, viewportHeight, aspectRatioSetting, scaleMatrix, cropMatrix
+    );
+
+    // Extract input SurfaceTexture UV matrix
+    jfloat* matrixElements = env->GetFloatArrayElements(uv_matrix_in, 0);
+    float uvMatrixIn[16];
+    for (int i = 0; i < 16; ++i) uvMatrixIn[i] = matrixElements[i];
+    env->ReleaseFloatArrayElements(uv_matrix_in, matrixElements, 0);
+
+    // Multiply input UV matrix by calculated crop matrix to get final UV matrix
+    float finalUvMatrix[16];
+    MatrixTransformCalculator::multiplyMM(finalUvMatrix, uvMatrixIn, cropMatrix);
+
+    filament::math::mat4f u_UvMatrix(
+        finalUvMatrix[0], finalUvMatrix[1], finalUvMatrix[2], finalUvMatrix[3],
+        finalUvMatrix[4], finalUvMatrix[5], finalUvMatrix[6], finalUvMatrix[7],
+        finalUvMatrix[8], finalUvMatrix[9], finalUvMatrix[10], finalUvMatrix[11],
+        finalUvMatrix[12], finalUvMatrix[13], finalUvMatrix[14], finalUvMatrix[15]
+    );
+
+    // Calculate viewport based on scale matrix
+    float scaleX = scaleMatrix[0];
+    float scaleY = scaleMatrix[5];
+    int vpWidth = static_cast<int>(viewportWidth * scaleX);
+    int vpHeight = static_cast<int>(viewportHeight * scaleY);
+    int vpX = (viewportWidth - vpWidth) / 2;
+    int vpY = (viewportHeight - vpHeight) / 2;
+
+    // Update viewport in engine
     enginePtr->viewportX = vpX;
     enginePtr->viewportY = vpY;
     enginePtr->viewportWidth = vpWidth;
     enginePtr->viewportHeight = vpHeight;
-    
-    // Convert jfloatArray to filament::math::mat4f
-    jfloat* matrixElements = env->GetFloatArrayElements(uv_matrix, 0);
-    filament::math::mat4f u_UvMatrix(
-        matrixElements[0], matrixElements[1], matrixElements[2], matrixElements[3],
-        matrixElements[4], matrixElements[5], matrixElements[6], matrixElements[7],
-        matrixElements[8], matrixElements[9], matrixElements[10], matrixElements[11],
-        matrixElements[12], matrixElements[13], matrixElements[14], matrixElements[15]
-    );
-    env->ReleaseFloatArrayElements(uv_matrix, matrixElements, 0);
 
-    // 1. Update geometry to use the External material
+    // 3. Update geometry to use the External material
     auto& rcm = enginePtr->engine->getRenderableManager();
     auto instance = rcm.getInstance(enginePtr->quadGrading);
     if (instance) {
         rcm.setMaterialInstanceAt(instance, 0, enginePtr->shaderManager.getMaterialInstanceExternal());
     }
     
-    // 2. Trigger LUT calculation on CPU and apply it to GPU texture
+    // 4. Trigger LUT calculation on CPU and apply it to GPU texture
     enginePtr->triggerLutUpdate(saturation, contrast, ev, white_balance, tint);
     enginePtr->applyLutTextureUpdate();
     enginePtr->applyOverlayTextureUpdate();
     
-    // 3. Set material parameters
+    // 5. Set material parameters
     filament::TextureSampler sampler2d(filament::TextureSampler::MinFilter::LINEAR, filament::TextureSampler::MagFilter::LINEAR);
     enginePtr->shaderManager.getMaterialInstanceExternal()->setParameter("u_Texture", enginePtr->inputTextureExternal, sampler2d);
     enginePtr->shaderManager.getMaterialInstanceExternal()->setParameter("u_UvMatrix", u_UvMatrix);
@@ -438,8 +538,8 @@ Java_com_grovkornet_nativefilmcamera_rendering_LiveFilmProcessor_nativeRenderLiv
     
     auto start = std::chrono::high_resolution_clock::now();
     
-    // 4. Render
-    if (enginePtr->renderer->beginFrame(liveSwapChain)) {
+    // 6. Render
+    if (enginePtr->renderer->beginFrame(enginePtr->liveSwapChain)) {
         enginePtr->renderer->render(enginePtr->viewGrading);
         if (bloom_intensity > 0.0f) {
             enginePtr->renderer->render(enginePtr->viewDownsample);
@@ -456,6 +556,8 @@ Java_com_grovkornet_nativefilmcamera_rendering_LiveFilmProcessor_nativeRenderLiv
     auto end = std::chrono::high_resolution_clock::now();
     float frameTimeMs = std::chrono::duration<float, std::milli>(end - start).count();
     enginePtr->recordFrameTimeAndEvaluate(frameTimeMs);
+
+    return JNI_TRUE;
 }
 
 JNIEXPORT void JNICALL
@@ -466,6 +568,52 @@ Java_com_grovkornet_nativefilmcamera_rendering_LiveFilmProcessor_nativeSimulateF
         enginePtr->framesSinceLastDrsScale = GrovkornetEngine::DRS_COOLDOWN_FRAMES;
         enginePtr->recordFrameTimeAndEvaluate(frame_time_ms);
     }
+}
+
+JNIEXPORT jboolean JNICALL
+Java_com_grovkornet_nativefilmcamera_logic_WatermarkEngine_nativeEmbedSignature(
+        JNIEnv* env, jclass clazz, jobject bitmap) {
+    AndroidBitmapInfo info;
+    void* pixels = nullptr;
+    if (AndroidBitmap_getInfo(env, bitmap, &info) < 0 || AndroidBitmap_lockPixels(env, bitmap, &pixels) < 0) {
+        __android_log_print(ANDROID_LOG_ERROR, "GrovkornetJNI", "WatermarkEngine: Failed to lock bitmap pixels for embedding");
+        return JNI_FALSE;
+    }
+
+    if (info.format != ANDROID_BITMAP_FORMAT_RGBA_8888) {
+        __android_log_print(ANDROID_LOG_ERROR, "GrovkornetJNI", "WatermarkEngine: Bitmap format is not RGBA_8888 (got %d)", info.format);
+        AndroidBitmap_unlockPixels(env, bitmap);
+        return JNI_FALSE;
+    }
+
+    int stride = info.stride / 4;
+    WatermarkEngine::embedSignature(reinterpret_cast<uint32_t*>(pixels), info.width, info.height, stride);
+
+    AndroidBitmap_unlockPixels(env, bitmap);
+    return JNI_TRUE;
+}
+
+JNIEXPORT jboolean JNICALL
+Java_com_grovkornet_nativefilmcamera_logic_WatermarkEngine_nativeVerifySignature(
+        JNIEnv* env, jclass clazz, jobject bitmap) {
+    AndroidBitmapInfo info;
+    void* pixels = nullptr;
+    if (AndroidBitmap_getInfo(env, bitmap, &info) < 0 || AndroidBitmap_lockPixels(env, bitmap, &pixels) < 0) {
+        __android_log_print(ANDROID_LOG_ERROR, "GrovkornetJNI", "WatermarkEngine: Failed to lock bitmap pixels for verification");
+        return JNI_FALSE;
+    }
+
+    if (info.format != ANDROID_BITMAP_FORMAT_RGBA_8888) {
+        __android_log_print(ANDROID_LOG_ERROR, "GrovkornetJNI", "WatermarkEngine: Bitmap format is not RGBA_8888 (got %d)", info.format);
+        AndroidBitmap_unlockPixels(env, bitmap);
+        return JNI_FALSE;
+    }
+
+    int stride = info.stride / 4;
+    bool verified = WatermarkEngine::verifySignature(reinterpret_cast<const uint32_t*>(pixels), info.width, info.height, stride);
+
+    AndroidBitmap_unlockPixels(env, bitmap);
+    return verified ? JNI_TRUE : JNI_FALSE;
 }
 
 } // extern "C"

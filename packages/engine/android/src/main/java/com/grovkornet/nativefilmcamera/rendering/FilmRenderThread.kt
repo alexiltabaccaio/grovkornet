@@ -6,10 +6,9 @@ import android.os.HandlerThread
 import android.util.Log
 import android.view.Choreographer
 import android.view.Surface
-import com.grovkornet.nativefilmcamera.rendering.utils.FrameTimingController
-import com.grovkornet.nativefilmcamera.rendering.utils.MatrixTransformCalculator
 import com.grovkornet.nativefilmcamera.state.CameraConfiguration
 import java.util.concurrent.atomic.AtomicBoolean
+import java.util.concurrent.atomic.AtomicInteger
 
 class FilmRenderThread(
     private val surfaceProvider: () -> Surface?,
@@ -23,9 +22,6 @@ class FilmRenderThread(
     private var choreographer: Choreographer? = null
     private var liveProcessor: LiveFilmProcessor? = null
     private var surfaceTexture: SurfaceTexture? = null
-
-    private val timingController = FrameTimingController()
-    private val matrixCalculator = MatrixTransformCalculator()
 
     @Volatile private var renderConfig = CameraConfiguration()
     @Volatile private var width = 0
@@ -105,40 +101,25 @@ class FilmRenderThread(
             }
 
             val currentConfig = renderConfig
+            val matrix = FloatArray(16)
+            st.getTransformMatrix(matrix)
 
-            timingController.updateFps { fps, stampedFps ->
+            liveProcessor?.renderLiveFrame(
+                surface,
+                currentConfig,
+                matrix,
+                cameraWidth,
+                cameraHeight,
+                width,
+                height
+            ) { actualFps, stampedFps ->
                 if (!isReleased.get()) {
                     onDebugUpdate(mapOf(
                         "fps" to stampedFps,
                         "resolution" to "${cameraWidth}x${cameraHeight}",
-                        "hwFps" to fps
+                        "hwFps" to actualFps
                     ))
                 }
-            }
-
-            val shouldCapture = timingController.shouldCaptureFrame(currentConfig.targetFps)
-            if (shouldCapture) {
-                val matrix = FloatArray(16)
-                st.getTransformMatrix(matrix)
-
-                val scaleMatrix = FloatArray(16)
-                val cropMatrix = FloatArray(16)
-
-                matrixCalculator.calculateScaleAndCrop(
-                    cameraWidth, cameraHeight, width, height, currentConfig.aspectRatio, scaleMatrix, cropMatrix
-                )
-
-                val finalUvMatrix = FloatArray(16)
-                android.opengl.Matrix.multiplyMM(finalUvMatrix, 0, matrix, 0, cropMatrix, 0)
-
-                val scaleX = scaleMatrix[0]
-                val scaleY = scaleMatrix[5]
-                val vpWidth = (width * scaleX).toInt()
-                val vpHeight = (height * scaleY).toInt()
-                val vpX = (width - vpWidth) / 2
-                val vpY = (height - vpHeight) / 2
-
-                liveProcessor?.renderLiveFrame(surface, currentConfig, finalUvMatrix, vpX, vpY, vpWidth, vpHeight)
             }
         } catch (e: Exception) {
             Log.e(TAG, "Error drawing live frame in background", e)

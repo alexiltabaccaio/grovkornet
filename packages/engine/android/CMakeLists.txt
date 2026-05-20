@@ -43,6 +43,9 @@ add_library(grovkornet-engine SHARED
     src/main/cpp/LutGenerator.cpp
     src/main/cpp/OverlayCompositor.cpp
     src/main/cpp/ShaderManager.cpp
+    src/main/cpp/WatermarkEngine.cpp
+    src/main/cpp/MatrixTransformCalculator.cpp
+    src/main/cpp/FrameTimingController.cpp
     src/main/cpp/jni_bindings.cpp
 )
 
@@ -93,6 +96,9 @@ if (EXISTS "${ANDROID_NDK}/sources/third_party/googletest")
         src/main/cpp/LutGenerator.cpp
         src/main/cpp/OverlayCompositor.cpp
         src/main/cpp/ShaderManager.cpp
+        src/main/cpp/WatermarkEngine.cpp
+        src/main/cpp/MatrixTransformCalculator.cpp
+        src/main/cpp/FrameTimingController.cpp
     )
     
     # Include headers
