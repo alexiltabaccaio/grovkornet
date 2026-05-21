@@ -104,7 +104,17 @@ class LiveFilmProcessor {
 
             val time = (System.currentTimeMillis() % 100000) / 1000f
             
-            val floatParams = FloatArray(17).apply {
+            val targetRes = when(params.resolutionSetting) {
+                0 -> 2160
+                1 -> 1080
+                2 -> 720
+                3 -> 480
+                4 -> 360
+                5 -> 240
+                6 -> 144
+                else -> 1080
+            }
+            val floatParams = FloatArray(18).apply {
                 this[0] = params.saturation
                 this[1] = params.contrast
                 this[2] = if (params.grainEnabled) params.grainIntensity else 0.0f
@@ -122,6 +132,7 @@ class LiveFilmProcessor {
                 this[14] = params.sharpening
                 this[15] = params.targetFps.toFloat()
                 this[16] = params.aspectRatio.toFloat()
+                this[17] = targetRes.toFloat()
             }
 
             val outFpsStats = IntArray(3) // [hasNewFps, actualFps, stampedFps]

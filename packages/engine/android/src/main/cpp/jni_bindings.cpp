@@ -138,6 +138,7 @@ Java_com_grovkornet_nativefilmcamera_rendering_OffscreenFilmProcessor_nativeProc
     filament::math::float2 texelSize{1.0f / enginePtr->width, 1.0f / enginePtr->height};
     enginePtr->shaderManager.getMaterialInstanceComposite()->setParameter("u_TexelSize", texelSize);
     enginePtr->shaderManager.getMaterialInstanceComposite()->setParameter("u_Sharpening", sharpening);
+    enginePtr->shaderManager.getMaterialInstanceComposite()->setParameter("u_TargetResolution", 0.0f);
 
     enginePtr->updateDrsAndViewport();
 
@@ -263,6 +264,7 @@ Java_com_grovkornet_nativefilmcamera_rendering_OffscreenFilmProcessor_nativeProc
     filament::math::float2 texelSize{1.0f / enginePtr->width, 1.0f / enginePtr->height};
     enginePtr->shaderManager.getMaterialInstanceComposite()->setParameter("u_TexelSize", texelSize);
     enginePtr->shaderManager.getMaterialInstanceComposite()->setParameter("u_Sharpening", sharpening);
+    enginePtr->shaderManager.getMaterialInstanceComposite()->setParameter("u_TargetResolution", 0.0f);
 
     enginePtr->updateDrsAndViewport();
 
@@ -448,6 +450,7 @@ Java_com_grovkornet_nativefilmcamera_rendering_LiveFilmProcessor_nativeRenderLiv
     jfloat sharpening = params[14];
     int targetFps = static_cast<int>(params[15]);
     int aspectRatioSetting = static_cast<int>(params[16]);
+    float targetResolution = params[17];
     env->ReleaseFloatArrayElements(float_params, params, 0);
 
     // 1. Run Frame Timing checks natively
@@ -543,6 +546,7 @@ Java_com_grovkornet_nativefilmcamera_rendering_LiveFilmProcessor_nativeRenderLiv
     filament::math::float2 texelSize{1.0f / enginePtr->width, 1.0f / enginePtr->height};
     enginePtr->shaderManager.getMaterialInstanceComposite()->setParameter("u_TexelSize", texelSize);
     enginePtr->shaderManager.getMaterialInstanceComposite()->setParameter("u_Sharpening", sharpening);
+    enginePtr->shaderManager.getMaterialInstanceComposite()->setParameter("u_TargetResolution", targetResolution);
     
     enginePtr->updateDrsAndViewport();
     

@@ -17,7 +17,8 @@ material {
         { type : float, name : u_OverlayEnabled },
         { type : float, name : u_DrsScale },
         { type : float, name : u_Sharpening },
-        { type : float2, name : u_TexelSize }
+        { type : float2, name : u_TexelSize },
+        { type : float, name : u_TargetResolution }
     ],
     requires : [ uv0 ]
 }
@@ -29,6 +30,18 @@ fragment {
     void material(inout MaterialInputs material) {
         prepareMaterial(material);
         vec2 uv = getUV0();
+        
+        if (materialParams.u_TargetResolution > 0.0) {
+            float minDim = min(1.0 / materialParams.u_TexelSize.x, 1.0 / materialParams.u_TexelSize.y);
+            if (materialParams.u_TargetResolution < minDim) {
+                float screenW = 1.0 / materialParams.u_TexelSize.x;
+                float screenH = 1.0 / materialParams.u_TexelSize.y;
+                float scale = materialParams.u_TargetResolution / minDim;
+                vec2 gridSize = vec2(screenW * scale, screenH * scale);
+                uv = (floor(uv * gridSize) + 0.5) / gridSize;
+            }
+        }
+
         vec2 baseUv = uv * materialParams.u_DrsScale;
         vec2 compositeUv = baseUv;
         vec4 baseColor;
