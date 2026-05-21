@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, StyleProp, ViewStyle, Pressable } from 'react-native';
+import { StyleSheet, StyleProp, ViewStyle, Pressable, View } from 'react-native';
 import Animated, { useAnimatedStyle, SharedValue } from 'react-native-reanimated';
 import { useShallow } from 'zustand/react/shallow';
 import { useStylesStore } from '@features/camera-controls/model/useStylesStore';
@@ -120,34 +120,39 @@ export const NoiseReductionExtension = ({ parameterExtensionAnimatedStyle }: Noi
 
   return (
     <ParameterExtensionWrapper animatedStyle={parameterExtensionAnimatedStyle}>
-      <AutoButton
-        noiseReductionAuto={noiseReductionAuto}
-        setNoiseReductionAuto={setNoiseReductionAuto}
-      />
-      <ModeButton
-        label="OFF"
-        modeValue={0}
-        noiseReductionMode={noiseReductionMode}
-        noiseReductionAuto={noiseReductionAuto}
-        setNoiseReductionMode={setNoiseReductionMode}
-        setNoiseReductionAuto={setNoiseReductionAuto}
-      />
-      <ModeButton
-        label="FAST"
-        modeValue={1}
-        noiseReductionMode={noiseReductionMode}
-        noiseReductionAuto={noiseReductionAuto}
-        setNoiseReductionMode={setNoiseReductionMode}
-        setNoiseReductionAuto={setNoiseReductionAuto}
-      />
-      <ModeButton
-        label="HQ"
-        modeValue={2}
-        noiseReductionMode={noiseReductionMode}
-        noiseReductionAuto={noiseReductionAuto}
-        setNoiseReductionMode={setNoiseReductionMode}
-        setNoiseReductionAuto={setNoiseReductionAuto}
-      />
+      <View style={{ width: 54, alignItems: 'flex-start' }}>
+        <AutoButton
+          noiseReductionAuto={noiseReductionAuto}
+          setNoiseReductionAuto={setNoiseReductionAuto}
+        />
+      </View>
+      <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'center', gap: 12 }}>
+        <ModeButton
+          label="OFF"
+          modeValue={0}
+          noiseReductionMode={noiseReductionMode}
+          noiseReductionAuto={noiseReductionAuto}
+          setNoiseReductionMode={setNoiseReductionMode}
+          setNoiseReductionAuto={setNoiseReductionAuto}
+        />
+        <ModeButton
+          label="FAST"
+          modeValue={1}
+          noiseReductionMode={noiseReductionMode}
+          noiseReductionAuto={noiseReductionAuto}
+          setNoiseReductionMode={setNoiseReductionMode}
+          setNoiseReductionAuto={setNoiseReductionAuto}
+        />
+        <ModeButton
+          label="HQ"
+          modeValue={2}
+          noiseReductionMode={noiseReductionMode}
+          noiseReductionAuto={noiseReductionAuto}
+          setNoiseReductionMode={setNoiseReductionMode}
+          setNoiseReductionAuto={setNoiseReductionAuto}
+        />
+      </View>
+      <View style={{ width: 54 }} />
     </ParameterExtensionWrapper>
   );
 };

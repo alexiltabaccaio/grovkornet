@@ -1,5 +1,6 @@
 import React from 'react';
-import { StyleSheet, View, Pressable } from 'react-native';
+import { StyleSheet, View } from 'react-native';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 import Animated, { 
   useSharedValue, 
   useAnimatedStyle, 
@@ -40,7 +41,7 @@ export const ShutterButton = ({ onPress, disabled, translateY }: ShutterButtonPr
   };
 
   return (
-    <Pressable
+    <TouchableOpacity activeOpacity={0.8}
       testID="shutter-button"
       onPressIn={handlePressIn}
       onPressOut={handlePressOut}
@@ -51,7 +52,7 @@ export const ShutterButton = ({ onPress, disabled, translateY }: ShutterButtonPr
       <Animated.View style={[styles.outerRing, animatedStyle]}>
         <View style={styles.innerCircle} />
       </Animated.View>
-    </Pressable>
+    </TouchableOpacity>
   );
 };
 

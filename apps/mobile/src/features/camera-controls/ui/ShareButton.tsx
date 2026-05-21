@@ -1,5 +1,6 @@
 import React from 'react';
-import { StyleSheet, Text, Pressable, Alert } from 'react-native';
+import { StyleSheet, Text, Alert } from 'react-native';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 import Share, { Social } from 'react-native-share';
 import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
@@ -46,7 +47,7 @@ export const ShareButton = ({ uri, isVerified }: ShareButtonProps) => {
   };
 
   return (
-    <Pressable
+    <TouchableOpacity activeOpacity={0.8}
       style={[styles.button, !isVerified && styles.buttonDisabled]}
       onPress={() => void handleShare()}
     >
@@ -54,7 +55,7 @@ export const ShareButton = ({ uri, isVerified }: ShareButtonProps) => {
       <Text style={[styles.text, !isVerified && styles.textDisabled]}>
         {isVerified ? t('gallery.share_instagram', 'Share to IG Stories') : t('gallery.unverified_badge', 'Unverified')}
       </Text>
-    </Pressable>
+    </TouchableOpacity>
   );
 };
 

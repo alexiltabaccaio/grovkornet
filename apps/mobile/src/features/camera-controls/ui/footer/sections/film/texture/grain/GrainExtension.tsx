@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet, Pressable, Text } from 'react-native';
+import { View, StyleSheet, Text , Pressable } from 'react-native';
 import Animated, { useAnimatedStyle, SharedValue } from 'react-native-reanimated';
 import { useShallow } from 'zustand/react/shallow';
 import { useStylesStore } from '@features/camera-controls/model/useStylesStore';
@@ -35,8 +35,10 @@ const ChromaButton = ({ label, grainChroma, targetValue, onPress }: ChromaButton
 
   return (
     <Pressable
+      
       onPress={onPress}
       style={styles.pressable}
+      containerStyle={styles.pressable}
     >
       <Animated.View style={[
         styles.pillButton,

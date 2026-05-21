@@ -5,7 +5,7 @@ import { useShallow } from 'zustand/react/shallow';
 import { useStylesStore } from '@features/camera-controls/model/useStylesStore';
 import { useTranslation } from 'react-i18next';
 import { useUIStore } from '@features/camera-controls/model/useUIStore';
-
+import { useCameraWorklets } from '@features/camera-controls/lib/useCameraWorklets';
 interface DirectionButtonProps {
   label: string;
   value: number;
@@ -33,6 +33,7 @@ const DirectionButton = ({ label, value, activeDirection, onPress }: DirectionBu
 
   return (
     <Pressable
+      
       onPress={() => onPress(value)}
       style={styles.pressable}
     >
@@ -58,6 +59,12 @@ export const ChromaticAberrationExtension = () => {
       setAberrationDirection: state.setAberrationDirection,
     }))
   );
+  const worklets = useCameraWorklets();
+
+  const handlePress = (val: number) => {
+    setAberrationDirection(val);
+    worklets.updateAberrationDirection(val);
+  };
 
   return (
     <View style={[
@@ -72,19 +79,19 @@ export const ChromaticAberrationExtension = () => {
           label="STD"
           value={0}
           activeDirection={aberrationDirection}
-          onPress={setAberrationDirection}
+          onPress={handlePress}
         />
         <DirectionButton
           label="HOR"
           value={1}
           activeDirection={aberrationDirection}
-          onPress={setAberrationDirection}
+          onPress={handlePress}
         />
         <DirectionButton
           label="RAD"
           value={2}
           activeDirection={aberrationDirection}
-          onPress={setAberrationDirection}
+          onPress={handlePress}
         />
       </View>
     </View>

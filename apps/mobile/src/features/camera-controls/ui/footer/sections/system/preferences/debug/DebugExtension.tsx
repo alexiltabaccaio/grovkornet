@@ -14,11 +14,10 @@ interface DebugToggleButtonProps {
   label: string;
   isActive: boolean;
   onPress: () => void;
+  isGloballyEnabled: boolean;
 }
 
-const DebugToggleButton = ({ label, isActive, onPress }: DebugToggleButtonProps) => {
-  const isDebugEnabled = useUIStore((s) => s.isDebugEnabled);
-
+const DebugToggleButton = ({ label, isActive, onPress, isGloballyEnabled }: DebugToggleButtonProps) => {
   const animatedStyle = useAnimatedStyle(() => {
     return {
       borderColor: isActive ? '#FFF' : '#333',
@@ -32,12 +31,14 @@ const DebugToggleButton = ({ label, isActive, onPress }: DebugToggleButtonProps)
     };
   });
 
+  const greenStyle = isGloballyEnabled ? { backgroundColor: 'rgba(0, 255, 0, 0.2)', borderWidth: 1, borderColor: 'green' } : {};
+
   return (
     <Pressable onPress={onPress} style={styles.pressable}>
       <Animated.View style={[
         styles.pillButton,
         animatedStyle,
-        isDebugEnabled && { backgroundColor: 'rgba(0, 255, 0, 0.2)', borderWidth: 1, borderColor: 'green' }
+        greenStyle
       ]}>
         <Animated.Text style={[styles.pillText, animatedTextStyle]}>
           {label}
@@ -56,17 +57,22 @@ export const DebugExtension = ({ parameterExtensionAnimatedStyle }: DebugExtensi
     setIsLogsEnabled: state.setIsLogsEnabled,
   })));
 
+  const labelUI = t('parameters.debug_ui') ? t('parameters.debug_ui').toUpperCase() : 'UI';
+  const labelLogs = t('parameters.debug_logs') ? t('parameters.debug_logs').toUpperCase() : 'LOGS';
+
   return (
     <ParameterExtensionWrapper animatedStyle={parameterExtensionAnimatedStyle} gap={16} paddingHorizontal={32}>
       <DebugToggleButton
-        label={t('parameters.debug_ui').toUpperCase()}
+        label={labelUI}
         isActive={isDebugEnabled}
         onPress={() => setIsDebugEnabled(!isDebugEnabled)}
+        isGloballyEnabled={isDebugEnabled}
       />
       <DebugToggleButton
-        label={t('parameters.debug_logs').toUpperCase()}
+        label={labelLogs}
         isActive={isLogsEnabled}
         onPress={() => setIsLogsEnabled(!isLogsEnabled)}
+        isGloballyEnabled={isDebugEnabled}
       />
     </ParameterExtensionWrapper>
   );
@@ -79,6 +85,7 @@ const styles = StyleSheet.create({
   },
   pillButton: {
     height: 32,
+    width: '100%',
     borderRadius: 16,
     borderWidth: 1,
     justifyContent: 'center',

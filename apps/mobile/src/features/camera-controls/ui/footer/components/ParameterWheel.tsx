@@ -1,6 +1,6 @@
 import React, { useRef, useCallback, useMemo } from 'react';
 import { View, StyleSheet, Pressable } from 'react-native';
-import { GestureDetector, Gesture } from 'react-native-gesture-handler';
+import { GestureDetector, Gesture, TouchableOpacity } from 'react-native-gesture-handler';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -208,11 +208,11 @@ const WheelItemComponent = ({
 
   return (
     <Animated.View style={[styles.slot, animatedStyle]} pointerEvents="box-none">
-      <Pressable onPress={handleTap} style={styles.pressable} pointerEvents="auto">
+      <TouchableOpacity onPress={handleTap} style={styles.pressable} activeOpacity={0.8} pointerEvents="auto">
         <View pointerEvents="none" style={styles.componentWrapper}>
           {item.component}
         </View>
-      </Pressable>
+      </TouchableOpacity>
     </Animated.View>
   );
 };

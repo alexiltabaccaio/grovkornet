@@ -1,5 +1,6 @@
 import React from 'react';
-import { StyleSheet, StyleProp, ViewStyle, Pressable } from 'react-native';
+import { StyleSheet, StyleProp, ViewStyle , Pressable } from 'react-native';
+
 import Animated, { useAnimatedStyle, SharedValue } from 'react-native-reanimated';
 import { useShallow } from 'zustand/react/shallow';
 import { useHardwareStore } from '@features/camera-controls/model/useHardwareStore';
@@ -35,7 +36,7 @@ const FpsButton = ({ val, fpsSetting, setFpsSetting }: FpsButtonProps) => {
   });
 
   return (
-    <Pressable
+    <Pressable 
       onPress={() => {
         setFpsSetting(val);
       }}
@@ -85,6 +86,7 @@ const styles = StyleSheet.create({
   },
   pillButton: {
     height: 32,
+    width: '100%',
     borderRadius: 16,
     borderWidth: 1,
     justifyContent: 'center',
