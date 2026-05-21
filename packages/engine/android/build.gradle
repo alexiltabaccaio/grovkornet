@@ -86,10 +86,87 @@ task downloadFilament {
   }
 }
 
-// Hook CMake build to run after downloadFilament by binding it to preBuild
+// Custom task to download and extract Filament host tools (matc)
+task downloadMatc {
+  def version = "1.71.4"
+  def osName = org.gradle.internal.os.OperatingSystem.current()
+  def osSuffix = "linux"
+  if (osName.isWindows()) {
+    osSuffix = "windows"
+  } else if (osName.isMacOsX()) {
+    osSuffix = "mac"
+  }
+  
+  def url = "https://github.com/google/filament/releases/download/v${version}/filament-v${version}-${osSuffix}.tgz"
+  def destDir = file("${projectDir}/filament-host")
+  def destFile = file("${projectDir}/filament-host.tgz")
+  def matcBin = file("${destDir}/bin/matc" + (osName.isWindows() ? ".exe" : ""))
+
+  inputs.property("version", version)
+  outputs.dir(destDir)
+
+  doLast {
+    if (!matcBin.exists()) {
+      println "Downloading Filament Host Tools v${version} for ${osSuffix} from ${url}..."
+      try {
+        destFile.parentFile.mkdirs()
+        new URL(url).withInputStream { i ->
+          destFile.withOutputStream { it << i }
+        }
+        println "Extracting Filament Host Tools..."
+        copy {
+          from tarTree(resources.gzip(destFile))
+          into destDir
+        }
+        destFile.delete()
+        if (!osName.isWindows()) {
+          exec { commandLine 'chmod', '+x', matcBin.absolutePath }
+        }
+        println "Filament Host Tools extracted to ${destDir}."
+      } catch (Exception e) {
+        println "Failed to download/extract Filament Host Tools: ${e.message}"
+        if (destFile.exists()) destFile.delete()
+        if (destDir.exists()) destDir.deleteDir()
+        throw e
+      }
+    } else {
+      println "Filament Host Tools already exist, skipping download."
+    }
+  }
+}
+
+// Compile shaders using matc
+task compileShaders {
+  dependsOn downloadMatc
+  def matcBin = file("${projectDir}/filament-host/bin/matc" + (org.gradle.internal.os.OperatingSystem.current().isWindows() ? ".exe" : ""))
+  def shadersDir = file("${projectDir}/src/main/filament-shaders")
+  def assetsDir = file("${projectDir}/src/main/assets/materials")
+  
+  inputs.dir(shadersDir)
+  outputs.dir(assetsDir)
+  
+  doLast {
+    if (!assetsDir.exists()) {
+      assetsDir.mkdirs()
+    }
+    
+    fileTree(dir: shadersDir, include: '**/*.mat').each { File file ->
+      def baseName = file.name.substring(0, file.name.lastIndexOf('.'))
+      def outputFile = new File(assetsDir, "${baseName}.filamat")
+      println "Compiling ${file.name} -> ${outputFile.name}..."
+      
+      exec {
+        commandLine matcBin.absolutePath, '-a', 'opengl', '-p', 'mobile', '-o', outputFile.absolutePath, file.absolutePath
+      }
+    }
+  }
+}
+
+// Hook CMake build to run after downloadFilament and compileShaders by binding it to preBuild
 afterEvaluate {
   tasks.named('preBuild').configure {
     dependsOn downloadFilament
+    dependsOn compileShaders
   }
 }
 

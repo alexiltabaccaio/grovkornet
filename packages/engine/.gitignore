@@ -10,4 +10,7 @@ node_modules/
 
 # Filament binaries & temp files
 android/filament/
+android/filament-host/
+android/src/main/assets/
 android/*.tgz
+

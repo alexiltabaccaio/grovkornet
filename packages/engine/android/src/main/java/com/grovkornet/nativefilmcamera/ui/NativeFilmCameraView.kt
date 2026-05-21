@@ -102,6 +102,7 @@ class NativeFilmCameraView(context: Context) : SurfaceView(context), SurfaceHold
         Log.i("NativeFilmCameraView", "Surface created")
         
         renderThread = com.grovkornet.nativefilmcamera.rendering.FilmRenderThread(
+            assetManager = context.assets,
             surfaceProvider = { holder.surface },
             onSurfaceTextureReady = { st ->
                 cameraEngine?.start(st)

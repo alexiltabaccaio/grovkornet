@@ -28,7 +28,7 @@ class OffscreenFilmProcessor {
     }
 
     // Native JNI methods
-    private external fun nativePrepare(width: Int, height: Int): Long
+    private external fun nativePrepare(width: Int, height: Int, assetManager: android.content.res.AssetManager): Long
     private external fun nativeProcessBitmap(
         nativeEnginePtr: Long,
         input: Bitmap,
@@ -62,7 +62,7 @@ class OffscreenFilmProcessor {
     private external fun nativeGetDrsScale(nativeEnginePtr: Long): Float
     private external fun nativeSimulateFrameTime(nativeEnginePtr: Long, frameTimeMs: Float)
 
-    fun prepare(width: Int, height: Int) {
+    fun prepare(width: Int, height: Int, assetManager: android.content.res.AssetManager) {
         if (isPrepared && currentWidth == width && currentHeight == height) return
         
         val startTime = System.currentTimeMillis()
@@ -71,7 +71,7 @@ class OffscreenFilmProcessor {
         try {
             if (isPrepared) release()
 
-            nativeEnginePtr = nativePrepare(width, height)
+            nativeEnginePtr = nativePrepare(width, height, assetManager)
             if (nativeEnginePtr == 0L) {
                 throw RuntimeException("nativePrepare returned 0 pointer")
             }
@@ -87,16 +87,16 @@ class OffscreenFilmProcessor {
         }
     }
 
-    suspend fun process(input: Bitmap, params: CameraConfiguration): Bitmap = processMutex.withLock {
+    suspend fun process(input: Bitmap, params: CameraConfiguration, context: android.content.Context): Bitmap = processMutex.withLock {
         if (!isPrepared) {
             Log.w(TAG, "Processor not prepared, preparing now (this will cause lag)...")
-            prepare(input.width, input.height)
+            prepare(input.width, input.height, context.assets)
         }
         
         // If resolution changed, we need to re-prepare
         if (input.width != currentWidth || input.height != currentHeight) {
             Log.i(TAG, "Resolution changed from ${currentWidth}x${currentHeight} to ${input.width}x${input.height}. Re-preparing...")
-            prepare(input.width, input.height)
+            prepare(input.width, input.height, context.assets)
         }
 
         if (nativeEnginePtr == 0L) {
@@ -150,17 +150,18 @@ class OffscreenFilmProcessor {
 
     suspend fun processHardwareBuffer(
         hardwareBuffer: android.hardware.HardwareBuffer,
-        params: CameraConfiguration
+        params: CameraConfiguration,
+        context: android.content.Context
     ) {
         processMutex.withLock {
             if (!isPrepared) {
                 Log.w(TAG, "Processor not prepared, preparing now...")
-                prepare(hardwareBuffer.width, hardwareBuffer.height)
+                prepare(hardwareBuffer.width, hardwareBuffer.height, context.assets)
             }
 
             if (hardwareBuffer.width != currentWidth || hardwareBuffer.height != currentHeight) {
                 Log.i(TAG, "Resolution changed from ${currentWidth}x${currentHeight} to ${hardwareBuffer.width}x${hardwareBuffer.height}. Re-preparing...")
-                prepare(hardwareBuffer.width, hardwareBuffer.height)
+                prepare(hardwareBuffer.width, hardwareBuffer.height, context.assets)
             }
 
             if (nativeEnginePtr == 0L) {

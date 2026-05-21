@@ -4,6 +4,8 @@
 #include <android/hardware_buffer.h>
 #include <android/hardware_buffer_jni.h>
 #include <android/native_window_jni.h>
+#include <android/asset_manager.h>
+#include <android/asset_manager_jni.h>
 #include <chrono>
 #include <vector>
 
@@ -41,10 +43,13 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm, void* reserved) {
 
 JNIEXPORT jlong JNICALL
 Java_com_grovkornet_nativefilmcamera_rendering_OffscreenFilmProcessor_nativePrepare(
-        JNIEnv* env, jobject thiz, jint width, jint height) {
+        JNIEnv* env, jobject thiz, jint width, jint height, jobject assetManagerObj) {
     GrovkornetEngine* engine = new GrovkornetEngine(width, height);
     env->GetJavaVM(&(engine->javaVm));
-    if (!engine->init()) {
+    
+    AAssetManager* assetManager = AAssetManager_fromJava(env, assetManagerObj);
+    
+    if (!engine->init(assetManager)) {
         delete engine;
         return 0;
     }
@@ -330,16 +335,21 @@ Java_com_grovkornet_nativefilmcamera_rendering_OffscreenFilmProcessor_nativeSimu
     }
 }
 
+#include <android/asset_manager.h>
+
 // ==========================================
 // LiveFilmProcessor JNI Bindings
 // ==========================================
 
 JNIEXPORT jlong JNICALL
 Java_com_grovkornet_nativefilmcamera_rendering_LiveFilmProcessor_nativePrepare(
-        JNIEnv* env, jobject thiz, jint width, jint height) {
+        JNIEnv* env, jobject thiz, jint width, jint height, jobject assetManagerObj) {
     GrovkornetEngine* engine = new GrovkornetEngine(width, height);
     env->GetJavaVM(&(engine->javaVm));
-    if (!engine->init()) {
+    
+    AAssetManager* assetManager = AAssetManager_fromJava(env, assetManagerObj);
+    
+    if (!engine->init(assetManager)) {
         delete engine;
         return 0;
     }

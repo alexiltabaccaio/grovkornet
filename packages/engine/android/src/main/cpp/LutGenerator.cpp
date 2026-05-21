@@ -4,6 +4,22 @@
 
 LutGenerator::LutGenerator() {
     lutBuffer.resize(LUT_SIZE * LUT_SIZE * LUT_SIZE * 4, 0);
+    // Initialize with Identity LUT so it's instantly usable
+    int index = 0;
+    for (int b = 0; b < LUT_SIZE; ++b) {
+        float b_val = (float)b / (LUT_SIZE - 1);
+        for (int g = 0; g < LUT_SIZE; ++g) {
+            float g_val = (float)g / (LUT_SIZE - 1);
+            for (int r = 0; r < LUT_SIZE; ++r) {
+                float r_val = (float)r / (LUT_SIZE - 1);
+                lutBuffer[index++] = static_cast<uint8_t>(r_val * 255.0f + 0.5f);
+                lutBuffer[index++] = static_cast<uint8_t>(g_val * 255.0f + 0.5f);
+                lutBuffer[index++] = static_cast<uint8_t>(b_val * 255.0f + 0.5f);
+                lutBuffer[index++] = 255;
+            }
+        }
+    }
+    lutDataReady = true; // Mark as ready immediately
     lutParametersDirty = true;
 }
 
@@ -57,10 +73,8 @@ void LutGenerator::applyLutTextureUpdate(filament::Engine& engine, filament::Tex
     
     {
         std::unique_lock<std::mutex> lock(lutMutex);
-        // Wait if parameters are dirty OR if we haven't successfully baked the first LUT yet
-        if (lutParametersDirty || (activeSaturation < 0 && !lutDataReady)) {
-            lutCv.wait(lock, [this]() { return !lutParametersDirty && lutDataReady; });
-        }
+        // We no longer wait. If it's not ready, we just skip updating this frame.
+        // Because we initialized with Identity LUT, there is always at least one valid LUT ready at startup.
         
         if (lutDataReady) {
             localLut = lutBuffer;

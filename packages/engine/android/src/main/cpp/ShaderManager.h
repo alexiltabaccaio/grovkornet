@@ -1,14 +1,16 @@
 #pragma once
+#include <string>
 #include <filament/Engine.h>
 #include <filament/Material.h>
 #include <filament/MaterialInstance.h>
+#include <android/asset_manager.h>
 
 class ShaderManager {
 public:
     ShaderManager();
     ~ShaderManager();
 
-    bool init(filament::Engine& engine);
+    bool init(filament::Engine& engine, AAssetManager* assetManager);
     void destroy(filament::Engine& engine);
 
     filament::MaterialInstance* getMaterialInstance2D() const { return materialInstance2D; }
@@ -36,4 +38,12 @@ private:
     
     filament::Material* materialComposite = nullptr;
     filament::MaterialInstance* materialInstanceComposite = nullptr;
+
+    bool loadFromAsset(
+        filament::Engine& engine, 
+        AAssetManager* assetManager,
+        const std::string& assetName, 
+        filament::Material*& outMaterial, 
+        filament::MaterialInstance*& outInstance
+    );
 };

@@ -1,0 +1,25 @@
+material {
+    name : "FilmShaderExternal",
+    shadingModel : unlit,
+    parameters : [
+        { type : samplerExternal, name : u_Texture },
+        { type : sampler3d, name : u_LutTexture },
+        { type : mat4, name : u_UvMatrix }
+    ],
+    requires : [ uv0 ]
+}
+
+fragment {
+    void material(inout MaterialInputs material) {
+        prepareMaterial(material);
+        vec2 uv = (materialParams.u_UvMatrix * vec4(getUV0(), 0.0, 1.0)).xy;
+        
+        vec4 color = texture(materialParams_u_Texture, uv);
+        
+        // Apply 3D LUT lookup
+        vec3 lutCoord = color.rgb * (32.0 / 33.0) + (0.5 / 33.0);
+        vec4 gradedColor = texture(materialParams_u_LutTexture, lutCoord);
+        
+        material.baseColor = vec4(gradedColor.rgb, color.a);
+    }
+}

@@ -1,0 +1,34 @@
+material {
+    name : "BlurUpShader",
+    shadingModel : unlit,
+    parameters : [
+        { type : sampler2d, name : u_Texture },
+        { type : float2, name : u_TexelSize },
+        { type : float, name : u_DrsScale }
+    ],
+    requires : [ uv0 ]
+}
+
+fragment {
+    void material(inout MaterialInputs material) {
+        prepareMaterial(material);
+        vec2 uv = getUV0() * materialParams.u_DrsScale;
+        vec2 texelSize = materialParams.u_TexelSize;
+        
+        vec2 d1 = texelSize * 1.0;
+        vec2 d2 = texelSize * 2.0;
+        
+        vec3 sum = vec3(0.0);
+        sum += texture(materialParams_u_Texture, uv + vec2(-d1.x, -d1.y)).rgb * 2.0;
+        sum += texture(materialParams_u_Texture, uv + vec2(d1.x, -d1.y)).rgb * 2.0;
+        sum += texture(materialParams_u_Texture, uv + vec2(-d1.x, d1.y)).rgb * 2.0;
+        sum += texture(materialParams_u_Texture, uv + vec2(d1.x, d1.y)).rgb * 2.0;
+        
+        sum += texture(materialParams_u_Texture, uv + vec2(0.0, -d2.y)).rgb;
+        sum += texture(materialParams_u_Texture, uv + vec2(0.0, d2.y)).rgb;
+        sum += texture(materialParams_u_Texture, uv + vec2(-d2.x, 0.0)).rgb;
+        sum += texture(materialParams_u_Texture, uv + vec2(d2.x, 0.0)).rgb;
+        
+        material.baseColor = vec4(sum * 0.083333, 1.0);
+    }
+}

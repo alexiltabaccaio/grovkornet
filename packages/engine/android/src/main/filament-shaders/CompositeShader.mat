@@ -1,0 +1,126 @@
+material {
+    name : "CompositeShader",
+    shadingModel : unlit,
+    parameters : [
+        { type : sampler2d, name : u_Texture },
+        { type : sampler2d, name : u_BloomTexture },
+        { type : float, name : u_GrainIntensity },
+        { type : float, name : u_GrainChroma },
+        { type : float, name : u_GrainSize },
+        { type : float, name : u_VignetteIntensity },
+        { type : float, name : u_VhsIntensity },
+        { type : float, name : u_Time },
+        { type : float, name : u_BloomIntensity },
+        { type : float, name : u_ChromaticAberration },
+        { type : float, name : u_AberrationDirection },
+        { type : sampler2d, name : u_OverlayTexture },
+        { type : float, name : u_OverlayEnabled },
+        { type : float, name : u_DrsScale },
+        { type : float, name : u_Sharpening },
+        { type : float2, name : u_TexelSize }
+    ],
+    requires : [ uv0 ]
+}
+
+fragment {
+    highp float rand(highp vec2 co) {
+        return fract(sin(dot(co, vec2(12.9898, 78.233))) * 43758.5453);
+    }
+    void material(inout MaterialInputs material) {
+        prepareMaterial(material);
+        vec2 uv = getUV0();
+        vec2 baseUv = uv * materialParams.u_DrsScale;
+        vec2 compositeUv = baseUv;
+        vec4 baseColor;
+        
+        vec2 rUv = compositeUv;
+        vec2 gUv = compositeUv;
+        vec2 bUv = compositeUv;
+
+        if (materialParams.u_VhsIntensity > 0.0) {
+            float jitter = sin(uv.y * 50.0 + materialParams.u_Time * 10.0) * 0.002 * materialParams.u_VhsIntensity;
+            compositeUv.x += jitter;
+            
+            float shift = 0.005 * materialParams.u_VhsIntensity;
+            rUv = vec2(compositeUv.x - shift, compositeUv.y);
+            gUv = compositeUv;
+            bUv = vec2(compositeUv.x + shift, compositeUv.y);
+        }
+
+        if (materialParams.u_ChromaticAberration > 0.0) {
+            float caIntensity = materialParams.u_ChromaticAberration * 0.02;
+            vec2 caShift = vec2(0.0);
+            if (materialParams.u_AberrationDirection < 0.5) {
+                caShift = vec2(0.0, caIntensity);
+            } else if (materialParams.u_AberrationDirection < 1.5) {
+                caShift = vec2(caIntensity, 0.0);
+            } else {
+                vec2 dir = normalize(uv - 0.5);
+                float dist = length(uv - 0.5);
+                caShift = dir * dist * caIntensity;
+            }
+            rUv -= caShift;
+            bUv += caShift;
+        }
+
+        vec4 colR = texture(materialParams_u_Texture, rUv);
+        vec4 colG = texture(materialParams_u_Texture, gUv);
+        vec4 colB = texture(materialParams_u_Texture, bUv);
+        baseColor = vec4(colR.r, colG.g, colB.b, colG.a);
+
+        if (materialParams.u_Sharpening > 0.0) {
+            vec2 texel = materialParams.u_TexelSize;
+            vec3 colN = texture(materialParams_u_Texture, compositeUv + vec2(0.0, texel.y)).rgb;
+            vec3 colS = texture(materialParams_u_Texture, compositeUv - vec2(0.0, texel.y)).rgb;
+            vec3 colE = texture(materialParams_u_Texture, compositeUv + vec2(texel.x, 0.0)).rgb;
+            vec3 colW = texture(materialParams_u_Texture, compositeUv - vec2(texel.x, 0.0)).rgb;
+            
+            vec3 laplacian = 4.0 * baseColor.rgb - (colN + colS + colE + colW);
+            baseColor.rgb += laplacian * materialParams.u_Sharpening * 10.0;
+        }
+
+        if (materialParams.u_VhsIntensity > 0.0) {
+            // Scanlines
+            float scanline = sin(uv.y * 800.0) * 0.04 * materialParams.u_VhsIntensity;
+            baseColor.rgb -= vec3(scanline);
+        }
+        
+        // Fix for inverted bloom reflection: flip the V coordinate within the valid DRS range
+        vec2 flippedBloomUv = vec2(compositeUv.x, materialParams.u_DrsScale - compositeUv.y);
+        vec3 bloomColor = texture(materialParams_u_BloomTexture, flippedBloomUv).rgb;
+        
+        // Soft additive blend in linear space
+        vec3 finalColor = baseColor.rgb + bloomColor * materialParams.u_BloomIntensity;
+        
+        // Vignette
+        if (materialParams.u_VignetteIntensity > 0.0) {
+            vec2 d = abs(uv - 0.5) * materialParams.u_VignetteIntensity;
+            float vignette = 1.0 - dot(d, d);
+            finalColor *= clamp(vignette, 0.0, 1.0);
+        }
+        
+        // Grain (procedural)
+        if (materialParams.u_GrainIntensity > 0.0) {
+            highp float size = materialParams.u_GrainSize;
+            highp vec2 grainUv = floor(uv * (1080.0 / clamp(size, 0.1, 10.0))) * clamp(size, 0.1, 10.0) / 1080.0;
+            
+            highp float noiseR = fract(rand(grainUv) + materialParams.u_Time * 0.13);
+            highp float noiseG = fract(rand(grainUv + vec2(17.0, 31.0)) + materialParams.u_Time * 0.21);
+            highp float noiseB = fract(rand(grainUv + vec2(43.0, 71.0)) + materialParams.u_Time * 0.37);
+            
+            highp vec3 noise = vec3(noiseR, noiseG, noiseB);
+            highp float monoNoise = (noise.r + noise.g + noise.b) / 3.0;
+            highp vec3 finalNoise = mix(vec3(monoNoise), noise, materialParams.u_GrainChroma) - 0.5;
+            
+            finalColor += finalNoise * materialParams.u_GrainIntensity;
+        }
+        
+        // Overlay Texture (Dust & Scratch)
+        if (materialParams.u_OverlayEnabled > 0.0) {
+            vec4 overlay = texture(materialParams_u_OverlayTexture, uv);
+            finalColor = mix(finalColor, overlay.rgb, overlay.a);
+        }
+        
+        material.baseColor = vec4(finalColor, baseColor.a);
+    }
+}

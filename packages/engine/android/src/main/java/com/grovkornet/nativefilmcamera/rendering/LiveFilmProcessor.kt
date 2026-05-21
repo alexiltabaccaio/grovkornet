@@ -6,6 +6,8 @@ import android.util.Log
 import android.view.Surface
 import com.grovkornet.nativefilmcamera.state.CameraConfiguration
 
+import android.content.res.AssetManager
+
 class LiveFilmProcessor {
     private val TAG = "LiveFilmProcessor"
 
@@ -28,7 +30,7 @@ class LiveFilmProcessor {
     }
 
     // Native JNI methods
-    private external fun nativePrepare(width: Int, height: Int): Long
+    private external fun nativePrepare(width: Int, height: Int, assetManager: AssetManager): Long
     private external fun nativeRelease(nativeEnginePtr: Long)
     private external fun nativeUpdateOverlay(nativeEnginePtr: Long, bitmaps: Array<Bitmap>)
     private external fun nativeGetDrsScale(nativeEnginePtr: Long): Float
@@ -46,7 +48,7 @@ class LiveFilmProcessor {
     ): Boolean
     private external fun nativeSimulateFrameTime(nativeEnginePtr: Long, frameTimeMs: Float)
 
-    fun prepare(surfaceTexture: SurfaceTexture, width: Int, height: Int) {
+    fun prepare(surfaceTexture: SurfaceTexture, width: Int, height: Int, assetManager: AssetManager) {
         if (isPrepared && currentWidth == width && currentHeight == height) return
 
         val startTime = System.currentTimeMillis()
@@ -55,7 +57,7 @@ class LiveFilmProcessor {
         try {
             if (isPrepared) release()
 
-            nativeEnginePtr = nativePrepare(width, height)
+            nativeEnginePtr = nativePrepare(width, height, assetManager)
             if (nativeEnginePtr == 0L) {
                 throw RuntimeException("nativePrepare returned 0 pointer")
             }

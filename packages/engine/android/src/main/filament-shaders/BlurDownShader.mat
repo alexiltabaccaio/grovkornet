@@ -1,0 +1,27 @@
+material {
+    name : "BlurDownShader",
+    shadingModel : unlit,
+    parameters : [
+        { type : sampler2d, name : u_Texture },
+        { type : float2, name : u_TexelSize },
+        { type : float, name : u_DrsScale }
+    ],
+    requires : [ uv0 ]
+}
+
+fragment {
+    void material(inout MaterialInputs material) {
+        prepareMaterial(material);
+        vec2 uv = getUV0() * materialParams.u_DrsScale;
+        vec2 texelSize = materialParams.u_TexelSize;
+        vec2 halfPixel = texelSize * 0.5;
+        
+        vec3 sum = texture(materialParams_u_Texture, uv).rgb * 4.0;
+        sum += texture(materialParams_u_Texture, uv - halfPixel).rgb;
+        sum += texture(materialParams_u_Texture, uv + halfPixel).rgb;
+        sum += texture(materialParams_u_Texture, uv + vec2(-halfPixel.x, halfPixel.y)).rgb;
+        sum += texture(materialParams_u_Texture, uv + vec2(halfPixel.x, -halfPixel.y)).rgb;
+        
+        material.baseColor = vec4(sum * 0.125, 1.0);
+    }
+}

@@ -20,6 +20,9 @@
 #include <filament/IndexBuffer.h>
 #include <utils/Entity.h>
 
+#include <android/hardware_buffer_jni.h>
+#include <android/asset_manager.h>
+
 #include "ShaderManager.h"
 #include "LutGenerator.h"
 #include "OverlayCompositor.h"
@@ -103,7 +106,7 @@ public:
     GrovkornetEngine(int w, int h);
     ~GrovkornetEngine();
     
-    bool init();
+    bool init(AAssetManager* assetManager);
     
     void triggerLutUpdate(float saturation, float contrast, float ev, float whiteBalance, float tint);
     void applyLutTextureUpdate();

@@ -142,7 +142,7 @@ class CapturePipeline(
             }
 
             // 2. Process the full-resolution image
-            val processed = offscreenProcessor.process(finalInput, config)
+            val processed = offscreenProcessor.process(finalInput, config, context)
             finalInput.recycle()
 
             val watermarked = WatermarkEngine.embedSignature(processed)

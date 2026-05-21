@@ -32,7 +32,7 @@ GrovkornetEngine::GrovkornetEngine(int w, int h)
     : width(w), height(h), overlayCompositor(w, h) {
 }
 
-bool GrovkornetEngine::init() {
+bool GrovkornetEngine::init(AAssetManager* assetManager) {
     LOGI("Initializing GrovkornetEngine for size %dx%d...", width, height);
     
     engine = filament::Engine::create();
@@ -50,6 +50,8 @@ bool GrovkornetEngine::init() {
     viewGrading = engine->createView();
     sceneGrading = engine->createScene();
     
+
+
     viewDownsample = engine->createView();
     sceneDownsample = engine->createScene();
     
@@ -58,6 +60,12 @@ bool GrovkornetEngine::init() {
     
     viewBlurUp = engine->createView();
     sceneBlurUp = engine->createScene();
+    
+    // Shader manager initializes the filament materials from assets
+    if (!shaderManager.init(*engine, assetManager)) {
+        LOGE("Failed to initialize ShaderManager!");
+        return false;
+    }
     
     utils::Entity cameraEntity = utils::EntityManager::get().create();
     camera = engine->createCamera(cameraEntity);
@@ -167,11 +175,7 @@ bool GrovkornetEngine::init() {
     viewBlurDown->setRenderTarget(bloomBlurRenderTarget);
     viewBlurUp->setRenderTarget(bloomUpRenderTarget);
     
-    // 3. Initialize all materials
-    if (!shaderManager.init(*engine)) {
-        LOGE("Failed to initialize Filament Materials");
-        return false;
-    }
+
     
     // 4. Initialize Geometry
     GeometryBuilder::buildQuad(*engine, vertexBuffer, indexBuffer);

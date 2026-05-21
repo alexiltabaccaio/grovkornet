@@ -1,5 +1,6 @@
 package com.grovkornet.nativefilmcamera.rendering
 
+import android.content.res.AssetManager
 import android.graphics.SurfaceTexture
 import android.os.Handler
 import android.os.HandlerThread
@@ -8,9 +9,9 @@ import android.view.Choreographer
 import android.view.Surface
 import com.grovkornet.nativefilmcamera.state.CameraConfiguration
 import java.util.concurrent.atomic.AtomicBoolean
-import java.util.concurrent.atomic.AtomicInteger
 
 class FilmRenderThread(
+    private val assetManager: AssetManager,
     private val surfaceProvider: () -> Surface?,
     private val onSurfaceTextureReady: (SurfaceTexture) -> Unit,
     private val onDebugUpdate: (Map<String, Any>) -> Unit
@@ -86,8 +87,7 @@ class FilmRenderThread(
             }
             onSurfaceTextureReady(surfaceTexture!!)
         }
-
-        liveProcessor?.prepare(surfaceTexture!!, w, h)
+        liveProcessor?.prepare(surfaceTexture!!, w, h, assetManager)
     }
 
     private fun drawLiveFrame() {

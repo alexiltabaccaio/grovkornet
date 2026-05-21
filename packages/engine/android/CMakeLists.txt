@@ -28,13 +28,13 @@ endmacro()
 import_filament_lib(filament)
 import_filament_lib(backend)
 import_filament_lib(filabridge)
-import_filament_lib(filamat)
 import_filament_lib(filaflat)
 import_filament_lib(shaders)
 import_filament_lib(utils)
 import_filament_lib(geometry)
 import_filament_lib(smol-v)
 import_filament_lib(bluevk)
+import_filament_lib(zstd)
 
 # Define our shared library target
 add_library(grovkornet-engine SHARED
@@ -62,13 +62,13 @@ target_link_libraries(grovkornet-engine
     filament
     backend
     filabridge
-    filamat
     filaflat
     shaders
     utils
     geometry
     smol-v
     bluevk
+    zstd
     -Wl,--end-group
     ${log-lib}
     ${android-lib}
@@ -116,13 +116,13 @@ if (EXISTS "${ANDROID_NDK}/sources/third_party/googletest")
         filament
         backend
         filabridge
-        filamat
         filaflat
         shaders
         utils
         geometry
         smol-v
         bluevk
+        zstd
         -Wl,--end-group
         ${log-lib}
         ${android-lib}
