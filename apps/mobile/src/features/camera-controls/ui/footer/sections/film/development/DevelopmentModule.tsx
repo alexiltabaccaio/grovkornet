@@ -1,85 +1,16 @@
-import React, { useMemo } from 'react';
-import Animated from 'react-native-reanimated';
-import { useShallow } from 'zustand/react/shallow';
-import { useUIStore } from '@features/camera-controls/model/useUIStore';
+import React from 'react';
 import { ParameterType } from '@shared/types/camera';
-import { footerStyles } from '@features/camera-controls/ui/footer/Footer.styles';
-import { ConnectedParameter } from '@features/camera-controls/ui/footer/components/ConnectedParameter';
-import { ParameterWheel, WheelItem } from '@features/camera-controls/ui/footer/components/ParameterWheel';
-import { useTranslation } from 'react-i18next';
+import { GenericParameterModule } from '@features/camera-controls/ui/footer/components/GenericParameterModule';
 
 interface DevelopmentModuleProps {
   handlePressWithDouble: (param: ParameterType, action: () => void) => void;
 }
 
 export const DevelopmentModule = ({ handlePressWithDouble }: DevelopmentModuleProps) => {
-  const { t } = useTranslation();
-  const { activeParameter, setActiveParameter } = useUIStore(
-    useShallow(s => ({
-      activeParameter: s.activeParameter,
-      setActiveParameter: s.setActiveParameter,
-    }))
-  );
-
-  const items: WheelItem[] = useMemo(() => [
-    {
-      id: 'saturation',
-      component: (
-        <ConnectedParameter
-          id="saturation"
-          label={t('parameters.saturation')}
-          variant="text"
-          handlePressWithDouble={handlePressWithDouble}
-          disableGestures={true}
-        />
-      ),
-    },
-    {
-      id: 'contrast',
-      component: (
-        <ConnectedParameter
-          id="contrast"
-          label={t('parameters.contrast')}
-          variant="text"
-          handlePressWithDouble={handlePressWithDouble}
-          disableGestures={true}
-        />
-      ),
-    },
-    {
-      id: 'temperature',
-      component: (
-        <ConnectedParameter
-          id="temperature"
-          label={t('parameters.temperature')}
-          variant="text"
-          handlePressWithDouble={handlePressWithDouble}
-          disableGestures={true}
-        />
-      ),
-    },
-    {
-      id: 'tint',
-      component: (
-        <ConnectedParameter
-          id="tint"
-          label={t('parameters.tint')}
-          variant="text"
-          handlePressWithDouble={handlePressWithDouble}
-          disableGestures={true}
-        />
-      ),
-    },
-  ], [t, handlePressWithDouble]);
-
   return (
-    <Animated.View style={footerStyles.tabContent}>
-      <ParameterWheel
-        items={items}
-        activeParameter={activeParameter}
-        setActiveParameter={setActiveParameter}
-        handlePressWithDouble={handlePressWithDouble}
-      />
-    </Animated.View>
+    <GenericParameterModule
+      parameters={['saturation', 'contrast', 'temperature', 'tint']}
+      handlePressWithDouble={handlePressWithDouble}
+    />
   );
 };

@@ -18,8 +18,7 @@ interface GestureControllerProps {
 }
 
 export const GestureController = ({ children }: GestureControllerProps) => {
-  const { gestureConfig, activeSection, setActiveSection } = useUIStore(useShallow((s) => ({
-    gestureConfig: s.gestureConfig,
+  const { activeSection, setActiveSection } = useUIStore(useShallow((s) => ({
     activeSection: s.activeSection,
     setActiveSection: s.setActiveSection,
   })));

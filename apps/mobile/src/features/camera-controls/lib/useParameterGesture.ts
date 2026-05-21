@@ -41,37 +41,28 @@ export const useParameterGesture = ({
   const fallbackTrackWidth = useSharedValue(0);
   const effectiveTrackWidth = sliderTrackWidth || fallbackTrackWidth;
   const isDebugEnabled = useUIStore((s) => s.isDebugEnabled);
-  const setGestureConfig = useUIStore((s) => s.setGestureConfig);
   const { width: SCREEN_WIDTH } = useWindowDimensions();
 
-  useEffect(() => {
-    if (isActive && value) {
-      setGestureConfig({
-        value,
-        minValue,
-        maxValue,
-        invertDrag,
-        onChange,
-      });
-    }
-  }, [isActive, value, minValue, maxValue, invertDrag, setGestureConfig, onChange]);
-
   const isSlider = variant === 'slider';
-  let pan = Gesture.Pan();
   
-  if (isSlider) {
-    pan = pan.activeOffsetX([-2, 2]).failOffsetY([-10, 10]);
-  } else {
-    pan = pan.activeOffsetY([-2, 2]).failOffsetX([-10, 10]);
-  }
-
-  pan = pan
-    .onStart((e) => {
+  const tap = Gesture.Tap()
+    .onEnd(() => {
       'worklet';
       if (disabled && disabled.value) return;
-      if (!value) return;
-      
-      if (isSlider) {
+      runOnJS(onPress)();
+    });
+
+  let panGesture;
+
+  if (isSlider) {
+    panGesture = Gesture.Pan()
+      .activeOffsetX([-2, 2])
+      .failOffsetY([-10, 10])
+      .onStart((e) => {
+        'worklet';
+        if (disabled && disabled.value) return;
+        if (!value) return;
+        
         let trackStartX = 94; // 24 (padding) + 54 (auto/placeholder width) + 16 (margin right)
         
         if (hideAutoPlaceholder) {
@@ -87,58 +78,43 @@ export const useParameterGesture = ({
         
         updateSharedValue(value, newValue);
         startVal.value = newValue;
-      } else {
-        startVal.value = value.value;
-      }
-      runOnJS(onPress)();
-    })
-    .onUpdate((e) => {
-      'worklet';
-      if (disabled && disabled.value) return;
-      if (!value) return;
-      
-      const range = maxValue - minValue;
-      const direction = invertDrag ? -1 : 1;
-      
-      let delta = 0;
-      if (isSlider) {
-        const travel = effectiveTrackWidth.value - 12; // 12 is thumb size
-        delta = (e.translationX / travel) * range * direction;
-      } else {
-        const THUMB_SENSITIVITY = 150;
-        delta = -(e.translationY / THUMB_SENSITIVITY) * range * direction;
-      }
+        runOnJS(onPress)();
+      })
+      .onUpdate((e) => {
+        'worklet';
+        if (disabled && disabled.value) return;
+        if (!value) return;
         
-      const newValue = Math.min(Math.max(startVal.value + delta, minValue), maxValue);
-      
-      if (newValue !== value.value) {
-        if (onUpdateWorklet) {
-          onUpdateWorklet(newValue);
-        } else {
-          updateSharedValue(value, newValue);
+        const range = maxValue - minValue;
+        const direction = invertDrag ? -1 : 1;
+        
+        const travel = effectiveTrackWidth.value - 12; // 12 is thumb size
+        const delta = (e.translationX / travel) * range * direction;
           
-          if (isAuto && isAuto.value) {
-            updateSharedValue(isAuto, false);
+        const newValue = Math.min(Math.max(startVal.value + delta, minValue), maxValue);
+        
+        if (newValue !== value.value) {
+          if (onUpdateWorklet) {
+            onUpdateWorklet(newValue);
+          } else {
+            updateSharedValue(value, newValue);
+            
+            if (isAuto && isAuto.value) {
+              updateSharedValue(isAuto, false);
+            }
           }
         }
-      }
-    })
-    .onEnd(() => {
-      'worklet';
-      if (disabled && disabled.value) return;
-      if (value && onChange) {
-        runOnJS(onChange)(value.value);
-      }
-    });
+      })
+      .onEnd(() => {
+        'worklet';
+        if (disabled && disabled.value) return;
+        if (value && onChange) {
+          runOnJS(onChange)(value.value);
+        }
+      });
+  }
 
-  const tap = Gesture.Tap()
-    .onEnd(() => {
-      'worklet';
-      if (disabled && disabled.value) return;
-      runOnJS(onPress)();
-    });
-
-  const combinedGesture = Gesture.Race(tap, pan);
+  const combinedGesture = panGesture ? Gesture.Race(tap, panGesture) : tap;
 
   return {
     combinedGesture,

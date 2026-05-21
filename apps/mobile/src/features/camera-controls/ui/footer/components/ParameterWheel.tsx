@@ -1,5 +1,5 @@
 import React, { useRef, useCallback, useMemo } from 'react';
-import { View, StyleSheet, Pressable } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import { GestureDetector, Gesture, TouchableOpacity } from 'react-native-gesture-handler';
 import Animated, {
   useSharedValue,
@@ -32,7 +32,7 @@ export const ParameterWheel = ({
   activeParameter,
   setActiveParameter,
   handlePressWithDouble,
-}: ParameterWheelProps) => {
+  }: ParameterWheelProps) => {
   const itemsLength = items.length;
   
   const virtualItems = useMemo(() => {
@@ -78,7 +78,6 @@ export const ParameterWheel = ({
     const normalized = ((newIndex % itemsLength) + itemsLength) % itemsLength;
     const param = items[normalized]?.id;
     if (param && param !== lastActiveRef.current) {
-      console.log(`[ParameterWheel] 🔄 Aggiornamento in corsa: ${param}`);
       lastActiveRef.current = param;
       setActiveParameter(param);
     }
@@ -208,7 +207,7 @@ const WheelItemComponent = ({
 
   return (
     <Animated.View style={[styles.slot, animatedStyle]} pointerEvents="box-none">
-      <TouchableOpacity onPress={handleTap} style={styles.pressable} activeOpacity={0.8} pointerEvents="auto">
+      <TouchableOpacity onPress={handleTap} style={styles.pressable} activeOpacity={0.8}>
         <View pointerEvents="none" style={styles.componentWrapper}>
           {item.component}
         </View>

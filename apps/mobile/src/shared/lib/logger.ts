@@ -30,12 +30,16 @@ class Logger {
   }
 
   public info(component: string, message: string, data?: unknown) {
-    // eslint-disable-next-line no-console
-    console.log(this.formatMessage('info', component, message), data ?? '');
+    if (this.isDebugEnabled) {
+      // eslint-disable-next-line no-console
+      console.log(this.formatMessage('info', component, message), data ?? '');
+    }
   }
 
   public warn(component: string, message: string, data?: unknown) {
-    console.warn(this.formatMessage('warn', component, message), data ?? '');
+    if (this.isDebugEnabled) {
+      console.warn(this.formatMessage('warn', component, message), data ?? '');
+    }
   }
 
   public error(component: string, message: string, error?: unknown) {

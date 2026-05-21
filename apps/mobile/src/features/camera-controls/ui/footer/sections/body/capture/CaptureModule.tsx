@@ -1,73 +1,16 @@
-import React, { useMemo } from 'react';
-import Animated from 'react-native-reanimated';
-import { useShallow } from 'zustand/react/shallow';
-import { useUIStore } from '@features/camera-controls/model/useUIStore';
+import React from 'react';
 import { ParameterType } from '@shared/types/camera';
-import { footerStyles } from '@features/camera-controls/ui/footer/Footer.styles';
-import { ConnectedParameter } from '@features/camera-controls/ui/footer/components/ConnectedParameter';
-import { ParameterWheel, WheelItem } from '@features/camera-controls/ui/footer/components/ParameterWheel';
-import { useTranslation } from 'react-i18next';
+import { GenericParameterModule } from '@features/camera-controls/ui/footer/components/GenericParameterModule';
 
 interface CaptureModuleProps {
   handlePressWithDouble: (param: ParameterType, action: () => void) => void;
 }
 
 export const CaptureModule = ({ handlePressWithDouble }: CaptureModuleProps) => {
-  const { t } = useTranslation();
-  const { activeParameter, setActiveParameter } = useUIStore(
-    useShallow(s => ({
-      activeParameter: s.activeParameter,
-      setActiveParameter: s.setActiveParameter,
-    }))
-  );
-
-  const items: WheelItem[] = useMemo(() => [
-    {
-      id: 'aspect_ratio',
-      component: (
-        <ConnectedParameter
-          id="aspect_ratio"
-          label={t('parameters.aspect_ratio')}
-          variant="text"
-          handlePressWithDouble={handlePressWithDouble}
-          disableGestures={true}
-        />
-      ),
-    },
-    {
-      id: 'resolution_setting',
-      component: (
-        <ConnectedParameter
-          id="resolution_setting"
-          label={t('parameters.resolution_setting')}
-          variant="text"
-          handlePressWithDouble={handlePressWithDouble}
-          disableGestures={true}
-        />
-      ),
-    },
-    {
-      id: 'fps_setting',
-      component: (
-        <ConnectedParameter
-          id="fps_setting"
-          label={t('parameters.fps_setting')}
-          variant="text"
-          handlePressWithDouble={handlePressWithDouble}
-          disableGestures={true}
-        />
-      ),
-    },
-  ], [t, handlePressWithDouble]);
-
   return (
-    <Animated.View style={footerStyles.tabContent}>
-      <ParameterWheel
-        items={items}
-        activeParameter={activeParameter}
-        setActiveParameter={setActiveParameter}
-        handlePressWithDouble={handlePressWithDouble}
-      />
-    </Animated.View>
+    <GenericParameterModule
+      parameters={['aspect_ratio', 'resolution_setting', 'fps_setting']}
+      handlePressWithDouble={handlePressWithDouble}
+    />
   );
 };

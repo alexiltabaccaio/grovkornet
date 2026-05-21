@@ -13,7 +13,6 @@ export const useUIStore = create<UIStore>((set, get) => ({
   isExtensionOpen: false,
   isCapturing: false,
   latestCapturedUri: null,
-  gestureConfig: null,
 
   lastActiveModules: {
     none: 'none',
@@ -102,8 +101,5 @@ export const useUIStore = create<UIStore>((set, get) => ({
   setLatestCapturedUri: (uri) => {
     set({ latestCapturedUri: uri });
   },
-  
-  setGestureConfig: (config) => {
-    set({ gestureConfig: config });
-  },
 }));
+

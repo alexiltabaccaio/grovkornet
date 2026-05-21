@@ -5,14 +5,6 @@ export type ModuleType = 'preferences' | 'optics' | 'flaws' | 'exposure' | 'ligh
 export type ParameterType = 'language' | 'debug' | 'camera_selection' | 'focus' | 'chromatic_aberration' | 'bloom' | 'iso' | 'shutter_speed' | 'ev' | 'torch' | 'torch_strength' | 'aspect_ratio' | 'resolution_setting' | 'fps_setting' | 'temperature' | 'tint' | 'saturation' | 'contrast' | 'grain' | 'noise_reduction' | 'sharpening' | 'none';
 export type ParameterExtensionType = 'grain_intensity' | 'grain_size' | 'grain_chroma' | 'torch_strength' | 'aberration_direction' | 'noise_reduction_mode' | 'lang_en' | 'lang_it' | 'none';
 
-export interface GestureConfig {
-  value: SharedValue<number>;
-  minValue: number;
-  maxValue: number;
-  invertDrag?: boolean;
-  onChange?: (val: number) => void;
-}
-
 
 export interface CameraCapabilities {
   supportsFocus: boolean;
@@ -110,7 +102,6 @@ export interface UIState {
   latestCapturedUri: string | null;
   lastActiveModules: Record<SectionType, ModuleType>;
   lastActiveParameters: Record<ModuleType, ParameterType>;
-  gestureConfig: GestureConfig | null;
 }
 
 
@@ -124,7 +115,6 @@ export interface UIActions {
   setIsExtensionOpen: (open: boolean) => void;
   triggerCapture: () => void;
   setLatestCapturedUri: (uri: string | null) => void;
-  setGestureConfig: (config: GestureConfig | null) => void;
 }
 
 

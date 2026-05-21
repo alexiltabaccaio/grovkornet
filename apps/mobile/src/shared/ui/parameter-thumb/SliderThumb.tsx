@@ -9,6 +9,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import { ParameterThumbViewProps } from './ParameterThumbView.types';
+import { logger } from '@shared/lib/logger';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const INITIAL_TRACK_WIDTH = SCREEN_WIDTH - 188;
@@ -34,7 +35,7 @@ export const SliderThumb = ({
   const trackWidth = sliderTrackWidth || internalTrackWidth;
   
   React.useEffect(() => {
-    console.log(`[SliderThumb] Mounted for param with minValue=${minValue}, maxValue=${maxValue}`);
+    logger.debug('SliderThumb', `Mounted for param with minValue=${minValue}, maxValue=${maxValue}`);
   }, []);
 
   const doubleTap = Gesture.Tap()

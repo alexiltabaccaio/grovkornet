@@ -50,14 +50,17 @@ fragment {
         if (materialParams.u_ChromaticAberration > 0.0) {
             float caIntensity = materialParams.u_ChromaticAberration * 0.02;
             vec2 caShift = vec2(0.0);
+            float aspect = materialParams.u_TexelSize.y / materialParams.u_TexelSize.x;
+            
             if (materialParams.u_AberrationDirection < 0.5) {
-                caShift = vec2(0.0, caIntensity);
+                caShift = vec2(0.0, caIntensity * aspect);
             } else if (materialParams.u_AberrationDirection < 1.5) {
                 caShift = vec2(caIntensity, 0.0);
             } else {
                 vec2 dir = normalize(uv - 0.5);
                 float dist = length(uv - 0.5);
-                caShift = dir * dist * caIntensity;
+                caShift = dir * dist * 2.0 * caIntensity;
+                caShift.y *= aspect;
             }
             rUv -= caShift;
             bUv += caShift;

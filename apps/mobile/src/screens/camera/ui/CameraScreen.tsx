@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, Text, View, AppState, AppStateStatus, PermissionsAndroid, Platform } from 'react-native';
+import { StyleSheet, View, AppState, AppStateStatus, PermissionsAndroid, Platform } from 'react-native';
 import Animated, { useSharedValue, useAnimatedStyle, interpolate } from 'react-native-reanimated';
 
 import { useTranslation } from 'react-i18next';
@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { useShallow } from 'zustand/react/shallow';
 import { useUIStore, GestureController, Footer, DebugOverlay, ConnectedFilmCamera, ShutterButton, CaptureThumbnail, StatusBarHeader } from '@features/camera-controls';
 import { VerifiedGallery } from '@features/gallery';
+import { logger } from '@shared/lib/logger';
 
 
 export const CameraScreen = () => {
@@ -54,7 +55,7 @@ const CameraScreenContent = () => {
       }
     };
     requestPermission().catch(error => {
-      console.error('Camera permission error:', error);
+      logger.error('CameraScreen', 'Camera permission error', error);
     });
   }, []);
 

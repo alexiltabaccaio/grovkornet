@@ -2,8 +2,8 @@ import React from 'react';
 import { render } from '@testing-library/react-native';
 import { CaptureModule } from './CaptureModule';
 
-jest.mock('../../../components/ConnectedParameter', () => ({
-  ConnectedParameter: 'ConnectedParameter',
+jest.mock('../../../components/GenericParameterModule', () => ({
+  GenericParameterModule: 'GenericParameterModule',
 }));
 
 describe('CaptureModule', () => {

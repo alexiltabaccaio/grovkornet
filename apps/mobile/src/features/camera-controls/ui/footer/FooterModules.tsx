@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, ScrollView, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
+import { ScrollView, TouchableOpacity } from 'react-native-gesture-handler';
 import { useTranslation } from 'react-i18next';
 
 import { useShallow } from 'zustand/react/shallow';
@@ -41,7 +42,7 @@ export const FooterModules = () => {
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.pillMenuContainer}
           style={styles.pillMenuWrapper}
-          keyboardShouldPersistTaps="handled"
+          /* keyboardShouldPersistTaps is not directly supported the same way in RNGH ScrollView but the touches are handled properly natively. */
         >
           {renderSection === 'system' && (
             <>

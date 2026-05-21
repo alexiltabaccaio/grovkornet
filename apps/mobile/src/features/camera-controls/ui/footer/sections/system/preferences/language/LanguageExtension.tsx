@@ -5,6 +5,7 @@ import { useShallow } from 'zustand/react/shallow';
 import { useUIStore } from '@features/camera-controls/model/useUIStore';
 import { ParameterControl } from '@features/camera-controls/ui/footer/components/ParameterControl';
 import { ParameterExtensionWrapper } from '@features/camera-controls/ui/footer/components/ParameterExtensionWrapper';
+import { logger } from '@shared/lib/logger';
 
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const enFlag = require('../../../../../../../../../assets/flags/en.png') as ImageSourcePropType;
@@ -32,7 +33,7 @@ export const LanguageExtension = ({ animatedStyle }: LanguageExtensionProps) => 
         onPress={() => {
           setActiveExtension('lang_en');
           void i18n.changeLanguage('en').catch(error => {
-            console.error('Failed to change language to en:', error);
+            logger.error('LanguageExtension', 'Failed to change language to en', error);
           });
         }}
         imageSource={enFlag}
@@ -44,7 +45,7 @@ export const LanguageExtension = ({ animatedStyle }: LanguageExtensionProps) => 
         onPress={() => {
           setActiveExtension('lang_it');
           void i18n.changeLanguage('it').catch(error => {
-            console.error('Failed to change language to it:', error);
+            logger.error('LanguageExtension', 'Failed to change language to it', error);
           });
         }}
         imageSource={itFlag}

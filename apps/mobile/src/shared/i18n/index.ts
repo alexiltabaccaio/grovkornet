@@ -1,6 +1,7 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import { getLocales } from 'expo-localization';
+import { logger } from '@shared/lib/logger';
 
 import en from './locales/en.json';
 import it from './locales/it.json';
@@ -24,6 +25,6 @@ i18n
     compatibilityJSON: 'v4',
   })
   .catch(error => {
-    console.error('Failed to initialize i18n:', error);
+    logger.error('i18n', 'Failed to initialize i18n', error);
   });
 
