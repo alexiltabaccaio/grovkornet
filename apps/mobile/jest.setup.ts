@@ -92,6 +92,8 @@ jest.mock('react-native-gesture-handler', () => {
     obj.activeOffsetX = jest.fn(() => obj);
     obj.failOffsetX = jest.fn(() => obj);
     obj.failOffsetY = jest.fn(() => obj);
+    obj.maxDuration = jest.fn(() => obj);
+    obj.maxDistance = jest.fn(() => obj);
     obj.onStart = jest.fn((cb) => { obj._onStart = cb; return obj; });
     obj.onUpdate = jest.fn((cb) => { obj._onUpdate = cb; return obj; });
     obj.onEnd = jest.fn((cb) => { obj._onEnd = cb; return obj; });

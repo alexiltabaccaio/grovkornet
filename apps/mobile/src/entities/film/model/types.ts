@@ -9,6 +9,7 @@ interface FilmState {
   grainIntensity: SharedValue<number>;
   grainChroma: SharedValue<number>;
   grainSize: SharedValue<number>;
+  grainSpeed: SharedValue<number>;
   grainEnabled: SharedValue<boolean>;
   saturation: SharedValue<number>;
   contrast: SharedValue<number>;
@@ -29,6 +30,7 @@ interface FilmActions {
   setGrainIntensity: (value: number) => void;
   setGrainChroma: (value: number) => void;
   setGrainSize: (value: number) => void;
+  setGrainSpeed: (value: number) => void;
   setSaturation: (value: number) => void;
   setContrast: (value: number) => void;
   setChromaticAberration: (value: number) => void;

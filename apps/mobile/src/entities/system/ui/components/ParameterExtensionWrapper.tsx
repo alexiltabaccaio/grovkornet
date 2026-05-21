@@ -1,6 +1,7 @@
 import React from 'react';
 import { StyleSheet, View, StyleProp, ViewStyle } from 'react-native';
 import Animated from 'react-native-reanimated';
+import { ScrollView } from 'react-native-gesture-handler';
 import { useSystemStore } from '@entities/system';
 
 interface ParameterExtensionWrapperProps {
@@ -8,6 +9,7 @@ interface ParameterExtensionWrapperProps {
   children: React.ReactNode;
   gap?: number;
   paddingHorizontal?: number;
+  scrollable?: boolean;
 }
 
 export const ParameterExtensionWrapper = ({
@@ -15,6 +17,7 @@ export const ParameterExtensionWrapper = ({
   children,
   gap = 12,
   paddingHorizontal = 24,
+  scrollable = false,
 }: ParameterExtensionWrapperProps) => {
   const isDebugEnabled = useSystemStore(state => state.isDebugEnabled);
 
@@ -30,9 +33,19 @@ export const ParameterExtensionWrapper = ({
             },
           ]}
         >
-          <View style={[styles.buttonRow, { gap, paddingHorizontal }]}>
-            {children}
-          </View>
+          {scrollable ? (
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={[styles.scrollContent, { gap, paddingHorizontal }]}
+            >
+              {children}
+            </ScrollView>
+          ) : (
+            <View style={[styles.buttonRow, { gap, paddingHorizontal }]}>
+              {children}
+            </View>
+          )}
         </View>
       </Animated.View>
     </View>
@@ -63,5 +76,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     width: '100%',
+  },
+  scrollContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
 });

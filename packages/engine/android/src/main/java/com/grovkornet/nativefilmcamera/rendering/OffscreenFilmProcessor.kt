@@ -38,6 +38,7 @@ class OffscreenFilmProcessor {
         grainIntensity: Float,
         grainChroma: Float,
         grainSize: Float,
+        grainSpeed: Float,
         vignetteIntensity: Float,
         vhsIntensity: Float,
         time: Float,
@@ -122,6 +123,7 @@ class OffscreenFilmProcessor {
                 if (params.grainEnabled) params.grainIntensity else 0.0f,
                 params.grainChroma,
                 params.grainSize,
+                params.grainSpeed,
                 params.vignetteIntensity,
                 params.vhsIntensity,
                 time,
@@ -172,22 +174,23 @@ class OffscreenFilmProcessor {
             val startTime = System.currentTimeMillis()
             val time = (System.currentTimeMillis() % 100000) / 1000f
             try {
-                val floatParams = FloatArray(15).apply {
+                val floatParams = FloatArray(16).apply {
                     this[0] = params.saturation
                     this[1] = params.contrast
                     this[2] = if (params.grainEnabled) params.grainIntensity else 0.0f
                     this[3] = params.grainChroma
                     this[4] = params.grainSize
-                    this[5] = params.vignetteIntensity
-                    this[6] = params.vhsIntensity
-                    this[7] = time
-                    this[8] = params.ev
-                    this[9] = params.whiteBalance
-                    this[10] = params.tint
-                    this[11] = if (params.bloomEnabled) params.bloomIntensity else 0.0f
-                    this[12] = params.aberration
-                    this[13] = params.aberrationDirection.toFloat()
-                    this[14] = params.sharpening
+                    this[5] = params.grainSpeed
+                    this[6] = params.vignetteIntensity
+                    this[7] = params.vhsIntensity
+                    this[8] = time
+                    this[9] = params.ev
+                    this[10] = params.whiteBalance
+                    this[11] = params.tint
+                    this[12] = if (params.bloomEnabled) params.bloomIntensity else 0.0f
+                    this[13] = params.aberration
+                    this[14] = params.aberrationDirection.toFloat()
+                    this[15] = params.sharpening
                 }
 
                 nativeProcessHardwareBuffer(

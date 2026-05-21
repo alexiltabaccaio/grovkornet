@@ -47,6 +47,7 @@ export const Viewfinder = ({ cameraKey }: ViewfinderProps) => {
         grainIntensity={filmStore.grainIntensity as unknown as SharedValue<number | undefined>}
         grainChroma={filmStore.grainChroma as unknown as SharedValue<number | undefined>}
         grainSize={filmStore.grainSize as unknown as SharedValue<number | undefined>}
+        grainSpeed={filmStore.grainSpeed as unknown as SharedValue<number | undefined>}
         grainEnabled={filmStore.grainEnabled as unknown as SharedValue<boolean | undefined>}
         bloomEnabled={filmStore.bloomEnabled as unknown as SharedValue<boolean | undefined>}
         bloomIntensity={filmStore.bloomIntensity as unknown as SharedValue<number | undefined>}

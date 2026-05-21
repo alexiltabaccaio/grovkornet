@@ -42,6 +42,9 @@ class NativeFilmCameraModule : Module() {
       Prop("grainSize") { view: NativeFilmCameraView, value: Float ->
         view.updateEffect { grainSize = value }
       }
+      Prop("grainSpeed") { view: NativeFilmCameraView, value: Float ->
+        view.updateEffect { grainSpeed = value }
+      }
       Prop("grainEnabled") { view: NativeFilmCameraView, value: Boolean ->
         view.updateEffect { grainEnabled = value }
       }

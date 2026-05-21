@@ -22,7 +22,7 @@ describe('useParameterControlData', () => {
 
     expect(result.current).toBeDefined();
     expect(result.current?.minValue).toBe(0);
-    expect(result.current?.maxValue).toBe(1.0);
+    expect(result.current?.maxValue).toBe(2.0);
     expect(result.current?.value.value).toBe(0); // filmStore grainIntensity default
     
     // Test onChange callback

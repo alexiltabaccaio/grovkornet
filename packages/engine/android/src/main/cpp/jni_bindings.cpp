@@ -60,7 +60,7 @@ JNIEXPORT void JNICALL
 Java_com_grovkornet_nativefilmcamera_rendering_OffscreenFilmProcessor_nativeProcessBitmap(
         JNIEnv* env, jobject thiz, jlong engine_ptr, jobject bitmap_in, jobject bitmap_out,
         jfloat saturation, jfloat contrast, jfloat grain_intensity, jfloat grain_chroma,
-        jfloat grain_size, jfloat vignette_intensity, jfloat vhs_intensity, jfloat time,
+        jfloat grain_size, jfloat grain_speed, jfloat vignette_intensity, jfloat vhs_intensity, jfloat time,
         jfloat ev, jfloat white_balance, jfloat tint, jfloat bloom_intensity,
         jfloat chromatic_aberration, jfloat aberration_direction, jfloat sharpening) {
     
@@ -127,6 +127,7 @@ Java_com_grovkornet_nativefilmcamera_rendering_OffscreenFilmProcessor_nativeProc
     enginePtr->shaderManager.getMaterialInstanceComposite()->setParameter("u_GrainIntensity", grain_intensity);
     enginePtr->shaderManager.getMaterialInstanceComposite()->setParameter("u_GrainChroma", grain_chroma);
     enginePtr->shaderManager.getMaterialInstanceComposite()->setParameter("u_GrainSize", grain_size);
+    enginePtr->shaderManager.getMaterialInstanceComposite()->setParameter("u_GrainSpeed", grain_speed);
     enginePtr->shaderManager.getMaterialInstanceComposite()->setParameter("u_VignetteIntensity", vignette_intensity);
     enginePtr->shaderManager.getMaterialInstanceComposite()->setParameter("u_VhsIntensity", vhs_intensity);
     enginePtr->shaderManager.getMaterialInstanceComposite()->setParameter("u_Time", time);
@@ -192,16 +193,17 @@ Java_com_grovkornet_nativefilmcamera_rendering_OffscreenFilmProcessor_nativeProc
     jfloat grain_intensity = params[2];
     jfloat grain_chroma = params[3];
     jfloat grain_size = params[4];
-    jfloat vignette_intensity = params[5];
-    jfloat vhs_intensity = params[6];
-    jfloat time = params[7];
-    jfloat ev = params[8];
-    jfloat white_balance = params[9];
-    jfloat tint = params[10];
-    jfloat bloom_intensity = params[11];
-    jfloat chromatic_aberration = params[12];
-    jfloat aberration_direction = params[13];
-    jfloat sharpening = params[14];
+    jfloat grain_speed = params[5];
+    jfloat vignette_intensity = params[6];
+    jfloat vhs_intensity = params[7];
+    jfloat time = params[8];
+    jfloat ev = params[9];
+    jfloat white_balance = params[10];
+    jfloat tint = params[11];
+    jfloat bloom_intensity = params[12];
+    jfloat chromatic_aberration = params[13];
+    jfloat aberration_direction = params[14];
+    jfloat sharpening = params[15];
     env->ReleaseFloatArrayElements(float_params, params, 0);
     
     AHardwareBuffer* ahb = AHardwareBuffer_fromHardwareBuffer(env, hardwareBuffer);
@@ -253,6 +255,7 @@ Java_com_grovkornet_nativefilmcamera_rendering_OffscreenFilmProcessor_nativeProc
     enginePtr->shaderManager.getMaterialInstanceComposite()->setParameter("u_GrainIntensity", grain_intensity);
     enginePtr->shaderManager.getMaterialInstanceComposite()->setParameter("u_GrainChroma", grain_chroma);
     enginePtr->shaderManager.getMaterialInstanceComposite()->setParameter("u_GrainSize", grain_size);
+    enginePtr->shaderManager.getMaterialInstanceComposite()->setParameter("u_GrainSpeed", grain_speed);
     enginePtr->shaderManager.getMaterialInstanceComposite()->setParameter("u_VignetteIntensity", vignette_intensity);
     enginePtr->shaderManager.getMaterialInstanceComposite()->setParameter("u_VhsIntensity", vhs_intensity);
     enginePtr->shaderManager.getMaterialInstanceComposite()->setParameter("u_Time", time);
@@ -438,19 +441,20 @@ Java_com_grovkornet_nativefilmcamera_rendering_LiveFilmProcessor_nativeRenderLiv
     jfloat grain_intensity = params[2];
     jfloat grain_chroma = params[3];
     jfloat grain_size = params[4];
-    jfloat vignette_intensity = params[5];
-    jfloat vhs_intensity = params[6];
-    jfloat time = params[7];
-    jfloat ev = params[8];
-    jfloat white_balance = params[9];
-    jfloat tint = params[10];
-    jfloat bloom_intensity = params[11];
-    jfloat chromatic_aberration = params[12];
-    jfloat aberration_direction = params[13];
-    jfloat sharpening = params[14];
-    int targetFps = static_cast<int>(params[15]);
-    int aspectRatioSetting = static_cast<int>(params[16]);
-    float targetResolution = params[17];
+    jfloat grain_speed = params[5];
+    jfloat vignette_intensity = params[6];
+    jfloat vhs_intensity = params[7];
+    jfloat time = params[8];
+    jfloat ev = params[9];
+    jfloat white_balance = params[10];
+    jfloat tint = params[11];
+    jfloat bloom_intensity = params[12];
+    jfloat chromatic_aberration = params[13];
+    jfloat aberration_direction = params[14];
+    jfloat sharpening = params[15];
+    int targetFps = static_cast<int>(params[16]);
+    int aspectRatioSetting = static_cast<int>(params[17]);
+    float targetResolution = params[18];
     env->ReleaseFloatArrayElements(float_params, params, 0);
 
     // 1. Run Frame Timing checks natively
@@ -535,6 +539,7 @@ Java_com_grovkornet_nativefilmcamera_rendering_LiveFilmProcessor_nativeRenderLiv
     enginePtr->shaderManager.getMaterialInstanceComposite()->setParameter("u_GrainIntensity", grain_intensity);
     enginePtr->shaderManager.getMaterialInstanceComposite()->setParameter("u_GrainChroma", grain_chroma);
     enginePtr->shaderManager.getMaterialInstanceComposite()->setParameter("u_GrainSize", grain_size);
+    enginePtr->shaderManager.getMaterialInstanceComposite()->setParameter("u_GrainSpeed", grain_speed);
     enginePtr->shaderManager.getMaterialInstanceComposite()->setParameter("u_VignetteIntensity", vignette_intensity);
     enginePtr->shaderManager.getMaterialInstanceComposite()->setParameter("u_VhsIntensity", vhs_intensity);
     enginePtr->shaderManager.getMaterialInstanceComposite()->setParameter("u_Time", time);

@@ -70,7 +70,7 @@ export const useParameterControlData = (parameter: ParameterType) => {
       return {
         value: film.grainIntensity,
         minValue: 0,
-        maxValue: 1.0,
+        maxValue: 2.0,
         centerValue: undefined,
         onChange: film.setGrainIntensity,
         onUpdateWorklet: filmWorklets.updateGrain,

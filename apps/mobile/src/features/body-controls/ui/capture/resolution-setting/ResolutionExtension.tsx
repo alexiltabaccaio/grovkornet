@@ -29,6 +29,7 @@ export const ResolutionExtension = ({ parameterExtensionAnimatedStyle }: Resolut
       getLabel={(label) => label}
       parameterExtensionAnimatedStyle={parameterExtensionAnimatedStyle}
       pillMaxWidth={80}
+      scrollable={true}
     />
   );
 };

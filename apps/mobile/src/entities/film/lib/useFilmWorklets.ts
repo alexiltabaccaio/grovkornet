@@ -6,7 +6,7 @@ export const useFilmWorklets = () => {
 
   const updateGrain = (value: number) => {
     'worklet';
-    const safeValue = Math.min(Math.max(value, 0), 1);
+    const safeValue = Math.min(Math.max(value, 0), 2.0);
     updateSharedValue(film.grainIntensity, safeValue);
     updateSharedValue(film.grainEnabled, safeValue > 0);
   };
@@ -19,6 +19,11 @@ export const useFilmWorklets = () => {
   const updateGrainSize = (value: number) => {
     'worklet';
     updateSharedValue(film.grainSize, value);
+  };
+
+  const updateGrainSpeed = (value: number) => {
+    'worklet';
+    updateSharedValue(film.grainSpeed, value);
   };
 
   const updateSaturation = (value: number) => {
@@ -69,6 +74,7 @@ export const useFilmWorklets = () => {
     updateGrain,
     updateGrainChroma,
     updateGrainSize,
+    updateGrainSpeed,
     updateSaturation,
     updateContrast,
     updateChromaticAberration,

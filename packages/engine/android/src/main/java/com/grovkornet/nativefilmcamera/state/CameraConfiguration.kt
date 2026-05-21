@@ -10,6 +10,7 @@ data class CameraConfiguration(
     var grainIntensity: Float = 0.0f,
     var grainChroma: Float = 0.0f,
     var grainSize: Float = 1.0f,
+    var grainSpeed: Float = 1.0f,
     var grainEnabled: Boolean = true,
     var aberration: Float = 0.0f,
     var aberrationDirection: Int = 0,

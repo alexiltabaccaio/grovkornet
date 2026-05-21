@@ -77,7 +77,12 @@ export const PillButton = ({
           isDebugEnabled && styles.debugStyle,
         ]}
       >
-        <Animated.Text style={[styles.pillText, animatedTextStyle, textStyle]}>
+        <Animated.Text
+          style={[styles.pillText, animatedTextStyle, textStyle]}
+          numberOfLines={1}
+          adjustsFontSizeToFit
+          minimumFontScale={0.7}
+        >
           {label}
         </Animated.Text>
       </Animated.View>
@@ -97,7 +102,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingHorizontal: 12,
+    paddingHorizontal: 8,
   },
   pillText: {
     fontSize: 11,

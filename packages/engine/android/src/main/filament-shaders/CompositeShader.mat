@@ -7,6 +7,7 @@ material {
         { type : float, name : u_GrainIntensity },
         { type : float, name : u_GrainChroma },
         { type : float, name : u_GrainSize },
+        { type : float, name : u_GrainSpeed },
         { type : float, name : u_VignetteIntensity },
         { type : float, name : u_VhsIntensity },
         { type : float, name : u_Time },
@@ -120,9 +121,9 @@ fragment {
             highp float size = materialParams.u_GrainSize;
             highp vec2 grainUv = floor(uv * (1080.0 / clamp(size, 0.1, 10.0))) * clamp(size, 0.1, 10.0) / 1080.0;
             
-            highp float noiseR = fract(rand(grainUv) + materialParams.u_Time * 0.13);
-            highp float noiseG = fract(rand(grainUv + vec2(17.0, 31.0)) + materialParams.u_Time * 0.21);
-            highp float noiseB = fract(rand(grainUv + vec2(43.0, 71.0)) + materialParams.u_Time * 0.37);
+            highp float noiseR = fract(rand(grainUv) + materialParams.u_Time * materialParams.u_GrainSpeed * 0.13);
+            highp float noiseG = fract(rand(grainUv + vec2(17.0, 31.0)) + materialParams.u_Time * materialParams.u_GrainSpeed * 0.21);
+            highp float noiseB = fract(rand(grainUv + vec2(43.0, 71.0)) + materialParams.u_Time * materialParams.u_GrainSpeed * 0.37);
             
             highp vec3 noise = vec3(noiseR, noiseG, noiseB);
             highp float monoNoise = (noise.r + noise.g + noise.b) / 3.0;

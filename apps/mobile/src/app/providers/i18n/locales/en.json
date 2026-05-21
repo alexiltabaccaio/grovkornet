@@ -29,6 +29,7 @@
       "grain": "GRAIN",
       "chroma": "CHROMA",
       "size": "SIZE",
+      "speed": "SPEED",
       "saturation": "SATURATION",
       "contrast": "CONTRAST",
       "chromatic_aberration": "CHROMATIC ABERRATION",

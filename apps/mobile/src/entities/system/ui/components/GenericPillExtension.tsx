@@ -18,6 +18,7 @@ interface GenericPillExtensionProps<T> {
   paddingHorizontal?: number;
   children?: React.ReactNode;
   opacity?: number | SharedValue<number> | ((option: T, index: number) => number | SharedValue<number>);
+  scrollable?: boolean;
 }
 
 function GenericPillItemShared<T>({
@@ -30,6 +31,7 @@ function GenericPillItemShared<T>({
   pillMaxWidth,
   isDebugEnabled,
   opacity,
+  scrollable,
 }: {
   option: T;
   index: number;
@@ -40,6 +42,7 @@ function GenericPillItemShared<T>({
   pillMaxWidth: number;
   isDebugEnabled: boolean;
   opacity: number | SharedValue<number> | ((option: T, index: number) => number | SharedValue<number>);
+  scrollable: boolean;
 }) {
   const isActive = useDerivedValue(() => isActiveOption(value.value, option, index));
   const itemOpacity = typeof opacity === 'function' ? opacity(option, index) : opacity;
@@ -51,7 +54,10 @@ function GenericPillItemShared<T>({
       onPress={() => onChange(option, index)}
       isDebugEnabled={isDebugEnabled}
       opacity={itemOpacity}
-      style={[styles.pressable, { maxWidth: pillMaxWidth }]}
+      style={[
+        scrollable ? styles.pressableScrollable : styles.pressable,
+        { maxWidth: pillMaxWidth }
+      ]}
     />
   );
 }
@@ -65,6 +71,7 @@ function GenericPillItemStatic<T>({
   pillMaxWidth,
   isDebugEnabled,
   opacity,
+  scrollable,
 }: {
   option: T;
   index: number;
@@ -74,6 +81,7 @@ function GenericPillItemStatic<T>({
   pillMaxWidth: number;
   isDebugEnabled: boolean;
   opacity: number | SharedValue<number> | ((option: T, index: number) => number | SharedValue<number>);
+  scrollable: boolean;
 }) {
   const isActive = isActiveOption(option, index);
   const itemOpacity = typeof opacity === 'function' ? opacity(option, index) : opacity;
@@ -85,7 +93,10 @@ function GenericPillItemStatic<T>({
       onPress={() => onChange(option, index)}
       isDebugEnabled={isDebugEnabled}
       opacity={itemOpacity}
-      style={[styles.pressable, { maxWidth: pillMaxWidth }]}
+      style={[
+        scrollable ? styles.pressableScrollable : styles.pressable,
+        { maxWidth: pillMaxWidth }
+      ]}
     />
   );
 }
@@ -103,6 +114,7 @@ export function GenericPillExtension<T>({
   paddingHorizontal = 16,
   children,
   opacity = 1,
+  scrollable = false,
 }: GenericPillExtensionProps<T>) {
   const isDebugEnabled = useSystemStore((s) => s.isDebugEnabled);
 
@@ -111,6 +123,7 @@ export function GenericPillExtension<T>({
       animatedStyle={parameterExtensionAnimatedStyle}
       gap={gap}
       paddingHorizontal={paddingHorizontal}
+      scrollable={scrollable}
     >
       {children}
       {options.map((option, index) => {
@@ -127,6 +140,7 @@ export function GenericPillExtension<T>({
               pillMaxWidth={pillMaxWidth}
               isDebugEnabled={isDebugEnabled}
               opacity={opacity}
+              scrollable={scrollable}
             />
           );
         }
@@ -141,6 +155,7 @@ export function GenericPillExtension<T>({
             pillMaxWidth={pillMaxWidth}
             isDebugEnabled={isDebugEnabled}
             opacity={opacity}
+            scrollable={scrollable}
           />
         );
       })}
@@ -151,5 +166,8 @@ export function GenericPillExtension<T>({
 const styles = StyleSheet.create({
   pressable: {
     flex: 1,
+  },
+  pressableScrollable: {
+    minWidth: 70,
   },
 });

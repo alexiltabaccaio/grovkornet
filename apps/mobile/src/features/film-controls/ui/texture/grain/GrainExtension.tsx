@@ -12,12 +12,14 @@ import { PillButton } from '@shared/ui';
 export const GrainExtension = () => {
   const { t } = useTranslation();
   const isDebugEnabled = useSystemStore((s) => s.isDebugEnabled);
-  const { grainChroma, setGrainChroma, grainSize, setGrainSize } = useFilmStore(
+  const { grainChroma, setGrainChroma, grainSize, setGrainSize, grainSpeed, setGrainSpeed } = useFilmStore(
     useShallow(state => ({
       grainChroma: state.grainChroma,
       setGrainChroma: state.setGrainChroma,
       grainSize: state.grainSize,
       setGrainSize: state.setGrainSize,
+      grainSpeed: state.grainSpeed,
+      setGrainSpeed: state.setGrainSpeed,
     }))
   );
 
@@ -28,53 +30,76 @@ export const GrainExtension = () => {
 
   return (
     <View style={styles.container}>
-      <View style={[
-        styles.chromaContainer,
-        isDebugEnabled && { backgroundColor: 'rgba(0, 255, 0, 0.2)', borderColor: 'green' }
-      ]}>
-        <Text allowFontScaling={false} style={styles.label}>
-          {t('parameters.chroma').toUpperCase()}
-        </Text>
-        <View style={styles.buttonRow}>
-          <PillButton
-            label="MONO"
-            isActive={isMonoActive}
-            onPress={() => {
-              setGrainChroma(0);
-              worklets.updateGrainChroma(0);
+      <View style={styles.row}>
+        <View style={[
+          styles.chromaContainer,
+          isDebugEnabled && { backgroundColor: 'rgba(0, 255, 0, 0.2)', borderColor: 'green' }
+        ]}>
+          <Text allowFontScaling={false} style={styles.label}>
+            {t('parameters.chroma').toUpperCase()}
+          </Text>
+          <View style={styles.buttonRow}>
+            <PillButton
+              label="MONO"
+              isActive={isMonoActive}
+              onPress={() => {
+                setGrainChroma(0);
+                worklets.updateGrainChroma(0);
+              }}
+              isDebugEnabled={isDebugEnabled}
+              style={styles.pressable}
+            />
+            <PillButton
+              label="RGB"
+              isActive={isRgbActive}
+              onPress={() => {
+                setGrainChroma(1);
+                worklets.updateGrainChroma(1);
+              }}
+              isDebugEnabled={isDebugEnabled}
+              style={styles.pressable}
+            />
+          </View>
+        </View>
+        <View style={styles.sizeContainer}>
+          <ParameterControl
+            label={t('parameters.size')}
+            isActive={true}
+            onPress={() => {}}
+            value={grainSize}
+            minValue={1.0}
+            maxValue={4.0}
+            onChange={setGrainSize}
+            onUpdateWorklet={worklets.updateGrainSize}
+            variant="slider"
+            hideAutoPlaceholder={true}
+            valueFormatter={(v) => {
+              'worklet';
+              return `${v.toFixed(1)}x`;
             }}
-            isDebugEnabled={isDebugEnabled}
-            style={styles.pressable}
-          />
-          <PillButton
-            label="RGB"
-            isActive={isRgbActive}
-            onPress={() => {
-              setGrainChroma(1);
-              worklets.updateGrainChroma(1);
-            }}
-            isDebugEnabled={isDebugEnabled}
-            style={styles.pressable}
           />
         </View>
       </View>
-      <View style={styles.sizeContainer}>
-        <ParameterControl
-          label={t('parameters.size')}
-          isActive={true}
-          onPress={() => {}}
-          value={grainSize}
-          minValue={1.0}
-          maxValue={4.0}
-          onChange={setGrainSize}
-          onUpdateWorklet={worklets.updateGrainSize}
-          variant="slider"
-          hideAutoPlaceholder={true}
-          valueFormatter={(v) => {
-            'worklet';
-            return `${v.toFixed(1)}x`;
-          }}
-        />
+      <View style={styles.row}>
+        <View style={styles.placeholderContainer} />
+        <View style={styles.speedContainer}>
+          <ParameterControl
+            label={t('parameters.speed')}
+            isActive={true}
+            onPress={() => {}}
+            value={grainSpeed}
+            minValue={0.0}
+            maxValue={30.0}
+            onChange={setGrainSpeed}
+            onUpdateWorklet={worklets.updateGrainSpeed}
+            variant="slider"
+            hideAutoPlaceholder={true}
+            valueFormatter={(v) => {
+              'worklet';
+              return `${v.toFixed(1)}x`;
+            }}
+          />
+        </View>
       </View>
     </View>
   );
@@ -82,12 +107,19 @@ export const GrainExtension = () => {
 
 const styles = StyleSheet.create({
   container: {
+    flexDirection: 'column',
+    width: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 12,
+    paddingHorizontal: 16,
+  },
+  row: {
     flexDirection: 'row',
     width: '100%',
     alignItems: 'center',
     justifyContent: 'center',
     gap: 16,
-    paddingHorizontal: 16,
   },
   chromaContainer: {
     flexDirection: 'column',
@@ -103,6 +135,12 @@ const styles = StyleSheet.create({
   sizeContainer: {
     flex: 1,
   },
+  placeholderContainer: {
+    flex: 1,
+  },
+  speedContainer: {
+    flex: 1,
+  },
   label: {
     color: '#CCC',
     fontSize: 11,
@@ -112,7 +150,7 @@ const styles = StyleSheet.create({
     marginBottom: 6,
   },
   pressable: {
-    width: 60,
+    width: 75,
   },
 });
 

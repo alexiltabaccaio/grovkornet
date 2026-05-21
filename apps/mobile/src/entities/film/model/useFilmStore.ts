@@ -15,6 +15,7 @@ export const useFilmStore = create<FilmStore>((set, get) => ({
   grainIntensity: makeMutable(DEFAULT_GRAIN_INTENSITY),
   grainChroma: makeMutable(0.0),
   grainSize: makeMutable(1.0),
+  grainSpeed: makeMutable(1.0),
   saturation: makeMutable(DEFAULT_SATURATION),
   contrast: makeMutable(DEFAULT_CONTRAST),
   chromaticAberration: makeMutable(DEFAULT_CHROMATIC_ABERRATION),
@@ -44,6 +45,9 @@ export const useFilmStore = create<FilmStore>((set, get) => ({
   },
   setGrainSize: (value) => {
     get().grainSize.value = value;
+  },
+  setGrainSpeed: (value) => {
+    get().grainSpeed.value = value;
   },
   setSaturation: (value) => {
     logger.debug('FilmStore', `Setting Saturation: ${value}`);
@@ -115,6 +119,7 @@ export const useFilmStore = create<FilmStore>((set, get) => ({
         state.grainEnabled.value = false;
         state.grainChroma.value = 0;
         state.grainSize.value = 1;
+        state.grainSpeed.value = 1.0;
         break;
       case 'saturation':
         state.saturation.value = DEFAULT_SATURATION;
