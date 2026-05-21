@@ -1,0 +1,67 @@
+appId: com.grovkornet.app
+---
+# Inizializzazione pulita dell'app
+- launchApp:
+    clearState: true
+    permissions:
+      camera: grant
+      microphone: grant
+
+# Gestione popup compatibilità 16kB memory page (Android 15+)
+- tapOn:
+    text: "[Oo][Kk]"
+    optional: true
+
+# Gestione eventuale popup permessi a runtime
+- tapOn:
+    text: "(Mentre usi l'app|While using the app|Consenti|Allow).*"
+    optional: true
+
+# Attesa del caricamento iniziale dell'interfaccia
+- extendedWaitUntil:
+    visible: "SISTEMA"
+    timeout: 30000
+
+# 1. Navigazione nella sezione OBIETTIVO
+- tapOn: "OBIETTIVO"
+- assertVisible: "Ottica"
+- assertVisible: "Difetti Ottici"
+
+# 2. Selezione del modulo "Difetti Ottici" (che attiva l'Aberrazione Cromatica)
+- tapOn: "Difetti Ottici"
+- assertVisible: "ABERRAZIONE CROMATICA"
+
+# 3. Trascina verso l'alto il bottom sheet a partire dall'etichetta dell'Aberrazione Cromatica
+# per rivelare lo slider e le estensioni dei parametri (STD, HOR, RAD)
+- swipe:
+    direction: UP
+    from:
+      text: "ABERRAZIONE CROMATICA"
+
+# 4. Verifica che lo slider (valore iniziale "0") sia presente
+- assertVisible: "0"
+
+# 5. Trascina lo slider verso destra per incrementare l'intensità
+- swipe:
+    start: 40%, 65%
+    end: 80%, 65%
+
+# 6. Verifica che il valore sia cambiato (lo "0" iniziale non deve più essere visibile)
+- assertNotVisible: "0"
+
+# 7. Esegui un doppio tocco sulla zona del valore numerico a destra per resettarlo
+- doubleTapOn:
+    point: 88%, 65%
+
+# 8. Verifica che il valore sia resettato correttamente a "0"
+- assertVisible: "0"
+
+# 9. Verifica che i pulsanti dell'estensione direzione (STD, HOR, RAD) siano visibili
+- assertVisible: "STD"
+- assertVisible: "HOR"
+- assertVisible: "RAD"
+
+# 10. Navigazione sequenziale tra le opzioni per testare il funzionamento dei pulsanti
+- tapOn: "HOR"
+- tapOn: "RAD"
+- tapOn: "STD"
