@@ -8,7 +8,7 @@ public:
     FrameTimingController() = default;
 
     bool shouldCaptureFrame(int targetFps);
-    void updateFps(int& outActualFps, int& outStampedFps, bool& outFpsUpdated);
+    void updateFps(bool isNewFrame, int& outActualFps, int& outStampedFps, bool& outFpsUpdated);
     void reset();
 
 private:

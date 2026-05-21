@@ -75,6 +75,10 @@ class CameraControlManager(
                 
                 builder.setCaptureRequestOption(CaptureRequest.SENSOR_SENSITIVITY, isoToApply)
                 builder.setCaptureRequestOption(CaptureRequest.SENSOR_EXPOSURE_TIME, shutterToApply)
+                
+                val target = if (config.targetFps > 0) config.targetFps else 60
+                val frameDuration = Math.max(1_000_000_000L / target, shutterToApply)
+                builder.setCaptureRequestOption(CaptureRequest.SENSOR_FRAME_DURATION, frameDuration)
             }
 
             if (config.noiseReduction != -1) {

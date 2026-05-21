@@ -115,7 +115,8 @@ class FilmRenderThread(
                 cameraHeight,
                 width,
                 height,
-                framesProcessed < 2
+                framesProcessed < 2,
+                wasFrameAvailable
             ) { actualFps, stampedFps ->
                 if (!isReleased.get()) {
                     onDebugUpdate(mapOf(

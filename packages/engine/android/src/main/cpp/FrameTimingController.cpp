@@ -31,17 +31,16 @@ bool FrameTimingController::shouldCaptureFrame(int targetFps) {
         }
     }
 
-    if (shouldCapture) {
-        fboFramesCount++;
-    }
-
     return shouldCapture;
 }
 
-void FrameTimingController::updateFps(int& outActualFps, int& outStampedFps, bool& outFpsUpdated) {
+void FrameTimingController::updateFps(bool isNewFrame, int& outActualFps, int& outStampedFps, bool& outFpsUpdated) {
     uint64_t now = getCurrentTimeMs();
     if (lastLogTime == 0) lastLogTime = now;
     framesCount++;
+    if (isNewFrame) {
+        fboFramesCount++;
+    }
     outFpsUpdated = false;
     if (now - lastLogTime >= 500) {
         uint64_t elapsed = now - lastLogTime;

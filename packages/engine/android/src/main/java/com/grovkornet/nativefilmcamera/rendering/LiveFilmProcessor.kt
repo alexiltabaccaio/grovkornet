@@ -45,7 +45,8 @@ class LiveFilmProcessor {
         viewportWidth: Int,
         viewportHeight: Int,
         outFpsStats: IntArray,
-        skipScreenRender: Boolean
+        skipScreenRender: Boolean,
+        isNewFrame: Boolean
     ): Boolean
     private external fun nativeSimulateFrameTime(nativeEnginePtr: Long, frameTimeMs: Float)
 
@@ -81,12 +82,13 @@ class LiveFilmProcessor {
         surface: Surface,
         params: CameraConfiguration,
         uvMatrixIn: FloatArray,
-        cameraWidth: Int,
-        cameraHeight: Int,
-        viewportWidth: Int,
-        viewportHeight: Int,
-        skipScreenRender: Boolean,
-        onFpsUpdate: (actualFps: Int, stampedFps: Int) -> Unit
+        cameraWidth: Int = 0,
+        cameraHeight: Int = 0,
+        viewportWidth: Int = 0,
+        viewportHeight: Int = 0,
+        skipScreenRender: Boolean = false,
+        isNewFrame: Boolean = true,
+        onFpsUpdate: (actualFps: Int, stampedFps: Int) -> Unit = { _, _ -> }
     ) {
         if (!isPrepared || nativeEnginePtr == 0L) {
             Log.w(TAG, "Cannot render live frame: LiveFilmProcessor not prepared")
@@ -132,7 +134,8 @@ class LiveFilmProcessor {
                 viewportWidth,
                 viewportHeight,
                 outFpsStats,
-                skipScreenRender
+                skipScreenRender,
+                isNewFrame
             )
 
             if (rendered && outFpsStats[0] != 0) {
