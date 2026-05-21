@@ -8,6 +8,10 @@ export const useLensStore = create<LensStore>((set, get) => ({
   focusAuto: makeMutable(true),
   cameraId: '',
   cameraAuto: true,
+  chromaticAberration: makeMutable(0),
+  aberrationDirection: makeMutable(0),
+  bloomEnabled: makeMutable(false),
+  bloomIntensity: makeMutable(0),
   capabilities: {
     supportsFocus: true,
     availableCameras: [],

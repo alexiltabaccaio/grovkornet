@@ -45,6 +45,8 @@ export const useParameterGesture = ({
   const isSlider = variant === 'slider';
   
   const tap = Gesture.Tap()
+    .maxDuration(250)
+    .maxDistance(20)
     .onEnd(() => {
       'worklet';
       if (disabled && disabled.value) return;

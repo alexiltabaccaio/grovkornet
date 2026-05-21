@@ -69,7 +69,7 @@ export const PillButton = ({
   });
 
   return (
-    <TouchableOpacity onPress={onPress} style={[styles.pressable, style]} activeOpacity={1}>
+    <TouchableOpacity onPress={onPress} containerStyle={[styles.pressable, style]} style={styles.pressable} activeOpacity={1}>
       <Animated.View
         style={[
           styles.pillButton,

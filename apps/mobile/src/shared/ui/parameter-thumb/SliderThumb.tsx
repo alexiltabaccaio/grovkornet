@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet, TextInput, Pressable, Dimensions } from 'react-native';
+import { View, StyleSheet, TextInput, Dimensions } from 'react-native';
 import Animated, {
   useAnimatedStyle,
   useAnimatedProps,
@@ -7,7 +7,7 @@ import Animated, {
   interpolate,
   Extrapolation
 } from 'react-native-reanimated';
-import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+import { Gesture, GestureDetector, TouchableOpacity } from 'react-native-gesture-handler';
 import { ParameterThumbViewProps } from './ParameterThumbView.types';
 import { logger } from '@shared/lib/logger';
 
@@ -155,7 +155,7 @@ export const SliderThumb = ({
   return (
     <View style={[styles.container, hideAutoPlaceholder && { paddingHorizontal: 8 }]}>
       {isAuto && (onReset || onToggleAuto) ? (
-        <Pressable
+        <TouchableOpacity
           onPress={() => {
             const active = isAuto.value;
             if (active) {
@@ -172,14 +172,16 @@ export const SliderThumb = ({
               }
             }
           }}
+          containerStyle={styles.autoPressable}
           style={styles.autoPressable}
+          activeOpacity={1}
         >
           <Animated.View style={[styles.autoButton, animatedAutoButtonStyle]}>
             <Animated.Text style={[styles.autoButtonText, animatedAutoButtonTextStyle]}>
               A
             </Animated.Text>
           </Animated.View>
-        </Pressable>
+        </TouchableOpacity>
       ) : hideAutoPlaceholder ? null : (
         <View style={styles.autoPlaceholder} />
       )}
