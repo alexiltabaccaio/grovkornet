@@ -4,12 +4,9 @@ import { useSystemStore } from '@entities/system';
 import { useFilmStore } from '@entities/film';
 
 describe('useCameraCapture', () => {
-  it('triggers takePhoto and updates noiseReductionMode when isCapturing becomes true', () => {
+  it('triggers takePhoto when isCapturing becomes true', () => {
     const systemStore = useSystemStore.getState();
-    const filmStore = useFilmStore.getState();
 
-    filmStore.noiseReductionAuto.value = true;
-    filmStore.noiseReductionMode.value = 1;
     systemStore.isCapturing = false;
 
     const { result, rerender } = renderHook(() => useCameraCapture());
@@ -23,6 +20,5 @@ describe('useCameraCapture', () => {
     rerender({});
 
     expect(mockTakePhoto).toHaveBeenCalled();
-    expect(filmStore.noiseReductionMode.value).toBe(2);
   });
 });

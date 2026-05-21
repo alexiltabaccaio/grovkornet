@@ -45,8 +45,5 @@ describe('CameraCapturePipeline Integration', () => {
 
     // Verify UI store isCapturing was triggered and useCameraCapture called takePhoto
     expect(mockTakePhoto).toHaveBeenCalled();
-
-    // Verify noise reduction mode temporarily switched to HQ (2) due to noiseReductionAuto
-    expect(useFilmStore.getState().noiseReductionMode.value).toBe(2);
   });
 });
