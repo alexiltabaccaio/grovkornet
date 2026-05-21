@@ -22,7 +22,7 @@ export const useStylesStore = create<EffectsStore>((set, get) => ({
   noiseReductionMode: makeMutable(1), // 0=OFF, 1=FAST, 2=HQ
   sharpening: makeMutable(0.0),
   bloomEnabled: makeMutable(false),
-  bloomIntensity: makeMutable(0.35),
+  bloomIntensity: makeMutable(0.0),
 
   setGrainIntensity: (value) => {
     logger.debug('StylesStore', `Setting Grain Intensity: ${value}`);
@@ -70,7 +70,7 @@ export const useStylesStore = create<EffectsStore>((set, get) => ({
   setBloomIntensity: (value) => {
     logger.debug('StylesStore', `Setting Bloom Intensity: ${value}`);
     get().bloomIntensity.value = value;
-    if (value > 0) get().bloomEnabled.value = true;
+    get().bloomEnabled.value = value > 0;
   },
   resetEffect: (effect) => {
     const state = get();
@@ -99,7 +99,7 @@ export const useStylesStore = create<EffectsStore>((set, get) => ({
         break;
       case 'bloom':
         state.bloomEnabled.value = false;
-        state.bloomIntensity.value = 0.35;
+        state.bloomIntensity.value = 0.0;
         break;
     }
   },

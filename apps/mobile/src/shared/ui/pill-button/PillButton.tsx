@@ -1,6 +1,5 @@
 import React from 'react';
-import { StyleSheet, StyleProp, ViewStyle, TextStyle } from 'react-native';
-import { TouchableOpacity } from 'react-native-gesture-handler';
+import { StyleSheet, StyleProp, ViewStyle, TextStyle, TouchableOpacity } from 'react-native';
 import Animated, { useAnimatedStyle, SharedValue } from 'react-native-reanimated';
 
 export interface PillButtonProps {

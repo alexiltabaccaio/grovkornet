@@ -163,6 +163,7 @@ export const FooterParameterExtensions = ({ translateY }: FooterParameterExtensi
       return <ResolutionExtension parameterExtensionAnimatedStyle={parameterExtensionAnimatedStyle} />;
 
     // Slider-only parameters (no children)
+    case 'bloom':
     case 'contrast':
     case 'saturation':
     case 'temperature':
