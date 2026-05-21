@@ -1,0 +1,60 @@
+appId: com.grovkornet.app
+---
+# Inizializzazione pulita dell'app
+- launchApp:
+    clearState: true
+    permissions:
+      camera: grant
+      microphone: grant
+
+# Gestione popup compatibilità 16kB memory page (Android 15+)
+- tapOn:
+    text: "[Oo][Kk]"
+    optional: true
+
+# Gestione eventuale popup permessi a runtime
+- tapOn:
+    text: "(Mentre usi l'app|While using the app|Consenti|Allow).*"
+    optional: true
+
+# Attesa del caricamento iniziale dell'interfaccia
+- extendedWaitUntil:
+    visible: "SISTEMA"
+    timeout: 30000
+
+# 1. Navigazione nella sezione SISTEMA
+- tapOn: "SISTEMA"
+- assertVisible: "SISTEMA"
+- assertVisible: "Preferenze"
+- assertNotVisible: "Ottica"
+- assertNotVisible: "Esposizione"
+
+# 2. Navigazione nella sezione OBIETTIVO
+- tapOn: "OBIETTIVO"
+- assertVisible: "OBIETTIVO"
+- assertVisible: "Ottica"
+- assertVisible: "Difetti Ottici"
+- assertNotVisible: "Preferenze"
+- assertNotVisible: "Esposizione"
+
+# 3. Navigazione nella sezione CORPO
+- tapOn: "CORPO"
+- assertVisible: "CORPO"
+- assertVisible: "Esposizione"
+- assertVisible: "Illuminazione"
+- assertVisible: "Acquisizione"
+- assertNotVisible: "Ottica"
+- assertNotVisible: "Sviluppo"
+
+# 4. Navigazione nella sezione PELLICOLA
+- tapOn: "PELLICOLA"
+- assertVisible: "PELLICOLA"
+- assertVisible: "Sviluppo"
+- assertVisible: "Texture"
+- assertNotVisible: "Esposizione"
+- assertNotVisible: "Preferenze"
+
+# 5. Chiusura del pannello premendo nuovamente la sezione attiva (PELLICOLA)
+- tapOn: "PELLICOLA"
+- assertNotVisible: "Sviluppo"
+- assertNotVisible: "Texture"

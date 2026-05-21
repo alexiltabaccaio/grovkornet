@@ -422,7 +422,7 @@ Java_com_grovkornet_nativefilmcamera_rendering_LiveFilmProcessor_nativeRenderLiv
         JNIEnv* env, jobject thiz, jlong engine_ptr,
         jfloatArray float_params, jfloatArray uv_matrix_in,
         jint cameraWidth, jint cameraHeight, jint viewportWidth, jint viewportHeight,
-        jintArray out_fps_stats) {
+        jintArray out_fps_stats, jboolean skip_screen_render) {
     
     GrovkornetEngine* enginePtr = reinterpret_cast<GrovkornetEngine*>(engine_ptr);
     if (!enginePtr || !enginePtr->liveSwapChain || !uv_matrix_in || !float_params) {
@@ -556,7 +556,9 @@ Java_com_grovkornet_nativefilmcamera_rendering_LiveFilmProcessor_nativeRenderLiv
             enginePtr->renderer->render(enginePtr->viewBlurDown);
             enginePtr->renderer->render(enginePtr->viewBlurUp);
         }
-        enginePtr->renderer->render(enginePtr->view);
+        if (!skip_screen_render) {
+            enginePtr->renderer->render(enginePtr->view);
+        }
         enginePtr->renderer->endFrame();
     }
     

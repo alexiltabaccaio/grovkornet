@@ -32,6 +32,8 @@ class FilmRenderThread(
 
     private val isFrameAvailable = AtomicBoolean(false)
     private val isReleased = AtomicBoolean(false)
+    
+    private var framesProcessed = 0
 
     private val frameCallback = object : Choreographer.FrameCallback {
         override fun doFrame(frameTimeNanos: Long) {
@@ -96,8 +98,9 @@ class FilmRenderThread(
         if (!surface.isValid) return
 
         try {
-            if (isFrameAvailable.get()) {
-                isFrameAvailable.set(false)
+            val wasFrameAvailable = isFrameAvailable.getAndSet(false)
+            if (wasFrameAvailable) {
+                framesProcessed++
             }
 
             val currentConfig = renderConfig
@@ -111,7 +114,8 @@ class FilmRenderThread(
                 cameraWidth,
                 cameraHeight,
                 width,
-                height
+                height,
+                framesProcessed < 2
             ) { actualFps, stampedFps ->
                 if (!isReleased.get()) {
                     onDebugUpdate(mapOf(

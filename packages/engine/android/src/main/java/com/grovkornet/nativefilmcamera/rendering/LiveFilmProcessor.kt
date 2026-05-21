@@ -44,7 +44,8 @@ class LiveFilmProcessor {
         cameraHeight: Int,
         viewportWidth: Int,
         viewportHeight: Int,
-        outFpsStats: IntArray
+        outFpsStats: IntArray,
+        skipScreenRender: Boolean
     ): Boolean
     private external fun nativeSimulateFrameTime(nativeEnginePtr: Long, frameTimeMs: Float)
 
@@ -84,6 +85,7 @@ class LiveFilmProcessor {
         cameraHeight: Int,
         viewportWidth: Int,
         viewportHeight: Int,
+        skipScreenRender: Boolean,
         onFpsUpdate: (actualFps: Int, stampedFps: Int) -> Unit
     ) {
         if (!isPrepared || nativeEnginePtr == 0L) {
@@ -129,7 +131,8 @@ class LiveFilmProcessor {
                 cameraHeight,
                 viewportWidth,
                 viewportHeight,
-                outFpsStats
+                outFpsStats,
+                skipScreenRender
             )
 
             if (rendered && outFpsStats[0] != 0) {

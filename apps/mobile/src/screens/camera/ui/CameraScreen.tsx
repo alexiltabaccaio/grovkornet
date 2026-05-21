@@ -84,9 +84,7 @@ const CameraScreenContent = () => {
 
   if (!hasPermission) {
     return (
-      <View style={styles.center}>
-        <Text style={styles.text}>{t('camera.requesting_permissions')}</Text>
-      </View>
+      <View style={styles.center} />
     );
   }
 

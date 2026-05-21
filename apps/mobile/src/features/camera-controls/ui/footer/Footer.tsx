@@ -153,6 +153,7 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
+    height: 500,
     backgroundColor: 'transparent',
     zIndex: 100,
   },
@@ -164,7 +165,7 @@ const styles = StyleSheet.create({
     zIndex: 1,
   },
   unifiedBackgroundClosed: {
-    top: 0,
+    bottom: -1000,
     height: 1000,
   },
   unifiedBackgroundOpen: {
