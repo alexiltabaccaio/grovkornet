@@ -37,7 +37,7 @@ export const ParameterThumbView = forwardRef<View, ParameterThumbViewProps>((pro
           styles.filterThumb,
           isMainParameter && { flex: 1 },
           { justifyContent: 'center', height: 82 },
-          isDebugEnabled && { backgroundColor: 'rgba(0, 255, 0, 0.2)', borderWidth: 1, borderColor: 'green' }
+          isDebugEnabled && { backgroundColor: 'rgba(0, 255, 0, 0.2)', borderColor: 'green' }
         ]}
       >
         <Text 
@@ -62,7 +62,7 @@ export const ParameterThumbView = forwardRef<View, ParameterThumbViewProps>((pro
         styles.filterThumb,
         isMainParameter && { flex: 1 },
         variant === 'slider' && { width: '100%', alignItems: 'center' },
-        isDebugEnabled && { backgroundColor: 'rgba(0, 255, 0, 0.2)', borderWidth: 1, borderColor: 'green' }
+        isDebugEnabled && { backgroundColor: 'rgba(0, 255, 0, 0.2)', borderColor: 'green' }
       ]}
     >
       {!!label && (
@@ -89,7 +89,7 @@ export const ParameterThumbView = forwardRef<View, ParameterThumbViewProps>((pro
         variant === 'text' && styles.textVariantPlaceholder,
         variant === 'text' && { width: 'auto', height: 'auto' },
         variant === 'slider' && { width: '100%', height: 'auto', backgroundColor: 'transparent', borderWidth: 0, overflow: 'visible' },
-        isDebugEnabled && variant === 'text' && { backgroundColor: 'rgba(255,0,0,0.2)', borderWidth: 1, borderColor: 'red' }
+        isDebugEnabled && variant === 'text' && { backgroundColor: 'rgba(255,0,0,0.2)', borderColor: 'red' }
       ]}>
         {variant === 'square' && !imageSource && <SquareThumb {...props} />}
         {variant === 'text' && !imageSource && <TextThumb {...props} />}

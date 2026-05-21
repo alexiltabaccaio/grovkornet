@@ -48,7 +48,7 @@ const ResolutionButton = ({ label, index, resolutionSetting, setResolutionSettin
       <Animated.View style={[
         styles.pillButton,
         animatedStyle,
-        isDebugEnabled && { backgroundColor: 'rgba(0, 255, 0, 0.2)', borderWidth: 1, borderColor: 'green' }
+        isDebugEnabled && { backgroundColor: 'rgba(0, 255, 0, 0.2)', borderColor: 'green' }
       ]}>
         <Animated.Text style={[styles.pillText, animatedTextStyle]}>
           {label}

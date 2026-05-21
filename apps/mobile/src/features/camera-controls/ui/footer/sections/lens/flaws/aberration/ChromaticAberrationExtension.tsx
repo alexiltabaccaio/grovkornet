@@ -40,7 +40,7 @@ const DirectionButton = ({ label, value, activeDirection, onPress }: DirectionBu
       <Animated.View style={[
         styles.pillButton,
         animatedStyle,
-        isDebugEnabled && { backgroundColor: 'rgba(0, 255, 0, 0.2)', borderWidth: 1, borderColor: 'green' }
+        isDebugEnabled && { backgroundColor: 'rgba(0, 255, 0, 0.2)', borderColor: 'green' }
       ]}>
         <Animated.Text style={[styles.pillText, animatedTextStyle]}>
           {label}
@@ -69,7 +69,7 @@ export const ChromaticAberrationExtension = () => {
   return (
     <View style={[
       styles.container,
-      isDebugEnabled && { backgroundColor: 'rgba(0, 255, 0, 0.2)', borderWidth: 1, borderColor: 'green' }
+      isDebugEnabled && { backgroundColor: 'rgba(0, 255, 0, 0.2)', borderColor: 'green' }
     ]}>
       <Text allowFontScaling={false} style={styles.label}>
         {t('parameters.direction').toUpperCase()}
@@ -102,6 +102,8 @@ const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
     width: '100%',
+    borderWidth: 1,
+    borderColor: 'transparent',
   },
   label: {
     color: '#CCC',

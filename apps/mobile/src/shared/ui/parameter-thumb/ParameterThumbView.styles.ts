@@ -4,15 +4,19 @@ export const styles = StyleSheet.create({
   filterThumb: {
     alignItems: 'center',
     backgroundColor: 'transparent',
+    borderWidth: 1,
+    borderColor: 'transparent',
   },
   filterPlaceholder: {
     width: 38,
     height: 38,
-    backgroundColor: '#22',
+    backgroundColor: '#222',
     marginBottom: 6,
     overflow: 'hidden',
     justifyContent: 'center',
     alignItems: 'center',
+    borderWidth: 1,
+    borderColor: 'transparent',
   },
   textVariantPlaceholder: {
     backgroundColor: 'rgba(0, 0, 0, 0.01)',

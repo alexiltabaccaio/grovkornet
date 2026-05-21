@@ -93,6 +93,8 @@ const styles = StyleSheet.create({
     height: '100%',
     alignItems: 'center',
     justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: 'transparent',
   },
   iconWrapper: {
     paddingHorizontal: 24,
@@ -105,7 +107,6 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255, 149, 0, 0.15)',
   },
   debugTabButton: {
-    borderWidth: 1,
     borderColor: 'orange',
   },
   debugHitbox: {

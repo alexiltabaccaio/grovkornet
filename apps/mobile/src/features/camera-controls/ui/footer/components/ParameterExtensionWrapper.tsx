@@ -26,7 +26,6 @@ export const ParameterExtensionWrapper = ({
             styles.debugWrapper,
             isDebugEnabled && {
               backgroundColor: 'rgba(0, 255, 0, 0.2)',
-              borderWidth: 1,
               borderColor: 'green',
             },
           ]}
@@ -56,6 +55,8 @@ const styles = StyleSheet.create({
   debugWrapper: {
     width: '100%',
     justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: 'transparent',
   },
   buttonRow: {
     flexDirection: 'row',

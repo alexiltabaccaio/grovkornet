@@ -44,7 +44,7 @@ const AutoButton = ({ cameraAuto, setCameraAuto }: AutoButtonProps) => {
         styles.pillButton,
         { width: 32 },
         animatedStyle,
-        isDebugEnabled && { backgroundColor: 'rgba(0, 255, 0, 0.2)', borderWidth: 1, borderColor: 'green' }
+        isDebugEnabled && { backgroundColor: 'rgba(0, 255, 0, 0.2)', borderColor: 'green' }
       ]}>
         <Animated.Text style={[styles.pillText, animatedTextStyle]}>
           A
@@ -92,7 +92,7 @@ const CamButton = ({ cam, cameraAuto, cameraId, setCameraId, setCameraAuto }: Ca
       <Animated.View style={[
         styles.pillButton,
         animatedStyle,
-        isDebugEnabled && { backgroundColor: 'rgba(0, 255, 0, 0.2)', borderWidth: 1, borderColor: 'green' }
+        isDebugEnabled && { backgroundColor: 'rgba(0, 255, 0, 0.2)', borderColor: 'green' }
       ]}>
         <Animated.Text style={[styles.pillText, animatedTextStyle]}>
           {`${cam.focalLength35mm}mm`}

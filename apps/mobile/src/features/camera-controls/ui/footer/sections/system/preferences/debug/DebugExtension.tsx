@@ -31,7 +31,7 @@ const DebugToggleButton = ({ label, isActive, onPress, isGloballyEnabled }: Debu
     };
   });
 
-  const greenStyle = isGloballyEnabled ? { backgroundColor: 'rgba(0, 255, 0, 0.2)', borderWidth: 1, borderColor: 'green' } : {};
+  const greenStyle = isGloballyEnabled ? { backgroundColor: 'rgba(0, 255, 0, 0.2)', borderColor: 'green' } : {};
 
   return (
     <Pressable onPress={onPress} style={styles.pressable}>

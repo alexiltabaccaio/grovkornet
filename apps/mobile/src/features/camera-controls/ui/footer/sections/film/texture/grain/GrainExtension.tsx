@@ -43,7 +43,7 @@ const ChromaButton = ({ label, grainChroma, targetValue, onPress }: ChromaButton
       <Animated.View style={[
         styles.pillButton,
         animatedStyle,
-        isDebugEnabled && { backgroundColor: 'rgba(0, 255, 0, 0.2)', borderWidth: 1, borderColor: 'green' }
+        isDebugEnabled && { backgroundColor: 'rgba(0, 255, 0, 0.2)', borderColor: 'green' }
       ]}>
         <Animated.Text style={[
           styles.pillText,
@@ -75,7 +75,7 @@ export const GrainExtension = () => {
     <View style={styles.container}>
       <View style={[
         styles.chromaContainer,
-        isDebugEnabled && { backgroundColor: 'rgba(0, 255, 0, 0.2)', borderWidth: 1, borderColor: 'green' }
+        isDebugEnabled && { backgroundColor: 'rgba(0, 255, 0, 0.2)', borderColor: 'green' }
       ]}>
         <Text allowFontScaling={false} style={styles.label}>
           {t('parameters.chroma').toUpperCase()}
@@ -136,6 +136,8 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     alignItems: 'center',
     flex: 1,
+    borderWidth: 1,
+    borderColor: 'transparent',
   },
   buttonRow: {
     flexDirection: 'row',

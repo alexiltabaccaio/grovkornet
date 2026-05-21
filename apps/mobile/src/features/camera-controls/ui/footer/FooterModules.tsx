@@ -100,6 +100,8 @@ const styles = StyleSheet.create({
     marginTop: 0,
     marginBottom: 0,
     paddingVertical: 8,
+    borderWidth: 1,
+    borderColor: 'transparent',
   },
   sectionTitle: {
     color: '#FF9500',
@@ -124,6 +126,8 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     backgroundColor: 'transparent',
     marginRight: 8,
+    borderWidth: 1,
+    borderColor: 'transparent',
   },
   pillActive: {
     backgroundColor: '#2C2C2E',
@@ -137,12 +141,10 @@ const styles = StyleSheet.create({
     color: '#FFF',
   },
   debugFrame: {
-    borderWidth: 1,
     borderColor: 'magenta',
     backgroundColor: 'rgba(255, 0, 255, 0.2)',
   },
   debugPill: {
-    borderWidth: 1,
     borderColor: 'cyan',
     backgroundColor: 'rgba(0, 255, 255, 0.2)',
   },

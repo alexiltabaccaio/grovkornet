@@ -44,7 +44,7 @@ const AutoButton = ({ noiseReductionAuto, setNoiseReductionAuto }: AutoButtonPro
         styles.pillButton,
         { width: 32 },
         animatedStyle,
-        isDebugEnabled && { backgroundColor: 'rgba(0, 255, 0, 0.2)', borderWidth: 1, borderColor: 'green' }
+        isDebugEnabled && { backgroundColor: 'rgba(0, 255, 0, 0.2)', borderColor: 'green' }
       ]}>
         <Animated.Text style={[styles.pillText, animatedTextStyle]}>
           A
@@ -100,7 +100,7 @@ const ModeButton = ({
       <Animated.View style={[
         styles.pillButton,
         animatedStyle,
-        isDebugEnabled && { backgroundColor: 'rgba(0, 255, 0, 0.2)', borderWidth: 1, borderColor: 'green' }
+        isDebugEnabled && { backgroundColor: 'rgba(0, 255, 0, 0.2)', borderColor: 'green' }
       ]}>
         <Animated.Text style={[styles.pillText, animatedTextStyle]}>
           {label}
