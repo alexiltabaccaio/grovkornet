@@ -1,1 +1,0 @@
-export { LightingModule } from './LightingModule';

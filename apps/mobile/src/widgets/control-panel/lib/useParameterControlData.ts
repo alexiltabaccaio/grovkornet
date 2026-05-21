@@ -3,7 +3,7 @@ import { useShallow } from 'zustand/react/shallow';
 import { useFilmStore, useFilmWorklets } from '@entities/film';
 import { useBodyStore, useBodyWorklets } from '@entities/body';
 import { useLensStore, useLensWorklets } from '@entities/lens';
-import { ParameterType } from '@shared/types/camera';
+import { ParameterType } from '@entities/system';
 
 export const useParameterControlData = (parameter: ParameterType) => {
   // Film store fields

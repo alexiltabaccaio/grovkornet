@@ -10,7 +10,7 @@ import Animated, {
   runOnJS,
   useAnimatedReaction,
 } from 'react-native-reanimated';
-import { ParameterType } from '@shared/types/camera';
+import { ParameterType } from '@entities/system';
 
 const ITEM_WIDTH = 120;
 

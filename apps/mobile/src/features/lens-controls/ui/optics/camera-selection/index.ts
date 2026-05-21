@@ -1,1 +1,0 @@
-export { LensSelectionExtension } from './LensSelectionExtension';

@@ -3,7 +3,7 @@ export type ModuleType = 'preferences' | 'optics' | 'flaws' | 'exposure' | 'ligh
 export type ParameterType = 'language' | 'debug' | 'camera_selection' | 'focus' | 'chromatic_aberration' | 'bloom' | 'iso' | 'shutter_speed' | 'ev' | 'torch' | 'torch_strength' | 'aspect_ratio' | 'resolution_setting' | 'fps_setting' | 'temperature' | 'tint' | 'saturation' | 'contrast' | 'grain' | 'noise_reduction' | 'sharpening' | 'none';
 export type ParameterExtensionType = 'grain_intensity' | 'grain_size' | 'grain_chroma' | 'torch_strength' | 'aberration_direction' | 'noise_reduction_mode' | 'lang_en' | 'lang_it' | 'none';
 
-export interface SystemState {
+interface SystemState {
   activeSection: SectionType;
   activeModule: ModuleType;
   activeParameter: ParameterType;
@@ -17,7 +17,7 @@ export interface SystemState {
   lastActiveParameters: Record<ModuleType, ParameterType>;
 }
 
-export interface SystemActions {
+interface SystemActions {
   setActiveSection: (section: SectionType) => void;
   setActiveModule: (module: ModuleType) => void;
   setActiveParameter: (param: ParameterType) => void;

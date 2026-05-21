@@ -1,1 +1,0 @@
-export { ResolutionExtension } from './ResolutionExtension';

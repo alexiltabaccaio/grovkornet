@@ -2,7 +2,7 @@ import { ImageSourcePropType } from 'react-native';
 import { SharedValue } from 'react-native-reanimated';
 import { Ionicons } from '@expo/vector-icons';
 
-export type ThumbVariant = 'square' | 'text' | 'slider';
+type ThumbVariant = 'square' | 'text' | 'slider';
 
 export interface ParameterThumbViewProps {
   label: string;

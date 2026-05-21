@@ -8,7 +8,7 @@ import { useBodyStore } from '@entities/body';
 import { useLensStore } from '@entities/lens';
 import { useDoublePress } from '@shared/lib/hooks/useDoublePress';
 import { controlPanelStyles } from './ControlPanel.styles';
-import { ModuleType } from '@shared/types/camera';
+import { ModuleType } from '@entities/system';
 
 // Import modules from feature slices
 import { DevelopmentModule, TextureModule } from '@features/film-controls';

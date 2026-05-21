@@ -5,7 +5,7 @@ export interface FilmCapabilities {
   availableEdgeModes?: number[];
 }
 
-export interface FilmState {
+interface FilmState {
   grainIntensity: SharedValue<number>;
   grainChroma: SharedValue<number>;
   grainSize: SharedValue<number>;
@@ -25,7 +25,7 @@ export interface FilmState {
   capabilities?: FilmCapabilities;
 }
 
-export interface FilmActions {
+interface FilmActions {
   setGrainIntensity: (value: number) => void;
   setGrainChroma: (value: number) => void;
   setGrainSize: (value: number) => void;

@@ -1,1 +1,0 @@
-export { LanguageExtension } from './LanguageExtension';

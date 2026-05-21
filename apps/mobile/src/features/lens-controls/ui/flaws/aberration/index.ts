@@ -1,1 +1,0 @@
-export { ChromaticAberrationExtension } from './ChromaticAberrationExtension';

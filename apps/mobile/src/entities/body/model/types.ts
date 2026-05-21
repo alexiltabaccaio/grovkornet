@@ -8,7 +8,7 @@ export interface BodyCapabilities {
   maxFps?: number;
 }
 
-export interface BodyState {
+interface BodyState {
   fps: SharedValue<number>;
   hwFps: SharedValue<number>;
   resolution: SharedValue<string>;
@@ -26,7 +26,7 @@ export interface BodyState {
   capabilities: BodyCapabilities;
 }
 
-export interface BodyActions {
+interface BodyActions {
   setDebugInfo: (fps: number, resolution: string, hwFps: number) => void;
   setIso: (value: number) => void;
   setEv: (value: number) => void;

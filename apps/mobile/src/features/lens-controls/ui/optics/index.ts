@@ -1,1 +1,0 @@
-export { OpticsModule } from './OpticsModule';

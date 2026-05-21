@@ -1,1 +1,0 @@
-export { FpsExtension } from './FpsExtension';

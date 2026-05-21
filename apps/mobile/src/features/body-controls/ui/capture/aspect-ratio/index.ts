@@ -1,1 +1,0 @@
-export { AspectRatioExtension } from './AspectRatioExtension';

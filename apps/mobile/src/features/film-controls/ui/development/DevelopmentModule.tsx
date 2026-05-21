@@ -1,5 +1,5 @@
 import React from 'react';
-import { ParameterType } from '@shared/types/camera';
+import { ParameterType } from '@entities/system';
 import { GenericParameterModule } from '@entities/system';
 
 
