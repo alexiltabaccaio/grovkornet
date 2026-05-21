@@ -5,8 +5,14 @@ import Animated, { useSharedValue, useAnimatedStyle, interpolate } from 'react-n
 import { useTranslation } from 'react-i18next';
 
 import { useShallow } from 'zustand/react/shallow';
-import { useUIStore, GestureController, Footer, DebugOverlay, ConnectedFilmCamera, ShutterButton, CaptureThumbnail, StatusBarHeader } from '@features/camera-controls';
-import { VerifiedGallery } from '@features/gallery';
+import { useSystemStore } from '@entities/system';
+import { ControlPanel } from '@widgets/control-panel';
+import { Viewfinder } from '@widgets/viewfinder';
+import { Header } from '@widgets/header';
+import { ShutterButton } from '@features/body-controls';
+import { GestureController } from '@features/lens-controls';
+import { DebugOverlay } from '@features/system-settings';
+import { VerifiedGallery, CaptureThumbnail } from '@features/gallery';
 import { logger } from '@shared/lib/logger';
 
 
@@ -18,7 +24,7 @@ export const CameraScreen = () => {
 
 const CameraScreenContent = () => {
   const { t } = useTranslation();
-  const { isDebugEnabled, triggerCapture, latestCapturedUri } = useUIStore(useShallow(state => ({
+  const { isDebugEnabled, triggerCapture, latestCapturedUri } = useSystemStore(useShallow(state => ({
     isDebugEnabled: state.isDebugEnabled,
     triggerCapture: state.triggerCapture,
     latestCapturedUri: state.latestCapturedUri,
@@ -92,10 +98,10 @@ const CameraScreenContent = () => {
   return (
     <View style={styles.container}>
       <GestureController>
-        <ConnectedFilmCamera cameraKey={cameraKey} />
+        <Viewfinder cameraKey={cameraKey} />
       </GestureController>
 
-      <StatusBarHeader />
+      <Header />
 
       {isDebugEnabled && <DebugOverlay />}
       
@@ -107,7 +113,7 @@ const CameraScreenContent = () => {
         <View style={styles.sideControl} pointerEvents="box-none" />
       </Animated.View>
 
-      <Footer translateY={footerTranslateY} drawerAnimation={drawerAnimation} />
+      <ControlPanel translateY={footerTranslateY} drawerAnimation={drawerAnimation} />
 
       {isGalleryOpen && <VerifiedGallery onClose={() => setIsGalleryOpen(false)} initialUri={latestCapturedUri} />}
     </View>

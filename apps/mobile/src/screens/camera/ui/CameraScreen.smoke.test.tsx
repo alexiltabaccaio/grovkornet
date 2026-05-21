@@ -12,8 +12,8 @@ jest.mock('react-i18next', () => ({
     },
   }),
 }));
-jest.mock('@features/camera-controls', () => ({
-  useUIStore: jest.fn(() => ({
+jest.mock('@entities/system', () => ({
+  useSystemStore: jest.fn(() => ({
     activeTab: 'none',
     activeModule: 'none',
     activeParameter: 'none',
@@ -22,13 +22,28 @@ jest.mock('@features/camera-controls', () => ({
     setActiveModule: jest.fn(),
     setActiveParameter: jest.fn(),
   })),
-  GestureController: 'GestureController',
-  Footer: 'Footer',
-  DebugOverlay: 'DebugOverlay',
-  ConnectedFilmCamera: 'ConnectedFilmCamera',
-  ShutterButton: 'ShutterButton',
+}));
+jest.mock('@widgets/control-panel', () => ({
+  ControlPanel: 'ControlPanel',
+}));
+jest.mock('@widgets/viewfinder', () => ({
+  Viewfinder: 'Viewfinder',
+}));
+jest.mock('@widgets/header', () => ({
+  Header: 'Header',
+}));
+jest.mock('@features/gallery', () => ({
   CaptureThumbnail: 'CaptureThumbnail',
-  StatusBarHeader: 'StatusBarHeader',
+  VerifiedGallery: 'VerifiedGallery',
+}));
+jest.mock('@features/body-controls', () => ({
+  ShutterButton: 'ShutterButton',
+}));
+jest.mock('@features/lens-controls', () => ({
+  GestureController: 'GestureController',
+}));
+jest.mock('@features/system-settings', () => ({
+  DebugOverlay: 'DebugOverlay',
 }));
 
 describe('CameraScreen Component Stability Test', () => {

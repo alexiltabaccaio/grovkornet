@@ -1,29 +1,26 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
-
 import React from 'react';
 import { render, fireEvent, waitFor, act } from '@testing-library/react-native';
 import { CameraScreen } from '@screens/camera/ui/CameraScreen';
-import { useUIStore } from '@features/camera-controls/model/useUIStore';
-import { useStylesStore } from '@features/camera-controls/model/useStylesStore';
+import { useSystemStore } from '@entities/system';
+import { useFilmStore } from '@entities/film';
 import { DEFAULT_GRAIN_INTENSITY } from '@grovkornet/shared';
 
-// Mock ConnectedFilmCamera to avoid native issues during integration test
-jest.mock('@features/camera-controls', () => {
-  const actual = jest.requireActual<{ ConnectedFilmCamera: unknown }>('@features/camera-controls');
+// Mock Viewfinder to avoid native issues during integration test
+jest.mock('@widgets/viewfinder', () => {
   const { View } = require('react-native') as typeof import('react-native');
   return {
-    ...actual,
-    ConnectedFilmCamera: (_props: unknown) => <View testID="connected-camera" />,
+    Viewfinder: (_props: unknown) => <View testID="connected-camera" />,
   };
 });
 
 describe('FilmEmulationStyles Integration', () => {
   beforeEach(() => {
     act(() => {
-      useUIStore.getState().setActiveSection('none');
-      useUIStore.getState().setActiveModule('none');
-      useStylesStore.getState().resetEffect('grain');
-      useStylesStore.getState().resetEffect('chromatic_aberration');
+      useSystemStore.getState().setActiveSection('none');
+      useSystemStore.getState().setActiveModule('none');
+      useFilmStore.getState().resetEffect('grain');
+      useFilmStore.getState().resetEffect('chromatic_aberration');
     });
   });
 
@@ -42,22 +39,22 @@ describe('FilmEmulationStyles Integration', () => {
     });
 
     // Verify UI Store updated to film section
-    expect(useUIStore.getState().activeSection).toBe('film');
+    expect(useSystemStore.getState().activeSection).toBe('film');
 
     // Adjust grain intensity and verify grainEnabled toggles automatically
     act(() => {
-      useStylesStore.getState().setGrainIntensity(0.75);
+      useFilmStore.getState().setGrainIntensity(0.75);
     });
 
-    expect(useStylesStore.getState().grainIntensity.value).toBe(0.75);
-    expect(useStylesStore.getState().grainEnabled.value).toBe(true);
+    expect(useFilmStore.getState().grainIntensity.value).toBe(0.75);
+    expect(useFilmStore.getState().grainEnabled.value).toBe(true);
 
     // Reset effect and verify it returns to default
     act(() => {
-      useStylesStore.getState().resetEffect('grain');
+      useFilmStore.getState().resetEffect('grain');
     });
 
-    expect(useStylesStore.getState().grainIntensity.value).toBe(DEFAULT_GRAIN_INTENSITY);
-    expect(useStylesStore.getState().grainEnabled.value).toBe(false);
+    expect(useFilmStore.getState().grainIntensity.value).toBe(DEFAULT_GRAIN_INTENSITY);
+    expect(useFilmStore.getState().grainEnabled.value).toBe(false);
   });
 });

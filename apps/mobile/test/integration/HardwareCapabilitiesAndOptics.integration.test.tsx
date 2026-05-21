@@ -1,16 +1,15 @@
- 
-
 import React from 'react';
 import { render, fireEvent, waitFor, act } from '@testing-library/react-native';
 import { CameraScreen } from '@screens/camera/ui/CameraScreen';
-import { useHardwareStore } from '@features/camera-controls/model/useHardwareStore';
-import { useUIStore } from '@features/camera-controls/model/useUIStore';
+import { useBodyStore } from '@entities/body';
+import { useLensStore } from '@entities/lens';
+import { useSystemStore } from '@entities/system';
 
-jest.mock('@entities/camera/ui/NativeFilmCamera', () => {
+jest.mock('@entities/lens/ui/NativeRenderer', () => {
   const ReactActual = jest.requireActual('react');
   const { View } = jest.requireActual('react-native');
   return {
-    NativeFilmCamera: ReactActual.forwardRef((props: unknown, ref: unknown) => {
+    NativeRenderer: ReactActual.forwardRef((props: unknown, ref: unknown) => {
       ReactActual.useImperativeHandle(ref, () => ({
         takePhoto: jest.fn(),
       }));
@@ -22,9 +21,9 @@ jest.mock('@entities/camera/ui/NativeFilmCamera', () => {
 describe('HardwareCapabilitiesAndOptics Integration', () => {
   beforeEach(() => {
     act(() => {
-      useUIStore.getState().setActiveSection('none');
-      useUIStore.getState().setActiveModule('none');
-      useHardwareStore.getState().setFpsSetting(60);
+      useSystemStore.getState().setActiveSection('none');
+      useSystemStore.getState().setActiveModule('none');
+      useBodyStore.getState().setFpsSetting(60);
     });
   });
 
@@ -37,7 +36,7 @@ describe('HardwareCapabilitiesAndOptics Integration', () => {
     const nativeCamera = getByTestId('native-film-camera');
 
     // Verify initial FPS setting is 60
-    expect(useHardwareStore.getState().fpsSetting.value).toBe(60);
+    expect(useBodyStore.getState().fpsSetting.value).toBe(60);
 
     // Simulate capabilities update from native camera where maxFps is 30
     act(() => {
@@ -53,10 +52,10 @@ describe('HardwareCapabilitiesAndOptics Integration', () => {
     });
 
     // Verify hardware store capabilities updated correctly
-    expect(useHardwareStore.getState().capabilities.maxFps).toBe(30);
-    expect(useHardwareStore.getState().capabilities.supportsFocus).toBe(false);
+    expect(useBodyStore.getState().capabilities.maxFps).toBe(30);
+    expect(useLensStore.getState().capabilities.supportsFocus).toBe(false);
 
     // Verify fpsSetting automatically adapted to maxFps (30)
-    expect(useHardwareStore.getState().fpsSetting.value).toBe(30);
+    expect(useBodyStore.getState().fpsSetting.value).toBe(30);
   });
 });

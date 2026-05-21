@@ -1,18 +1,16 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
- 
+
 import React from 'react';
 import { render, fireEvent, waitFor, act } from '@testing-library/react-native';
 import { CameraScreen } from '@screens/camera/ui/CameraScreen';
-import { useUIStore } from '@features/camera-controls/model/useUIStore';
-import { useHardwareStore } from '@features/camera-controls/model/useHardwareStore';
+import { useSystemStore } from '@entities/system';
+import { useBodyStore } from '@entities/body';
 
-// Mock ConnectedFilmCamera to avoid native issues during integration test
-jest.mock('@features/camera-controls', () => {
-  const actual = jest.requireActual<{ ConnectedFilmCamera: unknown }>('@features/camera-controls');
+// Mock Viewfinder to avoid native issues during integration test
+jest.mock('@widgets/viewfinder', () => {
   const { View } = require('react-native') as typeof import('react-native');
   return {
-    ...actual,
-    ConnectedFilmCamera: (_props: unknown) => <View testID="connected-camera" />,
+    Viewfinder: (_props: unknown) => <View testID="connected-camera" />,
   };
 });
 
@@ -20,28 +18,28 @@ describe('CameraScreen Integration', () => {
   beforeEach(() => {
     // Reset stores
     act(() => {
-      useUIStore.getState().setActiveSection('none');
-      useUIStore.getState().setActiveModule('none');
+      useSystemStore.getState().setActiveSection('none');
+      useSystemStore.getState().setActiveModule('none');
       // No global reset needed if we just set values in tests
     });
   });
 
   it('renders correctly and handles section switching', async () => {
-    const { getByLabelText, getByText, getAllByText, queryByText } = render(<CameraScreen />);
+    const { getByLabelText, queryByText, getAllByText } = render(<CameraScreen />);
 
     // Wait for permissions to be resolved (mocked as granted)
     await waitFor(() => expect(queryByText('camera.requesting_permissions')).toBeNull());
 
     // Check if Footer sections are present
-    const exposureSection = getByLabelText(/sections\.body/i) as unknown as { props: unknown };
+    const exposureSection = getByLabelText(/sections\.body/i);
     expect(exposureSection).toBeDefined();
 
     // Click on Exposure section
     fireEvent.press(exposureSection);
 
     // Verify UI Store updated
-    expect(useUIStore.getState().activeSection).toBe('body');
-    expect(useUIStore.getState().activeModule).toBe('exposure');
+    expect(useSystemStore.getState().activeSection).toBe('body');
+    expect(useSystemStore.getState().activeModule).toBe('exposure');
 
     // Verify ManualExposureModule components appear
     await waitFor(() => expect(getAllByText(/parameters\.iso/i)[0]).toBeDefined());
@@ -52,27 +50,27 @@ describe('CameraScreen Integration', () => {
     
     // Switch to exposure section
     act(() => {
-      fireEvent.press(getByLabelText(/sections\.body/i) as unknown);
+      fireEvent.press(getByLabelText(/sections\.body/i));
     });
 
     // Find ISO control
-    const isoControl = getAllByText(/parameters\.iso/i)[0] as unknown as { props: unknown };
+    const isoControl = getAllByText(/parameters\.iso/i)[0];
     
     // Reset active parameter to none to test activation on press
     act(() => {
-      useUIStore.getState().setActiveParameter('none');
+      useSystemStore.getState().setActiveParameter('none');
     });
 
     // Simulate press on ISO control to make it active
     fireEvent.press(isoControl);
-    expect(useUIStore.getState().activeParameter).toBe('iso');
+    expect(useSystemStore.getState().activeParameter).toBe('iso');
 
     // Directly test store integration (since Slider interaction is complex to mock/fire in unit test)
     act(() => {
-      useHardwareStore.getState().setIso(800);
+      useBodyStore.getState().setIso(800);
     });
 
-    expect(useHardwareStore.getState().iso.value).toBe(800);
-    expect(useHardwareStore.getState().isoAuto.value).toBe(false);
+    expect(useBodyStore.getState().iso.value).toBe(800);
+    expect(useBodyStore.getState().isoAuto.value).toBe(false);
   });
 });

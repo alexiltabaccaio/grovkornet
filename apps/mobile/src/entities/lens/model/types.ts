@@ -1,0 +1,28 @@
+import { SharedValue } from 'react-native-reanimated';
+
+export interface LensCapabilities {
+  supportsFocus: boolean;
+  availableCameras: Array<{
+    id: string;
+    focalLength: number;
+    focalLength35mm: number;
+  }>;
+}
+
+export interface LensState {
+  focusDistance: SharedValue<number>;
+  focusAuto: SharedValue<boolean>;
+  cameraId: string;
+  cameraAuto: boolean;
+  capabilities: LensCapabilities;
+}
+
+export interface LensActions {
+  setFocusDistance: (value: number) => void;
+  setFocusAuto: (value: boolean) => void;
+  setCameraId: (value: string) => void;
+  setCameraAuto: (value: boolean) => void;
+  setCapabilities: (capabilities: LensCapabilities) => void;
+}
+
+export interface LensStore extends LensState, LensActions {}

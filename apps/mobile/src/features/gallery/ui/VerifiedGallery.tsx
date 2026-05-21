@@ -2,7 +2,8 @@ import React, { useEffect } from 'react';
 import { StyleSheet, Text, View, Pressable, ActivityIndicator, Platform } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
-import { ShareButton, StatusBarHeader } from '@features/camera-controls';
+import { Header } from '@widgets/header';
+import { ShareButton } from './ShareButton';
 import { useGalleryPhotos } from '@features/gallery/lib/useGalleryPhotos';
 import { useImageVerification } from '@features/gallery/lib/useImageVerification';
 import { PhotoPreview } from './components/PhotoPreview';
@@ -36,7 +37,7 @@ export const VerifiedGallery = ({ onClose, initialUri }: VerifiedGalleryProps) =
 
   return (
     <View style={styles.absoluteContainer}>
-      <StatusBarHeader />
+      <Header />
       <View style={styles.safeArea}>
         
         {/* Close Button */}

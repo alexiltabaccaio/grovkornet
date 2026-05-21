@@ -162,6 +162,117 @@ export default [
       }],
     }
   },
+  // --- FSD RULES: CROSS-IMPORT BOUNDARIES ---
+  {
+    files: ['src/features/lens-controls/**/*.{ts,tsx}'],
+    rules: {
+      'no-restricted-imports': ['error', {
+        patterns: [{
+          group: ['@features/body-controls/**', '@features/film-controls/**', '@features/system-settings/**', '@features/gallery/**'],
+          message: 'Cross-imports between features are not allowed.'
+        }]
+      }]
+    }
+  },
+  {
+    files: ['src/features/body-controls/**/*.{ts,tsx}'],
+    rules: {
+      'no-restricted-imports': ['error', {
+        patterns: [{
+          group: ['@features/lens-controls/**', '@features/film-controls/**', '@features/system-settings/**', '@features/gallery/**'],
+          message: 'Cross-imports between features are not allowed.'
+        }]
+      }]
+    }
+  },
+  {
+    files: ['src/features/film-controls/**/*.{ts,tsx}'],
+    rules: {
+      'no-restricted-imports': ['error', {
+        patterns: [{
+          group: ['@features/lens-controls/**', '@features/body-controls/**', '@features/system-settings/**', '@features/gallery/**'],
+          message: 'Cross-imports between features are not allowed.'
+        }]
+      }]
+    }
+  },
+  {
+    files: ['src/features/system-settings/**/*.{ts,tsx}'],
+    rules: {
+      'no-restricted-imports': ['error', {
+        patterns: [{
+          group: ['@features/lens-controls/**', '@features/body-controls/**', '@features/film-controls/**', '@features/gallery/**'],
+          message: 'Cross-imports between features are not allowed.'
+        }]
+      }]
+    }
+  },
+  {
+    files: ['src/features/gallery/**/*.{ts,tsx}'],
+    rules: {
+      'no-restricted-imports': ['error', {
+        patterns: [{
+          group: ['@features/lens-controls/**', '@features/body-controls/**', '@features/film-controls/**', '@features/system-settings/**'],
+          message: 'Cross-imports between features are not allowed.'
+        }]
+      }]
+    }
+  },
+  {
+    files: ['src/entities/lens/**/*.{ts,tsx}'],
+    rules: {
+      'no-restricted-imports': ['error', {
+        patterns: [{
+          group: ['@entities/body/**', '@entities/film/**', '@entities/system/**', '@entities/camera/**'],
+          message: 'Cross-imports between entities are not allowed.'
+        }]
+      }]
+    }
+  },
+  {
+    files: ['src/entities/body/**/*.{ts,tsx}'],
+    rules: {
+      'no-restricted-imports': ['error', {
+        patterns: [{
+          group: ['@entities/lens/**', '@entities/film/**', '@entities/system/**', '@entities/camera/**'],
+          message: 'Cross-imports between entities are not allowed.'
+        }]
+      }]
+    }
+  },
+  {
+    files: ['src/entities/film/**/*.{ts,tsx}'],
+    rules: {
+      'no-restricted-imports': ['error', {
+        patterns: [{
+          group: ['@entities/lens/**', '@entities/body/**', '@entities/system/**', '@entities/camera/**'],
+          message: 'Cross-imports between entities are not allowed.'
+        }]
+      }]
+    }
+  },
+  {
+    files: ['src/entities/system/**/*.{ts,tsx}'],
+    rules: {
+      'no-restricted-imports': ['error', {
+        patterns: [{
+          group: ['@entities/lens/**', '@entities/body/**', '@entities/film/**', '@entities/camera/**'],
+          message: 'Cross-imports between entities are not allowed.'
+        }]
+      }]
+    }
+  },
+  {
+    files: ['src/entities/camera/**/*.{ts,tsx}'],
+    rules: {
+      'no-restricted-imports': ['error', {
+        patterns: [{
+          group: ['@entities/lens/**', '@entities/body/**', '@entities/film/**', '@entities/system/**'],
+          message: 'Cross-imports between entities are not allowed.'
+        }]
+      }]
+    }
+  },
   // --- TEST FILES: RELAXED TYPE CHECKING FOR MOCKS ---
   {
     files: ['**/*.test.{ts,tsx}', '**/__tests__/**', '**/__mocks__/**'],

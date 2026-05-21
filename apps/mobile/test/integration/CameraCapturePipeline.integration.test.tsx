@@ -1,18 +1,16 @@
- 
-
 import React from 'react';
 import { render, fireEvent, waitFor, act } from '@testing-library/react-native';
 import { CameraScreen } from '@screens/camera/ui/CameraScreen';
-import { useUIStore } from '@features/camera-controls/model/useUIStore';
-import { useStylesStore } from '@features/camera-controls/model/useStylesStore';
+import { useSystemStore } from '@entities/system';
+import { useFilmStore } from '@entities/film';
 
 const mockTakePhoto = jest.fn();
 
-jest.mock('@entities/camera/ui/NativeFilmCamera', () => {
+jest.mock('@entities/lens/ui/NativeRenderer', () => {
   const ReactActual = jest.requireActual('react');
   const { View } = jest.requireActual('react-native');
   return {
-    NativeFilmCamera: ReactActual.forwardRef((props: unknown, ref: unknown) => {
+    NativeRenderer: ReactActual.forwardRef((props: unknown, ref: unknown) => {
       ReactActual.useImperativeHandle(ref, () => ({
         takePhoto: mockTakePhoto,
       }));
@@ -25,10 +23,10 @@ describe('CameraCapturePipeline Integration', () => {
   beforeEach(() => {
     mockTakePhoto.mockClear();
     act(() => {
-      useUIStore.getState().setActiveSection('none');
-      useUIStore.getState().setActiveModule('none');
-      useStylesStore.getState().setNoiseReductionAuto(true);
-      useStylesStore.getState().setNoiseReductionMode(1);
+      useSystemStore.getState().setActiveSection('none');
+      useSystemStore.getState().setActiveModule('none');
+      useFilmStore.getState().setNoiseReductionAuto(true);
+      useFilmStore.getState().setNoiseReductionMode(1);
     });
   });
 
@@ -49,6 +47,6 @@ describe('CameraCapturePipeline Integration', () => {
     expect(mockTakePhoto).toHaveBeenCalled();
 
     // Verify noise reduction mode temporarily switched to HQ (2) due to noiseReductionAuto
-    expect(useStylesStore.getState().noiseReductionMode.value).toBe(2);
+    expect(useFilmStore.getState().noiseReductionMode.value).toBe(2);
   });
 });

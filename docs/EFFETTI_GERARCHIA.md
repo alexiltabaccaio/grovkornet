@@ -36,9 +36,10 @@ Per garantire il massimo realismo, l'Uber Shader elabora l'immagine applicando i
   * `[Parameter]` **Messa a Fuoco** (Distanza, AF/MF)
 * **Module: Difetti Ottici (Flaws)**
   * `[Parameter]` **Aberrazione Cromatica** (Amount)
+  * `[Parameter]` **Bloom** (Diffusione luci)
 
 ### 3. 📷 BODY (Corpo Macchina)
-> *La meccanica della fotocamera: cattura elettronica, illuminazione e hardware integrato.*
+> *La meccanica della fotocamera: cattura elettronica, illuminazione ed hardware integrato.*
 * **Module: Esposizione (Exposure)**
   * `[Parameter]` **ISO** (Sensibilità alla luce)
   * `[Parameter]` **Shutter Speed** (Tempi di posa per motion blur)
@@ -46,15 +47,21 @@ Per garantire il massimo realismo, l'Uber Shader elabora l'immagine applicando i
 * **Module: Illuminazione (Lighting)**
   * `[Parameter]` **Torcia** (On / Off)
     * ↳ `[SubParameter]` *Intensità Torcia (Dimmer)*
+* **Module: Acquisizione (Capture)**
+  * `[Parameter]` **Aspect Ratio** (Formato, es. 65:24)
+  * `[Parameter]` **Resolution Setting** (Risoluzione video)
+  * `[Parameter]` **FPS Setting** (Framerate)
 
 ### 4. 🎞️ FILM (Pellicola)
 > *La chimica e il carattere visivo del supporto (il rullino scelto).*
 * **Module: Sviluppo (Development / Color)**
   * `[Parameter]` **Temperature** (Bilanciamento colore)
+  * `[Parameter]` **Tint** (Tinta verde/magenta)
   * `[Parameter]` **Saturazione**
   * `[Parameter]` **Contrasto**
 * **Module: Texture (Materiale visibile)**
   * `[Parameter]` **Grana** (Amount / Intensità)
     * ↳ `[SubParameter]` *Dimensione Grana (Scale), Modalità Colore (Luma B/N o Chroma RGB)*
-
+  * `[Parameter]` **Sharpening** (Nitidezza)
+  * `[Parameter]` **Noise Reduction** (Riduzione Rumore)
 

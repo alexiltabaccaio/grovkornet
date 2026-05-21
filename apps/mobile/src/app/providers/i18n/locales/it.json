@@ -1,0 +1,58 @@
+{
+  "translation": {
+    "camera": {
+      "requesting_permissions": "Richiesta permessi fotocamera...",
+      "not_found": "Fotocamera non trovata"
+    },
+    "sections": {
+      "system": "SISTEMA",
+      "lens": "OBIETTIVO",
+      "body": "CORPO",
+      "film": "PELLICOLA"
+    },
+    "modules": {
+      "preferences": "Preferenze",
+      "optics": "Ottica",
+      "flaws": "Difetti Ottici",
+      "exposure": "Esposizione",
+      "lighting": "Illuminazione",
+      "development": "Sviluppo",
+      "texture": "Texture",
+      "capture": "Acquisizione",
+      "debug": "Debug"
+    },
+    "parameters": {
+      "language": "LINGUA",
+      "debug_ui": "OVERLAY UI",
+      "debug_logs": "LOG CONSOLE",
+      "amount": "QUANTITÀ",
+      "grain": "GRANA",
+      "chroma": "CROMINANZA",
+      "size": "DIMENSIONE",
+      "saturation": "SATURAZIONE",
+      "contrast": "CONTRASTO",
+      "chromatic_aberration": "ABERRAZIONE CROMATICA",
+      "bloom": "BLOOM",
+      "direction": "DIREZIONE",
+      "iso": "ISO",
+      "ev": "EV",
+      "shutter_speed": "TEMPI",
+      "temperature": "TEMPERATURA",
+      "tint": "TINTA",
+      "focus": "FUOCO",
+      "lens": "LENTE",
+      "torch": "TORCIA",
+      "torch_dimmer": "INTENSITÀ",
+      "aspect_ratio": "FORMATO",
+      "resolution_setting": "RISOLUZIONE",
+      "fps_setting": "FPS",
+      "noise_reduction": "RIDUZIONE RUMORE",
+      "noise_reduction_mode": "ALGORITMO",
+      "sharpening": "NITIDEZZA",
+      "sharpening_mode": "ALGORITMO"
+    },
+    "footer": {
+      "coming_soon": "IN ARRIVO"
+    }
+  }
+}

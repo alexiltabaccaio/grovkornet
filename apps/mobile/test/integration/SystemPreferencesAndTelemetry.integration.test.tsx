@@ -1,16 +1,14 @@
- 
-
 import React from 'react';
 import { render, fireEvent, waitFor, act } from '@testing-library/react-native';
 import { CameraScreen } from '@screens/camera/ui/CameraScreen';
-import { useHardwareStore } from '@features/camera-controls/model/useHardwareStore';
-import { useUIStore } from '@features/camera-controls/model/useUIStore';
+import { useBodyStore } from '@entities/body';
+import { useSystemStore } from '@entities/system';
 
-jest.mock('@entities/camera/ui/NativeFilmCamera', () => {
+jest.mock('@entities/lens/ui/NativeRenderer', () => {
   const ReactActual = jest.requireActual('react');
   const { View } = jest.requireActual('react-native');
   return {
-    NativeFilmCamera: ReactActual.forwardRef((props: unknown, ref: unknown) => {
+    NativeRenderer: ReactActual.forwardRef((props: unknown, ref: unknown) => {
       ReactActual.useImperativeHandle(ref, () => ({
         takePhoto: jest.fn(),
       }));
@@ -22,10 +20,10 @@ jest.mock('@entities/camera/ui/NativeFilmCamera', () => {
 describe('SystemPreferencesAndTelemetry Integration', () => {
   beforeEach(() => {
     act(() => {
-      useUIStore.getState().setActiveSection('none');
-      useUIStore.getState().setActiveModule('none');
-      useUIStore.getState().setIsDebugEnabled(false);
-      useHardwareStore.getState().setDebugInfo(0, '1080p', 0);
+      useSystemStore.getState().setActiveSection('none');
+      useSystemStore.getState().setActiveModule('none');
+      useSystemStore.getState().setIsDebugEnabled(false);
+      useBodyStore.getState().setDebugInfo(0, '1080p', 0);
     });
   });
 
@@ -40,7 +38,7 @@ describe('SystemPreferencesAndTelemetry Integration', () => {
 
     // Enable debug mode
     act(() => {
-      useUIStore.getState().setIsDebugEnabled(true);
+      useSystemStore.getState().setIsDebugEnabled(true);
     });
 
     // Verify debug overlay appears with default values
@@ -60,8 +58,8 @@ describe('SystemPreferencesAndTelemetry Integration', () => {
     });
 
     // Verify hardware store telemetry values updated correctly
-    expect(useHardwareStore.getState().fps.value).toBe(60);
-    expect(useHardwareStore.getState().hwFps.value).toBe(60);
-    expect(useHardwareStore.getState().resolution.value).toBe('3840x2160');
+    expect(useBodyStore.getState().fps.value).toBe(60);
+    expect(useBodyStore.getState().hwFps.value).toBe(60);
+    expect(useBodyStore.getState().resolution.value).toBe('3840x2160');
   });
 });
