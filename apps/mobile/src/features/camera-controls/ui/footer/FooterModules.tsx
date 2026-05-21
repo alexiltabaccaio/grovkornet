@@ -45,40 +45,40 @@ export const FooterModules = () => {
         >
           {renderSection === 'system' && (
             <>
-              <TouchableOpacity style={[styles.pill, renderModule === 'preferences' && styles.pillActive]} onPress={() => setActiveModule('preferences')} activeOpacity={0.7}>
+              <TouchableOpacity style={[styles.pill, renderModule === 'preferences' && styles.pillActive, isDebugEnabled && styles.debugPill]} onPress={() => setActiveModule('preferences')} activeOpacity={0.7}>
                 <Text style={[styles.pillText, renderModule === 'preferences' && styles.pillTextActive]}>{t('modules.preferences')}</Text>
               </TouchableOpacity>
             </>
           )}
           {renderSection === 'lens' && (
             <>
-              <TouchableOpacity style={[styles.pill, renderModule === 'optics' && styles.pillActive]} onPress={() => setActiveModule('optics')} activeOpacity={0.7}>
+              <TouchableOpacity style={[styles.pill, renderModule === 'optics' && styles.pillActive, isDebugEnabled && styles.debugPill]} onPress={() => setActiveModule('optics')} activeOpacity={0.7}>
                 <Text style={[styles.pillText, renderModule === 'optics' && styles.pillTextActive]}>{t('modules.optics')}</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={[styles.pill, renderModule === 'flaws' && styles.pillActive]} onPress={() => setActiveModule('flaws')} activeOpacity={0.7}>
+              <TouchableOpacity style={[styles.pill, renderModule === 'flaws' && styles.pillActive, isDebugEnabled && styles.debugPill]} onPress={() => setActiveModule('flaws')} activeOpacity={0.7}>
                 <Text style={[styles.pillText, renderModule === 'flaws' && styles.pillTextActive]}>{t('modules.flaws')}</Text>
               </TouchableOpacity>
             </>
           )}
           {renderSection === 'body' && (
             <>
-              <TouchableOpacity style={[styles.pill, renderModule === 'exposure' && styles.pillActive]} onPress={() => setActiveModule('exposure')} activeOpacity={0.7}>
+              <TouchableOpacity style={[styles.pill, renderModule === 'exposure' && styles.pillActive, isDebugEnabled && styles.debugPill]} onPress={() => setActiveModule('exposure')} activeOpacity={0.7}>
                 <Text style={[styles.pillText, renderModule === 'exposure' && styles.pillTextActive]}>{t('modules.exposure')}</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={[styles.pill, renderModule === 'lighting' && styles.pillActive]} onPress={() => setActiveModule('lighting')} activeOpacity={0.7}>
+              <TouchableOpacity style={[styles.pill, renderModule === 'lighting' && styles.pillActive, isDebugEnabled && styles.debugPill]} onPress={() => setActiveModule('lighting')} activeOpacity={0.7}>
                 <Text style={[styles.pillText, renderModule === 'lighting' && styles.pillTextActive]}>{t('modules.lighting')}</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={[styles.pill, renderModule === 'capture' && styles.pillActive]} onPress={() => setActiveModule('capture')} activeOpacity={0.7}>
+              <TouchableOpacity style={[styles.pill, renderModule === 'capture' && styles.pillActive, isDebugEnabled && styles.debugPill]} onPress={() => setActiveModule('capture')} activeOpacity={0.7}>
                 <Text style={[styles.pillText, renderModule === 'capture' && styles.pillTextActive]}>{t('modules.capture')}</Text>
               </TouchableOpacity>
             </>
           )}
           {renderSection === 'film' && (
             <>
-              <TouchableOpacity style={[styles.pill, renderModule === 'development' && styles.pillActive]} onPress={() => setActiveModule('development')} activeOpacity={0.7}>
+              <TouchableOpacity style={[styles.pill, renderModule === 'development' && styles.pillActive, isDebugEnabled && styles.debugPill]} onPress={() => setActiveModule('development')} activeOpacity={0.7}>
                 <Text style={[styles.pillText, renderModule === 'development' && styles.pillTextActive]}>{t('modules.development')}</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={[styles.pill, renderModule === 'texture' && styles.pillActive]} onPress={() => setActiveModule('texture')} activeOpacity={0.7}>
+              <TouchableOpacity style={[styles.pill, renderModule === 'texture' && styles.pillActive, isDebugEnabled && styles.debugPill]} onPress={() => setActiveModule('texture')} activeOpacity={0.7}>
                 <Text style={[styles.pillText, renderModule === 'texture' && styles.pillTextActive]}>{t('modules.texture')}</Text>
               </TouchableOpacity>
             </>
@@ -92,8 +92,8 @@ export const FooterModules = () => {
 const styles = StyleSheet.create({
   container: {
     paddingHorizontal: 16,
-    paddingTop: 0,
-    marginBottom: 0,
+    marginTop: 2,
+    marginBottom: 2,
   },
   sectionHeaderFrame: {
     width: '100%',
@@ -140,5 +140,10 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'magenta',
     backgroundColor: 'rgba(255, 0, 255, 0.2)',
+  },
+  debugPill: {
+    borderWidth: 1,
+    borderColor: 'cyan',
+    backgroundColor: 'rgba(0, 255, 255, 0.2)',
   },
 });
