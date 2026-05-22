@@ -7,9 +7,10 @@ import Animated, {
   interpolate,
   Extrapolation
 } from 'react-native-reanimated';
-import { Gesture, GestureDetector, TouchableOpacity } from 'react-native-gesture-handler';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import { ParameterThumbViewProps } from './ParameterThumbView.types';
 import { logger } from '@shared/lib/logger';
+import { AutoButton } from '../auto-button/AutoButton';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const INITIAL_TRACK_WIDTH = SCREEN_WIDTH - 188;
@@ -135,27 +136,11 @@ export const SliderThumb = ({
     return { backgroundColor: '#FFF' };
   });
 
-  const animatedAutoButtonStyle = useAnimatedStyle(() => {
-    if (!isAuto) return {};
-    const active = isAuto.value;
-    return {
-      borderColor: active ? '#FF453A' : '#333',
-      backgroundColor: active ? 'rgba(255, 69, 58, 0.15)' : 'rgba(255, 255, 255, 0.04)',
-    };
-  });
-
-  const animatedAutoButtonTextStyle = useAnimatedStyle(() => {
-    if (!isAuto) return {};
-    const active = isAuto.value;
-    return {
-      color: active ? '#FF453A' : '#888',
-    };
-  });
-
   return (
     <View style={[styles.container, hideAutoPlaceholder && { paddingHorizontal: 8 }]}>
       {isAuto && (onReset || onToggleAuto) ? (
-        <TouchableOpacity
+        <AutoButton
+          isActive={isAuto}
           onPress={() => {
             const active = isAuto.value;
             if (active) {
@@ -172,16 +157,8 @@ export const SliderThumb = ({
               }
             }
           }}
-          containerStyle={styles.autoPressable}
           style={styles.autoPressable}
-          activeOpacity={1}
-        >
-          <Animated.View style={[styles.autoButton, animatedAutoButtonStyle]}>
-            <Animated.Text style={[styles.autoButtonText, animatedAutoButtonTextStyle]}>
-              A
-            </Animated.Text>
-          </Animated.View>
-        </TouchableOpacity>
+        />
       ) : hideAutoPlaceholder ? null : (
         <View style={styles.autoPlaceholder} />
       )}
@@ -275,18 +252,5 @@ const styles = StyleSheet.create({
   autoPlaceholder: {
     width: 54,
     marginRight: 16,
-  },
-  autoButton: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    borderWidth: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  autoButtonText: {
-    fontSize: 12,
-    fontWeight: '800',
-    letterSpacing: 0.5,
   },
 });

@@ -6,7 +6,7 @@ import { styles } from './ParameterThumbView.styles';
 import { SquareThumb } from './SquareThumb';
 import { TextThumb } from './TextThumb';
 import { ImageThumb } from './ImageThumb';
-import { AutoBadge } from './AutoBadge';
+
 
 import { SliderThumb } from './SliderThumb';
 
@@ -96,7 +96,7 @@ export const ParameterThumbView = forwardRef<View, ParameterThumbViewProps>((pro
         {variant === 'slider' && <SliderThumb {...props} />}
         {!!imageSource && <ImageThumb {...props} />}
 
-        {variant !== 'slider' && <AutoBadge {...props} />}
+
 
         {variant === 'square' && !imageSource && (
           <View style={[styles.borderOverlay, isActive && styles.borderOverlayActive]} pointerEvents="none" />

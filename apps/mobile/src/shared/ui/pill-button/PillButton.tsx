@@ -7,16 +7,23 @@ export interface PillButtonProps {
   label: string;
   isActive: boolean | SharedValue<boolean>;
   onPress: () => void;
-  variant?: 'default' | 'auto';
+  variant?: 'default' | 'auto' | 'module';
   isDebugEnabled?: boolean;
   opacity?: number | SharedValue<number>;
   style?: StyleProp<ViewStyle>;
   textStyle?: StyleProp<TextStyle>;
 }
 
-const getColors = (variant: 'default' | 'auto', active: boolean) => {
+const getColors = (variant: 'default' | 'auto' | 'module', active: boolean) => {
   'worklet';
   if (!active) {
+    if (variant === 'module') {
+      return {
+        borderColor: 'transparent',
+        backgroundColor: 'transparent',
+        textColor: '#888',
+      };
+    }
     return {
       borderColor: '#333',
       backgroundColor: 'rgba(255, 255, 255, 0.04)',
@@ -28,6 +35,13 @@ const getColors = (variant: 'default' | 'auto', active: boolean) => {
       borderColor: '#FF453A',
       backgroundColor: 'rgba(255, 69, 58, 0.15)',
       textColor: '#FF453A',
+    };
+  }
+  if (variant === 'module') {
+    return {
+      borderColor: 'transparent',
+      backgroundColor: '#2C2C2E',
+      textColor: '#FFF',
     };
   }
   return {
@@ -73,6 +87,7 @@ export const PillButton = ({
       <Animated.View
         style={[
           styles.pillButton,
+          variant === 'auto' && styles.autoButton,
           animatedStyle,
           isDebugEnabled && styles.debugStyle,
         ]}
@@ -97,7 +112,7 @@ const styles = StyleSheet.create({
   },
   pillButton: {
     height: 32,
-    width: '100%',
+    alignSelf: 'stretch',
     borderRadius: 16,
     borderWidth: 1,
     justifyContent: 'center',
@@ -109,6 +124,10 @@ const styles = StyleSheet.create({
     fontWeight: '800',
     letterSpacing: 0.5,
     textAlign: 'center',
+  },
+  autoButton: {
+    width: 32,
+    alignSelf: 'auto',
   },
   debugStyle: {
     backgroundColor: 'rgba(0, 255, 0, 0.2)',

@@ -21,7 +21,6 @@ export interface ParameterThumbViewProps {
   autoValueText?: string;
   isDebugEnabled?: boolean;
   disabled?: SharedValue<boolean>;
-  hideAutoBadge?: boolean;
   isToggle?: boolean;
   centerValue?: number;
   onReset?: () => void;

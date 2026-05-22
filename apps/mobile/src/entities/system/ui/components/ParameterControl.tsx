@@ -26,7 +26,6 @@ interface ParameterControlProps {
   hideValueInAuto?: boolean;
   autoValueText?: string;
   disabled?: SharedValue<boolean>;
-  hideAutoBadge?: boolean;
   isToggle?: boolean;
   centerValue?: number;
   onReset?: () => void;
@@ -56,7 +55,6 @@ export const ParameterControl = ({
   onChange,
   onUpdateWorklet,
   disabled,
-  hideAutoBadge = false,
   isToggle = false,
   centerValue,
   onReset,
@@ -99,7 +97,6 @@ export const ParameterControl = ({
         autoValueText={autoValueText}
         isDebugEnabled={!hideDebugRectangles && isDebugEnabled}
         disabled={disabled}
-        hideAutoBadge={hideAutoBadge}
         isToggle={isToggle}
         centerValue={centerValue}
         onReset={onReset}
@@ -130,7 +127,6 @@ export const ParameterControl = ({
         autoValueText={autoValueText}
         isDebugEnabled={!hideDebugRectangles && isDebugEnabled}
         disabled={disabled}
-        hideAutoBadge={hideAutoBadge}
         isToggle={isToggle}
         centerValue={centerValue}
         onReset={onReset}

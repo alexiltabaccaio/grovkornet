@@ -6,7 +6,7 @@ import { useFilmStore } from '@entities/film';
 import { ParameterExtensionWrapper } from '@entities/system';
 
 import { useSystemStore } from '@entities/system';
-import { PillButton } from '@shared/ui';
+import { PillButton, AutoButton } from '@shared/ui';
 
 interface NoiseReductionExtensionProps {
   parameterExtensionAnimatedStyle?: StyleProp<ViewStyle>;
@@ -28,13 +28,10 @@ export const NoiseReductionExtension = ({ parameterExtensionAnimatedStyle }: Noi
   return (
     <ParameterExtensionWrapper animatedStyle={parameterExtensionAnimatedStyle}>
       <View style={{ width: 54, alignItems: 'flex-start' }}>
-        <PillButton
-          label="A"
+        <AutoButton
           isActive={noiseReductionAuto}
           onPress={() => setNoiseReductionAuto(!noiseReductionAuto.value)}
-          variant="auto"
           isDebugEnabled={isDebugEnabled}
-          style={styles.autoPressable}
         />
       </View>
       <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'center', gap: 12 }}>
@@ -75,9 +72,6 @@ export const NoiseReductionExtension = ({ parameterExtensionAnimatedStyle }: Noi
 };
 
 const styles = StyleSheet.create({
-  autoPressable: {
-    width: 32,
-  },
   pressable: {
     flex: 1,
     maxWidth: 75,

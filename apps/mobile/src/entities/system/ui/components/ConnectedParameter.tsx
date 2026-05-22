@@ -30,7 +30,6 @@ export interface ConnectedParameterProps {
   hideValueInAuto?: boolean;
   autoValueText?: string;
   disabled?: SharedValue<boolean>;
-  hideAutoBadge?: boolean;
   isToggle?: boolean;
   centerValue?: number;
   onReset?: () => void;

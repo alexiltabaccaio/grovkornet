@@ -1,9 +1,9 @@
 import React from 'react';
-import { StyleSheet, StyleProp, ViewStyle } from 'react-native';
+import { StyleProp, ViewStyle } from 'react-native';
 import { useShallow } from 'zustand/react/shallow';
 import { useLensStore } from '@entities/lens';
 import { useSystemStore } from '@entities/system';
-import { PillButton } from '@shared/ui';
+import { AutoButton } from '@shared/ui';
 import { GenericPillExtension } from '@entities/system';
 
 
@@ -34,20 +34,11 @@ export const LensSelectionExtension = ({ parameterExtensionAnimatedStyle }: Lens
       pillMaxWidth={75}
       opacity={() => cameraAuto ? 0.4 : 1}
     >
-      <PillButton
-        label="A"
+      <AutoButton
         isActive={cameraAuto}
         onPress={() => setCameraAuto(!cameraAuto)}
-        variant="auto"
         isDebugEnabled={isDebugEnabled}
-        style={styles.autoPressable}
       />
     </GenericPillExtension>
   );
 };
-
-const styles = StyleSheet.create({
-  autoPressable: {
-    width: 32,
-  },
-});

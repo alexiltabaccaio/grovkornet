@@ -76,15 +76,6 @@ export const styles = StyleSheet.create({
     fontSize: 18,
     width: 60,
   },
-  autoBadge: {
-    position: 'absolute',
-    bottom: 2,
-    fontSize: 8,
-    fontWeight: '900',
-    color: '#FF3B30',
-    letterSpacing: 0.5,
-    zIndex: 2,
-  },
   pillButton: {
     height: 32,
     borderRadius: 16,
