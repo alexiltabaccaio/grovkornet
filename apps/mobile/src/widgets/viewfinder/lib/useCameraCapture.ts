@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { NativeRendererRef } from '@entities/lens/ui/NativeRenderer';
+import { NativeRendererRef } from '@entities/lens';
 import { useSystemStore } from '@entities/system';
 
 export const useCameraCapture = () => {

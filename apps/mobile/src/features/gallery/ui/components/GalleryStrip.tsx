@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, View, FlatList, Pressable, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { GalleryItem } from '@features/gallery/lib/types';
+import { GalleryItem } from '../../lib/types';
 
 interface GalleryStripProps {
   photos: GalleryItem[];

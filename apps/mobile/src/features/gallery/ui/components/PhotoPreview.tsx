@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, Text, View, Image } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { GalleryItem } from '@features/gallery/lib/types';
+import { GalleryItem } from '../../lib/types';
 import { AuthenticityBadge } from './AuthenticityBadge';
 
 interface PhotoPreviewProps {

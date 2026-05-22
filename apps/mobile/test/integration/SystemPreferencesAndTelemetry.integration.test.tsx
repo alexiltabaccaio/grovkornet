@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, fireEvent, waitFor, act } from '@testing-library/react-native';
-import { CameraScreen } from '@screens/camera/ui/CameraScreen';
+import { CameraScreen } from '@screens/camera';
 import { useBodyStore } from '@entities/body';
 import { useSystemStore } from '@entities/system';
 

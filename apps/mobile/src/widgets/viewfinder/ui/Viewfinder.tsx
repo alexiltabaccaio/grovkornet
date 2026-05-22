@@ -7,8 +7,8 @@ import { useSystemStore } from '@entities/system';
 import { NativeRenderer } from '@entities/lens';
 import { useDerivedValue, SharedValue } from 'react-native-reanimated';
 import { FlashOverlay } from '@features/body-controls';
-import { useCameraCapture } from '@widgets/viewfinder/lib/useCameraCapture';
-import { useCameraEvents } from '@widgets/viewfinder/lib/useCameraEvents';
+import { useCameraCapture } from '../lib/useCameraCapture';
+import { useCameraEvents } from '../lib/useCameraEvents';
 
 interface ViewfinderProps {
   cameraKey?: number;

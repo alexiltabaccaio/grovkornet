@@ -8,9 +8,6 @@
 - [ ] **Affinamento Range Aberrazione Cromatica:** Il range attuale (1-200) non copre bene le esigenze micro e macro.
   *Approccio suggerito (Pro):* Mantenere un'interfaccia utente pulita (es. valori da 0 a 100 o percentuali) ma far lavorare il motore sotto il cofano con valori a virgola mobile (float) ad alta precisione (es. da `0.000` a `10.000`). Questo permette di avere una risoluzione altissima per le micro-regolazioni senza complicare l'interfaccia.
 - [ ] **Preview in Bassa Risoluzione in Galleria:** Inserire un sistema che mostri istantaneamente una miniatura (preview a bassa risoluzione) nella galleria contestualmente allo scatto della foto, per garantire un feedback visivo istantaneo all'utente prima che il salvataggio in alta definizione sia concluso.
-- [ ] **Sincronizzazione Torcia con il Sistema:** Connettere lo stato della torcia dell'app a quello globale di Android.
-  - Se la torcia del sistema è accesa all'apertura dell'app, l'app deve riconoscerlo e partire con la torcia su ON.
-  - Se l'app viene chiusa con la torcia su ON, la torcia di sistema deve rimanere accesa (previa verifica delle policy e API di Android per non bloccare il demone hardware della fotocamera).
 - [ ] **Preview in Alta Definizione (Risoluzione):** Aggiungere un pulsante/sub-parametro al parametro "RISOLUZIONE" che permetta di attivare la preview in alta definizione (es. forzare il feed della fotocamera in 4K invece del Full HD di default). 
   - Aggiungere un popup/avviso: *"Attenzione: richiede alte prestazioni"*.
 - [ ] **Adattamento formato**

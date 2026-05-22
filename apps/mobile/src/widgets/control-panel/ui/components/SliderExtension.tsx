@@ -3,7 +3,7 @@ import { StyleSheet, StyleProp, ViewStyle } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { useShallow } from 'zustand/react/shallow';
 import { useSystemStore, ParameterType, ParameterControl } from '@entities/system';
-import { useParameterControlData } from '@widgets/control-panel/lib/useParameterControlData';
+import { useParameterControlData } from '../../lib/useParameterControlData';
 
 interface SliderExtensionProps {
   parameter: ParameterType;

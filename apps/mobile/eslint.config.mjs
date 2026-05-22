@@ -6,6 +6,16 @@ import reactPlugin from 'eslint-plugin-react';
 import reactHooksPlugin from 'eslint-plugin-react-hooks';
 import reactNativePlugin from 'eslint-plugin-react-native';
 
+const fsdDeepImportRestrictions = {
+  group: [
+    '@entities/*/**',
+    '@features/*/**',
+    '@widgets/*/**',
+    '@screens/*/**',
+  ],
+  message: 'Import from the slice public API (e.g. "@entities/lens") instead of deep paths, or use relative paths for internal files.',
+};
+
 export default [
   {
     ignores: ['dist/**', 'node_modules/**', 'coverage/**', '.expo/**', 'android/**', 'ios/**'],
@@ -58,9 +68,10 @@ export default [
       'no-restricted-imports': ['error', {
         patterns: [
           {
-            group: ['../*'],
-            message: 'Relative parent imports (../) are not allowed. Please use path aliases (@features/, @shared/, etc.) instead.',
-          }
+            group: ['../../../**'],
+            message: 'Relative imports going up 3 or more levels are not allowed. Please use path aliases (@features/, @shared/, etc.) instead.',
+          },
+          fsdDeepImportRestrictions
         ]
       }],
     },
@@ -87,9 +98,10 @@ export default [
             message: 'The "shared" layer cannot import from higher layers.',
           },
           {
-            group: ['../*'],
-            message: 'Relative parent imports (../) are not allowed. Please use path aliases (@features/, @shared/, etc.) instead.',
-          }
+            group: ['../../../**'],
+            message: 'Relative imports going up 3 or more levels are not allowed. Please use path aliases (@features/, @shared/, etc.) instead.',
+          },
+          fsdDeepImportRestrictions
         ]
       }],
     }
@@ -104,9 +116,10 @@ export default [
             message: 'The "entities" layer cannot import from higher layers.',
           },
           {
-            group: ['../*'],
-            message: 'Relative parent imports (../) are not allowed. Please use path aliases (@features/, @shared/, etc.) instead.',
-          }
+            group: ['../../../**'],
+            message: 'Relative imports going up 3 or more levels are not allowed. Please use path aliases (@features/, @shared/, etc.) instead.',
+          },
+          fsdDeepImportRestrictions
         ]
       }],
     }
@@ -121,9 +134,10 @@ export default [
             message: 'The "features" layer cannot import from higher layers.',
           },
           {
-            group: ['../*'],
-            message: 'Relative parent imports (../) are not allowed. Please use path aliases (@features/, @shared/, etc.) instead.',
-          }
+            group: ['../../../**'],
+            message: 'Relative imports going up 3 or more levels are not allowed. Please use path aliases (@features/, @shared/, etc.) instead.',
+          },
+          fsdDeepImportRestrictions
         ]
       }],
     }
@@ -138,9 +152,10 @@ export default [
             message: 'The "widgets" layer cannot import from higher layers.',
           },
           {
-            group: ['../*'],
-            message: 'Relative parent imports (../) are not allowed. Please use path aliases (@features/, @shared/, etc.) instead.',
-          }
+            group: ['../../../**'],
+            message: 'Relative imports going up 3 or more levels are not allowed. Please use path aliases (@features/, @shared/, etc.) instead.',
+          },
+          fsdDeepImportRestrictions
         ]
       }],
     }
@@ -155,9 +170,10 @@ export default [
             message: 'The "screens" layer cannot import from higher layers.',
           },
           {
-            group: ['../*'],
-            message: 'Relative parent imports (../) are not allowed. Please use path aliases (@features/, @shared/, etc.) instead.',
-          }
+            group: ['../../../**'],
+            message: 'Relative imports going up 3 or more levels are not allowed. Please use path aliases (@features/, @shared/, etc.) instead.',
+          },
+          fsdDeepImportRestrictions
         ]
       }],
     }
@@ -167,10 +183,13 @@ export default [
     files: ['src/features/lens-controls/**/*.{ts,tsx}'],
     rules: {
       'no-restricted-imports': ['error', {
-        patterns: [{
-          group: ['@features/body-controls/**', '@features/film-controls/**', '@features/system-settings/**', '@features/gallery/**'],
-          message: 'Cross-imports between features are not allowed.'
-        }]
+        patterns: [
+          {
+            group: ['@features/body-controls/**', '@features/film-controls/**', '@features/system-settings/**', '@features/gallery/**'],
+            message: 'Cross-imports between features are not allowed.'
+          },
+          fsdDeepImportRestrictions
+        ]
       }]
     }
   },
@@ -178,10 +197,13 @@ export default [
     files: ['src/features/body-controls/**/*.{ts,tsx}'],
     rules: {
       'no-restricted-imports': ['error', {
-        patterns: [{
-          group: ['@features/lens-controls/**', '@features/film-controls/**', '@features/system-settings/**', '@features/gallery/**'],
-          message: 'Cross-imports between features are not allowed.'
-        }]
+        patterns: [
+          {
+            group: ['@features/lens-controls/**', '@features/film-controls/**', '@features/system-settings/**', '@features/gallery/**'],
+            message: 'Cross-imports between features are not allowed.'
+          },
+          fsdDeepImportRestrictions
+        ]
       }]
     }
   },
@@ -189,10 +211,13 @@ export default [
     files: ['src/features/film-controls/**/*.{ts,tsx}'],
     rules: {
       'no-restricted-imports': ['error', {
-        patterns: [{
-          group: ['@features/lens-controls/**', '@features/body-controls/**', '@features/system-settings/**', '@features/gallery/**'],
-          message: 'Cross-imports between features are not allowed.'
-        }]
+        patterns: [
+          {
+            group: ['@features/lens-controls/**', '@features/body-controls/**', '@features/system-settings/**', '@features/gallery/**'],
+            message: 'Cross-imports between features are not allowed.'
+          },
+          fsdDeepImportRestrictions
+        ]
       }]
     }
   },
@@ -200,10 +225,13 @@ export default [
     files: ['src/features/system-settings/**/*.{ts,tsx}'],
     rules: {
       'no-restricted-imports': ['error', {
-        patterns: [{
-          group: ['@features/lens-controls/**', '@features/body-controls/**', '@features/film-controls/**', '@features/gallery/**'],
-          message: 'Cross-imports between features are not allowed.'
-        }]
+        patterns: [
+          {
+            group: ['@features/lens-controls/**', '@features/body-controls/**', '@features/film-controls/**', '@features/gallery/**'],
+            message: 'Cross-imports between features are not allowed.'
+          },
+          fsdDeepImportRestrictions
+        ]
       }]
     }
   },
@@ -211,10 +239,13 @@ export default [
     files: ['src/features/gallery/**/*.{ts,tsx}'],
     rules: {
       'no-restricted-imports': ['error', {
-        patterns: [{
-          group: ['@features/lens-controls/**', '@features/body-controls/**', '@features/film-controls/**', '@features/system-settings/**'],
-          message: 'Cross-imports between features are not allowed.'
-        }]
+        patterns: [
+          {
+            group: ['@features/lens-controls/**', '@features/body-controls/**', '@features/film-controls/**', '@features/system-settings/**'],
+            message: 'Cross-imports between features are not allowed.'
+          },
+          fsdDeepImportRestrictions
+        ]
       }]
     }
   },
@@ -222,10 +253,13 @@ export default [
     files: ['src/entities/lens/**/*.{ts,tsx}'],
     rules: {
       'no-restricted-imports': ['error', {
-        patterns: [{
-          group: ['@entities/body/**', '@entities/film/**', '@entities/system/**', '@entities/camera/**'],
-          message: 'Cross-imports between entities are not allowed.'
-        }]
+        patterns: [
+          {
+            group: ['@entities/body/**', '@entities/film/**', '@entities/system/**', '@entities/camera/**'],
+            message: 'Cross-imports between entities are not allowed.'
+          },
+          fsdDeepImportRestrictions
+        ]
       }]
     }
   },
@@ -233,10 +267,13 @@ export default [
     files: ['src/entities/body/**/*.{ts,tsx}'],
     rules: {
       'no-restricted-imports': ['error', {
-        patterns: [{
-          group: ['@entities/lens/**', '@entities/film/**', '@entities/system/**', '@entities/camera/**'],
-          message: 'Cross-imports between entities are not allowed.'
-        }]
+        patterns: [
+          {
+            group: ['@entities/lens/**', '@entities/film/**', '@entities/system/**', '@entities/camera/**'],
+            message: 'Cross-imports between entities are not allowed.'
+          },
+          fsdDeepImportRestrictions
+        ]
       }]
     }
   },
@@ -244,10 +281,13 @@ export default [
     files: ['src/entities/film/**/*.{ts,tsx}'],
     rules: {
       'no-restricted-imports': ['error', {
-        patterns: [{
-          group: ['@entities/lens/**', '@entities/body/**', '@entities/system/**', '@entities/camera/**'],
-          message: 'Cross-imports between entities are not allowed.'
-        }]
+        patterns: [
+          {
+            group: ['@entities/lens/**', '@entities/body/**', '@entities/system/**', '@entities/camera/**'],
+            message: 'Cross-imports between entities are not allowed.'
+          },
+          fsdDeepImportRestrictions
+        ]
       }]
     }
   },
@@ -255,10 +295,13 @@ export default [
     files: ['src/entities/system/**/*.{ts,tsx}'],
     rules: {
       'no-restricted-imports': ['error', {
-        patterns: [{
-          group: ['@entities/lens/**', '@entities/body/**', '@entities/film/**', '@entities/camera/**'],
-          message: 'Cross-imports between entities are not allowed.'
-        }]
+        patterns: [
+          {
+            group: ['@entities/lens/**', '@entities/body/**', '@entities/film/**', '@entities/camera/**'],
+            message: 'Cross-imports between entities are not allowed.'
+          },
+          fsdDeepImportRestrictions
+        ]
       }]
     }
   },
@@ -266,10 +309,13 @@ export default [
     files: ['src/entities/camera/**/*.{ts,tsx}'],
     rules: {
       'no-restricted-imports': ['error', {
-        patterns: [{
-          group: ['@entities/lens/**', '@entities/body/**', '@entities/film/**', '@entities/system/**'],
-          message: 'Cross-imports between entities are not allowed.'
-        }]
+        patterns: [
+          {
+            group: ['@entities/lens/**', '@entities/body/**', '@entities/film/**', '@entities/system/**'],
+            message: 'Cross-imports between entities are not allowed.'
+          },
+          fsdDeepImportRestrictions
+        ]
       }]
     }
   },

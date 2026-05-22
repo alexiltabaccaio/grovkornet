@@ -4,8 +4,8 @@ import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import { Header } from '@widgets/header';
 import { ShareButton } from './ShareButton';
-import { useGalleryPhotos } from '@features/gallery/lib/useGalleryPhotos';
-import { useImageVerification } from '@features/gallery/lib/useImageVerification';
+import { useGalleryPhotos } from '../lib/useGalleryPhotos';
+import { useImageVerification } from '../lib/useImageVerification';
 import { PhotoPreview } from './components/PhotoPreview';
 import { GalleryStrip } from './components/GalleryStrip';
 

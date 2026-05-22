@@ -1,7 +1,6 @@
 import { renderHook } from '@testing-library/react-native';
 import { useCameraCapture } from './useCameraCapture';
 import { useSystemStore } from '@entities/system';
-import { useFilmStore } from '@entities/film';
 
 describe('useCameraCapture', () => {
   it('triggers takePhoto when isCapturing becomes true', () => {
