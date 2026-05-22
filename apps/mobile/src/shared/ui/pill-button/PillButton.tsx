@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo, useRef, useEffect } from 'react';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { StyleSheet, StyleProp, ViewStyle, TextStyle, View } from 'react-native';
 import Animated, { useAnimatedStyle, SharedValue } from 'react-native-reanimated';
@@ -68,7 +68,7 @@ const getColors = (variant: 'default' | 'auto' | 'module', active: boolean, isDe
   };
 };
 
-export const PillButton = ({
+const PillButtonComponent = ({
   label,
   isActive,
   onPress,
@@ -78,6 +78,15 @@ export const PillButton = ({
   style,
   textStyle,
 }: PillButtonProps) => {
+  const onPressRef = useRef(onPress);
+  useEffect(() => {
+    onPressRef.current = onPress;
+  }, [onPress]);
+
+  const handlePress = React.useCallback(() => {
+    onPressRef.current();
+  }, []);
+
   const animatedStyle = useAnimatedStyle(() => {
     const active = typeof isActive === 'object' && 'value' in isActive ? isActive.value : isActive;
     const op = typeof opacity === 'object' && 'value' in opacity ? opacity.value : opacity;
@@ -101,7 +110,7 @@ export const PillButton = ({
 
   return (
     <View style={style}>
-      <TouchableOpacity onPress={onPress} style={[styles.pressable, { width: '100%' }]} activeOpacity={1}>
+      <TouchableOpacity onPress={handlePress} style={[styles.pressable, { width: '100%' }]} activeOpacity={1}>
         <Animated.View
           style={[
             styles.pillButton,
@@ -122,6 +131,32 @@ export const PillButton = ({
     </View>
   );
 };
+
+const arePropsEqual = (prevProps: PillButtonProps, nextProps: PillButtonProps) => {
+  if (prevProps.label !== nextProps.label) return false;
+  if (prevProps.variant !== nextProps.variant) return false;
+  if (prevProps.isDebugEnabled !== nextProps.isDebugEnabled) return false;
+
+  if (prevProps.isActive !== nextProps.isActive) {
+    const prevActive = typeof prevProps.isActive === 'object' && 'value' in prevProps.isActive ? prevProps.isActive.value : prevProps.isActive;
+    const nextActive = typeof nextProps.isActive === 'object' && 'value' in nextProps.isActive ? nextProps.isActive.value : nextProps.isActive;
+    if (prevActive !== nextActive) return false;
+  }
+
+  if (prevProps.opacity !== nextProps.opacity) {
+    const prevOpacity = typeof prevProps.opacity === 'object' && 'value' in prevProps.opacity ? prevProps.opacity.value : prevProps.opacity;
+    const nextOpacity = typeof nextProps.opacity === 'object' && 'value' in nextProps.opacity ? nextProps.opacity.value : nextProps.opacity;
+    if (prevOpacity !== nextOpacity) return false;
+  }
+
+  // Confronto shallow degli stili (gestisce array, oggetti StyleSheet e inline stili)
+  if (JSON.stringify(prevProps.style) !== JSON.stringify(nextProps.style)) return false;
+  if (JSON.stringify(prevProps.textStyle) !== JSON.stringify(nextProps.textStyle)) return false;
+
+  return true;
+};
+
+export const PillButton = memo(PillButtonComponent, arePropsEqual);
 
 const styles = StyleSheet.create({
   pressable: {

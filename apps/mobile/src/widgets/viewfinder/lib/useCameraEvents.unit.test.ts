@@ -2,15 +2,12 @@ import { renderHook } from '@testing-library/react-native';
 import { useCameraEvents } from './useCameraEvents';
 import { useBodyStore } from '@entities/body';
 import { useLensStore } from '@entities/lens';
-import { useFilmStore } from '@entities/film';
 
 describe('useCameraEvents', () => {
   it('handles debug update events', () => {
     const bodyStore = useBodyStore.getState();
-    const lensStore = useLensStore.getState();
-    const filmStore = useFilmStore.getState();
 
-    const { result } = renderHook(() => useCameraEvents(bodyStore, lensStore, filmStore));
+    const { result } = renderHook(() => useCameraEvents());
 
     result.current.debugHandler({
       nativeEvent: {
@@ -27,11 +24,9 @@ describe('useCameraEvents', () => {
 
   it('updates store values on exposure update when in auto mode', () => {
     const bodyStore = useBodyStore.getState();
-    const lensStore = useLensStore.getState();
-    const filmStore = useFilmStore.getState();
     bodyStore.isoAuto.value = true;
 
-    const { result } = renderHook(() => useCameraEvents(bodyStore, lensStore, filmStore));
+    const { result } = renderHook(() => useCameraEvents());
 
     result.current.exposureHandler({
       nativeEvent: {
@@ -44,11 +39,7 @@ describe('useCameraEvents', () => {
   });
 
   it('updates capabilities', () => {
-    const bodyStore = useBodyStore.getState();
-    const lensStore = useLensStore.getState();
-    const filmStore = useFilmStore.getState();
-
-    const { result } = renderHook(() => useCameraEvents(bodyStore, lensStore, filmStore));
+    const { result } = renderHook(() => useCameraEvents());
 
     result.current.capabilitiesHandler({
       nativeEvent: {
@@ -61,11 +52,9 @@ describe('useCameraEvents', () => {
 
   it('updates torch state on torch state change event', () => {
     const bodyStore = useBodyStore.getState();
-    const lensStore = useLensStore.getState();
-    const filmStore = useFilmStore.getState();
     bodyStore.torchState.value = 0;
 
-    const { result } = renderHook(() => useCameraEvents(bodyStore, lensStore, filmStore));
+    const { result } = renderHook(() => useCameraEvents());
 
     result.current.torchStateHandler({
       nativeEvent: {

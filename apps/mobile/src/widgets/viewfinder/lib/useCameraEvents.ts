@@ -1,8 +1,8 @@
 import { useEvent } from 'react-native-reanimated';
 import { updateSharedValue } from '@shared/lib/reanimated/safeUpdate';
-import { BodyStore, BodyCapabilities } from '@entities/body';
-import { LensStore, LensCapabilities } from '@entities/lens';
-import { FilmStore, FilmCapabilities } from '@entities/film';
+import { useBodyStore, BodyCapabilities } from '@entities/body';
+import { useLensStore, LensCapabilities } from '@entities/lens';
+import { useFilmStore, FilmCapabilities } from '@entities/film';
 
 interface ExposureUpdatePayload {
   iso: number;
@@ -17,11 +17,10 @@ interface DebugUpdatePayload {
   resolution: string;
 }
 
-export const useCameraEvents = (
-  bodyStore: BodyStore,
-  lensStore: LensStore,
-  filmStore: FilmStore
-) => {
+export const useCameraEvents = () => {
+  const bodyStore = useBodyStore.getState();
+  const lensStore = useLensStore.getState();
+  const filmStore = useFilmStore.getState();
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const exposureHandler = useEvent((event: any) => {
     'worklet';

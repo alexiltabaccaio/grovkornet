@@ -1,6 +1,6 @@
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
-import { ScrollView, TouchableOpacity } from 'react-native-gesture-handler';
+import { StyleSheet, View, TouchableOpacity } from 'react-native';
+import { ScrollView } from 'react-native-gesture-handler';
 import { useShallow } from 'zustand/react/shallow';
 import { useSystemStore, ParameterControl, ParameterExtensionWrapper } from '@entities/system';
 import { useBodyStore, useBodyWorklets } from '@entities/body';
@@ -115,22 +115,24 @@ export const ParameterExtensions = ({ translateY }: ParameterExtensionsProps) =>
       return (
         <View style={styles.container}>
           <ParameterExtensionWrapper animatedStyle={parameterExtensionAnimatedStyle}>
-            <ScrollView scrollEnabled={false} contentContainerStyle={{ flexGrow: 1 }}>
+            <ScrollView scrollEnabled={false} contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', alignItems: 'center' }}>
               <TouchableOpacity
-              onPress={() => {
-                logger.debug('ParameterExtensions', 'Torch toggle pressed');
-                const next = torchState.value === 0 ? 1 : 0;
-                setTorchState(next);
-                setLocalTorchState(next);
-              }}
-              activeOpacity={0.8}
-              accessible={true}
-              accessibilityRole="button"
-              accessibilityLabel={localTorchState === 0 ? "OFF" : "ON"}
-            >
+                onPress={() => {
+                  logger.debug('ParameterExtensions', 'Torch toggle pressed');
+                  const next = torchState.value === 0 ? 1 : 0;
+                  setTorchState(next);
+                  setLocalTorchState(next);
+                }}
+                activeOpacity={0.8}
+                accessible={true}
+                accessibilityRole="button"
+                accessibilityLabel={localTorchState === 0 ? "OFF" : "ON"}
+                style={{ alignSelf: 'center' }}
+              >
                 <View
                   importantForAccessibility="no-hide-descendants"
                   accessibilityElementsHidden={true}
+                  pointerEvents="none"
                 >
                   <ParameterControl
                     label=""
