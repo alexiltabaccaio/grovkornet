@@ -20,6 +20,7 @@ jest.mock('@entities/system', () => ({
     return fn ? fn(state) : state;
   }),
   ParameterExtensionWrapper: 'ParameterExtensionWrapper',
+  GenericPillExtension: 'GenericPillExtension',
 }));
 
 describe('NoiseReductionExtension', () => {

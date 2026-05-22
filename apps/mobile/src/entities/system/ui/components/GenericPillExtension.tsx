@@ -19,6 +19,8 @@ interface GenericPillExtensionProps<T> {
   children?: React.ReactNode;
   opacity?: number | SharedValue<number> | ((option: T, index: number) => number | SharedValue<number>);
   scrollable?: boolean;
+  leftAccessory?: React.ReactNode;
+  rightAccessory?: React.ReactNode;
 }
 
 function GenericPillItemShared<T>({
@@ -115,6 +117,8 @@ export function GenericPillExtension<T>({
   children,
   opacity = 1,
   scrollable = false,
+  leftAccessory,
+  rightAccessory,
 }: GenericPillExtensionProps<T>) {
   const isDebugEnabled = useSystemStore((s) => s.isDebugEnabled);
 
@@ -124,6 +128,8 @@ export function GenericPillExtension<T>({
       gap={gap}
       paddingHorizontal={paddingHorizontal}
       scrollable={scrollable}
+      leftAccessory={leftAccessory}
+      rightAccessory={rightAccessory}
     >
       {children}
       {options.map((option, index) => {

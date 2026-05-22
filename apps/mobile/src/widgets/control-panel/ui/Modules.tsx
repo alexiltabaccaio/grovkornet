@@ -36,7 +36,7 @@ export const Modules = () => {
       <View style={[styles.sectionHeaderFrame, isDebugEnabled && styles.debugFrame]}>
         <Text style={styles.sectionTitle}>{t(`sections.${renderSection}`)}</Text>
       </View>
-      <View style={styles.container}>
+      <View style={[styles.container, isDebugEnabled && styles.debugContainerWrapper]}>
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
@@ -166,5 +166,10 @@ const styles = StyleSheet.create({
   debugFrame: {
     borderColor: 'magenta',
     backgroundColor: 'rgba(255, 0, 255, 0.2)',
+  },
+  debugContainerWrapper: {
+    borderWidth: 1,
+    borderColor: 'cyan',
+    backgroundColor: 'rgba(0, 255, 255, 0.1)',
   },
 });

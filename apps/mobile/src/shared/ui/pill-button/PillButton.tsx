@@ -14,8 +14,25 @@ export interface PillButtonProps {
   textStyle?: StyleProp<TextStyle>;
 }
 
-const getColors = (variant: 'default' | 'auto' | 'module', active: boolean) => {
+const getColors = (variant: 'default' | 'auto' | 'module', active: boolean, isDebugEnabled: boolean) => {
   'worklet';
+  if (isDebugEnabled) {
+    if (variant === 'module') {
+      return {
+        borderColor: 'cyan',
+        backgroundColor: 'rgba(0, 255, 255, 0.2)',
+        textColor: active ? '#FFF' : '#888',
+      };
+    }
+    if (!active) {
+      return {
+        borderColor: 'green',
+        backgroundColor: 'rgba(0, 255, 0, 0.2)',
+        textColor: '#888',
+      };
+    }
+  }
+
   if (!active) {
     if (variant === 'module') {
       return {
@@ -64,7 +81,7 @@ export const PillButton = ({
   const animatedStyle = useAnimatedStyle(() => {
     const active = typeof isActive === 'object' && 'value' in isActive ? isActive.value : isActive;
     const op = typeof opacity === 'object' && 'value' in opacity ? opacity.value : opacity;
-    const colors = getColors(variant, active);
+    const colors = getColors(variant, active, isDebugEnabled);
 
     return {
       borderColor: colors.borderColor,
@@ -75,7 +92,7 @@ export const PillButton = ({
 
   const animatedTextStyle = useAnimatedStyle(() => {
     const active = typeof isActive === 'object' && 'value' in isActive ? isActive.value : isActive;
-    const colors = getColors(variant, active);
+    const colors = getColors(variant, active, isDebugEnabled);
 
     return {
       color: colors.textColor,
@@ -89,7 +106,6 @@ export const PillButton = ({
           styles.pillButton,
           variant === 'auto' && styles.autoButton,
           animatedStyle,
-          isDebugEnabled && styles.debugStyle,
         ]}
       >
         <Animated.Text
@@ -128,9 +144,5 @@ const styles = StyleSheet.create({
   autoButton: {
     width: 32,
     alignSelf: 'auto',
-  },
-  debugStyle: {
-    backgroundColor: 'rgba(0, 255, 0, 0.2)',
-    borderColor: 'green',
   },
 });

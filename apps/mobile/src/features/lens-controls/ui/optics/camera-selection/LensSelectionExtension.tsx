@@ -2,10 +2,8 @@ import React from 'react';
 import { StyleProp, ViewStyle } from 'react-native';
 import { useShallow } from 'zustand/react/shallow';
 import { useLensStore } from '@entities/lens';
-import { useSystemStore } from '@entities/system';
+import { useSystemStore, GenericPillExtension } from '@entities/system';
 import { AutoButton } from '@shared/ui';
-import { GenericPillExtension } from '@entities/system';
-
 
 interface LensSelectionExtensionProps {
   parameterExtensionAnimatedStyle?: StyleProp<ViewStyle>;
@@ -32,13 +30,18 @@ export const LensSelectionExtension = ({ parameterExtensionAnimatedStyle }: Lens
       getLabel={(cam) => `${cam.focalLength35mm}mm`}
       parameterExtensionAnimatedStyle={parameterExtensionAnimatedStyle}
       pillMaxWidth={75}
-      opacity={() => cameraAuto ? 0.4 : 1}
-    >
-      <AutoButton
-        isActive={cameraAuto}
-        onPress={() => setCameraAuto(!cameraAuto)}
-        isDebugEnabled={isDebugEnabled}
-      />
-    </GenericPillExtension>
+      gap={8}
+      paddingHorizontal={24}
+      scrollable={true}
+      opacity={cameraAuto ? 0.4 : 1}
+      leftAccessory={
+        <AutoButton
+          isActive={cameraAuto}
+          onPress={() => setCameraAuto(!cameraAuto)}
+          isDebugEnabled={isDebugEnabled}
+        />
+      }
+    />
   );
 };
+

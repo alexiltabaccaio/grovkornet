@@ -10,6 +10,8 @@ interface ParameterExtensionWrapperProps {
   gap?: number;
   paddingHorizontal?: number;
   scrollable?: boolean;
+  leftAccessory?: React.ReactNode;
+  rightAccessory?: React.ReactNode;
 }
 
 export const ParameterExtensionWrapper = ({
@@ -18,8 +20,24 @@ export const ParameterExtensionWrapper = ({
   gap = 12,
   paddingHorizontal = 24,
   scrollable = false,
+  leftAccessory,
+  rightAccessory,
 }: ParameterExtensionWrapperProps) => {
   const isDebugEnabled = useSystemStore(state => state.isDebugEnabled);
+
+  const renderRightAccessory = () => {
+    if (rightAccessory) {
+      return (
+        <View style={styles.rightAccessoryContainer}>
+          {rightAccessory}
+        </View>
+      );
+    }
+    if (leftAccessory && !scrollable) {
+      return <View style={styles.rightPlaceholder} />;
+    }
+    return null;
+  };
 
   return (
     <View style={styles.container}>
@@ -33,19 +51,41 @@ export const ParameterExtensionWrapper = ({
             },
           ]}
         >
-          {scrollable ? (
-            <ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              contentContainerStyle={[styles.scrollContent, { gap, paddingHorizontal }]}
-            >
-              {children}
-            </ScrollView>
-          ) : (
-            <View style={[styles.buttonRow, { gap, paddingHorizontal }]}>
-              {children}
-            </View>
-          )}
+          <View
+            style={[
+              styles.rowContainer,
+              {
+                paddingLeft: paddingHorizontal,
+                paddingRight: scrollable && !rightAccessory ? 0 : paddingHorizontal,
+              },
+            ]}
+          >
+            {leftAccessory && (
+              <View style={styles.leftAccessoryContainer}>
+                {leftAccessory}
+              </View>
+            )}
+
+            {scrollable ? (
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={[
+                  styles.scrollContent,
+                  { gap, paddingRight: rightAccessory ? 0 : paddingHorizontal },
+                ]}
+                style={styles.centerContainer}
+              >
+                {children}
+              </ScrollView>
+            ) : (
+              <View style={[styles.buttonRow, { gap }]}>
+                {children}
+              </View>
+            )}
+
+            {renderRightAccessory()}
+          </View>
         </View>
       </Animated.View>
     </View>
@@ -71,11 +111,35 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'transparent',
   },
+  rowContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    width: '100%',
+  },
+  leftAccessoryContainer: {
+    width: 54,
+    marginRight: 16,
+    alignItems: 'flex-start',
+    justifyContent: 'center',
+  },
+  rightAccessoryContainer: {
+    width: 54,
+    marginLeft: 16,
+    alignItems: 'flex-end',
+    justifyContent: 'center',
+  },
+  rightPlaceholder: {
+    width: 54,
+    marginLeft: 16,
+  },
+  centerContainer: {
+    flex: 1,
+  },
   buttonRow: {
+    flex: 1,
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    width: '100%',
   },
   scrollContent: {
     flexDirection: 'row',
