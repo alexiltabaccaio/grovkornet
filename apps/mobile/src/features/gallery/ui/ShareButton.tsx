@@ -1,6 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, Alert } from 'react-native';
-import { TouchableOpacity } from 'react-native-gesture-handler';
+import { StyleSheet, Text, Alert, TouchableOpacity } from 'react-native';
 import Share, { Social } from 'react-native-share';
 import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';

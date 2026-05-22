@@ -52,7 +52,7 @@ const ReanimatedValueText = <T extends number | string>({ label, value, formatte
   return (
     <AnimatedTextInput
       editable={false}
-      defaultValue={`${label}: ${value.value}`}
+      defaultValue={`${label}: -`}
       style={styles.text}
       // @ts-expect-error - 'text' is a native property used by TextInput to avoid re-renders
       animatedProps={animatedProps}

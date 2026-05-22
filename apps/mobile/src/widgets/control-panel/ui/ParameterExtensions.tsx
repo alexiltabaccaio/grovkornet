@@ -1,10 +1,9 @@
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, TouchableOpacity } from 'react-native';
 import { useShallow } from 'zustand/react/shallow';
 import { useSystemStore, ParameterControl, ParameterExtensionWrapper } from '@entities/system';
 import { useBodyStore, useBodyWorklets } from '@entities/body';
-import { SharedValue, useAnimatedStyle, interpolate, Extrapolation } from 'react-native-reanimated';
-import Animated from 'react-native-reanimated';
+import Animated, { SharedValue, useAnimatedStyle, interpolate, Extrapolation, useAnimatedReaction, runOnJS } from 'react-native-reanimated';
 import { useTranslation } from 'react-i18next';
 import { SliderExtension } from './components/SliderExtension';
 
@@ -12,6 +11,8 @@ import { LanguageExtension, DebugExtension } from '@features/system-settings';
 import { NoiseReductionExtension, GrainExtension } from '@features/film-controls';
 import { LensSelectionExtension, ChromaticAberrationExtension } from '@features/lens-controls';
 import { AspectRatioExtension, FpsExtension, ResolutionExtension } from '@features/body-controls';
+
+import { logger } from '@shared/lib/logger';
 
 interface ParameterExtensionsProps {
   translateY: SharedValue<number>;
@@ -38,6 +39,19 @@ export const ParameterExtensions = ({ translateY }: ParameterExtensionsProps) =>
     torchStrength: state.torchStrength,
     setTorchStrength: state.setTorchStrength,
   })));
+
+  const [localTorchState, setLocalTorchState] = React.useState(0);
+
+  // Sync state correctly via Reanimated reaction without reading during render
+  useAnimatedReaction(
+    () => torchState.value,
+    (currentValue, previousValue) => {
+      if (currentValue !== previousValue) {
+        runOnJS(setLocalTorchState)(currentValue);
+      }
+    },
+    [torchState]
+  );
 
   const animatedStyle = useAnimatedStyle(() => {
     if (!translateY) return { opacity: 0 };
@@ -100,22 +114,39 @@ export const ParameterExtensions = ({ translateY }: ParameterExtensionsProps) =>
       return (
         <View style={styles.container}>
           <ParameterExtensionWrapper animatedStyle={parameterExtensionAnimatedStyle}>
-            <ParameterControl
-              label=""
-              isActive={false}
-              hideDebugRectangles={true}
+            <TouchableOpacity
               onPress={() => {
-                setTorchState(torchState.value === 0 ? 1 : 0);
+                logger.debug('ParameterExtensions', 'Torch toggle pressed');
+                const next = torchState.value === 0 ? 1 : 0;
+                setTorchState(next);
+                setLocalTorchState(next);
               }}
-              value={torchState}
-              variant="text"
-              renderValue={true}
-              isToggle={true}
-              valueFormatter={(v) => {
-                'worklet';
-                return v === 0 ? 'OFF' : 'ON';
-              }}
-            />
+              activeOpacity={0.8}
+              accessible={true}
+              accessibilityRole="button"
+              accessibilityLabel={localTorchState === 0 ? "OFF" : "ON"}
+            >
+              <View
+                importantForAccessibility="no-hide-descendants"
+                accessibilityElementsHidden={true}
+              >
+                <ParameterControl
+                  label=""
+                  isActive={false}
+                  hideDebugRectangles={true}
+                  onPress={() => {}}
+                  value={torchState}
+                  variant="text"
+                  renderValue={true}
+                  isToggle={true}
+                  valueFormatter={(v) => {
+                    'worklet';
+                    return v === 0 ? 'OFF' : 'ON';
+                  }}
+                  disableGestures={true}
+                />
+              </View>
+            </TouchableOpacity>
           </ParameterExtensionWrapper>
           <Animated.View style={[styles.childSubContainer, animatedStyle]}>
             <ParameterControl

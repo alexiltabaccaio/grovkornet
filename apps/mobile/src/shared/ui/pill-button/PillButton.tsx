@@ -1,6 +1,5 @@
 import React from 'react';
-import { StyleSheet, StyleProp, ViewStyle, TextStyle } from 'react-native';
-import { TouchableOpacity } from 'react-native-gesture-handler';
+import { StyleSheet, StyleProp, ViewStyle, TextStyle, TouchableOpacity } from 'react-native';
 import Animated, { useAnimatedStyle, SharedValue } from 'react-native-reanimated';
 
 export interface PillButtonProps {
@@ -100,7 +99,7 @@ export const PillButton = ({
   });
 
   return (
-    <TouchableOpacity onPress={onPress} containerStyle={[styles.pressable, style]} style={styles.pressable} activeOpacity={1}>
+    <TouchableOpacity onPress={onPress} style={[styles.pressable, style]} activeOpacity={1}>
       <Animated.View
         style={[
           styles.pillButton,

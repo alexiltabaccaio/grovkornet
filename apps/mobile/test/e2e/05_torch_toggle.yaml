@@ -1,0 +1,61 @@
+appId: com.grovkornet.app
+---
+# Inizializzazione pulita dell'app
+- launchApp:
+    clearState: true
+    permissions:
+      camera: grant
+      microphone: grant
+
+# Gestione popup compatibilità 16kB memory page (Android 15+)
+- tapOn:
+    text: "[Oo][Kk]"
+    optional: true
+
+# Gestione eventuale popup permessi a runtime
+- tapOn:
+    text: "(Mentre usi l'app|While using the app|Consenti|Allow).*"
+    optional: true
+
+# Attesa del caricamento iniziale dell'interfaccia
+- extendedWaitUntil:
+    visible: "SISTEMA"
+    timeout: 30000
+
+# 1. Navigazione nella sezione CORPO
+- tapOn: "CORPO"
+- assertVisible: "Esposizione"
+- assertVisible: "Illuminazione"
+
+# 2. Selezione del modulo "Illuminazione" (che attiva la Torcia)
+- tapOn: "Illuminazione"
+- assertVisible: "TORCIA"
+
+# 3. Trascina verso l'alto il bottom sheet a partire dall'etichetta TORCIA
+# per rivelare l'interruttore e l'estensione dell'intensità
+- swipe:
+    direction: UP
+    from:
+      text: "TORCIA"
+
+# 4. Verifica che il valore iniziale sia "OFF"
+- assertVisible: "OFF"
+
+# 5. Esegui vari cicli di accensione e spegnimento per verificare la reattività
+# Ciclo 1
+- tapOn: "OFF"
+- assertVisible: "ON"
+- tapOn: "ON"
+- assertVisible: "OFF"
+
+# Ciclo 2
+- tapOn: "OFF"
+- assertVisible: "ON"
+- tapOn: "ON"
+- assertVisible: "OFF"
+
+# Ciclo 3
+- tapOn: "OFF"
+- assertVisible: "ON"
+- tapOn: "ON"
+- assertVisible: "OFF"
