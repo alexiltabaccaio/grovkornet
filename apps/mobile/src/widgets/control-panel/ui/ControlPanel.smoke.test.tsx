@@ -67,9 +67,11 @@ describe('ControlPanel Component Stability Test', () => {
     torchStrength: { value: 0.5 },
     setTorchState: jest.fn(),
     setTorchStrength: jest.fn(),
-    resolutionSetting: { value: '1080p' },
+    resolutionSetting: { value: 1 },
     fpsSetting: { value: 30 },
-    aspectRatio: { value: '16:9' },
+    aspectRatio: { value: 1 },
+    previewIn4k: { value: 0 },
+    setPreviewIn4k: jest.fn(),
   };
 
   const mockLensStoreValue = {

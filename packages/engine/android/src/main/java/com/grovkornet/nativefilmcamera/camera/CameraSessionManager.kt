@@ -76,19 +76,32 @@ class CameraSessionManager(
             else -> Size(1920, 1080)
         }
 
-        val resolutionStrategy = if (targetSize != null) {
+        val captureResolutionStrategy = if (targetSize != null) {
             ResolutionStrategy(targetSize, ResolutionStrategy.FALLBACK_RULE_CLOSEST_HIGHER_THEN_LOWER)
         } else {
             ResolutionStrategy.HIGHEST_AVAILABLE_STRATEGY
         }
 
-        val resolutionSelector = ResolutionSelector.Builder()
+        val captureResolutionSelector = ResolutionSelector.Builder()
             .setAspectRatioStrategy(AspectRatioStrategy(targetAspectRatio, AspectRatioStrategy.FALLBACK_RULE_AUTO))
-            .setResolutionStrategy(resolutionStrategy)
+            .setResolutionStrategy(captureResolutionStrategy)
+            .build()
+
+        val previewResolutionStrategy = if (config.resolutionSetting == 0 && !config.previewIn4k) {
+            ResolutionStrategy(Size(1920, 1080), ResolutionStrategy.FALLBACK_RULE_CLOSEST_HIGHER_THEN_LOWER)
+        } else if (targetSize != null) {
+            ResolutionStrategy(targetSize, ResolutionStrategy.FALLBACK_RULE_CLOSEST_HIGHER_THEN_LOWER)
+        } else {
+            ResolutionStrategy.HIGHEST_AVAILABLE_STRATEGY
+        }
+
+        val previewResolutionSelector = ResolutionSelector.Builder()
+            .setAspectRatioStrategy(AspectRatioStrategy(targetAspectRatio, AspectRatioStrategy.FALLBACK_RULE_AUTO))
+            .setResolutionStrategy(previewResolutionStrategy)
             .build()
 
         val previewBuilder = Preview.Builder()
-            .setResolutionSelector(resolutionSelector)
+            .setResolutionSelector(previewResolutionSelector)
         
         captureCallback?.let {
             androidx.camera.camera2.interop.Camera2Interop.Extender(previewBuilder)
@@ -112,7 +125,7 @@ class CameraSessionManager(
 
             imageCapture = ImageCapture.Builder()
                 .setCaptureMode(ImageCapture.CAPTURE_MODE_MAXIMIZE_QUALITY)
-                .setResolutionSelector(resolutionSelector)
+                .setResolutionSelector(captureResolutionSelector)
                 .build()
 
             camera = provider.bindToLifecycle(lifecycleOwner, selector, preview, imageCapture)

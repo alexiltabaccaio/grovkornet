@@ -98,6 +98,9 @@ describe('useBodyStore', () => {
 
     store.setFpsSetting(30);
     expect(useBodyStore.getState().fpsSetting.value).toBe(30);
+
+    store.setPreviewIn4k(1);
+    expect(useBodyStore.getState().previewIn4k.value).toBe(1);
   });
 
   it('sets Capabilities and caps fpsSetting if needed', () => {

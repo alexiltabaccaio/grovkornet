@@ -23,6 +23,7 @@ interface BodyState {
   aspectRatio: SharedValue<number>;
   resolutionSetting: SharedValue<number>;
   fpsSetting: SharedValue<number>;
+  previewIn4k: SharedValue<number>;
   capabilities: BodyCapabilities;
 }
 
@@ -39,6 +40,7 @@ interface BodyActions {
   setAspectRatio: (value: number) => void;
   setResolutionSetting: (value: number) => void;
   setFpsSetting: (value: number) => void;
+  setPreviewIn4k: (value: number) => void;
   setCapabilities: (capabilities: BodyCapabilities) => void;
 }
 

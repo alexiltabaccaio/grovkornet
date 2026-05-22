@@ -40,6 +40,7 @@ class CameraEngine(
     private var lastBoundCameraId: String? = null
     private var lastBoundAspectRatio: Int = -1
     private var lastBoundResolutionSetting: Int = -1
+    private var lastBoundPreviewIn4K: Boolean? = null
     private var currentSurfaceTexture: SurfaceTexture? = null
 
     fun start(surfaceTexture: SurfaceTexture) {
@@ -47,14 +48,20 @@ class CameraEngine(
         lastBoundCameraId = config.cameraId
         lastBoundAspectRatio = config.aspectRatio
         lastBoundResolutionSetting = config.resolutionSetting
+        lastBoundPreviewIn4K = config.previewIn4k
         sessionManager.start(surfaceTexture, controlManager.createCaptureCallback())
     }
 
     fun updateCameraControls() {
-        if (config.cameraId != lastBoundCameraId || config.aspectRatio != lastBoundAspectRatio || config.resolutionSetting != lastBoundResolutionSetting) {
+        if (config.cameraId != lastBoundCameraId || 
+            config.aspectRatio != lastBoundAspectRatio || 
+            config.resolutionSetting != lastBoundResolutionSetting ||
+            config.previewIn4k != lastBoundPreviewIn4K
+        ) {
             lastBoundCameraId = config.cameraId
             lastBoundAspectRatio = config.aspectRatio
             lastBoundResolutionSetting = config.resolutionSetting
+            lastBoundPreviewIn4K = config.previewIn4k
             currentSurfaceTexture?.let { 
                 sessionManager.bindCameraUseCases(it, controlManager.createCaptureCallback())
             }

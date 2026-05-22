@@ -46,6 +46,8 @@
       "torch_dimmer": "DIMMER",
       "aspect_ratio": "FORMAT",
       "resolution_setting": "RESOLUTION",
+      "preview_in_4k": "PREVIEW IN 4K",
+      "preview_in_4k_warning": "OVERHEATING WARNING",
       "fps_setting": "FPS",
       "noise_reduction": "NOISE REDUCTION",
       "noise_reduction_mode": "ALGORITHM",

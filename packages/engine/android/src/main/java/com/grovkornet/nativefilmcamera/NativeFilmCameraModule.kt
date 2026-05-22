@@ -122,6 +122,11 @@ class NativeFilmCameraModule : Module() {
           view.updateBoth { resolutionSetting = value }
         }
       }
+      Prop("previewIn4k") { view: NativeFilmCameraView, value: Boolean ->
+        if (view.config.previewIn4k != value) {
+          view.updateBoth { previewIn4k = value }
+        }
+      }
       Prop("targetFps") { view: NativeFilmCameraView, value: Int ->
         if (view.config.targetFps != value) view.updateBoth { targetFps = value }
       }

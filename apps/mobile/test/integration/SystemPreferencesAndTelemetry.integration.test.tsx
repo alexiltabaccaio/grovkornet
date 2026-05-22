@@ -62,4 +62,36 @@ describe('SystemPreferencesAndTelemetry Integration', () => {
     expect(useBodyStore.getState().hwFps.value).toBe(60);
     expect(useBodyStore.getState().resolution.value).toBe('3840x2160');
   });
+
+  it('handles 4K preview decoupling integration correctly (toggle off)', () => {
+    act(() => {
+      useSystemStore.getState().setActiveParameter('resolution_setting');
+      useBodyStore.getState().resolutionSetting.value = 1; // 1080p
+      useBodyStore.getState().previewIn4k.value = 0;
+    });
+
+    const { getByTestId, queryByText } = render(<CameraScreen />);
+    const nativeCamera = getByTestId('native-film-camera');
+
+    // 4K preview toggle and warning should not render when resolution is 1080p
+    expect(queryByText('PARAMETERS.PREVIEW_IN_4K')).toBeNull();
+    expect(queryByText('parameters.preview_in_4k_warning')).toBeNull();
+    expect(nativeCamera.props.previewIn4k.value).toBe(false);
+  });
+
+  it('handles 4K preview decoupling integration correctly (toggle on)', () => {
+    act(() => {
+      useSystemStore.getState().setActiveParameter('resolution_setting');
+      useBodyStore.getState().resolutionSetting.value = 0; // 4K
+      useBodyStore.getState().previewIn4k.value = 1; // ON
+    });
+
+    const { getByTestId, queryByText } = render(<CameraScreen />);
+    const nativeCamera = getByTestId('native-film-camera');
+
+    // 4K preview toggle and warning should render and native prop should be true
+    expect(queryByText('PARAMETERS.PREVIEW_IN_4K')).toBeDefined();
+    expect(queryByText('parameters.preview_in_4k_warning')).toBeDefined();
+    expect(nativeCamera.props.previewIn4k.value).toBe(true);
+  });
 });

@@ -27,6 +27,7 @@ export const Viewfinder = ({ cameraKey }: ViewfinderProps) => {
     aspectRatio,
     resolutionSetting,
     fpsSetting,
+    previewIn4k,
     capabilities,
   } = useBodyStore(useShallow(state => ({
     iso: state.iso,
@@ -39,6 +40,7 @@ export const Viewfinder = ({ cameraKey }: ViewfinderProps) => {
     aspectRatio: state.aspectRatio,
     resolutionSetting: state.resolutionSetting,
     fpsSetting: state.fpsSetting,
+    previewIn4k: state.previewIn4k,
     capabilities: state.capabilities,
   })));
 
@@ -108,6 +110,10 @@ export const Viewfinder = ({ cameraKey }: ViewfinderProps) => {
     return Math.max(1, Math.round(torchStrength.value * (capabilities.maxTorchStrength ?? 1)));
   });
 
+  const resolvedPreviewIn4k = useDerivedValue(() => {
+    return previewIn4k.value === 1;
+  });
+
   return (
     <>
       <NativeRenderer
@@ -142,6 +148,7 @@ export const Viewfinder = ({ cameraKey }: ViewfinderProps) => {
         sharpening={sharpening as unknown as SharedValue<number | undefined>}
         cameraAspectRatio={aspectRatio as unknown as SharedValue<number | undefined>}
         resolutionSetting={resolutionSetting as unknown as SharedValue<number | undefined>}
+        previewIn4k={resolvedPreviewIn4k as unknown as SharedValue<boolean | undefined>}
         targetFps={fpsSetting as unknown as SharedValue<number | undefined>}
         onCapabilitiesUpdate={capabilitiesHandler}
         onDebugUpdate={debugHandler}

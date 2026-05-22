@@ -37,6 +37,7 @@ data class CameraConfiguration(
     var cameraId: String? = null,
     var aspectRatio: Int = 1,
     var resolutionSetting: Int = 1,
+    var previewIn4k: Boolean = false,
     var targetFps: Int = 60,
 
     // Viewport Props

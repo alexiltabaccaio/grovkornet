@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, TouchableOpacity, Text } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import { useShallow } from 'zustand/react/shallow';
 import { useSystemStore, ParameterControl, ParameterExtensionWrapper } from '@entities/system';
@@ -7,6 +7,7 @@ import { useBodyStore, useBodyWorklets } from '@entities/body';
 import Animated, { SharedValue, useAnimatedStyle, interpolate, Extrapolation, useAnimatedReaction, runOnJS } from 'react-native-reanimated';
 import { useTranslation } from 'react-i18next';
 import { SliderExtension } from './components/SliderExtension';
+import { Ionicons } from '@expo/vector-icons';
 
 import { LanguageExtension, DebugExtension } from '@features/system-settings';
 import { NoiseReductionExtension, GrainExtension } from '@features/film-controls';
@@ -34,14 +35,22 @@ export const ParameterExtensions = ({ translateY }: ParameterExtensionsProps) =>
     setTorchState,
     torchStrength,
     setTorchStrength,
+    resolutionSetting,
+    previewIn4k,
+    setPreviewIn4k,
   } = useBodyStore(useShallow(state => ({
     torchState: state.torchState,
     setTorchState: state.setTorchState,
     torchStrength: state.torchStrength,
     setTorchStrength: state.setTorchStrength,
+    resolutionSetting: state.resolutionSetting,
+    previewIn4k: state.previewIn4k,
+    setPreviewIn4k: state.setPreviewIn4k,
   })));
 
-  const [localTorchState, setLocalTorchState] = React.useState(0);
+  const [localTorchState, setLocalTorchState] = React.useState(torchState.value);
+  const [localResolutionSetting, setLocalResolutionSetting] = React.useState(resolutionSetting.value);
+  const [localPreviewIn4k, setLocalPreviewIn4k] = React.useState(previewIn4k.value);
 
   // Sync state correctly via Reanimated reaction without reading during render
   useAnimatedReaction(
@@ -52,6 +61,26 @@ export const ParameterExtensions = ({ translateY }: ParameterExtensionsProps) =>
       }
     },
     [torchState]
+  );
+
+  useAnimatedReaction(
+    () => resolutionSetting.value,
+    (currentValue, previousValue) => {
+      if (currentValue !== previousValue) {
+        runOnJS(setLocalResolutionSetting)(currentValue);
+      }
+    },
+    [resolutionSetting]
+  );
+
+  useAnimatedReaction(
+    () => previewIn4k.value,
+    (currentValue, previousValue) => {
+      if (currentValue !== previousValue) {
+        runOnJS(setLocalPreviewIn4k)(currentValue);
+      }
+    },
+    [previewIn4k]
   );
 
   const animatedStyle = useAnimatedStyle(() => {
@@ -186,7 +215,47 @@ export const ParameterExtensions = ({ translateY }: ParameterExtensionsProps) =>
     case 'fps_setting':
       return <FpsExtension parameterExtensionAnimatedStyle={parameterExtensionAnimatedStyle} />;
     case 'resolution_setting':
-      return <ResolutionExtension parameterExtensionAnimatedStyle={parameterExtensionAnimatedStyle} />;
+      return (
+        <View style={styles.container}>
+          <ResolutionExtension parameterExtensionAnimatedStyle={parameterExtensionAnimatedStyle} />
+          {localResolutionSetting === 0 && (
+            <Animated.View style={[styles.previewIn4kContainer, animatedStyle]}>
+              <View style={styles.toggleRowContainer}>
+                <Text style={styles.toggleLabel} allowFontScaling={false}>
+                  {t('parameters.preview_in_4k').toUpperCase()}
+                </Text>
+                <TouchableOpacity
+                  onPress={() => {
+                    logger.debug('ParameterExtensions', 'Preview in 4K toggle pressed');
+                    const next = previewIn4k.value === 0 ? 1 : 0;
+                    setPreviewIn4k(next);
+                    setLocalPreviewIn4k(next);
+                  }}
+                  activeOpacity={0.8}
+                  accessible={true}
+                  accessibilityRole="button"
+                  accessibilityLabel={t('parameters.preview_in_4k')}
+                  style={[
+                    styles.pillButton,
+                    localPreviewIn4k === 1 ? styles.pillButtonActive : styles.pillButtonInactive
+                  ]}
+                >
+                  <Text style={styles.pillValueText} allowFontScaling={false}>
+                    {localPreviewIn4k === 1 ? 'ON' : 'OFF'}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+
+              <View style={styles.warningContainer}>
+                <Ionicons name="warning-outline" size={14} color="#FF453A" style={{ marginRight: 4 }} />
+                <Text style={styles.warningText} allowFontScaling={false}>
+                  {t('parameters.preview_in_4k_warning')}
+                </Text>
+              </View>
+            </Animated.View>
+          )}
+        </View>
+      );
 
     // Slider-only parameters (no children)
     case 'bloom':
@@ -225,5 +294,68 @@ const styles = StyleSheet.create({
     paddingTop: 6,
     width: '100%',
     gap: 40,
+  },
+  previewIn4kContainer: {
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingTop: 6,
+    width: '100%',
+    gap: 8,
+  },
+  toggleRowContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+  },
+  toggleLabel: {
+    color: '#CCC',
+    fontSize: 11,
+    fontWeight: '700',
+    letterSpacing: 0.5,
+  },
+  pillButton: {
+    height: 28,
+    borderRadius: 14,
+    paddingHorizontal: 10,
+    borderWidth: 1,
+    minWidth: 46,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  pillButtonActive: {
+    backgroundColor: 'rgba(255, 255, 255, 0.12)',
+    borderColor: '#FFF',
+  },
+  pillButtonInactive: {
+    backgroundColor: 'rgba(255, 255, 255, 0.04)',
+    borderColor: '#333',
+  },
+  pillValueText: {
+    fontSize: 10,
+    fontWeight: '900',
+    color: '#FFF',
+    textAlign: 'center',
+    padding: 0,
+    margin: 0,
+    letterSpacing: 0.5,
+  },
+  warningContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(255, 69, 58, 0.1)',
+    borderRadius: 6,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 69, 58, 0.2)',
+  },
+  warningText: {
+    color: '#FF453A',
+    fontSize: 10,
+    fontWeight: '800',
+    letterSpacing: 0.5,
   },
 });

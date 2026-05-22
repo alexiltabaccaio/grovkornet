@@ -13,6 +13,7 @@ class CameraConfigurationTest {
         assertTrue(config.isoAuto)
         assertEquals(400, config.iso)
         assertNull(config.cameraId)
+        assertFalse(config.previewIn4k)
     }
 
     @Test
@@ -21,10 +22,12 @@ class CameraConfigurationTest {
         config.iso = 800
         config.isoAuto = false
         config.saturation = 0.5f
+        config.previewIn4k = true
         
         assertEquals(800, config.iso)
         assertFalse(config.isoAuto)
         assertEquals(0.5f, config.saturation)
+        assertTrue(config.previewIn4k)
     }
 
     @Test

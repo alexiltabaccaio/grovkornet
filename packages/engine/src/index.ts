@@ -31,6 +31,7 @@ export interface NativeFilmCameraViewProps extends ViewProps {
   sharpening?: number;
   cameraAspectRatio?: number;
   resolutionSetting?: number;
+  previewIn4k?: boolean;
   targetFps?: number;
   onDebugUpdate?: (event: { nativeEvent: { fps: number; hwFps: number; resolution: string } }) => void;
   onExposureUpdate?: (event: { nativeEvent: { iso: number; shutterSpeed: number; focusDistance?: number } }) => void;
