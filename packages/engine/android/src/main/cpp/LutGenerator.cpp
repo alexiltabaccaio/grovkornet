@@ -107,6 +107,11 @@ void LutGenerator::applyLutTextureUpdate(filament::Engine& engine, filament::Tex
     }
 }
 
+void LutGenerator::waitForLut() {
+    std::unique_lock<std::mutex> lock(lutMutex);
+    lutCv.wait(lock, [this]() { return !lutThreadRunning || (!lutParametersDirty && !isComputingLut); });
+}
+
 void LutGenerator::lutGenerationLoop() {
     std::vector<uint8_t> tempBuffer(LUT_SIZE * LUT_SIZE * LUT_SIZE * 4);
     
@@ -132,6 +137,7 @@ void LutGenerator::lutGenerationLoop() {
             tint = currentTint;
             
             lutParametersDirty = false;
+            isComputingLut = true;
         }
         
         // Compute LUT on CPU
@@ -188,6 +194,7 @@ void LutGenerator::lutGenerationLoop() {
             std::unique_lock<std::mutex> lock(lutMutex);
             lutBuffer = tempBuffer;
             lutDataReady = true;
+            isComputingLut = false;
             lutCv.notify_all(); // Wake up any waiting render thread
         }
     }

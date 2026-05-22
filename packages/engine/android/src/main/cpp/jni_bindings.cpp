@@ -137,6 +137,7 @@ Java_com_grovkornet_nativefilmcamera_rendering_OffscreenFilmProcessor_nativeProc
 
         // 4. Trigger LUT calculation on CPU and apply it to GPU texture
         enginePtr->triggerLutUpdate(saturation, contrast, ev, white_balance, tint);
+        enginePtr->lutGenerator.waitForLut();
         enginePtr->applyLutTextureUpdate();
         enginePtr->applyOverlayTextureUpdate();
 
@@ -267,6 +268,7 @@ Java_com_grovkornet_nativefilmcamera_rendering_OffscreenFilmProcessor_nativeProc
 
         // 4. Trigger LUT calculation on CPU and apply it to GPU texture
         enginePtr->triggerLutUpdate(saturation, contrast, ev, white_balance, tint);
+        enginePtr->lutGenerator.waitForLut();
         enginePtr->applyLutTextureUpdate();
         enginePtr->applyOverlayTextureUpdate();
 

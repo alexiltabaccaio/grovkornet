@@ -18,6 +18,7 @@ public:
 
     void triggerLutUpdate(float saturation, float contrast, float ev, float whiteBalance, float tint);
     void applyLutTextureUpdate(filament::Engine& engine, filament::Texture* lutTexture);
+    void waitForLut();
 
     // Active cache getters (for keeping track of parameters currently bound on GPU)
     float getActiveSaturation() const { return activeSaturation; }
@@ -32,6 +33,7 @@ private:
     bool lutThreadRunning = false;
     bool lutParametersDirty = false;
     bool lutDataReady = false;
+    bool isComputingLut = false;
 
     // Sliders
     float currentSaturation = 1.0f;
