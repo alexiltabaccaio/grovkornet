@@ -1,7 +1,6 @@
 import React from 'react';
-import { StyleSheet, View, StyleProp, ViewStyle } from 'react-native';
+import { StyleSheet, View, StyleProp, ViewStyle, ScrollView } from 'react-native';
 import Animated from 'react-native-reanimated';
-import { ScrollView } from 'react-native-gesture-handler';
 import { useSystemStore } from '@entities/system';
 
 interface ParameterExtensionWrapperProps {
