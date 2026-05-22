@@ -99,19 +99,8 @@ export const useParameterGesture = ({
         const dx = e.translationX - lastX.value;
         lastX.value = e.translationX;
         
-        // Determina il moltiplicatore di sensibilità in base alla distanza verticale
-        const verticalOffset = Math.abs(e.translationY);
-        let multiplier = 1.0;
-        if (verticalOffset >= 120) {
-          multiplier = 0.05; // Precisione estrema
-        } else if (verticalOffset >= 80) {
-          multiplier = 0.25; // Precisione fine
-        } else if (verticalOffset >= 40) {
-          multiplier = 0.5; // Precisione media
-        }
-        
         const range = maxValue - minValue;
-        const delta = (dx / travel) * range * direction * multiplier;
+        const delta = (dx / travel) * range * direction;
           
         const newValue = Math.min(Math.max(accumulatedValue.value + delta, minValue), maxValue);
         accumulatedValue.value = newValue;
