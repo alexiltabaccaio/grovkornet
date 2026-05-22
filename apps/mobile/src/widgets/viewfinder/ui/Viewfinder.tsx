@@ -16,6 +16,7 @@ interface ViewfinderProps {
 }
 
 export const Viewfinder = ({ cameraKey }: ViewfinderProps) => {
+  // 1. SharedValues a riferimento stabile (estratte staticamente per evitare abbonamento React)
   const {
     iso,
     shutterSpeed,
@@ -28,33 +29,12 @@ export const Viewfinder = ({ cameraKey }: ViewfinderProps) => {
     resolutionSetting,
     fpsSetting,
     previewIn4k,
-    capabilities,
-  } = useBodyStore(useShallow(state => ({
-    iso: state.iso,
-    shutterSpeed: state.shutterSpeed,
-    ev: state.ev,
-    isoAuto: state.isoAuto,
-    shutterSpeedAuto: state.shutterSpeedAuto,
-    torchState: state.torchState,
-    torchStrength: state.torchStrength,
-    aspectRatio: state.aspectRatio,
-    resolutionSetting: state.resolutionSetting,
-    fpsSetting: state.fpsSetting,
-    previewIn4k: state.previewIn4k,
-    capabilities: state.capabilities,
-  })));
+  } = useBodyStore.getState();
 
   const {
     focusAuto,
     focusDistance,
-    cameraAuto,
-    cameraId,
-  } = useLensStore(useShallow(state => ({
-    focusAuto: state.focusAuto,
-    focusDistance: state.focusDistance,
-    cameraAuto: state.cameraAuto,
-    cameraId: state.cameraId,
-  })));
+  } = useLensStore.getState();
 
   const {
     noiseReductionAuto,
@@ -74,27 +54,18 @@ export const Viewfinder = ({ cameraKey }: ViewfinderProps) => {
     tint,
     temperatureAuto,
     sharpening,
-  } = useFilmStore(useShallow(state => ({
-    noiseReductionAuto: state.noiseReductionAuto,
-    noiseReductionMode: state.noiseReductionMode,
-    saturation: state.saturation,
-    contrast: state.contrast,
-    chromaticAberration: state.chromaticAberration,
-    aberrationDirection: state.aberrationDirection,
-    grainIntensity: state.grainIntensity,
-    grainChroma: state.grainChroma,
-    grainSize: state.grainSize,
-    grainSpeed: state.grainSpeed,
-    grainEnabled: state.grainEnabled,
-    bloomEnabled: state.bloomEnabled,
-    bloomIntensity: state.bloomIntensity,
-    temperature: state.temperature,
-    tint: state.tint,
-    temperatureAuto: state.temperatureAuto,
-    sharpening: state.sharpening,
+  } = useFilmStore.getState();
+
+  // 2. Azioni stabili
+  const setLatestCapturedUri = useSystemStore.getState().setLatestCapturedUri;
+
+  // 3. Primitive reattive (abbonate per causare re-render solo quando necessario)
+  const capabilities = useBodyStore(state => state.capabilities);
+  const { cameraAuto, cameraId } = useLensStore(useShallow(state => ({
+    cameraAuto: state.cameraAuto,
+    cameraId: state.cameraId,
   })));
 
-  const setLatestCapturedUri = useSystemStore(state => state.setLatestCapturedUri);
   const cameraRef = useCameraCapture();
   const { exposureHandler, debugHandler, capabilitiesHandler, torchStateHandler } = useCameraEvents();
 
@@ -108,7 +79,7 @@ export const Viewfinder = ({ cameraKey }: ViewfinderProps) => {
 
   const resolvedTorchStrength = useDerivedValue(() => {
     return Math.max(1, Math.round(torchStrength.value * (capabilities.maxTorchStrength ?? 1)));
-  });
+  }, [capabilities.maxTorchStrength]);
 
   const resolvedPreviewIn4k = useDerivedValue(() => {
     return previewIn4k.value === 1;

@@ -13,13 +13,11 @@ interface DebugExtensionProps {
 
 export const DebugExtension = __DEV__ ? ({ parameterExtensionAnimatedStyle }: DebugExtensionProps) => {
   const { t } = useTranslation();
-  const { isDebugEnabled, setIsDebugEnabled, isLogsEnabled, setIsLogsEnabled, isXRayEnabled, setIsXRayEnabled } = useSystemStore(useShallow(state => ({
+  const { isDebugEnabled, setIsDebugEnabled, isLogsEnabled, setIsLogsEnabled } = useSystemStore(useShallow(state => ({
     isDebugEnabled: state.isDebugEnabled,
     setIsDebugEnabled: state.setIsDebugEnabled,
     isLogsEnabled: state.isLogsEnabled,
     setIsLogsEnabled: state.setIsLogsEnabled,
-    isXRayEnabled: state.isXRayEnabled,
-    setIsXRayEnabled: state.setIsXRayEnabled,
   })));
 
   const labelUI = t('parameters.debug_ui') ? t('parameters.debug_ui').toUpperCase() : 'UI';
@@ -38,13 +36,6 @@ export const DebugExtension = __DEV__ ? ({ parameterExtensionAnimatedStyle }: De
         label={labelLogs}
         isActive={isLogsEnabled}
         onPress={() => setIsLogsEnabled(!isLogsEnabled)}
-        isDebugEnabled={isDebugEnabled}
-        style={styles.pressable}
-      />
-      <PillButton
-        label="X-RAY"
-        isActive={isXRayEnabled}
-        onPress={() => setIsXRayEnabled(!isXRayEnabled)}
         isDebugEnabled={isDebugEnabled}
         style={styles.pressable}
       />
