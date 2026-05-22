@@ -20,7 +20,7 @@ export const Viewfinder = ({ cameraKey }: ViewfinderProps) => {
   const filmStore = useFilmStore();
   const setLatestCapturedUri = useSystemStore(state => state.setLatestCapturedUri);
   const cameraRef = useCameraCapture();
-  const { exposureHandler, debugHandler, capabilitiesHandler } = useCameraEvents(bodyStore, lensStore, filmStore);
+  const { exposureHandler, debugHandler, capabilitiesHandler, torchStateHandler } = useCameraEvents(bodyStore, lensStore, filmStore);
 
   const photoHandler = React.useCallback((event: { nativeEvent: { uri: string } }) => {
     setLatestCapturedUri(event.nativeEvent.uri);
@@ -73,6 +73,7 @@ export const Viewfinder = ({ cameraKey }: ViewfinderProps) => {
         onDebugUpdate={debugHandler}
         onExposureUpdate={exposureHandler}
         onPhotoCaptured={photoHandler}
+        onTorchStateChanged={torchStateHandler}
       />
       <FlashOverlay />
     </>

@@ -58,4 +58,29 @@ describe('useCameraEvents', () => {
 
     expect(useLensStore.getState().capabilities.availableCameras).toEqual([{ id: 'back', focalLength: 24, focalLength35mm: 24 }]);
   });
+
+  it('updates torch state on torch state change event', () => {
+    const bodyStore = useBodyStore.getState();
+    const lensStore = useLensStore.getState();
+    const filmStore = useFilmStore.getState();
+    bodyStore.torchState.value = 0;
+
+    const { result } = renderHook(() => useCameraEvents(bodyStore, lensStore, filmStore));
+
+    result.current.torchStateHandler({
+      nativeEvent: {
+        enabled: true,
+      },
+    });
+
+    expect(bodyStore.torchState.value).toBe(1);
+
+    result.current.torchStateHandler({
+      nativeEvent: {
+        enabled: false,
+      },
+    });
+
+    expect(bodyStore.torchState.value).toBe(0);
+  });
 });

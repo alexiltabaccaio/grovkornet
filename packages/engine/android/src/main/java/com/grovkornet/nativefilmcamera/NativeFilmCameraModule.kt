@@ -24,7 +24,8 @@ class NativeFilmCameraModule : Module() {
         "onDebugUpdate",
         "onExposureUpdate",
         "onCapabilitiesUpdate",
-        "onPhotoCaptured"
+        "onPhotoCaptured",
+        "onTorchStateChanged"
       )
 
       Prop("saturation") { view: NativeFilmCameraView, value: Float ->

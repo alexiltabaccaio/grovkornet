@@ -65,9 +65,19 @@ export const useCameraEvents = (
     }
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const torchStateHandler = (event: any) => {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    const nativeEvent = (event?.nativeEvent || event) as { enabled: boolean };
+    if (nativeEvent && nativeEvent.enabled !== undefined) {
+      updateSharedValue(bodyStore.torchState, nativeEvent.enabled ? 1 : 0);
+    }
+  };
+
   return {
     exposureHandler,
     debugHandler,
     capabilitiesHandler,
+    torchStateHandler,
   };
 };

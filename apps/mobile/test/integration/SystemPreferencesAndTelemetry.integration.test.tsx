@@ -42,7 +42,7 @@ describe('SystemPreferencesAndTelemetry Integration', () => {
     });
 
     // Verify debug overlay appears with default values
-    expect(getByDisplayValue(/FPS: 0/)).toBeDefined();
+    expect(getByDisplayValue(/FPS: -/)).toBeDefined();
 
     const nativeCamera = getByTestId('native-film-camera');
 

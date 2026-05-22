@@ -41,6 +41,7 @@ export interface NativeFilmCameraViewProps extends ViewProps {
     availableCameras: Array<{ id: string; focalLength: number; focalLength35mm: number }>;
   } }) => void;
   onPhotoCaptured?: (event: { nativeEvent: { uri: string } }) => void;
+  onTorchStateChanged?: (event: { nativeEvent: { enabled: boolean } }) => void;
 }
 
 const NativeFilmCameraView: React.ComponentType<NativeFilmCameraViewProps> =

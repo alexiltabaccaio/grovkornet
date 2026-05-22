@@ -6,6 +6,12 @@ import android.util.Log
 import android.view.Choreographer
 import android.view.SurfaceHolder
 import android.view.SurfaceView
+import android.hardware.camera2.CameraManager
+import android.hardware.camera2.CameraCharacteristics
+import android.os.Handler
+import android.os.Looper
+import androidx.lifecycle.DefaultLifecycleObserver
+import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ProcessLifecycleOwner
 import com.facebook.react.bridge.WritableMap
 import com.grovkornet.nativefilmcamera.camera.CameraEngine
@@ -34,6 +40,69 @@ class NativeFilmCameraView(context: Context) : SurfaceView(context), SurfaceHold
     val onExposureUpdate by EventDispatcher()
     val onCapabilitiesUpdate by EventDispatcher()
     val onPhotoCaptured by EventDispatcher()
+    val onTorchStateChanged by EventDispatcher()
+
+    private val cameraManager = context.getSystemService(Context.CAMERA_SERVICE) as CameraManager
+    private val activeSystemTorches = mutableSetOf<String>()
+    private var isTorchOnAtSystemLevel = false
+
+    private val torchCallback = object : CameraManager.TorchCallback() {
+        override fun onTorchModeChanged(cameraId: String, enabled: Boolean) {
+            if (enabled) {
+                activeSystemTorches.add(cameraId)
+            } else {
+                activeSystemTorches.remove(cameraId)
+            }
+
+            val currentCameraId = config.cameraId ?: getBackCameraIdFallback()
+            if (cameraId == currentCameraId) {
+                isTorchOnAtSystemLevel = enabled
+                
+                if (config.torchEnabled != enabled) {
+                    config.torchEnabled = enabled
+                    updateScheduler?.schedule()
+                }
+
+                if (!isReleased) {
+                    onTorchStateChanged(mapOf("enabled" to enabled))
+                }
+            }
+        }
+
+        override fun onTorchModeUnavailable(cameraId: String) {
+            // No-op
+        }
+    }
+
+    private val lifecycleObserver = object : DefaultLifecycleObserver {
+        override fun onStop(owner: LifecycleOwner) {
+            if (config.torchEnabled) {
+                val targetCameraId = config.cameraId ?: getBackCameraIdFallback()
+                if (targetCameraId != null) {
+                    try {
+                        cameraManager.setTorchMode(targetCameraId, true)
+                    } catch (e: Exception) {
+                        Log.e("NativeFilmCameraView", "Failed to set torch mode on background", e)
+                    }
+                }
+            }
+        }
+    }
+
+    private fun getBackCameraIdFallback(): String? {
+        try {
+            for (id in cameraManager.cameraIdList) {
+                val chars = cameraManager.getCameraCharacteristics(id)
+                val facing = chars.get(CameraCharacteristics.LENS_FACING)
+                if (facing == CameraCharacteristics.LENS_FACING_BACK) {
+                    return id
+                }
+            }
+        } catch (e: Exception) {
+            Log.e("NativeFilmCameraView", "Failed to get fallback back camera ID", e)
+        }
+        return null
+    }
 
     fun updateEffect(action: CameraConfiguration.() -> Unit) {
         config.action()
@@ -92,6 +161,13 @@ class NativeFilmCameraView(context: Context) : SurfaceView(context), SurfaceHold
                 cameraEngine?.updateCameraControls()
             }
         )
+
+        try {
+            cameraManager.registerTorchCallback(torchCallback, Handler(Looper.getMainLooper()))
+        } catch (e: Exception) {
+            Log.e("NativeFilmCameraView", "Failed to register torch callback", e)
+        }
+        ProcessLifecycleOwner.get().lifecycle.addObserver(lifecycleObserver)
     }
 
     fun takePhoto() {
@@ -114,7 +190,7 @@ class NativeFilmCameraView(context: Context) : SurfaceView(context), SurfaceHold
             updateConfig(config)
             start()
             // Access looper to block until the thread is fully started and handler/looper are ready
-            val threadLooper = looper
+            looper
             updateDimensions(surfaceWidth, surfaceHeight)
         }
     }
@@ -137,10 +213,33 @@ class NativeFilmCameraView(context: Context) : SurfaceView(context), SurfaceHold
         isReleased = true
         Log.i("NativeFilmCameraView", "Releasing NativeFilmCameraView...")
 
+        try {
+            cameraManager.unregisterTorchCallback(torchCallback)
+        } catch (e: Exception) {
+            Log.e("NativeFilmCameraView", "Failed to unregister torch callback", e)
+        }
+
+        try {
+            ProcessLifecycleOwner.get().lifecycle.removeObserver(lifecycleObserver)
+        } catch (e: Exception) {
+            Log.e("NativeFilmCameraView", "Failed to remove lifecycle observer", e)
+        }
+
+        val wasTorchEnabled = config.torchEnabled
+        val targetCameraId = config.cameraId ?: getBackCameraIdFallback()
+
         updateScheduler?.release()
         cameraEngine?.release()
         
         renderThread?.release()
         renderThread = null
+
+        if (wasTorchEnabled && targetCameraId != null) {
+            try {
+                cameraManager.setTorchMode(targetCameraId, true)
+            } catch (e: Exception) {
+                Log.e("NativeFilmCameraView", "Failed to set torch mode on release", e)
+            }
+        }
     }
 }
