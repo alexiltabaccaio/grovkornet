@@ -3,8 +3,11 @@ package com.grovkornet.nativefilmcamera.rendering
 import android.graphics.Bitmap
 import android.util.Log
 import com.grovkornet.nativefilmcamera.state.CameraConfiguration
+import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import kotlinx.coroutines.withContext
+import java.util.concurrent.Executors
 
 class OffscreenFilmProcessor {
     private val TAG = "OffscreenProcessor"
@@ -17,6 +20,8 @@ class OffscreenFilmProcessor {
     private var currentHeight = 0
 
     companion object {
+        private val singleThreadContext = Executors.newSingleThreadExecutor().asCoroutineDispatcher()
+        
         init {
             try {
                 System.loadLibrary("grovkornet-engine")
@@ -63,14 +68,20 @@ class OffscreenFilmProcessor {
     private external fun nativeGetDrsScale(nativeEnginePtr: Long): Float
     private external fun nativeSimulateFrameTime(nativeEnginePtr: Long, frameTimeMs: Float)
 
-    fun prepare(width: Int, height: Int, assetManager: android.content.res.AssetManager) {
-        if (isPrepared && currentWidth == width && currentHeight == height) return
+    suspend fun prepare(width: Int, height: Int, assetManager: android.content.res.AssetManager) = withContext(singleThreadContext) {
+        if (isPrepared && currentWidth == width && currentHeight == height) return@withContext
         
         val startTime = System.currentTimeMillis()
         Log.i(TAG, "Preparing native Filament engine for ${width}x${height}...")
 
         try {
-            if (isPrepared) release()
+            if (isPrepared) {
+                if (nativeEnginePtr != 0L) {
+                    nativeRelease(nativeEnginePtr)
+                    nativeEnginePtr = 0L
+                }
+                isPrepared = false
+            }
 
             nativeEnginePtr = nativePrepare(width, height, assetManager)
             if (nativeEnginePtr == 0L) {
@@ -88,65 +99,67 @@ class OffscreenFilmProcessor {
         }
     }
 
-    suspend fun process(input: Bitmap, params: CameraConfiguration, context: android.content.Context): Bitmap = processMutex.withLock {
-        if (!isPrepared) {
-            Log.w(TAG, "Processor not prepared, preparing now (this will cause lag)...")
-            prepare(input.width, input.height, context.assets)
-        }
-        
-        // If resolution changed, we need to re-prepare
-        if (input.width != currentWidth || input.height != currentHeight) {
-            Log.i(TAG, "Resolution changed from ${currentWidth}x${currentHeight} to ${input.width}x${input.height}. Re-preparing...")
-            prepare(input.width, input.height, context.assets)
-        }
-
-        if (nativeEnginePtr == 0L) {
-            Log.e(TAG, "Native engine pointer is null, returning original bitmap")
-            return input
-        }
-
-        val startTime = System.currentTimeMillis()
-        val width = input.width
-        val height = input.height
-
-        try {
-            val outputBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
-            val time = ((System.currentTimeMillis() / 1000.0) % (Math.PI * 2.0)).toFloat()
+    suspend fun process(input: Bitmap, params: CameraConfiguration, context: android.content.Context): Bitmap = withContext(singleThreadContext) {
+        processMutex.withLock {
+            if (!isPrepared) {
+                Log.w(TAG, "Processor not prepared, preparing now (this will cause lag)...")
+                prepare(input.width, input.height, context.assets)
+            }
             
-            // Process pixels in C++
-            nativeProcessBitmap(
-                nativeEnginePtr,
-                input,
-                outputBitmap,
-                params.saturation,
-                params.contrast,
-                if (params.grainEnabled) params.grainIntensity else 0.0f,
-                params.grainChroma,
-                params.grainSize,
-                params.grainSpeed,
-                params.vignetteIntensity,
-                params.vhsIntensity,
-                time,
-                params.ev,
-                params.whiteBalance,
-                params.tint,
-                if (params.bloomEnabled) params.bloomIntensity else 0.0f,
-                params.aberration,
-                params.aberrationDirection.toFloat(),
-                params.sharpening
-            )
+            // If resolution changed, we need to re-prepare
+            if (input.width != currentWidth || input.height != currentHeight) {
+                Log.i(TAG, "Resolution changed from ${currentWidth}x${currentHeight} to ${input.width}x${input.height}. Re-preparing...")
+                prepare(input.width, input.height, context.assets)
+            }
 
-            // FIX: Filament reads pixels with a bottom-left origin, so the resulting bitmap is upside down.
-            // We must vertically flip the bitmap to match Android's top-left coordinate system.
-            val flipMatrix = android.graphics.Matrix().apply { postScale(1f, -1f) }
-            val flippedBitmap = Bitmap.createBitmap(outputBitmap, 0, 0, width, height, flipMatrix, true)
-            outputBitmap.recycle()
+            if (nativeEnginePtr == 0L) {
+                Log.e(TAG, "Native engine pointer is null, returning original bitmap")
+                return@withContext input
+            }
 
-            Log.i(TAG, "Frame processed natively in ${System.currentTimeMillis() - startTime}ms")
-            return flippedBitmap
-        } catch (e: Exception) {
-            Log.e(TAG, "Offscreen native processing failed", e)
-            return input
+            val startTime = System.currentTimeMillis()
+            val width = input.width
+            val height = input.height
+
+            try {
+                val outputBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+                val time = ((System.currentTimeMillis() / 1000.0) % (Math.PI * 2.0)).toFloat()
+                
+                // Process pixels in C++
+                nativeProcessBitmap(
+                    nativeEnginePtr,
+                    input,
+                    outputBitmap,
+                    params.saturation,
+                    params.contrast,
+                    if (params.grainEnabled) params.grainIntensity else 0.0f,
+                    params.grainChroma,
+                    params.grainSize,
+                    params.grainSpeed,
+                    params.vignetteIntensity,
+                    params.vhsIntensity,
+                    time,
+                    params.ev,
+                    params.whiteBalance,
+                    params.tint,
+                    if (params.bloomEnabled) params.bloomIntensity else 0.0f,
+                    params.aberration,
+                    params.aberrationDirection.toFloat(),
+                    params.sharpening
+                )
+
+                // FIX: Filament reads pixels with a bottom-left origin, so the resulting bitmap is upside down.
+                // We must vertically flip the bitmap to match Android's top-left coordinate system.
+                val flipMatrix = android.graphics.Matrix().apply { postScale(1f, -1f) }
+                val flippedBitmap = Bitmap.createBitmap(outputBitmap, 0, 0, width, height, flipMatrix, true)
+                outputBitmap.recycle()
+
+                Log.i(TAG, "Frame processed natively in ${System.currentTimeMillis() - startTime}ms")
+                return@withContext flippedBitmap
+            } catch (e: Exception) {
+                Log.e(TAG, "Offscreen native processing failed", e)
+                return@withContext input
+            }
         }
     }
 
@@ -154,7 +167,7 @@ class OffscreenFilmProcessor {
         hardwareBuffer: android.hardware.HardwareBuffer,
         params: CameraConfiguration,
         context: android.content.Context
-    ) {
+    ) = withContext(singleThreadContext) {
         processMutex.withLock {
             if (!isPrepared) {
                 Log.w(TAG, "Processor not prepared, preparing now...")
@@ -168,7 +181,7 @@ class OffscreenFilmProcessor {
 
             if (nativeEnginePtr == 0L) {
                 Log.e(TAG, "Native engine pointer is null, skipping hardware buffer processing")
-                return@withLock
+                return@withContext
             }
 
             val startTime = System.currentTimeMillis()
@@ -221,16 +234,20 @@ class OffscreenFilmProcessor {
         }
     }
 
-    fun release() {
-        if (!isPrepared) return
-        
-        Log.i(TAG, "Releasing native Filament engine...")
-        if (nativeEnginePtr != 0L) {
-            nativeRelease(nativeEnginePtr)
-            nativeEnginePtr = 0L
+    fun release() = kotlinx.coroutines.runBlocking {
+        withContext(singleThreadContext) {
+            processMutex.withLock {
+                if (!isPrepared) return@withContext
+                
+                Log.i(TAG, "Releasing native Filament engine...")
+                if (nativeEnginePtr != 0L) {
+                    nativeRelease(nativeEnginePtr)
+                    nativeEnginePtr = 0L
+                }
+                
+                isPrepared = false
+                Log.i(TAG, "Release complete.")
+            }
         }
-        
-        isPrepared = false
-        Log.i(TAG, "Release complete.")
     }
 }

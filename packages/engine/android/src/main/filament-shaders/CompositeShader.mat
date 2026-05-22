@@ -87,10 +87,10 @@ fragment {
 
         if (materialParams.u_Sharpening > 0.0) {
             vec2 texel = materialParams.u_TexelSize;
-            vec3 colN = texture(materialParams_u_Texture, compositeUv + vec2(0.0, texel.y)).rgb;
-            vec3 colS = texture(materialParams_u_Texture, compositeUv - vec2(0.0, texel.y)).rgb;
-            vec3 colE = texture(materialParams_u_Texture, compositeUv + vec2(texel.x, 0.0)).rgb;
-            vec3 colW = texture(materialParams_u_Texture, compositeUv - vec2(texel.x, 0.0)).rgb;
+            vec3 colN = textureLod(materialParams_u_Texture, compositeUv + vec2(0.0, texel.y), 0.0).rgb;
+            vec3 colS = textureLod(materialParams_u_Texture, compositeUv - vec2(0.0, texel.y), 0.0).rgb;
+            vec3 colE = textureLod(materialParams_u_Texture, compositeUv + vec2(texel.x, 0.0), 0.0).rgb;
+            vec3 colW = textureLod(materialParams_u_Texture, compositeUv - vec2(texel.x, 0.0), 0.0).rgb;
             
             vec3 laplacian = 4.0 * baseColor.rgb - (colN + colS + colE + colW);
             baseColor.rgb += laplacian * materialParams.u_Sharpening * 10.0;
@@ -134,7 +134,7 @@ fragment {
         
         // Overlay Texture (Dust & Scratch)
         if (materialParams.u_OverlayEnabled > 0.0) {
-            vec4 overlay = texture(materialParams_u_OverlayTexture, uv);
+            vec4 overlay = textureLod(materialParams_u_OverlayTexture, uv, 0.0);
             finalColor = mix(finalColor, overlay.rgb, overlay.a);
         }
         

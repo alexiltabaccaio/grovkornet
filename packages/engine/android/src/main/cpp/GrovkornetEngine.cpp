@@ -1,6 +1,5 @@
 #include "GrovkornetEngine.h"
 #include <android/log.h>
-#include <cmath>
 #include <algorithm>
 
 #include <filament/Engine.h>
@@ -208,6 +207,15 @@ bool GrovkornetEngine::init(AAssetManager* assetManager) {
         return false;
     }
     
+    // Allocate dummy empty data for lutTexture to make it complete immediately!
+    static std::vector<uint32_t> dummyLutData(LutGenerator::LUT_SIZE * LutGenerator::LUT_SIZE * LutGenerator::LUT_SIZE, 0);
+    filament::Texture::PixelBufferDescriptor dummyLutDesc(
+        dummyLutData.data(), dummyLutData.size() * sizeof(uint32_t),
+        filament::Texture::Format::RGBA, filament::Texture::Type::UBYTE,
+        [](void* buffer, size_t size, void* user) {}, nullptr
+    );
+    lutTexture->setImage(*engine, 0, std::move(dummyLutDesc));
+    
     // Initialize 2D Overlay Texture
     overlayTexture = filament::Texture::Builder()
         .width(width)
@@ -221,25 +229,40 @@ bool GrovkornetEngine::init(AAssetManager* assetManager) {
         LOGE("Failed to create Overlay Texture");
         return false;
     }
+
+    // Initialize 1x1 Dummy Black Texture
+    dummyBlackTexture = filament::Texture::Builder()
+        .width(1).height(1).levels(1)
+        .sampler(filament::Texture::Sampler::SAMPLER_2D)
+        .format(filament::Texture::InternalFormat::RGBA8)
+        .build(*engine);
+    
+    static uint32_t blackPixel = 0xFF000000;
+    filament::Texture::PixelBufferDescriptor dummyDesc(
+        &blackPixel, 4,
+        filament::Texture::Format::RGBA, filament::Texture::Type::UBYTE,
+        [](void* buffer, size_t size, void* user) {}, nullptr
+    );
+    dummyBlackTexture->setImage(*engine, 0, std::move(dummyDesc));
     
     // 6. Bind static parameters on materials
     filament::TextureSampler samplerLinear(filament::TextureSampler::MinFilter::LINEAR, filament::TextureSampler::MagFilter::LINEAR);
     
     shaderManager.getMaterialInstanceDownsample()->setParameter("u_Texture", gradedTexture, samplerLinear);
     
-    float downW = std::max(1.0f, static_cast<float>(width / 4));
-    float downH = std::max(1.0f, static_cast<float>(height / 4));
+    float downW = std::max(1.0f, static_cast<float>(width / 4.0f));
+    float downH = std::max(1.0f, static_cast<float>(height / 4.0f));
     shaderManager.getMaterialInstanceBlurDown()->setParameter("u_Texture", bloomTexDown, samplerLinear);
     shaderManager.getMaterialInstanceBlurDown()->setParameter("u_TexelSize", filament::math::float2(1.0f / downW, 1.0f / downH));
     
-    float blurW = std::max(1.0f, static_cast<float>(width / 8));
-    float blurH = std::max(1.0f, static_cast<float>(height / 8));
+    float blurW = std::max(1.0f, static_cast<float>(width / 8.0f));
+    float blurH = std::max(1.0f, static_cast<float>(height / 8.0f));
     shaderManager.getMaterialInstanceBlurUp()->setParameter("u_Texture", bloomTexBlur, samplerLinear);
     shaderManager.getMaterialInstanceBlurUp()->setParameter("u_TexelSize", filament::math::float2(1.0f / blurW, 1.0f / blurH));
     
     shaderManager.getMaterialInstanceComposite()->setParameter("u_Texture", gradedTexture, samplerLinear);
     shaderManager.getMaterialInstanceComposite()->setParameter("u_BloomTexture", bloomTexUp, samplerLinear);
-    shaderManager.getMaterialInstanceComposite()->setParameter("u_OverlayTexture", overlayTexture, samplerLinear);
+    shaderManager.getMaterialInstanceComposite()->setParameter("u_OverlayTexture", dummyBlackTexture, samplerLinear);
     shaderManager.getMaterialInstanceComposite()->setParameter("u_OverlayEnabled", 0.0f);
     shaderManager.getMaterialInstanceComposite()->setParameter("u_GrainIntensity", 0.0f);
     shaderManager.getMaterialInstanceComposite()->setParameter("u_GrainChroma", 0.0f);
@@ -269,6 +292,10 @@ GrovkornetEngine::~GrovkornetEngine() {
     overlayCompositor.stop();
     
     if (engine) {
+        LOGI("Flushing Engine before destruction...");
+        engine->flushAndWait();
+
+        LOGI("Destroying streams and swapchains...");
         if (filamentStream) {
             engine->destroy(filamentStream);
             filamentStream = nullptr;
@@ -277,8 +304,8 @@ GrovkornetEngine::~GrovkornetEngine() {
             engine->destroy(liveSwapChain);
             liveSwapChain = nullptr;
         }
-
-        // Destroy views
+        
+        LOGI("Destroying views and scenes...");
         if (viewGrading) engine->destroy(viewGrading);
         if (viewDownsample) engine->destroy(viewDownsample);
         if (viewBlurDown) engine->destroy(viewBlurDown);
@@ -290,25 +317,34 @@ GrovkornetEngine::~GrovkornetEngine() {
         if (sceneBlurDown) engine->destroy(sceneBlurDown);
         if (sceneBlurUp) engine->destroy(sceneBlurUp);
         
-        // Destroy entities
+        LOGI("Destroying entities and buffers...");
         engine->destroy(quadGrading);
         engine->destroy(quadDownsample);
         engine->destroy(quadBlurDown);
         engine->destroy(quadBlurUp);
         engine->destroy(quadComposite);
         
+        utils::EntityManager::get().destroy(quadGrading);
+        utils::EntityManager::get().destroy(quadDownsample);
+        utils::EntityManager::get().destroy(quadBlurDown);
+        utils::EntityManager::get().destroy(quadBlurUp);
+        utils::EntityManager::get().destroy(quadComposite);
+        
         if (vertexBuffer) engine->destroy(vertexBuffer);
         if (indexBuffer) engine->destroy(indexBuffer);
         
+        LOGI("Destroying ShaderManager...");
         // Destroy materials/instances via ShaderManager
         shaderManager.destroy(*engine);
         
+        LOGI("Destroying RenderTargets...");
         // Destroy RenderTargets first
         if (gradedRenderTarget) engine->destroy(gradedRenderTarget);
         if (bloomDownRenderTarget) engine->destroy(bloomDownRenderTarget);
         if (bloomBlurRenderTarget) engine->destroy(bloomBlurRenderTarget);
         if (bloomUpRenderTarget) engine->destroy(bloomUpRenderTarget);
         
+        LOGI("Destroying Textures...");
         // Destroy Textures
         if (inputTexture2D) engine->destroy(inputTexture2D);
         if (inputTextureExternal) engine->destroy(inputTextureExternal);
@@ -318,18 +354,26 @@ GrovkornetEngine::~GrovkornetEngine() {
         if (bloomTexBlur) engine->destroy(bloomTexBlur);
         if (bloomTexUp) engine->destroy(bloomTexUp);
         if (overlayTexture) engine->destroy(overlayTexture);
+        if (dummyBlackTexture) engine->destroy(dummyBlackTexture);
+        LOGI("Textures destroyed!");
         
         if (swapChain) engine->destroy(swapChain);
+        LOGI("Destroyed swapchains");
         engine->destroy(view);
         engine->destroy(scene);
+        LOGI("Destroyed main view and scene");
         
         utils::Entity cameraEntity = camera->getEntity();
         engine->destroyCameraComponent(cameraEntity);
         utils::EntityManager::get().destroy(cameraEntity);
+        LOGI("Destroyed camera");
         
         engine->destroy(renderer);
+        LOGI("Destroyed renderer");
         
+        LOGI("Calling Engine::destroy()...");
         filament::Engine::destroy(&engine);
+        LOGI("Engine destroyed successfully!");
         engine = nullptr;
     }
     LOGI("Filament Engine resources destroyed.");
@@ -349,6 +393,13 @@ void GrovkornetEngine::triggerOverlayUpdate(std::vector<jobject>&& bitmaps, JNIE
 
 void GrovkornetEngine::applyOverlayTextureUpdate() {
     overlayCompositor.applyOverlayTextureUpdate(*engine, overlayTexture);
+    
+    filament::TextureSampler samplerLinear(filament::TextureSampler::MinFilter::LINEAR, filament::TextureSampler::MagFilter::LINEAR);
+    if (overlayCompositor.isOverlayEnabled()) {
+        shaderManager.getMaterialInstanceComposite()->setParameter("u_OverlayTexture", overlayTexture, samplerLinear);
+    } else {
+        shaderManager.getMaterialInstanceComposite()->setParameter("u_OverlayTexture", dummyBlackTexture, samplerLinear);
+    }
 }
 
 void GrovkornetEngine::updateDrsAndViewport() {

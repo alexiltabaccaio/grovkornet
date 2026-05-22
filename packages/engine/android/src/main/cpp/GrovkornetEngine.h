@@ -1,6 +1,5 @@
 #pragma once
 #include <jni.h>
-#include <chrono>
 #include <vector>
 
 #include <android/native_window.h>
@@ -77,6 +76,7 @@ public:
     filament::RenderTarget* bloomUpRenderTarget = nullptr;
     
     filament::Texture* overlayTexture = nullptr;
+    filament::Texture* dummyBlackTexture = nullptr;
     filament::SwapChain* liveSwapChain = nullptr;
     filament::Stream* filamentStream = nullptr;
     
