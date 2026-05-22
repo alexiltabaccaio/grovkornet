@@ -9,6 +9,7 @@ interface SystemState {
   activeParameter: ParameterType;
   activeExtension: ParameterExtensionType;
   isDebugEnabled: boolean;
+  isXRayEnabled: boolean;
   isLogsEnabled: boolean;
   isExtensionOpen: boolean;
   isCapturing: boolean;
@@ -23,6 +24,7 @@ interface SystemActions {
   setActiveParameter: (param: ParameterType) => void;
   setActiveExtension: (param: ParameterExtensionType) => void;
   setIsDebugEnabled: (enabled: boolean) => void;
+  setIsXRayEnabled: (enabled: boolean) => void;
   setIsLogsEnabled: (enabled: boolean) => void;
   setIsExtensionOpen: (open: boolean) => void;
   triggerCapture: () => void;

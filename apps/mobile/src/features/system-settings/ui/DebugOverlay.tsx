@@ -2,16 +2,20 @@ import React from 'react';
 import { StyleSheet, View, TextInput } from 'react-native';
 import Animated, { useAnimatedProps, SharedValue } from 'react-native-reanimated';
 import { useBodyStore } from '@entities/body';
+import { useSystemStore } from '@entities/system';
+import { Switch, Text } from 'react-native';
 
 const AnimatedTextInput = Animated.createAnimatedComponent(TextInput);
 
 export const DebugOverlay = () => {
   const fps = useBodyStore(state => state.fps);
   const resolution = useBodyStore(state => state.resolution);
+  const isXRayEnabled = useSystemStore(state => state.isXRayEnabled);
+  const setIsXRayEnabled = useSystemStore(state => state.setIsXRayEnabled);
 
   return (
-    <View style={styles.container} pointerEvents="none">
-      <View style={styles.badge}>
+    <View style={styles.container} pointerEvents="box-none">
+      <View style={styles.badge} pointerEvents="none">
         <ReanimatedValueText
           label="FPS"
           value={fps}
@@ -34,6 +38,17 @@ export const DebugOverlay = () => {
         <ReanimatedValueText
           label="RES"
           value={resolution}
+        />
+      </View>
+      <View style={[styles.badge, { marginTop: 5 }]} pointerEvents="auto">
+        <Text style={styles.text}>X-RAY:</Text>
+        <Switch 
+          value={isXRayEnabled} 
+          onValueChange={setIsXRayEnabled}
+          trackColor={{ false: '#767577', true: '#81b0ff' }}
+          thumbColor={isXRayEnabled ? '#f5dd4b' : '#f4f3f4'}
+          ios_backgroundColor="#3e3e3e"
+          style={{ transform: [{ scale: 0.6 }], margin: 0, padding: 0 }}
         />
       </View>
     </View>

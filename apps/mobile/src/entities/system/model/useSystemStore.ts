@@ -9,6 +9,7 @@ export const useSystemStore = create<SystemStore>((set, get) => ({
   activeParameter: 'none',
   activeExtension: 'none',
   isDebugEnabled: false,
+  isXRayEnabled: false,
   isLogsEnabled: __DEV__,
   isExtensionOpen: false,
   isCapturing: false,
@@ -75,6 +76,12 @@ export const useSystemStore = create<SystemStore>((set, get) => ({
 
   setIsDebugEnabled: (enabled: boolean) => {
     set({ isDebugEnabled: enabled });
+  },
+
+  setIsXRayEnabled: (enabled: boolean) => {
+    // @ts-ignore - Inject into global for monkey patch
+    global.__xray_enabled = enabled;
+    set({ isXRayEnabled: enabled });
   },
 
   setIsLogsEnabled: (enabled: boolean) => {

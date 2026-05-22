@@ -1,5 +1,6 @@
 import React from 'react';
-import { StyleSheet, StyleProp, ViewStyle, TextStyle, TouchableOpacity } from 'react-native';
+import { TouchableOpacity } from 'react-native-gesture-handler';
+import { StyleSheet, StyleProp, ViewStyle, TextStyle, View } from 'react-native';
 import Animated, { useAnimatedStyle, SharedValue } from 'react-native-reanimated';
 
 export interface PillButtonProps {
@@ -99,24 +100,26 @@ export const PillButton = ({
   });
 
   return (
-    <TouchableOpacity onPress={onPress} style={[styles.pressable, style]} activeOpacity={1}>
-      <Animated.View
-        style={[
-          styles.pillButton,
-          variant === 'auto' && styles.autoButton,
-          animatedStyle,
-        ]}
-      >
-        <Animated.Text
-          style={[styles.pillText, animatedTextStyle, textStyle]}
-          numberOfLines={1}
-          adjustsFontSizeToFit
-          minimumFontScale={0.7}
+    <View style={style}>
+      <TouchableOpacity onPress={onPress} style={[styles.pressable, { width: '100%' }]} activeOpacity={1}>
+        <Animated.View
+          style={[
+            styles.pillButton,
+            variant === 'auto' && styles.autoButton,
+            animatedStyle,
+          ]}
         >
-          {label}
-        </Animated.Text>
-      </Animated.View>
-    </TouchableOpacity>
+          <Animated.Text
+            style={[styles.pillText, animatedTextStyle, textStyle]}
+            numberOfLines={1}
+            adjustsFontSizeToFit
+            minimumFontScale={0.7}
+          >
+            {label}
+          </Animated.Text>
+        </Animated.View>
+      </TouchableOpacity>
+    </View>
   );
 };
 

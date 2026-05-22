@@ -1,5 +1,6 @@
 import React from 'react';
-import { StyleSheet, View, TouchableOpacity } from 'react-native';
+import { StyleSheet, View } from 'react-native';
+import { ScrollView, TouchableOpacity } from 'react-native-gesture-handler';
 import { useShallow } from 'zustand/react/shallow';
 import { useSystemStore, ParameterControl, ParameterExtensionWrapper } from '@entities/system';
 import { useBodyStore, useBodyWorklets } from '@entities/body';
@@ -114,7 +115,8 @@ export const ParameterExtensions = ({ translateY }: ParameterExtensionsProps) =>
       return (
         <View style={styles.container}>
           <ParameterExtensionWrapper animatedStyle={parameterExtensionAnimatedStyle}>
-            <TouchableOpacity
+            <ScrollView scrollEnabled={false} contentContainerStyle={{ flexGrow: 1 }}>
+              <TouchableOpacity
               onPress={() => {
                 logger.debug('ParameterExtensions', 'Torch toggle pressed');
                 const next = torchState.value === 0 ? 1 : 0;
@@ -126,27 +128,28 @@ export const ParameterExtensions = ({ translateY }: ParameterExtensionsProps) =>
               accessibilityRole="button"
               accessibilityLabel={localTorchState === 0 ? "OFF" : "ON"}
             >
-              <View
-                importantForAccessibility="no-hide-descendants"
-                accessibilityElementsHidden={true}
-              >
-                <ParameterControl
-                  label=""
-                  isActive={false}
-                  hideDebugRectangles={true}
-                  onPress={() => {}}
-                  value={torchState}
-                  variant="text"
-                  renderValue={true}
-                  isToggle={true}
-                  valueFormatter={(v) => {
-                    'worklet';
-                    return v === 0 ? 'OFF' : 'ON';
-                  }}
-                  disableGestures={true}
-                />
-              </View>
-            </TouchableOpacity>
+                <View
+                  importantForAccessibility="no-hide-descendants"
+                  accessibilityElementsHidden={true}
+                >
+                  <ParameterControl
+                    label=""
+                    isActive={false}
+                    hideDebugRectangles={true}
+                    onPress={() => {}}
+                    value={torchState}
+                    variant="text"
+                    renderValue={true}
+                    isToggle={true}
+                    valueFormatter={(v) => {
+                      'worklet';
+                      return v === 0 ? 'OFF' : 'ON';
+                    }}
+                    disableGestures={true}
+                  />
+                </View>
+              </TouchableOpacity>
+            </ScrollView>
           </ParameterExtensionWrapper>
           <Animated.View style={[styles.childSubContainer, animatedStyle]}>
             <ParameterControl
