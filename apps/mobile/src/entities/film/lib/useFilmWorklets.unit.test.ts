@@ -8,6 +8,7 @@ import {
   DEFAULT_CHROMATIC_ABERRATION,
   DEFAULT_TEMPERATURE,
   DEFAULT_TINT,
+  DEFAULT_GRAIN_SPEED,
 } from '@grovkornet/shared';
 
 describe('useFilmWorklets', () => {
@@ -17,7 +18,7 @@ describe('useFilmWorklets', () => {
     film.setGrainIntensity(DEFAULT_GRAIN_INTENSITY);
     film.setGrainChroma(0);
     film.setGrainSize(1);
-    film.setGrainSpeed(1);
+    film.setGrainSpeed(DEFAULT_GRAIN_SPEED);
     film.setSaturation(DEFAULT_SATURATION);
     film.setContrast(DEFAULT_CONTRAST);
     film.setChromaticAberration(DEFAULT_CHROMATIC_ABERRATION);

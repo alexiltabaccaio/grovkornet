@@ -32,6 +32,9 @@
       ],
       "package": "com.grovkornet.app"
     },
+    "androidNavigationBar": {
+      "backgroundColor": "#0e0e0e"
+    },
     "web": {
       "favicon": "./assets/favicon.png"
     },

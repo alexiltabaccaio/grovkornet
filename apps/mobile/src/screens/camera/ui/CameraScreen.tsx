@@ -123,7 +123,7 @@ const CameraScreenContent = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'black',
+    backgroundColor: '#0e0e0e',
   },
   bottomControlsContainer: {
     position: 'absolute',
@@ -144,7 +144,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#000',
+    backgroundColor: '#0e0e0e',
   },
   text: {
     color: '#fff',

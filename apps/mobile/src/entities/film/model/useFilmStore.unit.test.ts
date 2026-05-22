@@ -6,6 +6,7 @@ import {
   DEFAULT_CHROMATIC_ABERRATION,
   DEFAULT_TEMPERATURE,
   DEFAULT_TINT,
+  DEFAULT_GRAIN_SPEED,
 } from '@grovkornet/shared';
 
 describe('useFilmStore', () => {
@@ -81,6 +82,7 @@ describe('useFilmStore', () => {
     expect(useFilmStore.getState().grainEnabled.value).toBe(false);
     expect(useFilmStore.getState().grainChroma.value).toBe(0);
     expect(useFilmStore.getState().grainSize.value).toBe(1);
+    expect(useFilmStore.getState().grainSpeed.value).toBe(DEFAULT_GRAIN_SPEED);
 
     store.setSaturation(2.0);
     store.resetEffect('saturation');

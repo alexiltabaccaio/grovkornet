@@ -29,7 +29,7 @@ export const Header = () => {
 const styles = StyleSheet.create({
   statusBarHeader: {
     width: '100%',
-    backgroundColor: '#000',
+    backgroundColor: '#0e0e0e',
     zIndex: 900,
   },
   statusBarHeaderDebug: {

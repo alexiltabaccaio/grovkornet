@@ -9,13 +9,14 @@ import {
   DEFAULT_CHROMATIC_ABERRATION,
   DEFAULT_TEMPERATURE,
   DEFAULT_TINT,
+  DEFAULT_GRAIN_SPEED,
 } from '@grovkornet/shared';
 
 export const useFilmStore = create<FilmStore>((set, get) => ({
   grainIntensity: makeMutable(DEFAULT_GRAIN_INTENSITY),
   grainChroma: makeMutable(0.0),
   grainSize: makeMutable(1.0),
-  grainSpeed: makeMutable(1.0),
+  grainSpeed: makeMutable(DEFAULT_GRAIN_SPEED),
   saturation: makeMutable(DEFAULT_SATURATION),
   contrast: makeMutable(DEFAULT_CONTRAST),
   chromaticAberration: makeMutable(DEFAULT_CHROMATIC_ABERRATION),
@@ -119,7 +120,7 @@ export const useFilmStore = create<FilmStore>((set, get) => ({
         state.grainEnabled.value = false;
         state.grainChroma.value = 0;
         state.grainSize.value = 1;
-        state.grainSpeed.value = 1.0;
+        state.grainSpeed.value = DEFAULT_GRAIN_SPEED;
         break;
       case 'saturation':
         state.saturation.value = DEFAULT_SATURATION;

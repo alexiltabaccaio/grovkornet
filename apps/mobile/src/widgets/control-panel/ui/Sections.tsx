@@ -32,7 +32,7 @@ export const Sections = () => {
 
   return (
     <View style={styles.bottomFooterWrapper}>
-      <BlurView intensity={80} tint="dark" style={StyleSheet.absoluteFill} />
+      {/* <BlurView intensity={80} tint="dark" style={StyleSheet.absoluteFill} /> */}
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
@@ -74,7 +74,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     height: 80,
-    backgroundColor: 'black',
+    backgroundColor: '#0e0e0e',
     borderTopWidth: 1,
     borderTopColor: '#222',
     justifyContent: 'center',
