@@ -1,4 +1,4 @@
-#include "grovkornet-engine.h"
+#include "GrovkornetEngine.h"
 #include <android/log.h>
 #include <cmath>
 #include <algorithm>

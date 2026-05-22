@@ -61,6 +61,7 @@ Thumbs.db
 [Dd]esktop.ini
 *.swp
 *.swo
+compile_commands.json
 
 # Testing / Build
 coverage/

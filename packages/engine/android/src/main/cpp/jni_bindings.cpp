@@ -15,7 +15,7 @@
 #include <filament/TextureSampler.h>
 #include <filament/RenderableManager.h>
 
-#include "grovkornet-engine.h"
+#include "GrovkornetEngine.h"
 #include "WatermarkEngine.h"
 #include "MatrixTransformCalculator.h"
 
