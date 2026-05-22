@@ -102,7 +102,7 @@ class LiveFilmProcessor {
                 lastSurface = surface
             }
 
-            val time = (System.currentTimeMillis() % 100000) / 1000f
+            val time = ((System.currentTimeMillis() / 1000.0) % (Math.PI * 2.0)).toFloat()
             
             val targetRes = when(params.resolutionSetting) {
                 0 -> 2160

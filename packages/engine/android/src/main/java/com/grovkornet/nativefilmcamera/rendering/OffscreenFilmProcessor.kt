@@ -111,7 +111,7 @@ class OffscreenFilmProcessor {
 
         try {
             val outputBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
-            val time = (System.currentTimeMillis() % 100000) / 1000f
+            val time = ((System.currentTimeMillis() / 1000.0) % (Math.PI * 2.0)).toFloat()
             
             // Process pixels in C++
             nativeProcessBitmap(
@@ -172,7 +172,7 @@ class OffscreenFilmProcessor {
             }
 
             val startTime = System.currentTimeMillis()
-            val time = (System.currentTimeMillis() % 100000) / 1000f
+            val time = ((System.currentTimeMillis() / 1000.0) % (Math.PI * 2.0)).toFloat()
             try {
                 val floatParams = FloatArray(16).apply {
                     this[0] = params.saturation
