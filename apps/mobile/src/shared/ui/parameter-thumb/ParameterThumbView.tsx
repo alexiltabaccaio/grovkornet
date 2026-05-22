@@ -3,7 +3,6 @@ import { View, Text } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { ParameterThumbViewProps } from './ParameterThumbView.types';
 import { styles } from './ParameterThumbView.styles';
-import { SquareThumb } from './SquareThumb';
 import { TextThumb } from './TextThumb';
 import { ImageThumb } from './ImageThumb';
 
@@ -14,7 +13,7 @@ export const ParameterThumbView = forwardRef<View, ParameterThumbViewProps>((pro
   const {
     label,
     isActive,
-    variant = 'square',
+    variant = 'text',
     imageSource,
     isDebugEnabled = false,
     value,
@@ -84,23 +83,14 @@ export const ParameterThumbView = forwardRef<View, ParameterThumbViewProps>((pro
         { marginBottom: 0 },
         !!imageSource && { height: 32 },
         !!imageSource && !!label && { marginTop: 8, marginBottom: 14 },
-        variant === 'square' && isActive && styles.filterPlaceholderActive,
-        variant === 'square' && styles.iconPlaceholder,
-        variant === 'text' && styles.textVariantPlaceholder,
-        variant === 'text' && { width: 'auto', height: 'auto' },
+        variant === 'text' && !imageSource && styles.textVariantPlaceholder,
+        variant === 'text' && !imageSource && { width: 'auto', height: 'auto' },
         variant === 'slider' && { width: '100%', height: 'auto', backgroundColor: 'transparent', borderWidth: 0, overflow: 'visible' },
         isDebugEnabled && variant === 'text' && { backgroundColor: 'rgba(255,0,0,0.2)', borderColor: 'red' }
       ]}>
-        {variant === 'square' && !imageSource && <SquareThumb {...props} />}
         {variant === 'text' && !imageSource && <TextThumb {...props} />}
         {variant === 'slider' && <SliderThumb {...props} />}
         {!!imageSource && <ImageThumb {...props} />}
-
-
-
-        {variant === 'square' && !imageSource && (
-          <View style={[styles.borderOverlay, isActive && styles.borderOverlayActive]} pointerEvents="none" />
-        )}
       </View>
     </Animated.View>
   );

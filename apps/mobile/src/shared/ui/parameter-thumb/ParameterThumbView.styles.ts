@@ -22,30 +22,6 @@ export const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.01)',
     overflow: 'visible',
   },
-  filterPlaceholderActive: {
-    backgroundColor: '#000',
-  },
-  borderOverlay: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    borderWidth: 2,
-    borderColor: '#444',
-  },
-  borderOverlayActive: {
-    borderColor: '#FFF',
-  },
-  iconPlaceholder: {
-    backgroundColor: '#111',
-  },
-  progressFill: {
-    position: 'absolute',
-    bottom: -2,
-    left: -2,
-    right: -2,
-  },
   imageSource: {
     width: '100%',
     height: '100%',

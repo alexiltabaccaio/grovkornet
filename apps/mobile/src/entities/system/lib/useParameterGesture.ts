@@ -16,7 +16,7 @@ interface UseParameterGestureParams {
   onPress: () => void;
   isAuto?: SharedValue<boolean>;
   disabled?: SharedValue<boolean>;
-  variant?: 'square' | 'text' | 'slider';
+  variant?: 'text' | 'slider';
   hideAutoPlaceholder?: boolean;
   sliderTrackWidth?: SharedValue<number>;
 }

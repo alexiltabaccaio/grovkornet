@@ -23,7 +23,7 @@ export interface ConnectedParameterProps {
   imageSource?: ImageSourcePropType;
   renderValue?: boolean;
   valueFormatter?: (val: number) => string;
-  variant?: 'square' | 'text' | 'slider';
+  variant?: 'text' | 'slider';
   isAuto?: SharedValue<boolean>;
   staticText?: string;
   invertDrag?: boolean;

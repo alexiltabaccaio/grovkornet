@@ -19,7 +19,7 @@ interface ParameterControlProps {
   imageSource?: ImageSourcePropType;
   renderValue?: boolean;
   valueFormatter?: (val: number) => string;
-  variant?: 'square' | 'text' | 'slider';
+  variant?: 'text' | 'slider';
   isAuto?: SharedValue<boolean>;
   staticText?: string;
   invertDrag?: boolean;
@@ -46,7 +46,7 @@ export const ParameterControl = ({
   imageSource,
   renderValue,
   valueFormatter,
-  variant = 'square',
+  variant = 'text',
   isAuto,
   staticText,
   invertDrag = false,

@@ -25,15 +25,4 @@ describe('ParameterThumbView', () => {
     expect(toJSON()).toBeDefined();
   });
 
-  it('renders square variant correctly', () => {
-    const squareProps = {
-      label: 'SQUARE',
-      isActive: true,
-      variant: 'square' as const,
-      icon: 'sparkles-outline' as const,
-    };
-    const { toJSON, getByText } = render(<ParameterThumbView {...squareProps} />);
-    expect(toJSON()).toBeDefined();
-    expect(getByText('SQUARE')).toBeDefined();
-  });
 });
