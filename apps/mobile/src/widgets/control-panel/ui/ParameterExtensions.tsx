@@ -48,9 +48,9 @@ export const ParameterExtensions = ({ translateY }: ParameterExtensionsProps) =>
     setPreviewIn4k: state.setPreviewIn4k,
   })));
 
-  const [localTorchState, setLocalTorchState] = React.useState(torchState.value);
-  const [localResolutionSetting, setLocalResolutionSetting] = React.useState(resolutionSetting.value);
-  const [localPreviewIn4k, setLocalPreviewIn4k] = React.useState(previewIn4k.value);
+  const [localTorchState, setLocalTorchState] = React.useState(() => torchState.value);
+  const [localResolutionSetting, setLocalResolutionSetting] = React.useState(() => resolutionSetting.value);
+  const [localPreviewIn4k, setLocalPreviewIn4k] = React.useState(() => previewIn4k.value);
 
   // Sync state correctly via Reanimated reaction without reading during render
   useAnimatedReaction(

@@ -32,15 +32,16 @@ export const Parameters = () => {
   })));
 
   const { 
-    setEvAuto, setIsoAuto, setShutterSpeedAuto, setTorchState, setFpsSetting, capabilities
+    setEvAuto, setIsoAuto, setShutterSpeedAuto, setTorchState, setFpsSetting
   } = useBodyStore(useShallow(s => ({
     setEvAuto: s.setEvAuto,
     setIsoAuto: s.setIsoAuto,
     setShutterSpeedAuto: s.setShutterSpeedAuto,
     setTorchState: s.setTorchState,
     setFpsSetting: s.setFpsSetting,
-    capabilities: s.capabilities,
   })));
+
+  const maxFps = useBodyStore(s => s.capabilities.maxFps);
 
   const { setFocusAuto, setCameraAuto } = useLensStore(useShallow(s => ({
     setFocusAuto: s.setFocusAuto,
@@ -58,14 +59,14 @@ export const Parameters = () => {
     else if (tool === 'camera_selection') setCameraAuto(true);
     else if (tool === 'torch') setTorchState(0);
     else if (tool === 'fps_setting') {
-      const maxFps = capabilities.maxFps ?? 60;
-      setFpsSetting(maxFps >= 60 ? 60 : 30);
+      const currentMaxFps = maxFps ?? 60;
+      setFpsSetting(currentMaxFps >= 60 ? 60 : 30);
     }
     else {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any, @typescript-eslint/no-unnecessary-type-assertion
       resetEffect(tool as any); 
     }
-  }, [setEvAuto, setIsoAuto, setShutterSpeedAuto, setFocusAuto, setTemperatureAuto, setCameraAuto, setTorchState, capabilities.maxFps, setFpsSetting, resetEffect]);
+  }, [setEvAuto, setIsoAuto, setShutterSpeedAuto, setFocusAuto, setTemperatureAuto, setCameraAuto, setTorchState, maxFps, setFpsSetting, resetEffect]);
 
   const { handlePressWithDouble } = useDoublePress(resetTool);
 

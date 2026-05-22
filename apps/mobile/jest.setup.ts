@@ -216,3 +216,8 @@ jest.mock('expo-localization', () => ({
 // Silence some warnings
 console.warn = jest.fn();
 console.error = jest.fn();
+
+// Mock expo-system-ui
+jest.mock('expo-system-ui', () => ({
+  setBackgroundColorAsync: jest.fn(() => Promise.resolve()),
+}));
