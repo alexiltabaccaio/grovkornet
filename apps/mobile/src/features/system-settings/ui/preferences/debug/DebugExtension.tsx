@@ -11,7 +11,7 @@ interface DebugExtensionProps {
   parameterExtensionAnimatedStyle?: StyleProp<ViewStyle>;
 }
 
-export const DebugExtension = ({ parameterExtensionAnimatedStyle }: DebugExtensionProps) => {
+export const DebugExtension = __DEV__ ? ({ parameterExtensionAnimatedStyle }: DebugExtensionProps) => {
   const { t } = useTranslation();
   const { isDebugEnabled, setIsDebugEnabled, isLogsEnabled, setIsLogsEnabled, isXRayEnabled, setIsXRayEnabled } = useSystemStore(useShallow(state => ({
     isDebugEnabled: state.isDebugEnabled,
@@ -50,7 +50,7 @@ export const DebugExtension = ({ parameterExtensionAnimatedStyle }: DebugExtensi
       />
     </ParameterExtensionWrapper>
   );
-};
+} : () => null;
 
 const styles = StyleSheet.create({
   pressable: {

@@ -7,7 +7,7 @@ export const PreferencesModule = () => {
     <GenericParameterModule
       parameters={[
         'language',
-        { id: 'debug', labelKey: 'modules.debug' },
+        ...(__DEV__ ? [{ id: 'debug' as const, labelKey: 'modules.debug' }] : []),
       ]}
     />
   );
