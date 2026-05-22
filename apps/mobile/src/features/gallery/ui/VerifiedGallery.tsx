@@ -21,7 +21,7 @@ export const VerifiedGallery = ({ onClose, initialUri }: VerifiedGalleryProps) =
 
   // Auto-select on photos loaded
   useEffect(() => {
-    if (!loading && photos.length > 0) {
+    if (!loading && photos.length > 0 && !selectedPhoto) {
       if (initialUri) {
         const found = photos.find(item => item.uri === initialUri);
         if (found) {
@@ -33,7 +33,7 @@ export const VerifiedGallery = ({ onClose, initialUri }: VerifiedGalleryProps) =
         void verifyPhoto(photos[0]);
       }
     }
-  }, [loading, photos, initialUri, verifyPhoto]);
+  }, [loading, photos, initialUri, verifyPhoto, selectedPhoto]);
 
   return (
     <View style={styles.absoluteContainer}>
