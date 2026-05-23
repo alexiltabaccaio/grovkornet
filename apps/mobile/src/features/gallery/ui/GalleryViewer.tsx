@@ -24,11 +24,12 @@ export const GalleryViewer = ({ onClose, initialUri, galleryTransition }: Galler
   useEffect(() => {
     if (!loading && photos.length > 0 && !selectedPhoto) {
       if (initialUri) {
-        const found = photos.find(item => item.uri === initialUri);
+        const initialFilenameOrId = initialUri.split('/').pop();
+        const found = photos.find(item => item.uri === initialUri || (initialFilenameOrId && (item.filename === initialFilenameOrId || item.id === initialFilenameOrId)));
         if (found) {
           void verifyPhoto(found);
         } else {
-          void verifyPhoto({ id: 'initial', uri: initialUri });
+          void verifyPhoto({ id: 'initial', uri: initialUri, filename: initialFilenameOrId });
         }
       } else {
         void verifyPhoto(photos[0]);

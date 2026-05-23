@@ -98,10 +98,22 @@ export const useGalleryPhotos = (initialUri?: string | null) => {
 
         if (!active) return;
 
-        const items: GalleryItem[] = media.map(asset => ({ id: asset.id, uri: asset.uri }));
+        const items: GalleryItem[] = media.map(asset => ({ 
+          id: asset.id, 
+          uri: asset.uri,
+          filename: asset.filename
+        }));
 
-        if (initialUri && !items.find(item => item.uri === initialUri)) {
-          items.unshift({ id: 'preview-temp', uri: initialUri });
+        if (initialUri) {
+          const initialFilenameOrId = initialUri.split('/').pop();
+          const alreadyExists = items.some(item => 
+            item.uri === initialUri || 
+            (initialFilenameOrId && (item.filename === initialFilenameOrId || item.id === initialFilenameOrId))
+          );
+          
+          if (!alreadyExists) {
+            items.unshift({ id: 'preview-temp', uri: initialUri, filename: initialFilenameOrId });
+          }
         }
 
         setPhotos(items);

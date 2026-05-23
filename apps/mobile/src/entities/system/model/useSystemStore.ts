@@ -12,6 +12,7 @@ export const useSystemStore = create<SystemStore>((set, get) => ({
   isLogsEnabled: __DEV__,
   isExtensionOpen: false,
   isCapturing: false,
+  latestPreviewUri: null,
   latestCapturedUri: null,
 
   lastActiveModules: {
@@ -96,6 +97,10 @@ export const useSystemStore = create<SystemStore>((set, get) => ({
     setTimeout(() => {
       set({ isCapturing: false });
     }, 200);
+  },
+  
+  setLatestPreviewUri: (uri) => {
+    set({ latestPreviewUri: uri });
   },
   
   setLatestCapturedUri: (uri) => {

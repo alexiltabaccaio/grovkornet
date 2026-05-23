@@ -11,8 +11,9 @@ interface CaptureThumbnailProps {
 }
 
 export const CaptureThumbnail = ({ onPress }: CaptureThumbnailProps) => {
-  const { isCapturing, latestCapturedUri, setLatestCapturedUri } = useSystemStore(useShallow(state => ({
+  const { isCapturing, latestPreviewUri, latestCapturedUri, setLatestCapturedUri } = useSystemStore(useShallow(state => ({
     isCapturing: state.isCapturing,
+    latestPreviewUri: state.latestPreviewUri,
     latestCapturedUri: state.latestCapturedUri,
     setLatestCapturedUri: state.setLatestCapturedUri,
   })));
@@ -90,7 +91,7 @@ export const CaptureThumbnail = ({ onPress }: CaptureThumbnailProps) => {
 
   return (
     <Pressable testID="capture-thumbnail" onPress={onPress} style={styles.wrapper}>
-      {!isCapturing && !latestCapturedUri ? (
+      {!isCapturing && !latestCapturedUri && !latestPreviewUri ? (
         <View style={styles.placeholder} />
       ) : (
         <Animated.View style={[styles.container, animatedContainerStyle]}>
@@ -99,8 +100,8 @@ export const CaptureThumbnail = ({ onPress }: CaptureThumbnailProps) => {
               <View style={styles.spinnerRing} />
               <ActivityIndicator size="small" color="#FF9500" />
             </Animated.View>
-          ) : latestCapturedUri ? (
-            <Image source={{ uri: latestCapturedUri }} style={styles.image} />
+          ) : (latestPreviewUri ?? latestCapturedUri) ? (
+            <Image source={{ uri: latestPreviewUri ?? latestCapturedUri! }} style={styles.image} />
           ) : null}
         </Animated.View>
       )}

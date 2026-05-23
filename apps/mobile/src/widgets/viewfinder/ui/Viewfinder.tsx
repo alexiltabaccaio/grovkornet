@@ -65,6 +65,7 @@ export const Viewfinder = ({ cameraKey }: ViewfinderProps) => {
   } = useFilmStore.getState();
 
   // 2. Azioni stabili
+  const setLatestPreviewUri = useSystemStore.getState().setLatestPreviewUri;
   const setLatestCapturedUri = useSystemStore.getState().setLatestCapturedUri;
 
   // 3. Primitive reattive (abbonate per causare re-render solo quando necessario)
@@ -78,8 +79,15 @@ export const Viewfinder = ({ cameraKey }: ViewfinderProps) => {
   const { exposureHandler, debugHandler, capabilitiesHandler, torchStateHandler } = useCameraEvents();
 
   const photoHandler = React.useCallback((event: { nativeEvent: { uri: string } }) => {
-    setLatestCapturedUri(event.nativeEvent.uri);
-  }, [setLatestCapturedUri]);
+    const uri = event.nativeEvent.uri;
+    // L'URI di preview temporanea vive nella cache dell'app (file:///data/...)
+    // L'URI finale (MediaStore) inizia con content:// o file:///storage/
+    if (uri.startsWith('file:///data/')) {
+      setLatestPreviewUri(uri);
+    } else {
+      setLatestCapturedUri(uri);
+    }
+  }, [setLatestPreviewUri, setLatestCapturedUri]);
 
   const resolvedNoiseReduction = useDerivedValue(() => {
     return noiseReductionAuto.value ? -1 : noiseReductionMode.value;

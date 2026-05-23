@@ -12,6 +12,7 @@ interface SystemState {
   isLogsEnabled: boolean;
   isExtensionOpen: boolean;
   isCapturing: boolean;
+  latestPreviewUri: string | null;
   latestCapturedUri: string | null;
   lastActiveModules: Record<SectionType, ModuleType>;
   lastActiveParameters: Record<ModuleType, ParameterType>;
@@ -26,6 +27,7 @@ interface SystemActions {
   setIsLogsEnabled: (enabled: boolean) => void;
   setIsExtensionOpen: (open: boolean) => void;
   triggerCapture: () => void;
+  setLatestPreviewUri: (uri: string | null) => void;
   setLatestCapturedUri: (uri: string | null) => void;
 }
 
