@@ -32,16 +32,27 @@ export const CaptureThumbnail = ({ onPress }: CaptureThumbnailProps) => {
                 sortBy: [[MediaLibrary.SortBy.creationTime, false]],
                 mediaType: MediaLibrary.MediaType.photo,
               });
+              
+              if (result && result.assets.length > 0) {
+                setLatestCapturedUri(result.assets[0].uri);
+              }
             } else {
-              result = await MediaLibrary.getAssetsAsync({
-                first: 1,
+              // Robust fallback for thumbnail: get recent photos and find the first Grovkornet one
+              const recent = await MediaLibrary.getAssetsAsync({
+                first: 200,
                 sortBy: [[MediaLibrary.SortBy.creationTime, false]],
                 mediaType: MediaLibrary.MediaType.photo,
               });
-            }
-
-            if (result && result.assets.length > 0) {
-              setLatestCapturedUri(result.assets[0].uri);
+              
+              const latestGrovkornet = recent.assets.find(a => 
+                a.uri.includes('Grovkornet') || 
+                a.filename.includes('Grovkornet') || 
+                a.filename.startsWith('Grovkornet_')
+              );
+              
+              if (latestGrovkornet) {
+                setLatestCapturedUri(latestGrovkornet.uri);
+              }
             }
           }
         } catch (e) {

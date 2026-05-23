@@ -17,11 +17,10 @@ export const useGalleryPhotos = (initialUri?: string | null) => {
         const checkPerms = async () => {
           const current = await MediaLibrary.getPermissionsAsync();
           if (current.granted) return 'granted';
-          if (current.canAskAgain) {
-            const req = await MediaLibrary.requestPermissionsAsync();
-            return req.status;
-          }
-          return current.status;
+          
+          logger.debug('Gallery', 'Requesting MediaLibrary permissions (ignoring canAskAgain)...');
+          const req = await MediaLibrary.requestPermissionsAsync();
+          return req.status;
         };
 
         const permTimeout = new Promise<string>((_, reject) =>
@@ -77,8 +76,24 @@ export const useGalleryPhotos = (initialUri?: string | null) => {
           ]);
           media = result.assets;
         } else {
-          logger.debug('Gallery', 'Grovkornet album not found, returning empty list');
-          media = [];
+          logger.debug('Gallery', 'Grovkornet album not found. Using global fallback...');
+          try {
+            // Fallback: get recent assets and filter by 'Grovkornet'
+            const recent = await MediaLibrary.getAssetsAsync({
+              first: 200,
+              sortBy: [[MediaLibrary.SortBy.creationTime, false]],
+              mediaType: MediaLibrary.MediaType.photo,
+            });
+            media = recent.assets.filter(a => 
+              a.uri.includes('Grovkornet') || 
+              a.filename.includes('Grovkornet') || 
+              a.filename.startsWith('Grovkornet_')
+            );
+            logger.debug('Gallery', `Fallback found ${media.length} photos containing 'Grovkornet'`);
+          } catch (e) {
+            logger.error('Gallery', 'Error in global fallback', e);
+            media = [];
+          }
         }
 
         if (!active) return;

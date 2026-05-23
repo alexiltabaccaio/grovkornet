@@ -7,6 +7,7 @@
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
+    "backgroundColor": "#1d1714",
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
@@ -41,6 +42,13 @@
     "plugins": [
       "expo-asset",
       "expo-font",
+      [
+        "expo-media-library",
+        {
+          "photosPermission": "Allow Grovkornet to access your photos to save and view cinematic clips.",
+          "savePhotosPermission": "Allow Grovkornet to save cinematic clips to your photos."
+        }
+      ],
       [
         "expo-build-properties",
         {
