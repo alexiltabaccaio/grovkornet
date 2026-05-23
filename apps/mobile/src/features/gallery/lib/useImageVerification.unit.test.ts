@@ -18,7 +18,7 @@ describe('useImageVerification', () => {
   it('verifies photo authenticity successfully', async () => {
     (verifyGrovkornetAuthenticity as jest.Mock).mockResolvedValueOnce(true);
 
-    const { result } = renderHook(() => useImageVerification(mockSetPhotos));
+    const { result } = renderHook(() => useImageVerification([], mockSetPhotos));
 
     const item: GalleryItem = { id: '1', uri: 'file:///test/1.jpg' };
 
@@ -37,7 +37,7 @@ describe('useImageVerification', () => {
   it('handles verification failure gracefully', async () => {
     (verifyGrovkornetAuthenticity as jest.Mock).mockRejectedValueOnce(new Error('Verification failed'));
 
-    const { result } = renderHook(() => useImageVerification(mockSetPhotos));
+    const { result } = renderHook(() => useImageVerification([], mockSetPhotos));
 
     const item: GalleryItem = { id: '2', uri: 'file:///test/2.jpg' };
 

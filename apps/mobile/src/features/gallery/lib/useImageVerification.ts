@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { verifyGrovkornetAuthenticity } from '@grovkornet/engine';
 import { logger } from '@shared/lib/logger';
 import { GalleryItem } from './types';
@@ -11,7 +11,7 @@ export const useImageVerification = (
   const [verifying, setVerifying] = useState(false);
   const verifyingQueue = useRef<Set<string>>(new Set());
 
-  const verifyPhoto = async (item: GalleryItem) => {
+  const verifyPhoto = useCallback(async (item: GalleryItem) => {
     logger.debug('Gallery', `verifyPhoto for: ${item.uri}`);
     setSelectedPhoto(item);
     if (item.isVerified !== undefined) {
@@ -41,7 +41,10 @@ export const useImageVerification = (
     } finally {
       setVerifying(false);
     }
-  };
+  }, [setPhotos]);
+
+  const photosArray = Array.isArray(photos) ? photos : [];
+  const photosUris = photosArray.map(p => p.uri).join(',');
 
   // Background verification loop
   useEffect(() => {
@@ -49,7 +52,7 @@ export const useImageVerification = (
 
     const runBackgroundVerification = async () => {
       // Find all photos that haven't been verified and aren't currently verifying
-      const toVerify = photos.filter(
+      const toVerify = photosArray.filter(
         p => p.isVerified === undefined && !verifyingQueue.current.has(p.uri)
       );
 
@@ -83,7 +86,7 @@ export const useImageVerification = (
     return () => {
       active = false;
     };
-  }, [photos]);
+  }, [photosUris]);
 
   return {
     selectedPhoto,

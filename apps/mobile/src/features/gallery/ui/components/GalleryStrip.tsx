@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { StyleSheet, View, FlatList, Pressable, Image, Dimensions } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { GalleryItem } from '../../lib/types';
@@ -6,6 +6,31 @@ import { BottomFooter } from '@shared/ui';
 import Animated, { useAnimatedStyle, interpolate, SharedValue } from 'react-native-reanimated';
 
 const { width } = Dimensions.get('window');
+
+interface GalleryStripItemProps {
+  item: GalleryItem;
+  isSelected: boolean;
+  onSelect: (item: GalleryItem) => void;
+}
+
+const GalleryStripItem = React.memo(({ item, isSelected, onSelect }: GalleryStripItemProps) => {
+  return (
+    <Pressable
+      style={[
+        styles.thumbnailWrapper,
+        isSelected && styles.thumbnailSelected
+      ]}
+      onPress={() => onSelect(item)}
+    >
+      <Image source={{ uri: item.uri }} style={styles.thumbnailImage} />
+      {item.isVerified === true && (
+        <View style={[styles.miniBadge, { backgroundColor: 'transparent' }]}>
+          <Image source={require('../../../../../assets/logo-badge.png')} style={{ width: 10, height: 10, resizeMode: 'contain', opacity: 0.85 }} />
+        </View>
+      )}
+    </Pressable>
+  );
+});
 
 interface GalleryStripProps {
   photos: GalleryItem[];
@@ -23,6 +48,14 @@ export const GalleryStrip = ({ photos, selectedPhoto, onSelectPhoto, onClose, ga
       transform: [{ translateX }],
     };
   });
+
+  const renderItem = useCallback(({ item }: { item: GalleryItem }) => (
+    <GalleryStripItem
+      item={item}
+      isSelected={selectedPhoto?.uri === item.uri}
+      onSelect={onSelectPhoto}
+    />
+  ), [selectedPhoto?.uri, onSelectPhoto]);
 
   return (
     <BottomFooter style={styles.footerContainer}>
@@ -43,22 +76,7 @@ export const GalleryStrip = ({ photos, selectedPhoto, onSelectPhoto, onClose, ga
           keyExtractor={item => item.id}
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.gridContent}
-          renderItem={({ item }) => (
-            <Pressable
-              style={[
-                styles.thumbnailWrapper,
-                selectedPhoto?.uri === item.uri && styles.thumbnailSelected
-              ]}
-              onPress={() => onSelectPhoto(item)}
-            >
-              <Image source={{ uri: item.uri }} style={styles.thumbnailImage} />
-              {item.isVerified === true && (
-                <View style={[styles.miniBadge, { backgroundColor: 'transparent' }]}>
-                  <Image source={require('../../../../../assets/logo-badge.png')} style={{ width: 10, height: 10, resizeMode: 'contain', opacity: 0.85 }} />
-                </View>
-              )}
-            </Pressable>
-          )}
+          renderItem={renderItem}
         />
       </View>
       </Animated.View>
