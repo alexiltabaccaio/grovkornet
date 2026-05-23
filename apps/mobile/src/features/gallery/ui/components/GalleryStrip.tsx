@@ -53,8 +53,8 @@ export const GalleryStrip = ({ photos, selectedPhoto, onSelectPhoto, onClose, ga
             >
               <Image source={{ uri: item.uri }} style={styles.thumbnailImage} />
               {item.isVerified === true && (
-                <View style={styles.miniBadge}>
-                  <Ionicons name="checkmark-circle" size={10} color="#34C759" />
+                <View style={[styles.miniBadge, { backgroundColor: 'transparent' }]}>
+                  <Image source={require('../../../../../assets/logo-badge.png')} style={{ width: 10, height: 10, resizeMode: 'contain', opacity: 0.85 }} />
                 </View>
               )}
             </Pressable>

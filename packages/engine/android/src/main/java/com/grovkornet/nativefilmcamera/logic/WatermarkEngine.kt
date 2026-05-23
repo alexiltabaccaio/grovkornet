@@ -4,7 +4,6 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
-import android.media.ExifInterface
 import android.util.Log
 
 object WatermarkEngine {
@@ -32,32 +31,7 @@ object WatermarkEngine {
         return bitmap
     }
 
-    fun addExifMetadata(context: Context, uri: Uri) {
-        try {
-            context.contentResolver.openFileDescriptor(uri, "rw")?.use { pfd ->
-                val exif = ExifInterface(pfd.fileDescriptor)
-                exif.setAttribute(ExifInterface.TAG_SOFTWARE, "Grovkornet")
-                exif.saveAttributes()
-            }
-        } catch (e: Exception) {
-            Log.e(TAG, "Failed to inject EXIF metadata", e)
-        }
-    }
-
     fun verifyGrovkornetAuthenticity(context: Context, uri: Uri): Boolean {
-        try {
-            // EXIF fast path: check software tag first
-            context.contentResolver.openInputStream(uri)?.use { input ->
-                val exif = ExifInterface(input)
-                val software = exif.getAttribute(ExifInterface.TAG_SOFTWARE)
-                if (software == "Grovkornet") {
-                    return true
-                }
-            }
-        } catch (e: Exception) {
-            Log.w(TAG, "EXIF fast path verification failed, trying deep DCT verification", e)
-        }
-
         // DCT deep path: decode bitmap and verify signature natively
         try {
             val tempFile = java.io.File(context.cacheDir, "temp_verify_${System.currentTimeMillis()}.jpg")

@@ -1,13 +1,15 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { verifyGrovkornetAuthenticity } from '@grovkornet/engine';
 import { logger } from '@shared/lib/logger';
 import { GalleryItem } from './types';
 
 export const useImageVerification = (
+  photos: GalleryItem[],
   setPhotos: React.Dispatch<React.SetStateAction<GalleryItem[]>>
 ) => {
   const [selectedPhoto, setSelectedPhoto] = useState<GalleryItem | null>(null);
   const [verifying, setVerifying] = useState(false);
+  const verifyingQueue = useRef<Set<string>>(new Set());
 
   const verifyPhoto = async (item: GalleryItem) => {
     logger.debug('Gallery', `verifyPhoto for: ${item.uri}`);
@@ -17,6 +19,7 @@ export const useImageVerification = (
     }
 
     setVerifying(true);
+    verifyingQueue.current.add(item.uri);
     try {
       logger.debug('Gallery', 'Running real verifyGrovkornetAuthenticity with 5s timeout...');
       const verifyTimeout = new Promise<boolean>((_, reject) =>
@@ -39,6 +42,48 @@ export const useImageVerification = (
       setVerifying(false);
     }
   };
+
+  // Background verification loop
+  useEffect(() => {
+    let active = true;
+
+    const runBackgroundVerification = async () => {
+      // Find all photos that haven't been verified and aren't currently verifying
+      const toVerify = photos.filter(
+        p => p.isVerified === undefined && !verifyingQueue.current.has(p.uri)
+      );
+
+      for (const item of toVerify) {
+        if (!active) break;
+
+        verifyingQueue.current.add(item.uri);
+        try {
+          logger.debug('Gallery', `Background verifying: ${item.uri}`);
+          const verifyTimeout = new Promise<boolean>((_, reject) =>
+            setTimeout(() => reject(new Error('VERIFY_TIMEOUT')), 5000)
+          );
+
+          const verified = await Promise.race([
+            verifyGrovkornetAuthenticity(item.uri),
+            verifyTimeout
+          ]);
+
+          setPhotos(prev => prev.map(p => p.uri === item.uri ? { ...p, isVerified: verified } : p));
+          setSelectedPhoto(prev => prev?.uri === item.uri ? { ...prev, isVerified: verified } : prev);
+        } catch (error) {
+          logger.error('Gallery', `Background verification failed for ${item.uri}`, error);
+          setPhotos(prev => prev.map(p => p.uri === item.uri ? { ...p, isVerified: false } : p));
+          setSelectedPhoto(prev => prev?.uri === item.uri ? { ...prev, isVerified: false } : prev);
+        }
+      }
+    };
+
+    void runBackgroundVerification();
+
+    return () => {
+      active = false;
+    };
+  }, [photos]);
 
   return {
     selectedPhoto,

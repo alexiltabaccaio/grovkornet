@@ -2,7 +2,6 @@ import React from 'react';
 import { StyleSheet, Text, View, Image } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { GalleryItem } from '../../lib/types';
-import { AuthenticityBadge } from './AuthenticityBadge';
 
 interface PhotoPreviewProps {
   selectedPhoto: GalleryItem | null;
@@ -23,7 +22,6 @@ export const PhotoPreview = ({ selectedPhoto, verifying }: PhotoPreviewProps) =>
   return (
     <View style={styles.previewWrapper}>
       <Image source={{ uri: selectedPhoto.uri }} style={styles.previewImage} />
-      <AuthenticityBadge verifying={verifying} isVerified={selectedPhoto.isVerified} />
     </View>
   );
 };

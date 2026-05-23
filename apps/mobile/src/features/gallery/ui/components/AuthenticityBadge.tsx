@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View, ActivityIndicator } from 'react-native';
+import { StyleSheet, Text, View, ActivityIndicator, Image } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -23,7 +23,7 @@ export const AuthenticityBadge = ({ verifying, isVerified }: AuthenticityBadgePr
   if (isVerified) {
     return (
       <View style={[styles.badgeContainer, styles.badgeVerified]}>
-        <Ionicons name="checkmark-circle" size={16} color="#34C759" />
+        <Image source={require('../../../../../assets/logo-badge.png')} style={{ width: 16, height: 16, resizeMode: 'contain', opacity: 0.85 }} />
         <Text style={[styles.badgeText, styles.badgeTextVerified]}>
           {t('gallery.verified', 'Verified Original')}
         </Text>

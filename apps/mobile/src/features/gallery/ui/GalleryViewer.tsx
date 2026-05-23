@@ -18,7 +18,7 @@ interface GalleryViewerProps {
 export const GalleryViewer = ({ onClose, initialUri, galleryTransition }: GalleryViewerProps) => {
   const { t } = useTranslation();
   const { photos, setPhotos, loading, permissionGranted } = useGalleryPhotos(initialUri);
-  const { selectedPhoto, verifying, verifyPhoto } = useImageVerification(setPhotos);
+  const { selectedPhoto, verifying, verifyPhoto } = useImageVerification(photos, setPhotos);
 
   // Auto-select on photos loaded
   useEffect(() => {
