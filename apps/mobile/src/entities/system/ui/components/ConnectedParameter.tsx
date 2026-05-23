@@ -1,4 +1,5 @@
 import React, { memo } from 'react';
+import { useShallow } from 'zustand/react/shallow';
 import { useSystemStore } from '../../model/useSystemStore';
 import { ParameterType } from '../../model/types';
 import { ParameterControl } from './ParameterControl';
@@ -45,8 +46,12 @@ export const ConnectedParameter = memo(({
   onPress,
   ...rest
 }: ConnectedParameterProps) => {
-  const isActiveSelected = useSystemStore(s => s.activeParameter === id);
-  const setActiveParameter = useSystemStore(s => s.setActiveParameter);
+  const { isActiveSelected, setActiveParameter } = useSystemStore(
+    useShallow(s => ({
+      isActiveSelected: s.activeParameter === id,
+      setActiveParameter: s.setActiveParameter,
+    }))
+  );
 
   const finalIsActive = isActive !== undefined ? isActive : isActiveSelected;
 

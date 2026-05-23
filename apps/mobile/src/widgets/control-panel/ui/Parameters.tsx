@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Text, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useShallow } from 'zustand/react/shallow';
@@ -72,10 +72,12 @@ export const Parameters = () => {
 
   const [lastActive, setLastActive] = useState<ModuleType>(activeModule);
   
-  // Adjust state during render to track the last non-none module
-  if (activeModule !== 'none' && activeModule !== lastActive) {
-    setLastActive(activeModule);
-  }
+  // Adjust state inside useEffect to track the last non-none module
+  useEffect(() => {
+    if (activeModule !== 'none') {
+      setLastActive(activeModule);
+    }
+  }, [activeModule]);
 
   const renderActiveModule = activeModule === 'none' ? lastActive : activeModule;
 
