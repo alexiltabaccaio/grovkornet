@@ -40,11 +40,6 @@ export const VerifiedGallery = ({ onClose, initialUri }: VerifiedGalleryProps) =
       <Header />
       <View style={styles.safeArea}>
         
-        {/* Close Button */}
-        <Pressable onPress={onClose} style={styles.globalCloseButton}>
-          <Ionicons name="close" size={28} color="#FFF" />
-        </Pressable>
-
         {/* Loading Gallery View */}
         {loading ? (
           <View style={styles.center}>
@@ -66,17 +61,17 @@ export const VerifiedGallery = ({ onClose, initialUri }: VerifiedGalleryProps) =
               </View>
             )}
 
-            {/* Media Gallery Strip (only if permissions allowed it) */}
-            {permissionGranted && photos.length > 0 && (
-              <GalleryStrip
-                photos={photos}
-                selectedPhoto={selectedPhoto}
-                onSelectPhoto={(item) => void verifyPhoto(item)}
-              />
-            )}
+            {/* Media Gallery Strip */}
+            <GalleryStrip
+              photos={permissionGranted ? photos : []}
+              selectedPhoto={selectedPhoto}
+              onSelectPhoto={(item) => void verifyPhoto(item)}
+              onClose={onClose}
+            />
           </View>
         )}
       </View>
+
     </View>
   );
 };
@@ -95,23 +90,12 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingBottom: Platform.OS === 'ios' ? 34 : 0,
   },
-  globalCloseButton: {
-    position: 'absolute',
-    top: 12,
-    right: 16,
-    zIndex: 1000,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    borderRadius: 20,
-    width: 40,
-    height: 40,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
   center: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
   },
+
   loadingText: {
     color: '#FFF',
     marginTop: 10,

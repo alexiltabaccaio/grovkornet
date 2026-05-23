@@ -2,61 +2,83 @@ import React from 'react';
 import { StyleSheet, View, FlatList, Pressable, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { GalleryItem } from '../../lib/types';
+import { BottomFooter } from '@shared/ui';
 
 interface GalleryStripProps {
   photos: GalleryItem[];
   selectedPhoto: GalleryItem | null;
   onSelectPhoto: (item: GalleryItem) => void;
+  onClose: () => void;
 }
 
-export const GalleryStrip = ({ photos, selectedPhoto, onSelectPhoto }: GalleryStripProps) => {
+export const GalleryStrip = ({ photos, selectedPhoto, onSelectPhoto, onClose }: GalleryStripProps) => {
   return (
-    <View style={styles.gridContainer}>
-      <FlatList
-        horizontal
-        data={photos}
-        keyExtractor={item => item.id}
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.gridContent}
-        renderItem={({ item }) => (
-          <Pressable
-            style={[
-              styles.thumbnailWrapper,
-              selectedPhoto?.uri === item.uri && styles.thumbnailSelected
-            ]}
-            onPress={() => onSelectPhoto(item)}
-          >
-            <Image source={{ uri: item.uri }} style={styles.thumbnailImage} />
-            {item.isVerified === true && (
-              <View style={styles.miniBadge}>
-                <Ionicons name="checkmark-circle" size={12} color="#34C759" />
-              </View>
-            )}
-          </Pressable>
-        )}
-      />
-    </View>
+    <BottomFooter style={styles.footerContainer}>
+      <Pressable 
+        onPress={onClose} 
+        style={styles.backButton} 
+        accessibilityLabel="Go back" 
+        accessibilityRole="button"
+      >
+        <Ionicons name="chevron-back" size={24} color="#FFF" />
+      </Pressable>
+      
+      <View style={styles.listContainer}>
+        <FlatList
+          horizontal
+          data={photos}
+          keyExtractor={item => item.id}
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.gridContent}
+          renderItem={({ item }) => (
+            <Pressable
+              style={[
+                styles.thumbnailWrapper,
+                selectedPhoto?.uri === item.uri && styles.thumbnailSelected
+              ]}
+              onPress={() => onSelectPhoto(item)}
+            >
+              <Image source={{ uri: item.uri }} style={styles.thumbnailImage} />
+              {item.isVerified === true && (
+                <View style={styles.miniBadge}>
+                  <Ionicons name="checkmark-circle" size={10} color="#34C759" />
+                </View>
+              )}
+            </Pressable>
+          )}
+        />
+      </View>
+    </BottomFooter>
   );
 };
 
 const styles = StyleSheet.create({
-  gridContainer: {
-    height: 100,
-    borderTopWidth: 1,
-    borderTopColor: '#222',
-    backgroundColor: '#0A0A0A',
+  footerContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 8,
+  },
+  backButton: {
+    width: 48,
+    height: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  listContainer: {
+    flex: 1,
+    height: '100%',
     justifyContent: 'center',
   },
   gridContent: {
-    paddingHorizontal: 16,
+    paddingHorizontal: 8,
     alignItems: 'center',
   },
   thumbnailWrapper: {
-    width: 64,
-    height: 64,
+    width: 56,
+    height: 56,
     borderRadius: 8,
     overflow: 'hidden',
-    marginRight: 12,
+    marginRight: 10,
     borderWidth: 2,
     borderColor: 'transparent',
   },
@@ -70,10 +92,11 @@ const styles = StyleSheet.create({
   },
   miniBadge: {
     position: 'absolute',
-    bottom: 4,
-    right: 4,
+    bottom: 2,
+    right: 2,
     backgroundColor: 'rgba(0,0,0,0.6)',
     borderRadius: 6,
-    padding: 2,
+    padding: 1,
   },
 });
+

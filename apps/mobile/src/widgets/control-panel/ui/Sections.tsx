@@ -4,8 +4,10 @@ import { useTranslation } from 'react-i18next';
 import { SectionType, useSystemStore } from '@entities/system';
 import { Ionicons } from '@expo/vector-icons';
 import { BlurView } from 'expo-blur';
+import { BottomFooter } from '@shared/ui';
 
 import { useShallow } from 'zustand/react/shallow';
+
 
 export const Sections = () => {
   const { activeSection, setActiveSection, isDebugEnabled } = useSystemStore(useShallow(state => ({
@@ -31,7 +33,7 @@ export const Sections = () => {
   ];
 
   return (
-    <View style={styles.bottomFooterWrapper}>
+    <BottomFooter style={styles.bottomFooterPosition}>
       {/* <BlurView intensity={80} tint="dark" style={StyleSheet.absoluteFill} /> */}
       <ScrollView
         horizontal
@@ -63,25 +65,21 @@ export const Sections = () => {
           );
         })}
       </ScrollView>
-    </View>
+    </BottomFooter>
   );
+
 };
 
 const styles = StyleSheet.create({
-  bottomFooterWrapper: {
+  bottomFooterPosition: {
     position: 'absolute',
     bottom: 0,
     left: 0,
     right: 0,
-    height: 80,
-    backgroundColor: '#0e0e0e',
-    borderTopWidth: 1,
-    borderTopColor: '#222',
-    justifyContent: 'center',
-    overflow: 'hidden',
     zIndex: 10,
     elevation: 10,
   },
+
 
   scrollContent: {
     flexDirection: 'row',
