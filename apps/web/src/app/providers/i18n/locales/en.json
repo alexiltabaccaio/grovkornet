@@ -1,0 +1,51 @@
+{
+  "home": {
+    "subtitle": "Cinematic Analog Film Emulation",
+    "coming_soon_badge": "Coming Soon to Android",
+    "description": "Capture professional cinema footage with a custom C++/Kotlin native rendering engine for real-time analog film look.",
+    "footer": {
+      "rights": "All rights reserved.",
+      "privacy_policy": "Privacy Policy"
+    }
+  },
+  "language_modal": {
+    "title": "Select Language",
+    "english": "English",
+    "italian": "Italiano",
+    "close": "Close"
+  },
+  "select_language": {
+    "title": "Select Language",
+    "back": "← Go Back",
+    "system_title": "System Language",
+    "system_detected": "System default",
+    "all_languages": "All Languages"
+  },
+  "privacy": {
+    "back_to_home": "← Back to Home",
+    "title": "Privacy Policy",
+    "last_updated": "Last updated: May 2026",
+    "intro": "Welcome to <strong>Grovkornet</strong>. Transparency and the protection of your privacy are fundamental to us. Below we provide information on how this website works in relation to the processing of personal data.",
+    "section1": {
+      "title": "1. Data Controller",
+      "content": "The Data Controller is:<br /><strong>Alex Giustizieri</strong><br />Contact email: <strong>alexgiustizieri@gmail.com</strong>"
+    },
+    "section2": {
+      "title": "2. Absence of Personal Data Collection",
+      "content": "This website is an informational presentation page (\"Coming Soon\"). <strong>It does not collect, request, or process in any way the personal data of users.</strong> There are no registration forms, text fields for data entry, or newsletters."
+    },
+    "section3": {
+      "title": "3. Cookies and Tracking Systems",
+      "content": "This site does not use profiling cookies, advertising cookies, or other tracking systems for user activity. Any technical session cookies are used exclusively to ensure the correct loading and technical functioning of the page."
+    },
+    "section4": {
+      "title": "4. Links to Third-Party Sites and Services",
+      "content": "The site may contain links to external platforms (such as official Stores for downloading applications). By clicking on these links, you will be redirected to external services that adopt their own privacy policies, independent of this page. We invite you to consult the respective policies on the destination sites."
+    },
+    "section5": {
+      "title": "5. Your Rights",
+      "content": "Since we do not collect or store any personal data through this site, there are no personal data archives on which you can exercise the rights of modification, access, or deletion under the GDPR. For any questions or clarifications on the technical functioning of the page, you can contact us at the email address indicated in point 1."
+    },
+    "footer": "All rights reserved."
+  }
+}

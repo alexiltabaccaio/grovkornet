@@ -1,0 +1,51 @@
+{
+  "home": {
+    "subtitle": "Emulazione Cinematografica di Pellicola Analogica",
+    "coming_soon_badge": "In arrivo su Android",
+    "description": "Cattura riprese cinematografiche professionali con un motore di rendering nativo C++/Kotlin personalizzato per un look da pellicola analogica in tempo reale.",
+    "footer": {
+      "rights": "Tutti i diritti riservati.",
+      "privacy_policy": "Informativa sulla Privacy"
+    }
+  },
+  "language_modal": {
+    "title": "Seleziona Lingua",
+    "english": "English",
+    "italian": "Italiano",
+    "close": "Chiudi"
+  },
+  "select_language": {
+    "title": "Seleziona Lingua",
+    "back": "← Torna Indietro",
+    "system_title": "Lingua di Sistema",
+    "system_detected": "Rilevata dal sistema",
+    "all_languages": "Tutte le Lingue"
+  },
+  "privacy": {
+    "back_to_home": "← Torna alla Home",
+    "title": "Informativa sulla Privacy",
+    "last_updated": "Ultimo aggiornamento: Maggio 2026",
+    "intro": "Benvenuto su <strong>Grovkornet</strong>. La trasparenza e la tutela della tua privacy sono fondamentali per noi. Di seguito ti forniamo le informazioni sul funzionamento di questo sito web in relazione al trattamento dei dati personali.",
+    "section1": {
+      "title": "1. Titolare del Trattamento dei Dati",
+      "content": "Il Titolare del Trattamento è:<br /><strong>Alex Giustizieri</strong><br />Contatto email: <strong>alexgiustizieri@gmail.com</strong>"
+    },
+    "section2": {
+      "title": "2. Assenza di Raccolta Dati Personali",
+      "content": "Questo sito web è una pagina di presentazione informativa (\"Coming Soon\"). <strong>Non raccoglie, non richiede e non tratta in alcun modo dati personali degli utenti.</strong> Non sono presenti moduli di iscrizione, campi di testo per l'inserimento di dati, né newsletter."
+    },
+    "section3": {
+      "title": "3. Cookie e Sistemi di Tracciamento",
+      "content": "Questo sito non utilizza cookie di profilazione, cookie pubblicitari o altri sistemi di tracciamento dell'attività dell'utente. Eventuali cookie tecnici di sessione sono utilizzati esclusivamente per garantire il corretto caricamento e funzionamento tecnico della pagina."
+    },
+    "section4": {
+      "title": "4. Link a Siti e Servizi di Terze Parti",
+      "content": "Il sito potrebbe contenere collegamenti a piattaforme esterne (come ad esempio gli Store ufficiali per il download delle applicazioni). Cliccando su tali link, verrai reindirizzato a servizi esterni che adottano le proprie informative sulla privacy, indipendenti da questa pagina. Ti invitiamo a consultare le rispettive policy sui siti di destinazione."
+    },
+    "section5": {
+      "title": "5. I Tuoi Diritti",
+      "content": "Poiché non raccogliamo né conserviamo alcun dato personale tramite questo sito, non sussistono archivi di dati personali su cui poter esercitare i diritti di modifica, accesso o cancellazione ai sensi del GDPR. Per qualsiasi domanda o chiarimento sul funzionamento tecnico della pagina, puoi comunque contattarci all'indirizzo email indicato al punto 1."
+    },
+    "footer": "Tutti i diritti riservati."
+  }
+}

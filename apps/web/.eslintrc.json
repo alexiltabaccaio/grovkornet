@@ -1,4 +1,128 @@
 {
   "extends": "next/core-web-vitals",
-  "parser": "@typescript-eslint/parser"
+  "parser": "@typescript-eslint/parser",
+  "rules": {
+    "no-restricted-imports": [
+      "error",
+      {
+        "patterns": [
+          {
+            "group": ["../../../**"],
+            "message": "Relative imports going up 3 or more levels are not allowed. Please use path aliases instead."
+          },
+          {
+            "group": [
+              "@entities/*/**",
+              "@features/*/**",
+              "@widgets/*/**",
+              "@screens/*/**"
+            ],
+            "message": "Import from the slice public API instead of deep paths."
+          }
+        ]
+      }
+    ]
+  },
+  "overrides": [
+    {
+      "files": ["src/shared/**/*.{ts,tsx}"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": ["@app/**", "@screens/**", "@widgets/**", "@features/**", "@entities/**"],
+                "message": "The 'shared' layer cannot import from higher layers."
+              },
+              {
+                "group": ["../../../**"],
+                "message": "Relative imports going up 3 or more levels are not allowed. Please use path aliases instead."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "files": ["src/entities/**/*.{ts,tsx}"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": ["@app/**", "@screens/**", "@widgets/**", "@features/**"],
+                "message": "The 'entities' layer cannot import from higher layers."
+              },
+              {
+                "group": ["../../../**"],
+                "message": "Relative imports going up 3 or more levels are not allowed. Please use path aliases instead."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "files": ["src/features/**/*.{ts,tsx}"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": ["@app/**", "@screens/**", "@widgets/**"],
+                "message": "The 'features' layer cannot import from higher layers."
+              },
+              {
+                "group": ["../../../**"],
+                "message": "Relative imports going up 3 or more levels are not allowed. Please use path aliases instead."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "files": ["src/widgets/**/*.{ts,tsx}"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": ["@app/**", "@screens/**"],
+                "message": "The 'widgets' layer cannot import from higher layers."
+              },
+              {
+                "group": ["../../../**"],
+                "message": "Relative imports going up 3 or more levels are not allowed. Please use path aliases instead."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "files": ["src/screens/**/*.{ts,tsx}"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": ["@app/**"],
+                "message": "The 'screens' layer cannot import from higher layers."
+              },
+              {
+                "group": ["../../../**"],
+                "message": "Relative imports going up 3 or more levels are not allowed. Please use path aliases instead."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
 }

@@ -428,8 +428,12 @@ body {
   z-index: 10;
   max-width: 640px;
   width: 90%;
+}
+
+.coming-soon-content.animate-first {
   animation: fadeIn 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
+
 
 .coming-soon-brand {
   display: flex;
