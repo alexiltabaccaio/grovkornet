@@ -1,15 +1,20 @@
 import React from 'react';
-import { StyleSheet, View, Pressable, ScrollView } from 'react-native';
+import { StyleSheet, View, Pressable, ScrollView, Dimensions } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { SectionType, useSystemStore } from '@entities/system';
 import { Ionicons } from '@expo/vector-icons';
-import { BlurView } from 'expo-blur';
 import { BottomFooter } from '@shared/ui';
+import Animated, { useAnimatedStyle, interpolate, SharedValue } from 'react-native-reanimated';
 
 import { useShallow } from 'zustand/react/shallow';
 
+const { width } = Dimensions.get('window');
 
-export const Sections = () => {
+interface SectionsProps {
+  galleryTransition?: SharedValue<number>;
+}
+
+export const Sections = ({ galleryTransition }: SectionsProps) => {
   const { activeSection, setActiveSection, isDebugEnabled } = useSystemStore(useShallow(state => ({
     activeSection: state.activeSection,
     setActiveSection: state.setActiveSection,
@@ -32,10 +37,19 @@ export const Sections = () => {
     { id: 'film', icon: 'film-outline' },
   ];
 
+  const animatedStyle = useAnimatedStyle(() => {
+    if (!galleryTransition) return {};
+    const translateX = interpolate(galleryTransition.value, [0, 1], [0, width]);
+    return {
+      transform: [{ translateX }],
+    };
+  });
+
   return (
     <BottomFooter style={styles.bottomFooterPosition}>
-      {/* <BlurView intensity={80} tint="dark" style={StyleSheet.absoluteFill} /> */}
-      <ScrollView
+      <Animated.View style={[StyleSheet.absoluteFill, animatedStyle]}>
+        {/* <BlurView intensity={80} tint="dark" style={StyleSheet.absoluteFill} /> */}
+        <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
@@ -64,7 +78,8 @@ export const Sections = () => {
             </Pressable>
           );
         })}
-      </ScrollView>
+        </ScrollView>
+      </Animated.View>
     </BottomFooter>
   );
 

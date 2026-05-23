@@ -34,7 +34,7 @@ jest.mock('@widgets/header', () => ({
 }));
 jest.mock('@features/gallery', () => ({
   CaptureThumbnail: 'CaptureThumbnail',
-  VerifiedGallery: 'VerifiedGallery',
+  GalleryViewer: 'GalleryViewer',
 }));
 jest.mock('@features/body-controls', () => ({
   ShutterButton: 'ShutterButton',

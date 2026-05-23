@@ -17,9 +17,10 @@ const AnimatedBlurView = Animated.createAnimatedComponent(BlurView);
 interface ControlPanelProps {
   translateY?: Animated.SharedValue<number>;
   drawerAnimation?: Animated.SharedValue<number>;
+  galleryTransition?: Animated.SharedValue<number>;
 }
 
-export const ControlPanel = ({ translateY: externalTranslateY, drawerAnimation: externalDrawerAnimation }: ControlPanelProps) => {
+export const ControlPanel = ({ translateY: externalTranslateY, drawerAnimation: externalDrawerAnimation, galleryTransition }: ControlPanelProps) => {
   const { activeSection, isDebugEnabled } = useSystemStore(useShallow(state => ({
     activeSection: state.activeSection,
     isDebugEnabled: state.isDebugEnabled,
@@ -141,7 +142,7 @@ export const ControlPanel = ({ translateY: externalTranslateY, drawerAnimation: 
         </GestureDetector>
       </Animated.View>
 
-      <Sections />
+      <Sections galleryTransition={galleryTransition} />
     </View>
   );
 };

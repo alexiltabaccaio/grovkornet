@@ -1,20 +1,33 @@
 import React from 'react';
-import { StyleSheet, View, FlatList, Pressable, Image } from 'react-native';
+import { StyleSheet, View, FlatList, Pressable, Image, Dimensions } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { GalleryItem } from '../../lib/types';
 import { BottomFooter } from '@shared/ui';
+import Animated, { useAnimatedStyle, interpolate, SharedValue } from 'react-native-reanimated';
+
+const { width } = Dimensions.get('window');
 
 interface GalleryStripProps {
   photos: GalleryItem[];
   selectedPhoto: GalleryItem | null;
   onSelectPhoto: (item: GalleryItem) => void;
   onClose: () => void;
+  galleryTransition?: SharedValue<number>;
 }
 
-export const GalleryStrip = ({ photos, selectedPhoto, onSelectPhoto, onClose }: GalleryStripProps) => {
+export const GalleryStrip = ({ photos, selectedPhoto, onSelectPhoto, onClose, galleryTransition }: GalleryStripProps) => {
+  const animatedStyle = useAnimatedStyle(() => {
+    if (!galleryTransition) return {};
+    const translateX = interpolate(galleryTransition.value, [0, 1], [-width, 0]);
+    return {
+      transform: [{ translateX }],
+    };
+  });
+
   return (
     <BottomFooter style={styles.footerContainer}>
-      <Pressable 
+      <Animated.View style={[styles.innerAnimatedContainer, animatedStyle]}>
+        <Pressable 
         onPress={onClose} 
         style={styles.backButton} 
         accessibilityLabel="Go back" 
@@ -48,12 +61,17 @@ export const GalleryStrip = ({ photos, selectedPhoto, onSelectPhoto, onClose }: 
           )}
         />
       </View>
+      </Animated.View>
     </BottomFooter>
   );
 };
 
 const styles = StyleSheet.create({
   footerContainer: {
+    paddingHorizontal: 0,
+  },
+  innerAnimatedContainer: {
+    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 8,

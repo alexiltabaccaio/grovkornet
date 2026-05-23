@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, AppState, AppStateStatus, PermissionsAndroid, Platform, StatusBar } from 'react-native';
-import Animated, { useSharedValue, useAnimatedStyle, interpolate } from 'react-native-reanimated';
+import Animated, { useSharedValue, useAnimatedStyle, interpolate, withTiming, runOnJS } from 'react-native-reanimated';
 
-import { useTranslation } from 'react-i18next';
 
 import { useShallow } from 'zustand/react/shallow';
 import { useSystemStore } from '@entities/system';
@@ -12,7 +11,7 @@ import { Header } from '@widgets/header';
 import { ShutterButton } from '@features/body-controls';
 import { GestureController } from '@features/lens-controls';
 import { DebugOverlay } from '@features/system-settings';
-import { VerifiedGallery, CaptureThumbnail } from '@features/gallery';
+import { GalleryViewer, CaptureThumbnail } from '@features/gallery';
 import { logger } from '@shared/lib/logger';
 
 
@@ -23,7 +22,6 @@ export const CameraScreen = () => {
 };
 
 const CameraScreenContent = () => {
-  const { t } = useTranslation();
   const { isDebugEnabled, triggerCapture, latestCapturedUri } = useSystemStore(useShallow(state => ({
     isDebugEnabled: state.isDebugEnabled,
     triggerCapture: state.triggerCapture,
@@ -34,7 +32,21 @@ const CameraScreenContent = () => {
   const drawerAnimation = useSharedValue(250);
 
   const [cameraKey, setCameraKey] = useState(0);
-  const [isGalleryOpen, setIsGalleryOpen] = useState(false);
+  const [shouldRenderGallery, setShouldRenderGallery] = useState(false);
+  const galleryTransition = useSharedValue(0);
+
+  const openGallery = () => {
+    setShouldRenderGallery(true);
+    galleryTransition.value = withTiming(1, { duration: 300 });
+  };
+
+  const closeGallery = () => {
+    galleryTransition.value = withTiming(0, { duration: 300 }, (finished) => {
+      if (finished) {
+        runOnJS(setShouldRenderGallery)(false);
+      }
+    });
+  };
 
   useEffect(() => {
     const subscription = AppState.addEventListener('change', (nextAppState: AppStateStatus) => {
@@ -70,7 +82,8 @@ const CameraScreenContent = () => {
     // footerTranslateY goes from 0 (open) to -250 (pulled up)
     // Total goes from 250 (closed) to 0 (open) to -250 (pulled up)
     // We want to fade out the controls as the drawer opens (total goes 250 -> 150)
-    const totalOffset = drawerAnimation.value + footerTranslateY.value;
+    // galleryTransition.value * 100 reduces totalOffset to 150, which triggers the fade out
+    const totalOffset = drawerAnimation.value + footerTranslateY.value - (galleryTransition.value * 100);
     const opacity = interpolate(
       totalOffset,
       [250, 150],
@@ -113,15 +126,15 @@ const CameraScreenContent = () => {
       
       <Animated.View style={[styles.bottomControlsContainer, animatedBottomControlsStyle]} pointerEvents="box-none">
         <View style={styles.sideControl} pointerEvents="box-none">
-          <CaptureThumbnail onPress={() => setIsGalleryOpen(true)} />
+          <CaptureThumbnail onPress={openGallery} />
         </View>
         <ShutterButton onPress={triggerCapture} translateY={footerTranslateY} />
         <View style={styles.sideControl} pointerEvents="box-none" />
       </Animated.View>
 
-      <ControlPanel translateY={footerTranslateY} drawerAnimation={drawerAnimation} />
+      <ControlPanel translateY={footerTranslateY} drawerAnimation={drawerAnimation} galleryTransition={galleryTransition} />
 
-      {isGalleryOpen && <VerifiedGallery onClose={() => setIsGalleryOpen(false)} initialUri={latestCapturedUri} />}
+      {shouldRenderGallery && <GalleryViewer onClose={closeGallery} initialUri={latestCapturedUri} galleryTransition={galleryTransition} />}
     </View>
   );
 };
@@ -151,9 +164,5 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#0e0e0e',
-  },
-  text: {
-    color: '#fff',
-    fontSize: 16,
   },
 });

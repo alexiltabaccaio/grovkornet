@@ -1,6 +1,6 @@
 import React from 'react';
 import { render } from '@testing-library/react-native';
-import { VerifiedGallery } from './VerifiedGallery';
+import { GalleryViewer } from './GalleryViewer';
 
 jest.mock('react-i18next', () => ({
   useTranslation: () => ({
@@ -8,15 +8,15 @@ jest.mock('react-i18next', () => ({
   }),
 }));
 
-describe('VerifiedGallery', () => {
+describe('GalleryViewer', () => {
   it('renders correctly', () => {
-    const { toJSON } = render(<VerifiedGallery onClose={jest.fn()} initialUri={null} />);
+    const { toJSON } = render(<GalleryViewer onClose={jest.fn()} initialUri={null} />);
     expect(toJSON()).toBeDefined();
   });
 
   it('renders with initialUri correctly', () => {
     const { toJSON } = render(
-      <VerifiedGallery onClose={jest.fn()} initialUri="file:///test/preview.jpg" />
+      <GalleryViewer onClose={jest.fn()} initialUri="file:///test/preview.jpg" />
     );
     expect(toJSON()).toBeDefined();
   });

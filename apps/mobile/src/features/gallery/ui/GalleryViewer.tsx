@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
-import { StyleSheet, Text, View, Pressable, ActivityIndicator, Platform } from 'react-native';
+import { StyleSheet, Text, View, ActivityIndicator, Platform } from 'react-native';
+import Animated, { useAnimatedStyle, SharedValue } from 'react-native-reanimated';
 import { useTranslation } from 'react-i18next';
-import { Ionicons } from '@expo/vector-icons';
 import { Header } from '@widgets/header';
 import { ShareButton } from './ShareButton';
 import { useGalleryPhotos } from '../lib/useGalleryPhotos';
@@ -9,12 +9,13 @@ import { useImageVerification } from '../lib/useImageVerification';
 import { PhotoPreview } from './components/PhotoPreview';
 import { GalleryStrip } from './components/GalleryStrip';
 
-interface VerifiedGalleryProps {
+interface GalleryViewerProps {
   onClose: () => void;
   initialUri?: string | null;
+  galleryTransition?: SharedValue<number>;
 }
 
-export const VerifiedGallery = ({ onClose, initialUri }: VerifiedGalleryProps) => {
+export const GalleryViewer = ({ onClose, initialUri, galleryTransition }: GalleryViewerProps) => {
   const { t } = useTranslation();
   const { photos, setPhotos, loading, permissionGranted } = useGalleryPhotos(initialUri);
   const { selectedPhoto, verifying, verifyPhoto } = useImageVerification(setPhotos);
@@ -35,10 +36,19 @@ export const VerifiedGallery = ({ onClose, initialUri }: VerifiedGalleryProps) =
     }
   }, [loading, photos, initialUri, verifyPhoto, selectedPhoto]);
 
+  const animatedContainerStyle = useAnimatedStyle(() => {
+    if (!galleryTransition) return {};
+    return {
+      opacity: galleryTransition.value,
+    };
+  });
+
   return (
-    <View style={styles.absoluteContainer}>
-      <Header />
-      <View style={styles.safeArea}>
+    <Animated.View style={[styles.absoluteContainer, animatedContainerStyle]} pointerEvents="box-none">
+      <View style={styles.topArea} pointerEvents="box-none">
+        <Header />
+      </View>
+      <View style={styles.safeArea} pointerEvents="box-none">
         
         {/* Loading Gallery View */}
         {loading ? (
@@ -71,12 +81,13 @@ export const VerifiedGallery = ({ onClose, initialUri }: VerifiedGalleryProps) =
               selectedPhoto={selectedPhoto}
               onSelectPhoto={(item) => void verifyPhoto(item)}
               onClose={onClose}
+              galleryTransition={galleryTransition}
             />
           </View>
         )}
       </View>
 
-    </View>
+    </Animated.View>
   );
 };
 
@@ -87,8 +98,11 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    backgroundColor: '#000',
+    backgroundColor: 'transparent',
     zIndex: 999,
+  },
+  topArea: {
+    backgroundColor: '#000',
   },
   safeArea: {
     flex: 1,
@@ -114,6 +128,7 @@ const styles = StyleSheet.create({
     padding: 0,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: '#000',
   },
   shareContainer: {
     position: 'absolute',
