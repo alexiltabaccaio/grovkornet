@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, View, AppState, AppStateStatus, PermissionsAndroid, Platform } from 'react-native';
+import { StyleSheet, View, AppState, AppStateStatus, PermissionsAndroid, Platform, StatusBar } from 'react-native';
 import Animated, { useSharedValue, useAnimatedStyle, interpolate } from 'react-native-reanimated';
 
 import { useTranslation } from 'react-i18next';
@@ -95,10 +95,16 @@ const CameraScreenContent = () => {
     );
   }
 
+  const statusBarHeight = Platform.OS === 'android' 
+    ? (StatusBar.currentHeight ?? 24) 
+    : 47;
+
   return (
     <View style={styles.container}>
       <GestureController>
-        <Viewfinder cameraKey={cameraKey} />
+        <View style={{ flex: 1, width: '100%', marginTop: statusBarHeight, marginBottom: 80 }}>
+          <Viewfinder cameraKey={cameraKey} />
+        </View>
       </GestureController>
 
       <Header />
