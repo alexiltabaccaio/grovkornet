@@ -1,17 +1,19 @@
 import React from 'react';
-import { StyleSheet, Text, Alert, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, Alert, TouchableOpacity, Platform } from 'react-native';
 import Share, { Social } from 'react-native-share';
 import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import { CONFIG } from '@shared/config';
 import { logger } from '@shared/lib/logger';
+import * as FileSystem from 'expo-file-system';
 
 interface ShareButtonProps {
+  id?: string;
   uri: string;
   isVerified: boolean;
 }
 
-export const ShareButton = ({ uri, isVerified }: ShareButtonProps) => {
+export const ShareButton = ({ id, uri, isVerified }: ShareButtonProps) => {
   const { t } = useTranslation();
 
   const handleShare = async () => {
@@ -24,10 +26,35 @@ export const ShareButton = ({ uri, isVerified }: ShareButtonProps) => {
     }
 
     try {
+      let shareUri = uri;
+      
+      // On Android, react-native-share expects a file:// URI and will automatically wrap it
+      // with a FileProvider to create a content:// URI. Do NOT pass a content:// URI directly,
+      // as it will parse the path incorrectly and pass an invalid FileProvider URI to Instagram.
+      // Additionally, the original file might be in a public Pictures directory which react-native-share's
+      // default FileProvider configuration does not expose. Therefore, we copy it to the cache directory first.
+      if (Platform.OS === 'android') {
+        const cachePath = `${FileSystem.cacheDirectory}share_instagram_${Date.now()}.jpg`;
+        await FileSystem.copyAsync({ from: uri, to: cachePath });
+        shareUri = cachePath;
+      }
+
+      // Instagram Stories requires a numeric Facebook App ID. If CONFIG.APP_ID is not a number
+      // (e.g. it defaults to the package name 'com.grovkornet.app'), we use a dummy numeric ID
+      // to prevent the Instagram app from crashing/closing immediately.
+      const isValidAppId = /^\d+$/.test(CONFIG.APP_ID);
+      const appId = isValidAppId ? CONFIG.APP_ID : '123456789012345';
+      
+      if (!isValidAppId) {
+        logger.warn('ShareButton', 'CONFIG.APP_ID is not a valid numeric Facebook App ID. Using dummy ID to prevent crash.');
+      }
+
+      logger.debug('ShareButton', `Sharing to Instagram Stories. appId: ${appId}, shareUri: ${shareUri}, originalUri: ${uri}, id: ${id}`);
+
       await Share.shareSingle({
         social: Social.InstagramStories,
-        appId: CONFIG.APP_ID,
-        backgroundImage: uri,
+        appId,
+        backgroundImage: shareUri,
         backgroundBottomColor: '#000000',
         backgroundTopColor: '#000000',
         attributionURL: CONFIG.PLAY_STORE_URL,

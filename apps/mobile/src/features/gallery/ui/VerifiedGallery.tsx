@@ -52,14 +52,18 @@ export const VerifiedGallery = ({ onClose, initialUri }: VerifiedGalleryProps) =
             {/* Main Preview Area */}
             <View style={styles.previewContainer}>
               <PhotoPreview selectedPhoto={selectedPhoto} verifying={verifying} />
+              
+              {/* Share Instagram Action */}
+              {selectedPhoto && (
+                <View style={styles.shareContainer}>
+                  <ShareButton
+                    id={selectedPhoto.id}
+                    uri={selectedPhoto.uri}
+                    isVerified={selectedPhoto.isVerified ?? false}
+                  />
+                </View>
+              )}
             </View>
-
-            {/* Share Instagram Action */}
-            {selectedPhoto && (
-              <View style={styles.shareContainer}>
-                <ShareButton uri={selectedPhoto.uri} isVerified={selectedPhoto.isVerified ?? false} />
-              </View>
-            )}
 
             {/* Media Gallery Strip */}
             <GalleryStrip
@@ -107,12 +111,14 @@ const styles = StyleSheet.create({
   },
   previewContainer: {
     flex: 1,
-    padding: 20,
+    padding: 0,
     justifyContent: 'center',
     alignItems: 'center',
   },
   shareContainer: {
-    alignItems: 'center',
-    paddingVertical: 10,
+    position: 'absolute',
+    bottom: 20,
+    right: 20,
+    zIndex: 10,
   },
 });

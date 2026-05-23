@@ -41,7 +41,7 @@ const styles = StyleSheet.create({
   previewWrapper: {
     width: '100%',
     height: '100%',
-    borderRadius: 16,
+    borderRadius: 0,
     overflow: 'hidden',
     backgroundColor: '#111',
     position: 'relative',
