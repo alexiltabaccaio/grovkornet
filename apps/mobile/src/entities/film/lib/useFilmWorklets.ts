@@ -33,6 +33,46 @@ export const useFilmWorklets = () => {
       updateSharedValue(film.saturation, value);
     };
 
+    const updateSatRed = (value: number) => {
+      'worklet';
+      updateSharedValue(film.satRed, value);
+    };
+
+    const updateSatOrange = (value: number) => {
+      'worklet';
+      updateSharedValue(film.satOrange, value);
+    };
+
+    const updateSatYellow = (value: number) => {
+      'worklet';
+      updateSharedValue(film.satYellow, value);
+    };
+
+    const updateSatGreen = (value: number) => {
+      'worklet';
+      updateSharedValue(film.satGreen, value);
+    };
+
+    const updateSatCyan = (value: number) => {
+      'worklet';
+      updateSharedValue(film.satCyan, value);
+    };
+
+    const updateSatBlue = (value: number) => {
+      'worklet';
+      updateSharedValue(film.satBlue, value);
+    };
+
+    const updateSatPurple = (value: number) => {
+      'worklet';
+      updateSharedValue(film.satPurple, value);
+    };
+
+    const updateSatMagenta = (value: number) => {
+      'worklet';
+      updateSharedValue(film.satMagenta, value);
+    };
+
     const updateContrast = (value: number) => {
       'worklet';
       updateSharedValue(film.contrast, value);
@@ -78,6 +118,14 @@ export const useFilmWorklets = () => {
       updateGrainSize,
       updateGrainSpeed,
       updateSaturation,
+      updateSatRed,
+      updateSatOrange,
+      updateSatYellow,
+      updateSatGreen,
+      updateSatCyan,
+      updateSatBlue,
+      updateSatPurple,
+      updateSatMagenta,
       updateContrast,
       updateChromaticAberration,
       updateAberrationDirection,

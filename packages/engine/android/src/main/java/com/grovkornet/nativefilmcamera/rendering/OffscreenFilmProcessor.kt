@@ -39,6 +39,14 @@ class OffscreenFilmProcessor {
         input: Bitmap,
         output: Bitmap,
         saturation: Float,
+        satRed: Float,
+        satOrange: Float,
+        satYellow: Float,
+        satGreen: Float,
+        satCyan: Float,
+        satBlue: Float,
+        satPurple: Float,
+        satMagenta: Float,
         contrast: Float,
         grainIntensity: Float,
         grainChroma: Float,
@@ -131,6 +139,14 @@ class OffscreenFilmProcessor {
                     input,
                     outputBitmap,
                     params.saturation,
+                    params.satRed,
+                    params.satOrange,
+                    params.satYellow,
+                    params.satGreen,
+                    params.satCyan,
+                    params.satBlue,
+                    params.satPurple,
+                    params.satMagenta,
                     params.contrast,
                     if (params.grainEnabled) params.grainIntensity else 0.0f,
                     params.grainChroma,
@@ -187,7 +203,7 @@ class OffscreenFilmProcessor {
             val startTime = System.currentTimeMillis()
             val time = ((System.currentTimeMillis() / 1000.0) % (Math.PI * 2.0)).toFloat()
             try {
-                val floatParams = FloatArray(16).apply {
+                val floatParams = FloatArray(24).apply {
                     this[0] = params.saturation
                     this[1] = params.contrast
                     this[2] = if (params.grainEnabled) params.grainIntensity else 0.0f
@@ -204,6 +220,14 @@ class OffscreenFilmProcessor {
                     this[13] = params.aberration
                     this[14] = params.aberrationDirection.toFloat()
                     this[15] = params.sharpening
+                    this[16] = params.satRed
+                    this[17] = params.satOrange
+                    this[18] = params.satYellow
+                    this[19] = params.satGreen
+                    this[20] = params.satCyan
+                    this[21] = params.satBlue
+                    this[22] = params.satPurple
+                    this[23] = params.satMagenta
                 }
 
                 nativeProcessHardwareBuffer(

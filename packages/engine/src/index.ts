@@ -4,6 +4,14 @@ import { ViewProps } from 'react-native';
 
 export interface NativeFilmCameraViewProps extends ViewProps {
   saturation?: number;
+  satRed?: number;
+  satOrange?: number;
+  satYellow?: number;
+  satGreen?: number;
+  satCyan?: number;
+  satBlue?: number;
+  satPurple?: number;
+  satMagenta?: number;
   contrast?: number;
   grainIntensity?: number;
   grainChroma?: number;

@@ -108,7 +108,9 @@ public:
     
     bool init(AAssetManager* assetManager);
     
-    void triggerLutUpdate(float saturation, float contrast, float ev, float whiteBalance, float tint);
+    void triggerLutUpdate(float saturation, float contrast, float ev, float whiteBalance, float tint,
+                          float satRed, float satOrange, float satYellow, float satGreen,
+                          float satCyan, float satBlue, float satPurple, float satMagenta);
     void applyLutTextureUpdate();
     
     void triggerOverlayUpdate(std::vector<jobject>&& bitmaps, JNIEnv* env);

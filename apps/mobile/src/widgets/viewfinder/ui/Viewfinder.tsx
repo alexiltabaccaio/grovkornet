@@ -54,6 +54,14 @@ export const Viewfinder = ({ cameraKey }: ViewfinderProps) => {
     tint,
     temperatureAuto,
     sharpening,
+    satRed,
+    satOrange,
+    satYellow,
+    satGreen,
+    satCyan,
+    satBlue,
+    satPurple,
+    satMagenta,
   } = useFilmStore.getState();
 
   // 2. Azioni stabili
@@ -92,6 +100,14 @@ export const Viewfinder = ({ cameraKey }: ViewfinderProps) => {
         key={`camera-${cameraKey}`}
         style={StyleSheet.absoluteFill}
         saturation={saturation as unknown as SharedValue<number | undefined>}
+        satRed={satRed as unknown as SharedValue<number | undefined>}
+        satOrange={satOrange as unknown as SharedValue<number | undefined>}
+        satYellow={satYellow as unknown as SharedValue<number | undefined>}
+        satGreen={satGreen as unknown as SharedValue<number | undefined>}
+        satCyan={satCyan as unknown as SharedValue<number | undefined>}
+        satBlue={satBlue as unknown as SharedValue<number | undefined>}
+        satPurple={satPurple as unknown as SharedValue<number | undefined>}
+        satMagenta={satMagenta as unknown as SharedValue<number | undefined>}
         contrast={contrast as unknown as SharedValue<number | undefined>}
         chromaticAberration={chromaticAberration as unknown as SharedValue<number | undefined>}
         aberrationDirection={aberrationDirection as unknown as SharedValue<number | undefined>}

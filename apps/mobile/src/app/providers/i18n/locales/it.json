@@ -56,6 +56,16 @@
     },
     "footer": {
       "coming_soon": "IN ARRIVO"
+    },
+    "colors": {
+      "red": "ROSSO",
+      "orange": "ARANCIONE",
+      "yellow": "GIALLO",
+      "green": "VERDE",
+      "cyan": "CIANO",
+      "blue": "BLU",
+      "purple": "VIOLA",
+      "magenta": "MAGENTA"
     }
   }
 }

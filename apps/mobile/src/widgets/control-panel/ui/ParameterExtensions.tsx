@@ -10,7 +10,7 @@ import { SliderExtension } from './components/SliderExtension';
 import { Ionicons } from '@expo/vector-icons';
 
 import { LanguageExtension, DebugExtension } from '@features/system-settings';
-import { NoiseReductionExtension, GrainExtension } from '@features/film-controls';
+import { NoiseReductionExtension, GrainExtension, SaturationExtension } from '@features/film-controls';
 import { LensSelectionExtension, ChromaticAberrationExtension } from '@features/lens-controls';
 import { AspectRatioExtension, FpsExtension, ResolutionExtension } from '@features/body-controls';
 
@@ -257,10 +257,22 @@ export const ParameterExtensions = ({ translateY }: ParameterExtensionsProps) =>
         </View>
       );
 
+    case 'saturation':
+      return (
+        <View style={styles.container}>
+          <SliderExtension
+            parameter="saturation"
+            parameterExtensionAnimatedStyle={parameterExtensionAnimatedStyle}
+          />
+          <Animated.View style={[styles.childSubContainer, animatedStyle]}>
+            <SaturationExtension />
+          </Animated.View>
+        </View>
+      );
+
     // Slider-only parameters (no children)
     case 'bloom':
     case 'contrast':
-    case 'saturation':
     case 'temperature':
     case 'tint':
     case 'sharpening':

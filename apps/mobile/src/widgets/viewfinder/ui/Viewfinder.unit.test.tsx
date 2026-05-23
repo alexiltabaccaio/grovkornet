@@ -31,6 +31,8 @@ describe('Viewfinder', () => {
     
     // Set some values in store
     filmStore.saturation.value = 1.5;
+    filmStore.satRed.value = 75.0;
+    filmStore.satBlue.value = 25.0;
     bodyStore.iso.value = 400;
     bodyStore.aspectRatio.value = 1; // 16:9
 
@@ -39,6 +41,8 @@ describe('Viewfinder', () => {
 
     // Check if props match store values
     expect(nativeCamera.props.saturation.value).toBe(1.5);
+    expect((nativeCamera.props as any).satRed.value).toBe(75.0);
+    expect((nativeCamera.props as any).satBlue.value).toBe(25.0);
     expect(nativeCamera.props.iso.value).toBe(400);
     expect(nativeCamera.props.cameraAspectRatio.value).toBe(1);
   });

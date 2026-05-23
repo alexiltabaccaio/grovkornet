@@ -9,6 +9,8 @@ class CameraConfigurationTest {
     fun defaultValues_areCorrect() {
         val config = CameraConfiguration()
         assertEquals(1.0f, config.saturation)
+        assertEquals(50.0f, config.satRed)
+        assertEquals(50.0f, config.satBlue)
         assertEquals(1.0f, config.contrast)
         assertTrue(config.isoAuto)
         assertEquals(400, config.iso)
@@ -22,11 +24,15 @@ class CameraConfigurationTest {
         config.iso = 800
         config.isoAuto = false
         config.saturation = 0.5f
+        config.satRed = 80.0f
+        config.satBlue = 20.0f
         config.previewIn4k = true
         
         assertEquals(800, config.iso)
         assertFalse(config.isoAuto)
         assertEquals(0.5f, config.saturation)
+        assertEquals(80.0f, config.satRed)
+        assertEquals(20.0f, config.satBlue)
         assertTrue(config.previewIn4k)
     }
 

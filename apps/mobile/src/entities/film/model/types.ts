@@ -23,6 +23,14 @@ interface FilmState {
   temperature: SharedValue<number>;
   tint: SharedValue<number>;
   temperatureAuto: SharedValue<boolean>;
+  satRed: SharedValue<number>;
+  satOrange: SharedValue<number>;
+  satYellow: SharedValue<number>;
+  satGreen: SharedValue<number>;
+  satCyan: SharedValue<number>;
+  satBlue: SharedValue<number>;
+  satPurple: SharedValue<number>;
+  satMagenta: SharedValue<number>;
   capabilities?: FilmCapabilities;
 }
 
@@ -44,6 +52,14 @@ interface FilmActions {
   setTemperature: (value: number) => void;
   setTint: (value: number) => void;
   setTemperatureAuto: (value: boolean) => void;
+  setSatRed: (value: number) => void;
+  setSatOrange: (value: number) => void;
+  setSatYellow: (value: number) => void;
+  setSatGreen: (value: number) => void;
+  setSatCyan: (value: number) => void;
+  setSatBlue: (value: number) => void;
+  setSatPurple: (value: number) => void;
+  setSatMagenta: (value: number) => void;
   setCapabilities?: (capabilities: FilmCapabilities) => void;
   resetEffect: (effect: string) => void;
 }

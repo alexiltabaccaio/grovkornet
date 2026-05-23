@@ -31,6 +31,30 @@ class NativeFilmCameraModule : Module() {
       Prop("saturation") { view: NativeFilmCameraView, value: Float ->
         view.updateEffect { saturation = value }
       }
+      Prop("satRed") { view: NativeFilmCameraView, value: Float ->
+        view.updateEffect { satRed = value }
+      }
+      Prop("satOrange") { view: NativeFilmCameraView, value: Float ->
+        view.updateEffect { satOrange = value }
+      }
+      Prop("satYellow") { view: NativeFilmCameraView, value: Float ->
+        view.updateEffect { satYellow = value }
+      }
+      Prop("satGreen") { view: NativeFilmCameraView, value: Float ->
+        view.updateEffect { satGreen = value }
+      }
+      Prop("satCyan") { view: NativeFilmCameraView, value: Float ->
+        view.updateEffect { satCyan = value }
+      }
+      Prop("satBlue") { view: NativeFilmCameraView, value: Float ->
+        view.updateEffect { satBlue = value }
+      }
+      Prop("satPurple") { view: NativeFilmCameraView, value: Float ->
+        view.updateEffect { satPurple = value }
+      }
+      Prop("satMagenta") { view: NativeFilmCameraView, value: Float ->
+        view.updateEffect { satMagenta = value }
+      }
       Prop("contrast") { view: NativeFilmCameraView, value: Float ->
         view.updateEffect { contrast = value }
       }

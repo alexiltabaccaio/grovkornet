@@ -7,6 +7,7 @@ import {
   DEFAULT_TEMPERATURE,
   DEFAULT_TINT,
   DEFAULT_GRAIN_SPEED,
+  DEFAULT_SELECTIVE_SATURATION,
 } from '@grovkornet/shared';
 
 describe('useFilmStore', () => {
@@ -37,6 +38,27 @@ describe('useFilmStore', () => {
 
     store.setContrast(1.1);
     expect(useFilmStore.getState().contrast.value).toBe(1.1);
+  });
+
+  it('sets Selective Saturation values', () => {
+    const store = useFilmStore.getState();
+    store.setSatRed(75.5);
+    store.setSatOrange(80);
+    store.setSatYellow(10);
+    store.setSatGreen(20);
+    store.setSatCyan(30);
+    store.setSatBlue(40);
+    store.setSatPurple(50);
+    store.setSatMagenta(60);
+
+    expect(useFilmStore.getState().satRed.value).toBe(75.5);
+    expect(useFilmStore.getState().satOrange.value).toBe(80);
+    expect(useFilmStore.getState().satYellow.value).toBe(10);
+    expect(useFilmStore.getState().satGreen.value).toBe(20);
+    expect(useFilmStore.getState().satCyan.value).toBe(30);
+    expect(useFilmStore.getState().satBlue.value).toBe(40);
+    expect(useFilmStore.getState().satPurple.value).toBe(50);
+    expect(useFilmStore.getState().satMagenta.value).toBe(60);
   });
 
   it('sets Chromatic Aberration and Direction', () => {
@@ -85,8 +107,13 @@ describe('useFilmStore', () => {
     expect(useFilmStore.getState().grainSpeed.value).toBe(DEFAULT_GRAIN_SPEED);
 
     store.setSaturation(2.0);
+    store.setSatRed(90);
+    store.setSatBlue(10);
     store.resetEffect('saturation');
     expect(useFilmStore.getState().saturation.value).toBe(DEFAULT_SATURATION);
+    expect(useFilmStore.getState().satRed.value).toBe(DEFAULT_SELECTIVE_SATURATION);
+    expect(useFilmStore.getState().satOrange.value).toBe(DEFAULT_SELECTIVE_SATURATION);
+    expect(useFilmStore.getState().satBlue.value).toBe(DEFAULT_SELECTIVE_SATURATION);
 
     store.setContrast(2.0);
     store.resetEffect('contrast');

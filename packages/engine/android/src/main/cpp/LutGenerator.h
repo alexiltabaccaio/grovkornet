@@ -16,7 +16,9 @@ public:
     void start();
     void stop();
 
-    void triggerLutUpdate(float saturation, float contrast, float ev, float whiteBalance, float tint);
+    void triggerLutUpdate(float saturation, float contrast, float ev, float whiteBalance, float tint,
+                          float satRed, float satOrange, float satYellow, float satGreen,
+                          float satCyan, float satBlue, float satPurple, float satMagenta);
     void applyLutTextureUpdate(filament::Engine& engine, filament::Texture* lutTexture);
     void waitForLut();
 
@@ -41,6 +43,14 @@ private:
     float currentEv = 0.0f;
     float currentWhiteBalance = 5000.0f;
     float currentTint = 0.0f;
+    float currentSatRed = 50.0f;
+    float currentSatOrange = 50.0f;
+    float currentSatYellow = 50.0f;
+    float currentSatGreen = 50.0f;
+    float currentSatCyan = 50.0f;
+    float currentSatBlue = 50.0f;
+    float currentSatPurple = 50.0f;
+    float currentSatMagenta = 50.0f;
 
     // Cache of active parameters mapped into GPU texture
     float activeSaturation = -1.0f;
@@ -48,6 +58,14 @@ private:
     float activeEv = -1.0f;
     float activeWhiteBalance = -1.0f;
     float activeTint = -1.0f;
+    float activeSatRed = -1.0f;
+    float activeSatOrange = -1.0f;
+    float activeSatYellow = -1.0f;
+    float activeSatGreen = -1.0f;
+    float activeSatCyan = -1.0f;
+    float activeSatBlue = -1.0f;
+    float activeSatPurple = -1.0f;
+    float activeSatMagenta = -1.0f;
 
     std::vector<uint8_t> lutBuffer;
 };

@@ -6,6 +6,14 @@ package com.grovkornet.nativefilmcamera.state
 data class CameraConfiguration(
     // Rendering / Effect Props
     var saturation: Float = 1.0f,
+    var satRed: Float = 50.0f,
+    var satOrange: Float = 50.0f,
+    var satYellow: Float = 50.0f,
+    var satGreen: Float = 50.0f,
+    var satCyan: Float = 50.0f,
+    var satBlue: Float = 50.0f,
+    var satPurple: Float = 50.0f,
+    var satMagenta: Float = 50.0f,
     var contrast: Float = 1.0f,
     var grainIntensity: Float = 0.0f,
     var grainChroma: Float = 0.0f,

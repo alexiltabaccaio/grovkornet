@@ -73,4 +73,12 @@ describe('ParameterExtensions', () => {
     expect(getByText('PARAMETERS.PREVIEW_IN_4K')).toBeDefined();
     expect(getByText('parameters.preview_in_4k_warning')).toBeDefined();
   });
+
+  it('renders saturation sub-parameters when activeParameter is saturation', () => {
+    act(() => {
+      useSystemStore.getState().setActiveParameter('saturation');
+    });
+    const { getByText } = render(<ParameterExtensions translateY={mockTranslateY} />);
+    expect(getByText('COLORS.RED')).toBeDefined();
+  });
 });

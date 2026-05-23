@@ -10,6 +10,7 @@ import {
   DEFAULT_TEMPERATURE,
   DEFAULT_TINT,
   DEFAULT_GRAIN_SPEED,
+  DEFAULT_SELECTIVE_SATURATION,
 } from '@grovkornet/shared';
 
 export const useFilmStore = create<FilmStore>((set, get) => ({
@@ -30,6 +31,14 @@ export const useFilmStore = create<FilmStore>((set, get) => ({
   temperature: makeMutable(DEFAULT_TEMPERATURE),
   tint: makeMutable(DEFAULT_TINT),
   temperatureAuto: makeMutable(true),
+  satRed: makeMutable(DEFAULT_SELECTIVE_SATURATION),
+  satOrange: makeMutable(DEFAULT_SELECTIVE_SATURATION),
+  satYellow: makeMutable(DEFAULT_SELECTIVE_SATURATION),
+  satGreen: makeMutable(DEFAULT_SELECTIVE_SATURATION),
+  satCyan: makeMutable(DEFAULT_SELECTIVE_SATURATION),
+  satBlue: makeMutable(DEFAULT_SELECTIVE_SATURATION),
+  satPurple: makeMutable(DEFAULT_SELECTIVE_SATURATION),
+  satMagenta: makeMutable(DEFAULT_SELECTIVE_SATURATION),
   capabilities: {
     availableNoiseReductionModes: [],
     availableEdgeModes: [],
@@ -103,6 +112,30 @@ export const useFilmStore = create<FilmStore>((set, get) => ({
       get().tint.value = DEFAULT_TINT;
     }
   },
+  setSatRed: (value) => {
+    get().satRed.value = value;
+  },
+  setSatOrange: (value) => {
+    get().satOrange.value = value;
+  },
+  setSatYellow: (value) => {
+    get().satYellow.value = value;
+  },
+  setSatGreen: (value) => {
+    get().satGreen.value = value;
+  },
+  setSatCyan: (value) => {
+    get().satCyan.value = value;
+  },
+  setSatBlue: (value) => {
+    get().satBlue.value = value;
+  },
+  setSatPurple: (value) => {
+    get().satPurple.value = value;
+  },
+  setSatMagenta: (value) => {
+    get().satMagenta.value = value;
+  },
   setCapabilities: (caps) => {
     logger.info('FilmStore', 'Capabilities updated for Film');
     set((state) => ({
@@ -124,6 +157,14 @@ export const useFilmStore = create<FilmStore>((set, get) => ({
         break;
       case 'saturation':
         state.saturation.value = DEFAULT_SATURATION;
+        state.satRed.value = DEFAULT_SELECTIVE_SATURATION;
+        state.satOrange.value = DEFAULT_SELECTIVE_SATURATION;
+        state.satYellow.value = DEFAULT_SELECTIVE_SATURATION;
+        state.satGreen.value = DEFAULT_SELECTIVE_SATURATION;
+        state.satCyan.value = DEFAULT_SELECTIVE_SATURATION;
+        state.satBlue.value = DEFAULT_SELECTIVE_SATURATION;
+        state.satPurple.value = DEFAULT_SELECTIVE_SATURATION;
+        state.satMagenta.value = DEFAULT_SELECTIVE_SATURATION;
         break;
       case 'contrast':
         state.contrast.value = DEFAULT_CONTRAST;

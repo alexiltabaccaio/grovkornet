@@ -278,7 +278,9 @@ bool GrovkornetEngine::init(AAssetManager* assetManager) {
     overlayCompositor.start(javaVm);
     
     // Trigger initial LUT bake
-    triggerLutUpdate(1.0f, 1.0f, 0.0f, 5000.0f, 0.0f);
+    triggerLutUpdate(1.0f, 1.0f, 0.0f, 5000.0f, 0.0f,
+                     50.0f, 50.0f, 50.0f, 50.0f,
+                     50.0f, 50.0f, 50.0f, 50.0f);
 
     LOGI("Filament Engine initialized successfully.");
     return true;
@@ -379,8 +381,12 @@ GrovkornetEngine::~GrovkornetEngine() {
     LOGI("Filament Engine resources destroyed.");
 }
 
-void GrovkornetEngine::triggerLutUpdate(float saturation, float contrast, float ev, float whiteBalance, float tint) {
-    lutGenerator.triggerLutUpdate(saturation, contrast, ev, whiteBalance, tint);
+void GrovkornetEngine::triggerLutUpdate(float saturation, float contrast, float ev, float whiteBalance, float tint,
+                                        float satRed, float satOrange, float satYellow, float satGreen,
+                                        float satCyan, float satBlue, float satPurple, float satMagenta) {
+    lutGenerator.triggerLutUpdate(saturation, contrast, ev, whiteBalance, tint,
+                                  satRed, satOrange, satYellow, satGreen,
+                                  satCyan, satBlue, satPurple, satMagenta);
 }
 
 void GrovkornetEngine::applyLutTextureUpdate() {

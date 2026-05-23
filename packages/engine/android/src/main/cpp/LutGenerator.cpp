@@ -48,12 +48,18 @@ void LutGenerator::stop() {
     }
 }
 
-void LutGenerator::triggerLutUpdate(float saturation, float contrast, float ev, float whiteBalance, float tint) {
+void LutGenerator::triggerLutUpdate(float saturation, float contrast, float ev, float whiteBalance, float tint,
+                                    float satRed, float satOrange, float satYellow, float satGreen,
+                                    float satCyan, float satBlue, float satPurple, float satMagenta) {
     std::unique_lock<std::mutex> lock(lutMutex);
     
     // Check if parameters actually changed
     if (saturation == currentSaturation && contrast == currentContrast &&
-        ev == currentEv && whiteBalance == currentWhiteBalance && tint == currentTint) {
+        ev == currentEv && whiteBalance == currentWhiteBalance && tint == currentTint &&
+        satRed == currentSatRed && satOrange == currentSatOrange &&
+        satYellow == currentSatYellow && satGreen == currentSatGreen &&
+        satCyan == currentSatCyan && satBlue == currentSatBlue &&
+        satPurple == currentSatPurple && satMagenta == currentSatMagenta) {
         return;
     }
     
@@ -62,6 +68,14 @@ void LutGenerator::triggerLutUpdate(float saturation, float contrast, float ev, 
     currentEv = ev;
     currentWhiteBalance = whiteBalance;
     currentTint = tint;
+    currentSatRed = satRed;
+    currentSatOrange = satOrange;
+    currentSatYellow = satYellow;
+    currentSatGreen = satGreen;
+    currentSatCyan = satCyan;
+    currentSatBlue = satBlue;
+    currentSatPurple = satPurple;
+    currentSatMagenta = satMagenta;
     
     lutParametersDirty = true;
     lutCv.notify_one();
@@ -87,6 +101,14 @@ void LutGenerator::applyLutTextureUpdate(filament::Engine& engine, filament::Tex
             activeEv = currentEv;
             activeWhiteBalance = currentWhiteBalance;
             activeTint = currentTint;
+            activeSatRed = currentSatRed;
+            activeSatOrange = currentSatOrange;
+            activeSatYellow = currentSatYellow;
+            activeSatGreen = currentSatGreen;
+            activeSatCyan = currentSatCyan;
+            activeSatBlue = currentSatBlue;
+            activeSatPurple = currentSatPurple;
+            activeSatMagenta = currentSatMagenta;
         }
     }
     
@@ -121,6 +143,14 @@ void LutGenerator::lutGenerationLoop() {
         float ev = 0.0f;
         float whiteBalance = 5000.0f;
         float tint = 0.0f;
+        float satRed = 50.0f;
+        float satOrange = 50.0f;
+        float satYellow = 50.0f;
+        float satGreen = 50.0f;
+        float satCyan = 50.0f;
+        float satBlue = 50.0f;
+        float satPurple = 50.0f;
+        float satMagenta = 50.0f;
         
         {
             std::unique_lock<std::mutex> lock(lutMutex);
@@ -135,6 +165,14 @@ void LutGenerator::lutGenerationLoop() {
             ev = currentEv;
             whiteBalance = currentWhiteBalance;
             tint = currentTint;
+            satRed = currentSatRed;
+            satOrange = currentSatOrange;
+            satYellow = currentSatYellow;
+            satGreen = currentSatGreen;
+            satCyan = currentSatCyan;
+            satBlue = currentSatBlue;
+            satPurple = currentSatPurple;
+            satMagenta = currentSatMagenta;
             
             lutParametersDirty = false;
             isComputingLut = true;
@@ -149,11 +187,41 @@ void LutGenerator::lutGenerationLoop() {
                 for (int r = 0; r < LUT_SIZE; ++r) {
                     float r_val = (float)r / (LUT_SIZE - 1);
                     
-                    // 1. Saturation
+                    // 0. Selective Saturation
+                    float cmax = std::max(r_val, std::max(g_val, b_val));
+                    float cmin = std::min(r_val, std::min(g_val, b_val));
+                    float delta = cmax - cmin;
+                    float hue = 0.0f;
+                    if (delta > 1e-6f) {
+                        if      (cmax == r_val) hue = 60.0f * std::fmod((g_val - b_val) / delta, 6.0f);
+                        else if (cmax == g_val) hue = 60.0f * ((b_val - r_val) / delta + 2.0f);
+                        else                    hue = 60.0f * ((r_val - g_val) / delta + 4.0f);
+                        if (hue < 0.0f) hue += 360.0f;
+                    }
+                    static const float HUE_CENTERS[8] = {0.0f, 30.0f, 60.0f, 120.0f, 180.0f, 240.0f, 300.0f, 330.0f};
+                    static const float HUE_WIDTH = 30.0f;
+                    const float selValues[8] = { satRed, satOrange, satYellow,
+                                                  satGreen, satCyan, satBlue,
+                                                  satPurple, satMagenta };
+                    float selectiveMult = 1.0f;
+                    if (delta > 1e-6f) {
+                        float totalWeight = 0.0f, weightedMult = 0.0f;
+                        for (int i = 0; i < 8; ++i) {
+                            float diff = std::abs(hue - HUE_CENTERS[i]);
+                            if (diff > 180.0f) diff = 360.0f - diff;
+                            float w = std::max(0.0f, 1.0f - diff / HUE_WIDTH);
+                            w = w * w; // quadratic falloff
+                            weightedMult += w * (selValues[i] / 50.0f);
+                            totalWeight += w;
+                        }
+                        if (totalWeight > 1e-6f) selectiveMult = weightedMult / totalWeight;
+                    }
+                    // 1. Saturation (moltiplicativa)
+                    float effectiveSaturation = saturation * selectiveMult;
                     float luminance = r_val * 0.2126f + g_val * 0.7152f + b_val * 0.0722f;
-                    float out_r = luminance + (r_val - luminance) * saturation;
-                    float out_g = luminance + (g_val - luminance) * saturation;
-                    float out_b = luminance + (b_val - luminance) * saturation;
+                    float out_r = luminance + (r_val - luminance) * effectiveSaturation;
+                    float out_g = luminance + (g_val - luminance) * effectiveSaturation;
+                    float out_b = luminance + (b_val - luminance) * effectiveSaturation;
                     
                     // 2. Contrast
                     out_r = ((out_r - 0.5f) * std::max(contrast, 0.0f)) + 0.5f;

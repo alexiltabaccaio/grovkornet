@@ -9,6 +9,7 @@ import {
   DEFAULT_TEMPERATURE,
   DEFAULT_TINT,
   DEFAULT_GRAIN_SPEED,
+  DEFAULT_SELECTIVE_SATURATION,
 } from '@grovkornet/shared';
 
 describe('useFilmWorklets', () => {
@@ -26,6 +27,7 @@ describe('useFilmWorklets', () => {
     film.setSharpening(0);
     film.setBloomIntensity(0);
     film.setTemperatureAuto(true);
+    film.resetEffect('saturation');
   });
 
   it('correctly updates grain parameters in worklets', () => {
@@ -65,6 +67,29 @@ describe('useFilmWorklets', () => {
 
     worklets.updateContrast(1.2);
     expect(useFilmStore.getState().contrast.value).toBe(1.2);
+  });
+
+  it('correctly updates selective saturation parameters in worklets', () => {
+    const { result } = renderHook(() => useFilmWorklets());
+    const worklets = result.current;
+
+    worklets.updateSatRed(12.3);
+    worklets.updateSatOrange(45.6);
+    worklets.updateSatYellow(78.9);
+    worklets.updateSatGreen(10.0);
+    worklets.updateSatCyan(20.0);
+    worklets.updateSatBlue(30.0);
+    worklets.updateSatPurple(40.0);
+    worklets.updateSatMagenta(50.0);
+
+    expect(useFilmStore.getState().satRed.value).toBe(12.3);
+    expect(useFilmStore.getState().satOrange.value).toBe(45.6);
+    expect(useFilmStore.getState().satYellow.value).toBe(78.9);
+    expect(useFilmStore.getState().satGreen.value).toBe(10.0);
+    expect(useFilmStore.getState().satCyan.value).toBe(20.0);
+    expect(useFilmStore.getState().satBlue.value).toBe(30.0);
+    expect(useFilmStore.getState().satPurple.value).toBe(40.0);
+    expect(useFilmStore.getState().satMagenta.value).toBe(50.0);
   });
 
   it('correctly updates chromatic aberration parameters in worklets', () => {

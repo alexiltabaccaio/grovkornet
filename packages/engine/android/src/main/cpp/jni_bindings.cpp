@@ -63,10 +63,12 @@ Java_com_grovkornet_nativefilmcamera_rendering_OffscreenFilmProcessor_nativePrep
 JNIEXPORT void JNICALL
 Java_com_grovkornet_nativefilmcamera_rendering_OffscreenFilmProcessor_nativeProcessBitmap(
         JNIEnv* env, jobject thiz, jlong engine_ptr, jobject bitmap_in, jobject bitmap_out,
-        jfloat saturation, jfloat contrast, jfloat grain_intensity, jfloat grain_chroma,
-        jfloat grain_size, jfloat grain_speed, jfloat vignette_intensity, jfloat vhs_intensity, jfloat time,
-        jfloat ev, jfloat white_balance, jfloat tint, jfloat bloom_intensity,
-        jfloat chromatic_aberration, jfloat aberration_direction, jfloat sharpening) {
+        jfloat saturation, jfloat sat_red, jfloat sat_orange, jfloat sat_yellow, jfloat sat_green,
+        jfloat sat_cyan, jfloat sat_blue, jfloat sat_purple, jfloat sat_magenta, jfloat contrast,
+        jfloat grain_intensity, jfloat grain_chroma, jfloat grain_size, jfloat grain_speed,
+        jfloat vignette_intensity, jfloat vhs_intensity, jfloat time, jfloat ev, jfloat white_balance,
+        jfloat tint, jfloat bloom_intensity, jfloat chromatic_aberration, jfloat aberration_direction,
+        jfloat sharpening) {
     
     GrovkornetEngine* enginePtr = reinterpret_cast<GrovkornetEngine*>(engine_ptr);
     if (!enginePtr) {
@@ -136,7 +138,9 @@ Java_com_grovkornet_nativefilmcamera_rendering_OffscreenFilmProcessor_nativeProc
         }
 
         // 4. Trigger LUT calculation on CPU and apply it to GPU texture
-        enginePtr->triggerLutUpdate(saturation, contrast, ev, white_balance, tint);
+        enginePtr->triggerLutUpdate(saturation, contrast, ev, white_balance, tint,
+                                    sat_red, sat_orange, sat_yellow, sat_green,
+                                    sat_cyan, sat_blue, sat_purple, sat_magenta);
         enginePtr->lutGenerator.waitForLut();
         enginePtr->applyLutTextureUpdate();
         enginePtr->applyOverlayTextureUpdate();
@@ -233,6 +237,14 @@ Java_com_grovkornet_nativefilmcamera_rendering_OffscreenFilmProcessor_nativeProc
     jfloat chromatic_aberration = params[13];
     jfloat aberration_direction = params[14];
     jfloat sharpening = params[15];
+    jfloat sat_red     = params[16];
+    jfloat sat_orange  = params[17];
+    jfloat sat_yellow  = params[18];
+    jfloat sat_green   = params[19];
+    jfloat sat_cyan    = params[20];
+    jfloat sat_blue    = params[21];
+    jfloat sat_purple  = params[22];
+    jfloat sat_magenta = params[23];
     env->ReleaseFloatArrayElements(float_params, params, 0);
     
     try {
@@ -267,7 +279,9 @@ Java_com_grovkornet_nativefilmcamera_rendering_OffscreenFilmProcessor_nativeProc
         }
 
         // 4. Trigger LUT calculation on CPU and apply it to GPU texture
-        enginePtr->triggerLutUpdate(saturation, contrast, ev, white_balance, tint);
+        enginePtr->triggerLutUpdate(saturation, contrast, ev, white_balance, tint,
+                                    sat_red, sat_orange, sat_yellow, sat_green,
+                                    sat_cyan, sat_blue, sat_purple, sat_magenta);
         enginePtr->lutGenerator.waitForLut();
         enginePtr->applyLutTextureUpdate();
         enginePtr->applyOverlayTextureUpdate();
@@ -490,9 +504,17 @@ Java_com_grovkornet_nativefilmcamera_rendering_LiveFilmProcessor_nativeRenderLiv
     jfloat chromatic_aberration = params[13];
     jfloat aberration_direction = params[14];
     jfloat sharpening = params[15];
-    int targetFps = static_cast<int>(params[16]);
-    int aspectRatioSetting = static_cast<int>(params[17]);
-    float targetResolution = params[18];
+    jfloat sat_red     = params[16];
+    jfloat sat_orange  = params[17];
+    jfloat sat_yellow  = params[18];
+    jfloat sat_green   = params[19];
+    jfloat sat_cyan    = params[20];
+    jfloat sat_blue    = params[21];
+    jfloat sat_purple  = params[22];
+    jfloat sat_magenta = params[23];
+    int targetFps          = static_cast<int>(params[24]);
+    int aspectRatioSetting = static_cast<int>(params[25]);
+    float targetResolution = params[26];
     env->ReleaseFloatArrayElements(float_params, params, 0);
 
     try {
@@ -563,7 +585,9 @@ Java_com_grovkornet_nativefilmcamera_rendering_LiveFilmProcessor_nativeRenderLiv
         }
         
         // 4. Trigger LUT calculation on CPU and apply it to GPU texture
-        enginePtr->triggerLutUpdate(saturation, contrast, ev, white_balance, tint);
+        enginePtr->triggerLutUpdate(saturation, contrast, ev, white_balance, tint,
+                                    sat_red, sat_orange, sat_yellow, sat_green,
+                                    sat_cyan, sat_blue, sat_purple, sat_magenta);
         enginePtr->applyLutTextureUpdate();
         enginePtr->applyOverlayTextureUpdate();
         
