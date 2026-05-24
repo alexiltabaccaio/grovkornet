@@ -137,6 +137,16 @@ void LutGenerator::waitForLut() {
 void LutGenerator::lutGenerationLoop() {
     std::vector<uint8_t> tempBuffer(LUT_SIZE * LUT_SIZE * LUT_SIZE * 4);
     
+    // Precompute sRGB-to-Linear lookup table for input coordinates
+    float linearTable[LUT_SIZE];
+    for (int i = 0; i < LUT_SIZE; ++i) {
+        float val = (float)i / (LUT_SIZE - 1);
+        linearTable[i] = (val <= 0.04045f) ? val / 12.92f : std::pow((val + 0.055f) / 1.055f, 2.4f);
+    }
+    
+    // Linear equivalent of sRGB 0.5 (used as contrast midpoint)
+    const float CONTRAST_MIDPOINT = std::pow((0.5f + 0.055f) / 1.055f, 2.4f);
+    
     while (true) {
         float saturation = 1.0f;
         float contrast = 1.0f;
@@ -178,8 +188,15 @@ void LutGenerator::lutGenerationLoop() {
             isComputingLut = true;
         }
         
+        // Compute EV multiplier and White Balance factors outside the loops
+        float evMultiplier = std::pow(2.0f, ev);
+        float temp = whiteBalance / 5000.0f;
+        float tintOffset = tint / 100.0f;
+        float wb_r = temp * (1.0f + tintOffset * 0.2f);
+        float wb_g = 1.0f - tintOffset * 0.2f;
+        float wb_b = (1.0f / temp) * (1.0f + tintOffset * 0.2f);
+        
         // Definizione delle bande percettive (Core Plateaus).
-        // Ottimizzazione: dichiarato fuori dal loop per non ricrearlo 35937 volte
         struct ColorBand { float start; float end; float val; };
         const ColorBand bands[8] = {
             {350.0f,  8.0f, satRed},       // 0: Red (banda ristretta per i rossi puri)
@@ -192,16 +209,28 @@ void LutGenerator::lutGenerationLoop() {
             {305.0f, 335.0f, satMagenta}   // 7: Magenta
         };
 
+        // Helper lambda to convert linear value back to sRGB
+        auto linearToSrgb = [](float c) -> float {
+            if (c <= 0.0f) return 0.0f;
+            if (c >= 1.0f) return 1.0f;
+            return (c <= 0.0031308f) ? c * 12.92f : 1.055f * std::pow(c, 1.0f / 2.4f) - 0.055f;
+        };
+
         // Compute LUT on CPU
         int index = 0;
         for (int b = 0; b < LUT_SIZE; ++b) {
             float b_val = (float)b / (LUT_SIZE - 1);
+            float lin_b = linearTable[b];
+            
             for (int g = 0; g < LUT_SIZE; ++g) {
                 float g_val = (float)g / (LUT_SIZE - 1);
+                float lin_g = linearTable[g];
+                
                 for (int r = 0; r < LUT_SIZE; ++r) {
                     float r_val = (float)r / (LUT_SIZE - 1);
+                    float lin_r = linearTable[r];
                     
-                    // 0. Selective Saturation
+                    // 0. Selective Saturation (computed on sRGB inputs to match HSL band mappings)
                     float cmax = std::max(r_val, std::max(g_val, b_val));
                     float cmin = std::min(r_val, std::min(g_val, b_val));
                     float delta = cmax - cmin;
@@ -212,8 +241,6 @@ void LutGenerator::lutGenerationLoop() {
                         else                    hue = 60.0f * ((r_val - g_val) / delta + 4.0f);
                         if (hue < 0.0f) hue += 360.0f;
                     }
-                    // Le bande sono definite fuori dal loop per ottimizzazione performance
-
                     
                     float selectiveMult = 1.0f;
                     if (delta > 1e-6f) {
@@ -255,43 +282,34 @@ void LutGenerator::lutGenerationLoop() {
                             }
                         }
                     }
-                    // 1. Saturation (moltiplicativa)
+                    
+                    // 1. Saturation (applied in linear space)
                     float effectiveSaturation = saturation * selectiveMult;
-                    float luminance = r_val * 0.2126f + g_val * 0.7152f + b_val * 0.0722f;
-                    float out_r = luminance + (r_val - luminance) * effectiveSaturation;
-                    float out_g = luminance + (g_val - luminance) * effectiveSaturation;
-                    float out_b = luminance + (b_val - luminance) * effectiveSaturation;
+                    float lin_luminance = lin_r * 0.2126f + lin_g * 0.7152f + lin_b * 0.0722f;
+                    float out_r = lin_luminance + (lin_r - lin_luminance) * effectiveSaturation;
+                    float out_g = lin_luminance + (lin_g - lin_luminance) * effectiveSaturation;
+                    float out_b = lin_luminance + (lin_b - lin_luminance) * effectiveSaturation;
                     
-                    // 2. Contrast
-                    out_r = ((out_r - 0.5f) * std::max(contrast, 0.0f)) + 0.5f;
-                    out_g = ((out_g - 0.5f) * std::max(contrast, 0.0f)) + 0.5f;
-                    out_b = ((out_b - 0.5f) * std::max(contrast, 0.0f)) + 0.5f;
+                    // 2. Contrast (applied in linear space around linearized 0.5 midpoint)
+                    float activeContrast = std::max(contrast, 0.0f);
+                    out_r = ((out_r - CONTRAST_MIDPOINT) * activeContrast) + CONTRAST_MIDPOINT;
+                    out_g = ((out_g - CONTRAST_MIDPOINT) * activeContrast) + CONTRAST_MIDPOINT;
+                    out_b = ((out_b - CONTRAST_MIDPOINT) * activeContrast) + CONTRAST_MIDPOINT;
                     
-                    // 3. EV Exposure
-                    float evMultiplier = std::pow(2.0f, ev);
+                    // 3. EV Exposure (applied in linear space)
                     out_r *= evMultiplier;
                     out_g *= evMultiplier;
                     out_b *= evMultiplier;
                     
-                    // 4. White Balance & Tint
-                    float temp = whiteBalance / 5000.0f;
-                    float tintOffset = tint / 100.0f;
-                    float wb_r = temp * (1.0f + tintOffset * 0.2f);
-                    float wb_g = 1.0f - tintOffset * 0.2f;
-                    float wb_b = (1.0f / temp) * (1.0f + tintOffset * 0.2f);
-                    
+                    // 4. White Balance & Tint (applied in linear space)
                     out_r *= wb_r;
                     out_g *= wb_g;
                     out_b *= wb_b;
                     
-                    // Clip to [0, 1]
-                    out_r = std::max(0.0f, std::min(1.0f, out_r));
-                    out_g = std::max(0.0f, std::min(1.0f, out_g));
-                    out_b = std::max(0.0f, std::min(1.0f, out_b));
-                    
-                    tempBuffer[index++] = static_cast<uint8_t>(out_r * 255.0f + 0.5f);
-                    tempBuffer[index++] = static_cast<uint8_t>(out_g * 255.0f + 0.5f);
-                    tempBuffer[index++] = static_cast<uint8_t>(out_b * 255.0f + 0.5f);
+                    // Convert back to sRGB and write to buffer (linearToSrgb clamps to [0.0, 1.0])
+                    tempBuffer[index++] = static_cast<uint8_t>(linearToSrgb(out_r) * 255.0f + 0.5f);
+                    tempBuffer[index++] = static_cast<uint8_t>(linearToSrgb(out_g) * 255.0f + 0.5f);
+                    tempBuffer[index++] = static_cast<uint8_t>(linearToSrgb(out_b) * 255.0f + 0.5f);
                     tempBuffer[index++] = 255; // Alpha channel
                 }
             }
