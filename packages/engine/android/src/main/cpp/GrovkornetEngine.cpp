@@ -27,6 +27,38 @@
 #define LOGW(...) __android_log_print(ANDROID_LOG_WARN, LOG_TAG, __VA_ARGS__)
 #define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
 
+RenderParams parseRenderParams(const float* params) {
+    RenderParams rp;
+    rp.saturation = params[0];
+    rp.contrast = params[1];
+    rp.grainIntensity = params[2];
+    rp.grainChroma = params[3];
+    rp.grainSize = params[4];
+    rp.grainSpeed = params[5];
+    rp.vignetteIntensity = params[6];
+    rp.vhsIntensity = params[7];
+    rp.time = params[8];
+    rp.ev = params[9];
+    rp.whiteBalance = params[10];
+    rp.tint = params[11];
+    rp.bloomIntensity = params[12];
+    rp.chromaticAberration = params[13];
+    rp.aberrationDirection = params[14];
+    rp.sharpening = params[15];
+    rp.satRed = params[16];
+    rp.satOrange = params[17];
+    rp.satYellow = params[18];
+    rp.satGreen = params[19];
+    rp.satCyan = params[20];
+    rp.satBlue = params[21];
+    rp.satPurple = params[22];
+    rp.satMagenta = params[23];
+    rp.targetFps = params[24];
+    rp.aspectRatio = params[25];
+    rp.targetResolution = params[26];
+    return rp;
+}
+
 GrovkornetEngine::GrovkornetEngine(int w, int h) 
     : width(w), height(h), overlayCompositor(w, h) {
 }
@@ -392,6 +424,45 @@ void GrovkornetEngine::triggerLutUpdate(float saturation, float contrast, float 
 void GrovkornetEngine::applyLutTextureUpdate() {
     lutGenerator.applyLutTextureUpdate(*engine, lutTexture);
 }
+
+void GrovkornetEngine::applyShaderParameters(const RenderParams& params, filament::MaterialInstance* inputMaterial, bool waitForLut) {
+    // 1. Trigger LUT calculation on CPU and apply it to GPU texture
+    triggerLutUpdate(params.saturation, params.contrast, params.ev, params.whiteBalance, params.tint,
+                     params.satRed, params.satOrange, params.satYellow, params.satGreen,
+                     params.satCyan, params.satBlue, params.satPurple, params.satMagenta);
+    if (waitForLut) {
+        lutGenerator.waitForLut();
+    }
+    applyLutTextureUpdate();
+    applyOverlayTextureUpdate();
+
+    // 2. Set LutTexture parameter on inputMaterial
+    filament::TextureSampler sampler3d(filament::TextureSampler::MinFilter::LINEAR, filament::TextureSampler::MagFilter::LINEAR, filament::TextureSampler::WrapMode::CLAMP_TO_EDGE);
+    inputMaterial->setParameter("u_LutTexture", lutTexture, sampler3d);
+
+    // 3. Set parameters on materialInstanceComposite
+    filament::MaterialInstance* composite = shaderManager.getMaterialInstanceComposite();
+    composite->setParameter("u_GrainIntensity", params.grainIntensity);
+    composite->setParameter("u_GrainChroma", params.grainChroma);
+    composite->setParameter("u_GrainSize", params.grainSize);
+    composite->setParameter("u_GrainSpeed", params.grainSpeed);
+    composite->setParameter("u_VignetteIntensity", params.vignetteIntensity);
+    composite->setParameter("u_VhsIntensity", params.vhsIntensity);
+    composite->setParameter("u_Time", params.time);
+    composite->setParameter("u_BloomIntensity", params.bloomIntensity);
+    composite->setParameter("u_ChromaticAberration", params.chromaticAberration);
+    composite->setParameter("u_AberrationDirection", params.aberrationDirection);
+    composite->setParameter("u_OverlayEnabled", overlayCompositor.isOverlayEnabled() ? 1.0f : 0.0f);
+
+    filament::math::float2 texelSize{1.0f / width, 1.0f / height};
+    composite->setParameter("u_TexelSize", texelSize);
+    composite->setParameter("u_Sharpening", params.sharpening);
+    composite->setParameter("u_TargetResolution", params.targetResolution);
+
+    // 4. Update DRS and viewports
+    updateDrsAndViewport();
+}
+
 
 void GrovkornetEngine::triggerOverlayUpdate(std::vector<jobject>&& bitmaps, JNIEnv* env) {
     overlayCompositor.triggerOverlayUpdate(std::move(bitmaps), env);

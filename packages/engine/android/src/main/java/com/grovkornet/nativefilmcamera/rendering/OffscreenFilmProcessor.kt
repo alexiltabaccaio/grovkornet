@@ -3,6 +3,8 @@ package com.grovkornet.nativefilmcamera.rendering
 import android.graphics.Bitmap
 import android.util.Log
 import com.grovkornet.nativefilmcamera.state.CameraConfiguration
+import com.grovkornet.nativefilmcamera.state.getTargetResolutionValue
+import com.grovkornet.nativefilmcamera.state.toRenderParamsArray
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -38,30 +40,7 @@ class OffscreenFilmProcessor {
         nativeEnginePtr: Long,
         input: Bitmap,
         output: Bitmap,
-        saturation: Float,
-        satRed: Float,
-        satOrange: Float,
-        satYellow: Float,
-        satGreen: Float,
-        satCyan: Float,
-        satBlue: Float,
-        satPurple: Float,
-        satMagenta: Float,
-        contrast: Float,
-        grainIntensity: Float,
-        grainChroma: Float,
-        grainSize: Float,
-        grainSpeed: Float,
-        vignetteIntensity: Float,
-        vhsIntensity: Float,
-        time: Float,
-        ev: Float,
-        whiteBalance: Float,
-        tint: Float,
-        bloomIntensity: Float,
-        chromaticAberration: Float,
-        aberrationDirection: Float,
-        sharpening: Float
+        params: FloatArray
     )
     private external fun nativeProcessHardwareBuffer(
         nativeEnginePtr: Long,
@@ -138,30 +117,7 @@ class OffscreenFilmProcessor {
                     nativeEnginePtr,
                     input,
                     outputBitmap,
-                    params.saturation,
-                    params.satRed,
-                    params.satOrange,
-                    params.satYellow,
-                    params.satGreen,
-                    params.satCyan,
-                    params.satBlue,
-                    params.satPurple,
-                    params.satMagenta,
-                    params.contrast,
-                    if (params.grainEnabled) params.grainIntensity else 0.0f,
-                    params.grainChroma,
-                    params.grainSize,
-                    params.grainSpeed,
-                    params.vignetteIntensity,
-                    params.vhsIntensity,
-                    time,
-                    params.ev,
-                    params.whiteBalance,
-                    params.tint,
-                    if (params.bloomEnabled) params.bloomIntensity else 0.0f,
-                    params.aberration,
-                    params.aberrationDirection.toFloat(),
-                    params.sharpening
+                    params.toRenderParamsArray(time, params.getTargetResolutionValue())
                 )
 
                 // FIX: Filament reads pixels with a bottom-left origin, so the resulting bitmap is upside down.
@@ -203,32 +159,7 @@ class OffscreenFilmProcessor {
             val startTime = System.currentTimeMillis()
             val time = ((System.currentTimeMillis() / 1000.0) % (Math.PI * 2.0)).toFloat()
             try {
-                val floatParams = FloatArray(24).apply {
-                    this[0] = params.saturation
-                    this[1] = params.contrast
-                    this[2] = if (params.grainEnabled) params.grainIntensity else 0.0f
-                    this[3] = params.grainChroma
-                    this[4] = params.grainSize
-                    this[5] = params.grainSpeed
-                    this[6] = params.vignetteIntensity
-                    this[7] = params.vhsIntensity
-                    this[8] = time
-                    this[9] = params.ev
-                    this[10] = params.whiteBalance
-                    this[11] = params.tint
-                    this[12] = if (params.bloomEnabled) params.bloomIntensity else 0.0f
-                    this[13] = params.aberration
-                    this[14] = params.aberrationDirection.toFloat()
-                    this[15] = params.sharpening
-                    this[16] = params.satRed
-                    this[17] = params.satOrange
-                    this[18] = params.satYellow
-                    this[19] = params.satGreen
-                    this[20] = params.satCyan
-                    this[21] = params.satBlue
-                    this[22] = params.satPurple
-                    this[23] = params.satMagenta
-                }
+                val floatParams = params.toRenderParamsArray(time, params.getTargetResolutionValue())
 
                 nativeProcessHardwareBuffer(
                     nativeEnginePtr,

@@ -35,6 +35,14 @@ public:
 
 extern "C" {
 
+RenderParams parseRenderParams(JNIEnv* env, jfloatArray float_params) {
+    jfloat* params = env->GetFloatArrayElements(float_params, nullptr);
+    RenderParams rp = parseRenderParams(params);
+    env->ReleaseFloatArrayElements(float_params, params, JNI_ABORT);
+    return rp;
+}
+
+
 JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm, void* reserved) {
     LOGI("Grovkornet Engine JNI Library Loaded Successfully");
     
@@ -63,12 +71,7 @@ Java_com_grovkornet_nativefilmcamera_rendering_OffscreenFilmProcessor_nativePrep
 JNIEXPORT void JNICALL
 Java_com_grovkornet_nativefilmcamera_rendering_OffscreenFilmProcessor_nativeProcessBitmap(
         JNIEnv* env, jobject thiz, jlong engine_ptr, jobject bitmap_in, jobject bitmap_out,
-        jfloat saturation, jfloat sat_red, jfloat sat_orange, jfloat sat_yellow, jfloat sat_green,
-        jfloat sat_cyan, jfloat sat_blue, jfloat sat_purple, jfloat sat_magenta, jfloat contrast,
-        jfloat grain_intensity, jfloat grain_chroma, jfloat grain_size, jfloat grain_speed,
-        jfloat vignette_intensity, jfloat vhs_intensity, jfloat time, jfloat ev, jfloat white_balance,
-        jfloat tint, jfloat bloom_intensity, jfloat chromatic_aberration, jfloat aberration_direction,
-        jfloat sharpening) {
+        jfloatArray float_params) {
     
     GrovkornetEngine* enginePtr = reinterpret_cast<GrovkornetEngine*>(engine_ptr);
     if (!enginePtr) {
@@ -137,39 +140,14 @@ Java_com_grovkornet_nativefilmcamera_rendering_OffscreenFilmProcessor_nativeProc
             rcm.setMaterialInstanceAt(instance, 0, enginePtr->shaderManager.getMaterialInstance2D());
         }
 
-        // 4. Trigger LUT calculation on CPU and apply it to GPU texture
-        enginePtr->triggerLutUpdate(saturation, contrast, ev, white_balance, tint,
-                                    sat_red, sat_orange, sat_yellow, sat_green,
-                                    sat_cyan, sat_blue, sat_purple, sat_magenta);
-        enginePtr->lutGenerator.waitForLut();
-        enginePtr->applyLutTextureUpdate();
-        enginePtr->applyOverlayTextureUpdate();
+        RenderParams parsedParams = parseRenderParams(env, float_params);
 
-        // Set material parameters
+        // Set material parameter u_Texture (remains in JNI because sampler type differs)
         filament::TextureSampler sampler2d(filament::TextureSampler::MinFilter::LINEAR, filament::TextureSampler::MagFilter::LINEAR);
         enginePtr->shaderManager.getMaterialInstance2D()->setParameter("u_Texture", enginePtr->inputTexture2D, sampler2d);
-        
-        filament::TextureSampler sampler3d(filament::TextureSampler::MinFilter::LINEAR, filament::TextureSampler::MagFilter::LINEAR, filament::TextureSampler::WrapMode::CLAMP_TO_EDGE);
-        enginePtr->shaderManager.getMaterialInstance2D()->setParameter("u_LutTexture", enginePtr->lutTexture, sampler3d);
 
-        enginePtr->shaderManager.getMaterialInstanceComposite()->setParameter("u_GrainIntensity", grain_intensity);
-        enginePtr->shaderManager.getMaterialInstanceComposite()->setParameter("u_GrainChroma", grain_chroma);
-        enginePtr->shaderManager.getMaterialInstanceComposite()->setParameter("u_GrainSize", grain_size);
-        enginePtr->shaderManager.getMaterialInstanceComposite()->setParameter("u_GrainSpeed", grain_speed);
-        enginePtr->shaderManager.getMaterialInstanceComposite()->setParameter("u_VignetteIntensity", vignette_intensity);
-        enginePtr->shaderManager.getMaterialInstanceComposite()->setParameter("u_VhsIntensity", vhs_intensity);
-        enginePtr->shaderManager.getMaterialInstanceComposite()->setParameter("u_Time", time);
-        enginePtr->shaderManager.getMaterialInstanceComposite()->setParameter("u_BloomIntensity", bloom_intensity);
-        enginePtr->shaderManager.getMaterialInstanceComposite()->setParameter("u_ChromaticAberration", chromatic_aberration);
-        enginePtr->shaderManager.getMaterialInstanceComposite()->setParameter("u_AberrationDirection", aberration_direction);
-        enginePtr->shaderManager.getMaterialInstanceComposite()->setParameter("u_OverlayEnabled", enginePtr->overlayCompositor.isOverlayEnabled() ? 1.0f : 0.0f);
-        
-        filament::math::float2 texelSize{1.0f / enginePtr->width, 1.0f / enginePtr->height};
-        enginePtr->shaderManager.getMaterialInstanceComposite()->setParameter("u_TexelSize", texelSize);
-        enginePtr->shaderManager.getMaterialInstanceComposite()->setParameter("u_Sharpening", sharpening);
-        enginePtr->shaderManager.getMaterialInstanceComposite()->setParameter("u_TargetResolution", 0.0f);
-
-        enginePtr->updateDrsAndViewport();
+        // Apply unified parameters (waitForLut = true)
+        enginePtr->applyShaderParameters(parsedParams, enginePtr->shaderManager.getMaterialInstance2D(), true);
 
         auto start = std::chrono::high_resolution_clock::now();
 
@@ -220,32 +198,7 @@ Java_com_grovkornet_nativefilmcamera_rendering_OffscreenFilmProcessor_nativeProc
         return;
     }
     
-    jfloat* params = env->GetFloatArrayElements(float_params, 0);
-    jfloat saturation = params[0];
-    jfloat contrast = params[1];
-    jfloat grain_intensity = params[2];
-    jfloat grain_chroma = params[3];
-    jfloat grain_size = params[4];
-    jfloat grain_speed = params[5];
-    jfloat vignette_intensity = params[6];
-    jfloat vhs_intensity = params[7];
-    jfloat time = params[8];
-    jfloat ev = params[9];
-    jfloat white_balance = params[10];
-    jfloat tint = params[11];
-    jfloat bloom_intensity = params[12];
-    jfloat chromatic_aberration = params[13];
-    jfloat aberration_direction = params[14];
-    jfloat sharpening = params[15];
-    jfloat sat_red     = params[16];
-    jfloat sat_orange  = params[17];
-    jfloat sat_yellow  = params[18];
-    jfloat sat_green   = params[19];
-    jfloat sat_cyan    = params[20];
-    jfloat sat_blue    = params[21];
-    jfloat sat_purple  = params[22];
-    jfloat sat_magenta = params[23];
-    env->ReleaseFloatArrayElements(float_params, params, 0);
+    RenderParams parsedParams = parseRenderParams(env, float_params);
     
     try {
         AHardwareBuffer* ahb = AHardwareBuffer_fromHardwareBuffer(env, hardwareBuffer);
@@ -278,43 +231,16 @@ Java_com_grovkornet_nativefilmcamera_rendering_OffscreenFilmProcessor_nativeProc
             rcm.setMaterialInstanceAt(instance, 0, enginePtr->shaderManager.getMaterialInstanceExternal());
         }
 
-        // 4. Trigger LUT calculation on CPU and apply it to GPU texture
-        enginePtr->triggerLutUpdate(saturation, contrast, ev, white_balance, tint,
-                                    sat_red, sat_orange, sat_yellow, sat_green,
-                                    sat_cyan, sat_blue, sat_purple, sat_magenta);
-        enginePtr->lutGenerator.waitForLut();
-        enginePtr->applyLutTextureUpdate();
-        enginePtr->applyOverlayTextureUpdate();
-
-        // Set material parameters
+        // Set material parameter u_Texture and u_UvMatrix
         filament::TextureSampler sampler2d(filament::TextureSampler::MinFilter::LINEAR, filament::TextureSampler::MagFilter::LINEAR);
         enginePtr->shaderManager.getMaterialInstanceExternal()->setParameter("u_Texture", enginePtr->inputTextureExternal, sampler2d);
         
         // Hardware buffers from CameraX ImageCapture are already upright, use identity matrix
         filament::math::mat4f identityMatrix;
         enginePtr->shaderManager.getMaterialInstanceExternal()->setParameter("u_UvMatrix", identityMatrix);
-        
-        filament::TextureSampler sampler3d(filament::TextureSampler::MinFilter::LINEAR, filament::TextureSampler::MagFilter::LINEAR, filament::TextureSampler::WrapMode::CLAMP_TO_EDGE);
-        enginePtr->shaderManager.getMaterialInstanceExternal()->setParameter("u_LutTexture", enginePtr->lutTexture, sampler3d);
 
-        enginePtr->shaderManager.getMaterialInstanceComposite()->setParameter("u_GrainIntensity", grain_intensity);
-        enginePtr->shaderManager.getMaterialInstanceComposite()->setParameter("u_GrainChroma", grain_chroma);
-        enginePtr->shaderManager.getMaterialInstanceComposite()->setParameter("u_GrainSize", grain_size);
-        enginePtr->shaderManager.getMaterialInstanceComposite()->setParameter("u_GrainSpeed", grain_speed);
-        enginePtr->shaderManager.getMaterialInstanceComposite()->setParameter("u_VignetteIntensity", vignette_intensity);
-        enginePtr->shaderManager.getMaterialInstanceComposite()->setParameter("u_VhsIntensity", vhs_intensity);
-        enginePtr->shaderManager.getMaterialInstanceComposite()->setParameter("u_Time", time);
-        enginePtr->shaderManager.getMaterialInstanceComposite()->setParameter("u_BloomIntensity", bloom_intensity);
-        enginePtr->shaderManager.getMaterialInstanceComposite()->setParameter("u_ChromaticAberration", chromatic_aberration);
-        enginePtr->shaderManager.getMaterialInstanceComposite()->setParameter("u_AberrationDirection", aberration_direction);
-        enginePtr->shaderManager.getMaterialInstanceComposite()->setParameter("u_OverlayEnabled", enginePtr->overlayCompositor.isOverlayEnabled() ? 1.0f : 0.0f);
-        
-        filament::math::float2 texelSize{1.0f / enginePtr->width, 1.0f / enginePtr->height};
-        enginePtr->shaderManager.getMaterialInstanceComposite()->setParameter("u_TexelSize", texelSize);
-        enginePtr->shaderManager.getMaterialInstanceComposite()->setParameter("u_Sharpening", sharpening);
-        enginePtr->shaderManager.getMaterialInstanceComposite()->setParameter("u_TargetResolution", 0.0f);
-
-        enginePtr->updateDrsAndViewport();
+        // Apply unified parameters (waitForLut = true)
+        enginePtr->applyShaderParameters(parsedParams, enginePtr->shaderManager.getMaterialInstanceExternal(), true);
 
         auto start = std::chrono::high_resolution_clock::now();
 
@@ -486,36 +412,9 @@ Java_com_grovkornet_nativefilmcamera_rendering_LiveFilmProcessor_nativeRenderLiv
         return JNI_FALSE;
     }
     
-    // Extract parameters from float_params
-    jfloat* params = env->GetFloatArrayElements(float_params, 0);
-    jfloat saturation = params[0];
-    jfloat contrast = params[1];
-    jfloat grain_intensity = params[2];
-    jfloat grain_chroma = params[3];
-    jfloat grain_size = params[4];
-    jfloat grain_speed = params[5];
-    jfloat vignette_intensity = params[6];
-    jfloat vhs_intensity = params[7];
-    jfloat time = params[8];
-    jfloat ev = params[9];
-    jfloat white_balance = params[10];
-    jfloat tint = params[11];
-    jfloat bloom_intensity = params[12];
-    jfloat chromatic_aberration = params[13];
-    jfloat aberration_direction = params[14];
-    jfloat sharpening = params[15];
-    jfloat sat_red     = params[16];
-    jfloat sat_orange  = params[17];
-    jfloat sat_yellow  = params[18];
-    jfloat sat_green   = params[19];
-    jfloat sat_cyan    = params[20];
-    jfloat sat_blue    = params[21];
-    jfloat sat_purple  = params[22];
-    jfloat sat_magenta = params[23];
-    int targetFps          = static_cast<int>(params[24]);
-    int aspectRatioSetting = static_cast<int>(params[25]);
-    float targetResolution = params[26];
-    env->ReleaseFloatArrayElements(float_params, params, 0);
+    RenderParams parsedParams = parseRenderParams(env, float_params);
+    int targetFps          = static_cast<int>(parsedParams.targetFps);
+    int aspectRatioSetting = static_cast<int>(parsedParams.aspectRatio);
 
     try {
         // 1. Run Frame Timing checks natively
@@ -584,39 +483,13 @@ Java_com_grovkornet_nativefilmcamera_rendering_LiveFilmProcessor_nativeRenderLiv
             rcm.setMaterialInstanceAt(instance, 0, enginePtr->shaderManager.getMaterialInstanceExternal());
         }
         
-        // 4. Trigger LUT calculation on CPU and apply it to GPU texture
-        enginePtr->triggerLutUpdate(saturation, contrast, ev, white_balance, tint,
-                                    sat_red, sat_orange, sat_yellow, sat_green,
-                                    sat_cyan, sat_blue, sat_purple, sat_magenta);
-        enginePtr->applyLutTextureUpdate();
-        enginePtr->applyOverlayTextureUpdate();
-        
-        // 5. Set material parameters
+        // Set material parameter u_Texture and u_UvMatrix
         filament::TextureSampler sampler2d(filament::TextureSampler::MinFilter::LINEAR, filament::TextureSampler::MagFilter::LINEAR);
         enginePtr->shaderManager.getMaterialInstanceExternal()->setParameter("u_Texture", enginePtr->inputTextureExternal, sampler2d);
         enginePtr->shaderManager.getMaterialInstanceExternal()->setParameter("u_UvMatrix", u_UvMatrix);
         
-        filament::TextureSampler sampler3d(filament::TextureSampler::MinFilter::LINEAR, filament::TextureSampler::MagFilter::LINEAR, filament::TextureSampler::WrapMode::CLAMP_TO_EDGE);
-        enginePtr->shaderManager.getMaterialInstanceExternal()->setParameter("u_LutTexture", enginePtr->lutTexture, sampler3d);
-        
-        enginePtr->shaderManager.getMaterialInstanceComposite()->setParameter("u_GrainIntensity", grain_intensity);
-        enginePtr->shaderManager.getMaterialInstanceComposite()->setParameter("u_GrainChroma", grain_chroma);
-        enginePtr->shaderManager.getMaterialInstanceComposite()->setParameter("u_GrainSize", grain_size);
-        enginePtr->shaderManager.getMaterialInstanceComposite()->setParameter("u_GrainSpeed", grain_speed);
-        enginePtr->shaderManager.getMaterialInstanceComposite()->setParameter("u_VignetteIntensity", vignette_intensity);
-        enginePtr->shaderManager.getMaterialInstanceComposite()->setParameter("u_VhsIntensity", vhs_intensity);
-        enginePtr->shaderManager.getMaterialInstanceComposite()->setParameter("u_Time", time);
-        enginePtr->shaderManager.getMaterialInstanceComposite()->setParameter("u_BloomIntensity", bloom_intensity);
-        enginePtr->shaderManager.getMaterialInstanceComposite()->setParameter("u_ChromaticAberration", chromatic_aberration);
-        enginePtr->shaderManager.getMaterialInstanceComposite()->setParameter("u_AberrationDirection", aberration_direction);
-        enginePtr->shaderManager.getMaterialInstanceComposite()->setParameter("u_OverlayEnabled", enginePtr->overlayCompositor.isOverlayEnabled() ? 1.0f : 0.0f);
-        
-        filament::math::float2 texelSize{1.0f / enginePtr->width, 1.0f / enginePtr->height};
-        enginePtr->shaderManager.getMaterialInstanceComposite()->setParameter("u_TexelSize", texelSize);
-        enginePtr->shaderManager.getMaterialInstanceComposite()->setParameter("u_Sharpening", sharpening);
-        enginePtr->shaderManager.getMaterialInstanceComposite()->setParameter("u_TargetResolution", targetResolution);
-        
-        enginePtr->updateDrsAndViewport();
+        // Apply unified parameters (waitForLut = false)
+        enginePtr->applyShaderParameters(parsedParams, enginePtr->shaderManager.getMaterialInstanceExternal(), false);
         
         auto start = std::chrono::high_resolution_clock::now();
         

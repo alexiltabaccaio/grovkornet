@@ -5,6 +5,8 @@ import android.graphics.SurfaceTexture
 import android.util.Log
 import android.view.Surface
 import com.grovkornet.nativefilmcamera.state.CameraConfiguration
+import com.grovkornet.nativefilmcamera.state.getTargetResolutionValue
+import com.grovkornet.nativefilmcamera.state.toRenderParamsArray
 
 import android.content.res.AssetManager
 
@@ -104,45 +106,7 @@ class LiveFilmProcessor {
 
             val time = ((System.currentTimeMillis() / 1000.0) % (Math.PI * 2.0)).toFloat()
             
-            val targetRes = when(params.resolutionSetting) {
-                0 -> 2160
-                1 -> 1080
-                2 -> 720
-                3 -> 480
-                4 -> 360
-                5 -> 240
-                6 -> 144
-                else -> 1080
-            }
-            val floatParams = FloatArray(27).apply {
-                this[0] = params.saturation
-                this[1] = params.contrast
-                this[2] = if (params.grainEnabled) params.grainIntensity else 0.0f
-                this[3] = params.grainChroma
-                this[4] = params.grainSize
-                this[5] = params.grainSpeed
-                this[6] = params.vignetteIntensity
-                this[7] = params.vhsIntensity
-                this[8] = time
-                this[9] = params.ev
-                this[10] = params.whiteBalance
-                this[11] = params.tint
-                this[12] = if (params.bloomEnabled) params.bloomIntensity else 0.0f
-                this[13] = params.aberration
-                this[14] = params.aberrationDirection.toFloat()
-                this[15] = params.sharpening
-                this[16] = params.satRed
-                this[17] = params.satOrange
-                this[18] = params.satYellow
-                this[19] = params.satGreen
-                this[20] = params.satCyan
-                this[21] = params.satBlue
-                this[22] = params.satPurple
-                this[23] = params.satMagenta
-                this[24] = params.targetFps.toFloat()
-                this[25] = params.aspectRatio.toFloat()
-                this[26] = targetRes.toFloat()
-            }
+            val floatParams = params.toRenderParamsArray(time, params.getTargetResolutionValue())
 
             val outFpsStats = IntArray(3) // [hasNewFps, actualFps, stampedFps]
             val rendered = nativeRenderLiveFrame(
