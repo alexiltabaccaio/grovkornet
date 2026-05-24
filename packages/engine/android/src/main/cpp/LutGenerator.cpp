@@ -178,6 +178,20 @@ void LutGenerator::lutGenerationLoop() {
             isComputingLut = true;
         }
         
+        // Definizione delle bande percettive (Core Plateaus).
+        // Ottimizzazione: dichiarato fuori dal loop per non ricrearlo 35937 volte
+        struct ColorBand { float start; float end; float val; };
+        const ColorBand bands[8] = {
+            {350.0f,  8.0f, satRed},       // 0: Red (banda ristretta per i rossi puri)
+            { 16.0f,  40.0f, satOrange},   // 1: Orange (estesa verso il basso per legno/terracotta/ombre arancioni)
+            { 45.0f,  60.0f, satYellow},   // 2: Yellow (es. Banane)
+            { 70.0f, 155.0f, satGreen},    // 3: Green (allargato per coprire ogni minima sfumatura menta)
+            {165.0f, 185.0f, satCyan},     // 4: Cyan (ottanio)
+            {195.0f, 250.0f, satBlue},     // 5: Blue (cielo scuro)
+            {265.0f, 290.0f, satPurple},   // 6: Purple
+            {305.0f, 335.0f, satMagenta}   // 7: Magenta
+        };
+
         // Compute LUT on CPU
         int index = 0;
         for (int b = 0; b < LUT_SIZE; ++b) {
@@ -198,23 +212,48 @@ void LutGenerator::lutGenerationLoop() {
                         else                    hue = 60.0f * ((r_val - g_val) / delta + 4.0f);
                         if (hue < 0.0f) hue += 360.0f;
                     }
-                    static const float HUE_CENTERS[8] = {0.0f, 30.0f, 60.0f, 120.0f, 180.0f, 240.0f, 300.0f, 330.0f};
-                    static const float HUE_WIDTH = 30.0f;
-                    const float selValues[8] = { satRed, satOrange, satYellow,
-                                                  satGreen, satCyan, satBlue,
-                                                  satPurple, satMagenta };
+                    // Le bande sono definite fuori dal loop per ottimizzazione performance
+
+                    
                     float selectiveMult = 1.0f;
                     if (delta > 1e-6f) {
-                        float totalWeight = 0.0f, weightedMult = 0.0f;
-                        for (int i = 0; i < 8; ++i) {
-                            float diff = std::abs(hue - HUE_CENTERS[i]);
-                            if (diff > 180.0f) diff = 360.0f - diff;
-                            float w = std::max(0.0f, 1.0f - diff / HUE_WIDTH);
-                            w = w * w; // quadratic falloff
-                            weightedMult += w * (selValues[i] / 50.0f);
-                            totalWeight += w;
+                        float h = hue;
+                        if (h < 0.0f) h += 360.0f;
+                        if (h >= 360.0f) h -= 360.0f;
+                        
+                        // Gestione speciale per il Rosso che wrappa a 360/0
+                        if (h >= bands[0].start || h <= bands[0].end) {
+                            selectiveMult = bands[0].val / 50.0f;
+                        } else {
+                            bool handled = false;
+                            for (int i = 0; i < 7; ++i) {
+                                // Controllo se il colore è dentro il plateau puro
+                                if (h >= bands[i+1].start && h <= bands[i+1].end) {
+                                    selectiveMult = bands[i+1].val / 50.0f;
+                                    handled = true;
+                                    break;
+                                }
+                                // Controllo se è nel gap di transizione tra due plateau
+                                if (h > bands[i].end && h < bands[i+1].start) {
+                                    float gapStart = bands[i].end;
+                                    float gapEnd = bands[i+1].start;
+                                    float t = (h - gapStart) / (gapEnd - gapStart);
+                                    t = t * t * (3.0f - 2.0f * t); // Smoothstep
+                                    selectiveMult = (1.0f - t) * (bands[i].val / 50.0f) + t * (bands[i+1].val / 50.0f);
+                                    handled = true;
+                                    break;
+                                }
+                            }
+                            
+                            // Se non è stato gestito, è nel gap tra Magenta (7) e Red (0)
+                            if (!handled && h > bands[7].end && h < bands[0].start) {
+                                float gapStart = bands[7].end;
+                                float gapEnd = bands[0].start;
+                                float t = (h - gapStart) / (gapEnd - gapStart);
+                                t = t * t * (3.0f - 2.0f * t);
+                                selectiveMult = (1.0f - t) * (bands[7].val / 50.0f) + t * (bands[0].val / 50.0f);
+                            }
                         }
-                        if (totalWeight > 1e-6f) selectiveMult = weightedMult / totalWeight;
                     }
                     // 1. Saturation (moltiplicativa)
                     float effectiveSaturation = saturation * selectiveMult;
