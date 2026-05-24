@@ -22,6 +22,7 @@ export const useFilmStore = create<FilmStore>((set, get) => ({
   contrast: makeMutable(DEFAULT_CONTRAST),
   chromaticAberration: makeMutable(DEFAULT_CHROMATIC_ABERRATION),
   aberrationDirection: makeMutable(0), // 0: Vertical, 1: Horizontal, 2: Radial
+  aberrationInvert: makeMutable(false),
   grainEnabled: makeMutable(false),
   noiseReductionAuto: makeMutable(true),
   noiseReductionMode: makeMutable(1), // 0=OFF, 1=FAST, 2=HQ
@@ -73,6 +74,9 @@ export const useFilmStore = create<FilmStore>((set, get) => ({
   },
   setAberrationDirection: (value) => {
     get().aberrationDirection.value = value;
+  },
+  setAberrationInvert: (value) => {
+    get().aberrationInvert.value = value;
   },
   setGrainEnabled: (value) => {
     get().grainEnabled.value = value;
@@ -172,6 +176,7 @@ export const useFilmStore = create<FilmStore>((set, get) => ({
       case 'chromatic_aberration':
         state.chromaticAberration.value = DEFAULT_CHROMATIC_ABERRATION;
         state.aberrationDirection.value = 0;
+        state.aberrationInvert.value = false;
         break;
       case 'sharpening':
         state.sharpening.value = 0.0;

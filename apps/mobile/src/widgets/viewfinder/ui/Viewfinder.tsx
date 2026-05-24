@@ -43,6 +43,7 @@ export const Viewfinder = ({ cameraKey }: ViewfinderProps) => {
     contrast,
     chromaticAberration,
     aberrationDirection,
+    aberrationInvert,
     grainIntensity,
     grainChroma,
     grainSize,
@@ -119,6 +120,7 @@ export const Viewfinder = ({ cameraKey }: ViewfinderProps) => {
         contrast={contrast as unknown as SharedValue<number | undefined>}
         chromaticAberration={chromaticAberration as unknown as SharedValue<number | undefined>}
         aberrationDirection={aberrationDirection as unknown as SharedValue<number | undefined>}
+        aberrationInvert={aberrationInvert as unknown as SharedValue<boolean | undefined>}
         grainIntensity={grainIntensity as unknown as SharedValue<number | undefined>}
         grainChroma={grainChroma as unknown as SharedValue<number | undefined>}
         grainSize={grainSize as unknown as SharedValue<number | undefined>}

@@ -88,6 +88,11 @@ export const useFilmWorklets = () => {
       updateSharedValue(film.aberrationDirection, value);
     };
 
+    const updateAberrationInvert = (value: boolean) => {
+      'worklet';
+      updateSharedValue(film.aberrationInvert, value);
+    };
+
     const updateTemperature = (value: number) => {
       'worklet';
       updateSharedValue(film.temperature, value);
@@ -129,6 +134,7 @@ export const useFilmWorklets = () => {
       updateContrast,
       updateChromaticAberration,
       updateAberrationDirection,
+      updateAberrationInvert,
       updateTemperature,
       updateTint,
       updateSharpening,

@@ -28,6 +28,8 @@ struct RenderParams {
     float targetFps;
     float aspectRatio;
     float targetResolution;
+    float invertYShift;
+    float aberrationInvert;
 };
 
 RenderParams parseRenderParams(const float* params);

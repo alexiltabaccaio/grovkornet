@@ -15,6 +15,7 @@ interface FilmState {
   contrast: SharedValue<number>;
   chromaticAberration: SharedValue<number>;
   aberrationDirection: SharedValue<number>;
+  aberrationInvert: SharedValue<boolean>;
   noiseReductionAuto: SharedValue<boolean>;
   noiseReductionMode: SharedValue<number>;
   sharpening: SharedValue<number>;
@@ -43,6 +44,7 @@ interface FilmActions {
   setContrast: (value: number) => void;
   setChromaticAberration: (value: number) => void;
   setAberrationDirection: (value: number) => void;
+  setAberrationInvert: (value: boolean) => void;
   setGrainEnabled: (value: boolean) => void;
   setNoiseReductionAuto: (value: boolean) => void;
   setNoiseReductionMode: (mode: number) => void;

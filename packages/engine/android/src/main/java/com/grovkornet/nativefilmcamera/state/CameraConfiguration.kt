@@ -22,6 +22,7 @@ data class CameraConfiguration(
     var grainEnabled: Boolean = true,
     var aberration: Float = 0.0f,
     var aberrationDirection: Int = 0,
+    var aberrationInvert: Boolean = false,
     var whiteBalance: Float = 5000.0f,
     var tint: Float = 0.0f,
     var sharpening: Float = 0.0f,
@@ -69,8 +70,9 @@ fun CameraConfiguration.getTargetResolutionValue(): Float {
 fun CameraConfiguration.toRenderParamsArray(
     time: Float = 0f,
     targetResolution: Float = 0f,
-    targetFpsOverride: Float = targetFps.toFloat()
-): FloatArray = FloatArray(27).apply {
+    targetFpsOverride: Float = targetFps.toFloat(),
+    invertYShift: Boolean = false
+): FloatArray = FloatArray(29).apply {
     this[0]  = saturation
     this[1]  = contrast
     this[2]  = if (grainEnabled) grainIntensity else 0f
@@ -98,5 +100,7 @@ fun CameraConfiguration.toRenderParamsArray(
     this[24] = targetFpsOverride
     this[25] = aspectRatio.toFloat()
     this[26] = targetResolution
+    this[27] = if (invertYShift) 1.0f else 0.0f
+    this[28] = if (aberrationInvert) 1.0f else 0.0f
 }
 

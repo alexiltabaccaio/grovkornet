@@ -22,6 +22,7 @@ export interface NativeFilmCameraViewProps extends ViewProps {
   bloomIntensity?: number;
   chromaticAberration?: number;
   aberrationDirection?: number;
+  aberrationInvert?: boolean;
   isoAuto?: boolean;
   shutterSpeedAuto?: boolean;
   whiteBalanceAuto?: boolean;

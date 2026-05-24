@@ -83,7 +83,7 @@ class CameraConfigurationTest {
 
         val array = config.toRenderParamsArray(time = time, targetResolution = targetResolution)
 
-        assertEquals(27, array.size)
+        assertEquals(28, array.size)
         assertEquals(1.2f, array[0])
         assertEquals(0.9f, array[1])
         assertEquals(0.5f, array[2])
@@ -111,6 +111,7 @@ class CameraConfigurationTest {
         assertEquals(30f, array[24])
         assertEquals(2f, array[25])
         assertEquals(1080f, array[26])
+        assertEquals(0f, array[27])
 
         // Test dynamic disabling features
         config.grainEnabled = false

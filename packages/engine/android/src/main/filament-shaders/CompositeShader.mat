@@ -14,6 +14,8 @@ material {
         { type : float, name : u_BloomIntensity },
         { type : float, name : u_ChromaticAberration },
         { type : float, name : u_AberrationDirection },
+        { type : float, name : u_InvertYShift },
+        { type : float, name : u_AberrationInvert },
         { type : sampler2d, name : u_OverlayTexture },
         { type : float, name : u_OverlayEnabled },
         { type : float, name : u_DrsScale },
@@ -76,6 +78,15 @@ fragment {
                 caShift = dir * dist * 2.0 * caIntensity;
                 caShift.y *= aspect;
             }
+            
+            if (materialParams.u_InvertYShift > 0.5) {
+                caShift.y = -caShift.y;
+            }
+
+            if (materialParams.u_AberrationInvert > 0.5) {
+                caShift = -caShift;
+            }
+
             rUv -= caShift;
             bUv += caShift;
         }

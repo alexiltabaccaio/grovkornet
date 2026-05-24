@@ -10,10 +10,12 @@ import { PillButton } from '@shared/ui';
 export const ChromaticAberrationExtension = () => {
   const { t } = useTranslation();
   const isDebugEnabled = useSystemStore((s) => s.isDebugEnabled);
-  const { aberrationDirection, setAberrationDirection } = useFilmStore(
+  const { aberrationDirection, setAberrationDirection, aberrationInvert, setAberrationInvert } = useFilmStore(
     useShallow((state) => ({
       aberrationDirection: state.aberrationDirection,
       setAberrationDirection: state.setAberrationDirection,
+      aberrationInvert: state.aberrationInvert,
+      setAberrationInvert: state.setAberrationInvert,
     }))
   );
   const worklets = useFilmWorklets();
@@ -23,9 +25,16 @@ export const ChromaticAberrationExtension = () => {
     worklets.updateAberrationDirection(val);
   };
 
+  const handleInvertPress = () => {
+    const newVal = !aberrationInvert.value;
+    setAberrationInvert(newVal);
+    worklets.updateAberrationInvert(newVal);
+  };
+
   const isStdActive = useDerivedValue(() => aberrationDirection.value === 0);
   const isHorActive = useDerivedValue(() => aberrationDirection.value === 1);
   const isRadActive = useDerivedValue(() => aberrationDirection.value === 2);
+  const isInverted = useDerivedValue(() => aberrationInvert.value);
 
   return (
     <View style={[
@@ -57,6 +66,14 @@ export const ChromaticAberrationExtension = () => {
           isDebugEnabled={isDebugEnabled}
           style={styles.pressable}
         />
+        <View style={styles.divider} />
+        <PillButton
+          label="INV"
+          isActive={isInverted}
+          onPress={handleInvertPress}
+          isDebugEnabled={isDebugEnabled}
+          style={styles.pressableInvert}
+        />
       </View>
     </View>
   );
@@ -85,5 +102,14 @@ const styles = StyleSheet.create({
   },
   pressable: {
     width: 60,
+  },
+  pressableInvert: {
+    width: 50,
+  },
+  divider: {
+    width: 1,
+    height: 24,
+    backgroundColor: '#333',
+    marginHorizontal: 4,
   },
 });

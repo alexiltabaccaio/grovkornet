@@ -117,7 +117,7 @@ class OffscreenFilmProcessor {
                     nativeEnginePtr,
                     input,
                     outputBitmap,
-                    params.toRenderParamsArray(time, params.getTargetResolutionValue())
+                    params.toRenderParamsArray(time, params.getTargetResolutionValue(), invertYShift = true)
                 )
 
                 // FIX: Filament reads pixels with a bottom-left origin, so the resulting bitmap is upside down.

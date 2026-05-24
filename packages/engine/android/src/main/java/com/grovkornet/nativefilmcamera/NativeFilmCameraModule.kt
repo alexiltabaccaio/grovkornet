@@ -85,6 +85,9 @@ class NativeFilmCameraModule : Module() {
       Prop("aberrationDirection") { view: NativeFilmCameraView, value: Int ->
         view.updateEffect { aberrationDirection = value }
       }
+      Prop("aberrationInvert") { view: NativeFilmCameraView, value: Boolean ->
+        view.updateEffect { aberrationInvert = value }
+      }
       Prop("isoAuto") { view: NativeFilmCameraView, value: Boolean ->
         if (view.config.isoAuto != value) view.updateHardware { isoAuto = value }
       }

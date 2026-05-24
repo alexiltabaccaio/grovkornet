@@ -13,15 +13,18 @@ jest.mock('react-i18next', () => ({
 }));
 
 jest.mock('@entities/film', () => ({
-  useFilmStore: jest.fn((fn?: (state: { aberrationDirection: { value: number }; setAberrationDirection: jest.Mock }) => unknown) => {
+  useFilmStore: jest.fn((fn?: (state: any) => unknown) => {
     const state = {
       aberrationDirection: { value: 0 },
       setAberrationDirection: jest.fn(),
+      aberrationInvert: { value: false },
+      setAberrationInvert: jest.fn(),
     };
     return fn ? fn(state) : state;
   }),
   useFilmWorklets: () => ({
     updateAberrationDirection: jest.fn(),
+    updateAberrationInvert: jest.fn(),
   }),
 }));
 

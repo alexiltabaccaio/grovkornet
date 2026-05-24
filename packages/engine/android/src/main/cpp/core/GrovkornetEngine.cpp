@@ -57,6 +57,8 @@ RenderParams parseRenderParams(const float* params) {
     rp.targetFps = params[24];
     rp.aspectRatio = params[25];
     rp.targetResolution = params[26];
+    rp.invertYShift = params[27];
+    rp.aberrationInvert = params[28];
     return rp;
 }
 
@@ -291,6 +293,8 @@ void GrovkornetEngine::applyShaderParameters(const RenderParams& params, filamen
     composite->setParameter("u_BloomIntensity", params.bloomIntensity);
     composite->setParameter("u_ChromaticAberration", params.chromaticAberration);
     composite->setParameter("u_AberrationDirection", params.aberrationDirection);
+    composite->setParameter("u_InvertYShift", params.invertYShift);
+    composite->setParameter("u_AberrationInvert", params.aberrationInvert);
     composite->setParameter("u_OverlayEnabled", overlayCompositor.isOverlayEnabled() ? 1.0f : 0.0f);
 
     filament::math::float2 texelSize{1.0f / width, 1.0f / height};
