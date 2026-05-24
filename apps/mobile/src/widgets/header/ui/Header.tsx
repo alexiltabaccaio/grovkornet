@@ -39,13 +39,5 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  debugText: {
-    color: '#FFF',
-    fontSize: 10,
-    fontWeight: 'bold',
-    fontFamily: 'monospace',
-    textShadowColor: 'rgba(0, 0, 0, 0.75)',
-    textShadowOffset: { width: -1, height: 1 },
-    textShadowRadius: 10,
-  },
 });
+

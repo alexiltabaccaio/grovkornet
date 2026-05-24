@@ -1,7 +1,7 @@
 import { renderHook } from '@testing-library/react-native';
 import { useFilmParameterControlData } from './useFilmParameterControlData';
 import { useFilmStore } from '../model/useFilmStore';
-import { DEFAULT_TEMPERATURE, DEFAULT_TINT } from '@grovkornet/shared';
+import { DEFAULT_TINT } from '@grovkornet/shared';
 
 describe('useFilmParameterControlData', () => {
   beforeEach(() => {

@@ -80,7 +80,7 @@ export const GalleryViewer = ({ onClose, initialUri, galleryTransition }: Galler
             <GalleryStrip
               photos={permissionGranted ? photos : []}
               selectedPhoto={selectedPhoto}
-              onSelectPhoto={verifyPhoto}
+              onSelectPhoto={(photo) => { void verifyPhoto(photo); }}
               onClose={onClose}
               galleryTransition={galleryTransition}
             />

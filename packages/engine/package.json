@@ -8,6 +8,7 @@
     "build": "tsc",
     "clean": "expo-module clean",
     "test": "expo-module test",
+    "test:cpp": "node scripts/run-cpp-tests.js",
     "typecheck": "tsc --noEmit"
   },
   "keywords": [

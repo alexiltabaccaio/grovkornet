@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import { Text, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useShallow } from 'zustand/react/shallow';
@@ -70,14 +70,15 @@ export const Parameters = () => {
 
   const { handlePressWithDouble } = useDoublePress(resetTool);
 
-  const [lastActive, setLastActive] = useState<ModuleType>(activeModule);
-  
-  // Adjust state inside useEffect to track the last non-none module
-  useEffect(() => {
+  const [lastActive, setLastActive] = useState<ModuleType>(activeModule !== 'none' ? activeModule : 'none');
+  const [prevActiveModule, setPrevActiveModule] = useState<ModuleType>(activeModule);
+
+  if (activeModule !== prevActiveModule) {
+    setPrevActiveModule(activeModule);
     if (activeModule !== 'none') {
       setLastActive(activeModule);
     }
-  }, [activeModule]);
+  }
 
   const renderActiveModule = activeModule === 'none' ? lastActive : activeModule;
 

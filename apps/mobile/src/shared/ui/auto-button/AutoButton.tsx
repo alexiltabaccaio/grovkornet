@@ -16,7 +16,7 @@ export const AutoButton = ({
   isActive,
   onPress,
   style,
-  disabled,
+  disabled: _disabled,
   opacity,
   isDebugEnabled,
 }: AutoButtonProps) => {

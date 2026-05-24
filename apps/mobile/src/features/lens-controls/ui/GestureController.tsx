@@ -1,12 +1,8 @@
 import React, { ReactNode, useMemo } from 'react';
-import { StyleSheet, View, Dimensions } from 'react-native';
-import { useSharedValue } from 'react-native-reanimated';
+import { StyleSheet, View } from 'react-native';
 import { GestureDetector, Gesture } from 'react-native-gesture-handler';
 import { useSystemStore } from '@entities/system';
 import { useShallow } from 'zustand/react/shallow';
-
-const { height: SCREEN_HEIGHT } = Dimensions.get('window');
-const SLIDER_HEIGHT = SCREEN_HEIGHT * 0.3;
 
 /**
  * GestureController handles global vertical swipe gestures to update the active camera parameter.
@@ -22,7 +18,6 @@ export const GestureController = ({ children }: GestureControllerProps) => {
     activeSection: s.activeSection,
     setActiveSection: s.setActiveSection,
   })));
-  const startVal = useSharedValue(0);
 
   const composedGesture = useMemo(() => {
     const tap = Gesture.Tap()

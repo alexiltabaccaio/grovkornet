@@ -12,7 +12,7 @@ import * as SystemUI from 'expo-system-ui';
 LogBox.ignoreAllLogs(true);
 
 // Set root background color at runtime to ensure the area under the nav bar is colored correctly
-SystemUI.setBackgroundColorAsync('#0e0e0e');
+void SystemUI.setBackgroundColorAsync('#0e0e0e');
 
 export function App() {
   return (

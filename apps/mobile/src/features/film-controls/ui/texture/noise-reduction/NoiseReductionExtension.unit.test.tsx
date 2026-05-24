@@ -1,7 +1,6 @@
 import React from 'react';
 import { render } from '@testing-library/react-native';
 import { NoiseReductionExtension } from './NoiseReductionExtension';
-import { useFilmStore } from '@entities/film';
 
 const mockSetNoiseReductionMode = jest.fn();
 const mockSetNoiseReductionAuto = jest.fn();

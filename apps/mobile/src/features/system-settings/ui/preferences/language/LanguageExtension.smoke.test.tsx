@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/unbound-method */
 import React from 'react';
 import { render, fireEvent, waitFor } from '@testing-library/react-native';
 import { LanguageExtension } from './LanguageExtension';
@@ -55,7 +56,7 @@ describe('LanguageExtension', () => {
     expect(controls).toHaveLength(2);
   });
 
-  it('handles English flag selection correctly', async () => {
+  it('handles English flag selection correctly', () => {
     const { UNSAFE_root } = render(<LanguageExtension animatedStyle={{ opacity: 1 }} />);
     const controls = UNSAFE_root.findAllByType('ParameterControl');
     
@@ -66,7 +67,7 @@ describe('LanguageExtension', () => {
     expect(mockChangeLanguage).toHaveBeenCalledWith('en');
   });
 
-  it('handles Italian flag selection correctly', async () => {
+  it('handles Italian flag selection correctly', () => {
     const { UNSAFE_root } = render(<LanguageExtension animatedStyle={{ opacity: 1 }} />);
     const controls = UNSAFE_root.findAllByType('ParameterControl');
     

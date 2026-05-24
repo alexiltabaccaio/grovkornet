@@ -25,8 +25,8 @@ export const SliderThumb = ({
   disabled,
   centerValue,
   isAuto,
-  hideValueInAuto,
-  autoValueText,
+  hideValueInAuto: _hideValueInAuto,
+  autoValueText: _autoValueText,
   onReset,
   onToggleAuto,
   hideAutoPlaceholder,
@@ -37,6 +37,7 @@ export const SliderThumb = ({
   
   React.useEffect(() => {
     logger.debug('SliderThumb', `Mounted for param with minValue=${minValue}, maxValue=${maxValue}`);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const doubleTap = Gesture.Tap()

@@ -1,5 +1,5 @@
 #include "MatrixTransformCalculator.h"
-#include <algorithm>
+
 
 void MatrixTransformCalculator::setIdentityM(float* m) {
     for (int i = 0; i < 16; ++i) m[i] = 0.0f;
@@ -98,4 +98,19 @@ void MatrixTransformCalculator::calculateScaleAndCrop(
     translateM(outCropMatrix, 0.5f, 0.5f, 0.0f);
     scaleM(outCropMatrix, cropX, cropY, 1.0f);
     translateM(outCropMatrix, -0.5f, -0.5f, 0.0f);
+}
+
+ViewportRect MatrixTransformCalculator::calculateViewport(
+    const float* scaleMatrix,
+    int viewportWidth,
+    int viewportHeight
+) {
+    float scaleX = scaleMatrix[0];
+    float scaleY = scaleMatrix[5];
+    int vpWidth = static_cast<int>(viewportWidth * scaleX);
+    int vpHeight = static_cast<int>(viewportHeight * scaleY);
+    int vpX = (viewportWidth - vpWidth) / 2;
+    int vpY = (viewportHeight - vpHeight) / 2;
+
+    return ViewportRect{vpX, vpY, vpWidth, vpHeight};
 }

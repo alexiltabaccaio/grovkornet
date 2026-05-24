@@ -1,6 +1,5 @@
 import { SharedValue, useSharedValue, runOnJS } from 'react-native-reanimated';
 import { Gesture } from 'react-native-gesture-handler';
-import { useWindowDimensions } from 'react-native';
 
 import { useSystemStore } from '../model/useSystemStore';
 import { updateSharedValue } from '@shared/lib/reanimated/safeUpdate';
@@ -22,7 +21,7 @@ interface UseParameterGestureParams {
 }
 
 export const useParameterGesture = ({
-  isActive,
+  isActive: _isActive,
   value,
   minValue = 0,
   maxValue = 1,
@@ -42,7 +41,6 @@ export const useParameterGesture = ({
   const fallbackTrackWidth = useSharedValue(0);
   const effectiveTrackWidth = sliderTrackWidth || fallbackTrackWidth;
   const isDebugEnabled = useSystemStore((s) => s.isDebugEnabled);
-  const { width: SCREEN_WIDTH } = useWindowDimensions();
 
   const isSlider = variant === 'slider';
   

@@ -25,7 +25,7 @@ describe('FilmEmulationStyles Integration', () => {
   });
 
   it('navigates to Film section and synchronizes grain styles correctly', async () => {
-    const { getByLabelText, getByText, queryByText } = render(<CameraScreen />);
+    const { getByLabelText, queryByText } = render(<CameraScreen />);
 
     // Wait for permissions to be resolved
     await waitFor(() => expect(queryByText('camera.requesting_permissions')).toBeNull());

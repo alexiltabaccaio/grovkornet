@@ -25,12 +25,14 @@ const GalleryStripItem = React.memo(({ item, isSelected, onSelect }: GalleryStri
       <Image source={{ uri: item.uri }} style={styles.thumbnailImage} />
       {item.isVerified === true && (
         <View style={[styles.miniBadge, { backgroundColor: 'transparent' }]}>
+          {/* eslint-disable-next-line @typescript-eslint/no-require-imports, @typescript-eslint/no-unsafe-assignment */}
           <Image source={require('../../../../../assets/logo-badge.png')} style={{ width: 10, height: 10, resizeMode: 'contain', opacity: 0.85 }} />
         </View>
       )}
     </Pressable>
   );
 });
+GalleryStripItem.displayName = 'GalleryStripItem';
 
 interface GalleryStripProps {
   photos: GalleryItem[];

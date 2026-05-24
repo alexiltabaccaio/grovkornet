@@ -16,6 +16,6 @@ export function I18nInitializer({ children, initialLang }: PropsWithChildren<{ i
     localStorage.setItem("grovkornet-lang", initialLang);
   }, [initialLang]);
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // eslint-disable-next-line
   return <I18nextProvider i18n={i18n}>{children as any}</I18nextProvider>;
 }

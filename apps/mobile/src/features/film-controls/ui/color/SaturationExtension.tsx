@@ -41,9 +41,11 @@ const COLOR_MAPPING = [
   },
 ] as const;
 
+type ColorIndex = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7;
+
 export const SaturationExtension = () => {
   const { t } = useTranslation();
-  const [activeColorIndex, setActiveColorIndex] = React.useState<number>(0);
+  const [activeColorIndex, setActiveColorIndex] = React.useState<ColorIndex>(0);
 
   const {
     satRed, setSatRed,
@@ -89,7 +91,6 @@ export const SaturationExtension = () => {
       case 5: return satBlue;
       case 6: return satPurple;
       case 7: return satMagenta;
-      default: return satRed;
     }
   }, [activeColorIndex, satRed, satOrange, satYellow, satGreen, satCyan, satBlue, satPurple, satMagenta]);
 
@@ -103,7 +104,6 @@ export const SaturationExtension = () => {
       case 5: return setSatBlue;
       case 6: return setSatPurple;
       case 7: return setSatMagenta;
-      default: return setSatRed;
     }
   }, [activeColorIndex, setSatRed, setSatOrange, setSatYellow, setSatGreen, setSatCyan, setSatBlue, setSatPurple, setSatMagenta]);
 
@@ -117,7 +117,6 @@ export const SaturationExtension = () => {
       case 5: return worklets.updateSatBlue;
       case 6: return worklets.updateSatPurple;
       case 7: return worklets.updateSatMagenta;
-      default: return worklets.updateSatRed;
     }
   }, [activeColorIndex, worklets]);
 
@@ -129,7 +128,8 @@ export const SaturationExtension = () => {
           return (
             <TouchableOpacity
               key={item.key}
-              onPress={() => setActiveColorIndex(index)}
+              testID={`color-circle-${item.key}`}
+              onPress={() => setActiveColorIndex(index as ColorIndex)}
               style={[
                 styles.circleContainer,
                 isActive && styles.circleContainerActive

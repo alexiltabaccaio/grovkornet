@@ -62,6 +62,7 @@ export const CaptureThumbnail = ({ onPress }: CaptureThumbnailProps) => {
       };
       void loadInitialThumbnail();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const rotation = useSharedValue(0);

@@ -550,18 +550,13 @@ bool GrovkornetEngine::renderLiveFrame(const RenderParams& params, const float* 
     );
 
     // Calculate viewport based on scale matrix
-    float scaleX = scaleMatrix[0];
-    float scaleY = scaleMatrix[5];
-    int vpWidth = static_cast<int>(vpW * scaleX);
-    int vpHeight = static_cast<int>(vpH * scaleY);
-    int vpX = (vpW - vpWidth) / 2;
-    int vpY = (vpH - vpHeight) / 2;
+    ViewportRect vpRect = MatrixTransformCalculator::calculateViewport(scaleMatrix, vpW, vpH);
 
     // Update viewport in engine
-    viewportX = vpX;
-    viewportY = vpY;
-    viewportWidth = vpWidth;
-    viewportHeight = vpHeight;
+    viewportX = vpRect.x;
+    viewportY = vpRect.y;
+    viewportWidth = vpRect.width;
+    viewportHeight = vpRect.height;
 
     // Update geometry to use the External material
     auto& rcm = engine->getRenderableManager();

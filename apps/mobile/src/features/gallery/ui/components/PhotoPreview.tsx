@@ -8,7 +8,7 @@ interface PhotoPreviewProps {
   verifying: boolean;
 }
 
-export const PhotoPreview = ({ selectedPhoto, verifying }: PhotoPreviewProps) => {
+export const PhotoPreview = ({ selectedPhoto, verifying: _verifying }: PhotoPreviewProps) => {
   const { t } = useTranslation();
 
   if (!selectedPhoto) {

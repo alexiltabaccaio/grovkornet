@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, fireEvent } from '@testing-library/react-native';
+import { render, fireEvent, waitFor } from '@testing-library/react-native';
 import { ShareButton } from './ShareButton';
 import Share from 'react-native-share';
 import { Alert } from 'react-native';
@@ -17,11 +17,11 @@ describe('ShareButton', () => {
     jest.clearAllMocks();
   });
 
-  it('shows an alert and does not share when photo is not verified', async () => {
+  it('shows an alert and does not share when photo is not verified', () => {
     const { getByText } = render(<ShareButton uri={mockUri} isVerified={false} />);
     const button = getByText('gallery.unverified_badge');
 
-    await fireEvent.press(button);
+    fireEvent.press(button);
 
     expect(Alert.alert).toHaveBeenCalledWith(
       'gallery.unverified_title',
@@ -35,14 +35,16 @@ describe('ShareButton', () => {
     const { getByText } = render(<ShareButton uri={mockUri} isVerified={true} />);
     const button = getByText('gallery.share_instagram');
 
-    await fireEvent.press(button);
+    fireEvent.press(button);
 
-    expect(Share.shareSingle).toHaveBeenCalledWith(
-      expect.objectContaining({
-        social: 'instagramstories',
-        backgroundImage: mockUri,
-      })
-    );
+    await waitFor(() => {
+      expect(Share.shareSingle).toHaveBeenCalledWith(
+        expect.objectContaining({
+          social: 'instagramstories',
+          backgroundImage: mockUri,
+        })
+      );
+    });
     expect(Share.open).not.toHaveBeenCalled();
   });
 
@@ -52,15 +54,17 @@ describe('ShareButton', () => {
     const { getByText } = render(<ShareButton uri={mockUri} isVerified={true} />);
     const button = getByText('gallery.share_instagram');
 
-    await fireEvent.press(button);
+    fireEvent.press(button);
 
-    expect(Share.shareSingle).toHaveBeenCalled();
-    expect(Share.open).toHaveBeenCalledWith(
-      expect.objectContaining({
-        url: mockUri,
-        title: 'gallery.share_title',
-      })
-    );
+    await waitFor(() => {
+      expect(Share.shareSingle).toHaveBeenCalled();
+      expect(Share.open).toHaveBeenCalledWith(
+        expect.objectContaining({
+          url: mockUri,
+          title: 'gallery.share_title',
+        })
+      );
+    });
   });
 
   it('catches and logs errors gracefully if both Share.shareSingle and Share.open fail', async () => {
@@ -72,5 +76,10 @@ describe('ShareButton', () => {
 
     // Should not throw or crash the app
     fireEvent.press(button);
+
+    await waitFor(() => {
+      expect(Share.shareSingle).toHaveBeenCalled();
+      expect(Share.open).toHaveBeenCalled();
+    });
   });
 });

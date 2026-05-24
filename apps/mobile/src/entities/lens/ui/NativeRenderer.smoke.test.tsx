@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-require-imports */
 import React, { createRef } from 'react';
 import { render } from '@testing-library/react-native';
 import { NativeRenderer, NativeRendererRef } from './NativeRenderer';

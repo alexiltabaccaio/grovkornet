@@ -23,6 +23,7 @@ export const AuthenticityBadge = ({ verifying, isVerified }: AuthenticityBadgePr
   if (isVerified) {
     return (
       <View style={[styles.badgeContainer, styles.badgeVerified]}>
+        {/* eslint-disable-next-line @typescript-eslint/no-require-imports, @typescript-eslint/no-unsafe-assignment */}
         <Image source={require('../../../../../assets/logo-badge.png')} style={{ width: 16, height: 16, resizeMode: 'contain', opacity: 0.85 }} />
         <Text style={[styles.badgeText, styles.badgeTextVerified]}>
           {t('gallery.verified', 'Verified Original')}

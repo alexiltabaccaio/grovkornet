@@ -1,6 +1,13 @@
 #ifndef MATRIX_TRANSFORM_CALCULATOR_H
 #define MATRIX_TRANSFORM_CALCULATOR_H
 
+struct ViewportRect {
+    int x;
+    int y;
+    int width;
+    int height;
+};
+
 class MatrixTransformCalculator {
 public:
     static void calculateScaleAndCrop(
@@ -11,6 +18,12 @@ public:
         int aspectRatioSetting,
         float* outScaleMatrix,
         float* outCropMatrix
+    );
+
+    static ViewportRect calculateViewport(
+        const float* scaleMatrix,
+        int viewportWidth,
+        int viewportHeight
     );
 
     // Matrix helpers

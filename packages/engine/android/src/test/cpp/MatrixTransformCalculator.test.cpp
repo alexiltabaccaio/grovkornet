@@ -26,3 +26,26 @@ TEST(MatrixTransformCalculatorTest, BasicMatrixOperations) {
     EXPECT_FLOAT_EQ(translate[14], 0.0f);
     EXPECT_FLOAT_EQ(translate[15], 1.0f);
 }
+
+TEST(MatrixTransformCalculatorTest, ViewportCalculations) {
+    float identityScale[16];
+    MatrixTransformCalculator::setIdentityM(identityScale);
+
+    // Scale 1x1, full size
+    ViewportRect vp1 = MatrixTransformCalculator::calculateViewport(identityScale, 1000, 800);
+    EXPECT_EQ(vp1.width, 1000);
+    EXPECT_EQ(vp1.height, 800);
+    EXPECT_EQ(vp1.x, 0);
+    EXPECT_EQ(vp1.y, 0);
+
+    // Scale 0.5x0.5, half size centered
+    float halfScale[16];
+    MatrixTransformCalculator::setIdentityM(halfScale);
+    MatrixTransformCalculator::scaleM(halfScale, 0.5f, 0.5f, 1.0f);
+
+    ViewportRect vp2 = MatrixTransformCalculator::calculateViewport(halfScale, 1000, 800);
+    EXPECT_EQ(vp2.width, 500);
+    EXPECT_EQ(vp2.height, 400);
+    EXPECT_EQ(vp2.x, 250);
+    EXPECT_EQ(vp2.y, 200);
+}

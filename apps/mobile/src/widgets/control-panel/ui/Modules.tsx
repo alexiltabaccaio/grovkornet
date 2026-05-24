@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import { useTranslation } from 'react-i18next';
@@ -16,20 +16,24 @@ export const Modules = () => {
   })));
   const { t } = useTranslation();
 
-  const [lastActiveSection, setLastActiveSection] = useState<SectionType>(activeSection);
-  const [lastActiveModule, setLastActiveModule] = useState<ModuleType>(activeModule);
+  const [lastActiveSection, setLastActiveSection] = useState<SectionType>(activeSection !== 'none' ? activeSection : 'none');
+  const [prevActiveSection, setPrevActiveSection] = useState<SectionType>(activeSection);
+  const [lastActiveModule, setLastActiveModule] = useState<ModuleType>(activeModule !== 'none' ? activeModule : 'none');
+  const [prevActiveModule, setPrevActiveModule] = useState<ModuleType>(activeModule);
 
-  useEffect(() => {
+  if (activeSection !== prevActiveSection) {
+    setPrevActiveSection(activeSection);
     if (activeSection !== 'none') {
       setLastActiveSection(activeSection);
     }
-  }, [activeSection]);
+  }
 
-  useEffect(() => {
+  if (activeModule !== prevActiveModule) {
+    setPrevActiveModule(activeModule);
     if (activeModule !== 'none') {
       setLastActiveModule(activeModule);
     }
-  }, [activeModule]);
+  }
 
   const renderSection = activeSection === 'none' ? lastActiveSection : activeSection;
   const renderModule = activeModule === 'none' ? lastActiveModule : activeModule;
