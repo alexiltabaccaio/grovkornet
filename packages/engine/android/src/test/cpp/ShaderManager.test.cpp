@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "ShaderManager.h"
+#include "pipeline/ShaderManager.h"
 #include <filament/Engine.h>
 
 TEST(ShaderManagerTest, NullAssetManagerInitialization) {

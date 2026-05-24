@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "WatermarkEngine.h"
+#include "utils/WatermarkEngine.h"
 #include <vector>
 
 TEST(WatermarkEngineTest, EmbedAndVerifySignature) {

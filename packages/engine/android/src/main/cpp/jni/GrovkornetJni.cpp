@@ -6,7 +6,6 @@
 #include <android/native_window_jni.h>
 #include <android/asset_manager.h>
 #include <android/asset_manager_jni.h>
-#include <chrono>
 #include <vector>
 #include <mutex>
 
@@ -18,9 +17,8 @@ static std::mutex g_engineLifecycleMutex;
 #include <filament/TextureSampler.h>
 #include <filament/RenderableManager.h>
 
-#include "GrovkornetEngine.h"
-#include "WatermarkEngine.h"
-#include "MatrixTransformCalculator.h"
+#include "core/GrovkornetEngine.h"
+#include "utils/WatermarkEngine.h"
 
 #define LOG_TAG "GrovkornetJNI"
 #define LOGI(...) __android_log_print(ANDROID_LOG_INFO, LOG_TAG, __VA_ARGS__)
@@ -111,78 +109,11 @@ Java_com_grovkornet_nativefilmcamera_rendering_OffscreenFilmProcessor_nativeProc
             return;
         }
 
-        void* pixelsIn = inLocker.pixels;
-        void* pixelsOut = outLocker.pixels;
-
-        // 2. Setup or update input texture
-        if (!enginePtr->inputTexture2D) {
-            enginePtr->inputTexture2D = filament::Texture::Builder()
-                .width(enginePtr->width)
-                .height(enginePtr->height)
-                .levels(1)
-                .sampler(filament::Texture::Sampler::SAMPLER_2D)
-                .format(filament::Texture::InternalFormat::RGBA8)
-                .build(*(enginePtr->engine));
-        }
-
-        // Upload input pixels to texture
-        enginePtr->inputTexture2D->setImage(*(enginePtr->engine), 0, filament::Texture::PixelBufferDescriptor(
-            pixelsIn, 
-            enginePtr->width * enginePtr->height * 4, 
-            filament::backend::PixelDataFormat::RGBA, 
-            filament::backend::PixelDataType::UBYTE
-        ));
-
-        // 3. Update geometry to use the 2D material
-        auto& rcm = enginePtr->engine->getRenderableManager();
-        auto instance = rcm.getInstance(enginePtr->quadGrading);
-        if (instance) {
-            rcm.setMaterialInstanceAt(instance, 0, enginePtr->shaderManager.getMaterialInstance2D());
-        }
-
         RenderParams parsedParams = parseRenderParams(env, float_params);
 
-        // Set material parameter u_Texture (remains in JNI because sampler type differs)
-        filament::TextureSampler sampler2d(filament::TextureSampler::MinFilter::LINEAR, filament::TextureSampler::MagFilter::LINEAR);
-        enginePtr->shaderManager.getMaterialInstance2D()->setParameter("u_Texture", enginePtr->inputTexture2D, sampler2d);
-
-        // Apply unified parameters (waitForLut = true)
-        enginePtr->applyShaderParameters(parsedParams, enginePtr->shaderManager.getMaterialInstance2D(), true);
-
-        auto start = std::chrono::high_resolution_clock::now();
-
-        // 5. Render and readback inside frame boundary
-        if (enginePtr->renderer->beginFrame(enginePtr->swapChain)) {
-            enginePtr->renderer->render(enginePtr->viewGrading);
-            
-            // Always render downsample and blur passes to guarantee texture completeness
-            // even if bloom_intensity == 0.0f, to prevent GPU crash on incomplete texture.
-            enginePtr->renderer->render(enginePtr->viewDownsample);
-            enginePtr->renderer->render(enginePtr->viewBlurDown);
-            enginePtr->renderer->render(enginePtr->viewBlurUp);
-            
-            enginePtr->renderer->render(enginePtr->view);
-            
-            // 6. Read back pixels to output bitmap (must be before endFrame for SwapChain)
-            filament::backend::PixelBufferDescriptor desc(
-                pixelsOut, 
-                enginePtr->width * enginePtr->height * 4, 
-                filament::backend::PixelDataFormat::RGBA, 
-                filament::backend::PixelDataType::UBYTE
-            );
-            enginePtr->renderer->readPixels(0, 0, enginePtr->width, enginePtr->height, std::move(desc));
-            
-            enginePtr->renderer->endFrame();
-        }
+        // Call the engine's offscreen rendering method
+        enginePtr->renderOffscreenFrame(inLocker.pixels, outLocker.pixels, parsedParams);
         
-        // Flush commands and wait for GPU completion (includes rendering and readback)
-        enginePtr->engine->flushAndWait();
-
-        auto end = std::chrono::high_resolution_clock::now();
-        float frameTimeMs = std::chrono::duration<float, std::milli>(end - start).count();
-        enginePtr->recordFrameTimeAndEvaluate(frameTimeMs);
-        
-        // Destructors of inLocker and outLocker will automatically unlock the pixels.
     } catch (const std::exception& e) {
         LOGE("Filament Exception in nativeProcessBitmap: %s", e.what());
     } catch (...) {
@@ -207,60 +138,8 @@ Java_com_grovkornet_nativefilmcamera_rendering_OffscreenFilmProcessor_nativeProc
             return;
         }
 
-        AHardwareBuffer_Desc desc;
-        AHardwareBuffer_describe(ahb, &desc);
+        enginePtr->renderHardwareBufferFrame(ahb, parsedParams);
 
-        // 2. Setup or update external input texture
-        if (!enginePtr->inputTextureExternal) {
-            enginePtr->inputTextureExternal = filament::Texture::Builder()
-                .width(desc.width)
-                .height(desc.height)
-                .levels(1)
-                .sampler(filament::Texture::Sampler::SAMPLER_EXTERNAL)
-                .format(filament::Texture::InternalFormat::RGBA8)
-                .build(*(enginePtr->engine));
-        }
-
-        // Bind the AHardwareBuffer to the external texture
-        enginePtr->inputTextureExternal->setExternalImage(*(enginePtr->engine), ahb);
-
-        // 3. Update geometry to use the External material
-        auto& rcm = enginePtr->engine->getRenderableManager();
-        auto instance = rcm.getInstance(enginePtr->quadGrading);
-        if (instance) {
-            rcm.setMaterialInstanceAt(instance, 0, enginePtr->shaderManager.getMaterialInstanceExternal());
-        }
-
-        // Set material parameter u_Texture and u_UvMatrix
-        filament::TextureSampler sampler2d(filament::TextureSampler::MinFilter::LINEAR, filament::TextureSampler::MagFilter::LINEAR);
-        enginePtr->shaderManager.getMaterialInstanceExternal()->setParameter("u_Texture", enginePtr->inputTextureExternal, sampler2d);
-        
-        // Hardware buffers from CameraX ImageCapture are already upright, use identity matrix
-        filament::math::mat4f identityMatrix;
-        enginePtr->shaderManager.getMaterialInstanceExternal()->setParameter("u_UvMatrix", identityMatrix);
-
-        // Apply unified parameters (waitForLut = true)
-        enginePtr->applyShaderParameters(parsedParams, enginePtr->shaderManager.getMaterialInstanceExternal(), true);
-
-        auto start = std::chrono::high_resolution_clock::now();
-
-        // 5. Render
-        if (enginePtr->renderer->beginFrame(enginePtr->swapChain)) {
-            enginePtr->renderer->render(enginePtr->viewGrading);
-            // Always render downsample and blur passes to guarantee texture completeness
-            enginePtr->renderer->render(enginePtr->viewDownsample);
-            enginePtr->renderer->render(enginePtr->viewBlurDown);
-            enginePtr->renderer->render(enginePtr->viewBlurUp);
-            enginePtr->renderer->render(enginePtr->view);
-            enginePtr->renderer->endFrame();
-        }
-        
-        // Flush commands and wait for GPU completion
-        enginePtr->engine->flushAndWait();
-
-        auto end = std::chrono::high_resolution_clock::now();
-        float frameTimeMs = std::chrono::duration<float, std::milli>(end - start).count();
-        enginePtr->recordFrameTimeAndEvaluate(frameTimeMs);
     } catch (const std::exception& e) {
         LOGE("Filament Exception in nativeProcessHardwareBuffer: %s", e.what());
     } catch (...) {
@@ -303,7 +182,7 @@ JNIEXPORT jfloat JNICALL
 Java_com_grovkornet_nativefilmcamera_rendering_OffscreenFilmProcessor_nativeGetDrsScale(
         JNIEnv* env, jobject thiz, jlong engine_ptr) {
     GrovkornetEngine* enginePtr = reinterpret_cast<GrovkornetEngine*>(engine_ptr);
-    return enginePtr ? enginePtr->currentDrsScale : 1.0f;
+    return enginePtr ? enginePtr->getDrsScale() : 1.0f;
 }
 
 JNIEXPORT void JNICALL
@@ -311,8 +190,7 @@ Java_com_grovkornet_nativefilmcamera_rendering_OffscreenFilmProcessor_nativeSimu
         JNIEnv* env, jobject thiz, jlong engine_ptr, jfloat frame_time_ms) {
     GrovkornetEngine* enginePtr = reinterpret_cast<GrovkornetEngine*>(engine_ptr);
     if (enginePtr) {
-        enginePtr->framesSinceLastDrsScale = GrovkornetEngine::DRS_COOLDOWN_FRAMES;
-        enginePtr->recordFrameTimeAndEvaluate(frame_time_ms);
+        enginePtr->simulateFrameTime(frame_time_ms);
     }
 }
 
@@ -371,7 +249,7 @@ JNIEXPORT jfloat JNICALL
 Java_com_grovkornet_nativefilmcamera_rendering_LiveFilmProcessor_nativeGetDrsScale(
         JNIEnv* env, jobject thiz, jlong engine_ptr) {
     GrovkornetEngine* enginePtr = reinterpret_cast<GrovkornetEngine*>(engine_ptr);
-    return enginePtr ? enginePtr->currentDrsScale : 1.0f;
+    return enginePtr ? enginePtr->getDrsScale() : 1.0f;
 }
 
 JNIEXPORT void JNICALL
@@ -408,24 +286,28 @@ Java_com_grovkornet_nativefilmcamera_rendering_LiveFilmProcessor_nativeRenderLiv
         jintArray out_fps_stats, jboolean skip_screen_render, jboolean isNewFrame) {
     
     GrovkornetEngine* enginePtr = reinterpret_cast<GrovkornetEngine*>(engine_ptr);
-    if (!enginePtr || !enginePtr->liveSwapChain || !uv_matrix_in || !float_params) {
+    if (!enginePtr || !uv_matrix_in || !float_params) {
         return JNI_FALSE;
     }
     
     RenderParams parsedParams = parseRenderParams(env, float_params);
-    int targetFps          = static_cast<int>(parsedParams.targetFps);
-    int aspectRatioSetting = static_cast<int>(parsedParams.aspectRatio);
 
     try {
-        // 1. Run Frame Timing checks natively
-        bool shouldCapture = enginePtr->timingController.shouldCaptureFrame(targetFps);
-        
-        // Update FPS statistics
+        // Extract input SurfaceTexture UV matrix
+        jfloat* matrixElements = env->GetFloatArrayElements(uv_matrix_in, 0);
+        float uvMatrixIn[16];
+        for (int i = 0; i < 16; ++i) uvMatrixIn[i] = matrixElements[i];
+        env->ReleaseFloatArrayElements(uv_matrix_in, matrixElements, JNI_ABORT);
+
         int actualFps = 0;
         int stampedFps = 0;
         bool fpsUpdated = false;
-        enginePtr->timingController.updateFps(isNewFrame, actualFps, stampedFps, fpsUpdated);
-        
+
+        bool rendered = enginePtr->renderLiveFrame(
+            parsedParams, uvMatrixIn, cameraWidth, cameraHeight, viewportWidth, viewportHeight,
+            skip_screen_render, isNewFrame, actualFps, stampedFps, fpsUpdated
+        );
+
         if (out_fps_stats) {
             jint* fpsStats = env->GetIntArrayElements(out_fps_stats, 0);
             fpsStats[0] = fpsUpdated ? 1 : 0;
@@ -433,87 +315,9 @@ Java_com_grovkornet_nativefilmcamera_rendering_LiveFilmProcessor_nativeRenderLiv
             fpsStats[2] = stampedFps;
             env->ReleaseIntArrayElements(out_fps_stats, fpsStats, 0);
         }
-        
-        if (!shouldCapture) {
-            return JNI_FALSE;
-        }
 
-        // 2. Perform aspect ratio matrix calculations natively
-        float scaleMatrix[16];
-        float cropMatrix[16];
-        MatrixTransformCalculator::calculateScaleAndCrop(
-            cameraWidth, cameraHeight, viewportWidth, viewportHeight, aspectRatioSetting, scaleMatrix, cropMatrix
-        );
+        return rendered ? JNI_TRUE : JNI_FALSE;
 
-        // Extract input SurfaceTexture UV matrix
-        jfloat* matrixElements = env->GetFloatArrayElements(uv_matrix_in, 0);
-        float uvMatrixIn[16];
-        for (int i = 0; i < 16; ++i) uvMatrixIn[i] = matrixElements[i];
-        env->ReleaseFloatArrayElements(uv_matrix_in, matrixElements, 0);
-
-        // Multiply input UV matrix by calculated crop matrix to get final UV matrix
-        float finalUvMatrix[16];
-        MatrixTransformCalculator::multiplyMM(finalUvMatrix, uvMatrixIn, cropMatrix);
-
-        filament::math::mat4f u_UvMatrix(
-            finalUvMatrix[0], finalUvMatrix[1], finalUvMatrix[2], finalUvMatrix[3],
-            finalUvMatrix[4], finalUvMatrix[5], finalUvMatrix[6], finalUvMatrix[7],
-            finalUvMatrix[8], finalUvMatrix[9], finalUvMatrix[10], finalUvMatrix[11],
-            finalUvMatrix[12], finalUvMatrix[13], finalUvMatrix[14], finalUvMatrix[15]
-        );
-
-        // Calculate viewport based on scale matrix
-        float scaleX = scaleMatrix[0];
-        float scaleY = scaleMatrix[5];
-        int vpWidth = static_cast<int>(viewportWidth * scaleX);
-        int vpHeight = static_cast<int>(viewportHeight * scaleY);
-        int vpX = (viewportWidth - vpWidth) / 2;
-        int vpY = (viewportHeight - vpHeight) / 2;
-
-        // Update viewport in engine
-        enginePtr->viewportX = vpX;
-        enginePtr->viewportY = vpY;
-        enginePtr->viewportWidth = vpWidth;
-        enginePtr->viewportHeight = vpHeight;
-
-        // 3. Update geometry to use the External material
-        auto& rcm = enginePtr->engine->getRenderableManager();
-        auto instance = rcm.getInstance(enginePtr->quadGrading);
-        if (instance) {
-            rcm.setMaterialInstanceAt(instance, 0, enginePtr->shaderManager.getMaterialInstanceExternal());
-        }
-        
-        // Set material parameter u_Texture and u_UvMatrix
-        filament::TextureSampler sampler2d(filament::TextureSampler::MinFilter::LINEAR, filament::TextureSampler::MagFilter::LINEAR);
-        enginePtr->shaderManager.getMaterialInstanceExternal()->setParameter("u_Texture", enginePtr->inputTextureExternal, sampler2d);
-        enginePtr->shaderManager.getMaterialInstanceExternal()->setParameter("u_UvMatrix", u_UvMatrix);
-        
-        // Apply unified parameters (waitForLut = false)
-        enginePtr->applyShaderParameters(parsedParams, enginePtr->shaderManager.getMaterialInstanceExternal(), false);
-        
-        auto start = std::chrono::high_resolution_clock::now();
-        
-        // 6. Render
-        if (enginePtr->renderer->beginFrame(enginePtr->liveSwapChain)) {
-            enginePtr->renderer->render(enginePtr->viewGrading);
-            // Always render downsample and blur passes to guarantee texture completeness
-            enginePtr->renderer->render(enginePtr->viewDownsample);
-            enginePtr->renderer->render(enginePtr->viewBlurDown);
-            enginePtr->renderer->render(enginePtr->viewBlurUp);
-            if (!skip_screen_render) {
-                enginePtr->renderer->render(enginePtr->view);
-            }
-            enginePtr->renderer->endFrame();
-        }
-        
-        // Flush UI commands asynchronously (don't block the render thread with flushAndWait!)
-        enginePtr->engine->flush();
-        
-        auto end = std::chrono::high_resolution_clock::now();
-        float frameTimeMs = std::chrono::duration<float, std::milli>(end - start).count();
-        enginePtr->recordFrameTimeAndEvaluate(frameTimeMs);
-
-        return JNI_TRUE;
     } catch (const std::exception& e) {
         LOGE("Filament Exception in nativeRenderLiveFrame: %s", e.what());
         return JNI_FALSE;
@@ -528,8 +332,7 @@ Java_com_grovkornet_nativefilmcamera_rendering_LiveFilmProcessor_nativeSimulateF
         JNIEnv* env, jobject thiz, jlong engine_ptr, jfloat frame_time_ms) {
     GrovkornetEngine* enginePtr = reinterpret_cast<GrovkornetEngine*>(engine_ptr);
     if (enginePtr) {
-        enginePtr->framesSinceLastDrsScale = GrovkornetEngine::DRS_COOLDOWN_FRAMES;
-        enginePtr->recordFrameTimeAndEvaluate(frame_time_ms);
+        enginePtr->simulateFrameTime(frame_time_ms);
     }
 }
 

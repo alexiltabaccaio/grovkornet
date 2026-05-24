@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "MatrixTransformCalculator.h"
+#include "utils/MatrixTransformCalculator.h"
 
 TEST(MatrixTransformCalculatorTest, BasicMatrixOperations) {
     float identity[16];

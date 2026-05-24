@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "GrovkornetEngine.h"
+#include "core/GrovkornetEngine.h"
 
 TEST(GrovkornetEngineTest, BasicInitializationAndProperties) {
     GrovkornetEngine engine(640, 480);

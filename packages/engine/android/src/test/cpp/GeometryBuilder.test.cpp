@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "GeometryBuilder.h"
+#include "pipeline/GeometryBuilder.h"
 #include <filament/Engine.h>
 #include <filament/VertexBuffer.h>
 #include <filament/IndexBuffer.h>

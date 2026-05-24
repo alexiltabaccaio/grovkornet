@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "LutGenerator.h"
+#include "pipeline/LutGenerator.h"
 #include <filament/Engine.h>
 #include <filament/Texture.h>
 #include <chrono>

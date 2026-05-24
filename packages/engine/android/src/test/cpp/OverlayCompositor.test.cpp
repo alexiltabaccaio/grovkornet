@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "OverlayCompositor.h"
+#include "pipeline/OverlayCompositor.h"
 #include <filament/Engine.h>
 #include <filament/Texture.h>
 

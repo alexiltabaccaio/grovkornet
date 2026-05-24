@@ -1,6 +1,5 @@
 #include "GrovkornetEngine.h"
 #include <android/log.h>
-#include <algorithm>
 
 #include <filament/Engine.h>
 #include <filament/Viewport.h>
@@ -20,7 +19,9 @@
 #include <math/vec2.h>
 #include <utils/EntityManager.h>
 
-#include "GeometryBuilder.h"
+#include "pipeline/GeometryBuilder.h"
+#include "utils/MatrixTransformCalculator.h"
+#include <chrono>
 
 #define LOG_TAG "GrovkornetEngine"
 #define LOGI(...) __android_log_print(ANDROID_LOG_INFO, LOG_TAG, __VA_ARGS__)
@@ -78,20 +79,6 @@ bool GrovkornetEngine::init(AAssetManager* assetManager) {
     view = engine->createView();
     scene = engine->createScene();
     
-    viewGrading = engine->createView();
-    sceneGrading = engine->createScene();
-    
-
-
-    viewDownsample = engine->createView();
-    sceneDownsample = engine->createScene();
-    
-    viewBlurDown = engine->createView();
-    sceneBlurDown = engine->createScene();
-    
-    viewBlurUp = engine->createView();
-    sceneBlurUp = engine->createScene();
-    
     // Shader manager initializes the filament materials from assets
     if (!shaderManager.init(*engine, assetManager)) {
         LOGE("Failed to initialize ShaderManager!");
@@ -110,121 +97,25 @@ bool GrovkornetEngine::init(AAssetManager* assetManager) {
     view->setViewport(filament::Viewport(0, 0, width, height));
     view->setPostProcessingEnabled(false);
     
-    viewGrading->setCamera(camera);
-    viewGrading->setScene(sceneGrading);
-    viewGrading->setViewport(filament::Viewport(0, 0, width, height));
-    viewGrading->setPostProcessingEnabled(false);
-    
-    viewDownsample->setCamera(camera);
-    viewDownsample->setScene(sceneDownsample);
-    viewDownsample->setViewport(filament::Viewport(0, 0, std::max(1, width / 4), std::max(1, height / 4)));
-    viewDownsample->setPostProcessingEnabled(false);
-    
-    viewBlurDown->setCamera(camera);
-    viewBlurDown->setScene(sceneBlurDown);
-    viewBlurDown->setViewport(filament::Viewport(0, 0, std::max(1, width / 8), std::max(1, height / 8)));
-    viewBlurDown->setPostProcessingEnabled(false);
-    
-    viewBlurUp->setCamera(camera);
-    viewBlurUp->setScene(sceneBlurUp);
-    viewBlurUp->setViewport(filament::Viewport(0, 0, std::max(1, width / 4), std::max(1, height / 4)));
-    viewBlurUp->setPostProcessingEnabled(false);
-    
     swapChain = engine->createSwapChain(width, height, filament::SwapChain::CONFIG_READABLE);
     if (!swapChain) {
         LOGE("Failed to create headless SwapChain");
         return false;
     }
     
-    // 2. Initialize intermediate textures
-    gradedTexture = filament::Texture::Builder()
-        .width(width)
-        .height(height)
-        .levels(1)
-        .usage(filament::Texture::Usage::COLOR_ATTACHMENT | filament::Texture::Usage::SAMPLEABLE)
-        .sampler(filament::Texture::Sampler::SAMPLER_2D)
-        .format(filament::Texture::InternalFormat::RGBA8)
-        .build(*engine);
-        
-    bloomTexDown = filament::Texture::Builder()
-        .width(std::max(1, width / 4))
-        .height(std::max(1, height / 4))
-        .levels(1)
-        .usage(filament::Texture::Usage::COLOR_ATTACHMENT | filament::Texture::Usage::SAMPLEABLE)
-        .sampler(filament::Texture::Sampler::SAMPLER_2D)
-        .format(filament::Texture::InternalFormat::RGBA8)
-        .build(*engine);
-        
-    bloomTexBlur = filament::Texture::Builder()
-        .width(std::max(1, width / 8))
-        .height(std::max(1, height / 8))
-        .levels(1)
-        .usage(filament::Texture::Usage::COLOR_ATTACHMENT | filament::Texture::Usage::SAMPLEABLE)
-        .sampler(filament::Texture::Sampler::SAMPLER_2D)
-        .format(filament::Texture::InternalFormat::RGBA8)
-        .build(*engine);
-        
-    bloomTexUp = filament::Texture::Builder()
-        .width(std::max(1, width / 4))
-        .height(std::max(1, height / 4))
-        .levels(1)
-        .usage(filament::Texture::Usage::COLOR_ATTACHMENT | filament::Texture::Usage::SAMPLEABLE)
-        .sampler(filament::Texture::Sampler::SAMPLER_2D)
-        .format(filament::Texture::InternalFormat::RGBA8)
-        .build(*engine);
-        
-    if (!gradedTexture || !bloomTexDown || !bloomTexBlur || !bloomTexUp) {
-        LOGE("Failed to create multi-pass textures");
-        return false;
-    }
-    
-    // Create RenderTargets
-    gradedRenderTarget = filament::RenderTarget::Builder()
-        .texture(filament::RenderTarget::AttachmentPoint::COLOR, gradedTexture)
-        .build(*engine);
-        
-    bloomDownRenderTarget = filament::RenderTarget::Builder()
-        .texture(filament::RenderTarget::AttachmentPoint::COLOR, bloomTexDown)
-        .build(*engine);
-        
-    bloomBlurRenderTarget = filament::RenderTarget::Builder()
-        .texture(filament::RenderTarget::AttachmentPoint::COLOR, bloomTexBlur)
-        .build(*engine);
-        
-    bloomUpRenderTarget = filament::RenderTarget::Builder()
-        .texture(filament::RenderTarget::AttachmentPoint::COLOR, bloomTexUp)
-        .build(*engine);
-        
-    if (!gradedRenderTarget || !bloomDownRenderTarget || !bloomBlurRenderTarget || !bloomUpRenderTarget) {
-        LOGE("Failed to create multi-pass render targets");
-        return false;
-    }
-    
-    // Set render targets on views
-    viewGrading->setRenderTarget(gradedRenderTarget);
-    viewDownsample->setRenderTarget(bloomDownRenderTarget);
-    viewBlurDown->setRenderTarget(bloomBlurRenderTarget);
-    viewBlurUp->setRenderTarget(bloomUpRenderTarget);
-    
-
-    
-    // 4. Initialize Geometry
+    // Initialize Geometry
     GeometryBuilder::buildQuad(*engine, vertexBuffer, indexBuffer);
     
-    quadGrading = GeometryBuilder::createQuadEntity(*engine, vertexBuffer, indexBuffer, shaderManager.getMaterialInstance2D());
-    quadDownsample = GeometryBuilder::createQuadEntity(*engine, vertexBuffer, indexBuffer, shaderManager.getMaterialInstanceDownsample());
-    quadBlurDown = GeometryBuilder::createQuadEntity(*engine, vertexBuffer, indexBuffer, shaderManager.getMaterialInstanceBlurDown());
-    quadBlurUp = GeometryBuilder::createQuadEntity(*engine, vertexBuffer, indexBuffer, shaderManager.getMaterialInstanceBlurUp());
-    quadComposite = GeometryBuilder::createQuadEntity(*engine, vertexBuffer, indexBuffer, shaderManager.getMaterialInstanceComposite());
+    // Initialize PipelineRenderer
+    if (!pipelineRenderer.init(*engine, width, height, vertexBuffer, indexBuffer, shaderManager, camera)) {
+        LOGE("Failed to initialize PipelineRenderer!");
+        return false;
+    }
     
-    // Add entities to scenes
-    sceneGrading->addEntity(quadGrading);
-    sceneDownsample->addEntity(quadDownsample);
-    sceneBlurDown->addEntity(quadBlurDown);
-    sceneBlurUp->addEntity(quadBlurUp);
-    scene->addEntity(quadComposite);
+    // Add composite quad entity to main scene
+    scene->addEntity(pipelineRenderer.quadComposite);
     
-    // 5. Initialize 3D LUT Texture
+    // Initialize 3D LUT Texture
     lutTexture = filament::Texture::Builder()
         .width(LutGenerator::LUT_SIZE)
         .height(LutGenerator::LUT_SIZE)
@@ -277,33 +168,8 @@ bool GrovkornetEngine::init(AAssetManager* assetManager) {
     );
     dummyBlackTexture->setImage(*engine, 0, std::move(dummyDesc));
     
-    // 6. Bind static parameters on materials
-    filament::TextureSampler samplerLinear(filament::TextureSampler::MinFilter::LINEAR, filament::TextureSampler::MagFilter::LINEAR);
-    
-    shaderManager.getMaterialInstanceDownsample()->setParameter("u_Texture", gradedTexture, samplerLinear);
-    
-    float downW = std::max(1.0f, static_cast<float>(width / 4.0f));
-    float downH = std::max(1.0f, static_cast<float>(height / 4.0f));
-    shaderManager.getMaterialInstanceBlurDown()->setParameter("u_Texture", bloomTexDown, samplerLinear);
-    shaderManager.getMaterialInstanceBlurDown()->setParameter("u_TexelSize", filament::math::float2(1.0f / downW, 1.0f / downH));
-    
-    float blurW = std::max(1.0f, static_cast<float>(width / 8.0f));
-    float blurH = std::max(1.0f, static_cast<float>(height / 8.0f));
-    shaderManager.getMaterialInstanceBlurUp()->setParameter("u_Texture", bloomTexBlur, samplerLinear);
-    shaderManager.getMaterialInstanceBlurUp()->setParameter("u_TexelSize", filament::math::float2(1.0f / blurW, 1.0f / blurH));
-    
-    shaderManager.getMaterialInstanceComposite()->setParameter("u_Texture", gradedTexture, samplerLinear);
-    shaderManager.getMaterialInstanceComposite()->setParameter("u_BloomTexture", bloomTexUp, samplerLinear);
-    shaderManager.getMaterialInstanceComposite()->setParameter("u_OverlayTexture", dummyBlackTexture, samplerLinear);
-    shaderManager.getMaterialInstanceComposite()->setParameter("u_OverlayEnabled", 0.0f);
-    shaderManager.getMaterialInstanceComposite()->setParameter("u_GrainIntensity", 0.0f);
-    shaderManager.getMaterialInstanceComposite()->setParameter("u_GrainChroma", 0.0f);
-    shaderManager.getMaterialInstanceComposite()->setParameter("u_GrainSize", 1.0f);
-    shaderManager.getMaterialInstanceComposite()->setParameter("u_VignetteIntensity", 0.0f);
-    shaderManager.getMaterialInstanceComposite()->setParameter("u_VhsIntensity", 0.0f);
-    shaderManager.getMaterialInstanceComposite()->setParameter("u_Time", 0.0f);
-    shaderManager.getMaterialInstanceComposite()->setParameter("u_Sharpening", 0.0f);
-    shaderManager.getMaterialInstanceComposite()->setParameter("u_TexelSize", filament::math::float2(1.0f / width, 1.0f / height));
+    // Set static parameters on pipeline views & composite material
+    pipelineRenderer.setStaticParameters(width, height, shaderManager, dummyBlackTexture);
 
     // Start background threads
     lutGenerator.start();
@@ -339,60 +205,33 @@ GrovkornetEngine::~GrovkornetEngine() {
             liveSwapChain = nullptr;
         }
         
-        LOGI("Destroying views and scenes...");
-        if (viewGrading) engine->destroy(viewGrading);
-        if (viewDownsample) engine->destroy(viewDownsample);
-        if (viewBlurDown) engine->destroy(viewBlurDown);
-        if (viewBlurUp) engine->destroy(viewBlurUp);
+        LOGI("Destroying PipelineRenderer...");
+        pipelineRenderer.destroy(*engine);
         
-        // Destroy scenes
-        if (sceneGrading) engine->destroy(sceneGrading);
-        if (sceneDownsample) engine->destroy(sceneDownsample);
-        if (sceneBlurDown) engine->destroy(sceneBlurDown);
-        if (sceneBlurUp) engine->destroy(sceneBlurUp);
-        
-        LOGI("Destroying entities and buffers...");
-        engine->destroy(quadGrading);
-        engine->destroy(quadDownsample);
-        engine->destroy(quadBlurDown);
-        engine->destroy(quadBlurUp);
-        engine->destroy(quadComposite);
-        
-        utils::EntityManager::get().destroy(quadGrading);
-        utils::EntityManager::get().destroy(quadDownsample);
-        utils::EntityManager::get().destroy(quadBlurDown);
-        utils::EntityManager::get().destroy(quadBlurUp);
-        utils::EntityManager::get().destroy(quadComposite);
-        
-        if (vertexBuffer) engine->destroy(vertexBuffer);
-        if (indexBuffer) engine->destroy(indexBuffer);
+        LOGI("Destroying vertex & index buffers...");
+        if (vertexBuffer) {
+            engine->destroy(vertexBuffer);
+            vertexBuffer = nullptr;
+        }
+        if (indexBuffer) {
+            engine->destroy(indexBuffer);
+            indexBuffer = nullptr;
+        }
         
         LOGI("Destroying ShaderManager...");
-        // Destroy materials/instances via ShaderManager
         shaderManager.destroy(*engine);
         
-        LOGI("Destroying RenderTargets...");
-        // Destroy RenderTargets first
-        if (gradedRenderTarget) engine->destroy(gradedRenderTarget);
-        if (bloomDownRenderTarget) engine->destroy(bloomDownRenderTarget);
-        if (bloomBlurRenderTarget) engine->destroy(bloomBlurRenderTarget);
-        if (bloomUpRenderTarget) engine->destroy(bloomUpRenderTarget);
-        
         LOGI("Destroying Textures...");
-        // Destroy Textures
         if (inputTexture2D) engine->destroy(inputTexture2D);
         if (inputTextureExternal) engine->destroy(inputTextureExternal);
         if (lutTexture) engine->destroy(lutTexture);
-        if (gradedTexture) engine->destroy(gradedTexture);
-        if (bloomTexDown) engine->destroy(bloomTexDown);
-        if (bloomTexBlur) engine->destroy(bloomTexBlur);
-        if (bloomTexUp) engine->destroy(bloomTexUp);
         if (overlayTexture) engine->destroy(overlayTexture);
         if (dummyBlackTexture) engine->destroy(dummyBlackTexture);
         LOGI("Textures destroyed!");
         
         if (swapChain) engine->destroy(swapChain);
         LOGI("Destroyed swapchains");
+        
         engine->destroy(view);
         engine->destroy(scene);
         LOGI("Destroyed main view and scene");
@@ -480,13 +319,10 @@ void GrovkornetEngine::applyOverlayTextureUpdate() {
 }
 
 void GrovkornetEngine::updateDrsAndViewport() {
-    int vWidth = std::max(1, static_cast<int>(width * currentDrsScale));
-    int vHeight = std::max(1, static_cast<int>(height * currentDrsScale));
+    float scale = drsManager.getScale();
     
-    viewGrading->setViewport(filament::Viewport(0, 0, vWidth, vHeight));
-    viewDownsample->setViewport(filament::Viewport(0, 0, std::max(1, vWidth / 4), std::max(1, vHeight / 4)));
-    viewBlurDown->setViewport(filament::Viewport(0, 0, std::max(1, vWidth / 8), std::max(1, vHeight / 8)));
-    viewBlurUp->setViewport(filament::Viewport(0, 0, std::max(1, vWidth / 4), std::max(1, vHeight / 4)));
+    // Update pipeline views viewports
+    pipelineRenderer.updateViewports(width, height, scale);
     
     int finalVpX = viewportX;
     int finalVpY = viewportY;
@@ -494,39 +330,19 @@ void GrovkornetEngine::updateDrsAndViewport() {
     int finalVpH = viewportHeight > 0 ? viewportHeight : height;
     view->setViewport(filament::Viewport(finalVpX, finalVpY, finalVpW, finalVpH));
     
-    shaderManager.getMaterialInstanceDownsample()->setParameter("u_DrsScale", currentDrsScale);
-    shaderManager.getMaterialInstanceBlurDown()->setParameter("u_DrsScale", currentDrsScale);
-    shaderManager.getMaterialInstanceBlurUp()->setParameter("u_DrsScale", currentDrsScale);
-    shaderManager.getMaterialInstanceComposite()->setParameter("u_DrsScale", currentDrsScale);
+    shaderManager.getMaterialInstanceDownsample()->setParameter("u_DrsScale", scale);
+    shaderManager.getMaterialInstanceBlurDown()->setParameter("u_DrsScale", scale);
+    shaderManager.getMaterialInstanceBlurUp()->setParameter("u_DrsScale", scale);
+    shaderManager.getMaterialInstanceComposite()->setParameter("u_DrsScale", scale);
 }
 
 void GrovkornetEngine::recordFrameTimeAndEvaluate(float frameTimeMs) {
-    recentFrameTimes.push_back(frameTimeMs);
-    if (recentFrameTimes.size() > FRAME_TIME_WINDOW_SIZE) {
-        recentFrameTimes.erase(recentFrameTimes.begin());
-    }
-    
-    framesSinceLastDrsScale++;
-    if (framesSinceLastDrsScale >= DRS_COOLDOWN_FRAMES && recentFrameTimes.size() == FRAME_TIME_WINDOW_SIZE) {
-        float avgFrameTime = 0.0f;
-        for (float t : recentFrameTimes) {
-            avgFrameTime += t;
-        }
-        avgFrameTime /= recentFrameTimes.size();
-        
-        float nextScale = currentDrsScale;
-        if (avgFrameTime > 15.0f) {
-            nextScale = std::max(MIN_DRS_SCALE, currentDrsScale - 0.1f);
-        } else if (avgFrameTime < 11.0f) {
-            nextScale = std::min(MAX_DRS_SCALE, currentDrsScale + 0.05f);
-        }
-        
-        if (nextScale != currentDrsScale) {
-            currentDrsScale = nextScale;
-            framesSinceLastDrsScale = 0;
-            LOGI("DRS Scale changed to %.2f (avg frame time: %.2f ms)", currentDrsScale, avgFrameTime);
-        }
-    }
+    drsManager.recordFrameTimeAndEvaluate(frameTimeMs);
+}
+
+void GrovkornetEngine::simulateFrameTime(float frameTimeMs) {
+    drsManager.forceCooldownTrigger();
+    drsManager.recordFrameTimeAndEvaluate(frameTimeMs);
 }
 
 void GrovkornetEngine::updateSwapChain(ANativeWindow* window) {
@@ -567,4 +383,221 @@ void GrovkornetEngine::setExternalStream(filament::Stream* stream) {
             .build(*engine);
     }
     inputTextureExternal->setExternalStream(*engine, stream);
+}
+
+bool GrovkornetEngine::renderOffscreenFrame(void* pixelsIn, void* pixelsOut, const RenderParams& params) {
+    if (!pixelsIn || !pixelsOut) {
+        return false;
+    }
+
+    // Setup or update input texture
+    if (!inputTexture2D) {
+        inputTexture2D = filament::Texture::Builder()
+            .width(width)
+            .height(height)
+            .levels(1)
+            .sampler(filament::Texture::Sampler::SAMPLER_2D)
+            .format(filament::Texture::InternalFormat::RGBA8)
+            .build(*engine);
+    }
+
+    // Upload input pixels to texture
+    inputTexture2D->setImage(*engine, 0, filament::Texture::PixelBufferDescriptor(
+        pixelsIn, 
+        width * height * 4, 
+        filament::backend::PixelDataFormat::RGBA, 
+        filament::backend::PixelDataType::UBYTE
+    ));
+
+    // Update geometry to use the 2D material
+    auto& rcm = engine->getRenderableManager();
+    auto instance = rcm.getInstance(pipelineRenderer.quadGrading);
+    if (instance) {
+        rcm.setMaterialInstanceAt(instance, 0, shaderManager.getMaterialInstance2D());
+    }
+
+    // Set material parameter u_Texture
+    filament::TextureSampler sampler2d(filament::TextureSampler::MinFilter::LINEAR, filament::TextureSampler::MagFilter::LINEAR);
+    shaderManager.getMaterialInstance2D()->setParameter("u_Texture", inputTexture2D, sampler2d);
+
+    // Apply unified parameters (waitForLut = true)
+    applyShaderParameters(params, shaderManager.getMaterialInstance2D(), true);
+
+    auto start = std::chrono::high_resolution_clock::now();
+
+    // Render and readback
+    if (renderer->beginFrame(swapChain)) {
+        renderer->render(pipelineRenderer.viewGrading);
+        renderer->render(pipelineRenderer.viewDownsample);
+        renderer->render(pipelineRenderer.viewBlurDown);
+        renderer->render(pipelineRenderer.viewBlurUp);
+        renderer->render(view);
+        
+        filament::backend::PixelBufferDescriptor desc(
+            pixelsOut, 
+            width * height * 4, 
+            filament::backend::PixelDataFormat::RGBA, 
+            filament::backend::PixelDataType::UBYTE
+        );
+        renderer->readPixels(0, 0, width, height, std::move(desc));
+        renderer->endFrame();
+    }
+    engine->flushAndWait();
+
+    auto end = std::chrono::high_resolution_clock::now();
+    float frameTimeMs = std::chrono::duration<float, std::milli>(end - start).count();
+    recordFrameTimeAndEvaluate(frameTimeMs);
+
+    return true;
+}
+
+bool GrovkornetEngine::renderHardwareBufferFrame(AHardwareBuffer* ahb, const RenderParams& params) {
+    if (!ahb) {
+        return false;
+    }
+
+    AHardwareBuffer_Desc desc;
+    AHardwareBuffer_describe(ahb, &desc);
+
+    // Setup or update external input texture
+    if (!inputTextureExternal) {
+        inputTextureExternal = filament::Texture::Builder()
+            .width(desc.width)
+            .height(desc.height)
+            .levels(1)
+            .sampler(filament::Texture::Sampler::SAMPLER_EXTERNAL)
+            .format(filament::Texture::InternalFormat::RGBA8)
+            .build(*engine);
+    }
+
+    // Bind the AHardwareBuffer to the external texture
+    inputTextureExternal->setExternalImage(*engine, ahb);
+
+    // Update geometry to use the External material
+    auto& rcm = engine->getRenderableManager();
+    auto instance = rcm.getInstance(pipelineRenderer.quadGrading);
+    if (instance) {
+        rcm.setMaterialInstanceAt(instance, 0, shaderManager.getMaterialInstanceExternal());
+    }
+
+    // Set material parameter u_Texture and u_UvMatrix
+    filament::TextureSampler sampler2d(filament::TextureSampler::MinFilter::LINEAR, filament::TextureSampler::MagFilter::LINEAR);
+    shaderManager.getMaterialInstanceExternal()->setParameter("u_Texture", inputTextureExternal, sampler2d);
+    
+    filament::math::mat4f identityMatrix;
+    shaderManager.getMaterialInstanceExternal()->setParameter("u_UvMatrix", identityMatrix);
+
+    // Apply unified parameters (waitForLut = true)
+    applyShaderParameters(params, shaderManager.getMaterialInstanceExternal(), true);
+
+    auto start = std::chrono::high_resolution_clock::now();
+
+    // Render
+    if (renderer->beginFrame(swapChain)) {
+        renderer->render(pipelineRenderer.viewGrading);
+        renderer->render(pipelineRenderer.viewDownsample);
+        renderer->render(pipelineRenderer.viewBlurDown);
+        renderer->render(pipelineRenderer.viewBlurUp);
+        renderer->render(view);
+        renderer->endFrame();
+    }
+    engine->flushAndWait();
+
+    auto end = std::chrono::high_resolution_clock::now();
+    float frameTimeMs = std::chrono::duration<float, std::milli>(end - start).count();
+    recordFrameTimeAndEvaluate(frameTimeMs);
+
+    return true;
+}
+
+bool GrovkornetEngine::renderLiveFrame(const RenderParams& params, const float* uvMatrixIn,
+                                     int cameraWidth, int cameraHeight, int vpW, int vpH,
+                                     bool skipScreenRender, bool isNewFrame,
+                                     int& actualFps, int& stampedFps, bool& fpsUpdated) {
+    if (!liveSwapChain || !uvMatrixIn) {
+        return false;
+    }
+
+    int targetFps          = static_cast<int>(params.targetFps);
+    int aspectRatioSetting = static_cast<int>(params.aspectRatio);
+
+    // 1. Run Frame Timing checks natively
+    bool shouldCapture = timingController.shouldCaptureFrame(targetFps);
+    
+    // Update FPS statistics
+    timingController.updateFps(isNewFrame, actualFps, stampedFps, fpsUpdated);
+    
+    if (!shouldCapture) {
+        return false;
+    }
+
+    // 2. Perform aspect ratio matrix calculations natively
+    float scaleMatrix[16];
+    float cropMatrix[16];
+    MatrixTransformCalculator::calculateScaleAndCrop(
+        cameraWidth, cameraHeight, vpW, vpH, aspectRatioSetting, scaleMatrix, cropMatrix
+    );
+
+    // Multiply input UV matrix by calculated crop matrix to get final UV matrix
+    float finalUvMatrix[16];
+    MatrixTransformCalculator::multiplyMM(finalUvMatrix, uvMatrixIn, cropMatrix);
+
+    filament::math::mat4f u_UvMatrix(
+        finalUvMatrix[0], finalUvMatrix[1], finalUvMatrix[2], finalUvMatrix[3],
+        finalUvMatrix[4], finalUvMatrix[5], finalUvMatrix[6], finalUvMatrix[7],
+        finalUvMatrix[8], finalUvMatrix[9], finalUvMatrix[10], finalUvMatrix[11],
+        finalUvMatrix[12], finalUvMatrix[13], finalUvMatrix[14], finalUvMatrix[15]
+    );
+
+    // Calculate viewport based on scale matrix
+    float scaleX = scaleMatrix[0];
+    float scaleY = scaleMatrix[5];
+    int vpWidth = static_cast<int>(vpW * scaleX);
+    int vpHeight = static_cast<int>(vpH * scaleY);
+    int vpX = (vpW - vpWidth) / 2;
+    int vpY = (vpH - vpHeight) / 2;
+
+    // Update viewport in engine
+    viewportX = vpX;
+    viewportY = vpY;
+    viewportWidth = vpWidth;
+    viewportHeight = vpHeight;
+
+    // Update geometry to use the External material
+    auto& rcm = engine->getRenderableManager();
+    auto instance = rcm.getInstance(pipelineRenderer.quadGrading);
+    if (instance) {
+        rcm.setMaterialInstanceAt(instance, 0, shaderManager.getMaterialInstanceExternal());
+    }
+    
+    // Set material parameter u_Texture and u_UvMatrix
+    filament::TextureSampler sampler2d(filament::TextureSampler::MinFilter::LINEAR, filament::TextureSampler::MagFilter::LINEAR);
+    shaderManager.getMaterialInstanceExternal()->setParameter("u_Texture", inputTextureExternal, sampler2d);
+    shaderManager.getMaterialInstanceExternal()->setParameter("u_UvMatrix", u_UvMatrix);
+    
+    // Apply unified parameters (waitForLut = false)
+    applyShaderParameters(params, shaderManager.getMaterialInstanceExternal(), false);
+    
+    auto start = std::chrono::high_resolution_clock::now();
+    
+    // Render
+    if (renderer->beginFrame(liveSwapChain)) {
+        renderer->render(pipelineRenderer.viewGrading);
+        renderer->render(pipelineRenderer.viewDownsample);
+        renderer->render(pipelineRenderer.viewBlurDown);
+        renderer->render(pipelineRenderer.viewBlurUp);
+        if (!skipScreenRender) {
+            renderer->render(view);
+        }
+        renderer->endFrame();
+    }
+    
+    // Flush UI commands asynchronously (don't block the render thread!)
+    engine->flush();
+    
+    auto end = std::chrono::high_resolution_clock::now();
+    float frameTimeMs = std::chrono::duration<float, std::milli>(end - start).count();
+    recordFrameTimeAndEvaluate(frameTimeMs);
+
+    return true;
 }

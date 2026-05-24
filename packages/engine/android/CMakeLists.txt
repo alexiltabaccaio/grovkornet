@@ -14,6 +14,10 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 include_directories(
     ${FILAMENT_INCLUDE_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}/src/main/cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/main/cpp/core
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/main/cpp/pipeline
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/main/cpp/utils
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/main/cpp/jni
 )
 
 # Macro to add static imported Filament libraries
@@ -38,15 +42,17 @@ import_filament_lib(zstd)
 
 # Define our shared library target
 add_library(grovkornet-engine SHARED
-    src/main/cpp/GrovkornetEngine.cpp
-    src/main/cpp/GeometryBuilder.cpp
-    src/main/cpp/LutGenerator.cpp
-    src/main/cpp/OverlayCompositor.cpp
-    src/main/cpp/ShaderManager.cpp
-    src/main/cpp/WatermarkEngine.cpp
-    src/main/cpp/MatrixTransformCalculator.cpp
-    src/main/cpp/FrameTimingController.cpp
-    src/main/cpp/jni_bindings.cpp
+    src/main/cpp/core/GrovkornetEngine.cpp
+    src/main/cpp/pipeline/PipelineRenderer.cpp
+    src/main/cpp/pipeline/GeometryBuilder.cpp
+    src/main/cpp/pipeline/LutGenerator.cpp
+    src/main/cpp/pipeline/OverlayCompositor.cpp
+    src/main/cpp/pipeline/ShaderManager.cpp
+    src/main/cpp/utils/WatermarkEngine.cpp
+    src/main/cpp/utils/MatrixTransformCalculator.cpp
+    src/main/cpp/utils/FrameTimingController.cpp
+    src/main/cpp/utils/DrsManager.cpp
+    src/main/cpp/jni/GrovkornetJni.cpp
 )
 
 # Locate standard Android NDK libraries
@@ -90,7 +96,7 @@ if (EXISTS "${ANDROID_NDK}/sources/third_party/googletest")
     
     # Define test executable
     add_executable(grovkornet-engine-tests
-        src/test/cpp/engine_tests.cpp
+        src/test/cpp/TestRunner.cpp
         src/test/cpp/GrovkornetEngine.test.cpp
         src/test/cpp/WatermarkEngine.test.cpp
         src/test/cpp/MatrixTransformCalculator.test.cpp
@@ -99,19 +105,26 @@ if (EXISTS "${ANDROID_NDK}/sources/third_party/googletest")
         src/test/cpp/LutGenerator.test.cpp
         src/test/cpp/ShaderManager.test.cpp
         src/test/cpp/OverlayCompositor.test.cpp
-        src/main/cpp/GrovkornetEngine.cpp
-        src/main/cpp/GeometryBuilder.cpp
-        src/main/cpp/LutGenerator.cpp
-        src/main/cpp/OverlayCompositor.cpp
-        src/main/cpp/ShaderManager.cpp
-        src/main/cpp/WatermarkEngine.cpp
-        src/main/cpp/MatrixTransformCalculator.cpp
-        src/main/cpp/FrameTimingController.cpp
+        src/test/cpp/DrsManager.test.cpp
+        src/main/cpp/core/GrovkornetEngine.cpp
+        src/main/cpp/pipeline/PipelineRenderer.cpp
+        src/main/cpp/pipeline/GeometryBuilder.cpp
+        src/main/cpp/pipeline/LutGenerator.cpp
+        src/main/cpp/pipeline/OverlayCompositor.cpp
+        src/main/cpp/pipeline/ShaderManager.cpp
+        src/main/cpp/utils/WatermarkEngine.cpp
+        src/main/cpp/utils/MatrixTransformCalculator.cpp
+        src/main/cpp/utils/FrameTimingController.cpp
+        src/main/cpp/utils/DrsManager.cpp
     )
     
     # Include headers
     target_include_directories(grovkornet-engine-tests PRIVATE
         src/main/cpp
+        src/main/cpp/core
+        src/main/cpp/pipeline
+        src/main/cpp/utils
+        src/main/cpp/jni
         ${FILAMENT_INCLUDE_DIR}
         "${ANDROID_NDK}/sources/third_party/googletest/include"
     )

@@ -22,42 +22,14 @@
 #include <android/hardware_buffer_jni.h>
 #include <android/asset_manager.h>
 
-#include "ShaderManager.h"
-#include "LutGenerator.h"
-#include "OverlayCompositor.h"
-#include "FrameTimingController.h"
+#include "pipeline/ShaderManager.h"
+#include "pipeline/LutGenerator.h"
+#include "pipeline/OverlayCompositor.h"
+#include "utils/FrameTimingController.h"
+#include "utils/DrsManager.h"
+#include "pipeline/PipelineRenderer.h"
 
-struct RenderParams {
-    float saturation;
-    float contrast;
-    float grainIntensity;
-    float grainChroma;
-    float grainSize;
-    float grainSpeed;
-    float vignetteIntensity;
-    float vhsIntensity;
-    float time;
-    float ev;
-    float whiteBalance;
-    float tint;
-    float bloomIntensity;
-    float chromaticAberration;
-    float aberrationDirection;
-    float sharpening;
-    float satRed;
-    float satOrange;
-    float satYellow;
-    float satGreen;
-    float satCyan;
-    float satBlue;
-    float satPurple;
-    float satMagenta;
-    float targetFps;
-    float aspectRatio;
-    float targetResolution;
-};
-
-RenderParams parseRenderParams(const float* params);
+#include "core/RenderParams.h"
 
 class GrovkornetEngine {
 public:
@@ -68,44 +40,14 @@ public:
     filament::Scene* scene = nullptr;
     filament::Camera* camera = nullptr;
     
-    // Multi-pass pipeline views and scenes
-    filament::View* viewGrading = nullptr;
-    filament::Scene* sceneGrading = nullptr;
-    
-    filament::View* viewDownsample = nullptr;
-    filament::Scene* sceneDownsample = nullptr;
-    
-    filament::View* viewBlurDown = nullptr;
-    filament::Scene* sceneBlurDown = nullptr;
-    
-    filament::View* viewBlurUp = nullptr;
-    filament::Scene* sceneBlurUp = nullptr;
-    
     // Geometry
     filament::VertexBuffer* vertexBuffer = nullptr;
     filament::IndexBuffer* indexBuffer = nullptr;
-    utils::Entity quadGrading;
-    utils::Entity quadDownsample;
-    utils::Entity quadBlurDown;
-    utils::Entity quadBlurUp;
-    utils::Entity quadComposite;
     
     // Textures & Render Targets
     filament::Texture* inputTexture2D = nullptr;
     filament::Texture* inputTextureExternal = nullptr;
     filament::Texture* lutTexture = nullptr;
-    
-    filament::Texture* gradedTexture = nullptr;
-    filament::RenderTarget* gradedRenderTarget = nullptr;
-    
-    filament::Texture* bloomTexDown = nullptr;
-    filament::RenderTarget* bloomDownRenderTarget = nullptr;
-    
-    filament::Texture* bloomTexBlur = nullptr;
-    filament::RenderTarget* bloomBlurRenderTarget = nullptr;
-    
-    filament::Texture* bloomTexUp = nullptr;
-    filament::RenderTarget* bloomUpRenderTarget = nullptr;
     
     filament::Texture* overlayTexture = nullptr;
     filament::Texture* dummyBlackTexture = nullptr;
@@ -117,15 +59,10 @@ public:
     LutGenerator lutGenerator;
     OverlayCompositor overlayCompositor;
     FrameTimingController timingController;
+    PipelineRenderer pipelineRenderer;
     
     // DRS (Dynamic Resolution Scaling)
-    float currentDrsScale = 1.0f;
-    std::vector<float> recentFrameTimes;
-    int framesSinceLastDrsScale = 0;
-    static constexpr float MIN_DRS_SCALE = 0.5f;
-    static constexpr float MAX_DRS_SCALE = 1.0f;
-    static constexpr size_t FRAME_TIME_WINDOW_SIZE = 10;
-    static constexpr int DRS_COOLDOWN_FRAMES = 30;
+    DrsManager drsManager;
     
     JavaVM* javaVm = nullptr;
     int width = 0;
@@ -155,4 +92,13 @@ public:
     
     void updateDrsAndViewport();
     void recordFrameTimeAndEvaluate(float frameTimeMs);
+    float getDrsScale() const { return drsManager.getScale(); }
+    void simulateFrameTime(float frameTimeMs);
+
+    bool renderOffscreenFrame(void* pixelsIn, void* pixelsOut, const RenderParams& params);
+    bool renderHardwareBufferFrame(AHardwareBuffer* ahb, const RenderParams& params);
+    bool renderLiveFrame(const RenderParams& params, const float* uvMatrixIn,
+                         int cameraWidth, int cameraHeight, int vpW, int vpH,
+                         bool skipScreenRender, bool isNewFrame,
+                         int& actualFps, int& stampedFps, bool& fpsUpdated);
 };
