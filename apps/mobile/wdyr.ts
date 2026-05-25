@@ -9,5 +9,10 @@ if (__DEV__) {
     trackAllPureComponents: false,
     trackHooks: true,
     logOwnerReasons: true,
+    notifier: (updateInfo: any) => {
+      const name = updateInfo.Component.displayName || updateInfo.Component.name;
+      console.log(`[WDYR] 🚨 Re-render in ${name}!`);
+      console.log(`[WDYR] 🔍 Reasons:`, JSON.stringify(updateInfo.reason, null, 2));
+    }
   });
 }

@@ -17,3 +17,6 @@ export const FlawsModule = ({ handlePressWithDouble }: FlawsModuleProps) => {
     />
   );
 };
+
+FlawsModule.whyDidYouRender = true;
+

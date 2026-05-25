@@ -34,6 +34,8 @@ const isLensParameter = (p: ParameterType): p is LensParameterType => {
   return p === 'focus';
 };
 
+const NOOP = () => {};
+
 export const SliderDetailPanel = ({
   parameter,
   parameterDetailPanelAnimatedStyle,
@@ -75,7 +77,7 @@ export const SliderDetailPanel = ({
       <ParameterControl
         label=""
         isActive={finalIsActive}
-        onPress={() => { }}
+        onPress={NOOP}
         value={controlData.value}
         minValue={controlData.minValue}
         maxValue={controlData.maxValue}

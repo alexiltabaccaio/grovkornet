@@ -137,17 +137,8 @@ const arePropsEqual = (prevProps: PillButtonProps, nextProps: PillButtonProps) =
   if (prevProps.variant !== nextProps.variant) return false;
   if (prevProps.isDebugEnabled !== nextProps.isDebugEnabled) return false;
 
-  if (prevProps.isActive !== nextProps.isActive) {
-    const prevActive = typeof prevProps.isActive === 'object' && 'value' in prevProps.isActive ? prevProps.isActive.value : prevProps.isActive;
-    const nextActive = typeof nextProps.isActive === 'object' && 'value' in nextProps.isActive ? nextProps.isActive.value : nextProps.isActive;
-    if (prevActive !== nextActive) return false;
-  }
-
-  if (prevProps.opacity !== nextProps.opacity) {
-    const prevOpacity = typeof prevProps.opacity === 'object' && 'value' in prevProps.opacity ? prevProps.opacity.value : prevProps.opacity;
-    const nextOpacity = typeof nextProps.opacity === 'object' && 'value' in nextProps.opacity ? nextProps.opacity.value : nextProps.opacity;
-    if (prevOpacity !== nextOpacity) return false;
-  }
+  if (prevProps.isActive !== nextProps.isActive) return false;
+  if (prevProps.opacity !== nextProps.opacity) return false;
 
   // Confronto shallow degli stili (gestisce array, oggetti StyleSheet e inline stili)
   if (JSON.stringify(prevProps.style) !== JSON.stringify(nextProps.style)) return false;

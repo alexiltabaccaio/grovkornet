@@ -1,4 +1,4 @@
-import React, { useRef, useCallback, useMemo } from 'react';
+import React, { useRef, useCallback, useMemo, memo } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { GestureDetector, Gesture, TouchableOpacity } from 'react-native-gesture-handler';
 import Animated, {
@@ -154,7 +154,7 @@ interface WheelItemComponentProps {
   updateState: (newIndex: number) => void;
 }
 
-const WheelItemComponent = ({ 
+const WheelItemComponent = memo(({ 
   item, index, dragX, virtualItemsLength, handlePressWithDouble, setActiveParameter, updateState 
 }: WheelItemComponentProps) => {
   const totalWidth = virtualItemsLength * ITEM_WIDTH;
@@ -182,7 +182,7 @@ const WheelItemComponent = ({
     };
   });
 
-  const handleTap = () => {
+  const handleTap = useCallback(() => {
     const currentCenterIdx = Math.round(-dragX.value / ITEM_WIDTH);
     const normalizedCurrent = ((currentCenterIdx % virtualItemsLength) + virtualItemsLength) % virtualItemsLength;
     
@@ -203,7 +203,7 @@ const WheelItemComponent = ({
         handlePressWithDouble(item.id, () => setActiveParameter(item.id));
       }
     }
-  };
+  }, [dragX, index, virtualItemsLength, updateState, item, handlePressWithDouble, setActiveParameter]);
 
   return (
     <Animated.View style={[styles.slot, animatedStyle]} pointerEvents="box-none">
@@ -214,7 +214,9 @@ const WheelItemComponent = ({
       </TouchableOpacity>
     </Animated.View>
   );
-};
+});
+
+WheelItemComponent.displayName = 'WheelItemComponent';
 
 const styles = StyleSheet.create({
   container: {

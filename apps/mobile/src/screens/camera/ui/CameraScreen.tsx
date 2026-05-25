@@ -21,6 +21,8 @@ export const CameraScreen = () => {
   );
 };
 
+CameraScreen.whyDidYouRender = true;
+
 const CameraScreenContent = () => {
   const { isDebugEnabled, triggerCapture, latestCapturedUri } = useSystemStore(useShallow(state => ({
     isDebugEnabled: state.isDebugEnabled,
@@ -138,6 +140,8 @@ const CameraScreenContent = () => {
     </View>
   );
 };
+
+CameraScreenContent.whyDidYouRender = true;
 
 const styles = StyleSheet.create({
   container: {

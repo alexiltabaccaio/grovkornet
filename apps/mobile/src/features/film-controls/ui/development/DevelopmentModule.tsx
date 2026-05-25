@@ -17,3 +17,6 @@ export const DevelopmentModule = ({ handlePressWithDouble }: DevelopmentModulePr
     />
   );
 };
+
+DevelopmentModule.whyDidYouRender = true;
+

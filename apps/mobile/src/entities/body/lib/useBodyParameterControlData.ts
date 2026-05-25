@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 import { useDerivedValue } from 'react-native-reanimated';
 import { useBodyStore } from '../model/useBodyStore';
@@ -61,57 +62,59 @@ export const useBodyParameterControlData = (
 
   const bodyWorklets = useBodyWorklets();
 
-  switch (parameter) {
-    case 'ev':
-      return {
-        value: body.ev,
-        minValue: -2.0,
-        maxValue: 2.0,
-        centerValue: 0.0,
-        onChange: body.setEv,
-        onUpdateWorklet: bodyWorklets.updateEv,
-        valueFormatter: (v: number) => {
-          'worklet';
-          return v >= 0 ? `+${v.toFixed(1)}` : v.toFixed(1);
-        },
-        hideValueInAuto: false,
-        autoValueText: 'AUTO',
-        onReset: () => body.setEv(0),
-        disabled: isEvDisabled,
-      };
-    case 'iso':
-      return {
-        value: body.iso,
-        minValue: body.capabilities.isoMin ?? 50,
-        maxValue: body.capabilities.isoMax ?? 3200,
-        onChange: body.setIso,
-        onUpdateWorklet: bodyWorklets.updateIso,
-        isAuto: body.isoAuto,
-        valueFormatter: (v: number) => {
-          'worklet';
-          return `${Math.round(v)}`;
-        },
-        hideValueInAuto: true,
-        autoValueText: 'AUTO',
-        onReset: () => body.setIsoAuto(true),
-        onToggleAuto: body.setIsoAuto,
-      };
-    case 'shutter_speed':
-      return {
-        value: body.shutterSpeed,
-        minValue: 1,
-        maxValue: 1000,
-        onChange: body.setShutterSpeed,
-        onUpdateWorklet: bodyWorklets.updateShutterSpeed,
-        isAuto: body.shutterSpeedAuto,
-        valueFormatter: (v: number) => {
-          'worklet';
-          return `1/${Math.round(v)}`;
-        },
-        hideValueInAuto: true,
-        autoValueText: 'AUTO',
-        onReset: () => body.setShutterSpeedAuto(true),
-        onToggleAuto: body.setShutterSpeedAuto,
-      };
-  }
+  return useMemo((): ParameterControlData => {
+    switch (parameter) {
+      case 'ev':
+        return {
+          value: body.ev,
+          minValue: -2.0,
+          maxValue: 2.0,
+          centerValue: 0.0,
+          onChange: body.setEv,
+          onUpdateWorklet: bodyWorklets.updateEv,
+          valueFormatter: (v: number) => {
+            'worklet';
+            return v >= 0 ? `+${v.toFixed(1)}` : v.toFixed(1);
+          },
+          hideValueInAuto: false,
+          autoValueText: 'AUTO',
+          onReset: () => body.setEv(0),
+          disabled: isEvDisabled,
+        };
+      case 'iso':
+        return {
+          value: body.iso,
+          minValue: body.capabilities.isoMin ?? 50,
+          maxValue: body.capabilities.isoMax ?? 3200,
+          onChange: body.setIso,
+          onUpdateWorklet: bodyWorklets.updateIso,
+          isAuto: body.isoAuto,
+          valueFormatter: (v: number) => {
+            'worklet';
+            return `${Math.round(v)}`;
+          },
+          hideValueInAuto: true,
+          autoValueText: 'AUTO',
+          onReset: () => body.setIsoAuto(true),
+          onToggleAuto: body.setIsoAuto,
+        };
+      case 'shutter_speed':
+        return {
+          value: body.shutterSpeed,
+          minValue: 1,
+          maxValue: 1000,
+          onChange: body.setShutterSpeed,
+          onUpdateWorklet: bodyWorklets.updateShutterSpeed,
+          isAuto: body.shutterSpeedAuto,
+          valueFormatter: (v: number) => {
+            'worklet';
+            return `1/${Math.round(v)}`;
+          },
+          hideValueInAuto: true,
+          autoValueText: 'AUTO',
+          onReset: () => body.setShutterSpeedAuto(true),
+          onToggleAuto: body.setShutterSpeedAuto,
+        };
+    }
+  }, [parameter, body, bodyWorklets, isEvDisabled]);
 };

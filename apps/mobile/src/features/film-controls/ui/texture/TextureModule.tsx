@@ -17,3 +17,6 @@ export const TextureModule = ({ handlePressWithDouble }: TextureModuleProps) => 
     />
   );
 };
+
+TextureModule.whyDidYouRender = true;
+

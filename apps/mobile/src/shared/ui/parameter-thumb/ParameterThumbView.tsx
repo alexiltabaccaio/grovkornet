@@ -97,3 +97,6 @@ export const ParameterThumbView = forwardRef<View, ParameterThumbViewProps>((pro
 });
 
 ParameterThumbView.displayName = 'ParameterThumbView';
+// @ts-expect-error - whyDidYouRender is a property dynamically read by why-did-you-render in development
+ParameterThumbView.whyDidYouRender = true;
+

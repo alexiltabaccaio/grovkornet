@@ -1,4 +1,4 @@
-import React, { memo } from 'react';
+import React, { memo, useCallback } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 import { useSystemStore } from '../../model/useSystemStore';
 import { ParameterType } from '../../model/types';
@@ -55,7 +55,7 @@ export const ConnectedParameter = memo(({
 
   const finalIsActive = isActive !== undefined ? isActive : isActiveSelected;
 
-  const finalOnPress = onPress !== undefined ? onPress : () => {
+  const defaultOnPress = useCallback(() => {
     if (handlePressWithDouble) {
       handlePressWithDouble(id, () => {
         setActiveParameter(id);
@@ -63,7 +63,9 @@ export const ConnectedParameter = memo(({
     } else {
       setActiveParameter(id);
     }
-  };
+  }, [handlePressWithDouble, id, setActiveParameter]);
+
+  const finalOnPress = onPress !== undefined ? onPress : defaultOnPress;
 
   return (
     <ParameterControl
