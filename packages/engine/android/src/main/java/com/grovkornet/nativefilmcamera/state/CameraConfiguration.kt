@@ -4,8 +4,22 @@ package com.grovkornet.nativefilmcamera.state
  * Single source of truth for all camera and rendering parameters.
  */
 data class CameraConfiguration(
+    // @@GEN_FIELDS_START@@
     // Rendering / Effect Props
     var saturation: Float = 1.0f,
+    var contrast: Float = 1.0f,
+    var grainIntensity: Float = 0.0f,
+    var grainChroma: Float = 0.0f,
+    var grainSize: Float = 1.0f,
+    var grainSpeed: Float = 1.0f,
+    var vignetteIntensity: Float = 0.0f,
+    var vhsIntensity: Float = 0.0f,
+    var whiteBalance: Float = 5000.0f,
+    var tint: Float = 0.0f,
+    var bloomIntensity: Float = 0.35f,
+    var aberration: Float = 0.0f,
+    var aberrationDirection: Int = 0,
+    var sharpening: Float = 0.0f,
     var satRed: Float = 50.0f,
     var satOrange: Float = 50.0f,
     var satYellow: Float = 50.0f,
@@ -14,6 +28,7 @@ data class CameraConfiguration(
     var satBlue: Float = 50.0f,
     var satPurple: Float = 50.0f,
     var satMagenta: Float = 50.0f,
+    var aberrationInvert: Boolean = false,
     var boundMagentaRed: Float = 350.0f,
     var boundRedOrange: Float = 45.0f,
     var boundOrangeYellow: Float = 80.0f,
@@ -22,25 +37,13 @@ data class CameraConfiguration(
     var boundCyanBlue: Float = 230.0f,
     var boundBluePurple: Float = 280.0f,
     var boundPurpleMagenta: Float = 315.0f,
-    var contrast: Float = 1.0f,
-    var grainIntensity: Float = 0.0f,
-    var grainChroma: Float = 0.0f,
-    var grainSize: Float = 1.0f,
-    var grainSpeed: Float = 1.0f,
     var grainEnabled: Boolean = true,
-    var aberration: Float = 0.0f,
-    var aberrationDirection: Int = 0,
-    var aberrationInvert: Boolean = false,
-    var whiteBalance: Float = 5000.0f,
-    var tint: Float = 0.0f,
-    var sharpening: Float = 0.0f,
-    var vignetteIntensity: Float = 0.0f,
-    var vhsIntensity: Float = 0.0f,
     var bloomEnabled: Boolean = false,
-    var bloomIntensity: Float = 0.35f,
 
     // Hardware Props
     var ev: Float = 0.0f,
+    var targetFps: Int = 60,
+    var aspectRatio: Int = 1,
     var noiseReduction: Int = 1,
     var isoAuto: Boolean = true,
     var shutterSpeedAuto: Boolean = true,
@@ -52,14 +55,13 @@ data class CameraConfiguration(
     var torchEnabled: Boolean = false,
     var torchStrength: Int = 1,
     var cameraId: String? = null,
-    var aspectRatio: Int = 1,
     var resolutionSetting: Int = 1,
     var previewIn4k: Boolean = false,
-    var targetFps: Int = 60,
 
     // Viewport Props
     var viewportWidth: Float = 1080f,
     var viewportHeight: Float = 1920f
+    // @@GEN_FIELDS_END@@
 )
 
 fun CameraConfiguration.getTargetResolutionValue(): Float {
@@ -80,17 +82,18 @@ fun CameraConfiguration.toRenderParamsArray(
     targetResolution: Float = 0f,
     targetFpsOverride: Float = targetFps.toFloat(),
     invertYShift: Boolean = false
-): FloatArray = FloatArray(37).apply {
-    this[0]  = saturation
-    this[1]  = contrast
-    this[2]  = if (grainEnabled) grainIntensity else 0f
-    this[3]  = grainChroma
-    this[4]  = grainSize
-    this[5]  = grainSpeed
-    this[6]  = vignetteIntensity
-    this[7]  = vhsIntensity
-    this[8]  = time
-    this[9]  = ev
+): FloatArray = // @@GEN_ARRAY_START@@
+FloatArray(37).apply {
+    this[0 ] = saturation
+    this[1 ] = contrast
+    this[2 ] = if (grainEnabled) grainIntensity else 0f
+    this[3 ] = grainChroma
+    this[4 ] = grainSize
+    this[5 ] = grainSpeed
+    this[6 ] = vignetteIntensity
+    this[7 ] = vhsIntensity
+    this[8 ] = time
+    this[9 ] = ev
     this[10] = whiteBalance
     this[11] = tint
     this[12] = if (bloomEnabled) bloomIntensity else 0f
@@ -119,4 +122,5 @@ fun CameraConfiguration.toRenderParamsArray(
     this[35] = boundBluePurple
     this[36] = boundPurpleMagenta
 }
+// @@GEN_ARRAY_END@@
 

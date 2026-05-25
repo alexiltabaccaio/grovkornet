@@ -30,6 +30,7 @@
 
 RenderParams parseRenderParams(const float* params) {
     RenderParams rp;
+    // @@GEN_PARSING_START@@
     rp.saturation = params[0];
     rp.contrast = params[1];
     rp.grainIntensity = params[2];
@@ -67,6 +68,7 @@ RenderParams parseRenderParams(const float* params) {
     rp.boundCyanBlue = params[34];
     rp.boundBluePurple = params[35];
     rp.boundPurpleMagenta = params[36];
+    // @@GEN_PARSING_END@@
     return rp;
 }
 

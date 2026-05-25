@@ -6,24 +6,19 @@ export interface FilmCapabilities {
 }
 
 interface FilmState {
+  // @@GEN_STATE_START@@
+  saturation: SharedValue<number>;
+  contrast: SharedValue<number>;
   grainIntensity: SharedValue<number>;
   grainChroma: SharedValue<number>;
   grainSize: SharedValue<number>;
   grainSpeed: SharedValue<number>;
-  grainEnabled: SharedValue<boolean>;
-  saturation: SharedValue<number>;
-  contrast: SharedValue<number>;
-  chromaticAberration: SharedValue<number>;
-  aberrationDirection: SharedValue<number>;
-  aberrationInvert: SharedValue<boolean>;
-  noiseReductionAuto: SharedValue<boolean>;
-  noiseReductionMode: SharedValue<number>;
-  sharpening: SharedValue<number>;
-  bloomEnabled: SharedValue<boolean>;
-  bloomIntensity: SharedValue<number>;
   temperature: SharedValue<number>;
   tint: SharedValue<number>;
-  temperatureAuto: SharedValue<boolean>;
+  bloomIntensity: SharedValue<number>;
+  chromaticAberration: SharedValue<number>;
+  aberrationDirection: SharedValue<number>;
+  sharpening: SharedValue<number>;
   satRed: SharedValue<number>;
   satOrange: SharedValue<number>;
   satYellow: SharedValue<number>;
@@ -32,6 +27,7 @@ interface FilmState {
   satBlue: SharedValue<number>;
   satPurple: SharedValue<number>;
   satMagenta: SharedValue<number>;
+  aberrationInvert: SharedValue<boolean>;
   boundMagentaRed: SharedValue<number>;
   boundRedOrange: SharedValue<number>;
   boundOrangeYellow: SharedValue<number>;
@@ -40,28 +36,29 @@ interface FilmState {
   boundCyanBlue: SharedValue<number>;
   boundBluePurple: SharedValue<number>;
   boundPurpleMagenta: SharedValue<number>;
+  grainEnabled: SharedValue<boolean>;
+  bloomEnabled: SharedValue<boolean>;
+  noiseReductionMode: SharedValue<number>;
+  noiseReductionAuto: SharedValue<boolean>;
+  temperatureAuto: SharedValue<boolean>;
+  // @@GEN_STATE_END@@
   capabilities?: FilmCapabilities;
 }
 
 interface FilmActions {
+  // @@GEN_ACTIONS_START@@
+  setSaturation: (value: number) => void;
+  setContrast: (value: number) => void;
   setGrainIntensity: (value: number) => void;
   setGrainChroma: (value: number) => void;
   setGrainSize: (value: number) => void;
   setGrainSpeed: (value: number) => void;
-  setSaturation: (value: number) => void;
-  setContrast: (value: number) => void;
-  setChromaticAberration: (value: number) => void;
-  setAberrationDirection: (value: number) => void;
-  setAberrationInvert: (value: boolean) => void;
-  setGrainEnabled: (value: boolean) => void;
-  setNoiseReductionAuto: (value: boolean) => void;
-  setNoiseReductionMode: (mode: number) => void;
-  setSharpening: (value: number) => void;
-  setBloomEnabled: (value: boolean) => void;
-  setBloomIntensity: (value: number) => void;
   setTemperature: (value: number) => void;
   setTint: (value: number) => void;
-  setTemperatureAuto: (value: boolean) => void;
+  setBloomIntensity: (value: number) => void;
+  setChromaticAberration: (value: number) => void;
+  setAberrationDirection: (value: number) => void;
+  setSharpening: (value: number) => void;
   setSatRed: (value: number) => void;
   setSatOrange: (value: number) => void;
   setSatYellow: (value: number) => void;
@@ -70,6 +67,7 @@ interface FilmActions {
   setSatBlue: (value: number) => void;
   setSatPurple: (value: number) => void;
   setSatMagenta: (value: number) => void;
+  setAberrationInvert: (value: boolean) => void;
   setBoundMagentaRed: (value: number) => void;
   setBoundRedOrange: (value: number) => void;
   setBoundOrangeYellow: (value: number) => void;
@@ -78,6 +76,12 @@ interface FilmActions {
   setBoundCyanBlue: (value: number) => void;
   setBoundBluePurple: (value: number) => void;
   setBoundPurpleMagenta: (value: number) => void;
+  setGrainEnabled: (value: boolean) => void;
+  setBloomEnabled: (value: boolean) => void;
+  setNoiseReductionMode: (mode: number) => void;
+  setNoiseReductionAuto: (value: boolean) => void;
+  setTemperatureAuto: (value: boolean) => void;
+  // @@GEN_ACTIONS_END@@
   setCapabilities?: (capabilities: FilmCapabilities) => void;
   resetEffect: (effect: string) => void;
 }

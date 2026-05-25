@@ -1,6 +1,7 @@
 #pragma once
 
 struct RenderParams {
+    // @@GEN_STRUCT_START@@
     float saturation;
     float contrast;
     float grainIntensity;
@@ -38,6 +39,7 @@ struct RenderParams {
     float boundCyanBlue;
     float boundBluePurple;
     float boundPurpleMagenta;
+    // @@GEN_STRUCT_END@@
 };
 
 RenderParams parseRenderParams(const float* params);

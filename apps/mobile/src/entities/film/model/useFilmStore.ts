@@ -22,24 +22,19 @@ import {
 } from '@grovkornet/shared';
 
 export const useFilmStore = create<FilmStore>((set, get) => ({
+  // @@GEN_INIT_START@@
+  saturation: makeMutable(DEFAULT_SATURATION),
+  contrast: makeMutable(DEFAULT_CONTRAST),
   grainIntensity: makeMutable(DEFAULT_GRAIN_INTENSITY),
   grainChroma: makeMutable(0.0),
   grainSize: makeMutable(1.0),
   grainSpeed: makeMutable(DEFAULT_GRAIN_SPEED),
-  saturation: makeMutable(DEFAULT_SATURATION),
-  contrast: makeMutable(DEFAULT_CONTRAST),
-  chromaticAberration: makeMutable(DEFAULT_CHROMATIC_ABERRATION),
-  aberrationDirection: makeMutable(0), // 0: Vertical, 1: Horizontal, 2: Radial
-  aberrationInvert: makeMutable(false),
-  grainEnabled: makeMutable(false),
-  noiseReductionAuto: makeMutable(true),
-  noiseReductionMode: makeMutable(1), // 0=OFF, 1=FAST, 2=HQ
-  sharpening: makeMutable(0.0),
-  bloomEnabled: makeMutable(false),
-  bloomIntensity: makeMutable(0.0),
   temperature: makeMutable(DEFAULT_TEMPERATURE),
   tint: makeMutable(DEFAULT_TINT),
-  temperatureAuto: makeMutable(true),
+  bloomIntensity: makeMutable(0.0),
+  chromaticAberration: makeMutable(DEFAULT_CHROMATIC_ABERRATION),
+  aberrationDirection: makeMutable(0),
+  sharpening: makeMutable(0.0),
   satRed: makeMutable(DEFAULT_SELECTIVE_SATURATION),
   satOrange: makeMutable(DEFAULT_SELECTIVE_SATURATION),
   satYellow: makeMutable(DEFAULT_SELECTIVE_SATURATION),
@@ -48,6 +43,7 @@ export const useFilmStore = create<FilmStore>((set, get) => ({
   satBlue: makeMutable(DEFAULT_SELECTIVE_SATURATION),
   satPurple: makeMutable(DEFAULT_SELECTIVE_SATURATION),
   satMagenta: makeMutable(DEFAULT_SELECTIVE_SATURATION),
+  aberrationInvert: makeMutable(false),
   boundMagentaRed: makeMutable(DEFAULT_BOUND_MAGENTA_RED),
   boundRedOrange: makeMutable(DEFAULT_BOUND_RED_ORANGE),
   boundOrangeYellow: makeMutable(DEFAULT_BOUND_ORANGE_YELLOW),
@@ -56,16 +52,32 @@ export const useFilmStore = create<FilmStore>((set, get) => ({
   boundCyanBlue: makeMutable(DEFAULT_BOUND_CYAN_BLUE),
   boundBluePurple: makeMutable(DEFAULT_BOUND_BLUE_PURPLE),
   boundPurpleMagenta: makeMutable(DEFAULT_BOUND_PURPLE_MAGENTA),
+  grainEnabled: makeMutable(false),
+  bloomEnabled: makeMutable(false),
+  noiseReductionMode: makeMutable(1),
+  noiseReductionAuto: makeMutable(true),
+  temperatureAuto: makeMutable(true),
+  // @@GEN_INIT_END@@
   capabilities: {
     availableNoiseReductionModes: [],
     availableEdgeModes: [],
   },
 
+  // @@GEN_SETTERS_START@@
+  setSaturation: (value) => {
+    logger.debug('FilmStore', `Setting Saturation: ${value}`);
+    get().saturation.value = value;
+  },
+  setContrast: (value) => {
+    logger.debug('FilmStore', `Setting Contrast: ${value}`);
+    get().contrast.value = value;
+  },
   setGrainIntensity: (value) => {
-    logger.debug('FilmStore', `Setting Grain Intensity: ${value}`);
     const { grainIntensity, grainEnabled } = get();
+    logger.debug('FilmStore', `Setting Grain Intensity: ${value}`);
     grainIntensity.value = value;
     grainEnabled.value = value > 0;
+
   },
   setGrainChroma: (value) => {
     get().grainChroma.value = value;
@@ -76,13 +88,26 @@ export const useFilmStore = create<FilmStore>((set, get) => ({
   setGrainSpeed: (value) => {
     get().grainSpeed.value = value;
   },
-  setSaturation: (value) => {
-    logger.debug('FilmStore', `Setting Saturation: ${value}`);
-    get().saturation.value = value;
+  setTemperature: (value) => {
+    const { temperature, temperatureAuto } = get();
+    logger.debug('FilmStore', `Setting Temperature: ${value}`);
+    temperature.value = value;
+    temperatureAuto.value = false;
+
   },
-  setContrast: (value) => {
-    logger.debug('FilmStore', `Setting Contrast: ${value}`);
-    get().contrast.value = value;
+  setTint: (value) => {
+    const { tint, temperatureAuto } = get();
+    logger.debug('FilmStore', `Setting Tint: ${value}`);
+    tint.value = value;
+    temperatureAuto.value = false;
+
+  },
+  setBloomIntensity: (value) => {
+    const { bloomIntensity, bloomEnabled } = get();
+    logger.debug('FilmStore', `Setting Bloom Intensity: ${value}`);
+    bloomIntensity.value = value;
+    bloomEnabled.value = value > 0;
+
   },
   setChromaticAberration: (value) => {
     logger.debug('FilmStore', `Setting Chromatic Aberration: ${value}`);
@@ -91,46 +116,9 @@ export const useFilmStore = create<FilmStore>((set, get) => ({
   setAberrationDirection: (value) => {
     get().aberrationDirection.value = value;
   },
-  setAberrationInvert: (value) => {
-    get().aberrationInvert.value = value;
-  },
-  setGrainEnabled: (value) => {
-    get().grainEnabled.value = value;
-  },
-  setNoiseReductionAuto: (value) => {
-    get().noiseReductionAuto.value = value;
-  },
-  setNoiseReductionMode: (mode) => {
-    get().noiseReductionMode.value = mode;
-  },
   setSharpening: (value) => {
     logger.debug('FilmStore', `Setting Sharpening: ${value}`);
     get().sharpening.value = value;
-  },
-  setBloomEnabled: (value) => {
-    get().bloomEnabled.value = value;
-  },
-  setBloomIntensity: (value) => {
-    logger.debug('FilmStore', `Setting Bloom Intensity: ${value}`);
-    get().bloomIntensity.value = value;
-    get().bloomEnabled.value = value > 0;
-  },
-  setTemperature: (value) => {
-    logger.debug('FilmStore', `Setting Temperature: ${value}`);
-    get().temperature.value = value;
-    get().temperatureAuto.value = false;
-  },
-  setTint: (value) => {
-    logger.debug('FilmStore', `Setting Tint: ${value}`);
-    get().tint.value = value;
-    get().temperatureAuto.value = false;
-  },
-  setTemperatureAuto: (value) => {
-    get().temperatureAuto.value = value;
-    if (value) {
-      get().temperature.value = DEFAULT_TEMPERATURE;
-      get().tint.value = DEFAULT_TINT;
-    }
   },
   setSatRed: (value) => {
     get().satRed.value = value;
@@ -156,6 +144,9 @@ export const useFilmStore = create<FilmStore>((set, get) => ({
   setSatMagenta: (value) => {
     get().satMagenta.value = value;
   },
+  setAberrationInvert: (value) => {
+    get().aberrationInvert.value = value;
+  },
   setBoundMagentaRed: (value) => {
     get().boundMagentaRed.value = value;
   },
@@ -180,6 +171,28 @@ export const useFilmStore = create<FilmStore>((set, get) => ({
   setBoundPurpleMagenta: (value) => {
     get().boundPurpleMagenta.value = value;
   },
+  setGrainEnabled: (value) => {
+    get().grainEnabled.value = value;
+  },
+  setBloomEnabled: (value) => {
+    get().bloomEnabled.value = value;
+  },
+  setNoiseReductionMode: (mode) => {
+    get().noiseReductionMode.value = mode;
+  },
+  setNoiseReductionAuto: (value) => {
+    get().noiseReductionAuto.value = value;
+  },
+  setTemperatureAuto: (value) => {
+    const { temperatureAuto, temperature, tint } = get();
+    temperatureAuto.value = value;
+    if (value) {
+      temperature.value = DEFAULT_TEMPERATURE;
+      tint.value = DEFAULT_TINT;
+    }
+
+  },
+  // @@GEN_SETTERS_END@@
   setCapabilities: (caps) => {
     logger.info('FilmStore', 'Capabilities updated for Film');
     set((state) => ({
@@ -192,13 +205,7 @@ export const useFilmStore = create<FilmStore>((set, get) => ({
   resetEffect: (effect) => {
     const state = get();
     switch (effect) {
-      case 'grain':
-        state.grainIntensity.value = DEFAULT_GRAIN_INTENSITY;
-        state.grainEnabled.value = false;
-        state.grainChroma.value = 0;
-        state.grainSize.value = 1;
-        state.grainSpeed.value = DEFAULT_GRAIN_SPEED;
-        break;
+      // @@GEN_RESET_START@@
       case 'saturation':
         state.saturation.value = DEFAULT_SATURATION;
         state.satRed.value = DEFAULT_SELECTIVE_SATURATION;
@@ -221,6 +228,23 @@ export const useFilmStore = create<FilmStore>((set, get) => ({
       case 'contrast':
         state.contrast.value = DEFAULT_CONTRAST;
         break;
+      case 'grain':
+        state.grainIntensity.value = DEFAULT_GRAIN_INTENSITY;
+        state.grainChroma.value = 0.0;
+        state.grainSize.value = 1.0;
+        state.grainSpeed.value = DEFAULT_GRAIN_SPEED;
+        state.grainEnabled.value = false;
+        break;
+      case 'temperature':
+      case 'tint':
+        state.temperature.value = DEFAULT_TEMPERATURE;
+        state.temperatureAuto.value = true;
+        state.tint.value = DEFAULT_TINT;
+        break;
+      case 'bloom':
+        state.bloomIntensity.value = 0.0;
+        state.bloomEnabled.value = false;
+        break;
       case 'chromatic_aberration':
         state.chromaticAberration.value = DEFAULT_CHROMATIC_ABERRATION;
         state.aberrationDirection.value = 0;
@@ -230,18 +254,10 @@ export const useFilmStore = create<FilmStore>((set, get) => ({
         state.sharpening.value = 0.0;
         break;
       case 'noise_reduction':
+        state.noiseReductionMode.value = 1;
         state.noiseReductionAuto.value = true;
         break;
-      case 'bloom':
-        state.bloomEnabled.value = false;
-        state.bloomIntensity.value = 0.0;
-        break;
-      case 'temperature':
-      case 'tint':
-        state.temperatureAuto.value = true;
-        state.temperature.value = DEFAULT_TEMPERATURE;
-        state.tint.value = DEFAULT_TINT;
-        break;
+      // @@GEN_RESET_END@@
     }
   },
 }));

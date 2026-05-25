@@ -3,7 +3,22 @@ import * as React from 'react';
 import { ViewProps } from 'react-native';
 
 export interface NativeFilmCameraViewProps extends ViewProps {
+  // @@GEN_PROPS_START@@
   saturation?: number;
+  contrast?: number;
+  grainIntensity?: number;
+  grainChroma?: number;
+  grainSize?: number;
+  grainSpeed?: number;
+  vignetteIntensity?: number;
+  vhsIntensity?: number;
+  ev?: number;
+  whiteBalance?: number;
+  tint?: number;
+  bloomIntensity?: number;
+  chromaticAberration?: number;
+  aberrationDirection?: number;
+  sharpening?: number;
   satRed?: number;
   satOrange?: number;
   satYellow?: number;
@@ -12,6 +27,10 @@ export interface NativeFilmCameraViewProps extends ViewProps {
   satBlue?: number;
   satPurple?: number;
   satMagenta?: number;
+  targetFps?: number;
+  cameraAspectRatio?: number;
+  aberrationInvert?: boolean;
+  boundMagentaRed?: number;
   boundRedOrange?: number;
   boundOrangeYellow?: number;
   boundYellowGreen?: number;
@@ -19,37 +38,23 @@ export interface NativeFilmCameraViewProps extends ViewProps {
   boundCyanBlue?: number;
   boundBluePurple?: number;
   boundPurpleMagenta?: number;
-  boundMagentaRed?: number;
-  contrast?: number;
-  grainIntensity?: number;
-  grainChroma?: number;
-  grainSize?: number;
-  grainSpeed?: number;
   grainEnabled?: boolean;
   bloomEnabled?: boolean;
-  bloomIntensity?: number;
-  chromaticAberration?: number;
-  aberrationDirection?: number;
-  aberrationInvert?: boolean;
+  noiseReduction?: number;
+  noiseReductionAuto?: boolean;
   isoAuto?: boolean;
   shutterSpeedAuto?: boolean;
   whiteBalanceAuto?: boolean;
   autoFocus?: boolean;
   iso?: number;
   exposureTime?: number;
-  ev?: number;
-  whiteBalance?: number;
-  tint?: number;
   focusDistance?: number;
-  cameraId?: string;
   torchState?: number;
   torchStrength?: number;
-  noiseReduction?: number;
-  sharpening?: number;
-  cameraAspectRatio?: number;
+  cameraId?: string;
   resolutionSetting?: number;
   previewIn4k?: boolean;
-  targetFps?: number;
+  // @@GEN_PROPS_END@@
   onDebugUpdate?: (event: { nativeEvent: { fps: number; hwFps: number; resolution: string } }) => void;
   onExposureUpdate?: (event: { nativeEvent: { iso: number; shutterSpeed: number; focusDistance?: number } }) => void;
   onCapabilitiesUpdate?: (event: { nativeEvent: { 

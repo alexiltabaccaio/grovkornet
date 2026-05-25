@@ -37,23 +37,18 @@ export const Viewfinder = ({ cameraKey }: ViewfinderProps) => {
   } = useLensStore.getState();
 
   const {
-    noiseReductionAuto,
-    noiseReductionMode,
+    // @@GEN_SELECTOR_START@@
     saturation,
     contrast,
-    chromaticAberration,
-    aberrationDirection,
-    aberrationInvert,
     grainIntensity,
     grainChroma,
     grainSize,
     grainSpeed,
-    grainEnabled,
-    bloomEnabled,
-    bloomIntensity,
     temperature,
     tint,
-    temperatureAuto,
+    bloomIntensity,
+    chromaticAberration,
+    aberrationDirection,
     sharpening,
     satRed,
     satOrange,
@@ -63,6 +58,8 @@ export const Viewfinder = ({ cameraKey }: ViewfinderProps) => {
     satBlue,
     satPurple,
     satMagenta,
+    aberrationInvert,
+    boundMagentaRed,
     boundRedOrange,
     boundOrangeYellow,
     boundYellowGreen,
@@ -70,7 +67,12 @@ export const Viewfinder = ({ cameraKey }: ViewfinderProps) => {
     boundCyanBlue,
     boundBluePurple,
     boundPurpleMagenta,
-    boundMagentaRed,
+    grainEnabled,
+    bloomEnabled,
+    noiseReductionMode,
+    noiseReductionAuto,
+    temperatureAuto,
+    // @@GEN_SELECTOR_END@@
   } = useFilmStore.getState();
 
   // 2. Azioni stabili
@@ -116,7 +118,20 @@ export const Viewfinder = ({ cameraKey }: ViewfinderProps) => {
         ref={cameraRef}
         key={`camera-${cameraKey}`}
         style={StyleSheet.absoluteFill}
+        // @@GEN_PROPS_START@@
         saturation={saturation as unknown as SharedValue<number | undefined>}
+        contrast={contrast as unknown as SharedValue<number | undefined>}
+        grainIntensity={grainIntensity as unknown as SharedValue<number | undefined>}
+        grainChroma={grainChroma as unknown as SharedValue<number | undefined>}
+        grainSize={grainSize as unknown as SharedValue<number | undefined>}
+        grainSpeed={grainSpeed as unknown as SharedValue<number | undefined>}
+        ev={ev as unknown as SharedValue<number | undefined>}
+        whiteBalance={temperature as unknown as SharedValue<number | undefined>}
+        tint={tint as unknown as SharedValue<number | undefined>}
+        bloomIntensity={bloomIntensity as unknown as SharedValue<number | undefined>}
+        chromaticAberration={chromaticAberration as unknown as SharedValue<number | undefined>}
+        aberrationDirection={aberrationDirection as unknown as SharedValue<number | undefined>}
+        sharpening={sharpening as unknown as SharedValue<number | undefined>}
         satRed={satRed as unknown as SharedValue<number | undefined>}
         satOrange={satOrange as unknown as SharedValue<number | undefined>}
         satYellow={satYellow as unknown as SharedValue<number | undefined>}
@@ -125,6 +140,10 @@ export const Viewfinder = ({ cameraKey }: ViewfinderProps) => {
         satBlue={satBlue as unknown as SharedValue<number | undefined>}
         satPurple={satPurple as unknown as SharedValue<number | undefined>}
         satMagenta={satMagenta as unknown as SharedValue<number | undefined>}
+        targetFps={fpsSetting as unknown as SharedValue<number | undefined>}
+        cameraAspectRatio={aspectRatio as unknown as SharedValue<number | undefined>}
+        aberrationInvert={aberrationInvert as unknown as SharedValue<boolean | undefined>}
+        boundMagentaRed={boundMagentaRed as unknown as SharedValue<number | undefined>}
         boundRedOrange={boundRedOrange as unknown as SharedValue<number | undefined>}
         boundOrangeYellow={boundOrangeYellow as unknown as SharedValue<number | undefined>}
         boundYellowGreen={boundYellowGreen as unknown as SharedValue<number | undefined>}
@@ -132,37 +151,23 @@ export const Viewfinder = ({ cameraKey }: ViewfinderProps) => {
         boundCyanBlue={boundCyanBlue as unknown as SharedValue<number | undefined>}
         boundBluePurple={boundBluePurple as unknown as SharedValue<number | undefined>}
         boundPurpleMagenta={boundPurpleMagenta as unknown as SharedValue<number | undefined>}
-        boundMagentaRed={boundMagentaRed as unknown as SharedValue<number | undefined>}
-        contrast={contrast as unknown as SharedValue<number | undefined>}
-        chromaticAberration={chromaticAberration as unknown as SharedValue<number | undefined>}
-        aberrationDirection={aberrationDirection as unknown as SharedValue<number | undefined>}
-        aberrationInvert={aberrationInvert as unknown as SharedValue<boolean | undefined>}
-        grainIntensity={grainIntensity as unknown as SharedValue<number | undefined>}
-        grainChroma={grainChroma as unknown as SharedValue<number | undefined>}
-        grainSize={grainSize as unknown as SharedValue<number | undefined>}
-        grainSpeed={grainSpeed as unknown as SharedValue<number | undefined>}
         grainEnabled={grainEnabled as unknown as SharedValue<boolean | undefined>}
         bloomEnabled={bloomEnabled as unknown as SharedValue<boolean | undefined>}
-        bloomIntensity={bloomIntensity as unknown as SharedValue<number | undefined>}
-        iso={iso as unknown as SharedValue<number | undefined>}
-        exposureTime={shutterSpeed as unknown as SharedValue<number | undefined>}
-        ev={ev as unknown as SharedValue<number | undefined>}
-        whiteBalance={temperature as unknown as SharedValue<number | undefined>}
-        tint={tint as unknown as SharedValue<number | undefined>}
+        noiseReduction={resolvedNoiseReduction as unknown as SharedValue<number | undefined>}
+        noiseReductionAuto={noiseReductionAuto as unknown as SharedValue<boolean | undefined>}
         isoAuto={isoAuto as unknown as SharedValue<boolean | undefined>}
         shutterSpeedAuto={shutterSpeedAuto as unknown as SharedValue<boolean | undefined>}
         whiteBalanceAuto={temperatureAuto as unknown as SharedValue<boolean | undefined>}
         autoFocus={focusAuto as unknown as SharedValue<boolean | undefined>}
+        iso={iso as unknown as SharedValue<number | undefined>}
+        exposureTime={shutterSpeed as unknown as SharedValue<number | undefined>}
         focusDistance={focusDistance as unknown as SharedValue<number | undefined>}
-        cameraId={cameraAuto ? undefined : cameraId}
         torchState={torchState as unknown as SharedValue<number | undefined>}
         torchStrength={resolvedTorchStrength as unknown as SharedValue<number | undefined>}
-        noiseReduction={resolvedNoiseReduction as unknown as SharedValue<number | undefined>}
-        sharpening={sharpening as unknown as SharedValue<number | undefined>}
-        cameraAspectRatio={aspectRatio as unknown as SharedValue<number | undefined>}
+        cameraId={cameraAuto ? undefined : cameraId}
         resolutionSetting={resolutionSetting as unknown as SharedValue<number | undefined>}
         previewIn4k={resolvedPreviewIn4k as unknown as SharedValue<boolean | undefined>}
-        targetFps={fpsSetting as unknown as SharedValue<number | undefined>}
+        // @@GEN_PROPS_END@@
         onCapabilitiesUpdate={capabilitiesHandler}
         onDebugUpdate={debugHandler}
         onExposureUpdate={exposureHandler}
