@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet, TextInput, Dimensions } from 'react-native';
+import { View, StyleSheet, TextInput } from 'react-native';
 import Animated, {
   useAnimatedStyle,
   useAnimatedProps,
@@ -108,8 +108,8 @@ export const SliderThumb = React.memo(({
       return {
         transform: [{ translateX: percentage * (trackWidth.value - 12) }],
         opacity,
-        borderWidth: 2,
-        borderColor: sliderColor,
+        borderWidth: 0,
+        backgroundColor: sliderColor,
       };
     }
     
@@ -118,6 +118,7 @@ export const SliderThumb = React.memo(({
       opacity,
       borderWidth: 0,
       borderColor: 'transparent',
+      backgroundColor: '#FFF',
     };
   });
 
