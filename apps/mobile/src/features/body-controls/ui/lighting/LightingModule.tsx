@@ -9,6 +9,8 @@ interface LightingModuleProps {
   handlePressWithDouble: (param: ParameterType, action: () => void) => void;
 }
 
+const LIGHTING_PARAMETERS: ParameterType[] = ['torch'];
+
 export const LightingModule = ({ handlePressWithDouble }: LightingModuleProps) => {
   const { capabilities } = useBodyStore(
     useShallow(s => ({
@@ -20,7 +22,7 @@ export const LightingModule = ({ handlePressWithDouble }: LightingModuleProps) =
 
   return (
     <GenericParameterModule
-      parameters={['torch']}
+      parameters={LIGHTING_PARAMETERS}
       handlePressWithDouble={handlePressWithDouble}
     />
   );

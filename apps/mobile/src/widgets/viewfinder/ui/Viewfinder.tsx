@@ -178,3 +178,6 @@ export const Viewfinder = ({ cameraKey }: ViewfinderProps) => {
     </>
   );
 };
+
+Viewfinder.whyDidYouRender = true;
+

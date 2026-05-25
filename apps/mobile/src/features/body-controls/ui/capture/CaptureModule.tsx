@@ -7,10 +7,12 @@ interface CaptureModuleProps {
   handlePressWithDouble: (param: ParameterType, action: () => void) => void;
 }
 
+const CAPTURE_PARAMETERS: ParameterType[] = ['aspect_ratio', 'resolution_setting', 'fps_setting'];
+
 export const CaptureModule = ({ handlePressWithDouble }: CaptureModuleProps) => {
   return (
     <GenericParameterModule
-      parameters={['aspect_ratio', 'resolution_setting', 'fps_setting']}
+      parameters={CAPTURE_PARAMETERS}
       handlePressWithDouble={handlePressWithDouble}
     />
   );

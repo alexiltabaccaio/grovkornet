@@ -92,6 +92,8 @@ class FilmRenderThread(
         liveProcessor?.prepare(surfaceTexture!!, w, h, assetManager)
     }
 
+    private var lastDebugUpdateTime = 0L
+
     private fun drawLiveFrame() {
         val st = surfaceTexture ?: return
         val surface = surfaceProvider() ?: return
@@ -119,11 +121,15 @@ class FilmRenderThread(
                 wasFrameAvailable
             ) { actualFps, stampedFps ->
                 if (!isReleased.get()) {
-                    onDebugUpdate(mapOf(
-                        "fps" to stampedFps,
-                        "resolution" to "${cameraWidth}x${cameraHeight}",
-                        "hwFps" to actualFps
-                    ))
+                    val now = System.currentTimeMillis()
+                    if (now - lastDebugUpdateTime >= 500) {
+                        onDebugUpdate(mapOf(
+                            "fps" to stampedFps,
+                            "resolution" to "${cameraWidth}x${cameraHeight}",
+                            "hwFps" to actualFps
+                        ))
+                        lastDebugUpdateTime = now
+                    }
                 }
             }
         } catch (e: Exception) {

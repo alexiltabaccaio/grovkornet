@@ -7,10 +7,12 @@ interface DevelopmentModuleProps {
   handlePressWithDouble: (param: ParameterType, action: () => void) => void;
 }
 
+const DEVELOPMENT_PARAMETERS: ParameterType[] = ['saturation', 'contrast', 'temperature', 'tint'];
+
 export const DevelopmentModule = ({ handlePressWithDouble }: DevelopmentModuleProps) => {
   return (
     <GenericParameterModule
-      parameters={['saturation', 'contrast', 'temperature', 'tint']}
+      parameters={DEVELOPMENT_PARAMETERS}
       handlePressWithDouble={handlePressWithDouble}
     />
   );

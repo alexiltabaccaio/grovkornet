@@ -7,10 +7,12 @@ interface FlawsModuleProps {
   handlePressWithDouble: (param: ParameterType, action: () => void) => void;
 }
 
+const FLAWS_PARAMETERS: ParameterType[] = ['chromatic_aberration', 'bloom'];
+
 export const FlawsModule = ({ handlePressWithDouble }: FlawsModuleProps) => {
   return (
     <GenericParameterModule
-      parameters={['chromatic_aberration', 'bloom']}
+      parameters={FLAWS_PARAMETERS}
       handlePressWithDouble={handlePressWithDouble}
     />
   );

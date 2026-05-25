@@ -42,10 +42,30 @@ object WatermarkEngine {
             }
 
             try {
-                val options = BitmapFactory.Options().apply {
-                    inPreferredConfig = Bitmap.Config.ARGB_8888
+                var bitmap: Bitmap? = null
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+                    val decoder = android.graphics.BitmapRegionDecoder.newInstance(tempFile.absolutePath)
+                    if (decoder != null) {
+                        val rect = android.graphics.Rect(0, 0, 64, 64)
+                        val options = BitmapFactory.Options().apply {
+                            inPreferredConfig = Bitmap.Config.ARGB_8888
+                        }
+                        bitmap = decoder.decodeRegion(rect, options)
+                        decoder.recycle()
+                    }
+                } else {
+                    @Suppress("DEPRECATION")
+                    val decoder = android.graphics.BitmapRegionDecoder.newInstance(tempFile.absolutePath, false)
+                    if (decoder != null) {
+                        val rect = android.graphics.Rect(0, 0, 64, 64)
+                        val options = BitmapFactory.Options().apply {
+                            inPreferredConfig = Bitmap.Config.ARGB_8888
+                        }
+                        bitmap = decoder.decodeRegion(rect, options)
+                        decoder.recycle()
+                    }
                 }
-                val bitmap = BitmapFactory.decodeFile(tempFile.absolutePath, options)
+                
                 if (bitmap == null) {
                     return false
                 }

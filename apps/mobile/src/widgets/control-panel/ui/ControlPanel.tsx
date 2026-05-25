@@ -99,6 +99,9 @@ export const ControlPanel = ({ translateY: externalTranslateY, drawerAnimation: 
   );
 };
 
+ControlPanel.whyDidYouRender = true;
+
+
 const styles = StyleSheet.create({
   container: {
     position: 'absolute',
