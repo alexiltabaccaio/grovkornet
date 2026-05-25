@@ -92,13 +92,13 @@ export const ColorRangeSlider = ({ activeColorIndex }: ColorRangeSliderProps) =>
   // Convert Angle to Pixel position
   const angleToX = (angle: number) => {
     'worklet';
-    if (trackWidth.value === 0) return 0;
+    if (trackWidth.value === 0) return 6;
     const minA = getMinAngle();
     const maxA = getMaxAngle();
     const totalRange = maxA - minA;
-    if (totalRange <= 0) return 0;
+    if (totalRange <= 0) return 6;
     const pct = (angle - minA) / totalRange;
-    return pct * trackWidth.value;
+    return 6 + pct * (trackWidth.value - 12);
   };
 
   // Convert Pixel position to Angle
@@ -108,7 +108,7 @@ export const ColorRangeSlider = ({ activeColorIndex }: ColorRangeSliderProps) =>
     const minA = getMinAngle();
     const maxA = getMaxAngle();
     const totalRange = maxA - minA;
-    const pct = Math.min(Math.max(x / trackWidth.value, 0), 1);
+    const pct = Math.min(Math.max((x - 6) / (trackWidth.value - 12), 0), 1);
     return minA + pct * totalRange;
   };
 
@@ -165,11 +165,11 @@ export const ColorRangeSlider = ({ activeColorIndex }: ColorRangeSliderProps) =>
     
     if (range > 0 && trackWidth.value > 0) {
       const unwrappedLeft = unwrap(leftShared.value, ref);
-      widthVal = ((unwrappedLeft - ref) / range) * trackWidth.value;
+      widthVal = ((unwrappedLeft - ref) / range) * (trackWidth.value - 12);
     }
     
     return {
-      left: 0,
+      left: 6,
       width: Math.max(widthVal, 0),
     };
   });
@@ -184,12 +184,12 @@ export const ColorRangeSlider = ({ activeColorIndex }: ColorRangeSliderProps) =>
     if (range > 0 && trackWidth.value > 0) {
       const unwrappedLeft = unwrap(leftShared.value, ref);
       const unwrappedRight = unwrap(rightShared.value, ref);
-      leftVal = ((unwrappedLeft - ref) / range) * trackWidth.value;
-      widthVal = ((unwrappedRight - unwrappedLeft) / range) * trackWidth.value;
+      leftVal = ((unwrappedLeft - ref) / range) * (trackWidth.value - 12);
+      widthVal = ((unwrappedRight - unwrappedLeft) / range) * (trackWidth.value - 12);
     }
     
     return {
-      left: leftVal,
+      left: 6 + leftVal,
       width: Math.max(widthVal, 0),
     };
   });
@@ -203,12 +203,12 @@ export const ColorRangeSlider = ({ activeColorIndex }: ColorRangeSliderProps) =>
     
     if (range > 0 && trackWidth.value > 0) {
       const unwrappedRight = unwrap(rightShared.value, ref);
-      leftVal = ((unwrappedRight - ref) / range) * trackWidth.value;
-      widthVal = trackWidth.value - leftVal;
+      leftVal = ((unwrappedRight - ref) / range) * (trackWidth.value - 12);
+      widthVal = (trackWidth.value - 12) - leftVal;
     }
     
     return {
-      left: leftVal,
+      left: 6 + leftVal,
       width: Math.max(widthVal, 0),
     };
   });
@@ -218,10 +218,10 @@ export const ColorRangeSlider = ({ activeColorIndex }: ColorRangeSliderProps) =>
     const ref = limitLeftShared.value;
     const maxA = unwrap(limitRightShared.value, ref);
     const range = maxA - ref;
-    let x = 0;
+    let x = 6;
     if (range > 0 && trackWidth.value > 0) {
       const unwrapped = unwrap(leftShared.value, ref);
-      x = ((unwrapped - ref) / range) * trackWidth.value;
+      x = 6 + ((unwrapped - ref) / range) * (trackWidth.value - 12);
     }
     return {
       transform: [{ translateX: x - 10 }],
@@ -232,42 +232,13 @@ export const ColorRangeSlider = ({ activeColorIndex }: ColorRangeSliderProps) =>
     const ref = limitLeftShared.value;
     const maxA = unwrap(limitRightShared.value, ref);
     const range = maxA - ref;
-    let x = 0;
+    let x = 6;
     if (range > 0 && trackWidth.value > 0) {
       const unwrapped = unwrap(rightShared.value, ref);
-      x = ((unwrapped - ref) / range) * trackWidth.value;
+      x = 6 + ((unwrapped - ref) / range) * (trackWidth.value - 12);
     }
     return {
       transform: [{ translateX: x - 10 }],
-    };
-  });
-
-  // Floating label positions above the thumbs
-  const leftLabelStyle = useAnimatedStyle(() => {
-    const ref = limitLeftShared.value;
-    const maxA = unwrap(limitRightShared.value, ref);
-    const range = maxA - ref;
-    let x = 0;
-    if (range > 0 && trackWidth.value > 0) {
-      const unwrapped = unwrap(leftShared.value, ref);
-      x = ((unwrapped - ref) / range) * trackWidth.value;
-    }
-    return {
-      transform: [{ translateX: x - 25 }],
-    };
-  });
-
-  const rightLabelStyle = useAnimatedStyle(() => {
-    const ref = limitLeftShared.value;
-    const maxA = unwrap(limitRightShared.value, ref);
-    const range = maxA - ref;
-    let x = 0;
-    if (range > 0 && trackWidth.value > 0) {
-      const unwrapped = unwrap(rightShared.value, ref);
-      x = ((unwrapped - ref) / range) * trackWidth.value;
-    }
-    return {
-      transform: [{ translateX: x - 25 }],
     };
   });
 
@@ -278,7 +249,7 @@ export const ColorRangeSlider = ({ activeColorIndex }: ColorRangeSliderProps) =>
   });
 
   const rightLabelProps = useAnimatedProps((): Record<string, unknown> => {
-    const val = Math.round(rightShared.value).toString() + '°';
+    const val = Math.round(rightShared.value).toString();
     return { text: val, defaultValue: val };
   });
 
@@ -288,24 +259,14 @@ export const ColorRangeSlider = ({ activeColorIndex }: ColorRangeSliderProps) =>
 
   return (
     <View style={styles.container}>
-      {/* Floating degrees labels */}
-      <View style={styles.floatingLabelsContainer}>
-        <Animated.View style={[styles.floatingLabel, leftLabelStyle]}>
-          <AnimatedTextInput
-            editable={false}
-            pointerEvents="none"
-            animatedProps={leftLabelProps}
-            style={styles.floatingLabelText}
-          />
-        </Animated.View>
-        <Animated.View style={[styles.floatingLabel, rightLabelStyle]}>
-          <AnimatedTextInput
-            editable={false}
-            pointerEvents="none"
-            animatedProps={rightLabelProps}
-            style={styles.floatingLabelText}
-          />
-        </Animated.View>
+      {/* Left Bound Label (Fixed Position) */}
+      <View style={styles.leftValueContainer}>
+        <AnimatedTextInput
+          editable={false}
+          pointerEvents="none"
+          animatedProps={leftLabelProps}
+          style={styles.valueText}
+        />
       </View>
 
       {/* Slider Track with 3-color background sections and two pans */}
@@ -329,45 +290,67 @@ export const ColorRangeSlider = ({ activeColorIndex }: ColorRangeSliderProps) =>
           <Animated.View style={[styles.thumb, rightThumbStyle, { borderColor: activeColorHex }]} />
         </GestureDetector>
       </View>
+
+      {/* Right Bound Label (Fixed Position) */}
+      <View style={styles.rightValueContainer}>
+        <AnimatedTextInput
+          editable={false}
+          pointerEvents="none"
+          animatedProps={rightLabelProps}
+          style={styles.valueText}
+        />
+        <Text style={styles.rightDegreeSymbol}>°</Text>
+      </View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
+    flexDirection: 'row',
+    alignItems: 'center',
     width: '100%',
     paddingHorizontal: 24,
-    paddingVertical: 12,
+    height: 32, // Match the typical height of SliderThumb
   },
-  floatingLabelsContainer: {
+  leftValueContainer: {
+    width: 54, // Match width of AutoButton space in SliderThumb
+    marginRight: 16,
+    justifyContent: 'center',
+    alignItems: 'flex-start',
+  },
+  rightValueContainer: {
+    width: 54, // Match width of valueTextContainer in SliderThumb
+    marginLeft: 16,
+    justifyContent: 'center',
+    alignItems: 'flex-end',
     position: 'relative',
-    height: 18,
-    width: '100%',
-    marginBottom: 4,
   },
-  floatingLabel: {
+  rightDegreeSymbol: {
     position: 'absolute',
-    left: 0,
-    width: 50,
-    alignItems: 'center',
-  },
-  floatingLabelText: {
-    fontSize: 10,
+    right: -8,
+    fontSize: 13,
     fontWeight: '900',
     color: '#FFF',
     fontFamily: 'monospace',
-    textAlign: 'center',
+  },
+  valueText: {
+    fontSize: 13,
+    fontWeight: '900',
+    color: '#FFF',
+    letterSpacing: 0.5,
+    fontFamily: 'monospace',
   },
   sliderTrackContainer: {
-    height: 24,
-    width: '100%',
+    flex: 1, // Will perfectly align with standard SliderThumb track
+    height: 30, // Area sensibile per il touch
     position: 'relative',
     justifyContent: 'center',
   },
   trackBgSection: {
     position: 'absolute',
-    height: 6,
-    borderRadius: 3,
+    height: 4,
+    borderRadius: 2,
     opacity: 0.85,
   },
   thumb: {
