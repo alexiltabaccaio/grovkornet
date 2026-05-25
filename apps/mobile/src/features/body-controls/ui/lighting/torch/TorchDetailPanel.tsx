@@ -1,6 +1,6 @@
 import React from 'react';
-import { StyleSheet, View, TouchableOpacity, StyleProp, ViewStyle } from 'react-native';
-import { ScrollView } from 'react-native-gesture-handler';
+import { StyleSheet, View, StyleProp, ViewStyle } from 'react-native';
+import { ScrollView, TouchableOpacity } from 'react-native-gesture-handler';
 import { useShallow } from 'zustand/react/shallow';
 import { useSystemStore, ParameterControl, ParameterDetailPanelWrapper } from '@entities/system';
 import { useBodyStore, useBodyWorklets } from '@entities/body';

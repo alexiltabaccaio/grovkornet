@@ -30,8 +30,10 @@ jest.mock('@entities/body', () => ({
 }));
 
 jest.mock('react-native-gesture-handler', () => {
+  const { View } = require('react-native');
   return {
     ScrollView: 'View',
+    TouchableOpacity: View,
   };
 });
 

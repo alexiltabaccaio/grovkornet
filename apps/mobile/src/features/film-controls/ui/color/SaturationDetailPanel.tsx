@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
-import { View, StyleSheet, TouchableOpacity, Text } from 'react-native';
+import { View, StyleSheet, Text } from 'react-native';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 import Animated from 'react-native-reanimated';
 import { useShallow } from 'zustand/react/shallow';
 import { useFilmStore, useFilmWorklets, useFilmParameterControlData } from '@entities/film';
@@ -113,24 +114,25 @@ export const SaturationDetailPanel = ({
   const renderMultiColorDot = () => {
     const isActive = isMaster;
     return (
-      <TouchableOpacity
-        testID="color-circle-master"
-        onPress={() => setActiveColorIndex('master')}
-        style={[
-          styles.circleContainer,
-          isActive && styles.circleContainerActive,
-          styles.multiColorDotAbsolute
-        ]}
-        activeOpacity={0.8}
-        hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-      >
-        <View style={styles.multiColorCircle}>
-          <View style={{ width: 10, height: 10, backgroundColor: '#FF453A' }} />
-          <View style={{ width: 10, height: 10, backgroundColor: '#FFD60A' }} />
-          <View style={{ width: 10, height: 10, backgroundColor: '#0A84FF' }} />
-          <View style={{ width: 10, height: 10, backgroundColor: '#32D74B' }} />
-        </View>
-      </TouchableOpacity>
+      <View style={styles.multiColorDotAbsolute}>
+        <TouchableOpacity
+          testID="color-circle-master"
+          onPress={() => setActiveColorIndex('master')}
+          style={[
+            styles.circleContainer,
+            isActive && styles.circleContainerActive,
+          ]}
+          activeOpacity={0.8}
+          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+        >
+          <View style={styles.multiColorCircle}>
+            <View style={{ width: 10, height: 10, backgroundColor: '#FF453A' }} />
+            <View style={{ width: 10, height: 10, backgroundColor: '#FFD60A' }} />
+            <View style={{ width: 10, height: 10, backgroundColor: '#0A84FF' }} />
+            <View style={{ width: 10, height: 10, backgroundColor: '#32D74B' }} />
+          </View>
+        </TouchableOpacity>
+      </View>
     );
   };
 
