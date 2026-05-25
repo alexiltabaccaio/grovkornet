@@ -8,6 +8,14 @@ import {
   DEFAULT_TINT,
   DEFAULT_GRAIN_SPEED,
   DEFAULT_SELECTIVE_SATURATION,
+  DEFAULT_BOUND_MAGENTA_RED,
+  DEFAULT_BOUND_RED_ORANGE,
+  DEFAULT_BOUND_ORANGE_YELLOW,
+  DEFAULT_BOUND_YELLOW_GREEN,
+  DEFAULT_BOUND_GREEN_CYAN,
+  DEFAULT_BOUND_CYAN_BLUE,
+  DEFAULT_BOUND_BLUE_PURPLE,
+  DEFAULT_BOUND_PURPLE_MAGENTA,
 } from '@grovkornet/shared';
 
 describe('useFilmStore', () => {
@@ -61,6 +69,27 @@ describe('useFilmStore', () => {
     expect(useFilmStore.getState().satMagenta.value).toBe(60);
   });
 
+  it('sets Selective Saturation boundaries', () => {
+    const store = useFilmStore.getState();
+    store.setBoundMagentaRed(340);
+    store.setBoundRedOrange(50);
+    store.setBoundOrangeYellow(85);
+    store.setBoundYellowGreen(120);
+    store.setBoundGreenCyan(175);
+    store.setBoundCyanBlue(225);
+    store.setBoundBluePurple(285);
+    store.setBoundPurpleMagenta(310);
+
+    expect(useFilmStore.getState().boundMagentaRed.value).toBe(340);
+    expect(useFilmStore.getState().boundRedOrange.value).toBe(50);
+    expect(useFilmStore.getState().boundOrangeYellow.value).toBe(85);
+    expect(useFilmStore.getState().boundYellowGreen.value).toBe(120);
+    expect(useFilmStore.getState().boundGreenCyan.value).toBe(175);
+    expect(useFilmStore.getState().boundCyanBlue.value).toBe(225);
+    expect(useFilmStore.getState().boundBluePurple.value).toBe(285);
+    expect(useFilmStore.getState().boundPurpleMagenta.value).toBe(310);
+  });
+
   it('sets Chromatic Aberration and Direction', () => {
     const store = useFilmStore.getState();
     store.setChromaticAberration(0.05);
@@ -109,11 +138,13 @@ describe('useFilmStore', () => {
     store.setSaturation(2.0);
     store.setSatRed(90);
     store.setSatBlue(10);
+    store.setBoundMagentaRed(340);
     store.resetEffect('saturation');
     expect(useFilmStore.getState().saturation.value).toBe(DEFAULT_SATURATION);
     expect(useFilmStore.getState().satRed.value).toBe(DEFAULT_SELECTIVE_SATURATION);
     expect(useFilmStore.getState().satOrange.value).toBe(DEFAULT_SELECTIVE_SATURATION);
     expect(useFilmStore.getState().satBlue.value).toBe(DEFAULT_SELECTIVE_SATURATION);
+    expect(useFilmStore.getState().boundMagentaRed.value).toBe(DEFAULT_BOUND_MAGENTA_RED);
 
     store.setContrast(2.0);
     store.resetEffect('contrast');

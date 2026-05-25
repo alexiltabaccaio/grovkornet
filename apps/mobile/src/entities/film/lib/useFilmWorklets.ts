@@ -73,6 +73,46 @@ export const useFilmWorklets = () => {
       updateSharedValue(film.satMagenta, value);
     };
 
+    const updateBoundMagentaRed = (value: number) => {
+      'worklet';
+      updateSharedValue(film.boundMagentaRed, value);
+    };
+
+    const updateBoundRedOrange = (value: number) => {
+      'worklet';
+      updateSharedValue(film.boundRedOrange, value);
+    };
+
+    const updateBoundOrangeYellow = (value: number) => {
+      'worklet';
+      updateSharedValue(film.boundOrangeYellow, value);
+    };
+
+    const updateBoundYellowGreen = (value: number) => {
+      'worklet';
+      updateSharedValue(film.boundYellowGreen, value);
+    };
+
+    const updateBoundGreenCyan = (value: number) => {
+      'worklet';
+      updateSharedValue(film.boundGreenCyan, value);
+    };
+
+    const updateBoundCyanBlue = (value: number) => {
+      'worklet';
+      updateSharedValue(film.boundCyanBlue, value);
+    };
+
+    const updateBoundBluePurple = (value: number) => {
+      'worklet';
+      updateSharedValue(film.boundBluePurple, value);
+    };
+
+    const updateBoundPurpleMagenta = (value: number) => {
+      'worklet';
+      updateSharedValue(film.boundPurpleMagenta, value);
+    };
+
     const updateContrast = (value: number) => {
       'worklet';
       updateSharedValue(film.contrast, value);
@@ -131,6 +171,14 @@ export const useFilmWorklets = () => {
       updateSatBlue,
       updateSatPurple,
       updateSatMagenta,
+      updateBoundMagentaRed,
+      updateBoundRedOrange,
+      updateBoundOrangeYellow,
+      updateBoundYellowGreen,
+      updateBoundGreenCyan,
+      updateBoundCyanBlue,
+      updateBoundBluePurple,
+      updateBoundPurpleMagenta,
       updateContrast,
       updateChromaticAberration,
       updateAberrationDirection,

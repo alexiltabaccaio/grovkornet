@@ -63,6 +63,14 @@ export const Viewfinder = ({ cameraKey }: ViewfinderProps) => {
     satBlue,
     satPurple,
     satMagenta,
+    boundRedOrange,
+    boundOrangeYellow,
+    boundYellowGreen,
+    boundGreenCyan,
+    boundCyanBlue,
+    boundBluePurple,
+    boundPurpleMagenta,
+    boundMagentaRed,
   } = useFilmStore.getState();
 
   // 2. Azioni stabili
@@ -117,6 +125,14 @@ export const Viewfinder = ({ cameraKey }: ViewfinderProps) => {
         satBlue={satBlue as unknown as SharedValue<number | undefined>}
         satPurple={satPurple as unknown as SharedValue<number | undefined>}
         satMagenta={satMagenta as unknown as SharedValue<number | undefined>}
+        boundRedOrange={boundRedOrange as unknown as SharedValue<number | undefined>}
+        boundOrangeYellow={boundOrangeYellow as unknown as SharedValue<number | undefined>}
+        boundYellowGreen={boundYellowGreen as unknown as SharedValue<number | undefined>}
+        boundGreenCyan={boundGreenCyan as unknown as SharedValue<number | undefined>}
+        boundCyanBlue={boundCyanBlue as unknown as SharedValue<number | undefined>}
+        boundBluePurple={boundBluePurple as unknown as SharedValue<number | undefined>}
+        boundPurpleMagenta={boundPurpleMagenta as unknown as SharedValue<number | undefined>}
+        boundMagentaRed={boundMagentaRed as unknown as SharedValue<number | undefined>}
         contrast={contrast as unknown as SharedValue<number | undefined>}
         chromaticAberration={chromaticAberration as unknown as SharedValue<number | undefined>}
         aberrationDirection={aberrationDirection as unknown as SharedValue<number | undefined>}

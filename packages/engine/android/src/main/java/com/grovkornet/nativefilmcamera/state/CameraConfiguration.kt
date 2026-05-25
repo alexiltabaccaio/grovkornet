@@ -14,6 +14,14 @@ data class CameraConfiguration(
     var satBlue: Float = 50.0f,
     var satPurple: Float = 50.0f,
     var satMagenta: Float = 50.0f,
+    var boundMagentaRed: Float = 350.0f,
+    var boundRedOrange: Float = 45.0f,
+    var boundOrangeYellow: Float = 80.0f,
+    var boundYellowGreen: Float = 125.0f,
+    var boundGreenCyan: Float = 170.0f,
+    var boundCyanBlue: Float = 230.0f,
+    var boundBluePurple: Float = 280.0f,
+    var boundPurpleMagenta: Float = 315.0f,
     var contrast: Float = 1.0f,
     var grainIntensity: Float = 0.0f,
     var grainChroma: Float = 0.0f,
@@ -72,7 +80,7 @@ fun CameraConfiguration.toRenderParamsArray(
     targetResolution: Float = 0f,
     targetFpsOverride: Float = targetFps.toFloat(),
     invertYShift: Boolean = false
-): FloatArray = FloatArray(29).apply {
+): FloatArray = FloatArray(37).apply {
     this[0]  = saturation
     this[1]  = contrast
     this[2]  = if (grainEnabled) grainIntensity else 0f
@@ -102,5 +110,13 @@ fun CameraConfiguration.toRenderParamsArray(
     this[26] = targetResolution
     this[27] = if (invertYShift) 1.0f else 0.0f
     this[28] = if (aberrationInvert) 1.0f else 0.0f
+    this[29] = boundMagentaRed
+    this[30] = boundRedOrange
+    this[31] = boundOrangeYellow
+    this[32] = boundYellowGreen
+    this[33] = boundGreenCyan
+    this[34] = boundCyanBlue
+    this[35] = boundBluePurple
+    this[36] = boundPurpleMagenta
 }
 

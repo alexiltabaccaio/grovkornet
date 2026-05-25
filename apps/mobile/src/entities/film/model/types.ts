@@ -32,6 +32,14 @@ interface FilmState {
   satBlue: SharedValue<number>;
   satPurple: SharedValue<number>;
   satMagenta: SharedValue<number>;
+  boundMagentaRed: SharedValue<number>;
+  boundRedOrange: SharedValue<number>;
+  boundOrangeYellow: SharedValue<number>;
+  boundYellowGreen: SharedValue<number>;
+  boundGreenCyan: SharedValue<number>;
+  boundCyanBlue: SharedValue<number>;
+  boundBluePurple: SharedValue<number>;
+  boundPurpleMagenta: SharedValue<number>;
   capabilities?: FilmCapabilities;
 }
 
@@ -62,6 +70,14 @@ interface FilmActions {
   setSatBlue: (value: number) => void;
   setSatPurple: (value: number) => void;
   setSatMagenta: (value: number) => void;
+  setBoundMagentaRed: (value: number) => void;
+  setBoundRedOrange: (value: number) => void;
+  setBoundOrangeYellow: (value: number) => void;
+  setBoundYellowGreen: (value: number) => void;
+  setBoundGreenCyan: (value: number) => void;
+  setBoundCyanBlue: (value: number) => void;
+  setBoundBluePurple: (value: number) => void;
+  setBoundPurpleMagenta: (value: number) => void;
   setCapabilities?: (capabilities: FilmCapabilities) => void;
   resetEffect: (effect: string) => void;
 }

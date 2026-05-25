@@ -65,6 +65,7 @@ class CameraConfigurationTest {
             bloomIntensity = 0.4f
             aberration = 0.1f
             aberrationDirection = 90
+            aberrationInvert = true
             sharpening = 0.8f
             satRed = 45f
             satOrange = 46f
@@ -76,6 +77,14 @@ class CameraConfigurationTest {
             satMagenta = 53f
             targetFps = 30
             aspectRatio = 2
+            boundMagentaRed = 340f
+            boundRedOrange = 50f
+            boundOrangeYellow = 85f
+            boundYellowGreen = 120f
+            boundGreenCyan = 175f
+            boundCyanBlue = 225f
+            boundBluePurple = 285f
+            boundPurpleMagenta = 310f
         }
 
         val time = 123.45f
@@ -83,7 +92,7 @@ class CameraConfigurationTest {
 
         val array = config.toRenderParamsArray(time = time, targetResolution = targetResolution)
 
-        assertEquals(28, array.size)
+        assertEquals(37, array.size)
         assertEquals(1.2f, array[0])
         assertEquals(0.9f, array[1])
         assertEquals(0.5f, array[2])
@@ -111,7 +120,16 @@ class CameraConfigurationTest {
         assertEquals(30f, array[24])
         assertEquals(2f, array[25])
         assertEquals(1080f, array[26])
-        assertEquals(0f, array[27])
+        assertEquals(0f, array[27]) // invertYShift
+        assertEquals(1.0f, array[28]) // aberrationInvert (true -> 1.0f)
+        assertEquals(340f, array[29]) // boundMagentaRed
+        assertEquals(50f, array[30]) // boundRedOrange
+        assertEquals(85f, array[31]) // boundOrangeYellow
+        assertEquals(120f, array[32]) // boundYellowGreen
+        assertEquals(175f, array[33]) // boundGreenCyan
+        assertEquals(225f, array[34]) // boundCyanBlue
+        assertEquals(285f, array[35]) // boundBluePurple
+        assertEquals(310f, array[36]) // boundPurpleMagenta
 
         // Test dynamic disabling features
         config.grainEnabled = false

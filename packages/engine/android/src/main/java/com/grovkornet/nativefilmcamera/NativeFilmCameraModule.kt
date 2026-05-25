@@ -55,6 +55,30 @@ class NativeFilmCameraModule : Module() {
       Prop("satMagenta") { view: NativeFilmCameraView, value: Float ->
         view.updateEffect { satMagenta = value }
       }
+      Prop("boundMagentaRed") { view: NativeFilmCameraView, value: Float ->
+        view.updateEffect { boundMagentaRed = value }
+      }
+      Prop("boundRedOrange") { view: NativeFilmCameraView, value: Float ->
+        view.updateEffect { boundRedOrange = value }
+      }
+      Prop("boundOrangeYellow") { view: NativeFilmCameraView, value: Float ->
+        view.updateEffect { boundOrangeYellow = value }
+      }
+      Prop("boundYellowGreen") { view: NativeFilmCameraView, value: Float ->
+        view.updateEffect { boundYellowGreen = value }
+      }
+      Prop("boundGreenCyan") { view: NativeFilmCameraView, value: Float ->
+        view.updateEffect { boundGreenCyan = value }
+      }
+      Prop("boundCyanBlue") { view: NativeFilmCameraView, value: Float ->
+        view.updateEffect { boundCyanBlue = value }
+      }
+      Prop("boundBluePurple") { view: NativeFilmCameraView, value: Float ->
+        view.updateEffect { boundBluePurple = value }
+      }
+      Prop("boundPurpleMagenta") { view: NativeFilmCameraView, value: Float ->
+        view.updateEffect { boundPurpleMagenta = value }
+      }
       Prop("contrast") { view: NativeFilmCameraView, value: Float ->
         view.updateEffect { contrast = value }
       }

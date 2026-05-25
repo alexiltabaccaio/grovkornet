@@ -79,7 +79,9 @@ public:
     
     void triggerLutUpdate(float saturation, float contrast, float ev, float whiteBalance, float tint,
                           float satRed, float satOrange, float satYellow, float satGreen,
-                          float satCyan, float satBlue, float satPurple, float satMagenta);
+                          float satCyan, float satBlue, float satPurple, float satMagenta,
+                          float boundMagentaRed, float boundRedOrange, float boundOrangeYellow, float boundYellowGreen,
+                          float boundGreenCyan, float boundCyanBlue, float boundBluePurple, float boundPurpleMagenta);
     void applyLutTextureUpdate();
     void applyShaderParameters(const RenderParams& params, filament::MaterialInstance* inputMaterial, bool waitForLut);
     

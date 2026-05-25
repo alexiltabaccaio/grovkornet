@@ -30,6 +30,14 @@ struct RenderParams {
     float targetResolution;
     float invertYShift;
     float aberrationInvert;
+    float boundMagentaRed;
+    float boundRedOrange;
+    float boundOrangeYellow;
+    float boundYellowGreen;
+    float boundGreenCyan;
+    float boundCyanBlue;
+    float boundBluePurple;
+    float boundPurpleMagenta;
 };
 
 RenderParams parseRenderParams(const float* params);

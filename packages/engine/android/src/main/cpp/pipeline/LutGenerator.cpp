@@ -2,7 +2,6 @@
 #include <algorithm>
 #include <cmath>
 
-
 LutGenerator::LutGenerator() {
   lutBuffer.resize(LUT_SIZE * LUT_SIZE * LUT_SIZE * 4, 0);
   // Initialize with Identity LUT so it's instantly usable
@@ -53,7 +52,9 @@ void LutGenerator::triggerLutUpdate(float saturation, float contrast, float ev,
                                     float satRed, float satOrange,
                                     float satYellow, float satGreen,
                                     float satCyan, float satBlue,
-                                    float satPurple, float satMagenta) {
+                                    float satPurple, float satMagenta,
+                                    float boundMagentaRed, float boundRedOrange, float boundOrangeYellow, float boundYellowGreen,
+                                    float boundGreenCyan, float boundCyanBlue, float boundBluePurple, float boundPurpleMagenta) {
   std::unique_lock<std::mutex> lock(lutMutex);
 
   // Check if parameters actually changed
@@ -63,7 +64,15 @@ void LutGenerator::triggerLutUpdate(float saturation, float contrast, float ev,
       satOrange == currentSatOrange && satYellow == currentSatYellow &&
       satGreen == currentSatGreen && satCyan == currentSatCyan &&
       satBlue == currentSatBlue && satPurple == currentSatPurple &&
-      satMagenta == currentSatMagenta) {
+      satMagenta == currentSatMagenta &&
+      boundMagentaRed == currentBoundMagentaRed &&
+      boundRedOrange == currentBoundRedOrange &&
+      boundOrangeYellow == currentBoundOrangeYellow &&
+      boundYellowGreen == currentBoundYellowGreen &&
+      boundGreenCyan == currentBoundGreenCyan &&
+      boundCyanBlue == currentBoundCyanBlue &&
+      boundBluePurple == currentBoundBluePurple &&
+      boundPurpleMagenta == currentBoundPurpleMagenta) {
     return;
   }
 
@@ -80,6 +89,14 @@ void LutGenerator::triggerLutUpdate(float saturation, float contrast, float ev,
   currentSatBlue = satBlue;
   currentSatPurple = satPurple;
   currentSatMagenta = satMagenta;
+  currentBoundMagentaRed = boundMagentaRed;
+  currentBoundRedOrange = boundRedOrange;
+  currentBoundOrangeYellow = boundOrangeYellow;
+  currentBoundYellowGreen = boundYellowGreen;
+  currentBoundGreenCyan = boundGreenCyan;
+  currentBoundCyanBlue = boundCyanBlue;
+  currentBoundBluePurple = boundBluePurple;
+  currentBoundPurpleMagenta = boundPurpleMagenta;
 
   lutParametersDirty = true;
   lutCv.notify_one();
@@ -115,6 +132,14 @@ void LutGenerator::applyLutTextureUpdate(filament::Engine &engine,
       activeSatBlue = currentSatBlue;
       activeSatPurple = currentSatPurple;
       activeSatMagenta = currentSatMagenta;
+      activeBoundMagentaRed = currentBoundMagentaRed;
+      activeBoundRedOrange = currentBoundRedOrange;
+      activeBoundOrangeYellow = currentBoundOrangeYellow;
+      activeBoundYellowGreen = currentBoundYellowGreen;
+      activeBoundGreenCyan = currentBoundGreenCyan;
+      activeBoundCyanBlue = currentBoundCyanBlue;
+      activeBoundBluePurple = currentBoundBluePurple;
+      activeBoundPurpleMagenta = currentBoundPurpleMagenta;
     }
   }
 
@@ -171,6 +196,14 @@ void LutGenerator::lutGenerationLoop() {
     float satBlue = 50.0f;
     float satPurple = 50.0f;
     float satMagenta = 50.0f;
+    float boundMagentaRed = 350.0f;
+    float boundRedOrange = 45.0f;
+    float boundOrangeYellow = 80.0f;
+    float boundYellowGreen = 125.0f;
+    float boundGreenCyan = 170.0f;
+    float boundCyanBlue = 230.0f;
+    float boundBluePurple = 280.0f;
+    float boundPurpleMagenta = 315.0f;
 
     {
       std::unique_lock<std::mutex> lock(lutMutex);
@@ -194,6 +227,14 @@ void LutGenerator::lutGenerationLoop() {
       satBlue = currentSatBlue;
       satPurple = currentSatPurple;
       satMagenta = currentSatMagenta;
+      boundMagentaRed = currentBoundMagentaRed;
+      boundRedOrange = currentBoundRedOrange;
+      boundOrangeYellow = currentBoundOrangeYellow;
+      boundYellowGreen = currentBoundYellowGreen;
+      boundGreenCyan = currentBoundGreenCyan;
+      boundCyanBlue = currentBoundCyanBlue;
+      boundBluePurple = currentBoundBluePurple;
+      boundPurpleMagenta = currentBoundPurpleMagenta;
 
       lutParametersDirty = false;
       isComputingLut = true;
@@ -210,31 +251,53 @@ void LutGenerator::lutGenerationLoop() {
     // Precompute combined multipliers and offsets for Contrast, EV, and WB
     float activeContrast = std::max(contrast, 0.0f);
     float contrastOffset = CONTRAST_MIDPOINT * (1.0f - activeContrast);
-    
+
     float finalMult_r = activeContrast * evMultiplier * wb_r;
     float finalMult_g = activeContrast * evMultiplier * wb_g;
     float finalMult_b = activeContrast * evMultiplier * wb_b;
-    
+
     float finalAdd_r = contrastOffset * evMultiplier * wb_r;
     float finalAdd_g = contrastOffset * evMultiplier * wb_g;
     float finalAdd_b = contrastOffset * evMultiplier * wb_b;
 
-    // Definizione delle bande percettive in OKLAB (Core Plateaus).
+    // Definition of perceptual color bands in OKLAB (Core Plateaus).
     struct ColorBand {
       float start;
       float end;
       float val;
     };
-    // Pre-divide by 50.0f here to save divisions in the inner loop
+    // Bands calculated based on real measured OKLAB values (sRGB -> OKLAB).
+    // Key reference points (theoretical values):
+    //   Pure Red      (255,0,0)   →  29.2°
+    //   CSS Orange    (255,165,0) →  70.7°
+    //   Pure Yellow   (255,255,0) → 109.8°
+    //   Pure Green    (0,255,0)   → 142.5°
+    //   Pure Cyan     (0,255,255) → 194.8°
+    //   Pure Blue     (0,0,255)   → 264.1°
+    //   Pure Magenta  (255,0,255) → 328.4°
+    //
+    // Note: Band limits are intentionally shifted/tuned from these exact
+    // primary values for artistic/perceptual coherence.
+    //
+    // Strategy: no gaps between adjacent bands. Edges touch.
+    // Smooth transition is guaranteed by smoothstep in the logic below.
     const ColorBand bands[8] = {
-        {355.0f, 30.0f, satRed / 50.0f},     // 0: Red (wrappa a 360/0 in OKLAB)
-        {38.0f, 72.0f, satOrange / 50.0f},   // 1: Orange
-        {80.0f, 110.0f, satYellow / 50.0f},  // 2: Yellow
-        {120.0f, 198.0f, satGreen / 50.0f},  // 3: Green
-        {208.0f, 225.0f, satCyan / 50.0f},   // 4: Cyan
-        {233.0f, 277.0f, satBlue / 50.0f},   // 5: Blue
-        {283.0f, 307.0f, satPurple / 50.0f}, // 6: Purple
-        {313.0f, 347.0f, satMagenta / 50.0f} // 7: Magenta
+        {boundMagentaRed, boundRedOrange, satRed / 50.0f},     // 0: Red
+        {boundRedOrange, boundOrangeYellow, satOrange / 50.0f},   // 1: Orange
+        {boundOrangeYellow, boundYellowGreen, satYellow / 50.0f},  // 2: Yellow
+        {boundYellowGreen, boundGreenCyan, satGreen / 50.0f},  // 3: Green
+        {boundGreenCyan, boundCyanBlue, satCyan / 50.0f},   // 4: Cyan
+        {boundCyanBlue, boundBluePurple, satBlue / 50.0f},   // 5: Blue
+        {boundBluePurple, boundPurpleMagenta, satPurple / 50.0f}, // 6: Purple
+        {boundPurpleMagenta, boundMagentaRed, satMagenta / 50.0f} // 7: Magenta
+    };
+
+    // Helper lambdas for angle arithmetic
+    auto unwrap_angle = [](float angle, float ref) -> float {
+      float val = angle;
+      while (val < ref) val += 360.0f;
+      while (val >= ref + 360.0f) val -= 360.0f;
+      return val;
     };
 
     // Helper lambda to convert linear value back to sRGB
@@ -253,7 +316,7 @@ void LutGenerator::lutGenerationLoop() {
     for (int b = 0; b < LUT_SIZE; ++b) {
       float b_val = (float)b / (LUT_SIZE - 1);
       float lin_b = linearTable[b];
-      
+
       // Hoist b-dependent parts of luminance and LMS conversion
       float lum_b = lin_b * 0.0722f;
       float l_lms_b = 0.0514459929f * lin_b;
@@ -263,7 +326,7 @@ void LutGenerator::lutGenerationLoop() {
       for (int g = 0; g < LUT_SIZE; ++g) {
         float g_val = (float)g / (LUT_SIZE - 1);
         float lin_g = linearTable[g];
-        
+
         // Hoist g-dependent parts of luminance and LMS conversion
         float lum_bg = lum_b + lin_g * 0.7152f;
         float l_lms_bg = l_lms_b + 0.5363325363f * lin_g;
@@ -305,39 +368,64 @@ void LutGenerator::lutGenerationLoop() {
             if (h >= 360.0f)
               h -= 360.0f;
 
-            // Gestione speciale per il Rosso che wrappa a 360/0
-            if (h >= bands[0].start || h <= bands[0].end) {
-              selectiveMult = bands[0].val;
-            } else {
-              bool handled = false;
-              for (int i = 0; i < 7; ++i) {
-                // Controllo se il colore è dentro il plateau puro
-                if (h >= bands[i + 1].start && h <= bands[i + 1].end) {
-                  selectiveMult = bands[i + 1].val;
-                  handled = true;
-                  break;
-                }
-                // Controllo se è nel gap di transizione tra due plateau
-                if (h > bands[i].end && h < bands[i + 1].start) {
-                  float gapStart = bands[i].end;
-                  float gapEnd = bands[i + 1].start;
-                  float t = (h - gapStart) / (gapEnd - gapStart);
-                  t = t * t * (3.0f - 2.0f * t); // Smoothstep
-                  selectiveMult = (1.0f - t) * bands[i].val +
-                                  t * bands[i + 1].val;
-                  handled = true;
-                  break;
-                }
+            // Find which band h falls into
+            int activeBand = -1;
+            for (int i = 0; i < 8; ++i) {
+              bool inside = false;
+              if (bands[i].start > bands[i].end) {
+                if (h >= bands[i].start || h <= bands[i].end) inside = true;
+              } else {
+                if (h >= bands[i].start && h <= bands[i].end) inside = true;
               }
+              if (inside) {
+                activeBand = i;
+                break;
+              }
+            }
 
-              // Se non è stato gestito, è nel gap tra Magenta (7) e Red (0)
-              if (!handled && h > bands[7].end && h < bands[0].start) {
-                float gapStart = bands[7].end;
-                float gapEnd = bands[0].start;
-                float t = (h - gapStart) / (gapEnd - gapStart);
-                t = t * t * (3.0f - 2.0f * t);
-                selectiveMult = (1.0f - t) * bands[7].val +
-                                t * bands[0].val;
+            if (activeBand != -1) {
+              int prevBand = (activeBand - 1 + 8) % 8;
+              int nextBand = (activeBand + 1) % 8;
+
+              float L = bands[activeBand].start;
+              float R = bands[activeBand].end;
+
+              float valPrev = bands[prevBand].val;
+              float valCurr = bands[activeBand].val;
+              float valNext = bands[nextBand].val;
+
+              // Calculate current, previous, and next band widths
+              float widthCurr = R - L;
+              if (widthCurr < 0.0f) widthCurr += 360.0f;
+
+              float widthPrev = L - bands[prevBand].start;
+              if (widthPrev < 0.0f) widthPrev += 360.0f;
+
+              float widthNext = bands[nextBand].end - R;
+              if (widthNext < 0.0f) widthNext += 360.0f;
+
+              // Transition radius logic (smooth transition zone of max 10 degrees total)
+              const float MAX_RADIUS = 5.0f;
+              float radiusL = std::min(MAX_RADIUS, std::min(widthPrev * 0.5f, widthCurr * 0.5f));
+              float radiusR = std::min(MAX_RADIUS, std::min(widthCurr * 0.5f, widthNext * 0.5f));
+
+              // Local unwrapped coordinates around transitions
+              float h_unwrapped_L = unwrap_angle(h, L - radiusL);
+              float dist_L = h_unwrapped_L - (L - radiusL);
+
+              float h_unwrapped_R = unwrap_angle(h, R - radiusR);
+              float dist_R = h_unwrapped_R - (R - radiusR);
+
+              if (dist_L >= 0.0f && dist_L < 2.0f * radiusL && radiusL > 0.001f) {
+                float t = dist_L / (2.0f * radiusL);
+                t = t * t * (3.0f - 2.0f * t); // Smoothstep
+                selectiveMult = (1.0f - t) * valPrev + t * valCurr;
+              } else if (dist_R >= 0.0f && dist_R < 2.0f * radiusR && radiusR > 0.001f) {
+                float t = dist_R / (2.0f * radiusR);
+                t = t * t * (3.0f - 2.0f * t); // Smoothstep
+                selectiveMult = (1.0f - t) * valCurr + t * valNext;
+              } else {
+                selectiveMult = valCurr;
               }
             }
           }
@@ -345,7 +433,7 @@ void LutGenerator::lutGenerationLoop() {
           // 1. Saturation (applied in linear space)
           float effectiveSaturation = saturation * selectiveMult;
           float lin_luminance = lin_r * 0.2126f + lum_bg;
-          
+
           float out_r =
               lin_luminance + (lin_r - lin_luminance) * effectiveSaturation;
           float out_g =

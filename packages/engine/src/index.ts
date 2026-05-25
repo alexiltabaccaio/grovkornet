@@ -12,6 +12,14 @@ export interface NativeFilmCameraViewProps extends ViewProps {
   satBlue?: number;
   satPurple?: number;
   satMagenta?: number;
+  boundRedOrange?: number;
+  boundOrangeYellow?: number;
+  boundYellowGreen?: number;
+  boundGreenCyan?: number;
+  boundCyanBlue?: number;
+  boundBluePurple?: number;
+  boundPurpleMagenta?: number;
+  boundMagentaRed?: number;
   contrast?: number;
   grainIntensity?: number;
   grainChroma?: number;

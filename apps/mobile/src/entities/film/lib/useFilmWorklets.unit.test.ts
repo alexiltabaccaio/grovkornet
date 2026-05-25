@@ -89,6 +89,29 @@ describe('useFilmWorklets', () => {
     expect(useFilmStore.getState().satMagenta.value).toBe(50.0);
   });
 
+  it('correctly updates selective saturation boundaries in worklets', () => {
+    const { result } = renderHook(() => useFilmWorklets());
+    const worklets = result.current;
+
+    worklets.updateBoundMagentaRed(340.5);
+    worklets.updateBoundRedOrange(50.5);
+    worklets.updateBoundOrangeYellow(85.5);
+    worklets.updateBoundYellowGreen(120.5);
+    worklets.updateBoundGreenCyan(175.5);
+    worklets.updateBoundCyanBlue(225.5);
+    worklets.updateBoundBluePurple(285.5);
+    worklets.updateBoundPurpleMagenta(310.5);
+
+    expect(useFilmStore.getState().boundMagentaRed.value).toBe(340.5);
+    expect(useFilmStore.getState().boundRedOrange.value).toBe(50.5);
+    expect(useFilmStore.getState().boundOrangeYellow.value).toBe(85.5);
+    expect(useFilmStore.getState().boundYellowGreen.value).toBe(120.5);
+    expect(useFilmStore.getState().boundGreenCyan.value).toBe(175.5);
+    expect(useFilmStore.getState().boundCyanBlue.value).toBe(225.5);
+    expect(useFilmStore.getState().boundBluePurple.value).toBe(285.5);
+    expect(useFilmStore.getState().boundPurpleMagenta.value).toBe(310.5);
+  });
+
   it('correctly updates chromatic aberration parameters in worklets', () => {
     const { result } = renderHook(() => useFilmWorklets());
     const worklets = result.current;

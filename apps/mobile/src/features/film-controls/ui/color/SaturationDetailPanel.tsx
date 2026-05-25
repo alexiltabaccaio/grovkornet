@@ -5,6 +5,7 @@ import { useShallow } from 'zustand/react/shallow';
 import { useFilmStore, useFilmWorklets, useFilmParameterControlData } from '@entities/film';
 import { ParameterControl } from '@entities/system';
 import { useTranslation } from 'react-i18next';
+import { ColorRangeSlider } from './ColorRangeSlider';
 
 const COLOR_MAPPING = [
   { key: 'red', color: '#FF453A' },
@@ -178,6 +179,10 @@ export const SaturationDetailPanel = ({
           );
         })}
       </Animated.View>
+
+      {!isMaster && (
+        <ColorRangeSlider activeColorIndex={activeColorIndex as number} />
+      )}
     </View>
   );
 };

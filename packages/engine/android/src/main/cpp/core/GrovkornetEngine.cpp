@@ -59,6 +59,14 @@ RenderParams parseRenderParams(const float* params) {
     rp.targetResolution = params[26];
     rp.invertYShift = params[27];
     rp.aberrationInvert = params[28];
+    rp.boundMagentaRed = params[29];
+    rp.boundRedOrange = params[30];
+    rp.boundOrangeYellow = params[31];
+    rp.boundYellowGreen = params[32];
+    rp.boundGreenCyan = params[33];
+    rp.boundCyanBlue = params[34];
+    rp.boundBluePurple = params[35];
+    rp.boundPurpleMagenta = params[36];
     return rp;
 }
 
@@ -180,7 +188,9 @@ bool GrovkornetEngine::init(AAssetManager* assetManager) {
     // Trigger initial LUT bake
     triggerLutUpdate(1.0f, 1.0f, 0.0f, 5000.0f, 0.0f,
                      50.0f, 50.0f, 50.0f, 50.0f,
-                     50.0f, 50.0f, 50.0f, 50.0f);
+                     50.0f, 50.0f, 50.0f, 50.0f,
+                     350.0f, 45.0f, 80.0f, 125.0f,
+                     170.0f, 230.0f, 280.0f, 315.0f);
 
     LOGI("Filament Engine initialized successfully.");
     return true;
@@ -256,10 +266,14 @@ GrovkornetEngine::~GrovkornetEngine() {
 
 void GrovkornetEngine::triggerLutUpdate(float saturation, float contrast, float ev, float whiteBalance, float tint,
                                         float satRed, float satOrange, float satYellow, float satGreen,
-                                        float satCyan, float satBlue, float satPurple, float satMagenta) {
+                                        float satCyan, float satBlue, float satPurple, float satMagenta,
+                                        float boundMagentaRed, float boundRedOrange, float boundOrangeYellow, float boundYellowGreen,
+                                        float boundGreenCyan, float boundCyanBlue, float boundBluePurple, float boundPurpleMagenta) {
     lutGenerator.triggerLutUpdate(saturation, contrast, ev, whiteBalance, tint,
                                   satRed, satOrange, satYellow, satGreen,
-                                  satCyan, satBlue, satPurple, satMagenta);
+                                  satCyan, satBlue, satPurple, satMagenta,
+                                  boundMagentaRed, boundRedOrange, boundOrangeYellow, boundYellowGreen,
+                                  boundGreenCyan, boundCyanBlue, boundBluePurple, boundPurpleMagenta);
 }
 
 void GrovkornetEngine::applyLutTextureUpdate() {
@@ -270,7 +284,9 @@ void GrovkornetEngine::applyShaderParameters(const RenderParams& params, filamen
     // 1. Trigger LUT calculation on CPU and apply it to GPU texture
     triggerLutUpdate(params.saturation, params.contrast, params.ev, params.whiteBalance, params.tint,
                      params.satRed, params.satOrange, params.satYellow, params.satGreen,
-                     params.satCyan, params.satBlue, params.satPurple, params.satMagenta);
+                     params.satCyan, params.satBlue, params.satPurple, params.satMagenta,
+                     params.boundMagentaRed, params.boundRedOrange, params.boundOrangeYellow, params.boundYellowGreen,
+                     params.boundGreenCyan, params.boundCyanBlue, params.boundBluePurple, params.boundPurpleMagenta);
     if (waitForLut) {
         lutGenerator.waitForLut();
     }

@@ -11,6 +11,14 @@ import {
   DEFAULT_TINT,
   DEFAULT_GRAIN_SPEED,
   DEFAULT_SELECTIVE_SATURATION,
+  DEFAULT_BOUND_MAGENTA_RED,
+  DEFAULT_BOUND_RED_ORANGE,
+  DEFAULT_BOUND_ORANGE_YELLOW,
+  DEFAULT_BOUND_YELLOW_GREEN,
+  DEFAULT_BOUND_GREEN_CYAN,
+  DEFAULT_BOUND_CYAN_BLUE,
+  DEFAULT_BOUND_BLUE_PURPLE,
+  DEFAULT_BOUND_PURPLE_MAGENTA,
 } from '@grovkornet/shared';
 
 export const useFilmStore = create<FilmStore>((set, get) => ({
@@ -40,6 +48,14 @@ export const useFilmStore = create<FilmStore>((set, get) => ({
   satBlue: makeMutable(DEFAULT_SELECTIVE_SATURATION),
   satPurple: makeMutable(DEFAULT_SELECTIVE_SATURATION),
   satMagenta: makeMutable(DEFAULT_SELECTIVE_SATURATION),
+  boundMagentaRed: makeMutable(DEFAULT_BOUND_MAGENTA_RED),
+  boundRedOrange: makeMutable(DEFAULT_BOUND_RED_ORANGE),
+  boundOrangeYellow: makeMutable(DEFAULT_BOUND_ORANGE_YELLOW),
+  boundYellowGreen: makeMutable(DEFAULT_BOUND_YELLOW_GREEN),
+  boundGreenCyan: makeMutable(DEFAULT_BOUND_GREEN_CYAN),
+  boundCyanBlue: makeMutable(DEFAULT_BOUND_CYAN_BLUE),
+  boundBluePurple: makeMutable(DEFAULT_BOUND_BLUE_PURPLE),
+  boundPurpleMagenta: makeMutable(DEFAULT_BOUND_PURPLE_MAGENTA),
   capabilities: {
     availableNoiseReductionModes: [],
     availableEdgeModes: [],
@@ -140,6 +156,30 @@ export const useFilmStore = create<FilmStore>((set, get) => ({
   setSatMagenta: (value) => {
     get().satMagenta.value = value;
   },
+  setBoundMagentaRed: (value) => {
+    get().boundMagentaRed.value = value;
+  },
+  setBoundRedOrange: (value) => {
+    get().boundRedOrange.value = value;
+  },
+  setBoundOrangeYellow: (value) => {
+    get().boundOrangeYellow.value = value;
+  },
+  setBoundYellowGreen: (value) => {
+    get().boundYellowGreen.value = value;
+  },
+  setBoundGreenCyan: (value) => {
+    get().boundGreenCyan.value = value;
+  },
+  setBoundCyanBlue: (value) => {
+    get().boundCyanBlue.value = value;
+  },
+  setBoundBluePurple: (value) => {
+    get().boundBluePurple.value = value;
+  },
+  setBoundPurpleMagenta: (value) => {
+    get().boundPurpleMagenta.value = value;
+  },
   setCapabilities: (caps) => {
     logger.info('FilmStore', 'Capabilities updated for Film');
     set((state) => ({
@@ -169,6 +209,14 @@ export const useFilmStore = create<FilmStore>((set, get) => ({
         state.satBlue.value = DEFAULT_SELECTIVE_SATURATION;
         state.satPurple.value = DEFAULT_SELECTIVE_SATURATION;
         state.satMagenta.value = DEFAULT_SELECTIVE_SATURATION;
+        state.boundMagentaRed.value = DEFAULT_BOUND_MAGENTA_RED;
+        state.boundRedOrange.value = DEFAULT_BOUND_RED_ORANGE;
+        state.boundOrangeYellow.value = DEFAULT_BOUND_ORANGE_YELLOW;
+        state.boundYellowGreen.value = DEFAULT_BOUND_YELLOW_GREEN;
+        state.boundGreenCyan.value = DEFAULT_BOUND_GREEN_CYAN;
+        state.boundCyanBlue.value = DEFAULT_BOUND_CYAN_BLUE;
+        state.boundBluePurple.value = DEFAULT_BOUND_BLUE_PURPLE;
+        state.boundPurpleMagenta.value = DEFAULT_BOUND_PURPLE_MAGENTA;
         break;
       case 'contrast':
         state.contrast.value = DEFAULT_CONTRAST;
