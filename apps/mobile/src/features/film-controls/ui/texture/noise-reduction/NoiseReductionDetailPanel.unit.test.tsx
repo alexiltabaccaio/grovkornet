@@ -1,6 +1,6 @@
 import React from 'react';
 import { render } from '@testing-library/react-native';
-import { NoiseReductionExtension } from './NoiseReductionExtension';
+import { NoiseReductionDetailPanel } from './NoiseReductionDetailPanel';
 
 const mockSetNoiseReductionMode = jest.fn();
 const mockSetNoiseReductionAuto = jest.fn();
@@ -22,18 +22,18 @@ jest.mock('@entities/system', () => ({
     const state = { isDebugEnabled: true };
     return fn ? fn(state) : state;
   }),
-  ParameterExtensionWrapper: 'ParameterExtensionWrapper',
-  GenericPillExtension: 'GenericPillExtension',
+  ParameterDetailPanelWrapper: 'ParameterDetailPanelWrapper',
+  GenericPillDetailPanel: 'GenericPillDetailPanel',
 }));
 
-describe('NoiseReductionExtension', () => {
+describe('NoiseReductionDetailPanel', () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
   it('renders and invokes onChange and auto-toggle callbacks correctly', () => {
-    const { UNSAFE_getByType } = render(<NoiseReductionExtension />);
-    const genericPill = UNSAFE_getByType('GenericPillExtension' as any);
+    const { UNSAFE_getByType } = render(<NoiseReductionDetailPanel />);
+    const genericPill = UNSAFE_getByType('GenericPillDetailPanel' as any);
 
     expect(genericPill).toBeDefined();
 

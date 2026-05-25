@@ -1,6 +1,6 @@
 import React from 'react';
 import { render } from '@testing-library/react-native';
-import { DebugExtension } from './DebugExtension';
+import { DebugDetailPanel } from './DebugDetailPanel';
 
 jest.mock('@entities/system', () => ({
   useSystemStore: jest.fn((fn?: (state: { 
@@ -17,12 +17,12 @@ jest.mock('@entities/system', () => ({
     };
     return fn ? fn(state) : state;
   }),
-  ParameterExtensionWrapper: 'ParameterExtensionWrapper',
+  ParameterDetailPanelWrapper: 'ParameterDetailPanelWrapper',
 }));
 
-describe('DebugExtension', () => {
+describe('DebugDetailPanel', () => {
   it('renders correctly', () => {
-    const { toJSON } = render(<DebugExtension />);
+    const { toJSON } = render(<DebugDetailPanel />);
     expect(toJSON()).toBeDefined();
   });
 });

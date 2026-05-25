@@ -2,16 +2,16 @@ import React from 'react';
 import { StyleSheet, StyleProp, ViewStyle } from 'react-native';
 import { useShallow } from 'zustand/react/shallow';
 import { useSystemStore } from '@entities/system';
-import { ParameterExtensionWrapper } from '@entities/system';
+import { ParameterDetailPanelWrapper } from '@entities/system';
 
 import { useTranslation } from 'react-i18next';
 import { PillButton } from '@shared/ui';
 
-interface DebugExtensionProps {
-  parameterExtensionAnimatedStyle?: StyleProp<ViewStyle>;
+interface DebugDetailPanelProps {
+  parameterDetailPanelAnimatedStyle?: StyleProp<ViewStyle>;
 }
 
-export const DebugExtension = __DEV__ ? ({ parameterExtensionAnimatedStyle }: DebugExtensionProps) => {
+export const DebugDetailPanel = __DEV__ ? ({ parameterDetailPanelAnimatedStyle }: DebugDetailPanelProps) => {
   const { t } = useTranslation();
   const { isDebugEnabled, setIsDebugEnabled, isLogsEnabled, setIsLogsEnabled } = useSystemStore(useShallow(state => ({
     isDebugEnabled: state.isDebugEnabled,
@@ -24,7 +24,7 @@ export const DebugExtension = __DEV__ ? ({ parameterExtensionAnimatedStyle }: De
   const labelLogs = t('parameters.debug_logs') ? t('parameters.debug_logs').toUpperCase() : 'LOGS';
 
   return (
-    <ParameterExtensionWrapper animatedStyle={parameterExtensionAnimatedStyle} gap={16} paddingHorizontal={32}>
+    <ParameterDetailPanelWrapper animatedStyle={parameterDetailPanelAnimatedStyle} gap={16} paddingHorizontal={32}>
       <PillButton
         label={labelUI}
         isActive={isDebugEnabled}
@@ -39,7 +39,7 @@ export const DebugExtension = __DEV__ ? ({ parameterExtensionAnimatedStyle }: De
         isDebugEnabled={isDebugEnabled}
         style={styles.pressable}
       />
-    </ParameterExtensionWrapper>
+    </ParameterDetailPanelWrapper>
   );
 } : () => null;
 

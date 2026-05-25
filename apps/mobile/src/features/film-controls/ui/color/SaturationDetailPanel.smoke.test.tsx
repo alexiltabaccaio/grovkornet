@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-require-imports, react-hooks/exhaustive-deps */
 import React from 'react';
 import { render, fireEvent } from '@testing-library/react-native';
-import { SaturationExtension } from './SaturationExtension';
+import { SaturationDetailPanel } from './SaturationDetailPanel';
 
 jest.mock('react-i18next', () => ({
   useTranslation: () => ({
@@ -79,18 +79,18 @@ jest.mock('@entities/film', () => ({
   useFilmWorklets: () => mockWorklets,
 }));
 
-describe('SaturationExtension', () => {
+describe('SaturationDetailPanel', () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
   it('renders correctly', () => {
-    const { toJSON } = render(<SaturationExtension />);
+    const { toJSON } = render(<SaturationDetailPanel />);
     expect(toJSON()).toBeDefined();
   });
 
   it('handles switching between all color channels and updates state', () => {
-    const { getByTestId, getByText } = render(<SaturationExtension />);
+    const { getByTestId, getByText } = render(<SaturationDetailPanel />);
 
     const colors = [
       { key: 'red', setter: mockSetters.setSatRed },

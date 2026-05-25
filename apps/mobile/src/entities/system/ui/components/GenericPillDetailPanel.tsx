@@ -1,18 +1,18 @@
 import React from 'react';
 import { StyleSheet, StyleProp, ViewStyle } from 'react-native';
 import { useDerivedValue, SharedValue } from 'react-native-reanimated';
-import { ParameterExtensionWrapper } from './ParameterExtensionWrapper';
+import { ParameterDetailPanelWrapper } from './ParameterDetailPanelWrapper';
 import { useSystemStore } from '../../model/useSystemStore';
 import { PillButton } from '@shared/ui';
 
-interface GenericPillExtensionProps<T> {
+interface GenericPillDetailPanelProps<T> {
   options: T[];
   onChange: (option: T, index: number) => void;
   value?: SharedValue<number> | null;
   isActiveShared?: (currValue: number, option: T, index: number) => boolean;
   isActiveStatic?: (option: T, index: number) => boolean;
   getLabel: (option: T, index: number) => string;
-  parameterExtensionAnimatedStyle?: StyleProp<ViewStyle>;
+  parameterDetailPanelAnimatedStyle?: StyleProp<ViewStyle>;
   pillMaxWidth?: number;
   gap?: number;
   paddingHorizontal?: number;
@@ -103,14 +103,14 @@ function GenericPillItemStatic<T>({
   );
 }
 
-export function GenericPillExtension<T>({
+export function GenericPillDetailPanel<T>({
   options,
   onChange,
   value,
   isActiveShared,
   isActiveStatic,
   getLabel,
-  parameterExtensionAnimatedStyle,
+  parameterDetailPanelAnimatedStyle,
   pillMaxWidth = 80,
   gap = 8,
   paddingHorizontal = 16,
@@ -119,12 +119,12 @@ export function GenericPillExtension<T>({
   scrollable = false,
   leftAccessory,
   rightAccessory,
-}: GenericPillExtensionProps<T>) {
+}: GenericPillDetailPanelProps<T>) {
   const isDebugEnabled = useSystemStore((s) => s.isDebugEnabled);
 
   return (
-    <ParameterExtensionWrapper
-      animatedStyle={parameterExtensionAnimatedStyle}
+    <ParameterDetailPanelWrapper
+      animatedStyle={parameterDetailPanelAnimatedStyle}
       gap={gap}
       paddingHorizontal={paddingHorizontal}
       scrollable={scrollable}
@@ -165,7 +165,7 @@ export function GenericPillExtension<T>({
           />
         );
       })}
-    </ParameterExtensionWrapper>
+    </ParameterDetailPanelWrapper>
   );
 }
 

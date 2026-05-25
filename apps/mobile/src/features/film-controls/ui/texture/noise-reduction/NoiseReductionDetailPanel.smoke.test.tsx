@@ -1,6 +1,6 @@
 import React from 'react';
 import { render } from '@testing-library/react-native';
-import { NoiseReductionExtension } from './NoiseReductionExtension';
+import { NoiseReductionDetailPanel } from './NoiseReductionDetailPanel';
 
 jest.mock('@entities/film', () => ({
   useFilmStore: jest.fn((fn?: (state: { noiseReductionMode: { value: number }; setNoiseReductionMode: jest.Mock; noiseReductionAuto: { value: boolean }; setNoiseReductionAuto: jest.Mock }) => unknown) => {
@@ -19,13 +19,13 @@ jest.mock('@entities/system', () => ({
     const state = { isDebugEnabled: false };
     return fn ? fn(state) : state;
   }),
-  ParameterExtensionWrapper: 'ParameterExtensionWrapper',
-  GenericPillExtension: 'GenericPillExtension',
+  ParameterDetailPanelWrapper: 'ParameterDetailPanelWrapper',
+  GenericPillDetailPanel: 'GenericPillDetailPanel',
 }));
 
-describe('NoiseReductionExtension', () => {
+describe('NoiseReductionDetailPanel', () => {
   it('renders correctly', () => {
-    const { toJSON } = render(<NoiseReductionExtension />);
+    const { toJSON } = render(<NoiseReductionDetailPanel />);
     expect(toJSON()).toBeDefined();
   });
 });

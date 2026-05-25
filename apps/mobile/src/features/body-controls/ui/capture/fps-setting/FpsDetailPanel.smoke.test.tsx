@@ -1,6 +1,6 @@
 import React from 'react';
 import { render } from '@testing-library/react-native';
-import { FpsExtension } from './FpsExtension';
+import { FpsDetailPanel } from './FpsDetailPanel';
 
 jest.mock('@entities/body', () => ({
   useBodyStore: jest.fn((fn?: (state: { fpsSetting: { value: number }; setFpsSetting: jest.Mock; capabilities: { maxFps: number } }) => unknown) => {
@@ -13,9 +13,9 @@ jest.mock('@entities/body', () => ({
   }),
 }));
 
-describe('FpsExtension', () => {
+describe('FpsDetailPanel', () => {
   it('renders correctly', () => {
-    const { toJSON } = render(<FpsExtension />);
+    const { toJSON } = render(<FpsDetailPanel />);
     expect(toJSON()).toBeDefined();
   });
 });

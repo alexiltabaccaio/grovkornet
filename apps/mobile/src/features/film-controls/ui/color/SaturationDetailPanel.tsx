@@ -43,7 +43,7 @@ const COLOR_MAPPING = [
 
 type ColorIndex = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7;
 
-export const SaturationExtension = () => {
+export const SaturationDetailPanel = () => {
   const { t } = useTranslation();
   const [activeColorIndex, setActiveColorIndex] = React.useState<ColorIndex>(0);
 

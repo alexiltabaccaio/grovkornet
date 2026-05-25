@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { useSystemStore } from '@entities/system';
 import { PillButton } from '@shared/ui';
 
-export const ChromaticAberrationExtension = () => {
+export const ChromaticAberrationDetailPanel = () => {
   const { t } = useTranslation();
   const isDebugEnabled = useSystemStore((s) => s.isDebugEnabled);
   const { aberrationDirection, setAberrationDirection, aberrationInvert, setAberrationInvert } = useFilmStore(

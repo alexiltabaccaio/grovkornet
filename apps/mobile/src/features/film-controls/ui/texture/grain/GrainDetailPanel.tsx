@@ -9,7 +9,7 @@ import { useTranslation } from 'react-i18next';
 import { useSystemStore } from '@entities/system';
 import { PillButton } from '@shared/ui';
 
-export const GrainExtension = () => {
+export const GrainDetailPanel = () => {
   const { t } = useTranslation();
   const isDebugEnabled = useSystemStore((s) => s.isDebugEnabled);
   const { grainChroma, setGrainChroma, grainSize, setGrainSize, grainSpeed, setGrainSpeed } = useFilmStore(

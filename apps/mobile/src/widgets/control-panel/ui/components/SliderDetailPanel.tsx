@@ -7,9 +7,9 @@ import { useFilmParameterControlData, FilmParameterType } from '@entities/film';
 import { useBodyParameterControlData, BodyParameterType } from '@entities/body';
 import { useLensParameterControlData, LensParameterType } from '@entities/lens';
 
-interface SliderExtensionProps {
+interface SliderDetailPanelProps {
   parameter: ParameterType;
-  parameterExtensionAnimatedStyle?: StyleProp<ViewStyle>;
+  parameterDetailPanelAnimatedStyle?: StyleProp<ViewStyle>;
   isActiveOverride?: boolean;
 }
 
@@ -34,16 +34,16 @@ const isLensParameter = (p: ParameterType): p is LensParameterType => {
   return p === 'focus';
 };
 
-export const SliderExtension = ({
+export const SliderDetailPanel = ({
   parameter,
-  parameterExtensionAnimatedStyle,
+  parameterDetailPanelAnimatedStyle,
   isActiveOverride,
-}: SliderExtensionProps) => {
+}: SliderDetailPanelProps) => {
   if (isFilmParameter(parameter)) {
     return (
-      <FilmSliderExtension
+      <FilmSliderDetailPanel
         parameter={parameter}
-        parameterExtensionAnimatedStyle={parameterExtensionAnimatedStyle}
+        parameterDetailPanelAnimatedStyle={parameterDetailPanelAnimatedStyle}
         isActiveOverride={isActiveOverride}
       />
     );
@@ -51,9 +51,9 @@ export const SliderExtension = ({
 
   if (isBodyParameter(parameter)) {
     return (
-      <BodySliderExtension
+      <BodySliderDetailPanel
         parameter={parameter}
-        parameterExtensionAnimatedStyle={parameterExtensionAnimatedStyle}
+        parameterDetailPanelAnimatedStyle={parameterDetailPanelAnimatedStyle}
         isActiveOverride={isActiveOverride}
       />
     );
@@ -61,9 +61,9 @@ export const SliderExtension = ({
 
   if (isLensParameter(parameter)) {
     return (
-      <LensSliderExtension
+      <LensSliderDetailPanel
         parameter={parameter}
-        parameterExtensionAnimatedStyle={parameterExtensionAnimatedStyle}
+        parameterDetailPanelAnimatedStyle={parameterDetailPanelAnimatedStyle}
         isActiveOverride={isActiveOverride}
       />
     );
@@ -74,18 +74,18 @@ export const SliderExtension = ({
 
 interface SubSliderProps<T> {
   parameter: T;
-  parameterExtensionAnimatedStyle?: StyleProp<ViewStyle>;
+  parameterDetailPanelAnimatedStyle?: StyleProp<ViewStyle>;
   isActiveOverride?: boolean;
 }
 
-const FilmSliderExtension = ({
+const FilmSliderDetailPanel = ({
   parameter,
-  parameterExtensionAnimatedStyle,
+  parameterDetailPanelAnimatedStyle,
   isActiveOverride,
 }: SubSliderProps<FilmParameterType>) => {
-  const { activeExtension } = useSystemStore(
+  const { activeDetailPanel } = useSystemStore(
     useShallow((s) => ({
-      activeExtension: s.activeExtension,
+      activeDetailPanel: s.activeDetailPanel,
     }))
   );
 
@@ -95,11 +95,11 @@ const FilmSliderExtension = ({
     isActiveOverride !== undefined
       ? isActiveOverride
       : parameter === 'grain'
-        ? activeExtension === 'grain_intensity'
+        ? activeDetailPanel === 'grain_intensity'
         : true;
 
   return (
-    <Animated.View style={[styles.parameterExtensionContainer, parameterExtensionAnimatedStyle]}>
+    <Animated.View style={[styles.parameterDetailPanelContainer, parameterDetailPanelAnimatedStyle]}>
       <ParameterControl
         label=""
         isActive={finalIsActive}
@@ -123,9 +123,9 @@ const FilmSliderExtension = ({
   );
 };
 
-const BodySliderExtension = ({
+const BodySliderDetailPanel = ({
   parameter,
-  parameterExtensionAnimatedStyle,
+  parameterDetailPanelAnimatedStyle,
   isActiveOverride,
 }: SubSliderProps<BodyParameterType>) => {
   const controlData = useBodyParameterControlData(parameter);
@@ -133,7 +133,7 @@ const BodySliderExtension = ({
   const finalIsActive = isActiveOverride !== undefined ? isActiveOverride : true;
 
   return (
-    <Animated.View style={[styles.parameterExtensionContainer, parameterExtensionAnimatedStyle]}>
+    <Animated.View style={[styles.parameterDetailPanelContainer, parameterDetailPanelAnimatedStyle]}>
       <ParameterControl
         label=""
         isActive={finalIsActive}
@@ -157,9 +157,9 @@ const BodySliderExtension = ({
   );
 };
 
-const LensSliderExtension = ({
+const LensSliderDetailPanel = ({
   parameter,
-  parameterExtensionAnimatedStyle,
+  parameterDetailPanelAnimatedStyle,
   isActiveOverride,
 }: SubSliderProps<LensParameterType>) => {
   const controlData = useLensParameterControlData(parameter);
@@ -167,7 +167,7 @@ const LensSliderExtension = ({
   const finalIsActive = isActiveOverride !== undefined ? isActiveOverride : true;
 
   return (
-    <Animated.View style={[styles.parameterExtensionContainer, parameterExtensionAnimatedStyle]}>
+    <Animated.View style={[styles.parameterDetailPanelContainer, parameterDetailPanelAnimatedStyle]}>
       <ParameterControl
         label=""
         isActive={finalIsActive}
@@ -192,7 +192,7 @@ const LensSliderExtension = ({
 };
 
 const styles = StyleSheet.create({
-  parameterExtensionContainer: {
+  parameterDetailPanelContainer: {
     justifyContent: 'center',
     alignItems: 'center',
     width: '100%',

@@ -1,6 +1,6 @@
 import React from 'react';
 import { render } from '@testing-library/react-native';
-import { AspectRatioExtension } from './AspectRatioExtension';
+import { AspectRatioDetailPanel } from './AspectRatioDetailPanel';
 
 jest.mock('@entities/body', () => ({
   useBodyStore: jest.fn((fn?: (state: { aspectRatio: { value: number }; setAspectRatio: jest.Mock }) => unknown) => {
@@ -12,9 +12,9 @@ jest.mock('@entities/body', () => ({
   }),
 }));
 
-describe('AspectRatioExtension', () => {
+describe('AspectRatioDetailPanel', () => {
   it('renders correctly', () => {
-    const { toJSON } = render(<AspectRatioExtension />);
+    const { toJSON } = render(<AspectRatioDetailPanel />);
     expect(toJSON()).toBeDefined();
   });
 });

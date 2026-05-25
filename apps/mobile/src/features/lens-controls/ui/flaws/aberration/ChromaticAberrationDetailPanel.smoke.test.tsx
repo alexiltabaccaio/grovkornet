@@ -1,6 +1,6 @@
 import React from 'react';
 import { render } from '@testing-library/react-native';
-import { ChromaticAberrationExtension } from './ChromaticAberrationExtension';
+import { ChromaticAberrationDetailPanel } from './ChromaticAberrationDetailPanel';
 
 jest.mock('react-i18next', () => ({
   useTranslation: () => ({
@@ -35,9 +35,9 @@ jest.mock('@entities/system', () => ({
   }),
 }));
 
-describe('ChromaticAberrationExtension', () => {
+describe('ChromaticAberrationDetailPanel', () => {
   it('renders correctly', () => {
-    const { toJSON } = render(<ChromaticAberrationExtension />);
+    const { toJSON } = render(<ChromaticAberrationDetailPanel />);
     expect(toJSON()).toBeDefined();
   });
 });

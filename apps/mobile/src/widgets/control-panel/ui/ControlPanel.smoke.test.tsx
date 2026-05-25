@@ -50,12 +50,12 @@ describe('ControlPanel Component Stability Test', () => {
     activeSection: 'none' as SectionType,
     activeModule: 'none' as ModuleType,
     activeParameter: 'none' as ParameterType,
-    activeExtension: 'none' as any,
+    activeDetailPanel: 'none' as any,
     isDebugEnabled: false,
     setActiveSection: jest.fn(),
     setActiveModule: jest.fn(),
     setActiveParameter: jest.fn(),
-    setActiveExtension: jest.fn(),
+    setActiveDetailPanel: jest.fn(),
     setIsDebugEnabled: jest.fn(),
   };
 

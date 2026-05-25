@@ -1,6 +1,6 @@
 import React from 'react';
 import { render } from '@testing-library/react-native';
-import { LensSelectionExtension } from './LensSelectionExtension';
+import { LensSelectionDetailPanel } from './LensSelectionDetailPanel';
 
 const mockSetCameraId = jest.fn();
 const mockSetCameraAuto = jest.fn();
@@ -28,17 +28,17 @@ jest.mock('@entities/system', () => ({
     const state = { isDebugEnabled: true };
     return fn ? fn(state) : state;
   }),
-  GenericPillExtension: 'GenericPillExtension',
+  GenericPillDetailPanel: 'GenericPillDetailPanel',
 }));
 
-describe('LensSelectionExtension', () => {
+describe('LensSelectionDetailPanel', () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
   it('renders and invokes onChange and auto-toggle callbacks correctly', () => {
-    const { UNSAFE_getByType } = render(<LensSelectionExtension />);
-    const genericPill = UNSAFE_getByType('GenericPillExtension' as any);
+    const { UNSAFE_getByType } = render(<LensSelectionDetailPanel />);
+    const genericPill = UNSAFE_getByType('GenericPillDetailPanel' as any);
 
     expect(genericPill).toBeDefined();
 

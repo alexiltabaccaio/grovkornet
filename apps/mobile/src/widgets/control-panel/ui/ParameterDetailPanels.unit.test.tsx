@@ -2,7 +2,7 @@
 import React from 'react';
 import { render, act, fireEvent } from '@testing-library/react-native';
 import { Image } from 'react-native';
-import { ParameterExtensions } from './ParameterExtensions';
+import { ParameterDetailPanels } from './ParameterDetailPanels';
 import { useSystemStore } from '@entities/system';
 import { useBodyStore } from '@entities/body';
 
@@ -60,7 +60,7 @@ jest.mock('react-native-reanimated', () => {
   return mockReanimated;
 });
 
-describe('ParameterExtensions', () => {
+describe('ParameterDetailPanels', () => {
   const mockTranslateY = { value: -50 } as unknown as import('react-native-reanimated').SharedValue<number>;
 
   beforeEach(() => {
@@ -71,7 +71,7 @@ describe('ParameterExtensions', () => {
     act(() => {
       useSystemStore.getState().setActiveParameter('none');
     });
-    const { toJSON } = render(<ParameterExtensions translateY={mockTranslateY} />);
+    const { toJSON } = render(<ParameterDetailPanels translateY={mockTranslateY} />);
     expect(toJSON()).toBeNull();
   });
 
@@ -79,7 +79,7 @@ describe('ParameterExtensions', () => {
     act(() => {
       useSystemStore.getState().setActiveParameter('grain');
     });
-    const { getByText } = render(<ParameterExtensions translateY={mockTranslateY} />);
+    const { getByText } = render(<ParameterDetailPanels translateY={mockTranslateY} />);
     expect(getByText('PARAMETERS.CHROMA')).toBeDefined();
     expect(getByText('PARAMETERS.SIZE')).toBeDefined();
   });
@@ -89,7 +89,7 @@ describe('ParameterExtensions', () => {
       useSystemStore.getState().setActiveParameter('torch');
       useBodyStore.getState().torchState.value = 0;
     });
-    const { getByText, getByRole } = render(<ParameterExtensions translateY={mockTranslateY} />);
+    const { getByText, getByRole } = render(<ParameterDetailPanels translateY={mockTranslateY} />);
     expect(getByText('PARAMETERS.TORCH_DIMMER')).toBeDefined();
 
     const torchButton = getByRole('button', { name: 'OFF' });
@@ -106,7 +106,7 @@ describe('ParameterExtensions', () => {
     act(() => {
       useSystemStore.getState().setActiveParameter('chromatic_aberration');
     });
-    const { getByText } = render(<ParameterExtensions translateY={mockTranslateY} />);
+    const { getByText } = render(<ParameterDetailPanels translateY={mockTranslateY} />);
     expect(getByText('PARAMETERS.DIRECTION')).toBeDefined();
   });
 
@@ -114,7 +114,7 @@ describe('ParameterExtensions', () => {
     act(() => {
       useSystemStore.getState().setActiveParameter('language');
     });
-    const { UNSAFE_getAllByType } = render(<ParameterExtensions translateY={mockTranslateY} />);
+    const { UNSAFE_getAllByType } = render(<ParameterDetailPanels translateY={mockTranslateY} />);
     const images = UNSAFE_getAllByType(Image);
     expect(images.length).toBe(2);
   });
@@ -125,7 +125,7 @@ describe('ParameterExtensions', () => {
       useBodyStore.getState().resolutionSetting.value = 1; // 1080p
     });
 
-    const { getByText, queryByText } = render(<ParameterExtensions translateY={mockTranslateY} />);
+    const { getByText, queryByText } = render(<ParameterDetailPanels translateY={mockTranslateY} />);
     expect(getByText('1080p')).toBeDefined();
     expect(queryByText('PARAMETERS.PREVIEW_IN_4K')).toBeNull();
     expect(queryByText('parameters.preview_in_4k_warning')).toBeNull();
@@ -138,7 +138,7 @@ describe('ParameterExtensions', () => {
       useBodyStore.getState().previewIn4k.value = 0;
     });
 
-    const { getByText, getByRole } = render(<ParameterExtensions translateY={mockTranslateY} />);
+    const { getByText, getByRole } = render(<ParameterDetailPanels translateY={mockTranslateY} />);
     expect(getByText('4K')).toBeDefined();
     expect(getByText('PARAMETERS.PREVIEW_IN_4K')).toBeDefined();
     expect(getByText('parameters.preview_in_4k_warning')).toBeDefined();
@@ -157,7 +157,7 @@ describe('ParameterExtensions', () => {
     act(() => {
       useSystemStore.getState().setActiveParameter('saturation');
     });
-    const { getByText } = render(<ParameterExtensions translateY={mockTranslateY} />);
+    const { getByText } = render(<ParameterDetailPanels translateY={mockTranslateY} />);
     expect(getByText('COLORS.RED')).toBeDefined();
   });
 
@@ -165,7 +165,7 @@ describe('ParameterExtensions', () => {
     act(() => {
       useSystemStore.getState().setActiveParameter('contrast');
     });
-    const { toJSON } = render(<ParameterExtensions translateY={mockTranslateY} />);
+    const { toJSON } = render(<ParameterDetailPanels translateY={mockTranslateY} />);
     expect(toJSON()).toBeDefined();
   });
 });

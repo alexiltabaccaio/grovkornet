@@ -6,7 +6,7 @@ describe('useSystemStore', () => {
       activeSection: 'none',
       activeModule: 'none',
       activeParameter: 'none',
-      activeExtension: 'none',
+      activeDetailPanel: 'none',
       isDebugEnabled: false,
       isLogsEnabled: false,
       lastActiveModules: {
@@ -35,7 +35,7 @@ describe('useSystemStore', () => {
     expect(state.activeSection).toBe('none');
     expect(state.activeModule).toBe('none');
     expect(state.activeParameter).toBe('none');
-    expect(state.activeExtension).toBe('none');
+    expect(state.activeDetailPanel).toBe('none');
   });
 
   it('sets active section correctly', () => {
@@ -80,21 +80,21 @@ describe('useSystemStore', () => {
   });
 
   it('sets active sub parameter and resets correctly', () => {
-    const { setActiveExtension, setActiveParameter, setActiveModule } = useSystemStore.getState();
+    const { setActiveDetailPanel, setActiveParameter, setActiveModule } = useSystemStore.getState();
     
-    setActiveExtension('grain_chroma');
-    expect(useSystemStore.getState().activeExtension).toBe('grain_chroma');
+    setActiveDetailPanel('grain_chroma');
+    expect(useSystemStore.getState().activeDetailPanel).toBe('grain_chroma');
 
     // Reset on parameter change
     setActiveParameter('grain');
-    expect(useSystemStore.getState().activeExtension).toBe('none');
+    expect(useSystemStore.getState().activeDetailPanel).toBe('none');
 
-    setActiveExtension('grain_size');
-    expect(useSystemStore.getState().activeExtension).toBe('grain_size');
+    setActiveDetailPanel('grain_size');
+    expect(useSystemStore.getState().activeDetailPanel).toBe('grain_size');
 
     // Reset on module change
     setActiveModule('none');
-    expect(useSystemStore.getState().activeExtension).toBe('none');
+    expect(useSystemStore.getState().activeDetailPanel).toBe('none');
   });
 
   it('sets latest captured uri correctly', () => {
@@ -133,10 +133,10 @@ describe('useSystemStore', () => {
     expect(useSystemStore.getState().activeParameter).toBe('sharpening');
   });
 
-  it('updates isExtensionOpen correctly', () => {
-    const { setIsExtensionOpen } = useSystemStore.getState();
-    setIsExtensionOpen(true);
-    expect(useSystemStore.getState().isExtensionOpen).toBe(true);
+  it('updates isDetailPanelOpen correctly', () => {
+    const { setIsDetailPanelOpen } = useSystemStore.getState();
+    setIsDetailPanelOpen(true);
+    expect(useSystemStore.getState().isDetailPanelOpen).toBe(true);
   });
 
   it('triggers capture and resets after timeout', () => {

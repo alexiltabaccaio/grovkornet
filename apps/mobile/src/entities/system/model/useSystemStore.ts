@@ -1,16 +1,16 @@
 import { create } from 'zustand';
 import { logger } from '@shared/lib/logger';
-import { SystemStore, ModuleType, ParameterType, SectionType, ParameterExtensionType } from './types';
+import { SystemStore, ModuleType, ParameterType, SectionType, ParameterDetailPanelType } from './types';
 
 export const useSystemStore = create<SystemStore>((set, get) => ({
   // UI State
   activeSection: 'none',
   activeModule: 'none',
   activeParameter: 'none',
-  activeExtension: 'none',
+  activeDetailPanel: 'none',
   isDebugEnabled: false,
   isLogsEnabled: __DEV__,
-  isExtensionOpen: false,
+  isDetailPanelOpen: false,
   isCapturing: false,
   latestPreviewUri: null,
   latestCapturedUri: null,
@@ -44,7 +44,7 @@ export const useSystemStore = create<SystemStore>((set, get) => ({
       activeSection: section,
       activeModule: module,
       activeParameter: parameter,
-      activeExtension: 'none'
+      activeDetailPanel: 'none'
     });
   },
   
@@ -53,7 +53,7 @@ export const useSystemStore = create<SystemStore>((set, get) => ({
     set((state) => ({ 
       activeModule: module, 
       activeParameter: lastActiveParameters[module] || 'none',
-      activeExtension: 'none',
+      activeDetailPanel: 'none',
       lastActiveModules: {
         ...state.lastActiveModules,
         [activeSection]: module,
@@ -66,7 +66,7 @@ export const useSystemStore = create<SystemStore>((set, get) => ({
     const { activeModule } = get();
     set((state) => ({
       activeParameter: param,
-      activeExtension: 'none',
+      activeDetailPanel: 'none',
       lastActiveParameters: {
         ...state.lastActiveParameters,
         [activeModule]: param,
@@ -83,12 +83,12 @@ export const useSystemStore = create<SystemStore>((set, get) => ({
     set({ isLogsEnabled: enabled });
   },
 
-  setIsExtensionOpen: (open: boolean) => {
-    set({ isExtensionOpen: open });
+  setIsDetailPanelOpen: (open: boolean) => {
+    set({ isDetailPanelOpen: open });
   },
 
-  setActiveExtension: (param: ParameterExtensionType) => {
-    set({ activeExtension: param });
+  setActiveDetailPanel: (param: ParameterDetailPanelType) => {
+    set({ activeDetailPanel: param });
   },
 
   triggerCapture: () => {

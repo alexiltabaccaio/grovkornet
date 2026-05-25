@@ -9,12 +9,17 @@ export const useLensParameterControlData = (
   parameter: LensParameterType
 ): ParameterControlData => {
   const lens = useLensStore(
-    useShallow((s) => ({
-      focusDistance: s.focusDistance,
-      setFocusDistance: s.setFocusDistance,
-      focusAuto: s.focusAuto,
-      setFocusAuto: s.setFocusAuto,
-    }))
+    useShallow((s) => {
+      switch (parameter) {
+        case 'focus':
+          return {
+            focusDistance: s.focusDistance,
+            setFocusDistance: s.setFocusDistance,
+            focusAuto: s.focusAuto,
+            setFocusAuto: s.setFocusAuto,
+          };
+      }
+    })
   );
 
   const lensWorklets = useLensWorklets();

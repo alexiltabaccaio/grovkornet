@@ -1,6 +1,6 @@
 import React from 'react';
 import { render } from '@testing-library/react-native';
-import { GrainExtension } from './GrainExtension';
+import { GrainDetailPanel } from './GrainDetailPanel';
 
 jest.mock('react-i18next', () => ({
   useTranslation: () => ({
@@ -38,9 +38,9 @@ jest.mock('@entities/film', () => ({
   }),
 }));
 
-describe('GrainExtension', () => {
+describe('GrainDetailPanel', () => {
   it('renders correctly', () => {
-    const { toJSON } = render(<GrainExtension />);
+    const { toJSON } = render(<GrainDetailPanel />);
     expect(toJSON()).toBeDefined();
   });
 });

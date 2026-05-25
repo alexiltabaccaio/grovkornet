@@ -1,6 +1,6 @@
 export * from './ui/development/DevelopmentModule';
 export * from './ui/texture/TextureModule';
-export * from './ui/texture/noise-reduction/NoiseReductionExtension';
-export * from './ui/texture/grain/GrainExtension';
-export * from './ui/color/SaturationExtension';
+export * from './ui/texture/noise-reduction/NoiseReductionDetailPanel';
+export * from './ui/texture/grain/GrainDetailPanel';
+export * from './ui/color/SaturationDetailPanel';
 

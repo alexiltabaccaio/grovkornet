@@ -2,6 +2,7 @@ import { useShallow } from 'zustand/react/shallow';
 import { useFilmStore } from '../model/useFilmStore';
 import { useFilmWorklets } from './useFilmWorklets';
 import { ParameterControlData } from '@shared/lib/parameter/types';
+import { FilmStore } from '../model/types';
 
 export type FilmParameterType =
   | 'grain'
@@ -13,31 +14,81 @@ export type FilmParameterType =
   | 'temperature'
   | 'tint';
 
+type SelectedFilmState = Pick<
+  FilmStore,
+  | 'grainIntensity'
+  | 'setGrainIntensity'
+  | 'sharpening'
+  | 'setSharpening'
+  | 'saturation'
+  | 'setSaturation'
+  | 'contrast'
+  | 'setContrast'
+  | 'chromaticAberration'
+  | 'setChromaticAberration'
+  | 'bloomIntensity'
+  | 'setBloomIntensity'
+  | 'temperature'
+  | 'setTemperature'
+  | 'temperatureAuto'
+  | 'setTemperatureAuto'
+  | 'tint'
+  | 'setTint'
+>;
+
 export const useFilmParameterControlData = (
   parameter: FilmParameterType
 ): ParameterControlData => {
   const film = useFilmStore(
-    useShallow((s) => ({
-      grainIntensity: s.grainIntensity,
-      setGrainIntensity: s.setGrainIntensity,
-      sharpening: s.sharpening,
-      setSharpening: s.setSharpening,
-      saturation: s.saturation,
-      setSaturation: s.setSaturation,
-      contrast: s.contrast,
-      setContrast: s.setContrast,
-      chromaticAberration: s.chromaticAberration,
-      setChromaticAberration: s.setChromaticAberration,
-      bloomIntensity: s.bloomIntensity,
-      setBloomIntensity: s.setBloomIntensity,
-      temperature: s.temperature,
-      setTemperature: s.setTemperature,
-      temperatureAuto: s.temperatureAuto,
-      setTemperatureAuto: s.setTemperatureAuto,
-      tint: s.tint,
-      setTint: s.setTint,
-    }))
-  );
+    useShallow((s) => {
+      switch (parameter) {
+        case 'grain':
+          return {
+            grainIntensity: s.grainIntensity,
+            setGrainIntensity: s.setGrainIntensity,
+          };
+        case 'sharpening':
+          return {
+            sharpening: s.sharpening,
+            setSharpening: s.setSharpening,
+          };
+        case 'saturation':
+          return {
+            saturation: s.saturation,
+            setSaturation: s.setSaturation,
+          };
+        case 'contrast':
+          return {
+            contrast: s.contrast,
+            setContrast: s.setContrast,
+          };
+        case 'chromatic_aberration':
+          return {
+            chromaticAberration: s.chromaticAberration,
+            setChromaticAberration: s.setChromaticAberration,
+          };
+        case 'bloom':
+          return {
+            bloomIntensity: s.bloomIntensity,
+            setBloomIntensity: s.setBloomIntensity,
+          };
+        case 'temperature':
+          return {
+            temperature: s.temperature,
+            setTemperature: s.setTemperature,
+            temperatureAuto: s.temperatureAuto,
+            setTemperatureAuto: s.setTemperatureAuto,
+          };
+        case 'tint':
+          return {
+            tint: s.tint,
+            setTint: s.setTint,
+            temperatureAuto: s.temperatureAuto,
+            setTemperatureAuto: s.setTemperatureAuto,
+          };
+      }
+    })
+  ) as unknown as SelectedFilmState;
 
   const filmWorklets = useFilmWorklets();
 

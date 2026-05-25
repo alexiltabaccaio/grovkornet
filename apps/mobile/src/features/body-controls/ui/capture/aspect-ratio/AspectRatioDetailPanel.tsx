@@ -2,23 +2,22 @@ import React from 'react';
 import { StyleProp, ViewStyle } from 'react-native';
 import { useShallow } from 'zustand/react/shallow';
 import { useBodyStore } from '@entities/body';
-import { GenericPillExtension } from '@entities/system';
+import { GenericPillDetailPanel } from '@entities/system';
 
-
-interface AspectRatioExtensionProps {
-  parameterExtensionAnimatedStyle?: StyleProp<ViewStyle>;
+interface AspectRatioDetailPanelProps {
+  parameterDetailPanelAnimatedStyle?: StyleProp<ViewStyle>;
 }
 
 const ASPECT_RATIOS = ['4:3', '16:9', '1:1', '3:2', '65:24'];
 
-export const AspectRatioExtension = ({ parameterExtensionAnimatedStyle }: AspectRatioExtensionProps) => {
+export const AspectRatioDetailPanel = ({ parameterDetailPanelAnimatedStyle }: AspectRatioDetailPanelProps) => {
   const { aspectRatio, setAspectRatio } = useBodyStore(useShallow(state => ({
     aspectRatio: state.aspectRatio,
     setAspectRatio: state.setAspectRatio,
   })));
 
   return (
-    <GenericPillExtension
+    <GenericPillDetailPanel
       options={ASPECT_RATIOS}
       onChange={(_, index) => setAspectRatio(index)}
       value={aspectRatio}
@@ -27,7 +26,7 @@ export const AspectRatioExtension = ({ parameterExtensionAnimatedStyle }: Aspect
         return currVal === index;
       }}
       getLabel={(label) => label}
-      parameterExtensionAnimatedStyle={parameterExtensionAnimatedStyle}
+      parameterDetailPanelAnimatedStyle={parameterDetailPanelAnimatedStyle}
       pillMaxWidth={65}
     />
   );

@@ -2,14 +2,13 @@ import React from 'react';
 import { StyleProp, ViewStyle } from 'react-native';
 import { useShallow } from 'zustand/react/shallow';
 import { useBodyStore } from '@entities/body';
-import { GenericPillExtension } from '@entities/system';
+import { GenericPillDetailPanel } from '@entities/system';
 
-
-interface FpsExtensionProps {
-  parameterExtensionAnimatedStyle?: StyleProp<ViewStyle>;
+interface FpsDetailPanelProps {
+  parameterDetailPanelAnimatedStyle?: StyleProp<ViewStyle>;
 }
 
-export const FpsExtension = ({ parameterExtensionAnimatedStyle }: FpsExtensionProps) => {
+export const FpsDetailPanel = ({ parameterDetailPanelAnimatedStyle }: FpsDetailPanelProps) => {
   const { fpsSetting, setFpsSetting, capabilities } = useBodyStore(useShallow(state => ({
     fpsSetting: state.fpsSetting,
     setFpsSetting: state.setFpsSetting,
@@ -20,7 +19,7 @@ export const FpsExtension = ({ parameterExtensionAnimatedStyle }: FpsExtensionPr
   const fpsOptions = [60, 30, 24].filter(f => f <= maxFps);
 
   return (
-    <GenericPillExtension
+    <GenericPillDetailPanel
       options={fpsOptions}
       onChange={(val) => setFpsSetting(val)}
       value={fpsSetting}
@@ -29,7 +28,7 @@ export const FpsExtension = ({ parameterExtensionAnimatedStyle }: FpsExtensionPr
         return Math.round(currVal) === val;
       }}
       getLabel={(val) => val.toString()}
-      parameterExtensionAnimatedStyle={parameterExtensionAnimatedStyle}
+      parameterDetailPanelAnimatedStyle={parameterDetailPanelAnimatedStyle}
       pillMaxWidth={80}
     />
   );

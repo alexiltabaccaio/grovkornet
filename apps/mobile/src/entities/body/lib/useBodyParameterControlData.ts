@@ -3,29 +3,59 @@ import { useDerivedValue } from 'react-native-reanimated';
 import { useBodyStore } from '../model/useBodyStore';
 import { useBodyWorklets } from './useBodyWorklets';
 import { ParameterControlData } from '@shared/lib/parameter/types';
+import { BodyStore } from '../model/types';
 
 export type BodyParameterType = 'ev' | 'iso' | 'shutter_speed';
+
+type SelectedBodyState = Pick<
+  BodyStore,
+  | 'ev'
+  | 'setEv'
+  | 'iso'
+  | 'setIso'
+  | 'isoAuto'
+  | 'setIsoAuto'
+  | 'shutterSpeed'
+  | 'setShutterSpeed'
+  | 'shutterSpeedAuto'
+  | 'setShutterSpeedAuto'
+  | 'capabilities'
+>;
 
 export const useBodyParameterControlData = (
   parameter: BodyParameterType
 ): ParameterControlData => {
   const body = useBodyStore(
-    useShallow((s) => ({
-      ev: s.ev,
-      setEv: s.setEv,
-      iso: s.iso,
-      setIso: s.setIso,
-      isoAuto: s.isoAuto,
-      setIsoAuto: s.setIsoAuto,
-      shutterSpeed: s.shutterSpeed,
-      setShutterSpeed: s.setShutterSpeed,
-      shutterSpeedAuto: s.shutterSpeedAuto,
-      setShutterSpeedAuto: s.setShutterSpeedAuto,
-      capabilities: s.capabilities,
-    }))
-  );
+    useShallow((s) => {
+      switch (parameter) {
+        case 'ev':
+          return {
+            ev: s.ev,
+            setEv: s.setEv,
+            isoAuto: s.isoAuto,
+            shutterSpeedAuto: s.shutterSpeedAuto,
+          };
+        case 'iso':
+          return {
+            iso: s.iso,
+            setIso: s.setIso,
+            isoAuto: s.isoAuto,
+            setIsoAuto: s.setIsoAuto,
+            capabilities: s.capabilities,
+          };
+        case 'shutter_speed':
+          return {
+            shutterSpeed: s.shutterSpeed,
+            setShutterSpeed: s.setShutterSpeed,
+            shutterSpeedAuto: s.shutterSpeedAuto,
+            setShutterSpeedAuto: s.setShutterSpeedAuto,
+          };
+      }
+    })
+  ) as unknown as SelectedBodyState;
 
   const isEvDisabled = useDerivedValue(() => {
+    if (!body.isoAuto || !body.shutterSpeedAuto) return false;
     return !body.isoAuto.value && !body.shutterSpeedAuto.value;
   });
 

@@ -3,7 +3,7 @@ import { StyleSheet, View, StyleProp, ViewStyle, ScrollView } from 'react-native
 import Animated from 'react-native-reanimated';
 import { useSystemStore } from '@entities/system';
 
-interface ParameterExtensionWrapperProps {
+interface ParameterDetailPanelWrapperProps {
   animatedStyle?: StyleProp<ViewStyle>;
   children: React.ReactNode;
   gap?: number;
@@ -13,7 +13,7 @@ interface ParameterExtensionWrapperProps {
   rightAccessory?: React.ReactNode;
 }
 
-export const ParameterExtensionWrapper = ({
+export const ParameterDetailPanelWrapper = ({
   animatedStyle,
   children,
   gap = 12,
@@ -21,7 +21,7 @@ export const ParameterExtensionWrapper = ({
   scrollable = false,
   leftAccessory,
   rightAccessory,
-}: ParameterExtensionWrapperProps) => {
+}: ParameterDetailPanelWrapperProps) => {
   const isDebugEnabled = useSystemStore(state => state.isDebugEnabled);
 
   const renderRightAccessory = () => {
@@ -40,7 +40,7 @@ export const ParameterExtensionWrapper = ({
 
   return (
     <View style={styles.container}>
-      <Animated.View style={[styles.parameterExtensionContainer, animatedStyle]}>
+      <Animated.View style={[styles.parameterDetailPanelContainer, animatedStyle]}>
         <View
           style={[
             styles.debugWrapper,
@@ -97,7 +97,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     width: '100%',
   },
-  parameterExtensionContainer: {
+  parameterDetailPanelContainer: {
     justifyContent: 'center',
     alignItems: 'center',
     width: '100%',

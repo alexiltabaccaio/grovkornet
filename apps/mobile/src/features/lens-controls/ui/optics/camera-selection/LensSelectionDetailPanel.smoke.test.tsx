@@ -1,6 +1,6 @@
 import React from 'react';
 import { render } from '@testing-library/react-native';
-import { LensSelectionExtension } from './LensSelectionExtension';
+import { LensSelectionDetailPanel } from './LensSelectionDetailPanel';
 
 jest.mock('@entities/lens', () => ({
   useLensStore: jest.fn((fn?: (state: { capabilities: { availableCameras: Array<{ id: string; focalLength35mm: number }> }; cameraId: string; setCameraId: jest.Mock; cameraAuto: boolean; setCameraAuto: jest.Mock }) => unknown) => {
@@ -25,12 +25,12 @@ jest.mock('@entities/system', () => ({
     const state = { isDebugEnabled: false };
     return fn ? fn(state) : state;
   }),
-  GenericPillExtension: 'GenericPillExtension',
+  GenericPillDetailPanel: 'GenericPillDetailPanel',
 }));
 
-describe('LensSelectionExtension', () => {
+describe('LensSelectionDetailPanel', () => {
   it('renders correctly', () => {
-    const { toJSON } = render(<LensSelectionExtension />);
+    const { toJSON } = render(<LensSelectionDetailPanel />);
     expect(toJSON()).toBeDefined();
   });
 });
