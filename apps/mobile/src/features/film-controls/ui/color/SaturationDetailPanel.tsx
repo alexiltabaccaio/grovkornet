@@ -1,51 +1,37 @@
 import React, { useMemo } from 'react';
 import { View, StyleSheet, TouchableOpacity, Text } from 'react-native';
+import Animated from 'react-native-reanimated';
 import { useShallow } from 'zustand/react/shallow';
-import { useFilmStore } from '@entities/film';
-import { useFilmWorklets } from '@entities/film';
+import { useFilmStore, useFilmWorklets, useFilmParameterControlData } from '@entities/film';
 import { ParameterControl } from '@entities/system';
 import { useTranslation } from 'react-i18next';
 
 const COLOR_MAPPING = [
-  {
-    key: 'red',
-    color: '#FF453A',
-  },
-  {
-    key: 'orange',
-    color: '#FF9F0A',
-  },
-  {
-    key: 'yellow',
-    color: '#FFD60A',
-  },
-  {
-    key: 'green',
-    color: '#32D74B',
-  },
-  {
-    key: 'cyan',
-    color: '#64D2FF',
-  },
-  {
-    key: 'blue',
-    color: '#0A84FF',
-  },
-  {
-    key: 'purple',
-    color: '#BF5AF2',
-  },
-  {
-    key: 'magenta',
-    color: '#FF2D55',
-  },
+  { key: 'red', color: '#FF453A' },
+  { key: 'orange', color: '#FF9F0A' },
+  { key: 'yellow', color: '#FFD60A' },
+  { key: 'green', color: '#32D74B' },
+  { key: 'cyan', color: '#64D2FF' },
+  { key: 'blue', color: '#0A84FF' },
+  { key: 'purple', color: '#BF5AF2' },
+  { key: 'magenta', color: '#FF2D55' },
 ] as const;
 
-type ColorIndex = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7;
+type ColorIndex = 'master' | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7;
 
-export const SaturationDetailPanel = () => {
+interface SaturationDetailPanelProps {
+  parameterDetailPanelAnimatedStyle?: any;
+  animatedStyle?: any;
+}
+
+export const SaturationDetailPanel = ({
+  parameterDetailPanelAnimatedStyle,
+  animatedStyle
+}: SaturationDetailPanelProps) => {
   const { t } = useTranslation();
-  const [activeColorIndex, setActiveColorIndex] = React.useState<ColorIndex>(0);
+  const [activeColorIndex, setActiveColorIndex] = React.useState<ColorIndex>('master');
+
+  const masterData = useFilmParameterControlData('saturation');
 
   const {
     satRed, setSatRed,
@@ -79,9 +65,10 @@ export const SaturationDetailPanel = () => {
 
   const worklets = useFilmWorklets();
 
-  const activeColor = COLOR_MAPPING[activeColorIndex];
+  const isMaster = activeColorIndex === 'master';
 
   const activeValue = useMemo(() => {
+    if (activeColorIndex === 'master') return masterData.value;
     switch (activeColorIndex) {
       case 0: return satRed;
       case 1: return satOrange;
@@ -92,9 +79,10 @@ export const SaturationDetailPanel = () => {
       case 6: return satPurple;
       case 7: return satMagenta;
     }
-  }, [activeColorIndex, satRed, satOrange, satYellow, satGreen, satCyan, satBlue, satPurple, satMagenta]);
+  }, [activeColorIndex, masterData.value, satRed, satOrange, satYellow, satGreen, satCyan, satBlue, satPurple, satMagenta]);
 
   const activeSetter = useMemo(() => {
+    if (activeColorIndex === 'master') return masterData.onChange;
     switch (activeColorIndex) {
       case 0: return setSatRed;
       case 1: return setSatOrange;
@@ -105,9 +93,10 @@ export const SaturationDetailPanel = () => {
       case 6: return setSatPurple;
       case 7: return setSatMagenta;
     }
-  }, [activeColorIndex, setSatRed, setSatOrange, setSatYellow, setSatGreen, setSatCyan, setSatBlue, setSatPurple, setSatMagenta]);
+  }, [activeColorIndex, masterData.onChange, setSatRed, setSatOrange, setSatYellow, setSatGreen, setSatCyan, setSatBlue, setSatPurple, setSatMagenta]);
 
   const activeWorklet = useMemo(() => {
+    if (activeColorIndex === 'master') return masterData.onUpdateWorklet;
     switch (activeColorIndex) {
       case 0: return worklets.updateSatRed;
       case 1: return worklets.updateSatOrange;
@@ -118,11 +107,58 @@ export const SaturationDetailPanel = () => {
       case 6: return worklets.updateSatPurple;
       case 7: return worklets.updateSatMagenta;
     }
-  }, [activeColorIndex, worklets]);
+  }, [activeColorIndex, masterData.onUpdateWorklet, worklets]);
+
+  const renderMultiColorDot = () => {
+    const isActive = isMaster;
+    return (
+      <TouchableOpacity
+        testID="color-circle-master"
+        onPress={() => setActiveColorIndex('master')}
+        style={[
+          styles.circleContainer,
+          isActive && styles.circleContainerActive,
+          styles.multiColorDotAbsolute
+        ]}
+        activeOpacity={0.8}
+        hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+      >
+        <View style={styles.multiColorCircle}>
+          <View style={{ width: 10, height: 10, backgroundColor: '#FF453A' }} />
+          <View style={{ width: 10, height: 10, backgroundColor: '#FFD60A' }} />
+          <View style={{ width: 10, height: 10, backgroundColor: '#0A84FF' }} />
+          <View style={{ width: 10, height: 10, backgroundColor: '#32D74B' }} />
+        </View>
+      </TouchableOpacity>
+    );
+  };
 
   return (
     <View style={styles.container}>
-      <View style={styles.colorCirclesRow}>
+      <Animated.View style={[styles.sliderRow, parameterDetailPanelAnimatedStyle]}>
+        <View style={styles.sliderContainer}>
+          <ParameterControl
+            label=""
+            isActive={true}
+            onPress={() => {}}
+            value={activeValue}
+            minValue={isMaster ? masterData.minValue : 0.0}
+            maxValue={isMaster ? masterData.maxValue : 100.0}
+            centerValue={isMaster ? masterData.centerValue : 50.0}
+            onChange={activeSetter as any}
+            onUpdateWorklet={activeWorklet as any}
+            variant="slider"
+            onReset={isMaster ? masterData.onReset : undefined}
+            valueFormatter={isMaster ? masterData.valueFormatter : (v) => {
+              'worklet';
+              return `${Math.round(v * 2)}`;
+            }}
+          />
+        </View>
+        {renderMultiColorDot()}
+      </Animated.View>
+
+      <Animated.View style={[styles.colorCirclesRow, animatedStyle]}>
         {COLOR_MAPPING.map((item, index) => {
           const isActive = index === activeColorIndex;
           return (
@@ -135,33 +171,13 @@ export const SaturationDetailPanel = () => {
                 isActive && styles.circleContainerActive
               ]}
               activeOpacity={0.8}
+              hitSlop={{ top: 10, bottom: 10, left: 5, right: 5 }}
             >
               <View style={[styles.circle, { backgroundColor: item.color }]} />
             </TouchableOpacity>
           );
         })}
-      </View>
-      <Text allowFontScaling={false} style={styles.activeColorLabel}>
-        {t(`colors.${activeColor.key}`).toUpperCase()}
-      </Text>
-      <View style={styles.sliderContainer}>
-        <ParameterControl
-          label=""
-          isActive={true}
-          onPress={() => {}}
-          value={activeValue}
-          minValue={0.0}
-          maxValue={100.0}
-          onChange={activeSetter}
-          onUpdateWorklet={activeWorklet}
-          variant="slider"
-          hideAutoPlaceholder={true}
-          valueFormatter={(v) => {
-            'worklet';
-            return `${v.toFixed(0)}%`;
-          }}
-        />
-      </View>
+      </Animated.View>
     </View>
   );
 };
@@ -172,19 +188,26 @@ const styles = StyleSheet.create({
     width: '100%',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: 16,
+  },
+  sliderRow: {
+    position: 'relative',
+    flexDirection: 'row',
+    alignItems: 'center',
+    width: '100%',
+    paddingTop: 5,
   },
   colorCirclesRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     width: '100%',
-    paddingHorizontal: 8,
+    paddingHorizontal: 16,
+    paddingTop: 8,
     marginBottom: 8,
   },
   circleContainer: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
+    width: 24,
+    height: 24,
+    borderRadius: 12,
     borderWidth: 2,
     borderColor: 'transparent',
     alignItems: 'center',
@@ -198,15 +221,21 @@ const styles = StyleSheet.create({
     height: 20,
     borderRadius: 10,
   },
-  activeColorLabel: {
-    color: '#CCCCCC',
-    fontSize: 10,
-    fontWeight: '700',
-    letterSpacing: 1.5,
-    textAlign: 'center',
-    marginBottom: 10,
+  multiColorCircle: {
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    overflow: 'hidden',
+    flexDirection: 'row',
+    flexWrap: 'wrap',
   },
   sliderContainer: {
-    width: '100%',
+    flex: 1,
+  },
+  multiColorDotAbsolute: {
+    position: 'absolute',
+    left: 39,
+    top: 9,
+    zIndex: 10,
   },
 });

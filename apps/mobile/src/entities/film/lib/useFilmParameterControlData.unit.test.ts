@@ -64,11 +64,11 @@ describe('useFilmParameterControlData', () => {
     expect(useFilmStore.getState().saturation.value).toBe(1.25);
 
     // Test valueFormatter positive
-    expect(result.current.valueFormatter(1.25)).toBe('+25');
+    expect(result.current.valueFormatter(1.25)).toBe('125');
 
     // Test valueFormatter negative/zero
-    expect(result.current.valueFormatter(0.85)).toBe('-15');
-    expect(result.current.valueFormatter(1.0)).toBe('0');
+    expect(result.current.valueFormatter(0.85)).toBe('85');
+    expect(result.current.valueFormatter(1.0)).toBe('100');
 
     result.current.onReset?.();
     expect(useFilmStore.getState().saturation.value).toBe(1.0);

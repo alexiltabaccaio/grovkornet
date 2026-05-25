@@ -77,6 +77,15 @@ jest.mock('@entities/film', () => ({
     return fn ? fn(state) : state;
   }),
   useFilmWorklets: () => mockWorklets,
+  useFilmParameterControlData: () => ({
+    value: 1.0,
+    minValue: 0.0,
+    maxValue: 2.0,
+    centerValue: 1.0,
+    onChange: jest.fn(),
+    onUpdateWorklet: jest.fn(),
+    valueFormatter: (v: number) => v.toString(),
+  }),
 }));
 
 describe('SaturationDetailPanel', () => {
@@ -90,7 +99,7 @@ describe('SaturationDetailPanel', () => {
   });
 
   it('handles switching between all color channels and updates state', () => {
-    const { getByTestId, getByText } = render(<SaturationDetailPanel />);
+    const { getByTestId } = render(<SaturationDetailPanel />);
 
     const colors = [
       { key: 'red', setter: mockSetters.setSatRed },
@@ -106,9 +115,6 @@ describe('SaturationDetailPanel', () => {
     colors.forEach(({ key, setter }) => {
       const btn = getByTestId(`color-circle-${key}`);
       fireEvent.press(btn);
-
-      // Verify i18n text updates for active color
-      expect(getByText(`colors.${key}`.toUpperCase())).toBeDefined();
 
       // ParameterControl mock will trigger onChange, check if corresponding setter was called
       expect(setter).toHaveBeenCalledWith(85);

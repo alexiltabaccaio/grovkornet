@@ -133,8 +133,7 @@ export const useFilmParameterControlData = (
         onUpdateWorklet: filmWorklets.updateSaturation,
         valueFormatter: (v: number) => {
           'worklet';
-          const val = Math.round((v - 1) * 100);
-          return val > 0 ? `+${val}` : `${val}`;
+          return `${Math.round(v * 100)}`;
         },
         hideValueInAuto: false,
         autoValueText: 'AUTO',

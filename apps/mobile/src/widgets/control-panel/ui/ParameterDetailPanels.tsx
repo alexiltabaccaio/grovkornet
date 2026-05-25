@@ -105,15 +105,10 @@ export const ParameterDetailPanels = ({ translateY }: ParameterDetailPanelsProps
 
     case 'saturation':
       return (
-        <View style={styles.container}>
-          <SliderDetailPanel
-            parameter="saturation"
-            parameterDetailPanelAnimatedStyle={parameterDetailPanelAnimatedStyle}
-          />
-          <Animated.View style={[styles.childSubContainer, animatedStyle]}>
-            <SaturationDetailPanel />
-          </Animated.View>
-        </View>
+        <SaturationDetailPanel
+          parameterDetailPanelAnimatedStyle={parameterDetailPanelAnimatedStyle}
+          animatedStyle={animatedStyle}
+        />
       );
 
     // Slider-only parameters (no children)

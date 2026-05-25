@@ -157,8 +157,8 @@ describe('ParameterDetailPanels', () => {
     act(() => {
       useSystemStore.getState().setActiveParameter('saturation');
     });
-    const { getByText } = render(<ParameterDetailPanels translateY={mockTranslateY} />);
-    expect(getByText('COLORS.RED')).toBeDefined();
+    const { getByTestId } = render(<ParameterDetailPanels translateY={mockTranslateY} />);
+    expect(getByTestId('color-circle-red')).toBeDefined();
   });
 
   it('renders slider-only parameters like contrast', () => {
