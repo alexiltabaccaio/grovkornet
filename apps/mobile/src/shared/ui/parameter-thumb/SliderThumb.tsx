@@ -17,7 +17,7 @@ const INITIAL_TRACK_WIDTH = SCREEN_WIDTH - 188;
 
 const AnimatedTextInput = Animated.createAnimatedComponent(TextInput);
 
-export const SliderThumb = ({
+export const SliderThumb = React.memo(({
   value,
   minValue = 0,
   maxValue = 1,
@@ -187,7 +187,7 @@ export const SliderThumb = ({
       </GestureDetector>
     </View>
   );
-};
+});
 
 
 const styles = StyleSheet.create({

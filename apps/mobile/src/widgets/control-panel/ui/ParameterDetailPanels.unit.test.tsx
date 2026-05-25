@@ -168,4 +168,23 @@ describe('ParameterDetailPanels', () => {
     const { toJSON } = render(<ParameterDetailPanels translateY={mockTranslateY} />);
     expect(toJSON()).toBeDefined();
   });
+
+  it('re-uses the same container root element when switching between different parameters', () => {
+    act(() => {
+      useSystemStore.getState().setActiveParameter('contrast');
+    });
+    const { toJSON, rerender } = render(<ParameterDetailPanels translateY={mockTranslateY} />);
+    const firstRender = toJSON();
+    expect(firstRender?.type).toBe('View');
+
+    act(() => {
+      useSystemStore.getState().setActiveParameter('iso');
+    });
+    rerender(<ParameterDetailPanels translateY={mockTranslateY} />);
+    const secondRender = toJSON();
+    expect(secondRender?.type).toBe('View');
+    
+    // Both must use the same container layout style
+    expect(firstRender?.props?.style).toEqual(secondRender?.props?.style);
+  });
 });

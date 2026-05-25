@@ -51,87 +51,93 @@ export const ParameterDetailPanels = ({ translateY }: ParameterDetailPanelsProps
 
   if (!translateY || activeParameter === 'none') return null;
 
-  switch (activeParameter) {
-    case 'grain':
-      return (
-        <View style={styles.container}>
-          <SliderDetailPanel
-            parameter="grain"
+  const renderContent = () => {
+    switch (activeParameter) {
+      case 'grain':
+        return (
+          <>
+            <SliderDetailPanel
+              parameter="grain"
+              parameterDetailPanelAnimatedStyle={parameterDetailPanelAnimatedStyle}
+            />
+            <Animated.View style={[styles.childSubContainer, animatedStyle]}>
+              <GrainDetailPanel />
+            </Animated.View>
+          </>
+        );
+      case 'chromatic_aberration':
+        return (
+          <>
+            <SliderDetailPanel
+              parameter="chromatic_aberration"
+              parameterDetailPanelAnimatedStyle={parameterDetailPanelAnimatedStyle}
+            />
+            <Animated.View style={[styles.childSubContainer, animatedStyle]}>
+              <ChromaticAberrationDetailPanel />
+            </Animated.View>
+          </>
+        );
+      case 'torch':
+        return (
+          <TorchDetailPanel
             parameterDetailPanelAnimatedStyle={parameterDetailPanelAnimatedStyle}
+            animatedStyle={animatedStyle}
           />
-          <Animated.View style={[styles.childSubContainer, animatedStyle]}>
-            <GrainDetailPanel />
-          </Animated.View>
-        </View>
-      );
-    case 'chromatic_aberration':
-      return (
-        <View style={styles.container}>
-          <SliderDetailPanel
-            parameter="chromatic_aberration"
+        );
+      case 'language':
+        return <LanguageDetailPanel animatedStyle={parameterDetailPanelAnimatedStyle} />;
+      case 'debug':
+        return <DebugDetailPanel parameterDetailPanelAnimatedStyle={parameterDetailPanelAnimatedStyle} />;
+      case 'camera_selection':
+        return <LensSelectionDetailPanel parameterDetailPanelAnimatedStyle={parameterDetailPanelAnimatedStyle} />;
+      case 'noise_reduction':
+        return <NoiseReductionDetailPanel parameterDetailPanelAnimatedStyle={parameterDetailPanelAnimatedStyle} />;
+      case 'aspect_ratio':
+        return <AspectRatioDetailPanel parameterDetailPanelAnimatedStyle={parameterDetailPanelAnimatedStyle} />;
+      case 'fps_setting':
+        return <FpsDetailPanel parameterDetailPanelAnimatedStyle={parameterDetailPanelAnimatedStyle} />;
+      case 'resolution_setting':
+        return (
+          <ResolutionDetailPanel
             parameterDetailPanelAnimatedStyle={parameterDetailPanelAnimatedStyle}
+            animatedStyle={animatedStyle}
           />
-          <Animated.View style={[styles.childSubContainer, animatedStyle]}>
-            <ChromaticAberrationDetailPanel />
-          </Animated.View>
-        </View>
-      );
-    case 'torch':
-      return (
-        <TorchDetailPanel
-          parameterDetailPanelAnimatedStyle={parameterDetailPanelAnimatedStyle}
-          animatedStyle={animatedStyle}
-        />
-      );
-    case 'language':
-      return <LanguageDetailPanel animatedStyle={parameterDetailPanelAnimatedStyle} />;
-    case 'debug':
-      return <DebugDetailPanel parameterDetailPanelAnimatedStyle={parameterDetailPanelAnimatedStyle} />;
-    case 'camera_selection':
-      return <LensSelectionDetailPanel parameterDetailPanelAnimatedStyle={parameterDetailPanelAnimatedStyle} />;
-    case 'noise_reduction':
-      return <NoiseReductionDetailPanel parameterDetailPanelAnimatedStyle={parameterDetailPanelAnimatedStyle} />;
-    case 'aspect_ratio':
-      return <AspectRatioDetailPanel parameterDetailPanelAnimatedStyle={parameterDetailPanelAnimatedStyle} />;
-    case 'fps_setting':
-      return <FpsDetailPanel parameterDetailPanelAnimatedStyle={parameterDetailPanelAnimatedStyle} />;
-    case 'resolution_setting':
-      return (
-        <ResolutionDetailPanel
-          parameterDetailPanelAnimatedStyle={parameterDetailPanelAnimatedStyle}
-          animatedStyle={animatedStyle}
-        />
-      );
+        );
 
-    case 'saturation':
-      return (
-        <SaturationDetailPanel
-          parameterDetailPanelAnimatedStyle={parameterDetailPanelAnimatedStyle}
-          animatedStyle={animatedStyle}
-        />
-      );
+      case 'saturation':
+        return (
+          <SaturationDetailPanel
+            parameterDetailPanelAnimatedStyle={parameterDetailPanelAnimatedStyle}
+            animatedStyle={animatedStyle}
+          />
+        );
 
-    // Slider-only parameters (no children)
-    case 'bloom':
-    case 'contrast':
-    case 'temperature':
-    case 'tint':
-    case 'sharpening':
-    case 'ev':
-    case 'iso':
-    case 'shutter_speed':
-    case 'focus':
-      return (
-        <View style={styles.container}>
+      // Slider-only parameters (no children)
+      case 'bloom':
+      case 'contrast':
+      case 'temperature':
+      case 'tint':
+      case 'sharpening':
+      case 'ev':
+      case 'iso':
+      case 'shutter_speed':
+      case 'focus':
+        return (
           <SliderDetailPanel
             parameter={activeParameter}
             parameterDetailPanelAnimatedStyle={parameterDetailPanelAnimatedStyle}
           />
-        </View>
-      );
-    default:
-      return null;
-  }
+        );
+      default:
+        return null;
+    }
+  };
+
+  return (
+    <View style={styles.container}>
+      {renderContent()}
+    </View>
+  );
 };
 
 const styles = StyleSheet.create({

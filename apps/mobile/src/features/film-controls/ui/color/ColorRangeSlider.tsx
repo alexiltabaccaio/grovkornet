@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { View, StyleSheet, TextInput, Text } from 'react-native';
+import { View, StyleSheet, TextInput, Text, Dimensions } from 'react-native';
 import Animated, {
   useAnimatedStyle,
   useAnimatedProps,
@@ -7,6 +7,9 @@ import Animated, {
 } from 'react-native-reanimated';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import { useFilmStore, useFilmWorklets } from '@entities/film';
+
+const SCREEN_WIDTH = Dimensions.get('window').width;
+const INITIAL_TRACK_WIDTH = SCREEN_WIDTH - 188;
 
 const COLOR_MAPPING = [
   { key: 'red', color: '#FF453A' },
@@ -50,7 +53,7 @@ interface ColorRangeSliderProps {
 export const ColorRangeSlider = ({ activeColorIndex }: ColorRangeSliderProps) => {
   const store = useFilmStore();
   const worklets = useFilmWorklets();
-  const trackWidth = useSharedValue(0);
+  const trackWidth = useSharedValue(INITIAL_TRACK_WIDTH);
   const dragRefAngle = useSharedValue(0);
 
   // Map keys for the store dynamically
@@ -271,6 +274,7 @@ export const ColorRangeSlider = ({ activeColorIndex }: ColorRangeSliderProps) =>
 
       {/* Slider Track with 3-color background sections and two pans */}
       <View
+        testID="color-range-slider-track"
         style={styles.sliderTrackContainer}
         onLayout={(e) => {
           trackWidth.value = e.nativeEvent.layout.width;

@@ -4,7 +4,7 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
 import Animated from 'react-native-reanimated';
 import { useShallow } from 'zustand/react/shallow';
 import { useFilmStore, useFilmWorklets, useFilmParameterControlData } from '@entities/film';
-import { ParameterControl } from '@entities/system';
+import { ParameterControl, useSystemStore } from '@entities/system';
 import { useTranslation } from 'react-i18next';
 import { ColorRangeSlider } from './ColorRangeSlider';
 
@@ -32,6 +32,13 @@ export const SaturationDetailPanel = ({
 }: SaturationDetailPanelProps) => {
   const { t } = useTranslation();
   const [activeColorIndex, setActiveColorIndex] = React.useState<ColorIndex>('master');
+  const activeParameter = useSystemStore(useShallow(state => state.activeParameter));
+
+  React.useEffect(() => {
+    if (activeParameter === 'saturation') {
+      setActiveColorIndex('master');
+    }
+  }, [activeParameter]);
 
   const masterData = useFilmParameterControlData('saturation');
 

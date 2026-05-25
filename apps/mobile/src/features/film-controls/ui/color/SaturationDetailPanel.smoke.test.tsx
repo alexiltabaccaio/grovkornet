@@ -39,6 +39,14 @@ jest.mock('@entities/system', () => {
   const React = require('react');
   const { View } = require('react-native');
   return {
+    useSystemStore: jest.fn((fn?: (state: any) => unknown) => {
+      const state = {
+        activeParameter: 'saturation',
+        activeDetailPanel: 'master',
+        setActiveDetailPanel: jest.fn(),
+      };
+      return fn ? fn(state) : state;
+    }),
     ParameterControl: (props: any) => {
       // Trigger onChange to test state updates
       React.useEffect(() => {

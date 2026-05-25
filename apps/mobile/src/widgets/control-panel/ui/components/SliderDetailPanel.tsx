@@ -39,57 +39,29 @@ export const SliderDetailPanel = ({
   parameterDetailPanelAnimatedStyle,
   isActiveOverride,
 }: SliderDetailPanelProps) => {
-  if (isFilmParameter(parameter)) {
-    return (
-      <FilmSliderDetailPanel
-        parameter={parameter}
-        parameterDetailPanelAnimatedStyle={parameterDetailPanelAnimatedStyle}
-        isActiveOverride={isActiveOverride}
-      />
-    );
-  }
-
-  if (isBodyParameter(parameter)) {
-    return (
-      <BodySliderDetailPanel
-        parameter={parameter}
-        parameterDetailPanelAnimatedStyle={parameterDetailPanelAnimatedStyle}
-        isActiveOverride={isActiveOverride}
-      />
-    );
-  }
-
-  if (isLensParameter(parameter)) {
-    return (
-      <LensSliderDetailPanel
-        parameter={parameter}
-        parameterDetailPanelAnimatedStyle={parameterDetailPanelAnimatedStyle}
-        isActiveOverride={isActiveOverride}
-      />
-    );
-  }
-
-  return null;
-};
-
-interface SubSliderProps<T> {
-  parameter: T;
-  parameterDetailPanelAnimatedStyle?: StyleProp<ViewStyle>;
-  isActiveOverride?: boolean;
-}
-
-const FilmSliderDetailPanel = ({
-  parameter,
-  parameterDetailPanelAnimatedStyle,
-  isActiveOverride,
-}: SubSliderProps<FilmParameterType>) => {
   const { activeDetailPanel } = useSystemStore(
     useShallow((s) => ({
       activeDetailPanel: s.activeDetailPanel,
     }))
   );
 
-  const controlData = useFilmParameterControlData(parameter);
+  const filmParam = isFilmParameter(parameter) ? parameter : 'grain';
+  const bodyParam = isBodyParameter(parameter) ? parameter : 'ev';
+  const lensParam = isLensParameter(parameter) ? parameter : 'focus';
+
+  const filmData = useFilmParameterControlData(filmParam);
+  const bodyData = useBodyParameterControlData(bodyParam);
+  const lensData = useLensParameterControlData(lensParam);
+
+  if (!isFilmParameter(parameter) && !isBodyParameter(parameter) && !isLensParameter(parameter)) {
+    return null;
+  }
+
+  const controlData = isFilmParameter(parameter)
+    ? filmData
+    : isBodyParameter(parameter)
+      ? bodyData
+      : lensData;
 
   const finalIsActive =
     isActiveOverride !== undefined
@@ -97,74 +69,6 @@ const FilmSliderDetailPanel = ({
       : parameter === 'grain'
         ? activeDetailPanel === 'grain_intensity'
         : true;
-
-  return (
-    <Animated.View style={[styles.parameterDetailPanelContainer, parameterDetailPanelAnimatedStyle]}>
-      <ParameterControl
-        label=""
-        isActive={finalIsActive}
-        onPress={() => { }}
-        value={controlData.value}
-        minValue={controlData.minValue}
-        maxValue={controlData.maxValue}
-        centerValue={controlData.centerValue}
-        onChange={controlData.onChange}
-        onUpdateWorklet={controlData.onUpdateWorklet}
-        variant="slider"
-        isAuto={controlData.isAuto}
-        valueFormatter={controlData.valueFormatter}
-        hideValueInAuto={controlData.hideValueInAuto}
-        autoValueText={controlData.autoValueText}
-        onReset={controlData.onReset}
-        onToggleAuto={controlData.onToggleAuto}
-        disabled={controlData.disabled}
-      />
-    </Animated.View>
-  );
-};
-
-const BodySliderDetailPanel = ({
-  parameter,
-  parameterDetailPanelAnimatedStyle,
-  isActiveOverride,
-}: SubSliderProps<BodyParameterType>) => {
-  const controlData = useBodyParameterControlData(parameter);
-
-  const finalIsActive = isActiveOverride !== undefined ? isActiveOverride : true;
-
-  return (
-    <Animated.View style={[styles.parameterDetailPanelContainer, parameterDetailPanelAnimatedStyle]}>
-      <ParameterControl
-        label=""
-        isActive={finalIsActive}
-        onPress={() => { }}
-        value={controlData.value}
-        minValue={controlData.minValue}
-        maxValue={controlData.maxValue}
-        centerValue={controlData.centerValue}
-        onChange={controlData.onChange}
-        onUpdateWorklet={controlData.onUpdateWorklet}
-        variant="slider"
-        isAuto={controlData.isAuto}
-        valueFormatter={controlData.valueFormatter}
-        hideValueInAuto={controlData.hideValueInAuto}
-        autoValueText={controlData.autoValueText}
-        onReset={controlData.onReset}
-        onToggleAuto={controlData.onToggleAuto}
-        disabled={controlData.disabled}
-      />
-    </Animated.View>
-  );
-};
-
-const LensSliderDetailPanel = ({
-  parameter,
-  parameterDetailPanelAnimatedStyle,
-  isActiveOverride,
-}: SubSliderProps<LensParameterType>) => {
-  const controlData = useLensParameterControlData(parameter);
-
-  const finalIsActive = isActiveOverride !== undefined ? isActiveOverride : true;
 
   return (
     <Animated.View style={[styles.parameterDetailPanelContainer, parameterDetailPanelAnimatedStyle]}>
