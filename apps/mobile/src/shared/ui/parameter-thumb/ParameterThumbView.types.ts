@@ -28,4 +28,6 @@ export interface ParameterThumbViewProps {
   onPress?: () => void;
   hideAutoPlaceholder?: boolean;
   sliderTrackWidth?: SharedValue<number>;
+  sliderColor?: string;
 }
+

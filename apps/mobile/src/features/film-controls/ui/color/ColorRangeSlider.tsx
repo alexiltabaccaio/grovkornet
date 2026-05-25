@@ -115,48 +115,56 @@ export const ColorRangeSlider = ({ activeColorIndex }: ColorRangeSliderProps) =>
     return minA + pct * totalRange;
   };
 
-  // Left thumb pan gesture
   const startXLeft = useSharedValue(0);
-  const panGestureLeft = Gesture.Pan()
-    .onStart(() => {
-      dragRefAngle.value = limitLeftShared.value;
-      const currentUnwrapped = unwrap(leftShared.value, dragRefAngle.value);
-      startXLeft.value = angleToX(currentUnwrapped);
-    })
-    .onUpdate((event) => {
-      const newX = startXLeft.value + event.translationX;
-      const newAngleUnwrapped = xToAngle(newX);
-      
-      const minVal = dragRefAngle.value;
-      const maxVal = unwrap(rightShared.value, dragRefAngle.value);
-      
-      const clampedAngleUnwrapped = Math.min(Math.max(newAngleUnwrapped, minVal), maxVal);
-      
-      let finalAngle = clampedAngleUnwrapped % 360;
-      if (finalAngle < 0) finalAngle += 360;
-      updateLeftBound(finalAngle);
-    });
-
-  // Right thumb pan gesture
   const startXRight = useSharedValue(0);
-  const panGestureRight = Gesture.Pan()
-    .onStart(() => {
+  const activeThumb = useSharedValue(0); // 0 = left, 1 = right
+
+  const panGesture = Gesture.Pan()
+    .onStart((event) => {
       dragRefAngle.value = limitLeftShared.value;
-      const currentUnwrapped = unwrap(rightShared.value, dragRefAngle.value);
-      startXRight.value = angleToX(currentUnwrapped);
+      const leftUnwrapped = unwrap(leftShared.value, dragRefAngle.value);
+      const rightUnwrapped = unwrap(rightShared.value, dragRefAngle.value);
+      
+      const leftX = angleToX(leftUnwrapped);
+      const rightX = angleToX(rightUnwrapped);
+      
+      const distLeft = Math.abs(event.x - leftX);
+      const distRight = Math.abs(event.x - rightX);
+      
+      if (distLeft <= distRight) {
+        activeThumb.value = 0;
+        startXLeft.value = leftX;
+      } else {
+        activeThumb.value = 1;
+        startXRight.value = rightX;
+      }
     })
     .onUpdate((event) => {
-      const newX = startXRight.value + event.translationX;
-      const newAngleUnwrapped = xToAngle(newX);
-      
-      const minVal = unwrap(leftShared.value, dragRefAngle.value);
-      const maxVal = unwrap(limitRightShared.value, dragRefAngle.value);
-      
-      const clampedAngleUnwrapped = Math.min(Math.max(newAngleUnwrapped, minVal), maxVal);
-      
-      let finalAngle = clampedAngleUnwrapped % 360;
-      if (finalAngle < 0) finalAngle += 360;
-      updateRightBound(finalAngle);
+      if (activeThumb.value === 0) {
+        const newX = startXLeft.value + event.translationX;
+        const newAngleUnwrapped = xToAngle(newX);
+        
+        const minVal = dragRefAngle.value;
+        const maxVal = unwrap(rightShared.value, dragRefAngle.value);
+        
+        const clampedAngleUnwrapped = Math.min(Math.max(newAngleUnwrapped, minVal), maxVal);
+        
+        let finalAngle = clampedAngleUnwrapped % 360;
+        if (finalAngle < 0) finalAngle += 360;
+        updateLeftBound(finalAngle);
+      } else {
+        const newX = startXRight.value + event.translationX;
+        const newAngleUnwrapped = xToAngle(newX);
+        
+        const minVal = unwrap(leftShared.value, dragRefAngle.value);
+        const maxVal = unwrap(limitRightShared.value, dragRefAngle.value);
+        
+        const clampedAngleUnwrapped = Math.min(Math.max(newAngleUnwrapped, minVal), maxVal);
+        
+        let finalAngle = clampedAngleUnwrapped % 360;
+        if (finalAngle < 0) finalAngle += 360;
+        updateRightBound(finalAngle);
+      }
     });
 
   // Animated background track sections
@@ -227,7 +235,7 @@ export const ColorRangeSlider = ({ activeColorIndex }: ColorRangeSliderProps) =>
       x = 6 + ((unwrapped - ref) / range) * (trackWidth.value - 12);
     }
     return {
-      transform: [{ translateX: x - 10 }],
+      transform: [{ translateX: x - 6 }],
     };
   });
 
@@ -241,7 +249,7 @@ export const ColorRangeSlider = ({ activeColorIndex }: ColorRangeSliderProps) =>
       x = 6 + ((unwrapped - ref) / range) * (trackWidth.value - 12);
     }
     return {
-      transform: [{ translateX: x - 10 }],
+      transform: [{ translateX: x - 6 }],
     };
   });
 
@@ -273,27 +281,25 @@ export const ColorRangeSlider = ({ activeColorIndex }: ColorRangeSliderProps) =>
       </View>
 
       {/* Slider Track with 3-color background sections and two pans */}
-      <View
-        testID="color-range-slider-track"
-        style={styles.sliderTrackContainer}
-        onLayout={(e) => {
-          trackWidth.value = e.nativeEvent.layout.width;
-        }}
-      >
-        <Animated.View style={[styles.trackBgSection, leftBgStyle, { backgroundColor: prevColorHex }]} />
-        <Animated.View style={[styles.trackBgSection, centerBgStyle, { backgroundColor: activeColorHex }]} />
-        <Animated.View style={[styles.trackBgSection, rightBgStyle, { backgroundColor: nextColorHex }]} />
-
-        {/* Left Thumb */}
-        <GestureDetector gesture={panGestureLeft}>
+      <GestureDetector gesture={panGesture}>
+        <View
+          testID="color-range-slider-track"
+          style={styles.sliderTrackContainer}
+          onLayout={(e) => {
+            trackWidth.value = e.nativeEvent.layout.width;
+          }}
+        >
+          <Animated.View style={[styles.trackBgSection, leftBgStyle, { backgroundColor: prevColorHex }]} />
+          <Animated.View style={[styles.trackBgSection, centerBgStyle, { backgroundColor: activeColorHex }]} />
+          <Animated.View style={[styles.trackBgSection, rightBgStyle, { backgroundColor: nextColorHex }]} />
+  
+          {/* Left Thumb */}
           <Animated.View style={[styles.thumb, leftThumbStyle, { borderColor: activeColorHex }]} />
-        </GestureDetector>
-
-        {/* Right Thumb */}
-        <GestureDetector gesture={panGestureRight}>
+  
+          {/* Right Thumb */}
           <Animated.View style={[styles.thumb, rightThumbStyle, { borderColor: activeColorHex }]} />
-        </GestureDetector>
-      </View>
+        </View>
+      </GestureDetector>
 
       {/* Right Bound Label (Fixed Position) */}
       <View style={styles.rightValueContainer}>
@@ -360,15 +366,15 @@ const styles = StyleSheet.create({
   thumb: {
     position: 'absolute',
     left: 0,
-    width: 20,
-    height: 20,
-    borderRadius: 10,
+    width: 12,
+    height: 12,
+    borderRadius: 6,
     backgroundColor: '#FFF',
-    borderWidth: 3,
+    borderWidth: 2,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1.5 },
-    shadowOpacity: 0.4,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.35,
     shadowRadius: 2,
-    elevation: 4,
+    elevation: 3,
   },
 });

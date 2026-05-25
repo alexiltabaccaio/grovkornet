@@ -33,6 +33,7 @@ interface ParameterControlProps {
   hideDebugRectangles?: boolean;
   disableGestures?: boolean;
   hideAutoPlaceholder?: boolean;
+  sliderColor?: string;
 }
 
 export const ParameterControl = ({
@@ -62,6 +63,7 @@ export const ParameterControl = ({
   hideDebugRectangles = false,
   disableGestures = false,
   hideAutoPlaceholder,
+  sliderColor,
 }: ParameterControlProps) => {
   const { combinedGesture, isDebugEnabled, effectiveTrackWidth } = useParameterGesture({
     isActive,
@@ -104,6 +106,7 @@ export const ParameterControl = ({
         onPress={onPress}
         hideAutoPlaceholder={hideAutoPlaceholder}
         sliderTrackWidth={effectiveTrackWidth}
+        sliderColor={sliderColor}
       />
     );
   }
@@ -134,6 +137,7 @@ export const ParameterControl = ({
         onPress={onPress}
         hideAutoPlaceholder={hideAutoPlaceholder}
         sliderTrackWidth={effectiveTrackWidth}
+        sliderColor={sliderColor}
       />
     </GestureDetector>
   );

@@ -1,11 +1,10 @@
 import React, { useMemo } from 'react';
-import { View, StyleSheet, Text } from 'react-native';
+import { View, StyleSheet, StyleProp, ViewStyle } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import Animated from 'react-native-reanimated';
 import { useShallow } from 'zustand/react/shallow';
 import { useFilmStore, useFilmWorklets, useFilmParameterControlData } from '@entities/film';
 import { ParameterControl, useSystemStore } from '@entities/system';
-import { useTranslation } from 'react-i18next';
 import { ColorRangeSlider } from './ColorRangeSlider';
 
 const COLOR_MAPPING = [
@@ -22,23 +21,24 @@ const COLOR_MAPPING = [
 type ColorIndex = 'master' | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7;
 
 interface SaturationDetailPanelProps {
-  parameterDetailPanelAnimatedStyle?: any;
-  animatedStyle?: any;
+  parameterDetailPanelAnimatedStyle?: StyleProp<ViewStyle>;
+  animatedStyle?: StyleProp<ViewStyle>;
 }
 
 export const SaturationDetailPanel = ({
   parameterDetailPanelAnimatedStyle,
   animatedStyle
 }: SaturationDetailPanelProps) => {
-  const { t } = useTranslation();
   const [activeColorIndex, setActiveColorIndex] = React.useState<ColorIndex>('master');
   const activeParameter = useSystemStore(useShallow(state => state.activeParameter));
+  const [prevActiveParameter, setPrevActiveParameter] = React.useState(activeParameter);
 
-  React.useEffect(() => {
+  if (activeParameter !== prevActiveParameter) {
+    setPrevActiveParameter(activeParameter);
     if (activeParameter === 'saturation') {
       setActiveColorIndex('master');
     }
-  }, [activeParameter]);
+  }
 
   const masterData = useFilmParameterControlData('saturation');
 
@@ -155,14 +155,15 @@ export const SaturationDetailPanel = ({
             minValue={isMaster ? masterData.minValue : 0.0}
             maxValue={isMaster ? masterData.maxValue : 100.0}
             centerValue={isMaster ? masterData.centerValue : 50.0}
-            onChange={activeSetter as any}
-            onUpdateWorklet={activeWorklet as any}
+            onChange={activeSetter}
+            onUpdateWorklet={activeWorklet}
             variant="slider"
             onReset={isMaster ? masterData.onReset : undefined}
             valueFormatter={isMaster ? masterData.valueFormatter : (v) => {
               'worklet';
               return `${Math.round(v * 2)}`;
             }}
+            sliderColor={isMaster ? undefined : COLOR_MAPPING[activeColorIndex as number].color}
           />
         </View>
         {renderMultiColorDot()}
@@ -190,7 +191,7 @@ export const SaturationDetailPanel = ({
       </Animated.View>
 
       {!isMaster && (
-        <ColorRangeSlider activeColorIndex={activeColorIndex as number} />
+        <ColorRangeSlider activeColorIndex={activeColorIndex} />
       )}
     </View>
   );

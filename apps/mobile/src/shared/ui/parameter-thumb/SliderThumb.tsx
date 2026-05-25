@@ -13,8 +13,6 @@ import { logger } from '@shared/lib/logger';
 import { AutoButton } from '../auto-button/AutoButton';
 import { globalMeasuredTrackWidth, setGlobalMeasuredTrackWidth } from './globalTrackWidth';
 
-const SCREEN_WIDTH = Dimensions.get('window').width;
-
 const AnimatedTextInput = Animated.createAnimatedComponent(TextInput);
 
 export const SliderThumb = React.memo(({
@@ -31,6 +29,7 @@ export const SliderThumb = React.memo(({
   onToggleAuto,
   hideAutoPlaceholder,
   sliderTrackWidth,
+  sliderColor,
 }: ParameterThumbViewProps) => {
   const internalTrackWidth = useSharedValue(globalMeasuredTrackWidth);
   const trackWidth = sliderTrackWidth || internalTrackWidth;
@@ -104,9 +103,21 @@ export const SliderThumb = React.memo(({
       Extrapolation.CLAMP
     );
     const opacity = (isAuto && isAuto.value) ? 0.4 : 1;
+    
+    if (sliderColor) {
+      return {
+        transform: [{ translateX: percentage * (trackWidth.value - 12) }],
+        opacity,
+        borderWidth: 2,
+        borderColor: sliderColor,
+      };
+    }
+    
     return {
       transform: [{ translateX: percentage * (trackWidth.value - 12) }],
       opacity,
+      borderWidth: 0,
+      borderColor: 'transparent',
     };
   });
 
@@ -132,9 +143,9 @@ export const SliderThumb = React.memo(({
       return { backgroundColor: '#444' };
     }
     if (isAuto && isAuto.value) {
-      return { backgroundColor: 'rgba(255, 255, 255, 0.3)' };
+      return { backgroundColor: sliderColor ? `${sliderColor}4D` : 'rgba(255, 255, 255, 0.3)' };
     }
-    return { backgroundColor: '#FFF' };
+    return { backgroundColor: sliderColor ? sliderColor : '#FFF' };
   });
 
   return (
@@ -258,3 +269,6 @@ const styles = StyleSheet.create({
     marginRight: 16,
   },
 });
+
+SliderThumb.displayName = 'SliderThumb';
+
