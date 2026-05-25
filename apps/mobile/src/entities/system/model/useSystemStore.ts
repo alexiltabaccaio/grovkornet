@@ -14,6 +14,8 @@ export const useSystemStore = create<SystemStore>((set, get) => ({
   isCapturing: false,
   latestPreviewUri: null,
   latestCapturedUri: null,
+  lastNonNoneSection: 'none',
+  lastNonNoneModule: 'none',
 
   lastActiveModules: {
     none: 'none',
@@ -44,7 +46,9 @@ export const useSystemStore = create<SystemStore>((set, get) => ({
       activeSection: section,
       activeModule: module,
       activeParameter: parameter,
-      activeDetailPanel: 'none'
+      activeDetailPanel: 'none',
+      ...(section !== 'none' ? { lastNonNoneSection: section } : {}),
+      ...(module !== 'none' ? { lastNonNoneModule: module } : {}),
     });
   },
   
@@ -57,7 +61,8 @@ export const useSystemStore = create<SystemStore>((set, get) => ({
       lastActiveModules: {
         ...state.lastActiveModules,
         [activeSection]: module,
-      }
+      },
+      ...(module !== 'none' ? { lastNonNoneModule: module } : {}),
     }));
   },
 

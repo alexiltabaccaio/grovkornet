@@ -1,42 +1,32 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import { useTranslation } from 'react-i18next';
 
 import { useShallow } from 'zustand/react/shallow';
-import { useSystemStore, SectionType, ModuleType } from '@entities/system';
+import { useSystemStore } from '@entities/system';
 import { PillButton } from '@shared/ui';
 
 export const Modules = () => {
-  const { activeSection, activeModule, setActiveModule, isDebugEnabled } = useSystemStore(useShallow(state => ({
+  const { 
+    activeSection, 
+    activeModule, 
+    lastNonNoneSection,
+    lastNonNoneModule,
+    setActiveModule, 
+    isDebugEnabled 
+  } = useSystemStore(useShallow(state => ({
     activeSection: state.activeSection,
     activeModule: state.activeModule,
+    lastNonNoneSection: state.lastNonNoneSection,
+    lastNonNoneModule: state.lastNonNoneModule,
     setActiveModule: state.setActiveModule,
     isDebugEnabled: state.isDebugEnabled
   })));
   const { t } = useTranslation();
 
-  const [lastActiveSection, setLastActiveSection] = useState<SectionType>(activeSection !== 'none' ? activeSection : 'none');
-  const [prevActiveSection, setPrevActiveSection] = useState<SectionType>(activeSection);
-  const [lastActiveModule, setLastActiveModule] = useState<ModuleType>(activeModule !== 'none' ? activeModule : 'none');
-  const [prevActiveModule, setPrevActiveModule] = useState<ModuleType>(activeModule);
-
-  if (activeSection !== prevActiveSection) {
-    setPrevActiveSection(activeSection);
-    if (activeSection !== 'none') {
-      setLastActiveSection(activeSection);
-    }
-  }
-
-  if (activeModule !== prevActiveModule) {
-    setPrevActiveModule(activeModule);
-    if (activeModule !== 'none') {
-      setLastActiveModule(activeModule);
-    }
-  }
-
-  const renderSection = activeSection === 'none' ? lastActiveSection : activeSection;
-  const renderModule = activeModule === 'none' ? lastActiveModule : activeModule;
+  const renderSection = activeSection === 'none' ? lastNonNoneSection : activeSection;
+  const renderModule = activeModule === 'none' ? lastNonNoneModule : activeModule;
 
   if (renderSection === 'none') return null;
 

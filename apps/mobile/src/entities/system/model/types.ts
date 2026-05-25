@@ -16,6 +16,8 @@ interface SystemState {
   latestCapturedUri: string | null;
   lastActiveModules: Record<SectionType, ModuleType>;
   lastActiveParameters: Record<ModuleType, ParameterType>;
+  lastNonNoneSection: SectionType;
+  lastNonNoneModule: ModuleType;
 }
 
 interface SystemActions {

@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useCallback } from 'react';
 import { Text, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useShallow } from 'zustand/react/shallow';
@@ -8,7 +8,6 @@ import { useBodyStore } from '@entities/body';
 import { useLensStore } from '@entities/lens';
 import { useDoublePress } from '@shared/lib/hooks/useDoublePress';
 import { controlPanelStyles } from './ControlPanel.styles';
-import { ModuleType } from '@entities/system';
 
 // Import modules from feature slices
 import { DevelopmentModule, TextureModule } from '@features/film-controls';
@@ -22,8 +21,9 @@ import { PreferencesModule } from '@features/system-settings';
  * moving state consumption into the individual modules.
  */
 export const Parameters = () => {
-  const { activeModule } = useSystemStore(useShallow(state => ({
+  const { activeModule, lastNonNoneModule } = useSystemStore(useShallow(state => ({
     activeModule: state.activeModule,
+    lastNonNoneModule: state.lastNonNoneModule,
   })));
 
   const { resetEffect, setTemperatureAuto } = useFilmStore(useShallow(s => ({
@@ -70,17 +70,7 @@ export const Parameters = () => {
 
   const { handlePressWithDouble } = useDoublePress(resetTool);
 
-  const [lastActive, setLastActive] = useState<ModuleType>(activeModule !== 'none' ? activeModule : 'none');
-  const [prevActiveModule, setPrevActiveModule] = useState<ModuleType>(activeModule);
-
-  if (activeModule !== prevActiveModule) {
-    setPrevActiveModule(activeModule);
-    if (activeModule !== 'none') {
-      setLastActive(activeModule);
-    }
-  }
-
-  const renderActiveModule = activeModule === 'none' ? lastActive : activeModule;
+  const renderActiveModule = activeModule === 'none' ? lastNonNoneModule : activeModule;
 
   const renderModuleContent = () => {
     switch (renderActiveModule) {

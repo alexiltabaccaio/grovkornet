@@ -11,9 +11,9 @@ import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import { ParameterThumbViewProps } from './ParameterThumbView.types';
 import { logger } from '@shared/lib/logger';
 import { AutoButton } from '../auto-button/AutoButton';
+import { globalMeasuredTrackWidth, setGlobalMeasuredTrackWidth } from './globalTrackWidth';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
-const INITIAL_TRACK_WIDTH = SCREEN_WIDTH - 188;
 
 const AnimatedTextInput = Animated.createAnimatedComponent(TextInput);
 
@@ -32,7 +32,7 @@ export const SliderThumb = React.memo(({
   hideAutoPlaceholder,
   sliderTrackWidth,
 }: ParameterThumbViewProps) => {
-  const internalTrackWidth = useSharedValue(INITIAL_TRACK_WIDTH);
+  const internalTrackWidth = useSharedValue(globalMeasuredTrackWidth);
   const trackWidth = sliderTrackWidth || internalTrackWidth;
   
   React.useEffect(() => {
@@ -167,7 +167,10 @@ export const SliderThumb = React.memo(({
       <View
         style={styles.trackContainer}
         onLayout={(e) => {
-          trackWidth.value = e.nativeEvent.layout.width;
+          if (e.nativeEvent.layout.width > 0) {
+            trackWidth.value = e.nativeEvent.layout.width;
+            setGlobalMeasuredTrackWidth(e.nativeEvent.layout.width);
+          }
         }}
       >
         <Animated.View style={[styles.trackBackground, animatedTrackStyle]} />

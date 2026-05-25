@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, View, StyleProp, ViewStyle, ScrollView } from 'react-native';
 import Animated from 'react-native-reanimated';
-import { useSystemStore } from '@entities/system';
+import { useSystemStore } from '../../model/useSystemStore';
 
 interface ParameterDetailPanelWrapperProps {
   animatedStyle?: StyleProp<ViewStyle>;
