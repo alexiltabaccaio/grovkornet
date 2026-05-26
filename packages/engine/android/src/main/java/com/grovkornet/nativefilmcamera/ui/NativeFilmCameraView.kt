@@ -23,6 +23,7 @@ import expo.modules.kotlin.viewevent.EventDispatcher
 class NativeFilmCameraView(context: Context) : SurfaceView(context), SurfaceHolder.Callback {
 
     @Volatile private var isReleased = false
+    @Volatile private var lastReconfigureTime = 0L
 
     val config = CameraConfiguration()
     private var cameraEngine: CameraEngine? = null
@@ -52,14 +53,26 @@ class NativeFilmCameraView(context: Context) : SurfaceView(context), SurfaceHold
     }
 
     fun updateHardware(action: CameraConfiguration.() -> Unit) {
+        val oldCam = config.cameraId
+        val oldRes = config.resolutionSetting
+        val oldPrev = config.previewIn4k
         config.action()
+        if (oldCam != config.cameraId || oldRes != config.resolutionSetting || oldPrev != config.previewIn4k) {
+            lastReconfigureTime = System.currentTimeMillis()
+        }
         renderThread?.updateConfig(config)
         Log.d("NativeFilmCameraView", "Hardware update scheduled for config change")
         updateScheduler?.schedule()
     }
 
     fun updateBoth(action: CameraConfiguration.() -> Unit) {
+        val oldCam = config.cameraId
+        val oldRes = config.resolutionSetting
+        val oldPrev = config.previewIn4k
         config.action()
+        if (oldCam != config.cameraId || oldRes != config.resolutionSetting || oldPrev != config.previewIn4k) {
+            lastReconfigureTime = System.currentTimeMillis()
+        }
         renderThread?.updateConfig(config)
         Log.d("NativeFilmCameraView", "Hardware+Effect update scheduled for config change")
         updateScheduler?.schedule()
@@ -109,6 +122,10 @@ class NativeFilmCameraView(context: Context) : SurfaceView(context), SurfaceHold
             getTargetCameraId = { config.cameraId ?: CameraTorchManager.getBackCameraIdFallback(context) },
             isTorchLogicalEnabled = { config.torchEnabled },
             onTorchStateChanged = { enabled ->
+                if (System.currentTimeMillis() - lastReconfigureTime < 2000) {
+                    Log.d("NativeFilmCameraView", "Ignoring torch state change during reconfiguration window")
+                    return@create
+                }
                 if (config.torchEnabled != enabled) {
                     config.torchEnabled = enabled
                     updateScheduler?.schedule()

@@ -54,7 +54,6 @@ class CameraEngine(
 
     fun updateCameraControls() {
         if (config.cameraId != lastBoundCameraId || 
-            config.aspectRatio != lastBoundAspectRatio || 
             config.resolutionSetting != lastBoundResolutionSetting ||
             config.previewIn4k != lastBoundPreviewIn4K
         ) {

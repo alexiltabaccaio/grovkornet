@@ -63,7 +63,7 @@ class CameraSessionManager(
     fun bindCameraUseCases(surfaceTexture: SurfaceTexture, captureCallback: android.hardware.camera2.CameraCaptureSession.CaptureCallback? = null) {
         val provider = cameraProvider ?: return
 
-        val targetAspectRatio = if (config.aspectRatio == 1) AspectRatio.RATIO_16_9 else AspectRatio.RATIO_4_3
+        val targetAspectRatio = AspectRatio.RATIO_4_3
         
         val targetSize = when (config.resolutionSetting) {
             0 -> null // 4K / Highest
@@ -103,9 +103,13 @@ class CameraSessionManager(
         val previewBuilder = Preview.Builder()
             .setResolutionSelector(previewResolutionSelector)
         
+        val extender = androidx.camera.camera2.interop.Camera2Interop.Extender(previewBuilder)
         captureCallback?.let {
-            androidx.camera.camera2.interop.Camera2Interop.Extender(previewBuilder)
-                .setSessionCaptureCallback(it)
+            extender.setSessionCaptureCallback(it)
+        }
+        if (config.torchEnabled) {
+            extender.setCaptureRequestOption(android.hardware.camera2.CaptureRequest.FLASH_MODE, android.hardware.camera2.CaptureRequest.FLASH_MODE_TORCH)
+            extender.setCaptureRequestOption(android.hardware.camera2.CaptureRequest.CONTROL_AE_MODE, android.hardware.camera2.CaptureRequest.CONTROL_AE_MODE_ON)
         }
 
         val preview = previewBuilder.build().also {

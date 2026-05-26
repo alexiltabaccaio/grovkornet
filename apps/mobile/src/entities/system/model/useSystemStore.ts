@@ -12,6 +12,7 @@ export const useSystemStore = create<SystemStore>((set, get) => ({
   isLogsEnabled: __DEV__,
   isDetailPanelOpen: false,
   isCapturing: false,
+  isTorchOn: false,
   latestPreviewUri: null,
   latestCapturedUri: null,
   lastNonNoneSection: 'none',
@@ -94,6 +95,10 @@ export const useSystemStore = create<SystemStore>((set, get) => ({
 
   setActiveDetailPanel: (param: ParameterDetailPanelType) => {
     set({ activeDetailPanel: param });
+  },
+
+  setIsTorchOn: (isOn: boolean) => {
+    set({ isTorchOn: isOn });
   },
 
   triggerCapture: () => {

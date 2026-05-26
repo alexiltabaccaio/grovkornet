@@ -12,6 +12,7 @@ interface SystemState {
   isLogsEnabled: boolean;
   isDetailPanelOpen: boolean;
   isCapturing: boolean;
+  isTorchOn: boolean;
   latestPreviewUri: string | null;
   latestCapturedUri: string | null;
   lastActiveModules: Record<SectionType, ModuleType>;
@@ -28,6 +29,7 @@ interface SystemActions {
   setIsDebugEnabled: (enabled: boolean) => void;
   setIsLogsEnabled: (enabled: boolean) => void;
   setIsDetailPanelOpen: (open: boolean) => void;
+  setIsTorchOn: (isOn: boolean) => void;
   triggerCapture: () => void;
   setLatestPreviewUri: (uri: string | null) => void;
   setLatestCapturedUri: (uri: string | null) => void;
