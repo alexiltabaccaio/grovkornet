@@ -136,6 +136,18 @@ class CapturePipeline(
                 watermarked.compress(Bitmap.CompressFormat.JPEG, 95, os)
             }
 
+            try {
+                val exif = android.media.ExifInterface(tempFile.absolutePath)
+                val sdf = java.text.SimpleDateFormat("yyyy:MM:dd HH:mm:ss", java.util.Locale.US)
+                val now = sdf.format(java.util.Date())
+                exif.setAttribute(android.media.ExifInterface.TAG_DATETIME, now)
+                exif.setAttribute(android.media.ExifInterface.TAG_DATETIME_ORIGINAL, now)
+                exif.setAttribute(android.media.ExifInterface.TAG_DATETIME_DIGITIZED, now)
+                exif.saveAttributes()
+            } catch (e: Exception) {
+                Log.e(TAG, "Failed to write EXIF data", e)
+            }
+
             // Save the file to the gallery
             val uri = galleryManager.saveFileToGallery(tempFile)
             watermarked.recycle()

@@ -5,9 +5,13 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Build
+import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
 import java.io.OutputStream
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 class GalleryManager(private val context: Context) {
     private val TAG = "GalleryManager"
@@ -16,12 +20,18 @@ class GalleryManager(private val context: Context) {
      * Saves a bitmap to the system gallery using MediaStore.
      */
     fun saveToGallery(bitmap: Bitmap): Uri? {
-        val filename = "Grovkornet_${System.currentTimeMillis()}.jpg"
+        val currentTime = System.currentTimeMillis()
+        val formatter = SimpleDateFormat("yyyyMMdd_HHmmssSSS", Locale.US)
+        val dateString = formatter.format(Date(currentTime))
+        val filename = "GVK_${dateString}.jpg"
+        
         val contentValues = ContentValues().apply {
             put(MediaStore.MediaColumns.DISPLAY_NAME, filename)
             put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg")
+            put(MediaStore.MediaColumns.DATE_ADDED, currentTime / 1000)
+            put(MediaStore.Images.Media.DATE_TAKEN, currentTime)
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                put(MediaStore.MediaColumns.RELATIVE_PATH, "Pictures/Grovkornet")
+                put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_DCIM + "/Grovkornet")
             }
         }
 
@@ -47,12 +57,18 @@ class GalleryManager(private val context: Context) {
      * Saves an existing file to the system gallery using MediaStore.
      */
     fun saveFileToGallery(file: java.io.File): Uri? {
-        val filename = "Grovkornet_${System.currentTimeMillis()}.jpg"
+        val currentTime = System.currentTimeMillis()
+        val formatter = SimpleDateFormat("yyyyMMdd_HHmmssSSS", Locale.US)
+        val dateString = formatter.format(Date(currentTime))
+        val filename = "GVK_${dateString}.jpg"
+        
         val contentValues = ContentValues().apply {
             put(MediaStore.MediaColumns.DISPLAY_NAME, filename)
             put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg")
+            put(MediaStore.MediaColumns.DATE_ADDED, currentTime / 1000)
+            put(MediaStore.Images.Media.DATE_TAKEN, currentTime)
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                put(MediaStore.MediaColumns.RELATIVE_PATH, "Pictures/Grovkornet")
+                put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_DCIM + "/Grovkornet")
             }
         }
 
