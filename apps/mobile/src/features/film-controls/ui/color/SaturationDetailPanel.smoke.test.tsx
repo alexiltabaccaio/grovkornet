@@ -35,6 +35,19 @@ const mockWorklets = {
   updateSatMagenta: jest.fn(),
 };
 
+const mockMasterData = {
+  value: 1.0,
+  minValue: 0.0,
+  maxValue: 2.0,
+  centerValue: 1.0,
+  onChange: jest.fn(),
+  onUpdateWorklet: jest.fn(),
+  onReset: jest.fn(),
+  hideValueInAuto: false,
+  autoValueText: 'AUTO',
+  valueFormatter: (v: number) => v.toString(),
+};
+
 jest.mock('@entities/system', () => {
   const React = require('react');
   const { View } = require('react-native');
@@ -101,15 +114,7 @@ jest.mock('@entities/film', () => ({
     return fn ? fn(state) : state;
   }),
   useFilmWorklets: () => mockWorklets,
-  useFilmParameterControlData: () => ({
-    value: 1.0,
-    minValue: 0.0,
-    maxValue: 2.0,
-    centerValue: 1.0,
-    onChange: jest.fn(),
-    onUpdateWorklet: jest.fn(),
-    valueFormatter: (v: number) => v.toString(),
-  }),
+  useFilmParameterControlData: () => mockMasterData,
 }));
 
 describe('SaturationDetailPanel', () => {
@@ -143,5 +148,66 @@ describe('SaturationDetailPanel', () => {
       // ParameterControl mock will trigger onChange, check if corresponding setter was called
       expect(setter).toHaveBeenCalledWith(85);
     });
+  });
+
+  it('resets specific color saturation on double press', () => {
+    jest.useFakeTimers();
+    const { getByTestId } = render(<SaturationDetailPanel />);
+    const redBtn = getByTestId('color-circle-red');
+
+    // Primo tap
+    fireEvent.press(redBtn);
+
+    // Avanza di 100ms per il secondo tap (< 300ms)
+    jest.advanceTimersByTime(100);
+    fireEvent.press(redBtn);
+
+    expect(mockSetters.setSatRed).toHaveBeenCalledWith(50.0);
+    jest.useRealTimers();
+  });
+
+  it('single press does NOT reset, only switches color', () => {
+    jest.useFakeTimers();
+    const { getByTestId } = render(<SaturationDetailPanel />);
+    const redBtn = getByTestId('color-circle-red');
+
+    fireEvent.press(redBtn);
+
+    // Aspetta 400ms (> 300ms) prima di un eventuale altro tap per essere sicuri che non venga interpretato come doppio
+    jest.advanceTimersByTime(400);
+
+    expect(mockSetters.setSatRed).not.toHaveBeenCalledWith(50.0);
+    jest.useRealTimers();
+  });
+
+  it('resets master saturation on double press on master dot', () => {
+    jest.useFakeTimers();
+    const { getByTestId } = render(<SaturationDetailPanel />);
+    const masterBtn = getByTestId('color-circle-master');
+
+    // Primo tap
+    fireEvent.press(masterBtn);
+
+    // Secondo tap
+    jest.advanceTimersByTime(100);
+    fireEvent.press(masterBtn);
+
+    expect(mockMasterData.onReset).toHaveBeenCalled();
+    jest.useRealTimers();
+  });
+
+  it('verifies isolation of reset (red reset does not reset blue)', () => {
+    jest.useFakeTimers();
+    const { getByTestId } = render(<SaturationDetailPanel />);
+    const redBtn = getByTestId('color-circle-red');
+
+    // Doppio tap su rosso
+    fireEvent.press(redBtn);
+    jest.advanceTimersByTime(100);
+    fireEvent.press(redBtn);
+
+    expect(mockSetters.setSatRed).toHaveBeenCalledWith(50.0);
+    expect(mockSetters.setSatBlue).not.toHaveBeenCalled();
+    jest.useRealTimers();
   });
 });

@@ -1,9 +1,11 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useCallback, memo } from 'react';
 import { View, StyleSheet, StyleProp, ViewStyle } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import Animated from 'react-native-reanimated';
 import { useShallow } from 'zustand/react/shallow';
 import { useFilmStore, useFilmWorklets, useFilmParameterControlData } from '@entities/film';
+import { DEFAULT_SELECTIVE_SATURATION } from '@grovkornet/shared';
+import { useDoublePress } from '@shared/lib/hooks/useDoublePress';
 import { ParameterControl, useSystemStore } from '@entities/system';
 import { ColorRangeSlider } from './ColorRangeSlider';
 
@@ -17,6 +19,33 @@ const COLOR_MAPPING = [
   { key: 'purple', color: '#BF5AF2' },
   { key: 'magenta', color: '#FF2D55' },
 ] as const;
+
+interface ColorCircleProps {
+  itemKey: string;
+  index: number;
+  isActive: boolean;
+  color: string;
+  onPress: (key: string, index: number) => void;
+}
+
+const MemoizedColorCircle = memo(({ itemKey, index, isActive, color, onPress }: ColorCircleProps) => {
+  const handlePress = useCallback(() => {
+    onPress(itemKey, index);
+  }, [itemKey, index, onPress]);
+
+  return (
+    <TouchableOpacity
+      testID={`color-circle-${itemKey}`}
+      onPress={handlePress}
+      style={[styles.circleContainer, isActive && styles.circleContainerActive]}
+      activeOpacity={0.8}
+      hitSlop={{ top: 10, bottom: 10, left: 5, right: 5 }}
+    >
+      <View style={[styles.circle, { backgroundColor: color }]} />
+    </TouchableOpacity>
+  );
+});
+MemoizedColorCircle.displayName = 'MemoizedColorCircle';
 
 type ColorIndex = 'master' | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7;
 
@@ -72,6 +101,30 @@ export const SaturationDetailPanel = ({
     }))
   );
 
+  const handleColorReset = useCallback((colorKey: string) => {
+    if (colorKey === 'master') {
+      masterData.onReset();
+    } else {
+      const v = DEFAULT_SELECTIVE_SATURATION;
+      switch (colorKey) {
+        case 'red':     setSatRed(v); break;
+        case 'orange':  setSatOrange(v); break;
+        case 'yellow':  setSatYellow(v); break;
+        case 'green':   setSatGreen(v); break;
+        case 'cyan':    setSatCyan(v); break;
+        case 'blue':    setSatBlue(v); break;
+        case 'purple':  setSatPurple(v); break;
+        case 'magenta': setSatMagenta(v); break;
+      }
+    }
+  }, [masterData, setSatRed, setSatOrange, setSatYellow, setSatGreen, setSatCyan, setSatBlue, setSatPurple, setSatMagenta]);
+
+  const { handlePressWithDouble } = useDoublePress(handleColorReset);
+
+  const handleColorPress = useCallback((key: string, index: number) => {
+    handlePressWithDouble(key, () => setActiveColorIndex(index as ColorIndex));
+  }, [handlePressWithDouble]);
+
   const worklets = useFilmWorklets();
 
   const isMaster = activeColorIndex === 'master';
@@ -124,7 +177,7 @@ export const SaturationDetailPanel = ({
       <View style={styles.multiColorDotAbsolute}>
         <TouchableOpacity
           testID="color-circle-master"
-          onPress={() => setActiveColorIndex('master')}
+          onPress={() => handlePressWithDouble('master', () => setActiveColorIndex('master'))}
           style={[
             styles.circleContainer,
             isActive && styles.circleContainerActive,
@@ -170,24 +223,16 @@ export const SaturationDetailPanel = ({
       </Animated.View>
 
       <Animated.View style={[styles.colorCirclesRow, animatedStyle]}>
-        {COLOR_MAPPING.map((item, index) => {
-          const isActive = index === activeColorIndex;
-          return (
-            <TouchableOpacity
-              key={item.key}
-              testID={`color-circle-${item.key}`}
-              onPress={() => setActiveColorIndex(index as ColorIndex)}
-              style={[
-                styles.circleContainer,
-                isActive && styles.circleContainerActive
-              ]}
-              activeOpacity={0.8}
-              hitSlop={{ top: 10, bottom: 10, left: 5, right: 5 }}
-            >
-              <View style={[styles.circle, { backgroundColor: item.color }]} />
-            </TouchableOpacity>
-          );
-        })}
+        {COLOR_MAPPING.map((item, index) => (
+          <MemoizedColorCircle
+            key={item.key}
+            itemKey={item.key}
+            index={index}
+            isActive={index === activeColorIndex}
+            color={item.color}
+            onPress={handleColorPress}
+          />
+        ))}
       </Animated.View>
 
       {!isMaster && (
