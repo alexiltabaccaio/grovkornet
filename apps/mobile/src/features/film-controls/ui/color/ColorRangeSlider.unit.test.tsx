@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-require-imports, react-hooks/exhaustive-deps */
 import React from 'react';
 import { render, fireEvent } from '@testing-library/react-native';
 import { Dimensions } from 'react-native';

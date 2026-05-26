@@ -137,7 +137,8 @@ const arePropsEqual = (prevProps: PillButtonProps, nextProps: PillButtonProps) =
   if (prevProps.variant !== nextProps.variant) return false;
   if (prevProps.isDebugEnabled !== nextProps.isDebugEnabled) return false;
 
-  const getVal = (val: any) => typeof val === 'object' && val !== null && 'value' in val ? val.value : val;
+  const getVal = (val: boolean | number | SharedValue<boolean> | SharedValue<number> | undefined): boolean | number | undefined => 
+    typeof val === 'object' && val !== null && 'value' in val ? (val as SharedValue<boolean | number>).value : val;
 
   if (getVal(prevProps.isActive) !== getVal(nextProps.isActive)) return false;
   if (getVal(prevProps.opacity) !== getVal(nextProps.opacity)) return false;
