@@ -122,26 +122,7 @@ class CapturePipeline(
                 }
             }
 
-            // 1. Generate and emit a fast low-res preview
-            val previewScale = 256f / maxOf(finalInput.width, finalInput.height).toFloat()
-            if (previewScale < 1f) {
-                val previewBitmap = Bitmap.createScaledBitmap(finalInput, (finalInput.width * previewScale).toInt(), (finalInput.height * previewScale).toInt(), true)
-                
-                // Skip native processing for the tiny thumbnail to avoid double EGL Context teardown
-                // and provide instantaneous UI feedback! Ultra-compressed for speed.
-                val previewFile = java.io.File(context.cacheDir, "preview_capture_${System.currentTimeMillis()}.jpg")
-                previewFile.outputStream().use { os ->
-                    previewBitmap.compress(Bitmap.CompressFormat.JPEG, 50, os)
-                }
-                previewBitmap.recycle()
-                
-                val previewUri = android.net.Uri.fromFile(previewFile).toString()
-                withContext(Dispatchers.Main) {
-                    listener.onPhotoCaptured(previewUri)
-                }
-            }
-
-            // 2. Process the full-resolution image
+            // Process the full-resolution image
             val processed = offscreenProcessor.process(finalInput, config, context)
             finalInput.recycle()
 

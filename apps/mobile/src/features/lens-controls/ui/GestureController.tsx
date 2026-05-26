@@ -1,6 +1,7 @@
 import React, { ReactNode, useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { GestureDetector, Gesture } from 'react-native-gesture-handler';
+import Animated, { useSharedValue, useAnimatedStyle, withSpring, runOnJS } from 'react-native-reanimated';
 import { useSystemStore } from '@entities/system';
 import { useShallow } from 'zustand/react/shallow';
 
@@ -19,6 +20,8 @@ export const GestureController = ({ children }: GestureControllerProps) => {
     setActiveSection: s.setActiveSection,
   })));
 
+  const translateY = useSharedValue(0);
+
   const composedGesture = useMemo(() => {
     const tap = Gesture.Tap()
       .runOnJS(true)
@@ -28,14 +31,35 @@ export const GestureController = ({ children }: GestureControllerProps) => {
         }
       });
 
-    return tap;
-  }, [activeSection, setActiveSection]);
+    const pan = Gesture.Pan()
+      .onChange((event) => {
+        if (activeSection !== 'none' && event.translationY < 0) {
+          translateY.value = event.translationY;
+        }
+      })
+      .onEnd((event) => {
+        if (activeSection !== 'none') {
+          if (event.translationY < -100 || event.velocityY < -500) {
+            runOnJS(setActiveSection)('none');
+          }
+          translateY.value = withSpring(0, { damping: 15, stiffness: 150 });
+        }
+      });
+
+    return Gesture.Simultaneous(tap, pan);
+  }, [activeSection, setActiveSection, translateY]);
+
+  const animatedStyle = useAnimatedStyle(() => {
+    return {
+      transform: [{ translateY: translateY.value }],
+    };
+  });
 
   return (
     <GestureDetector gesture={composedGesture}>
-      <View style={styles.container} pointerEvents="auto">
+      <Animated.View style={[styles.container, animatedStyle]} pointerEvents="auto">
         {children}
-      </View>
+      </Animated.View>
     </GestureDetector>
   );
 };
