@@ -13,15 +13,18 @@ interface DebugDetailPanelProps {
 
 export const DebugDetailPanel = __DEV__ ? ({ parameterDetailPanelAnimatedStyle }: DebugDetailPanelProps) => {
   const { t } = useTranslation();
-  const { isDebugEnabled, setIsDebugEnabled, isLogsEnabled, setIsLogsEnabled } = useSystemStore(useShallow(state => ({
+  const { isDebugEnabled, setIsDebugEnabled, isLogsEnabled, setIsLogsEnabled, isCameraSecure, setIsCameraSecure } = useSystemStore(useShallow(state => ({
     isDebugEnabled: state.isDebugEnabled,
     setIsDebugEnabled: state.setIsDebugEnabled,
     isLogsEnabled: state.isLogsEnabled,
     setIsLogsEnabled: state.setIsLogsEnabled,
+    isCameraSecure: state.isCameraSecure,
+    setIsCameraSecure: state.setIsCameraSecure,
   })));
 
   const labelUI = t('parameters.debug_ui') ? t('parameters.debug_ui').toUpperCase() : 'UI';
   const labelLogs = t('parameters.debug_logs') ? t('parameters.debug_logs').toUpperCase() : 'LOGS';
+  const labelSecure = 'SECURE';
 
   return (
     <ParameterDetailPanelWrapper animatedStyle={parameterDetailPanelAnimatedStyle} gap={16} paddingHorizontal={32}>
@@ -36,6 +39,13 @@ export const DebugDetailPanel = __DEV__ ? ({ parameterDetailPanelAnimatedStyle }
         label={labelLogs}
         isActive={isLogsEnabled}
         onPress={() => setIsLogsEnabled(!isLogsEnabled)}
+        isDebugEnabled={isDebugEnabled}
+        style={styles.pressable}
+      />
+      <PillButton
+        label={labelSecure}
+        isActive={isCameraSecure}
+        onPress={() => setIsCameraSecure(!isCameraSecure)}
         isDebugEnabled={isDebugEnabled}
         style={styles.pressable}
       />

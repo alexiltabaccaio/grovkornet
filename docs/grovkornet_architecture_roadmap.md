@@ -15,17 +15,14 @@
 
 ---
 
-## [TICKET #02] – Sicurezza Commerciale: Oscuramento Catture (FLAG_SECURE)
+## ~~[TICKET #02] – Sicurezza Commerciale: Oscuramento Catture (FLAG_SECURE)~~ [COMPLETATO]
 * **File di riferimento:** Store Zustand (`useSystemStore` / `useFilmStore`), modulo di cattura nativo.
 * **Contesto:** L'app permette il libero utilizzo dei sub-parametri Pro (es. OKLAB boundaries, granularità fine) nell'anteprima in tempo reale, bloccando lo scatto definitivo. Al momento manca una protezione hardware che impedisca agli utenti di esfiltrare l'immagine elaborata eseguendo uno screenshot o una registrazione video del mirino.
 * **Stato Avanzamento:**
-    - [ ] Integrare la libreria `expo-screen-capture` per comunicare in modo asincrono con la Window nativa di Android.
-    - [ ] Creare un listener reattivo collegato allo store Zustand che ascolti lo stato booleano `isProFeatureActive`.
-    - [ ] Invocare la funzione nativa che applica il flag hardware di sicurezza quando `isProFeatureActive == true`:
-      ```typescript
-      await ScreenCapture.preventScreenCaptureAsync();
-      ```
-    - [ ] Forzare l'**oscuramento totale (schermo nero)** del feed video sia in caso di screenshot sia in caso di avvio di software di registrazione dello schermo. Al ritorno ai parametri base (Free), rimuovere il flag in modo asincrono.
+    - [x] (Sostituito con Native SurfaceView) Integrare la libreria `expo-screen-capture` per comunicare in modo asincrono con la Window nativa di Android.
+    - [x] (Sostituito con Native SurfaceView) Creare un listener reattivo collegato allo store Zustand che ascolti lo stato booleano `isProFeatureActive`.
+    - [x] Invocare la funzione nativa che applica il flag hardware di sicurezza (`SurfaceView.setSecure(true)`).
+    - [x] Forzare l'**oscuramento totale (schermo nero)** del feed video sia in caso di screenshot sia in caso di avvio di software di registrazione dello schermo (ad esclusione di `isDebugEnabled == true`).
 
 ---
 

@@ -80,6 +80,7 @@ export const Viewfinder = ({ cameraKey }: ViewfinderProps) => {
   const setLatestCapturedUri = useSystemStore.getState().setLatestCapturedUri;
 
   // 3. Primitive reattive (abbonate per causare re-render solo quando necessario)
+  const isCameraSecure = useSystemStore(state => state.isCameraSecure);
   const capabilities = useBodyStore(state => state.capabilities);
   const { cameraAuto, cameraId } = useLensStore(useShallow(state => ({
     cameraAuto: state.cameraAuto,
@@ -116,7 +117,7 @@ export const Viewfinder = ({ cameraKey }: ViewfinderProps) => {
     <>
       <NativeRenderer
         ref={cameraRef}
-        key={`camera-${cameraKey}`}
+        key={`camera-${cameraKey}-${isCameraSecure}`}
         style={StyleSheet.absoluteFill}
         // @@GEN_PROPS_START@@
         saturation={saturation as unknown as SharedValue<number | undefined>}
@@ -167,6 +168,7 @@ export const Viewfinder = ({ cameraKey }: ViewfinderProps) => {
         cameraId={cameraAuto ? undefined : cameraId}
         resolutionSetting={resolutionSetting as unknown as SharedValue<number | undefined>}
         previewIn4k={resolvedPreviewIn4k as unknown as SharedValue<boolean | undefined>}
+        secureViewEnabled={isCameraSecure}
         // @@GEN_PROPS_END@@
         onCapabilitiesUpdate={capabilitiesHandler}
         onDebugUpdate={debugHandler}

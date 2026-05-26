@@ -137,8 +137,10 @@ const arePropsEqual = (prevProps: PillButtonProps, nextProps: PillButtonProps) =
   if (prevProps.variant !== nextProps.variant) return false;
   if (prevProps.isDebugEnabled !== nextProps.isDebugEnabled) return false;
 
-  if (prevProps.isActive !== nextProps.isActive) return false;
-  if (prevProps.opacity !== nextProps.opacity) return false;
+  const getVal = (val: any) => typeof val === 'object' && val !== null && 'value' in val ? val.value : val;
+
+  if (getVal(prevProps.isActive) !== getVal(nextProps.isActive)) return false;
+  if (getVal(prevProps.opacity) !== getVal(nextProps.opacity)) return false;
 
   // Confronto shallow degli stili (gestisce array, oggetti StyleSheet e inline stili)
   if (JSON.stringify(prevProps.style) !== JSON.stringify(nextProps.style)) return false;

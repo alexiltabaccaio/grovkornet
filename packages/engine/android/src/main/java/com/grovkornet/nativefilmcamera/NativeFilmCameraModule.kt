@@ -238,6 +238,10 @@ class NativeFilmCameraModule : Module() {
       }
       // @@GEN_PROPS_END@@
 
+      Prop("secureViewEnabled") { view: NativeFilmCameraView, value: Boolean ->
+        view.setSecureMode(value)
+      }
+
       AsyncFunction("takePhoto") { view: NativeFilmCameraView ->
         view.takePhoto()
       }

@@ -77,8 +77,19 @@ class NativeFilmCameraView(context: Context) : SurfaceView(context), SurfaceHold
         Log.d("NativeFilmCameraView", "Hardware+Effect update scheduled for config change")
         updateScheduler?.schedule()
     }
+    fun setSecureMode(enabled: Boolean) {
+        val isDebuggable = (context.applicationInfo.flags and android.content.pm.ApplicationInfo.FLAG_DEBUGGABLE) != 0
+        if (isDebuggable) {
+            this.setSecure(enabled)
+        } else {
+            // In produzione (Release build), forziamo SEMPRE la sicurezza ignorando React Native
+            this.setSecure(true)
+        }
+    }
 
     init {
+        // Oscura il feed video in screenshot e screen recording (FLAG_SECURE hardware)
+        this.setSecure(true)
         holder.addCallback(this)
 
         val cameraListener = object : CameraEngine.Listener {

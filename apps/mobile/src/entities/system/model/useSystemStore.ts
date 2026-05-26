@@ -12,6 +12,7 @@ export const useSystemStore = create<SystemStore>((set, get) => ({
   isLogsEnabled: __DEV__,
   isDetailPanelOpen: false,
   isCapturing: false,
+  isCameraSecure: true,
   isTorchOn: false,
   latestPreviewUri: null,
   latestCapturedUri: null,
@@ -91,6 +92,10 @@ export const useSystemStore = create<SystemStore>((set, get) => ({
 
   setIsDetailPanelOpen: (open: boolean) => {
     set({ isDetailPanelOpen: open });
+  },
+
+  setIsCameraSecure: (enabled: boolean) => {
+    set({ isCameraSecure: enabled });
   },
 
   setActiveDetailPanel: (param: ParameterDetailPanelType) => {

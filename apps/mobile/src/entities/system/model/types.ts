@@ -12,6 +12,7 @@ interface SystemState {
   isLogsEnabled: boolean;
   isDetailPanelOpen: boolean;
   isCapturing: boolean;
+  isCameraSecure: boolean;
   isTorchOn: boolean;
   latestPreviewUri: string | null;
   latestCapturedUri: string | null;
@@ -29,6 +30,7 @@ interface SystemActions {
   setIsDebugEnabled: (enabled: boolean) => void;
   setIsLogsEnabled: (enabled: boolean) => void;
   setIsDetailPanelOpen: (open: boolean) => void;
+  setIsCameraSecure: (enabled: boolean) => void;
   setIsTorchOn: (isOn: boolean) => void;
   triggerCapture: () => void;
   setLatestPreviewUri: (uri: string | null) => void;
