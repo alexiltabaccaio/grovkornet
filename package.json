@@ -1,6 +1,6 @@
 {
   "name": "grovkornet-monorepo",
-  "version": "1.0.0",
+  "version": "0.9.0",
   "private": true,
   "packageManager": "npm@10.8.1",
   "workspaces": [
@@ -22,9 +22,11 @@
     "codegen": "node packages/shared/scripts/codegen-parameters.js",
     "lint": "turbo run lint",
     "android": "npm run android -w @grovkornet/mobile",
-    "ios": "npm run ios -w @grovkornet/mobile"
+    "ios": "npm run ios -w @grovkornet/mobile",
+    "release": "commit-and-tag-version"
   },
   "devDependencies": {
+    "commit-and-tag-version": "^12.7.3",
     "turbo": "^2.3.3"
   },
   "dependencies": {
