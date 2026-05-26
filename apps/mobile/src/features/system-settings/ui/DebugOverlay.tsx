@@ -31,12 +31,59 @@ export const DebugOverlay = () => {
         />
 
         <View style={styles.separator} />
-        <ReanimatedValueText
-          label="RES"
-          value={resolution}
-        />
+        <ReanimatedResolutionText />
       </View>
     </View>
+  );
+};
+
+const ReanimatedResolutionText = () => {
+  const resolution = useBodyStore(state => state.resolution);
+  const aspectRatio = useBodyStore(state => state.aspectRatio);
+
+  const animatedProps = useAnimatedProps(() => {
+    const resStr = resolution.value;
+    if (!resStr) return { text: 'RES: -' };
+    const parts = resStr.split('x');
+    if (parts.length !== 2) return { text: `RES: ${resStr}` };
+
+    const camW = Number(parts[0]);
+    const camH = Number(parts[1]);
+    if (isNaN(camW) || isNaN(camH) || camH === 0) return { text: `RES: ${resStr}` };
+
+    let targetAspect = 4.0 / 3.0;
+    switch (aspectRatio.value) {
+      case 0: targetAspect = 4.0 / 3.0; break;
+      case 1: targetAspect = 16.0 / 9.0; break;
+      case 2: targetAspect = 1.0; break;
+      case 3: targetAspect = 3.0 / 2.0; break;
+      case 4: targetAspect = 65.0 / 24.0; break;
+      default: targetAspect = 4.0 / 3.0; break;
+    }
+
+    const camAspect = camW / camH;
+    let outW = camW;
+    let outH = camH;
+
+    if (targetAspect > camAspect) {
+      outH = Math.round(camW / targetAspect);
+    } else {
+      outW = Math.round(camH * targetAspect);
+    }
+
+    return {
+      text: `RES: ${outW}x${outH}`,
+    };
+  });
+
+  return (
+    <AnimatedTextInput
+      editable={false}
+      defaultValue={`RES: ${resolution.value || '-'}`}
+      style={styles.text}
+      // @ts-expect-error
+      animatedProps={animatedProps}
+    />
   );
 };
 

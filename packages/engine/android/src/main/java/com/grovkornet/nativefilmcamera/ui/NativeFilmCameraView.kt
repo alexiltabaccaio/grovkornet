@@ -120,6 +120,10 @@ class NativeFilmCameraView(context: Context) : SurfaceView(context), SurfaceHold
                 cameraWidth = width
                 cameraHeight = height
                 renderThread?.updateCameraResolution(width, height)
+                
+                onDebugUpdate(mapOf(
+                    "resolution" to "${width}x${height}"
+                ))
             }
 
             override fun onPhotoCaptured(uri: String) {
@@ -206,7 +210,7 @@ class NativeFilmCameraView(context: Context) : SurfaceView(context), SurfaceHold
     override fun surfaceCreated(holder: SurfaceHolder) {
         Log.i("NativeFilmCameraView", "Surface created")
         
-        renderThread = com.grovkornet.nativefilmcamera.rendering.FilmRenderThread(
+        val thread = com.grovkornet.nativefilmcamera.rendering.FilmRenderThread(
             assetManager = context.assets,
             surfaceProvider = { holder.surface },
             onSurfaceTextureReady = { st ->
@@ -215,7 +219,11 @@ class NativeFilmCameraView(context: Context) : SurfaceView(context), SurfaceHold
             onDebugUpdate = { debugData ->
                 onDebugUpdate(debugData)
             }
-        ).apply {
+        )
+        
+        renderThread = thread
+        
+        thread.apply {
             updateConfig(config)
             start()
             // Access looper to block until the thread is fully started and handler/looper are ready

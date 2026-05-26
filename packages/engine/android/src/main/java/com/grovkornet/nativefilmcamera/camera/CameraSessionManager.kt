@@ -63,17 +63,22 @@ class CameraSessionManager(
     fun bindCameraUseCases(surfaceTexture: SurfaceTexture, captureCallback: android.hardware.camera2.CameraCaptureSession.CaptureCallback? = null) {
         val provider = cameraProvider ?: return
 
-        val targetAspectRatio = AspectRatio.RATIO_4_3
+        val targetAspectRatio = when (config.aspectRatio) {
+            1, 4 -> AspectRatio.RATIO_16_9 // 16:9 and 65:24 map to 16:9
+            else -> AspectRatio.RATIO_4_3 // 4:3, 1:1, 3:2 map to 4:3
+        }
+
+        val is169 = targetAspectRatio == AspectRatio.RATIO_16_9
         
         val targetSize = when (config.resolutionSetting) {
             0 -> null // 4K / Highest
-            1 -> Size(1920, 1080) // 1080p
-            2 -> Size(1280, 720)  // 720p
-            3 -> Size(720, 480)   // 480p
-            4 -> Size(640, 360)   // 360p
-            5 -> Size(426, 240)   // 240p
-            6 -> Size(256, 144)   // 144p
-            else -> Size(1920, 1080)
+            1 -> if (is169) Size(1920, 1080) else Size(1920, 1440) // 1080p
+            2 -> if (is169) Size(1280, 720) else Size(1280, 960)  // 720p
+            3 -> if (is169) Size(720, 480) else Size(720, 540)   // 480p
+            4 -> if (is169) Size(640, 360) else Size(640, 480)   // 360p
+            5 -> if (is169) Size(426, 240) else Size(426, 320)   // 240p
+            6 -> if (is169) Size(256, 144) else Size(256, 192)   // 144p
+            else -> if (is169) Size(1920, 1080) else Size(1920, 1440)
         }
 
         val captureResolutionStrategy = if (targetSize != null) {
@@ -88,7 +93,8 @@ class CameraSessionManager(
             .build()
 
         val previewResolutionStrategy = if (config.resolutionSetting == 0 && !config.previewIn4k) {
-            ResolutionStrategy(Size(1920, 1080), ResolutionStrategy.FALLBACK_RULE_CLOSEST_HIGHER_THEN_LOWER)
+            val defaultPreview = if (is169) Size(1920, 1080) else Size(1920, 1440)
+            ResolutionStrategy(defaultPreview, ResolutionStrategy.FALLBACK_RULE_CLOSEST_HIGHER_THEN_LOWER)
         } else if (targetSize != null) {
             ResolutionStrategy(targetSize, ResolutionStrategy.FALLBACK_RULE_CLOSEST_HIGHER_THEN_LOWER)
         } else {

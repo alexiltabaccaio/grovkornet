@@ -87,23 +87,37 @@ jest.mock('react-native-gesture-handler', () => {
   
   const createChainable = () => {
     const obj: any = {};
-    obj.hitSlop = jest.fn(() => obj);
-    obj.activeOffsetY = jest.fn(() => obj);
-    obj.activeOffsetX = jest.fn(() => obj);
-    obj.failOffsetX = jest.fn(() => obj);
-    obj.failOffsetY = jest.fn(() => obj);
-    obj.maxDuration = jest.fn(() => obj);
-    obj.maxDistance = jest.fn(() => obj);
-    obj.onStart = jest.fn((cb) => { obj._onStart = cb; return obj; });
-    obj.onUpdate = jest.fn((cb) => { obj._onUpdate = cb; return obj; });
-    obj.onEnd = jest.fn((cb) => { obj._onEnd = cb; return obj; });
-    obj.onFinalize = jest.fn((cb) => { obj._onFinalize = cb; return obj; });
-    obj.minDistance = jest.fn(() => obj);
-    obj.numberOfTaps = jest.fn(() => obj);
-    obj.enabled = jest.fn(() => obj);
-    obj.runOnJS = jest.fn(() => obj);
-    obj.toGestureArray = jest.fn(() => [obj]);
-    return obj;
+    obj.toGestureArray = jest.fn(() => [proxy]);
+
+    const proxy: any = new Proxy(obj, {
+      get(target, prop) {
+        if (prop in target) {
+          return target[prop];
+        }
+        if (typeof prop === 'string') {
+          if (
+            prop.startsWith('_') ||
+            prop === 'type' ||
+            prop === 'gestures' ||
+            prop === 'then' ||
+            prop === 'toJSON' ||
+            prop === '$$typeof'
+          ) {
+            return target[prop];
+          }
+          target[prop] = jest.fn((cb) => {
+            if (typeof cb === 'function') {
+              target['_' + prop] = cb;
+            }
+            return proxy;
+          });
+          return target[prop];
+        }
+        return undefined;
+      },
+    });
+
+    return proxy;
   };
 
   return {
@@ -113,6 +127,8 @@ jest.mock('react-native-gesture-handler', () => {
         if (!g) return undefined;
         if (typeof g._onEnd === 'function') return g._onEnd;
         if (typeof g._onStart === 'function') return g._onStart;
+        if (typeof g._onChange === 'function') return g._onChange;
+        if (typeof g._onUpdate === 'function') return g._onUpdate;
         if (g.gestures && Array.isArray(g.gestures)) {
           for (const sub of g.gestures) {
             const h = findHandler(sub);
