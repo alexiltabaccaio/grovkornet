@@ -77,7 +77,7 @@ export const useParameterGesture = ({
         const thumbSize = 12;
         const travel = effectiveTrackWidth.value - thumbSize;
         
-        // Calcola il valore in base alla posizione esatta del tocco (salto assoluto)
+        // Calculate value based on exact touch position (absolute jump)
         const percentage = Math.max(0, Math.min(1, (e.x - trackStartX) / travel));
         const newValue = minValue + percentage * (maxValue - minValue);
         
@@ -95,7 +95,7 @@ export const useParameterGesture = ({
         const direction = invertDrag ? -1 : 1;
         const travel = effectiveTrackWidth.value - 12; // 12 is thumb size
         
-        // Calcola il delta del trascinamento orizzontale dall'ultimo frame
+        // Calculate horizontal drag delta since the last frame
         const dx = e.translationX - lastX.value;
         lastX.value = e.translationX;
         

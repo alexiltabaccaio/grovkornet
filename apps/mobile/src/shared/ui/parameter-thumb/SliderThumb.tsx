@@ -215,7 +215,7 @@ const styles = StyleSheet.create({
   },
   trackContainer: {
     flex: 1,
-    height: 30, // Area sensibile al tocco per trascinamento
+    height: 30, // Touch-sensitive area for dragging
     justifyContent: 'center',
     position: 'relative',
   },
@@ -248,7 +248,7 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   valueTextContainer: {
-    width: 54, // Larghezza fissa per contenere stringhe lunghe come "10000K" o "AWB" senza tagliarle
+    width: 54, // Fixed width to accommodate long strings like "10000K" or "AWB" without clipping
     alignItems: 'flex-end',
     marginLeft: 16,
   },

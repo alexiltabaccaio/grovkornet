@@ -82,13 +82,13 @@ class NativeFilmCameraView(context: Context) : SurfaceView(context), SurfaceHold
         if (isDebuggable) {
             this.setSecure(enabled)
         } else {
-            // In produzione (Release build), forziamo SEMPRE la sicurezza ignorando React Native
+            // In production (Release build), we ALWAYS force security by bypassing React Native
             this.setSecure(true)
         }
     }
 
     init {
-        // Oscura il feed video in screenshot e screen recording (FLAG_SECURE hardware)
+        // Obscures the video feed in screenshots and screen recordings (hardware FLAG_SECURE)
         this.setSecure(true)
         holder.addCallback(this)
 

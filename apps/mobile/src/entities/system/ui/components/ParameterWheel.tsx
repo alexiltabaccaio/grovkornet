@@ -53,7 +53,7 @@ export const ParameterWheel = ({
 
   const lastActiveRef = useRef(activeParameter);
   
-  // Sincronizza cambiamenti di stato esterni (es. click su bottoni di reset)
+  // Synchronize external state changes (e.g., click on reset buttons)
   // eslint-disable-next-line react-hooks/refs
   if (activeParameter !== lastActiveRef.current) {
     // eslint-disable-next-line react-hooks/refs
@@ -83,7 +83,7 @@ export const ParameterWheel = ({
     }
   }, [items, itemsLength, setActiveParameter]);
 
-  // Trigger state update DURANTE la rotazione, appena si supera la metà di un parametro
+  // Trigger state update DURING rotation, as soon as we cross the halfway point of a parameter
   useAnimatedReaction(
     () => Math.round(-dragX.value / ITEM_WIDTH),
     (currentIndex, previousIndex) => {
@@ -111,7 +111,7 @@ export const ParameterWheel = ({
       const startIndex = Math.round(-startX.value / ITEM_WIDTH);
       let targetIndex = startIndex;
 
-      // Se c'è un movimento o una velocità intenzionale, spostiamo esattamente di 1 parametro
+      // If there is intentional movement or velocity, shift exactly by 1 parameter
       if (dx < -30 || velocity < -400) {
         targetIndex = startIndex + 1;
       } else if (dx > 30 || velocity > 400) {
@@ -164,7 +164,7 @@ const WheelItemComponent = memo(({
     const rawX = (index * ITEM_WIDTH + dragX.value) % totalWidth;
     let x = rawX < 0 ? rawX + totalWidth : rawX;
     
-    // Mappa le coordinate da [0, totalWidth] a [-halfWidth, halfWidth] per centrarle
+    // Map coordinates from [0, totalWidth] to [-halfWidth, halfWidth] to center them
     if (x > halfWidth) x -= totalWidth;
     
     const scale = interpolate(x, [-ITEM_WIDTH, 0, ITEM_WIDTH], [0.8, 1.15, 0.8], Extrapolation.CLAMP);

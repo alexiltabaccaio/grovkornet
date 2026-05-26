@@ -1,31 +1,31 @@
 appId: com.grovkornet.app
 ---
-# Inizializzazione pulita dell'app
+# Clean app initialization
 - launchApp:
     clearState: true
     permissions:
       camera: grant
       microphone: grant
 
-# Gestione popup compatibilit 16kB memory page (Android 15+)
+# Handle 16kB memory page compatibility popup (Android 15+)
 - tapOn:
     text: "[Oo][Kk]"
     optional: true
 
-# Gestione eventuale popup permessi a runtime
+# Handle runtime permissions popup if present
 - tapOn:
     text: "(Mentre usi l'app|While using the app|Consenti|Allow).*"
     optional: true
 
-# Attesa del caricamento iniziale dell'interfaccia
+# Wait for initial interface loading
 - extendedWaitUntil:
     visible: "SISTEMA"
     timeout: 30000
 
-# Navigazione nella sezione CORPO
+# Navigation to the BODY section
 - tapOn: "CORPO"
 
-# 1. Modulo Esposizione
+# 1. Exposure Module
 - tapOn: "Esposizione"
 - assertVisible: "ISO"
 - swipe:
@@ -34,7 +34,7 @@ appId: com.grovkornet.app
       text: "ISO"
 - tapOn: "ISO"
 
-# 2. Modulo Illuminazione
+# 2. Lighting Module
 - tapOn: "Illuminazione"
 - assertVisible: "TORCIA"
 - swipe:
@@ -43,7 +43,7 @@ appId: com.grovkornet.app
       text: "TORCIA"
 - tapOn: "TORCIA"
 
-# 3. Modulo Acquisizione
+# 3. Capture Module
 - tapOn: "Acquisizione"
 - assertVisible: "FORMATO"
 - swipe:

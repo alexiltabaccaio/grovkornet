@@ -1,35 +1,35 @@
 appId: com.grovkornet.app
 ---
-# Inizializzazione pulita dell'app
+# Clean app initialization
 - launchApp:
     clearState: true
     permissions:
       camera: grant
       microphone: grant
 
-# Gestione popup compatibilità 16kB memory page (Android 15+)
+# Handle 16kB memory page compatibility popup (Android 15+)
 - tapOn:
     text: "[Oo][Kk]"
     optional: true
 
-# Gestione eventuale popup permessi a runtime
+# Handle runtime permissions popup if present
 - tapOn:
     text: "(Mentre usi l'app|While using the app|Consenti|Allow).*"
     optional: true
 
-# Attesa del caricamento iniziale dell'interfaccia
+# Wait for initial interface loading
 - extendedWaitUntil:
     visible: "SISTEMA"
     timeout: 30000
 
-# 1. Apre la sezione OBIETTIVO
+# 1. Open the LENS section
 - tapOn: "OBIETTIVO"
 - assertVisible: "Ottica"
 - assertVisible: "Difetti Ottici"
 
-# 3. Tenta di passare al modulo Difetti Ottici
+# 3. Attempt to switch to the Lens Flaws module
 - tapOn: "Difetti Ottici"
 
-# 4. Verifica se il modulo è effettivamente cambiato. 
-# Se il tap viene inghiottito dal PanGesture, questo assert fallirà
+# 4. Verify that the module has indeed changed.
+# If the tap is swallowed by the PanGesture, this assertion will fail
 - assertVisible: "ABERRAZIONE CROMATICA"

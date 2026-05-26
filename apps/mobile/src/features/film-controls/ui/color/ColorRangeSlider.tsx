@@ -23,14 +23,14 @@ const COLOR_MAPPING = [
 ] as const;
 
 const BOUND_STORE_KEYS = [
-  'boundRedOrange',     // 0: divide Red (0) e Orange (1)
-  'boundOrangeYellow',  // 1: divide Orange (1) e Yellow (2)
-  'boundYellowGreen',   // 2: divide Yellow (2) e Green (3)
-  'boundGreenCyan',     // 3: divide Green (3) e Cyan (4)
-  'boundCyanBlue',      // 4: divide Cyan (4) e Blue (5)
-  'boundBluePurple',    // 5: divide Blue (5) e Purple (6)
-  'boundPurpleMagenta',  // 6: divide Purple (6) e Magenta (7)
-  'boundMagentaRed',    // 7: divide Magenta (7) e Red (0)
+  'boundRedOrange',     // 0: splits Red (0) and Orange (1)
+  'boundOrangeYellow',  // 1: splits Orange (1) and Yellow (2)
+  'boundYellowGreen',   // 2: splits Yellow (2) and Green (3)
+  'boundGreenCyan',     // 3: splits Green (3) and Cyan (4)
+  'boundCyanBlue',      // 4: splits Cyan (4) and Blue (5)
+  'boundBluePurple',    // 5: splits Blue (5) and Purple (6)
+  'boundPurpleMagenta',  // 6: splits Purple (6) and Magenta (7)
+  'boundMagentaRed',    // 7: splits Magenta (7) and Red (0)
 ] as const;
 
 const BOUND_WORKLET_KEYS = [
@@ -353,7 +353,7 @@ const styles = StyleSheet.create({
   },
   sliderTrackContainer: {
     flex: 1, // Will perfectly align with standard SliderThumb track
-    height: 30, // Area sensibile per il touch
+    height: 30, // Touch-sensitive area
     position: 'relative',
     justifyContent: 'center',
   },

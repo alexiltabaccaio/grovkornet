@@ -143,7 +143,7 @@ const arePropsEqual = (prevProps: PillButtonProps, nextProps: PillButtonProps) =
   if (getVal(prevProps.isActive) !== getVal(nextProps.isActive)) return false;
   if (getVal(prevProps.opacity) !== getVal(nextProps.opacity)) return false;
 
-  // Confronto shallow degli stili (gestisce array, oggetti StyleSheet e inline stili)
+  // Shallow style comparison (handles arrays, StyleSheet objects, and inline styles)
   if (JSON.stringify(prevProps.style) !== JSON.stringify(nextProps.style)) return false;
   if (JSON.stringify(prevProps.textStyle) !== JSON.stringify(nextProps.textStyle)) return false;
 

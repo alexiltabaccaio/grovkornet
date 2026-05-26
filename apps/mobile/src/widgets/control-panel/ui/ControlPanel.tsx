@@ -86,7 +86,7 @@ export const ControlPanel = ({ translateY: externalTranslateY, drawerAnimation: 
                 />
               </View>
             )}
-            {/* Area espansa che riempie il vuoto sotto quando si tira su */}
+            {/* Expanded area that fills the gap underneath when pulled up */}
             <View style={styles.expandedBackground}>
               <ParameterDetailPanels translateY={translateY} />
             </View>
@@ -131,7 +131,7 @@ const styles = StyleSheet.create({
   topFooterContainer: {
     width: '100%',
     position: 'absolute',
-    bottom: -323, // Calcolato matematicamente per combaciare perfettamente con le sezioni rosse
+    bottom: -323, // Mathematically calculated to align perfectly with the red sections
     zIndex: 5,
     elevation: 5,
   },
@@ -143,7 +143,7 @@ const styles = StyleSheet.create({
 
 
   expandedBackground: {
-    height: 400, // Altezza abbondante per coprire il buco
+    height: 400, // Ample height to cover the gap
   },
 
 

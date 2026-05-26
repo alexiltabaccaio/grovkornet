@@ -43,18 +43,18 @@ function getFilesRecursive(dir) {
 
 try {
   // Check adb connection
-  console.log('🔍 Verifica dei dispositivi Android connessi...');
+  console.log('🔍 Checking connected Android devices...');
   const devices = execSync('adb devices').toString();
   const lines = devices.trim().split('\n').slice(1);
   const activeDevices = lines.filter(line => line.includes('\tdevice'));
   if (activeDevices.length === 0) {
-    console.error('❌ Errore: Nessun dispositivo o emulatore Android connesso via ADB.');
+    console.error('❌ Error: No Android device or emulator connected via ADB.');
     process.exit(1);
   }
 
   // Get target ABI
   const abi = execSync('adb shell getprop ro.product.cpu.abi').toString().trim();
-  console.log(`📱 Dispositivo connesso rilevato con ABI: ${abi}`);
+  console.log(`📱 Connected device detected with ABI: ${abi}`);
 
   // Resolve paths
   const androidBuildDir = path.resolve(__dirname, '../android/build');
@@ -62,13 +62,13 @@ try {
   const libCppPath = findBinary(androidBuildDir, 'libc++_shared.so', abi);
 
   if (!testBinaryPath || !libCppPath) {
-    console.error(`❌ Errore: Impossibile trovare i binari C++ precompilati per l'ABI ${abi}.`);
-    console.error(`Assicurati di compilare il modulo nativo Android prima di lanciare i test.`);
+    console.error(`❌ Error: Cannot find precompiled C++ binaries for ABI ${abi}.`);
+    console.error(`Make sure to compile the native Android module before running tests.`);
     process.exit(1);
   }
 
-  console.log(`📂 Trovato eseguibile di test: ${testBinaryPath}`);
-  console.log(`📂 Trovato runtime C++: ${libCppPath}`);
+  console.log(`📂 Test executable found: ${testBinaryPath}`);
+  console.log(`📂 C++ runtime found: ${libCppPath}`);
 
   console.log(`📤 Pushing ${path.basename(testBinaryPath)} to /data/local/tmp/...`);
   execSync(`adb push "${testBinaryPath}" /data/local/tmp/`, { stdio: 'inherit' });
@@ -76,13 +76,13 @@ try {
   console.log(`📤 Pushing ${path.basename(libCppPath)} to /data/local/tmp/...`);
   execSync(`adb push "${libCppPath}" /data/local/tmp/`, { stdio: 'inherit' });
 
-  console.log(`🔑 Impostando i permessi di esecuzione...`);
+  console.log(`🔑 Setting execution permissions...`);
   execSync('adb shell chmod +x /data/local/tmp/grovkornet-engine-tests');
 
-  console.log(`🏃 Esecuzione di Google Test sul dispositivo...\n`);
+  console.log(`🏃 Running Google Test on device...\n`);
   execSync('adb shell "LD_LIBRARY_PATH=/data/local/tmp/ /data/local/tmp/grovkornet-engine-tests"', { stdio: 'inherit' });
-  console.log(`\n✅ Google Test completato con successo!`);
+  console.log(`\n✅ Google Test completed successfully!`);
 } catch (error) {
-  console.error('\n❌ Errore durante l\'esecuzione dei test nativi C++:', error.message);
+  console.error('\n❌ Error during native C++ tests execution:', error.message);
   process.exit(1);
 }

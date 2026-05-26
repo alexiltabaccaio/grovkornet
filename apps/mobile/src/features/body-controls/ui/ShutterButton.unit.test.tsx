@@ -30,7 +30,7 @@ describe('ShutterButton Unit Tests', () => {
 
     // onPressOut
     fireEvent(button, 'pressOut');
-    // Nessun errore generato
+    // No error generated
   });
 
   it('does not trigger actions when disabled', () => {

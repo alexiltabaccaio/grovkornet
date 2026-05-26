@@ -79,4 +79,4 @@ eas-cli-local.json
 .metro/
 .metro-cache/
 grovkornet_source_bundle.txt
-
+.gemini_workflows/analyze.js

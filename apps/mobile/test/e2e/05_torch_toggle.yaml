@@ -1,60 +1,60 @@
 appId: com.grovkornet.app
 ---
-# Inizializzazione pulita dell'app
+# Clean app initialization
 - launchApp:
     clearState: true
     permissions:
       camera: grant
       microphone: grant
 
-# Gestione popup compatibilità 16kB memory page (Android 15+)
+# Handle 16kB memory page compatibility popup (Android 15+)
 - tapOn:
     text: "[Oo][Kk]"
     optional: true
 
-# Gestione eventuale popup permessi a runtime
+# Handle runtime permissions popup if present
 - tapOn:
     text: "(Mentre usi l'app|While using the app|Consenti|Allow).*"
     optional: true
 
-# Attesa del caricamento iniziale dell'interfaccia
+# Wait for initial interface loading
 - extendedWaitUntil:
     visible: "SISTEMA"
     timeout: 30000
 
-# 1. Navigazione nella sezione CORPO
+# 1. Navigation to the BODY section
 - tapOn: "CORPO"
 - assertVisible: "Esposizione"
 - assertVisible: "Illuminazione"
 
-# 2. Selezione del modulo "Illuminazione" (che attiva la Torcia)
+# 2. Selection of "Lighting" module (which activates the Torch)
 - tapOn: "Illuminazione"
 - assertVisible: "TORCIA"
 
-# 3. Trascina verso l'alto il bottom sheet a partire dall'etichetta TORCIA
-# per rivelare l'interruttore e l'estensione dell'intensità
+# 3. Drag up the bottom sheet starting from the TORCH label
+# to reveal the switch and intensity extension
 - swipe:
     direction: UP
     from:
       text: "TORCIA"
 
-# 4. Verifica che il valore iniziale sia "OFF"
+# 4. Verify that the initial value is "OFF"
 - assertVisible: "OFF"
 
-# 5. Esegui vari cicli di accensione e spegnimento per verificare la reattività
-# Ciclo 1
+# 5. Perform multiple toggling cycles to verify responsiveness
+# Cycle 1
 - tapOn: "OFF"
 - assertVisible: "ON"
 - tapOn: "ON"
 - assertVisible: "OFF"
 
-# Ciclo 2
+# Cycle 2
 - tapOn: "OFF"
 - assertVisible: "ON"
 - tapOn: "ON"
 - assertVisible: "OFF"
 
-# Ciclo 3
+# Cycle 3
 - tapOn: "OFF"
 - assertVisible: "ON"
 - tapOn: "ON"

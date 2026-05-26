@@ -34,7 +34,7 @@ export const ShutterButton = ({ onPress, disabled, translateY }: ShutterButtonPr
 
   const handlePress = () => {
     if (disabled || (translateY && translateY.value < -50)) return;
-    // Feedback tattile più forte allo scatto reale
+    // Stronger tactile feedback at the moment of actual shutter release
     void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     onPress();
   };

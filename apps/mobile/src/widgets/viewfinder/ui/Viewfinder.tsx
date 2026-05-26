@@ -16,7 +16,7 @@ interface ViewfinderProps {
 }
 
 export const Viewfinder = ({ cameraKey }: ViewfinderProps) => {
-  // 1. SharedValues a riferimento stabile (estratte staticamente per evitare abbonamento React)
+  // 1. Stable reference SharedValues (statically extracted to avoid React subscription)
   const {
     iso,
     shutterSpeed,
@@ -75,11 +75,11 @@ export const Viewfinder = ({ cameraKey }: ViewfinderProps) => {
     // @@GEN_SELECTOR_END@@
   } = useFilmStore.getState();
 
-  // 2. Azioni stabili
+  // 2. Stable actions
   const setLatestPreviewUri = useSystemStore.getState().setLatestPreviewUri;
   const setLatestCapturedUri = useSystemStore.getState().setLatestCapturedUri;
 
-  // 3. Primitive reattive (abbonate per causare re-render solo quando necessario)
+  // 3. Reactive primitives (subscribed to cause re-renders only when necessary)
   const isCameraSecure = useSystemStore(state => state.isCameraSecure);
   const capabilities = useBodyStore(state => state.capabilities);
   const { cameraAuto, cameraId } = useLensStore(useShallow(state => ({
@@ -92,8 +92,8 @@ export const Viewfinder = ({ cameraKey }: ViewfinderProps) => {
 
   const photoHandler = React.useCallback((event: { nativeEvent: { uri: string } }) => {
     const uri = event.nativeEvent.uri;
-    // L'URI di preview temporanea vive nella cache dell'app (file:///data/...)
-    // L'URI finale (MediaStore) inizia con content:// o file:///storage/
+    // The temporary preview URI lives in the app's cache (file:///data/...)
+    // The final URI (MediaStore) starts with content:// or file:///storage/
     if (uri.startsWith('file:///data/')) {
       setLatestPreviewUri(uri);
     } else {
