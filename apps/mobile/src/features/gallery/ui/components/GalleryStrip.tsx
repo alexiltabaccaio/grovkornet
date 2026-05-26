@@ -1,11 +1,13 @@
 import React, { useCallback } from 'react';
-import { StyleSheet, View, FlatList, Pressable, Image, Dimensions } from 'react-native';
+import { StyleSheet, View, FlatList, Pressable, Image as RNImage, Dimensions } from 'react-native';
+import { Image } from 'expo-image';
 import { Ionicons } from '@expo/vector-icons';
 import { GalleryItem } from '../../lib/types';
 import { BottomFooter } from '@shared/ui';
 import Animated, { useAnimatedStyle, interpolate, SharedValue } from 'react-native-reanimated';
 
 const { width } = Dimensions.get('window');
+const ITEM_SIZE = 56 + 10; // thumbnailWidth (56) + marginRight (10) = 66px
 
 interface GalleryStripItemProps {
   item: GalleryItem;
@@ -22,11 +24,16 @@ const GalleryStripItem = React.memo(({ item, isSelected, onSelect }: GalleryStri
       ]}
       onPress={() => onSelect(item)}
     >
-      <Image source={{ uri: item.uri }} style={styles.thumbnailImage} />
+      <Image
+        source={{ uri: item.uri }}
+        style={styles.thumbnailImage}
+        contentFit="cover"
+        recyclingKey={item.uri}
+      />
       {item.isVerified === true && (
         <View style={[styles.miniBadge, { backgroundColor: 'transparent' }]}>
           {/* eslint-disable-next-line @typescript-eslint/no-require-imports, @typescript-eslint/no-unsafe-assignment */}
-          <Image source={require('../../../../../assets/logo-badge.png')} style={{ width: 10, height: 10, resizeMode: 'contain', opacity: 0.85 }} />
+          <RNImage source={require('../../../../../assets/logo-badge.png')} style={{ width: 10, height: 10, resizeMode: 'contain', opacity: 0.85 }} />
         </View>
       )}
     </Pressable>
@@ -79,6 +86,15 @@ export const GalleryStrip = ({ photos, selectedPhoto, onSelectPhoto, onClose, ga
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.gridContent}
           renderItem={renderItem}
+          windowSize={5}
+          maxToRenderPerBatch={5}
+          initialNumToRender={8}
+          removeClippedSubviews
+          getItemLayout={(_data, index) => ({
+            length: ITEM_SIZE,
+            offset: ITEM_SIZE * index,
+            index,
+          })}
         />
       </View>
       </Animated.View>
@@ -126,7 +142,6 @@ const styles = StyleSheet.create({
   thumbnailImage: {
     width: '100%',
     height: '100%',
-    resizeMode: 'cover',
   },
   miniBadge: {
     position: 'absolute',

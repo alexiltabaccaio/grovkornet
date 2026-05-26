@@ -221,3 +221,13 @@ console.error = jest.fn();
 jest.mock('expo-system-ui', () => ({
   setBackgroundColorAsync: jest.fn(() => Promise.resolve()),
 }));
+
+// Mock expo-image
+jest.mock('expo-image', () => {
+  const actualExpoImage = jest.requireActual('expo-image');
+  const { Image } = jest.requireActual('react-native');
+  return {
+    ...actualExpoImage,
+    Image,
+  };
+});

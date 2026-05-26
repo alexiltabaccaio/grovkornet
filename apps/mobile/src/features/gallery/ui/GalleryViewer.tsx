@@ -62,7 +62,25 @@ export const GalleryViewer = ({ onClose, initialUri, galleryTransition }: Galler
             
             {/* Main Preview Area */}
             <View style={styles.previewContainer}>
-              <PhotoPreview selectedPhoto={selectedPhoto} verifying={verifying} />
+              <PhotoPreview
+                selectedPhoto={selectedPhoto}
+                verifying={verifying}
+                photos={permissionGranted ? photos : []}
+                onSwipeLeft={() => {
+                  if (!selectedPhoto || !permissionGranted) return;
+                  const idx = photos.findIndex(p => p.uri === selectedPhoto.uri);
+                  if (idx !== -1 && idx < photos.length - 1) {
+                    void verifyPhoto(photos[idx + 1]);
+                  }
+                }}
+                onSwipeRight={() => {
+                  if (!selectedPhoto || !permissionGranted) return;
+                  const idx = photos.findIndex(p => p.uri === selectedPhoto.uri);
+                  if (idx > 0) {
+                    void verifyPhoto(photos[idx - 1]);
+                  }
+                }}
+              />
               
               {/* Share Instagram Action */}
               {selectedPhoto && (

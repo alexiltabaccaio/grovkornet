@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
-import { StyleSheet, View, Pressable, Image, ActivityIndicator } from 'react-native';
+import { StyleSheet, View, Pressable, ActivityIndicator } from 'react-native';
+import { Image } from 'expo-image';
 import Animated, { useSharedValue, useAnimatedStyle, withRepeat, withTiming, Easing, withSpring } from 'react-native-reanimated';
 import { useSystemStore } from '@entities/system';
 import { useShallow } from 'zustand/react/shallow';
@@ -102,7 +103,11 @@ export const CaptureThumbnail = ({ onPress }: CaptureThumbnailProps) => {
               <ActivityIndicator size="small" color="#FF9500" />
             </Animated.View>
           ) : (latestPreviewUri ?? latestCapturedUri) ? (
-            <Image source={{ uri: latestPreviewUri ?? latestCapturedUri! }} style={styles.image} />
+            <Image
+              source={{ uri: latestPreviewUri ?? latestCapturedUri! }}
+              style={styles.image}
+              contentFit="cover"
+            />
           ) : null}
         </Animated.View>
       )}
@@ -158,6 +163,5 @@ const styles = StyleSheet.create({
   image: {
     width: '100%',
     height: '100%',
-    resizeMode: 'cover',
   },
 });

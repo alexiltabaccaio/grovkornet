@@ -26,14 +26,14 @@
 
 ---
 
-## [TICKET #03] – Ottimizzazione Galleria e Mitigazione Rischi OOM
+## ~~[TICKET #03] – Ottimizzazione Galleria e Mitigazione Rischi OOM~~ [COMPLETATO]
 * **File di riferimento:** `GalleryStrip.tsx`, `PhotoPreview.tsx`, hook di recupero asset.
 * **Contesto:** Lo scroll della galleria custom causa micro-scatti e crash per OutOfMemory (OOM). Questo accade perché il componente `<Image>` standard di React Native decodifica in memoria RAM i file originali ad alta risoluzione presi dal disco senza eseguire downsampling.
 * **Stato Avanzamento:**
-    - [ ] Deprecare l'uso del tag `<Image>` standard di React Native in tutta la feature della galleria.
-    - [ ] Implementare il componente `Image` di `expo-image`.
-    - [ ] Bloccare la dimensione massima di decodifica hardware a livello di pixel nel componente `GalleryStrip.tsx` (es. `width: 56, height: 56`) utilizzando la proprietà `contentFit="cover"`.
-    - [ ] Nel visualizzatore principale `PhotoPreview.tsx`, implementare la proprietà `placeholder` iniettando la miniatura sgranata già presente in RAM con transizione nativa per il cross-fade per eliminare i tempi vuoti di I/O da disco:
+    - [x] Deprecare l'uso del tag `<Image>` standard di React Native in tutta la feature della galleria.
+    - [x] Implementare il componente `Image` di `expo-image`.
+    - [x] Bloccare la dimensione massima di decodifica hardware a livello di pixel nel componente `GalleryStrip.tsx` (es. `width: 56, height: 56`) utilizzando la proprietà `contentFit="cover"`.
+    - [x] Nel visualizzatore principale `PhotoPreview.tsx`, implementare la proprietà `placeholder` iniettando la miniatura sgranata già presente in RAM con transizione nativa per il cross-fade per eliminare i tempi vuoti di I/O da disco:
       ```tsx
       transition={200}
       ```
