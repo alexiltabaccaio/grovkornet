@@ -150,11 +150,15 @@ bool WatermarkEngine::verifySignature(const uint32_t* pixels, int width, int hei
             matchingBits++;
         }
         if (blockIndex < 5) {
+#ifndef NDEBUG
             printf("DEBUG Block %d: dct1=%e, dct2=%e, expected=%llu, actual=%llu\n",
                    blockIndex, dct1, dct2, (unsigned long long)expectedBit, (unsigned long long)actualBit);
+#endif
         }
     }
 
+#ifndef NDEBUG
     printf("DEBUG: Total matchingBits = %d (threshold = %d)\n", matchingBits, MATCH_THRESHOLD);
+#endif
     return matchingBits >= MATCH_THRESHOLD;
 }

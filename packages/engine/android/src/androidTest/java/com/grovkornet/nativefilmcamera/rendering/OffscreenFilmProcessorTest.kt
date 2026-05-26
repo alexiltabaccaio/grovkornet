@@ -3,6 +3,7 @@ package com.grovkornet.nativefilmcamera.rendering
 import android.graphics.Bitmap
 import android.graphics.Color
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.platform.app.InstrumentationRegistry
 import com.grovkornet.nativefilmcamera.state.CameraConfiguration
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
@@ -16,11 +17,12 @@ class OffscreenFilmProcessorTest {
     @Test
     fun testInitializationAndProcessing() = runBlocking {
         val processor = OffscreenFilmProcessor()
+        val context = InstrumentationRegistry.getInstrumentation().targetContext
         
         // 1. Verify we can prepare the processor
         val width = 128
         val height = 128
-        processor.prepare(width, height)
+        processor.prepare(width, height, context.assets)
         
         // 2. Create a dummy solid input bitmap (Red color)
         val inputBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
@@ -36,7 +38,7 @@ class OffscreenFilmProcessorTest {
         )
         
         // 3. Process the bitmap
-        val outputBitmap = processor.process(inputBitmap, params)
+        val outputBitmap = processor.process(inputBitmap, params, context)
         
         // 4. Verification
         assertNotNull("Output bitmap should not be null", outputBitmap)
@@ -60,9 +62,10 @@ class OffscreenFilmProcessorTest {
     @Test
     fun testVaryingParameters() = runBlocking {
         val processor = OffscreenFilmProcessor()
+        val context = InstrumentationRegistry.getInstrumentation().targetContext
         val width = 64
         val height = 64
-        processor.prepare(width, height)
+        processor.prepare(width, height, context.assets)
         
         val inputBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
         inputBitmap.eraseColor(Color.rgb(128, 128, 128)) // Mid-gray
@@ -75,7 +78,7 @@ class OffscreenFilmProcessorTest {
             whiteBalance = 5000.0f,
             tint = 0.0f
         )
-        val outIdentity = processor.process(inputBitmap, identityParams)
+        val outIdentity = processor.process(inputBitmap, identityParams, context)
         val pixelIdentity = outIdentity.getPixel(width / 2, height / 2)
         val rId = Color.red(pixelIdentity)
         
@@ -87,7 +90,7 @@ class OffscreenFilmProcessorTest {
             whiteBalance = 5000.0f,
             tint = 0.0f
         )
-        val outDark = processor.process(inputBitmap, darkParams)
+        val outDark = processor.process(inputBitmap, darkParams, context)
         val pixelDark = outDark.getPixel(width / 2, height / 2)
         val rDark = Color.red(pixelDark)
         
@@ -101,7 +104,7 @@ class OffscreenFilmProcessorTest {
         )
         val inputColor = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
         inputColor.eraseColor(Color.RED)
-        val outGray = processor.process(inputColor, grayParams)
+        val outGray = processor.process(inputColor, grayParams, context)
         val pixelGray = outGray.getPixel(width / 2, height / 2)
         val gGray = Color.green(pixelGray)
         
@@ -115,9 +118,10 @@ class OffscreenFilmProcessorTest {
     @Test
     fun testBloomEffect() = runBlocking {
         val processor = OffscreenFilmProcessor()
+        val context = InstrumentationRegistry.getInstrumentation().targetContext
         val width = 64
         val height = 64
-        processor.prepare(width, height)
+        processor.prepare(width, height, context.assets)
         
         // Create a black bitmap with a bright white block in the center (10x10 pixels)
         val inputBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
@@ -136,7 +140,7 @@ class OffscreenFilmProcessorTest {
             tint = 0.0f
         )
         
-        val outputBitmap = processor.process(inputBitmap, params)
+        val outputBitmap = processor.process(inputBitmap, params, context)
         
         // Verify that the light has bled/bloomed into the surrounding pixels
         // (which were initially pure black)
@@ -154,9 +158,10 @@ class OffscreenFilmProcessorTest {
     @Test
     fun testProceduralEffects() = runBlocking {
         val processor = OffscreenFilmProcessor()
+        val context = InstrumentationRegistry.getInstrumentation().targetContext
         val width = 64
         val height = 64
-        processor.prepare(width, height)
+        processor.prepare(width, height, context.assets)
         
         val inputBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
         inputBitmap.eraseColor(Color.BLUE) // solid blue input
@@ -172,7 +177,7 @@ class OffscreenFilmProcessorTest {
             vignetteIntensity = 0.0f,
             vhsIntensity = 0.0f
         )
-        val outIdentity = processor.process(inputBitmap, identityParams)
+        val outIdentity = processor.process(inputBitmap, identityParams, context)
         val cornerIdentity = outIdentity.getPixel(2, 2)
         
         // 2. Render with vignette (center should be normal, but corners should be darker)
@@ -186,7 +191,7 @@ class OffscreenFilmProcessorTest {
             vignetteIntensity = 1.0f,
             vhsIntensity = 0.0f
         )
-        val outVignette = processor.process(inputBitmap, vignetteParams)
+        val outVignette = processor.process(inputBitmap, vignetteParams, context)
         val cornerVignette = outVignette.getPixel(2, 2)
         
         assertTrue("Vignette should darken the corners of the image: B_vignette (${Color.blue(cornerVignette)}) < B_identity (${Color.blue(cornerIdentity)})",
@@ -206,7 +211,7 @@ class OffscreenFilmProcessorTest {
             vignetteIntensity = 0.0f,
             vhsIntensity = 0.0f
         )
-        val outGrain = processor.process(inputBitmap, grainParams)
+        val outGrain = processor.process(inputBitmap, grainParams, context)
         
         // Grain is random noise, so nearby pixels in solid area should not be identical anymore
         val pixel1 = outGrain.getPixel(width / 2, height / 2)
@@ -219,9 +224,10 @@ class OffscreenFilmProcessorTest {
     @Test
     fun testOverlayBlending() = runBlocking {
         val processor = OffscreenFilmProcessor()
+        val context = InstrumentationRegistry.getInstrumentation().targetContext
         val width = 64
         val height = 64
-        processor.prepare(width, height)
+        processor.prepare(width, height, context.assets)
         
         val inputBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
         inputBitmap.eraseColor(Color.BLACK)
@@ -253,7 +259,7 @@ class OffscreenFilmProcessorTest {
             vhsIntensity = 0.0f
         )
         
-        val output = processor.process(inputBitmap, params)
+        val output = processor.process(inputBitmap, params, context)
         
         // Center-ish pixel (25, 25) should now be red
         val pixelOver = output.getPixel(25, 25)
@@ -269,9 +275,10 @@ class OffscreenFilmProcessorTest {
     @Test
     fun testDynamicResolutionScaling() = runBlocking {
         val processor = OffscreenFilmProcessor()
+        val context = InstrumentationRegistry.getInstrumentation().targetContext
         val width = 64
         val height = 64
-        processor.prepare(width, height)
+        processor.prepare(width, height, context.assets)
         
         // Initial DRS scale should be 1.0
         assertEquals("Initial DRS scale should be 1.0f", 1.0f, processor.getDrsScale(), 0.001f)

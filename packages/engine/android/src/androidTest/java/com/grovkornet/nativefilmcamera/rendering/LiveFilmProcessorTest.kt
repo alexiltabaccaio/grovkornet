@@ -3,6 +3,7 @@ package com.grovkornet.nativefilmcamera.rendering
 import android.graphics.SurfaceTexture
 import android.view.Surface
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.platform.app.InstrumentationRegistry
 import com.grovkornet.nativefilmcamera.state.CameraConfiguration
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.*
@@ -21,7 +22,8 @@ class LiveFilmProcessorTest {
         val st = SurfaceTexture(0)
         st.setDefaultBufferSize(width, height)
         
-        processor.prepare(st, width, height)
+        val context = InstrumentationRegistry.getInstrumentation().targetContext
+        processor.prepare(st, width, height, context.assets)
         
         assertEquals("Initial DRS scale should be 1.0f", 1.0f, processor.getDrsScale(), 0.001f)
         
@@ -38,7 +40,8 @@ class LiveFilmProcessorTest {
         val stInput = SurfaceTexture(0)
         stInput.setDefaultBufferSize(width, height)
         
-        processor.prepare(stInput, width, height)
+        val context = InstrumentationRegistry.getInstrumentation().targetContext
+        processor.prepare(stInput, width, height, context.assets)
         
         val stOutput = SurfaceTexture(0)
         stOutput.setDefaultBufferSize(width, height)
@@ -77,7 +80,8 @@ class LiveFilmProcessorTest {
         val st = SurfaceTexture(0)
         st.setDefaultBufferSize(width, height)
         
-        processor.prepare(st, width, height)
+        val context = InstrumentationRegistry.getInstrumentation().targetContext
+        processor.prepare(st, width, height, context.assets)
         
         assertEquals(1.0f, processor.getDrsScale(), 0.001f)
         

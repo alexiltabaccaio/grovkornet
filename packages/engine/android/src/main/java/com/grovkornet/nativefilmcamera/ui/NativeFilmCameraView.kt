@@ -19,6 +19,7 @@ import com.grovkornet.nativefilmcamera.rendering.LiveFilmProcessor
 import com.grovkornet.nativefilmcamera.state.CameraConfiguration
 import com.grovkornet.nativefilmcamera.managers.CameraTorchManager
 import expo.modules.kotlin.viewevent.EventDispatcher
+import com.grovkornet.nativefilmcamera.BuildConfig
 import android.graphics.Bitmap
 import android.view.PixelCopy
 import java.io.File
@@ -68,7 +69,9 @@ class NativeFilmCameraView(context: Context) : SurfaceView(context), SurfaceHold
             lastReconfigureTime = System.currentTimeMillis()
         }
         renderThread?.updateConfig(config)
-        Log.d("NativeFilmCameraView", "Hardware update scheduled for config change")
+        if (BuildConfig.DEBUG) {
+            Log.d("NativeFilmCameraView", "Hardware update scheduled for config change")
+        }
         updateScheduler?.schedule()
     }
 
@@ -81,7 +84,9 @@ class NativeFilmCameraView(context: Context) : SurfaceView(context), SurfaceHold
             lastReconfigureTime = System.currentTimeMillis()
         }
         renderThread?.updateConfig(config)
-        Log.d("NativeFilmCameraView", "Hardware+Effect update scheduled for config change")
+        if (BuildConfig.DEBUG) {
+            Log.d("NativeFilmCameraView", "Hardware+Effect update scheduled for config change")
+        }
         updateScheduler?.schedule()
     }
     fun setSecureMode(enabled: Boolean) {
@@ -145,7 +150,9 @@ class NativeFilmCameraView(context: Context) : SurfaceView(context), SurfaceHold
             isTorchLogicalEnabled = { config.torchEnabled },
             onTorchStateChanged = { enabled ->
                 if (System.currentTimeMillis() - lastReconfigureTime < 2000) {
-                    Log.d("NativeFilmCameraView", "Ignoring torch state change during reconfiguration window")
+                    if (BuildConfig.DEBUG) {
+                        Log.d("NativeFilmCameraView", "Ignoring torch state change during reconfiguration window")
+                    }
                     return@create
                 }
                 if (config.torchEnabled != enabled) {
@@ -201,14 +208,18 @@ class NativeFilmCameraView(context: Context) : SurfaceView(context), SurfaceHold
                 bitmap.recycle()
             }
         } else {
-            Log.w("NativeFilmCameraView", "Cannot request PixelCopy: surface not ready")
+            if (BuildConfig.DEBUG) {
+                Log.w("NativeFilmCameraView", "Cannot request PixelCopy: surface not ready")
+            }
         }
 
         cameraEngine?.takePicture()
     }
 
     override fun surfaceCreated(holder: SurfaceHolder) {
-        Log.i("NativeFilmCameraView", "Surface created")
+        if (BuildConfig.DEBUG) {
+            Log.i("NativeFilmCameraView", "Surface created")
+        }
         
         val thread = com.grovkornet.nativefilmcamera.rendering.FilmRenderThread(
             assetManager = context.assets,
@@ -233,14 +244,18 @@ class NativeFilmCameraView(context: Context) : SurfaceView(context), SurfaceHold
     }
 
     override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {
-        Log.i("NativeFilmCameraView", "Surface changed: ${width}x${height}")
+        if (BuildConfig.DEBUG) {
+            Log.i("NativeFilmCameraView", "Surface changed: ${width}x${height}")
+        }
         surfaceWidth = width
         surfaceHeight = height
         renderThread?.updateDimensions(width, height)
     }
 
     override fun surfaceDestroyed(holder: SurfaceHolder) {
-        Log.i("NativeFilmCameraView", "Surface destroyed")
+        if (BuildConfig.DEBUG) {
+            Log.i("NativeFilmCameraView", "Surface destroyed")
+        }
         renderThread?.release()
         renderThread = null
     }
@@ -248,7 +263,9 @@ class NativeFilmCameraView(context: Context) : SurfaceView(context), SurfaceHold
     fun release() {
         if (isReleased) return
         isReleased = true
-        Log.i("NativeFilmCameraView", "Releasing NativeFilmCameraView...")
+        if (BuildConfig.DEBUG) {
+            Log.i("NativeFilmCameraView", "Releasing NativeFilmCameraView...")
+        }
 
         cameraTorchManager.unregister()
 

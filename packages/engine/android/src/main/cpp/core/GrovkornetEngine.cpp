@@ -24,8 +24,13 @@
 #include <chrono>
 
 #define LOG_TAG "GrovkornetEngine"
+#ifdef NDEBUG
+#define LOGI(...) ((void)0)
+#define LOGW(...) ((void)0)
+#else
 #define LOGI(...) __android_log_print(ANDROID_LOG_INFO, LOG_TAG, __VA_ARGS__)
 #define LOGW(...) __android_log_print(ANDROID_LOG_WARN, LOG_TAG, __VA_ARGS__)
+#endif
 #define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
 
 RenderParams parseRenderParams(const float* params) {

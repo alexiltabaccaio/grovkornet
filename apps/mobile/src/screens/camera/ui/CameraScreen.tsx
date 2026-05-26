@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, Profiler } from 'react';
 import { StyleSheet, View, AppState, AppStateStatus, PermissionsAndroid, Platform, StatusBar } from 'react-native';
 import Animated, { useSharedValue, useAnimatedStyle, interpolate, withTiming, runOnJS } from 'react-native-reanimated';
 
@@ -118,7 +118,9 @@ const CameraScreenContent = () => {
     <View style={styles.container}>
       <GestureController>
         <View style={{ flex: 1, width: '100%', marginTop: statusBarHeight, marginBottom: 80 }}>
-          <Viewfinder cameraKey={cameraKey} />
+          <Profiler id="Viewfinder" onRender={(id, phase, duration) => { if (__DEV__ && duration > 10) logger.warn('UI', `Viewfinder render took ${duration.toFixed(2)}ms`); }}>
+            <Viewfinder cameraKey={cameraKey} />
+          </Profiler>
         </View>
       </GestureController>
 
@@ -134,7 +136,9 @@ const CameraScreenContent = () => {
         <View style={styles.sideControl} pointerEvents="box-none" />
       </Animated.View>
 
-      <ControlPanel translateY={footerTranslateY} drawerAnimation={drawerAnimation} galleryTransition={galleryTransition} />
+      <Profiler id="ControlPanel" onRender={(id, phase, duration) => { if (__DEV__ && duration > 10) logger.warn('UI', `ControlPanel render took ${duration.toFixed(2)}ms`); }}>
+        <ControlPanel translateY={footerTranslateY} drawerAnimation={drawerAnimation} galleryTransition={galleryTransition} />
+      </Profiler>
 
       {shouldRenderGallery && <GalleryViewer onClose={closeGallery} initialUri={latestCapturedUri} galleryTransition={galleryTransition} />}
     </View>

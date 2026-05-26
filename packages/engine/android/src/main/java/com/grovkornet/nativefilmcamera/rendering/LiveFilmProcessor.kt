@@ -3,6 +3,7 @@ package com.grovkornet.nativefilmcamera.rendering
 import android.graphics.Bitmap
 import android.graphics.SurfaceTexture
 import android.util.Log
+import com.grovkornet.nativefilmcamera.BuildConfig
 import android.view.Surface
 import com.grovkornet.nativefilmcamera.state.CameraConfiguration
 import com.grovkornet.nativefilmcamera.state.getTargetResolutionValue
@@ -24,7 +25,9 @@ class LiveFilmProcessor {
         init {
             try {
                 System.loadLibrary("grovkornet-engine")
-                Log.i("LiveFilmProcessor", "Successfully loaded native grovkornet-engine library")
+                if (BuildConfig.DEBUG) {
+                    Log.i("LiveFilmProcessor", "Successfully loaded native grovkornet-engine library")
+                }
             } catch (e: Exception) {
                 Log.e("LiveFilmProcessor", "Failed to load engine library", e)
             }
@@ -56,7 +59,9 @@ class LiveFilmProcessor {
         if (isPrepared && currentWidth == width && currentHeight == height) return
 
         val startTime = System.currentTimeMillis()
-        Log.i(TAG, "Preparing LiveFilmProcessor for ${width}x${height}...")
+        if (BuildConfig.DEBUG) {
+            Log.i(TAG, "Preparing LiveFilmProcessor for ${width}x${height}...")
+        }
 
         try {
             if (isPrepared) release()
@@ -73,7 +78,9 @@ class LiveFilmProcessor {
             currentHeight = height
             isPrepared = true
 
-            Log.i(TAG, "Live native preparation complete in ${System.currentTimeMillis() - startTime}ms")
+            if (BuildConfig.DEBUG) {
+                Log.i(TAG, "Live native preparation complete in ${System.currentTimeMillis() - startTime}ms")
+            }
         } catch (e: Exception) {
             Log.e(TAG, "Failed to prepare LiveFilmProcessor", e)
             isPrepared = false
@@ -93,7 +100,9 @@ class LiveFilmProcessor {
         onFpsUpdate: (actualFps: Int, stampedFps: Int) -> Unit = { _, _ -> }
     ) {
         if (!isPrepared || nativeEnginePtr == 0L) {
-            Log.w(TAG, "Cannot render live frame: LiveFilmProcessor not prepared")
+            if (BuildConfig.DEBUG) {
+                Log.w(TAG, "Cannot render live frame: LiveFilmProcessor not prepared")
+            }
             return
         }
 
@@ -147,7 +156,9 @@ class LiveFilmProcessor {
     }
 
     fun release() {
-        Log.i(TAG, "Releasing LiveFilmProcessor...")
+        if (BuildConfig.DEBUG) {
+            Log.i(TAG, "Releasing LiveFilmProcessor...")
+        }
         if (nativeEnginePtr != 0L) {
             nativeRelease(nativeEnginePtr)
             nativeEnginePtr = 0L
@@ -155,6 +166,8 @@ class LiveFilmProcessor {
 
         lastSurface = null
         isPrepared = false
-        Log.i(TAG, "LiveFilmProcessor release complete.")
+        if (BuildConfig.DEBUG) {
+            Log.i(TAG, "LiveFilmProcessor release complete.")
+        }
     }
 }

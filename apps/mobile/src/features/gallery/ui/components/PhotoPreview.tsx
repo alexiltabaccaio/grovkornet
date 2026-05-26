@@ -112,9 +112,12 @@ export const PhotoPreview = ({ selectedPhoto, photos, onPhotoVisible }: PhotoPre
     targetIndex: number,
     dragThreshold: number,
   ) => {
-    console.log(
-      `[PhotoPreview] onEnd | currentIdx=${idx} shiftX=${shiftX.toFixed(1)} vel=${velocity.toFixed(0)} threshold=${dragThreshold.toFixed(0)} → targetIdx=${targetIndex}`,
-    );
+    if (__DEV__) {
+      // eslint-disable-next-line no-console
+      console.log(
+        `[PhotoPreview] onEnd | currentIdx=${idx} shiftX=${shiftX.toFixed(1)} vel=${velocity.toFixed(0)} threshold=${dragThreshold.toFixed(0)} → targetIdx=${targetIndex}`,
+      );
+    }
   };
 
   const panGesture = Gesture.Pan()
@@ -195,7 +198,7 @@ export const PhotoPreview = ({ selectedPhoto, photos, onPhotoVisible }: PhotoPre
     );
   }
 
-  // Creiamo un Set di renderIndices unico
+  // Create a unique Set of renderIndices
   const uniqueIndices = Array.from(new Set(renderIndices)).filter(i => i >= 0 && i < photos.length);
 
   return (

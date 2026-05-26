@@ -7,7 +7,6 @@ const AnimatedTextInput = Animated.createAnimatedComponent(TextInput);
 
 export const DebugOverlay = () => {
   const fps = useBodyStore(state => state.fps);
-  const resolution = useBodyStore(state => state.resolution);
 
   return (
     <View style={styles.container} pointerEvents="box-none">
@@ -81,7 +80,7 @@ const ReanimatedResolutionText = () => {
       editable={false}
       defaultValue={`RES: ${resolution.value || '-'}`}
       style={styles.text}
-      // @ts-expect-error
+      // @ts-expect-error: AnimatedTextInput ref animatedProps type mismatch
       animatedProps={animatedProps}
     />
   );

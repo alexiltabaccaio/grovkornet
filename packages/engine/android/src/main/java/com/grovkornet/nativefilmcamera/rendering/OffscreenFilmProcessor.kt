@@ -2,6 +2,7 @@ package com.grovkornet.nativefilmcamera.rendering
 
 import android.graphics.Bitmap
 import android.util.Log
+import com.grovkornet.nativefilmcamera.BuildConfig
 import com.grovkornet.nativefilmcamera.state.CameraConfiguration
 import com.grovkornet.nativefilmcamera.state.getTargetResolutionValue
 import com.grovkornet.nativefilmcamera.state.toRenderParamsArray
@@ -27,7 +28,9 @@ class OffscreenFilmProcessor {
         init {
             try {
                 System.loadLibrary("grovkornet-engine")
-                Log.i("OffscreenProcessor", "Successfully loaded native grovkornet-engine library")
+                if (BuildConfig.DEBUG) {
+                    Log.i("OffscreenProcessor", "Successfully loaded native grovkornet-engine library")
+                }
             } catch (e: Exception) {
                 Log.e("OffscreenProcessor", "Failed to load engine library", e)
             }
@@ -59,7 +62,9 @@ class OffscreenFilmProcessor {
         if (isPrepared && currentWidth == width && currentHeight == height) return@withContext
         
         val startTime = System.currentTimeMillis()
-        Log.i(TAG, "Preparing native Filament engine for ${width}x${height}...")
+        if (BuildConfig.DEBUG) {
+            Log.i(TAG, "Preparing native Filament engine for ${width}x${height}...")
+        }
 
         try {
             if (isPrepared) {
@@ -79,7 +84,10 @@ class OffscreenFilmProcessor {
             currentHeight = height
             isPrepared = true
             
-            Log.i(TAG, "Native preparation complete in ${System.currentTimeMillis() - startTime}ms")
+            if (BuildConfig.DEBUG) {
+                Log.i(TAG, "Native preparation complete in ${System.currentTimeMillis() - startTime}ms")
+            }
+            Unit
         } catch (e: Exception) {
             Log.e(TAG, "Failed to prepare OffscreenProcessor with Filament", e)
             isPrepared = false
@@ -89,13 +97,17 @@ class OffscreenFilmProcessor {
     suspend fun process(input: Bitmap, params: CameraConfiguration, context: android.content.Context): Bitmap = withContext(singleThreadContext) {
         processMutex.withLock {
             if (!isPrepared) {
-                Log.w(TAG, "Processor not prepared, preparing now (this will cause lag)...")
+                if (BuildConfig.DEBUG) {
+                    Log.w(TAG, "Processor not prepared, preparing now (this will cause lag)...")
+                }
                 prepare(input.width, input.height, context.assets)
             }
             
             // If resolution changed, we need to re-prepare
             if (input.width != currentWidth || input.height != currentHeight) {
-                Log.i(TAG, "Resolution changed from ${currentWidth}x${currentHeight} to ${input.width}x${input.height}. Re-preparing...")
+                if (BuildConfig.DEBUG) {
+                    Log.i(TAG, "Resolution changed from ${currentWidth}x${currentHeight} to ${input.width}x${input.height}. Re-preparing...")
+                }
                 prepare(input.width, input.height, context.assets)
             }
 
@@ -126,7 +138,9 @@ class OffscreenFilmProcessor {
                 val flippedBitmap = Bitmap.createBitmap(outputBitmap, 0, 0, width, height, flipMatrix, true)
                 outputBitmap.recycle()
 
-                Log.i(TAG, "Frame processed natively in ${System.currentTimeMillis() - startTime}ms")
+                if (BuildConfig.DEBUG) {
+                    Log.i(TAG, "Frame processed natively in ${System.currentTimeMillis() - startTime}ms")
+                }
                 return@withContext flippedBitmap
             } catch (e: Exception) {
                 Log.e(TAG, "Offscreen native processing failed", e)
@@ -142,12 +156,16 @@ class OffscreenFilmProcessor {
     ) = withContext(singleThreadContext) {
         processMutex.withLock {
             if (!isPrepared) {
-                Log.w(TAG, "Processor not prepared, preparing now...")
+                if (BuildConfig.DEBUG) {
+                    Log.w(TAG, "Processor not prepared, preparing now...")
+                }
                 prepare(hardwareBuffer.width, hardwareBuffer.height, context.assets)
             }
 
             if (hardwareBuffer.width != currentWidth || hardwareBuffer.height != currentHeight) {
-                Log.i(TAG, "Resolution changed from ${currentWidth}x${currentHeight} to ${hardwareBuffer.width}x${hardwareBuffer.height}. Re-preparing...")
+                if (BuildConfig.DEBUG) {
+                    Log.i(TAG, "Resolution changed from ${currentWidth}x${currentHeight} to ${hardwareBuffer.width}x${hardwareBuffer.height}. Re-preparing...")
+                }
                 prepare(hardwareBuffer.width, hardwareBuffer.height, context.assets)
             }
 
@@ -166,7 +184,10 @@ class OffscreenFilmProcessor {
                     hardwareBuffer,
                     floatParams
                 )
-                Log.i(TAG, "HardwareBuffer processed natively (zero-copy) in ${System.currentTimeMillis() - startTime}ms")
+                if (BuildConfig.DEBUG) {
+                    Log.i(TAG, "HardwareBuffer processed natively (zero-copy) in ${System.currentTimeMillis() - startTime}ms")
+                }
+                Unit
             } catch (e: Exception) {
                 Log.e(TAG, "Offscreen native HardwareBuffer processing failed", e)
             }
@@ -194,14 +215,18 @@ class OffscreenFilmProcessor {
             processMutex.withLock {
                 if (!isPrepared) return@withContext
                 
-                Log.i(TAG, "Releasing native Filament engine...")
+                if (BuildConfig.DEBUG) {
+                    Log.i(TAG, "Releasing native Filament engine...")
+                }
                 if (nativeEnginePtr != 0L) {
                     nativeRelease(nativeEnginePtr)
                     nativeEnginePtr = 0L
                 }
                 
                 isPrepared = false
-                Log.i(TAG, "Release complete.")
+                if (BuildConfig.DEBUG) {
+                    Log.i(TAG, "Release complete.")
+                }
             }
         }
     }

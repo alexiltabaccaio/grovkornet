@@ -4,20 +4,19 @@ import { useImageVerification } from './useImageVerification';
 import { GalleryItem } from './types';
 
 /**
- * Hook di orchestrazione per GalleryViewer.
- * Combina il caricamento delle foto (useGalleryPhotos) con la
- * logica di verifica (useImageVerification) e gestisce la
- * selezione automatica della foto iniziale.
+ * Orchestration hook for GalleryViewer.
+ * Combines photo loading (useGalleryPhotos) with image
+ * verification logic (useImageVerification) and handles
+ * automatic selection of the initial photo.
  *
- * Usato da GalleryViewer.tsx come unica fonte di verità per
- * lo stato della galleria, permettendo al componente di
- * concentrarsi solo sul layout.
+ * Used by GalleryViewer.tsx as the single source of truth for
+ * gallery state, allowing the component to focus solely on layout.
  */
 export const useGalleryViewer = (initialUri?: string | null) => {
   const { photos, setPhotos, loading, permissionGranted } = useGalleryPhotos(initialUri);
   const { selectedPhoto, verifyPhoto } = useImageVerification(photos, setPhotos);
 
-  // Auto-seleziona la foto iniziale una volta completato il caricamento
+  // Auto-select the initial photo once loading is complete
   useEffect(() => {
     if (!loading && photos.length > 0 && !selectedPhoto) {
       if (initialUri) {
@@ -40,8 +39,8 @@ export const useGalleryViewer = (initialUri?: string | null) => {
   }, [loading, photos, initialUri, verifyPhoto, selectedPhoto]);
 
   /**
-   * Chiamata da PhotoPreview quando l'utente scorre a una nuova foto.
-   * Avvia la verifica di autenticità solo se la foto non è già selezionata.
+   * Called by PhotoPreview when the user swipes/scrolls to a new photo.
+   * Initiates authenticity verification only if the photo is not already selected.
    */
   const onPhotoVisible = (photo: GalleryItem) => {
     if (selectedPhoto?.uri !== photo.uri) {
@@ -50,7 +49,7 @@ export const useGalleryViewer = (initialUri?: string | null) => {
   };
 
   /**
-   * Chiamata da GalleryStrip quando si seleziona una miniatura.
+   * Called by GalleryStrip when a thumbnail is selected.
    */
   const onSelectPhoto = (photo: GalleryItem) => {
     void verifyPhoto(photo);

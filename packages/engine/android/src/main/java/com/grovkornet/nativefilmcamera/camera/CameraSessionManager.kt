@@ -19,6 +19,7 @@ import androidx.lifecycle.LifecycleOwner
 import android.view.OrientationEventListener
 import com.grovkornet.nativefilmcamera.logic.CameraLogicUtils
 import com.grovkornet.nativefilmcamera.state.CameraConfiguration
+import com.grovkornet.nativefilmcamera.BuildConfig
 
 class CameraSessionManager(
     private val context: Context,
@@ -149,7 +150,9 @@ class CameraSessionManager(
             }
             
             orientationEventListener.enable()
-            Log.i(TAG, "CameraX bound successfully to cameraId: ${config.cameraId}")
+            if (BuildConfig.DEBUG) {
+                Log.i(TAG, "CameraX bound successfully to cameraId: ${config.cameraId}")
+            }
         } catch (e: Exception) {
             Log.e(TAG, "Use case binding failed", e)
         }

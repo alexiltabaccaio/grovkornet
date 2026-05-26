@@ -3,13 +3,13 @@ package com.grovkornet.app
 import android.app.Application
 
 /**
- * Applicazione fittizia usata solo durante i test strumentati.
- * Impedisce l'inizializzazione di React Native, evitando crash e ANR
- * dovuti alla mancanza del server Metro nell'ambiente di test.
+ * Dummy application used only during instrumented tests.
+ * Prevents React Native initialization, avoiding crashes and ANRs
+ * due to the absence of the Metro server in the test environment.
  */
 class TestApplication : Application() {
     override fun onCreate() {
         super.onCreate()
-        // Non inizializziamo nulla qui per mantenere l'ambiente puro.
+        // We do not initialize anything here to keep the environment pure.
     }
 }

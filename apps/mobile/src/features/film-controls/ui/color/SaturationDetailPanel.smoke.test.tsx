@@ -155,10 +155,10 @@ describe('SaturationDetailPanel', () => {
     const { getByTestId } = render(<SaturationDetailPanel />);
     const redBtn = getByTestId('color-circle-red');
 
-    // Primo tap
+    // First tap
     fireEvent.press(redBtn);
 
-    // Avanza di 100ms per il secondo tap (< 300ms)
+    // Advance by 100ms for the second tap (< 300ms)
     jest.advanceTimersByTime(100);
     fireEvent.press(redBtn);
 
@@ -173,7 +173,7 @@ describe('SaturationDetailPanel', () => {
 
     fireEvent.press(redBtn);
 
-    // Aspetta 400ms (> 300ms) prima di un eventuale altro tap per essere sicuri che non venga interpretato come doppio
+    // Wait 400ms (> 300ms) before another tap to ensure it is not interpreted as a double tap
     jest.advanceTimersByTime(400);
 
     expect(mockSetters.setSatRed).not.toHaveBeenCalledWith(50.0);
@@ -185,10 +185,10 @@ describe('SaturationDetailPanel', () => {
     const { getByTestId } = render(<SaturationDetailPanel />);
     const masterBtn = getByTestId('color-circle-master');
 
-    // Primo tap
+    // First tap
     fireEvent.press(masterBtn);
 
-    // Secondo tap
+    // Second tap
     jest.advanceTimersByTime(100);
     fireEvent.press(masterBtn);
 
@@ -201,7 +201,7 @@ describe('SaturationDetailPanel', () => {
     const { getByTestId } = render(<SaturationDetailPanel />);
     const redBtn = getByTestId('color-circle-red');
 
-    // Doppio tap su rosso
+    // Double tap on red
     fireEvent.press(redBtn);
     jest.advanceTimersByTime(100);
     fireEvent.press(redBtn);

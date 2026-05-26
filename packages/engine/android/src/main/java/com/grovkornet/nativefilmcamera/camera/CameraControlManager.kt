@@ -12,6 +12,7 @@ import androidx.camera.camera2.interop.Camera2CameraInfo
 import androidx.camera.camera2.interop.CaptureRequestOptions
 import androidx.camera.core.Camera
 import com.grovkornet.nativefilmcamera.state.CameraConfiguration
+import com.grovkornet.nativefilmcamera.BuildConfig
 import android.hardware.camera2.CameraCharacteristics
 
 class CameraControlManager(
@@ -59,7 +60,9 @@ class CameraControlManager(
                     // fallback to the absolute maximum supported by the hardware.
                     bestRange = availableFpsRanges.maxByOrNull { it.upper } ?: availableFpsRanges.last()
                 }
-                Log.d(TAG, "Selected FPS range: $bestRange for target ${config.targetFps}")
+                if (BuildConfig.DEBUG) {
+                    Log.d(TAG, "Selected FPS range: $bestRange for target ${config.targetFps}")
+                }
             }
 
             builder.setCaptureRequestOption(CaptureRequest.CONTROL_AE_TARGET_FPS_RANGE, bestRange)
@@ -100,14 +103,18 @@ class CameraControlManager(
                 try {
                     camera.cameraControl.setTorchStrengthLevel(config.torchStrength)
                 } catch (e: Exception) {
-                    Log.w(TAG, "setTorchStrengthLevel failed: ${e.message}")
+                    if (BuildConfig.DEBUG) {
+                        Log.w(TAG, "setTorchStrengthLevel failed: ${e.message}")
+                    }
                 }
             } else {
                 camera.cameraControl.enableTorch(false)
             }
 
             control.captureRequestOptions = builder.build()
-            Log.d(TAG, "Camera controls updated: ISO=${config.iso}, AF=${config.autoFocus}")
+            if (BuildConfig.DEBUG) {
+                Log.d(TAG, "Camera controls updated: ISO=${config.iso}, AF=${config.autoFocus}")
+            }
         } catch (e: Exception) {
             Log.e(TAG, "Failed to update camera controls", e)
         }

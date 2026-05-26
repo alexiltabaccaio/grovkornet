@@ -15,6 +15,7 @@ import com.grovkornet.nativefilmcamera.managers.GalleryManager
 import com.grovkornet.nativefilmcamera.logic.ImageUtils
 import com.grovkornet.nativefilmcamera.logic.WatermarkEngine
 import com.grovkornet.nativefilmcamera.state.CameraConfiguration
+import com.grovkornet.nativefilmcamera.BuildConfig
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -158,7 +159,9 @@ class CapturePipeline(
                     listener.onPhotoCaptured(it.toString())
                 }
             }
-            Log.i(TAG, "Processing complete in ${System.currentTimeMillis() - procStartTime}ms: $uri")
+            if (BuildConfig.DEBUG) {
+                Log.d(TAG, "Processing complete in ${System.currentTimeMillis() - procStartTime}ms: $uri")
+            }
         } catch (e: Exception) {
             Log.e(TAG, "Failed to process photo", e)
         }

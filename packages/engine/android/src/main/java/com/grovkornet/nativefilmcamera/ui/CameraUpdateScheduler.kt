@@ -3,6 +3,7 @@ package com.grovkornet.nativefilmcamera.ui
 import android.os.Handler
 import android.os.Looper
 import java.util.concurrent.atomic.AtomicInteger
+import com.grovkornet.nativefilmcamera.BuildConfig
 
 class CameraUpdateScheduler(
     private val onUpdateCameraControls: () -> Unit,
@@ -26,10 +27,16 @@ class CameraUpdateScheduler(
         val minInterval = 33L
 
         if (now - lastCameraUpdateTime >= minInterval) {
+            if (BuildConfig.DEBUG) {
+                android.util.Log.d("CameraUpdateScheduler", "Executing immediate hardware update")
+            }
             lastCameraUpdateTime = now
             onUpdateCameraControls()
             hardwareUpdateCount.incrementAndGet()
         } else if (!isCameraUpdatePending) {
+            if (BuildConfig.DEBUG) {
+                android.util.Log.d("CameraUpdateScheduler", "Scheduling delayed hardware update")
+            }
             isCameraUpdatePending = true
             val delay = minInterval - (now - lastCameraUpdateTime)
             postDelayedAction(cameraUpdateRunnable, delay)

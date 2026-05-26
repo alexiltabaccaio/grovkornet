@@ -8,6 +8,7 @@ import android.util.Log
 import android.view.Choreographer
 import android.view.Surface
 import com.grovkornet.nativefilmcamera.state.CameraConfiguration
+import com.grovkornet.nativefilmcamera.BuildConfig
 import java.util.concurrent.atomic.AtomicBoolean
 
 class FilmRenderThread(
@@ -100,6 +101,8 @@ class FilmRenderThread(
         if (!surface.isValid) return
 
         try {
+            val renderStartTime = if (BuildConfig.DEBUG) System.currentTimeMillis() else 0L
+
             val wasFrameAvailable = isFrameAvailable.getAndSet(false)
             if (wasFrameAvailable) {
                 framesProcessed++
@@ -123,13 +126,24 @@ class FilmRenderThread(
                 if (!isReleased.get()) {
                     val now = System.currentTimeMillis()
                     if (now - lastDebugUpdateTime >= 500) {
+                        if (BuildConfig.DEBUG) {
+                            Log.d(TAG, "Sending onDebugUpdate at $now")
+                        }
                         onDebugUpdate(mapOf(
                             "fps" to stampedFps,
                             "resolution" to "${cameraWidth}x${cameraHeight}",
-                            "hwFps" to actualFps
+                            "hwFps" to actualFps,
+                            "timestamp" to now.toDouble()
                         ))
                         lastDebugUpdateTime = now
                     }
+                }
+            }
+
+            if (BuildConfig.DEBUG) {
+                val renderDuration = System.currentTimeMillis() - renderStartTime
+                if (renderDuration > 17) {
+                    Log.w(TAG, "Frame drop! Rendering took ${renderDuration}ms")
                 }
             }
         } catch (e: Exception) {
@@ -139,7 +153,9 @@ class FilmRenderThread(
 
     fun release() {
         if (isReleased.getAndSet(true)) return
-        Log.i(TAG, "Releasing FilmRenderThread...")
+        if (BuildConfig.DEBUG) {
+            Log.i(TAG, "Releasing FilmRenderThread...")
+        }
 
         handler.post {
             choreographer?.removeFrameCallback(frameCallback)

@@ -38,7 +38,7 @@ describe('PhotoPreview', () => {
       />
     );
 
-    // Salto programmatico alla terza foto
+    // Programmatic jump to the third photo
     act(() => {
       rerender(
         <PhotoPreview
@@ -49,7 +49,7 @@ describe('PhotoPreview', () => {
       );
     });
 
-    // Per i salti programmatici, onPhotoVisible NON deve essere chiamato
+    // For programmatic jumps, onPhotoVisible MUST NOT be called
     expect(onPhotoVisibleMock).not.toHaveBeenCalled();
   });
 });

@@ -4,7 +4,7 @@ const nextConfig: NextConfig = {
   transpilePackages: ["@grovkornet/shared"],
   reactStrictMode: true,
   eslint: {
-    // Vercel installa solo le dipendenze di web/, quindi ignoriamo l'eslint root durante la build di Vercel
+    // Vercel only installs dependencies of web/, so we ignore root eslint during Vercel build
     ignoreDuringBuilds: true,
   },
 };
