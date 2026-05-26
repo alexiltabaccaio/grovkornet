@@ -2,14 +2,13 @@ import React, { useRef, useEffect, useState, useLayoutEffect } from 'react';
 import { StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import Animated, {
   useSharedValue,
-  useAnimatedStyle,
   withSpring,
   withTiming,
   runOnJS,
   cancelAnimation,
 } from 'react-native-reanimated';
 import { GestureDetector, Gesture } from 'react-native-gesture-handler';
-import { Image } from 'expo-image';
+
 import { useTranslation } from 'react-i18next';
 import { GalleryItem } from '../../lib/types';
 
@@ -19,41 +18,7 @@ interface PhotoPreviewProps {
   onPhotoVisible?: (photo: GalleryItem) => void;
 }
 
-const AnimatedSlot = ({
-  photo,
-  index,
-  translateX,
-  slotWidth,
-  gap,
-}: {
-  photo: GalleryItem;
-  index: number;
-  translateX: Animated.SharedValue<number>;
-  slotWidth: number;
-  gap: number;
-}) => {
-  const animatedStyle = useAnimatedStyle(() => {
-    return {
-      transform: [{ translateX: index * slotWidth + translateX.value }],
-    };
-  });
-
-  return (
-    <Animated.View
-      style={[
-        { position: 'absolute', width: slotWidth, height: '100%', paddingRight: gap },
-        animatedStyle,
-      ]}
-    >
-      <Image
-        source={photo.uri}
-        style={styles.previewImage}
-        contentFit="contain"
-        transition={200}
-      />
-    </Animated.View>
-  );
-};
+import { AnimatedSlot } from './AnimatedSlot';
 
 export const PhotoPreview = ({ selectedPhoto, photos, onPhotoVisible }: PhotoPreviewProps) => {
   const { t } = useTranslation();
@@ -274,9 +239,5 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     backgroundColor: '#111',
     position: 'relative',
-  },
-  previewImage: {
-    width: '100%',
-    height: '100%',
   },
 });

@@ -7,6 +7,8 @@ import Animated, {
 } from 'react-native-reanimated';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import { useFilmStore, useFilmWorklets } from '@entities/film';
+import { unwrap, angleToX, xToAngle } from '../../lib/colorMath';
+
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const INITIAL_TRACK_WIDTH = SCREEN_WIDTH - 188;
@@ -73,15 +75,6 @@ export const ColorRangeSlider = ({ activeColorIndex }: ColorRangeSliderProps) =>
   const updateLeftBound = worklets[leftWorkletKey];
   const updateRightBound = worklets[rightWorkletKey];
 
-  // Helper to unwrap angles relative to a reference angle on the chromatic circle
-  const unwrap = (h: number, ref: number) => {
-    'worklet';
-    let val = h;
-    while (val < ref) val += 360;
-    while (val >= ref + 360) val -= 360;
-    return val;
-  };
-
   const getMinAngle = () => {
     'worklet';
     return dragRefAngle.value;
@@ -92,27 +85,14 @@ export const ColorRangeSlider = ({ activeColorIndex }: ColorRangeSliderProps) =>
     return unwrap(limitRightShared.value, dragRefAngle.value);
   };
 
-  // Convert Angle to Pixel position
-  const angleToX = (angle: number) => {
+  const angleToXLocal = (angle: number) => {
     'worklet';
-    if (trackWidth.value === 0) return 6;
-    const minA = getMinAngle();
-    const maxA = getMaxAngle();
-    const totalRange = maxA - minA;
-    if (totalRange <= 0) return 6;
-    const pct = (angle - minA) / totalRange;
-    return 6 + pct * (trackWidth.value - 12);
+    return angleToX(angle, getMinAngle(), getMaxAngle(), trackWidth.value);
   };
 
-  // Convert Pixel position to Angle
-  const xToAngle = (x: number) => {
+  const xToAngleLocal = (x: number) => {
     'worklet';
-    if (trackWidth.value === 0) return getMinAngle();
-    const minA = getMinAngle();
-    const maxA = getMaxAngle();
-    const totalRange = maxA - minA;
-    const pct = Math.min(Math.max((x - 6) / (trackWidth.value - 12), 0), 1);
-    return minA + pct * totalRange;
+    return xToAngle(x, getMinAngle(), getMaxAngle(), trackWidth.value);
   };
 
   const startXLeft = useSharedValue(0);
@@ -125,8 +105,8 @@ export const ColorRangeSlider = ({ activeColorIndex }: ColorRangeSliderProps) =>
       const leftUnwrapped = unwrap(leftShared.value, dragRefAngle.value);
       const rightUnwrapped = unwrap(rightShared.value, dragRefAngle.value);
       
-      const leftX = angleToX(leftUnwrapped);
-      const rightX = angleToX(rightUnwrapped);
+      const leftX = angleToXLocal(leftUnwrapped);
+      const rightX = angleToXLocal(rightUnwrapped);
       
       const distLeft = Math.abs(event.x - leftX);
       const distRight = Math.abs(event.x - rightX);
@@ -142,7 +122,7 @@ export const ColorRangeSlider = ({ activeColorIndex }: ColorRangeSliderProps) =>
     .onUpdate((event) => {
       if (activeThumb.value === 0) {
         const newX = startXLeft.value + event.translationX;
-        const newAngleUnwrapped = xToAngle(newX);
+        const newAngleUnwrapped = xToAngleLocal(newX);
         
         const minVal = dragRefAngle.value;
         const maxVal = unwrap(rightShared.value, dragRefAngle.value);
@@ -154,7 +134,7 @@ export const ColorRangeSlider = ({ activeColorIndex }: ColorRangeSliderProps) =>
         updateLeftBound(finalAngle);
       } else {
         const newX = startXRight.value + event.translationX;
-        const newAngleUnwrapped = xToAngle(newX);
+        const newAngleUnwrapped = xToAngleLocal(newX);
         
         const minVal = unwrap(leftShared.value, dragRefAngle.value);
         const maxVal = unwrap(limitRightShared.value, dragRefAngle.value);

@@ -1,13 +1,11 @@
-import React, { useMemo, useCallback, memo } from 'react';
+import React from 'react';
 import { View, StyleSheet, StyleProp, ViewStyle } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import Animated from 'react-native-reanimated';
-import { useShallow } from 'zustand/react/shallow';
-import { useFilmStore, useFilmWorklets, useFilmParameterControlData } from '@entities/film';
-import { DEFAULT_SELECTIVE_SATURATION } from '@grovkornet/shared';
-import { useDoublePress } from '@shared/lib/hooks/useDoublePress';
-import { ParameterControl, useSystemStore } from '@entities/system';
+import { ParameterControl } from '@entities/system';
 import { ColorRangeSlider } from './ColorRangeSlider';
+import { ColorCircle } from './components/ColorCircle';
+import { useSelectiveSaturation } from '../../lib/useSelectiveSaturation';
 
 const COLOR_MAPPING = [
   { key: 'red', color: '#FF453A' },
@@ -20,35 +18,6 @@ const COLOR_MAPPING = [
   { key: 'magenta', color: '#FF2D55' },
 ] as const;
 
-interface ColorCircleProps {
-  itemKey: string;
-  index: number;
-  isActive: boolean;
-  color: string;
-  onPress: (key: string, index: number) => void;
-}
-
-const MemoizedColorCircle = memo(({ itemKey, index, isActive, color, onPress }: ColorCircleProps) => {
-  const handlePress = useCallback(() => {
-    onPress(itemKey, index);
-  }, [itemKey, index, onPress]);
-
-  return (
-    <TouchableOpacity
-      testID={`color-circle-${itemKey}`}
-      onPress={handlePress}
-      style={[styles.circleContainer, isActive && styles.circleContainerActive]}
-      activeOpacity={0.8}
-      hitSlop={{ top: 10, bottom: 10, left: 5, right: 5 }}
-    >
-      <View style={[styles.circle, { backgroundColor: color }]} />
-    </TouchableOpacity>
-  );
-});
-MemoizedColorCircle.displayName = 'MemoizedColorCircle';
-
-type ColorIndex = 'master' | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7;
-
 interface SaturationDetailPanelProps {
   parameterDetailPanelAnimatedStyle?: StyleProp<ViewStyle>;
   animatedStyle?: StyleProp<ViewStyle>;
@@ -58,118 +27,17 @@ export const SaturationDetailPanel = ({
   parameterDetailPanelAnimatedStyle,
   animatedStyle
 }: SaturationDetailPanelProps) => {
-  const [activeColorIndex, setActiveColorIndex] = React.useState<ColorIndex>('master');
-  const activeParameter = useSystemStore(useShallow(state => state.activeParameter));
-  const [prevActiveParameter, setPrevActiveParameter] = React.useState(activeParameter);
-
-  if (activeParameter !== prevActiveParameter) {
-    setPrevActiveParameter(activeParameter);
-    if (activeParameter === 'saturation') {
-      setActiveColorIndex('master');
-    }
-  }
-
-  const masterData = useFilmParameterControlData('saturation');
-
   const {
-    satRed, setSatRed,
-    satOrange, setSatOrange,
-    satYellow, setSatYellow,
-    satGreen, setSatGreen,
-    satCyan, setSatCyan,
-    satBlue, setSatBlue,
-    satPurple, setSatPurple,
-    satMagenta, setSatMagenta,
-  } = useFilmStore(
-    useShallow(state => ({
-      satRed: state.satRed,
-      setSatRed: state.setSatRed,
-      satOrange: state.satOrange,
-      setSatOrange: state.setSatOrange,
-      satYellow: state.satYellow,
-      setSatYellow: state.setSatYellow,
-      satGreen: state.satGreen,
-      setSatGreen: state.setSatGreen,
-      satCyan: state.satCyan,
-      setSatCyan: state.setSatCyan,
-      satBlue: state.satBlue,
-      setSatBlue: state.setSatBlue,
-      satPurple: state.satPurple,
-      setSatPurple: state.setSatPurple,
-      satMagenta: state.satMagenta,
-      setSatMagenta: state.setSatMagenta,
-    }))
-  );
-
-  const handleColorReset = useCallback((colorKey: string) => {
-    if (colorKey === 'master') {
-      masterData.onReset();
-    } else {
-      const v = DEFAULT_SELECTIVE_SATURATION;
-      switch (colorKey) {
-        case 'red':     setSatRed(v); break;
-        case 'orange':  setSatOrange(v); break;
-        case 'yellow':  setSatYellow(v); break;
-        case 'green':   setSatGreen(v); break;
-        case 'cyan':    setSatCyan(v); break;
-        case 'blue':    setSatBlue(v); break;
-        case 'purple':  setSatPurple(v); break;
-        case 'magenta': setSatMagenta(v); break;
-      }
-    }
-  }, [masterData, setSatRed, setSatOrange, setSatYellow, setSatGreen, setSatCyan, setSatBlue, setSatPurple, setSatMagenta]);
-
-  const { handlePressWithDouble } = useDoublePress(handleColorReset);
-
-  const handleColorPress = useCallback((key: string, index: number) => {
-    handlePressWithDouble(key, () => setActiveColorIndex(index as ColorIndex));
-  }, [handlePressWithDouble]);
-
-  const worklets = useFilmWorklets();
-
-  const isMaster = activeColorIndex === 'master';
-
-  const activeValue = useMemo(() => {
-    if (activeColorIndex === 'master') return masterData.value;
-    switch (activeColorIndex) {
-      case 0: return satRed;
-      case 1: return satOrange;
-      case 2: return satYellow;
-      case 3: return satGreen;
-      case 4: return satCyan;
-      case 5: return satBlue;
-      case 6: return satPurple;
-      case 7: return satMagenta;
-    }
-  }, [activeColorIndex, masterData.value, satRed, satOrange, satYellow, satGreen, satCyan, satBlue, satPurple, satMagenta]);
-
-  const activeSetter = useMemo(() => {
-    if (activeColorIndex === 'master') return masterData.onChange;
-    switch (activeColorIndex) {
-      case 0: return setSatRed;
-      case 1: return setSatOrange;
-      case 2: return setSatYellow;
-      case 3: return setSatGreen;
-      case 4: return setSatCyan;
-      case 5: return setSatBlue;
-      case 6: return setSatPurple;
-      case 7: return setSatMagenta;
-    }
-  }, [activeColorIndex, masterData.onChange, setSatRed, setSatOrange, setSatYellow, setSatGreen, setSatCyan, setSatBlue, setSatPurple, setSatMagenta]);
-
-  const activeWorklet = useMemo(() => {
-    if (activeColorIndex === 'master') return masterData.onUpdateWorklet;
-    switch (activeColorIndex) {
-      case 0: return worklets.updateSatRed;
-      case 1: return worklets.updateSatOrange;
-      case 2: return worklets.updateSatYellow;
-      case 3: return worklets.updateSatGreen;
-      case 4: return worklets.updateSatCyan;
-      case 5: return worklets.updateSatBlue;
-      case 6: return worklets.updateSatPurple;
-      case 7: return worklets.updateSatMagenta;
-    }
-  }, [activeColorIndex, masterData.onUpdateWorklet, worklets]);
+    activeColorIndex,
+    setActiveColorIndex,
+    isMaster,
+    activeValue,
+    activeSetter,
+    activeWorklet,
+    masterData,
+    handleColorPress,
+    handlePressWithDouble,
+  } = useSelectiveSaturation();
 
   const renderMultiColorDot = () => {
     const isActive = isMaster;
@@ -224,7 +92,7 @@ export const SaturationDetailPanel = ({
 
       <Animated.View style={[styles.colorCirclesRow, animatedStyle]}>
         {COLOR_MAPPING.map((item, index) => (
-          <MemoizedColorCircle
+          <ColorCircle
             key={item.key}
             itemKey={item.key}
             index={index}
@@ -236,7 +104,7 @@ export const SaturationDetailPanel = ({
       </Animated.View>
 
       {!isMaster && (
-        <ColorRangeSlider activeColorIndex={activeColorIndex} />
+        <ColorRangeSlider activeColorIndex={activeColorIndex as number} />
       )}
     </View>
   );
@@ -275,11 +143,6 @@ const styles = StyleSheet.create({
   },
   circleContainerActive: {
     borderColor: '#FFFFFF',
-  },
-  circle: {
-    width: 20,
-    height: 20,
-    borderRadius: 10,
   },
   multiColorCircle: {
     width: 20,

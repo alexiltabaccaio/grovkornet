@@ -18,6 +18,7 @@ interface GalleryStripItemProps {
 const GalleryStripItem = React.memo(({ item, isSelected, onSelect }: GalleryStripItemProps) => {
   return (
     <Pressable
+      testID={`gallery-strip-item-${item.id}`}
       style={[
         styles.thumbnailWrapper,
         isSelected && styles.thumbnailSelected
