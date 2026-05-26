@@ -1,35 +1,228 @@
-import React, { useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import React, { useRef, useEffect, useState, useLayoutEffect } from 'react';
+import { StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withSpring,
+  withTiming,
+  runOnJS,
+  cancelAnimation,
+} from 'react-native-reanimated';
+import { GestureDetector, Gesture } from 'react-native-gesture-handler';
 import { Image } from 'expo-image';
 import { useTranslation } from 'react-i18next';
-import Animated, { SlideInRight, SlideInLeft, SlideOutRight, SlideOutLeft, runOnJS } from 'react-native-reanimated';
-import { GestureDetector, Gesture } from 'react-native-gesture-handler';
 import { GalleryItem } from '../../lib/types';
 
 interface PhotoPreviewProps {
   selectedPhoto: GalleryItem | null;
-  verifying: boolean;
   photos: GalleryItem[];
-  onSwipeLeft?: () => void;
-  onSwipeRight?: () => void;
+  onPhotoVisible?: (photo: GalleryItem) => void;
 }
 
-export const PhotoPreview = ({ selectedPhoto, verifying: _verifying, photos, onSwipeLeft, onSwipeRight }: PhotoPreviewProps) => {
+const AnimatedSlot = ({
+  photo,
+  index,
+  translateX,
+  slotWidth,
+  gap,
+}: {
+  photo: GalleryItem;
+  index: number;
+  translateX: Animated.SharedValue<number>;
+  slotWidth: number;
+  gap: number;
+}) => {
+  const animatedStyle = useAnimatedStyle(() => {
+    return {
+      transform: [{ translateX: index * slotWidth + translateX.value }],
+    };
+  });
+
+  return (
+    <Animated.View
+      style={[
+        { position: 'absolute', width: slotWidth, height: '100%', paddingRight: gap },
+        animatedStyle,
+      ]}
+    >
+      <Image
+        source={photo.uri}
+        style={styles.previewImage}
+        contentFit="contain"
+        transition={200}
+      />
+    </Animated.View>
+  );
+};
+
+export const PhotoPreview = ({ selectedPhoto, photos, onPhotoVisible }: PhotoPreviewProps) => {
   const { t } = useTranslation();
-  const [prevUri, setPrevUri] = useState<string | null>(null);
-  const [direction, setDirection] = useState<'forward' | 'backward'>('forward');
+  const { width } = useWindowDimensions();
+  const GAP = 20;
+  const slotWidth = width + GAP;
 
-  // Derive direction based on index change in photos
-  if (selectedPhoto && selectedPhoto.uri !== prevUri) {
-    const oldIndex = prevUri ? photos.findIndex(p => p.uri === prevUri) : -1;
-    const newIndex = photos.findIndex(p => p.uri === selectedPhoto.uri);
-    if (oldIndex !== -1 && newIndex !== -1 && oldIndex !== newIndex) {
-      setDirection(newIndex > oldIndex ? 'forward' : 'backward');
+  const initialIndex = photos.length > 0
+    ? Math.max(0, photos.findIndex(p => p.uri === selectedPhoto?.uri))
+    : 0;
+
+  // SharedValue so it's safely readable/writable from worklets without stale-closure issues
+  const currentIndex = useSharedValue(initialIndex);
+
+  const pendingTeleportRef = useRef<number | null>(null);
+  const animatingToIndexRef = useRef<number | null>(null);
+  
+  const [renderIndices, setRenderIndices] = useState<number[]>([
+    initialIndex - 1,
+    initialIndex,
+    initialIndex + 1,
+  ]);
+
+  const [slotOverrides, setSlotOverrides] = useState<Record<number, GalleryItem>>({});
+
+  const translateX = useSharedValue(-initialIndex * slotWidth);
+  const dragOffset = useSharedValue(0);
+
+  useLayoutEffect(() => {
+    if (pendingTeleportRef.current !== null) {
+      const targetIndex = pendingTeleportRef.current;
+      pendingTeleportRef.current = null;
+      translateX.value = -targetIndex * slotWidth;
     }
-    setPrevUri(selectedPhoto.uri);
-  }
+  });
 
-  if (!selectedPhoto) {
+  const finalizeTransition = (newIndex: number, isManualSwipe: boolean) => {
+    currentIndex.value = newIndex;
+    animatingToIndexRef.current = null;
+    setRenderIndices([newIndex - 1, newIndex, newIndex + 1]);
+
+    if (isManualSwipe && onPhotoVisible && photos[newIndex]) {
+      onPhotoVisible(photos[newIndex]);
+    }
+  };
+
+  const finalizeTeleport = (targetIndex: number) => {
+    currentIndex.value = targetIndex;
+    animatingToIndexRef.current = null;
+    pendingTeleportRef.current = targetIndex;
+    setSlotOverrides({});
+    setRenderIndices([targetIndex - 1, targetIndex, targetIndex + 1]);
+  };
+
+  useEffect(() => {
+    if (!selectedPhoto || photos.length === 0) return;
+    const idx = photos.findIndex(p => p.uri === selectedPhoto.uri);
+    if (idx === -1 || idx === currentIndex.value || idx === animatingToIndexRef.current) return;
+
+    const diff = idx - currentIndex.value;
+    animatingToIndexRef.current = idx;
+
+    if (Math.abs(diff) === 1) {
+      const targetVal = -idx * slotWidth;
+      translateX.value = withTiming(targetVal, { duration: 250 }, (finished) => {
+        if (finished) runOnJS(finalizeTransition)(idx, false);
+      });
+    } else {
+      // Distant jump: simulate adjacent scroll then teleport
+      const mockAdjacentIndex = diff > 0 ? currentIndex.value + 1 : currentIndex.value - 1;
+      
+      setSlotOverrides({ [mockAdjacentIndex]: photos[idx] });
+      setRenderIndices([currentIndex.value - 1, currentIndex.value, currentIndex.value + 1, mockAdjacentIndex]);
+
+      const targetVal = -mockAdjacentIndex * slotWidth;
+      translateX.value = withTiming(targetVal, { duration: 250 }, (finished) => {
+        if (finished) {
+          runOnJS(finalizeTeleport)(idx);
+        }
+      });
+    }
+  }, [selectedPhoto, photos, slotWidth]);
+
+  // Capture photos.length as a plain number for the worklet closure
+  const photosLength = photos.length;
+
+  const logSwipeDecision = (
+    idx: number,
+    shiftX: number,
+    velocity: number,
+    targetIndex: number,
+    dragThreshold: number,
+  ) => {
+    console.log(
+      `[PhotoPreview] onEnd | currentIdx=${idx} shiftX=${shiftX.toFixed(1)} vel=${velocity.toFixed(0)} threshold=${dragThreshold.toFixed(0)} → targetIdx=${targetIndex}`,
+    );
+  };
+
+  const panGesture = Gesture.Pan()
+    .onStart(() => {
+      'worklet';
+      // Cancel any in-progress spring so it doesn't fight the new drag
+      cancelAnimation(translateX);
+      dragOffset.value = translateX.value;
+    })
+    .onUpdate((event) => {
+      'worklet';
+      const proposedVal = dragOffset.value + event.translationX;
+
+      const maxTranslateX = 0;
+      const minTranslateX = -(photosLength - 1) * slotWidth;
+
+      if (proposedVal > maxTranslateX) {
+        const overscroll = proposedVal - maxTranslateX;
+        translateX.value = maxTranslateX + overscroll * 0.35;
+      } else if (proposedVal < minTranslateX) {
+        const overscroll = proposedVal - minTranslateX;
+        translateX.value = minTranslateX + overscroll * 0.35;
+      } else {
+        translateX.value = proposedVal;
+      }
+    })
+    .onEnd((event) => {
+      'worklet';
+      const dragThreshold = width / 2;
+      const velocityThreshold = 500;
+      // Read from SharedValue — always up-to-date on the UI thread
+      const idx = currentIndex.value;
+      const currentBaseX = -idx * slotWidth;
+      const shiftX = translateX.value - currentBaseX; // positive = dragged right (previous photo)
+      const velocity = event.velocityX;
+
+      let targetIndex = idx;
+
+      if (shiftX > dragThreshold || velocity > velocityThreshold) {
+        if (idx > 0) targetIndex = idx - 1;
+      } else if (shiftX < -dragThreshold || velocity < -velocityThreshold) {
+        if (idx < photosLength - 1) targetIndex = idx + 1;
+      }
+
+      // Log decision variables for debugging — remove once stable
+      runOnJS(logSwipeDecision)(idx, shiftX, velocity, targetIndex, dragThreshold);
+
+      const targetTranslateX = -targetIndex * slotWidth;
+
+      if (targetIndex !== idx) {
+        translateX.value = withSpring(
+          targetTranslateX,
+          {
+            velocity: velocity,
+            overshootClamping: true,
+            restDisplacementThreshold: 0.01,
+            restSpeedThreshold: 0.01,
+          },
+          (finished) => {
+            if (finished) runOnJS(finalizeTransition)(targetIndex, true);
+          }
+        );
+      } else {
+        translateX.value = withSpring(targetTranslateX, {
+          velocity: velocity,
+          overshootClamping: true,
+          restDisplacementThreshold: 0.01,
+          restSpeedThreshold: 0.01,
+        });
+      }
+    });
+
+  if (!selectedPhoto || photos.length === 0) {
     return (
       <View style={styles.center}>
         <Text style={styles.title}>{t('gallery.no_photos', 'No photos found')}</Text>
@@ -37,42 +230,30 @@ export const PhotoPreview = ({ selectedPhoto, verifying: _verifying, photos, onS
     );
   }
 
-  const enteringAnimation = direction === 'forward'
-    ? SlideInRight.duration(250)
-    : SlideInLeft.duration(250);
-
-  const exitingAnimation = direction === 'forward'
-    ? SlideOutLeft.duration(250)
-    : SlideOutRight.duration(250);
-
-  const panGesture = Gesture.Pan()
-    .onEnd((e) => {
-      if (e.translationX < -50 && onSwipeLeft) {
-        runOnJS(onSwipeLeft)();
-      } else if (e.translationX > 50 && onSwipeRight) {
-        runOnJS(onSwipeRight)();
-      }
-    });
+  // Creiamo un Set di renderIndices unico
+  const uniqueIndices = Array.from(new Set(renderIndices)).filter(i => i >= 0 && i < photos.length);
 
   return (
-    <GestureDetector gesture={panGesture}>
-      <View style={styles.previewWrapper}>
-        <Animated.View
-          key={selectedPhoto.uri}
-          entering={enteringAnimation}
-          exiting={exitingAnimation}
-          style={styles.previewImageContainer}
-        >
-          <Image
-            source={{ uri: selectedPhoto.uri }}
-            style={styles.previewImage}
-            contentFit="contain"
-            placeholder={{ uri: selectedPhoto.uri }}
-            placeholderContentFit="contain"
-          />
+    <View style={styles.previewWrapper}>
+      <GestureDetector gesture={panGesture}>
+        <Animated.View style={StyleSheet.absoluteFill}>
+          {uniqueIndices.map(index => {
+            const photo = slotOverrides[index] || photos[index];
+            if (!photo) return null;
+            return (
+              <AnimatedSlot
+                key={photo.id}
+                photo={photo}
+                index={index}
+                translateX={translateX}
+                slotWidth={slotWidth}
+                gap={GAP}
+              />
+            );
+          })}
         </Animated.View>
-      </View>
-    </GestureDetector>
+      </GestureDetector>
+    </View>
   );
 };
 
@@ -93,13 +274,6 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     backgroundColor: '#111',
     position: 'relative',
-  },
-  previewImageContainer: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
   },
   previewImage: {
     width: '100%',

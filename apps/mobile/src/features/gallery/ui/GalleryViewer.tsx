@@ -1,11 +1,10 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { StyleSheet, Text, View, ActivityIndicator, Platform } from 'react-native';
 import Animated, { useAnimatedStyle, SharedValue } from 'react-native-reanimated';
 import { useTranslation } from 'react-i18next';
 import { Header } from '@widgets/header';
 import { ShareButton } from './ShareButton';
-import { useGalleryPhotos } from '../lib/useGalleryPhotos';
-import { useImageVerification } from '../lib/useImageVerification';
+import { useGalleryViewer } from '../lib/useGalleryViewer';
 import { PhotoPreview } from './components/PhotoPreview';
 import { GalleryStrip } from './components/GalleryStrip';
 
@@ -17,25 +16,7 @@ interface GalleryViewerProps {
 
 export const GalleryViewer = ({ onClose, initialUri, galleryTransition }: GalleryViewerProps) => {
   const { t } = useTranslation();
-  const { photos, setPhotos, loading, permissionGranted } = useGalleryPhotos(initialUri);
-  const { selectedPhoto, verifying, verifyPhoto } = useImageVerification(photos, setPhotos);
-
-  // Auto-select on photos loaded
-  useEffect(() => {
-    if (!loading && photos.length > 0 && !selectedPhoto) {
-      if (initialUri) {
-        const initialFilenameOrId = initialUri.split('/').pop();
-        const found = photos.find(item => item.uri === initialUri || (initialFilenameOrId && (item.filename === initialFilenameOrId || item.id === initialFilenameOrId)));
-        if (found) {
-          void verifyPhoto(found);
-        } else {
-          void verifyPhoto({ id: 'initial', uri: initialUri, filename: initialFilenameOrId });
-        }
-      } else {
-        void verifyPhoto(photos[0]);
-      }
-    }
-  }, [loading, photos, initialUri, verifyPhoto, selectedPhoto]);
+  const { photos, selectedPhoto, loading, onPhotoVisible, onSelectPhoto } = useGalleryViewer(initialUri);
 
   const animatedContainerStyle = useAnimatedStyle(() => {
     if (!galleryTransition) return {};
@@ -64,22 +45,8 @@ export const GalleryViewer = ({ onClose, initialUri, galleryTransition }: Galler
             <View style={styles.previewContainer}>
               <PhotoPreview
                 selectedPhoto={selectedPhoto}
-                verifying={verifying}
-                photos={permissionGranted ? photos : []}
-                onSwipeLeft={() => {
-                  if (!selectedPhoto || !permissionGranted) return;
-                  const idx = photos.findIndex(p => p.uri === selectedPhoto.uri);
-                  if (idx !== -1 && idx < photos.length - 1) {
-                    void verifyPhoto(photos[idx + 1]);
-                  }
-                }}
-                onSwipeRight={() => {
-                  if (!selectedPhoto || !permissionGranted) return;
-                  const idx = photos.findIndex(p => p.uri === selectedPhoto.uri);
-                  if (idx > 0) {
-                    void verifyPhoto(photos[idx - 1]);
-                  }
-                }}
+                photos={photos}
+                onPhotoVisible={onPhotoVisible}
               />
               
               {/* Share Instagram Action */}
@@ -96,9 +63,9 @@ export const GalleryViewer = ({ onClose, initialUri, galleryTransition }: Galler
 
             {/* Media Gallery Strip */}
             <GalleryStrip
-              photos={permissionGranted ? photos : []}
+              photos={photos}
               selectedPhoto={selectedPhoto}
-              onSelectPhoto={(photo) => { void verifyPhoto(photo); }}
+              onSelectPhoto={onSelectPhoto}
               onClose={onClose}
               galleryTransition={galleryTransition}
             />
@@ -156,3 +123,4 @@ const styles = StyleSheet.create({
     zIndex: 10,
   },
 });
+
