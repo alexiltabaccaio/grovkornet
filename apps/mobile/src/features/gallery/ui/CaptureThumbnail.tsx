@@ -115,6 +115,8 @@ export const CaptureThumbnail = ({ onPress }: CaptureThumbnailProps) => {
               source={{ uri: latestPreviewUri ?? latestCapturedUri! }}
               style={styles.image}
               contentFit="cover"
+              transition={0}
+              cachePolicy="memory-disk"
             />
           ) : null}
         </Animated.View>
