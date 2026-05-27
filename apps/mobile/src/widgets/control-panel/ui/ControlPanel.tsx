@@ -21,7 +21,7 @@ interface ControlPanelProps {
   galleryTransition?: Animated.SharedValue<number>;
 }
 
-export const ControlPanel = ({ translateY: externalTranslateY, drawerAnimation: externalDrawerAnimation, galleryTransition }: ControlPanelProps) => {
+export const ControlPanel = React.memo(({ translateY: externalTranslateY, drawerAnimation: externalDrawerAnimation, galleryTransition }: ControlPanelProps) => {
   const { isDebugEnabled } = useSystemStore(useShallow(state => ({
     isDebugEnabled: state.isDebugEnabled,
   })));
@@ -97,9 +97,10 @@ export const ControlPanel = ({ translateY: externalTranslateY, drawerAnimation: 
       <Sections galleryTransition={galleryTransition} />
     </View>
   );
-};
+});
 
-ControlPanel.whyDidYouRender = true;
+ControlPanel.displayName = 'ControlPanel';
+(ControlPanel as any).whyDidYouRender = true;
 
 
 const styles = StyleSheet.create({

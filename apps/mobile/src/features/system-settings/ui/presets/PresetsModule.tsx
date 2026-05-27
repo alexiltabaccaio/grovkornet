@@ -8,6 +8,35 @@ import { ParameterThumbView } from '@shared/ui/parameter-thumb';
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const monoscopeAsset = require('../../../../../assets/monoscope.jpg') as ImageSourcePropType;
 
+interface PresetButtonProps {
+  id: string;
+  label: string;
+  thumbnailUri?: string | null;
+  isActive: boolean;
+  onPress: (id: string) => void;
+}
+
+const PresetButton = React.memo(({ id, label, thumbnailUri, isActive, onPress }: PresetButtonProps) => {
+  const handlePress = useCallback(() => {
+    onPress(id);
+  }, [onPress, id]);
+
+  const imageSource = thumbnailUri ? { uri: thumbnailUri } : monoscopeAsset;
+
+  return (
+    <TouchableOpacity activeOpacity={0.8} onPress={handlePress}>
+      <ParameterThumbView
+        label={label}
+        variant="preset"
+        imageSource={imageSource}
+        isActive={isActive}
+      />
+    </TouchableOpacity>
+  );
+});
+
+PresetButton.displayName = 'PresetButton';
+
 export const PresetsModule = () => {
   const {
     userPresets,
@@ -43,35 +72,32 @@ export const PresetsModule = () => {
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
       >
-        <TouchableOpacity activeOpacity={0.8} onPress={() => handlePresetPress('default')}>
-          <ParameterThumbView
-            label="Default"
-            variant="preset"
-            imageSource={monoscopeAsset}
-            isActive={activePresetId === 'default'}
-          />
-        </TouchableOpacity>
+        <PresetButton
+          id="default"
+          label="Default"
+          isActive={activePresetId === 'default'}
+          onPress={handlePresetPress}
+        />
 
         {customizedPayload && (
-          <TouchableOpacity activeOpacity={0.8} onPress={() => handlePresetPress('customized')}>
-            <ParameterThumbView
-              label="Personalizzato"
-              variant="preset"
-              imageSource={customizedThumbnailUri ? { uri: customizedThumbnailUri } : monoscopeAsset}
-              isActive={activePresetId === 'customized'}
-            />
-          </TouchableOpacity>
+          <PresetButton
+            id="customized"
+            label="Personalizzato"
+            thumbnailUri={customizedThumbnailUri}
+            isActive={activePresetId === 'customized'}
+            onPress={handlePresetPress}
+          />
         )}
 
         {userPresets.map((preset: Preset) => (
-          <TouchableOpacity key={preset.id} activeOpacity={0.8} onPress={() => handlePresetPress(preset.id)}>
-            <ParameterThumbView
-              label={preset.name}
-              variant="preset"
-              imageSource={preset.thumbnailUri ? { uri: preset.thumbnailUri } : monoscopeAsset}
-              isActive={activePresetId === preset.id}
-            />
-          </TouchableOpacity>
+          <PresetButton
+            key={preset.id}
+            id={preset.id}
+            label={preset.name}
+            thumbnailUri={preset.thumbnailUri}
+            isActive={activePresetId === preset.id}
+            onPress={handlePresetPress}
+          />
         ))}
       </ScrollView>
     </View>
@@ -94,4 +120,7 @@ const styles = StyleSheet.create({
     gap: 8,
   },
 });
+
+PresetsModule.whyDidYouRender = true;
+
 

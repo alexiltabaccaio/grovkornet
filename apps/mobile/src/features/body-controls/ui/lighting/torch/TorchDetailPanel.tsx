@@ -8,6 +8,18 @@ import Animated, { useAnimatedReaction, runOnJS } from 'react-native-reanimated'
 import { useTranslation } from 'react-i18next';
 import { logger } from '@shared/lib/logger';
 
+const noop = () => {};
+
+const formatTorchState = (v: number) => {
+  'worklet';
+  return v === 0 ? 'OFF' : 'ON';
+};
+
+const formatTorchStrength = (v: number) => {
+  'worklet';
+  return `${(v * 100).toFixed(0)}`;
+};
+
 interface TorchDetailPanelProps {
   parameterDetailPanelAnimatedStyle?: StyleProp<ViewStyle>;
   animatedStyle?: StyleProp<ViewStyle>;
@@ -72,15 +84,12 @@ export const TorchDetailPanel = ({ parameterDetailPanelAnimatedStyle, animatedSt
                 label=""
                 isActive={false}
                 hideDebugRectangles={true}
-                onPress={() => {}}
+                onPress={noop}
                 value={torchState}
                 variant="text"
                 renderValue={true}
                 isToggle={true}
-                valueFormatter={(v) => {
-                  'worklet';
-                  return v === 0 ? 'OFF' : 'ON';
-                }}
+                valueFormatter={formatTorchState}
                 disableGestures={true}
               />
             </View>
@@ -99,10 +108,7 @@ export const TorchDetailPanel = ({ parameterDetailPanelAnimatedStyle, animatedSt
           onUpdateWorklet={bodyWorklets.updateTorchStrength}
           variant="slider"
           renderValue={true}
-          valueFormatter={(v) => {
-            'worklet';
-            return `${(v * 100).toFixed(0)}`;
-          }}
+          valueFormatter={formatTorchStrength}
         />
       </Animated.View>
     </View>

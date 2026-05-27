@@ -27,3 +27,6 @@ export const LightingModule = ({ handlePressWithDouble }: LightingModuleProps) =
     />
   );
 };
+
+LightingModule.whyDidYouRender = true;
+

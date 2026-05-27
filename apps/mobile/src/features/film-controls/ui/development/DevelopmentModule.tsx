@@ -1,4 +1,5 @@
 import React from 'react';
+import { StyleSheet, View } from 'react-native';
 import { ParameterType } from '@entities/system';
 import { GenericParameterModule } from '@entities/system';
 
@@ -9,14 +10,16 @@ interface DevelopmentModuleProps {
 
 const DEVELOPMENT_PARAMETERS: ParameterType[] = ['saturation', 'contrast', 'temperature', 'tint'];
 
-export const DevelopmentModule = ({ handlePressWithDouble }: DevelopmentModuleProps) => {
+export const DevelopmentModule = React.memo(({ handlePressWithDouble }: DevelopmentModuleProps) => {
   return (
     <GenericParameterModule
       parameters={DEVELOPMENT_PARAMETERS}
       handlePressWithDouble={handlePressWithDouble}
     />
   );
-};
+});
 
-DevelopmentModule.whyDidYouRender = true;
+DevelopmentModule.displayName = 'DevelopmentModule';
+
+(DevelopmentModule as any).whyDidYouRender = true;
 

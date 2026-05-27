@@ -36,7 +36,7 @@ interface ParameterControlProps {
   sliderColor?: string;
 }
 
-export const ParameterControl = ({
+export const ParameterControl = React.memo(({
   label,
   isActive,
   onPress,
@@ -141,4 +141,8 @@ export const ParameterControl = ({
       />
     </GestureDetector>
   );
-};
+});
+
+ParameterControl.displayName = 'ParameterControl';
+// @ts-expect-error - whyDidYouRender is a property dynamically read by why-did-you-render in development
+ParameterControl.whyDidYouRender = true;

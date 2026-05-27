@@ -17,3 +17,6 @@ export const ExposureModule = ({ handlePressWithDouble }: ExposureModuleProps) =
     />
   );
 };
+
+ExposureModule.whyDidYouRender = true;
+

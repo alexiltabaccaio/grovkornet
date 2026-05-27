@@ -1,4 +1,4 @@
-import React, { forwardRef } from 'react';
+import React, { forwardRef, memo } from 'react';
 import { View, Text, Image, ImageSourcePropType } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { ParameterThumbViewProps } from './ParameterThumbView.types';
@@ -12,7 +12,7 @@ import { SliderThumb } from './SliderThumb';
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const defaultMonoscope = require('../../../../assets/monoscope.jpg') as ImageSourcePropType;
 
-export const ParameterThumbView = forwardRef<View, ParameterThumbViewProps>((props, ref) => {
+const ParameterThumbViewBase = forwardRef<View, ParameterThumbViewProps>((props, ref) => {
   const {
     label,
     isActive,
@@ -130,7 +130,59 @@ export const ParameterThumbView = forwardRef<View, ParameterThumbViewProps>((pro
   );
 });
 
-ParameterThumbView.displayName = 'ParameterThumbView';
+ParameterThumbViewBase.displayName = 'ParameterThumbView';
+
+const arePropsEqual = (prev: ParameterThumbViewProps, next: ParameterThumbViewProps): boolean => {
+  const prevImg = prev.imageSource;
+  const nextImg = next.imageSource;
+
+  let isImageEqual = false;
+  if (prevImg === nextImg) {
+    isImageEqual = true;
+  } else if (
+    prevImg &&
+    nextImg &&
+    typeof prevImg === 'object' &&
+    typeof nextImg === 'object' &&
+    'uri' in prevImg &&
+    'uri' in nextImg
+  ) {
+    isImageEqual = (prevImg as { uri?: string }).uri === (nextImg as { uri?: string }).uri;
+  }
+
+  const areCallbacksEqual = 
+    prev.onPress === next.onPress && 
+    prev.onReset === next.onReset && 
+    prev.onToggleAuto === next.onToggleAuto;
+
+  return !!(
+    prev.label === next.label &&
+    prev.isActive === next.isActive &&
+    prev.variant === next.variant &&
+    prev.isDebugEnabled === next.isDebugEnabled &&
+    prev.staticText === next.staticText &&
+    prev.renderValue === next.renderValue &&
+    prev.isToggle === next.isToggle &&
+    prev.hideValueInAuto === next.hideValueInAuto &&
+    prev.autoValueText === next.autoValueText &&
+    prev.minValue === next.minValue &&
+    prev.maxValue === next.maxValue &&
+    prev.centerValue === next.centerValue &&
+    prev.sliderColor === next.sliderColor &&
+    prev.value === next.value &&
+    prev.isAuto === next.isAuto &&
+    prev.disabled === next.disabled &&
+    prev.sliderTrackWidth === next.sliderTrackWidth &&
+    prev.valueFormatter === next.valueFormatter &&
+    prev.icon === next.icon &&
+    prev.hideAutoPlaceholder === next.hideAutoPlaceholder &&
+    isImageEqual &&
+    areCallbacksEqual
+  );
+};
+
+export const ParameterThumbView = memo(ParameterThumbViewBase, arePropsEqual);
+
 // @ts-expect-error - whyDidYouRender is a property dynamically read by why-did-you-render in development
 ParameterThumbView.whyDidYouRender = true;
 

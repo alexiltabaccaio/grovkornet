@@ -9,6 +9,13 @@ import { useTranslation } from 'react-i18next';
 import { useSystemStore } from '@entities/system';
 import { PillButton } from '@shared/ui';
 
+const formatGrainValue = (v: number) => {
+  'worklet';
+  return `${v.toFixed(1)}x`;
+};
+
+const noop = () => {};
+
 export const GrainDetailPanel = () => {
   const { t } = useTranslation();
   const isDebugEnabled = useSystemStore((s) => s.isDebugEnabled);
@@ -65,7 +72,7 @@ export const GrainDetailPanel = () => {
           <ParameterControl
             label={t('parameters.size')}
             isActive={true}
-            onPress={() => {}}
+            onPress={noop}
             value={grainSize}
             minValue={1.0}
             maxValue={4.0}
@@ -73,10 +80,7 @@ export const GrainDetailPanel = () => {
             onUpdateWorklet={worklets.updateGrainSize}
             variant="slider"
             hideAutoPlaceholder={true}
-            valueFormatter={(v) => {
-              'worklet';
-              return `${v.toFixed(1)}x`;
-            }}
+            valueFormatter={formatGrainValue}
           />
         </View>
       </View>
@@ -86,7 +90,7 @@ export const GrainDetailPanel = () => {
           <ParameterControl
             label={t('parameters.speed')}
             isActive={true}
-            onPress={() => {}}
+            onPress={noop}
             value={grainSpeed}
             minValue={0.0}
             maxValue={30.0}
@@ -94,10 +98,7 @@ export const GrainDetailPanel = () => {
             onUpdateWorklet={worklets.updateGrainSpeed}
             variant="slider"
             hideAutoPlaceholder={true}
-            valueFormatter={(v) => {
-              'worklet';
-              return `${v.toFixed(1)}x`;
-            }}
+            valueFormatter={formatGrainValue}
           />
         </View>
       </View>

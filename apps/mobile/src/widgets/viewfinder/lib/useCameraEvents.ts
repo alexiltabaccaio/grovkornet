@@ -47,13 +47,7 @@ export const useCameraEvents = () => {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const nativeEvent = (event.nativeEvent || event) as DebugUpdatePayload;
 
-    if (__DEV__ && nativeEvent.timestamp) {
-      const bridgeTime = Date.now() - nativeEvent.timestamp;
-      if (bridgeTime > 15) {
-        // eslint-disable-next-line no-console
-        console.log(`[Bridge Latency] onDebugUpdate took ${bridgeTime}ms to reach JS worklet`);
-      }
-    }
+    // Bridge latency logging disabled to reduce terminal noise
 
     updateSharedValue(bodyStore.fps, nativeEvent.fps);
     updateSharedValue(bodyStore.hwFps, nativeEvent.hwFps);

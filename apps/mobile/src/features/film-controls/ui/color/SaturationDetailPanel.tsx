@@ -6,6 +6,12 @@ import { ParameterControl } from '@entities/system';
 import { ColorRangeSlider } from './ColorRangeSlider';
 import { ColorCircle } from './components/ColorCircle';
 import { useSelectiveSaturation } from '../../lib/useSelectiveSaturation';
+const noop = () => {};
+
+const formatSaturationColor = (v: number) => {
+  'worklet';
+  return `${Math.round(v * 2)}`;
+};
 
 const COLOR_MAPPING = [
   { key: 'red', color: '#FF453A' },
@@ -71,7 +77,7 @@ export const SaturationDetailPanel = ({
           <ParameterControl
             label=""
             isActive={true}
-            onPress={() => {}}
+            onPress={noop}
             value={activeValue}
             minValue={isMaster ? masterData.minValue : 0.0}
             maxValue={isMaster ? masterData.maxValue : 100.0}
@@ -80,10 +86,7 @@ export const SaturationDetailPanel = ({
             onUpdateWorklet={activeWorklet}
             variant="slider"
             onReset={isMaster ? masterData.onReset : undefined}
-            valueFormatter={isMaster ? masterData.valueFormatter : (v) => {
-              'worklet';
-              return `${Math.round(v * 2)}`;
-            }}
+            valueFormatter={isMaster ? masterData.valueFormatter : formatSaturationColor}
             sliderColor={isMaster ? undefined : COLOR_MAPPING[activeColorIndex as number].color}
           />
         </View>

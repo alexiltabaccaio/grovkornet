@@ -16,7 +16,7 @@ interface ViewfinderProps {
   cameraKey?: number;
 }
 
-export const Viewfinder = ({ cameraKey }: ViewfinderProps) => {
+export const Viewfinder = React.memo(({ cameraKey }: ViewfinderProps) => {
   // 1. Stable reference SharedValues (statically extracted to avoid React subscription)
   const {
     iso,
@@ -183,9 +183,10 @@ export const Viewfinder = ({ cameraKey }: ViewfinderProps) => {
       </View>
     </>
   );
-};
+});
 
-Viewfinder.whyDidYouRender = true;
+Viewfinder.displayName = 'Viewfinder';
+(Viewfinder as any).whyDidYouRender = true;
 
 const styles = StyleSheet.create({
   selectorContainer: {

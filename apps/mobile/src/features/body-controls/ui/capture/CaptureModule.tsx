@@ -17,3 +17,6 @@ export const CaptureModule = ({ handlePressWithDouble }: CaptureModuleProps) => 
     />
   );
 };
+
+CaptureModule.whyDidYouRender = true;
+

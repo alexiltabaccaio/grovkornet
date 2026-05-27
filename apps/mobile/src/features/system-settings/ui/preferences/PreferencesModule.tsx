@@ -16,3 +16,6 @@ export const PreferencesModule = () => {
     />
   );
 };
+
+PreferencesModule.whyDidYouRender = true;
+
