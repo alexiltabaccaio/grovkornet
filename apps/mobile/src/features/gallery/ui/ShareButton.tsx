@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, Alert, TouchableOpacity, Platform } from 'react-native';
+import { StyleSheet, View, Alert, TouchableOpacity, Platform } from 'react-native';
 import Share, { Social } from 'react-native-share';
 import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
@@ -16,7 +16,7 @@ interface ShareButtonProps {
 export const ShareButton = ({ id, uri, isVerified }: ShareButtonProps) => {
   const { t } = useTranslation();
 
-  const handleShare = async () => {
+  const handleInstagramShare = async () => {
     if (!isVerified) {
       Alert.alert(
         t('gallery.unverified_title', 'Unverified Photo'),
@@ -60,58 +60,80 @@ export const ShareButton = ({ id, uri, isVerified }: ShareButtonProps) => {
         attributionURL: CONFIG.PLAY_STORE_URL,
       });
     } catch (error: unknown) {
-      logger.error('ShareButton', 'Share error', error);
-      try {
-        await Share.open({
-          url: uri,
-          title: t('gallery.share_title', 'Share Photo'),
-        });
-      } catch (fallbackError: unknown) {
-        logger.error('ShareButton', 'Fallback share error', fallbackError);
+      logger.error('ShareButton', 'Instagram share error', error);
+    }
+  };
+
+  const handleGenericShare = async () => {
+    try {
+      let shareUri = uri;
+      
+      if (Platform.OS === 'android') {
+        // Copiamo il file nella cache per assicurarci che react-native-share abbia 
+        // i permessi corretti tramite FileProvider (stesso workaround usato per IG)
+        const cachePath = `${FileSystem.cacheDirectory}share_generic_${Date.now()}.jpg`;
+        await FileSystem.copyAsync({ from: uri, to: cachePath });
+        shareUri = cachePath;
       }
+
+      await Share.open({
+        url: shareUri,
+        type: 'image/jpeg',
+        title: t('gallery.share_title', 'Share Photo'),
+      });
+    } catch (error: unknown) {
+      logger.error('ShareButton', 'Generic share error', error);
     }
   };
 
   return (
-    <TouchableOpacity activeOpacity={0.8}
-      style={[styles.button, !isVerified && styles.buttonDisabled]}
-      onPress={() => void handleShare()}
-    >
-      <Ionicons name="logo-instagram" size={20} color={isVerified ? "#FFF" : "#666"} />
-      <Text style={[styles.text, !isVerified && styles.textDisabled]}>
-        {isVerified ? t('gallery.share_instagram', 'Share to IG Stories') : t('gallery.unverified_badge', 'Unverified')}
-      </Text>
-    </TouchableOpacity>
+    <View style={styles.container}>
+      <TouchableOpacity 
+        activeOpacity={0.8}
+        style={[styles.iconButton, styles.igButton, !isVerified && styles.buttonDisabled]}
+        onPress={() => void handleInstagramShare()}
+      >
+        <Ionicons name="logo-instagram" size={24} color={isVerified ? "#FFF" : "#666"} />
+      </TouchableOpacity>
+
+      <TouchableOpacity 
+        activeOpacity={0.8}
+        style={[styles.iconButton, styles.genericButton]}
+        onPress={() => void handleGenericShare()}
+      >
+        <Ionicons name="arrow-redo-outline" size={24} color="#FFF" />
+      </TouchableOpacity>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
-  button: {
+  container: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#E1306C',
-    paddingHorizontal: 20,
-    paddingVertical: 14,
-    borderRadius: 28,
+    gap: 16,
+  },
+  iconButton: {
+    width: 52,
+    height: 52,
+    borderRadius: 26,
+    justifyContent: 'center',
+    alignItems: 'center',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 6,
     elevation: 6,
   },
+  igButton: {
+    backgroundColor: '#E1306C',
+  },
+  genericButton: {
+    backgroundColor: '#333',
+  },
   buttonDisabled: {
     backgroundColor: '#333',
     shadowOpacity: 0,
     elevation: 0,
-  },
-  text: {
-    color: '#FFF',
-    fontWeight: '700',
-    fontSize: 14,
-    marginLeft: 8,
-    letterSpacing: 0.5,
-  },
-  textDisabled: {
-    color: '#666',
   },
 });
