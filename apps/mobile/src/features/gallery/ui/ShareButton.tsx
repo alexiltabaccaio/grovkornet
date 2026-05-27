@@ -7,6 +7,10 @@ import { CONFIG } from '@shared/config';
 import { logger } from '@shared/lib/logger';
 import * as FileSystem from 'expo-file-system';
 
+const getCachePath = (prefix: string) => {
+  return `${FileSystem.cacheDirectory}${prefix}_${Date.now()}.jpg`;
+};
+
 interface ShareButtonProps {
   id?: string;
   uri: string;
@@ -34,7 +38,7 @@ export const ShareButton = ({ id, uri, isVerified }: ShareButtonProps) => {
       // Additionally, the original file might be in a public Pictures directory which react-native-share's
       // default FileProvider configuration does not expose. Therefore, we copy it to the cache directory first.
       if (Platform.OS === 'android') {
-        const cachePath = `${FileSystem.cacheDirectory}share_instagram_${Date.now()}.jpg`;
+        const cachePath = getCachePath('share_instagram');
         await FileSystem.copyAsync({ from: uri, to: cachePath });
         shareUri = cachePath;
       }
@@ -60,7 +64,8 @@ export const ShareButton = ({ id, uri, isVerified }: ShareButtonProps) => {
         attributionURL: CONFIG.PLAY_STORE_URL,
       });
     } catch (error: unknown) {
-      logger.error('ShareButton', 'Instagram share error', error);
+      logger.error('ShareButton', 'Instagram share error. Falling back to generic share.', error);
+      await handleGenericShare();
     }
   };
 
@@ -71,7 +76,7 @@ export const ShareButton = ({ id, uri, isVerified }: ShareButtonProps) => {
       if (Platform.OS === 'android') {
         // Copiamo il file nella cache per assicurarci che react-native-share abbia 
         // i permessi corretti tramite FileProvider (stesso workaround usato per IG)
-        const cachePath = `${FileSystem.cacheDirectory}share_generic_${Date.now()}.jpg`;
+        const cachePath = getCachePath('share_generic');
         await FileSystem.copyAsync({ from: uri, to: cachePath });
         shareUri = cachePath;
       }
@@ -92,6 +97,7 @@ export const ShareButton = ({ id, uri, isVerified }: ShareButtonProps) => {
         activeOpacity={0.8}
         style={[styles.iconButton, styles.igButton, !isVerified && styles.buttonDisabled]}
         onPress={() => void handleInstagramShare()}
+        accessibilityLabel={isVerified ? t('gallery.share_instagram') : t('gallery.unverified_badge')}
       >
         <Ionicons name="logo-instagram" size={24} color={isVerified ? "#FFF" : "#666"} />
       </TouchableOpacity>
@@ -100,6 +106,7 @@ export const ShareButton = ({ id, uri, isVerified }: ShareButtonProps) => {
         activeOpacity={0.8}
         style={[styles.iconButton, styles.genericButton]}
         onPress={() => void handleGenericShare()}
+        accessibilityLabel={t('gallery.share_generic')}
       >
         <Ionicons name="arrow-redo-outline" size={24} color="#FFF" />
       </TouchableOpacity>

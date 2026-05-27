@@ -18,8 +18,8 @@ describe('ShareButton', () => {
   });
 
   it('shows an alert and does not share when photo is not verified', () => {
-    const { getByText } = render(<ShareButton uri={mockUri} isVerified={false} />);
-    const button = getByText('gallery.unverified_badge');
+    const { getByLabelText } = render(<ShareButton uri={mockUri} isVerified={false} />);
+    const button = getByLabelText('gallery.unverified_badge');
 
     fireEvent.press(button);
 
@@ -32,8 +32,8 @@ describe('ShareButton', () => {
   });
 
   it('shares directly to Instagram Stories when photo is verified', async () => {
-    const { getByText } = render(<ShareButton uri={mockUri} isVerified={true} />);
-    const button = getByText('gallery.share_instagram');
+    const { getByLabelText } = render(<ShareButton uri={mockUri} isVerified={true} />);
+    const button = getByLabelText('gallery.share_instagram');
 
     fireEvent.press(button);
 
@@ -51,8 +51,8 @@ describe('ShareButton', () => {
   it('falls back to standard Share.open if Share.shareSingle fails', async () => {
     (Share.shareSingle as jest.Mock).mockRejectedValueOnce(new Error('Instagram not installed'));
 
-    const { getByText } = render(<ShareButton uri={mockUri} isVerified={true} />);
-    const button = getByText('gallery.share_instagram');
+    const { getByLabelText } = render(<ShareButton uri={mockUri} isVerified={true} />);
+    const button = getByLabelText('gallery.share_instagram');
 
     fireEvent.press(button);
 
@@ -71,8 +71,8 @@ describe('ShareButton', () => {
     (Share.shareSingle as jest.Mock).mockRejectedValueOnce(new Error('IG error'));
     (Share.open as jest.Mock).mockRejectedValueOnce(new Error('Open error'));
 
-    const { getByText } = render(<ShareButton uri={mockUri} isVerified={true} />);
-    const button = getByText('gallery.share_instagram');
+    const { getByLabelText } = render(<ShareButton uri={mockUri} isVerified={true} />);
+    const button = getByLabelText('gallery.share_instagram');
 
     // Should not throw or crash the app
     fireEvent.press(button);

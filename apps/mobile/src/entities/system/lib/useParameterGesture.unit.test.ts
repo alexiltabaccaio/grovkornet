@@ -68,19 +68,11 @@ describe('useParameterGesture', () => {
     expect(mockOnPress).toHaveBeenCalledTimes(1);
 
     // Trigger pan onStart (simulating a touch at x=140)
-    // Formula inside panGesture.onStart:
-    // trackStartX = 94. travel = trackWidthVal - 12 = 188.
-    // percentage = (x - trackStartX) / travel = (140 - 94) / 188 = 46 / 188 = 0.244
-    // newValue = minValue + percentage * range = 0.244
     panGesture._onStart({ x: 140 });
     expect(valueVal.value).toBeCloseTo(0.244, 2);
     expect(mockOnPress).toHaveBeenCalledTimes(2); // onPress called on pan start
 
     // Trigger pan onUpdate (dragging right)
-    // dx = e.translationX - lastX. lastX starts at 0.
-    // translationX = 50 -> dx = 50.
-    // travel = 188. range = 1.0. delta = 50 / 188 = 0.265.
-    // newValue = accumulatedValue + delta = 0.244 + 0.265 = 0.509
     panGesture._onUpdate({ translationX: 50 });
     expect(mockOnUpdateWorklet).toHaveBeenCalledWith(expect.any(Number));
     expect(mockOnUpdateWorklet.mock.calls[0][0]).toBeCloseTo(0.509, 2);
@@ -111,11 +103,11 @@ describe('useParameterGesture', () => {
 
     const [, panGesture] = (result.current.combinedGesture as any).gestures;
 
-    // Trigger start at 144 (exact center travel = 94 + 94 = 188)
+    // Trigger start at 188
     panGesture._onStart({ x: 188 });
     expect(valueVal.value).toBe(0.5);
 
-    // Trigger update (dx = 30 -> delta = 30 / 188 = 0.159 -> newValue = 0.659)
+    // Trigger update
     panGesture._onUpdate({ translationX: 30 });
     expect(valueVal.value).toBeCloseTo(0.659, 2);
     expect(autoVal.value).toBe(false); // auto mode should be turned off on manual adjustment
@@ -141,9 +133,6 @@ describe('useParameterGesture', () => {
 
     const [, panGesture] = (result.current.combinedGesture as any).gestures;
 
-    // trackStartX = 8 since hideAutoPlaceholder is true
-    // travel = 188
-    // touch x = 102 -> percentage = (102 - 8) / 188 = 94 / 188 = 0.5
     panGesture._onStart({ x: 102 });
     expect(valueVal.value).toBe(0.5);
   });
@@ -169,8 +158,105 @@ describe('useParameterGesture', () => {
     const [, panGesture] = (result.current.combinedGesture as any).gestures;
 
     panGesture._onStart({ x: 188 });
-    // dx = 30 -> delta = -30 / 188 = -0.159 (due to invertDrag) -> newValue = 0.341
     panGesture._onUpdate({ translationX: 30 });
     expect(valueVal.value).toBeCloseTo(0.341, 2);
+  });
+
+  describe('Slider Edge Cases', () => {
+    it('returns early onStart/onUpdate/onEnd when gesture is disabled', () => {
+      const mockOnPress = jest.fn();
+      const mockOnChange = jest.fn();
+      const valueVal = makeMutable(0.5);
+      const disabledVal = makeMutable(true);
+
+      const { result } = renderHook(() =>
+        useParameterGesture({
+          isActive: true,
+          onPress: mockOnPress,
+          onChange: mockOnChange,
+          value: valueVal,
+          disabled: disabledVal,
+          variant: 'slider',
+        })
+      );
+
+      const [, panGesture] = (result.current.combinedGesture as any).gestures;
+
+      panGesture._onStart({ x: 100 });
+      expect(valueVal.value).toBe(0.5); // unchanged
+
+      panGesture._onUpdate({ translationX: 20 });
+      expect(valueVal.value).toBe(0.5); // unchanged
+
+      panGesture._onEnd();
+      expect(mockOnChange).not.toHaveBeenCalled();
+    });
+
+    it('returns early onStart/onUpdate if value is undefined', () => {
+      const mockOnPress = jest.fn();
+      const disabledVal = makeMutable(false);
+
+      const { result } = renderHook(() =>
+        useParameterGesture({
+          isActive: true,
+          onPress: mockOnPress,
+          disabled: disabledVal,
+          variant: 'slider',
+        })
+      );
+
+      const [, panGesture] = (result.current.combinedGesture as any).gestures;
+
+      // Should not throw
+      expect(() => {
+        panGesture._onStart({ x: 100 });
+        panGesture._onUpdate({ translationX: 20 });
+      }).not.toThrow();
+    });
+
+    it('returns early onUpdate if the new value is identical to the current value', () => {
+      const mockOnPress = jest.fn();
+      const valueVal = makeMutable(0.5);
+      const trackWidthVal = makeMutable(200);
+
+      const { result } = renderHook(() =>
+        useParameterGesture({
+          isActive: true,
+          onPress: mockOnPress,
+          value: valueVal,
+          variant: 'slider',
+          sliderTrackWidth: trackWidthVal,
+        })
+      );
+
+      const [, panGesture] = (result.current.combinedGesture as any).gestures;
+
+      panGesture._onStart({ x: 188 }); // Sets value to 0.5
+      expect(valueVal.value).toBe(0.5);
+
+      // Drag by 0 translation (delta = 0), value remains 0.5
+      panGesture._onUpdate({ translationX: 0 });
+      expect(valueVal.value).toBe(0.5);
+    });
+
+    it('does not call onChange onEnd if onChange is undefined', () => {
+      const mockOnPress = jest.fn();
+      const valueVal = makeMutable(0.5);
+
+      const { result } = renderHook(() =>
+        useParameterGesture({
+          isActive: true,
+          onPress: mockOnPress,
+          value: valueVal,
+          variant: 'slider',
+        })
+      );
+
+      const [, panGesture] = (result.current.combinedGesture as any).gestures;
+      
+      expect(() => {
+        panGesture._onEnd();
+      }).not.toThrow();
+    });
   });
 });

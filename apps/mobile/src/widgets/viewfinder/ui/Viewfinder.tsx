@@ -186,7 +186,8 @@ export const Viewfinder = React.memo(({ cameraKey }: ViewfinderProps) => {
 });
 
 Viewfinder.displayName = 'Viewfinder';
-(Viewfinder as any).whyDidYouRender = true;
+(Viewfinder as React.NamedExoticComponent<ViewfinderProps> & { whyDidYouRender?: boolean }).whyDidYouRender = true;
+
 
 const styles = StyleSheet.create({
   selectorContainer: {

@@ -61,11 +61,11 @@ describe('GalleryViewer', () => {
       onSelectPhoto: jest.fn(),
     });
 
-    const { getByText } = render(
+    const { getByLabelText } = render(
       <GalleryViewer onClose={jest.fn()} initialUri={null} />
     );
 
-    expect(getByText('gallery.share_instagram')).toBeTruthy();
+    expect(getByLabelText('gallery.share_instagram')).toBeTruthy();
   });
 
   it('does not render share button when no photo is selected', () => {

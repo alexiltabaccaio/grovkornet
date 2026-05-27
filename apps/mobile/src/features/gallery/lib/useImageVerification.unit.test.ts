@@ -49,4 +49,53 @@ describe('useImageVerification', () => {
 
     expect(result.current.selectedPhoto?.isVerified).toBe(false);
   });
+
+  it('runs background verification loop for unverified photos and updates them', async () => {
+    (verifyGrovkornetAuthenticity as jest.Mock)
+      .mockResolvedValueOnce(true)   // photo 1 passes
+      .mockResolvedValueOnce(false); // photo 2 fails
+
+    const photos: GalleryItem[] = [
+      { id: '1', uri: 'file:///test/1.jpg' },
+      { id: '2', uri: 'file:///test/2.jpg' },
+    ];
+
+    renderHook(() => useImageVerification(photos, mockSetPhotos));
+
+    await waitFor(() => {
+      expect(verifyGrovkornetAuthenticity).toHaveBeenCalledWith('file:///test/1.jpg');
+      expect(verifyGrovkornetAuthenticity).toHaveBeenCalledWith('file:///test/2.jpg');
+    });
+
+    expect(mockSetPhotos).toHaveBeenCalled();
+  });
+
+  it('handles background verification errors gracefully', async () => {
+    (verifyGrovkornetAuthenticity as jest.Mock)
+      .mockRejectedValueOnce(new Error('Verify error'));
+
+    const photos: GalleryItem[] = [
+      { id: '1', uri: 'file:///test/1.jpg' },
+    ];
+
+    renderHook(() => useImageVerification(photos, mockSetPhotos));
+
+    await waitFor(() => {
+      expect(verifyGrovkornetAuthenticity).toHaveBeenCalledWith('file:///test/1.jpg');
+    });
+
+    expect(mockSetPhotos).toHaveBeenCalled();
+  });
+
+  it('skips background verification if photo is already verified or currently in queue', async () => {
+    const photos: GalleryItem[] = [
+      { id: '1', uri: 'file:///test/1.jpg', isVerified: true },
+    ];
+
+    renderHook(() => useImageVerification(photos, mockSetPhotos));
+
+    // Wait a tiny bit to check that it is not called
+    await new Promise((resolve) => setTimeout(resolve, 50));
+    expect(verifyGrovkornetAuthenticity).not.toHaveBeenCalled();
+  });
 });

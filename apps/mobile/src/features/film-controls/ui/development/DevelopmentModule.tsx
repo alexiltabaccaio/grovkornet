@@ -1,5 +1,4 @@
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
 import { ParameterType } from '@entities/system';
 import { GenericParameterModule } from '@entities/system';
 
@@ -21,5 +20,6 @@ export const DevelopmentModule = React.memo(({ handlePressWithDouble }: Developm
 
 DevelopmentModule.displayName = 'DevelopmentModule';
 
-(DevelopmentModule as any).whyDidYouRender = true;
+(DevelopmentModule as React.NamedExoticComponent<DevelopmentModuleProps> & { whyDidYouRender?: boolean }).whyDidYouRender = true;
+
 

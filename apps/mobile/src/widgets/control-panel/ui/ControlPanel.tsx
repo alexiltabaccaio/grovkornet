@@ -100,7 +100,8 @@ export const ControlPanel = React.memo(({ translateY: externalTranslateY, drawer
 });
 
 ControlPanel.displayName = 'ControlPanel';
-(ControlPanel as any).whyDidYouRender = true;
+(ControlPanel as React.NamedExoticComponent<ControlPanelProps> & { whyDidYouRender?: boolean }).whyDidYouRender = true;
+
 
 
 const styles = StyleSheet.create({

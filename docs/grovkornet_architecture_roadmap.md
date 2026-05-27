@@ -13,3 +13,5 @@
 ## [TICKET #08] – Refactoring Gerarchia UI: Controlli Bloom e Inversione Sliders
 
 ## [TICKET #11] – Interazione Avanzata: Animazione "Hold-to-Reset" Settoriale
+
+## [TICKET #11] – I Formati 4:3, 1:1 e 3:2 passano a 30 fps quando ho modalità 4k attiva anche se la modalità preview 4k è disattivata

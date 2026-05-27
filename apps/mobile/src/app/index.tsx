@@ -22,12 +22,17 @@ void SystemUI.setBackgroundColorAsync('#0e0e0e');
 
 export function App() {
   useEffect(() => {
+    /* eslint-disable @typescript-eslint/no-require-imports */
     // Prefetch static assets for settings/informazioni panel
     const staticAssets = [
       require('../../assets/flags/en.png'),
       require('../../assets/flags/it.png'),
       require('../../assets/monoscope.jpg'),
-    ];
+    ] as unknown as string[];
+    /* eslint-enable @typescript-eslint/no-require-imports */
+
+
+
     void Image.prefetch(staticAssets);
 
     // Restore global preferences
