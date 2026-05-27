@@ -25,18 +25,25 @@ export const CaptureThumbnail = ({ onPress }: CaptureThumbnailProps) => {
         try {
           const perms = await MediaLibrary.getPermissionsAsync();
           if (perms.granted) {
-            const album = await MediaLibrary.getAlbumAsync('Grovkornet');
-            let result;
-            if (album) {
-              result = await MediaLibrary.getAssetsAsync({
-                album,
-                first: 1,
-                sortBy: [[MediaLibrary.SortBy.creationTime, false]],
-                mediaType: MediaLibrary.MediaType.photo,
-              });
+            const allAlbums = await MediaLibrary.getAlbumsAsync();
+            const grovkornetAlbums = allAlbums.filter(a => a.title.toLowerCase() === 'grovkornet');
+
+            if (grovkornetAlbums.length > 0) {
+              const fetchPromises = grovkornetAlbums.map(album => 
+                MediaLibrary.getAssetsAsync({
+                  album: album.id,
+                  first: 1,
+                  sortBy: [[MediaLibrary.SortBy.creationTime, false]],
+                  mediaType: MediaLibrary.MediaType.photo,
+                })
+              );
               
-              if (result && result.assets.length > 0) {
-                setLatestCapturedUri(result.assets[0].uri);
+              const results = await Promise.all(fetchPromises);
+              const combinedAssets = results.flatMap(r => r.assets);
+              combinedAssets.sort((a, b) => b.creationTime - a.creationTime);
+              
+              if (combinedAssets.length > 0) {
+                setLatestCapturedUri(combinedAssets[0].uri);
               }
             } else {
               // Robust fallback for thumbnail: get recent photos and find the first Grovkornet one
@@ -49,7 +56,8 @@ export const CaptureThumbnail = ({ onPress }: CaptureThumbnailProps) => {
               const latestGrovkornet = recent.assets.find(a => 
                 a.uri.includes('Grovkornet') || 
                 a.filename.includes('Grovkornet') || 
-                a.filename.startsWith('Grovkornet_')
+                a.filename.startsWith('Grovkornet_') ||
+                a.filename.startsWith('GVK_')
               );
               
               if (latestGrovkornet) {

@@ -137,15 +137,7 @@ export const PhotoPreview = ({ selectedPhoto, photos, onPhotoVisible, rotationY 
       const maxTranslateX = 0;
       const minTranslateX = -(photosLength - 1) * slotWidth;
 
-      if (proposedVal > maxTranslateX) {
-        const overscroll = proposedVal - maxTranslateX;
-        translateX.value = maxTranslateX + overscroll * 0.35;
-      } else if (proposedVal < minTranslateX) {
-        const overscroll = proposedVal - minTranslateX;
-        translateX.value = minTranslateX + overscroll * 0.35;
-      } else {
-        translateX.value = proposedVal;
-      }
+      translateX.value = Math.max(minTranslateX, Math.min(maxTranslateX, proposedVal));
     })
     .onEnd((event) => {
       'worklet';

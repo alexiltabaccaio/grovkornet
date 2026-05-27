@@ -17,7 +17,7 @@ export const useGalleryPhotos = (initialUri?: string | null) => {
         const checkPerms = async () => {
           const current = await MediaLibrary.getPermissionsAsync();
           if (current.granted) return 'granted';
-          
+
           logger.debug('Gallery', 'Requesting MediaLibrary permissions (ignoring canAskAgain)...');
           const req = await MediaLibrary.requestPermissionsAsync();
           return req.status;
@@ -48,33 +48,45 @@ export const useGalleryPhotos = (initialUri?: string | null) => {
 
         setPermissionGranted(true);
 
-        logger.debug('Gallery', 'Fetching Grovkornet album with timeout...');
-        const albumTimeout = new Promise<never>((_, reject) =>
+        const albumsTimeout = new Promise<never>((_, reject) =>
           setTimeout(() => reject(new Error('ALBUM_TIMEOUT')), 10000)
         );
-        const album = await Promise.race([
-          MediaLibrary.getAlbumAsync('Grovkornet'),
-          albumTimeout
+        const allAlbums = await Promise.race([
+          MediaLibrary.getAlbumsAsync(),
+          albumsTimeout
         ]);
 
         if (!active) return;
+
+        const grovkornetAlbums = allAlbums.filter(a => a.title.toLowerCase() === 'grovkornet');
 
         let media: MediaLibrary.Asset[] = [];
         const assetsTimeout = new Promise<never>((_, reject) =>
           setTimeout(() => reject(new Error('ASSETS_TIMEOUT')), 15000)
         );
 
-        if (album) {
-          const result = await Promise.race([
+        if (grovkornetAlbums.length > 0) {
+          logger.debug('Gallery', `Found ${grovkornetAlbums.length} Grovkornet albums, fetching from all...`);
+          const fetchPromises = grovkornetAlbums.map(album => 
             MediaLibrary.getAssetsAsync({
               album: album.id,
               first: 50,
               sortBy: [[MediaLibrary.SortBy.creationTime, false]],
               mediaType: MediaLibrary.MediaType.photo,
-            }),
+            })
+          );
+          
+          const results = await Promise.race([
+            Promise.all(fetchPromises),
             assetsTimeout
           ]);
-          media = result.assets;
+          
+          // Combine and sort descending by creationTime
+          const combinedAssets = results.flatMap(r => r.assets);
+          combinedAssets.sort((a, b) => b.creationTime - a.creationTime);
+          
+          // Take top 50 across all albums
+          media = combinedAssets.slice(0, 50);
         } else {
           logger.debug('Gallery', 'Grovkornet album not found. Using global fallback...');
           try {
@@ -87,7 +99,8 @@ export const useGalleryPhotos = (initialUri?: string | null) => {
             media = recent.assets.filter(a => 
               a.uri.includes('Grovkornet') || 
               a.filename.includes('Grovkornet') || 
-              a.filename.startsWith('Grovkornet_')
+              a.filename.startsWith('Grovkornet_') ||
+              a.filename.startsWith('GVK_')
             );
             logger.debug('Gallery', `Fallback found ${media.length} photos containing 'Grovkornet'`);
           } catch (e) {
@@ -98,19 +111,19 @@ export const useGalleryPhotos = (initialUri?: string | null) => {
 
         if (!active) return;
 
-        const items: GalleryItem[] = media.map(asset => ({ 
-          id: asset.id, 
+        const items: GalleryItem[] = media.map(asset => ({
+          id: asset.id,
           uri: asset.uri,
           filename: asset.filename
         }));
 
         if (initialUri) {
           const initialFilenameOrId = initialUri.split('/').pop();
-          const alreadyExists = items.some(item => 
-            item.uri === initialUri || 
+          const alreadyExists = items.some(item =>
+            item.uri === initialUri ||
             (initialFilenameOrId && (item.filename === initialFilenameOrId || item.id === initialFilenameOrId))
           );
-          
+
           if (!alreadyExists) {
             items.unshift({ id: 'preview-temp', uri: initialUri, filename: initialFilenameOrId });
           }
