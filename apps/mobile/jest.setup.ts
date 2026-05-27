@@ -247,3 +247,15 @@ jest.mock('expo-image', () => {
     Image,
   };
 });
+
+// Mock expo-sensors
+jest.mock('expo-sensors', () => ({
+  Accelerometer: {
+    addListener: jest.fn(() => ({
+      remove: jest.fn(),
+    })),
+    removeAllListeners: jest.fn(),
+    setUpdateInterval: jest.fn(),
+  },
+}));
+

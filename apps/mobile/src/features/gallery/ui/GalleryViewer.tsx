@@ -8,6 +8,8 @@ import { useGalleryViewer } from '../lib/useGalleryViewer';
 import { PhotoPreview } from './components/PhotoPreview';
 import { GalleryStrip } from './components/GalleryStrip';
 
+import { useDeviceRotation } from '@shared/lib/hooks/useDeviceRotation';
+
 interface GalleryViewerProps {
   onClose: () => void;
   initialUri?: string | null;
@@ -17,6 +19,7 @@ interface GalleryViewerProps {
 export const GalleryViewer = ({ onClose, initialUri, galleryTransition }: GalleryViewerProps) => {
   const { t } = useTranslation();
   const { photos, selectedPhoto, loading, onPhotoVisible, onSelectPhoto } = useGalleryViewer(initialUri);
+  const rotationY = useDeviceRotation();
 
   const animatedContainerStyle = useAnimatedStyle(() => {
     if (!galleryTransition) return {};
@@ -47,6 +50,7 @@ export const GalleryViewer = ({ onClose, initialUri, galleryTransition }: Galler
                 selectedPhoto={selectedPhoto}
                 photos={photos}
                 onPhotoVisible={onPhotoVisible}
+                rotationY={rotationY}
               />
               
               {/* Share Instagram Action */}

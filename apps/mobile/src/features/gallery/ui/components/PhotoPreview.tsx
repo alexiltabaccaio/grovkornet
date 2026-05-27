@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/set-state-in-effect, react-hooks/refs, react-hooks/exhaustive-deps */
 import React, { useRef, useEffect, useState, useLayoutEffect } from 'react';
 import { StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import Animated, {
@@ -6,6 +7,7 @@ import Animated, {
   withTiming,
   runOnJS,
   cancelAnimation,
+  SharedValue,
 } from 'react-native-reanimated';
 import { GestureDetector, Gesture } from 'react-native-gesture-handler';
 
@@ -16,11 +18,12 @@ interface PhotoPreviewProps {
   selectedPhoto: GalleryItem | null;
   photos: GalleryItem[];
   onPhotoVisible?: (photo: GalleryItem) => void;
+  rotationY?: SharedValue<number>;
 }
 
 import { AnimatedSlot } from './AnimatedSlot';
 
-export const PhotoPreview = ({ selectedPhoto, photos, onPhotoVisible }: PhotoPreviewProps) => {
+export const PhotoPreview = ({ selectedPhoto, photos, onPhotoVisible, rotationY }: PhotoPreviewProps) => {
   const { t } = useTranslation();
   const { width } = useWindowDimensions();
   const GAP = 20;
@@ -216,6 +219,7 @@ export const PhotoPreview = ({ selectedPhoto, photos, onPhotoVisible }: PhotoPre
                 translateX={translateX}
                 slotWidth={slotWidth}
                 gap={GAP}
+                rotationY={rotationY}
               />
             );
           })}

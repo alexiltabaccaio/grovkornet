@@ -20,4 +20,22 @@ describe('AnimatedSlot', () => {
     );
     expect(toJSON()).toBeDefined();
   });
+
+  it('renders correctly when rotationY is provided', () => {
+    const mockPhoto: GalleryItem = { uri: 'file:///test/1.jpg', id: '1' };
+    const translateX = makeMutable(0);
+    const rotationY = makeMutable(90);
+
+    const { toJSON } = render(
+      <AnimatedSlot
+        photo={mockPhoto}
+        index={0}
+        translateX={translateX}
+        slotWidth={300}
+        gap={10}
+        rotationY={rotationY}
+      />
+    );
+    expect(toJSON()).toBeDefined();
+  });
 });
