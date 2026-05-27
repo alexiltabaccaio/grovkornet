@@ -106,8 +106,8 @@ export const PresetsDetailPanel = ({ animatedStyle }: PresetsDetailPanelProps) =
 
           {(!isCustomizedActive) && (
             <TouchableOpacity style={styles.actionButton} onPress={handleToggleFavorite}>
-              <Ionicons name={isFavorite ? "star" : "star-outline"} size={16} color={isFavorite ? "#FFD700" : "#FFF"} />
-              <Text style={[styles.actionText, isFavorite && { color: "#FFD700" }]}>{t('presets.favorite', 'Preferito')}</Text>
+              <Ionicons name={isFavorite ? "star" : "star-outline"} size={16} color="#FFF" />
+              <Text style={styles.actionText}>{t('presets.default', 'Predefinito')}</Text>
             </TouchableOpacity>
           )}
 

@@ -81,7 +81,8 @@
       "delete": "ELIMINA",
       "save_title": "SALVA PRESET",
       "placeholder": "NOME PRESET",
-      "save": "SALVA"
+      "save": "SALVA",
+      "default": "Predefinito"
     }
   }
 }
