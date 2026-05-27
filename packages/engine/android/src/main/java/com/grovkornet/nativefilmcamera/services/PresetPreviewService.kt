@@ -12,12 +12,21 @@ import java.util.UUID
 
 object PresetPreviewService {
   suspend fun generatePresetPreview(context: Context, inputUriString: String, payload: Map<String, Any>): String {
-    val inputUri = Uri.parse(inputUriString)
+    android.util.Log.i("PresetPreviewService", ">>> generatePresetPreview called with URI: $inputUriString")
+    android.util.Log.i("PresetPreviewService", "Raw JS Payload received: $payload")
+
+    val inputStream = if (inputUriString.startsWith("http") || inputUriString.startsWith("file") || inputUriString.startsWith("content")) {
+        val inputUri = Uri.parse(inputUriString)
+        context.contentResolver.openInputStream(inputUri) ?: throw Exception("Failed to open URI stream: $inputUriString")
+    } else {
+        val resId = context.resources.getIdentifier(inputUriString, "drawable", context.packageName)
+        if (resId == 0) throw Exception("Drawable resource not found: $inputUriString")
+        context.resources.openRawResource(resId)
+    }
     
-    val inputStream = context.contentResolver.openInputStream(inputUri) ?: throw Exception("Failed to open input stream")
     val inputBitmap = BitmapFactory.decodeStream(inputStream) ?: throw Exception("Failed to decode bitmap")
     inputStream.close()
-    
+
     val config = CameraConfiguration().apply {
         (payload["saturation"] as? Number)?.toFloat()?.let { saturation = it }
         (payload["contrast"] as? Number)?.toFloat()?.let { contrast = it }
@@ -54,6 +63,8 @@ object PresetPreviewService {
         (payload["bloomEnabled"] as? Boolean)?.let { bloomEnabled = it }
     }
     
+    android.util.Log.i("PresetPreviewService", "Parsed Configuration: saturation=${config.saturation}, contrast=${config.contrast}, grainEnabled=${config.grainEnabled}, tint=${config.tint}")
+
     val processor = OffscreenFilmProcessor()
     processor.prepare(inputBitmap.width, inputBitmap.height, context.assets)
     val outputBitmap = processor.process(inputBitmap, config, context)
