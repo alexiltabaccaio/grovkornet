@@ -2,6 +2,7 @@ export * from './ui/preferences/PreferencesModule';
 export * from './ui/DebugOverlay';
 export * from './ui/preferences/language/LanguageDetailPanel';
 export * from './ui/preferences/debug/DebugDetailPanel';
+export * from './ui/presets/PresetsModule';
 export * from './ui/presets/PresetsDetailPanel';
 export * from './ui/presets/QuickPresetSelector';
 export * from './ui/presets/AddPresetModal';

@@ -46,6 +46,14 @@ export const Modules = () => {
             <>
               <PillButton
                 variant="module"
+                label={t('modules.presets')}
+                isActive={renderModule === 'presets'}
+                onPress={() => setActiveModule('presets')}
+                isDebugEnabled={isDebugEnabled}
+                style={styles.pill}
+              />
+              <PillButton
+                variant="module"
                 label={t('modules.preferences')}
                 isActive={renderModule === 'preferences'}
                 onPress={() => setActiveModule('preferences')}

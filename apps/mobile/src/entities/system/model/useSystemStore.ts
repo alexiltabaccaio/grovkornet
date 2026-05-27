@@ -29,7 +29,8 @@ export const useSystemStore = create<SystemStore>((set, get) => ({
 
   lastActiveParameters: {
     none: 'none',
-    preferences: 'presets',
+    preferences: 'language',
+    presets: 'none',
     optics: 'camera_selection',
     flaws: 'chromatic_aberration',
     exposure: 'iso',

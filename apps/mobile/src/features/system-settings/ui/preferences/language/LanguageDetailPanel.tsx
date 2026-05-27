@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useShallow } from 'zustand/react/shallow';
 import { useSystemStore } from '@entities/system';
 import { ParameterControl, ParameterDetailPanelWrapper } from '@entities/system';
+import { usePreferencesStore } from '@entities/preferences';
 
 import { logger } from '@shared/lib/logger';
 
@@ -32,6 +33,7 @@ export const LanguageDetailPanel = ({ animatedStyle }: LanguageDetailPanelProps)
         hideDebugRectangles={true}
         onPress={() => {
           setActiveDetailPanel('lang_en');
+          usePreferencesStore.getState().setLanguagePref('en');
           void i18n.changeLanguage('en').catch(error => {
             logger.error('LanguageDetailPanel', 'Failed to change language to en', error);
           });
@@ -44,6 +46,7 @@ export const LanguageDetailPanel = ({ animatedStyle }: LanguageDetailPanelProps)
         hideDebugRectangles={true}
         onPress={() => {
           setActiveDetailPanel('lang_it');
+          usePreferencesStore.getState().setLanguagePref('it');
           void i18n.changeLanguage('it').catch(error => {
             logger.error('LanguageDetailPanel', 'Failed to change language to it', error);
           });

@@ -13,7 +13,7 @@ import { controlPanelStyles } from './ControlPanel.styles';
 import { DevelopmentModule, TextureModule } from '@features/film-controls';
 import { FlawsModule, OpticsModule } from '@features/lens-controls';
 import { CaptureModule, ExposureModule, LightingModule } from '@features/body-controls';
-import { PreferencesModule } from '@features/system-settings';
+import { PreferencesModule, PresetsModule } from '@features/system-settings';
 
 /**
  * Parameters acts as a router for the different camera control modules.
@@ -90,6 +90,8 @@ export const Parameters = () => {
         return <CaptureModule handlePressWithDouble={handlePressWithDouble} />;
       case 'preferences':
         return <PreferencesModule />;
+      case 'presets':
+        return <PresetsModule />;
       case 'none':
         return null;
       default:

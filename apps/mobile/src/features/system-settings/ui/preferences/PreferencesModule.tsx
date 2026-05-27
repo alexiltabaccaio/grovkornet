@@ -5,7 +5,6 @@ import { GenericParameterModule } from '@entities/system';
 import { ParameterType } from '@entities/system';
 
 const PREFERENCES_PARAMETERS: (ParameterType | { id: ParameterType, labelKey: string })[] = [
-  'presets',
   'language',
   ...(__DEV__ ? [{ id: 'debug' as const, labelKey: 'modules.debug' }] : []),
 ];

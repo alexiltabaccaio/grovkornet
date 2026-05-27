@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { makeMutable } from 'react-native-reanimated';
 import { logger } from '@shared/lib/logger';
 import { BodyStore } from './types';
+import { usePreferencesStore } from '@entities/preferences';
 import { 
   DEFAULT_ISO,
   DEFAULT_EV,
@@ -89,12 +90,15 @@ export const useBodyStore = create<BodyStore>((set, get) => ({
   },
   setAspectRatio: (value) => {
     get().aspectRatio.value = value;
+    usePreferencesStore.getState().setAspectRatioPref(value);
   },
   setResolutionSetting: (value) => {
     get().resolutionSetting.value = value;
+    usePreferencesStore.getState().setResolutionSettingPref(value);
   },
   setFpsSetting: (value) => {
     get().fpsSetting.value = value;
+    usePreferencesStore.getState().setFpsSettingPref(value);
   },
   setPreviewIn4k: (value) => {
     get().previewIn4k.value = value;

@@ -8,6 +8,10 @@ import { usePresetStore } from '@entities/preset';
 // Initialize i18n
 import './providers/i18n';
 
+import i18n from 'i18next';
+import { useBodyStore } from '@entities/body';
+import { usePreferencesStore } from '@entities/preferences';
+
 import * as SystemUI from 'expo-system-ui';
 
 LogBox.ignoreAllLogs(true);
@@ -17,6 +21,23 @@ void SystemUI.setBackgroundColorAsync('#0e0e0e');
 
 export function App() {
   useEffect(() => {
+    // Restore global preferences
+    const prefs = usePreferencesStore.getState();
+    const bodyStore = useBodyStore.getState();
+    
+    if (prefs.resolutionSetting !== null) {
+      bodyStore.resolutionSetting.value = prefs.resolutionSetting;
+    }
+    if (prefs.fpsSetting !== null) {
+      bodyStore.fpsSetting.value = prefs.fpsSetting;
+    }
+    if (prefs.aspectRatio !== null) {
+      bodyStore.aspectRatio.value = prefs.aspectRatio;
+    }
+    if (prefs.language !== null) {
+      void i18n.changeLanguage(prefs.language).catch(() => {});
+    }
+
     // Apply favorite preset on startup, or default if none
     const { userPresets, applyPreset } = usePresetStore.getState();
     const favorite = userPresets.find((p) => p.isFavorite);

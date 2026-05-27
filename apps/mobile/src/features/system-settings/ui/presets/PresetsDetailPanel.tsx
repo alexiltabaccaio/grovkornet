@@ -1,12 +1,11 @@
 import React from 'react';
-import { StyleSheet, View, TouchableOpacity, Alert } from 'react-native';
+import { StyleSheet, View, TouchableOpacity, Alert, Text } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { useShallow } from 'zustand/react/shallow';
 import { usePresetStore, Preset } from '@entities/preset';
 import { ParameterDetailPanelWrapper } from '@entities/system';
 import * as Haptics from 'expo-haptics';
-import { PresetItem } from './PresetItem';
 
 interface PresetsDetailPanelProps {
   animatedStyle?: any;
@@ -17,31 +16,41 @@ export const PresetsDetailPanel = ({ animatedStyle }: PresetsDetailPanelProps) =
   const {
     userPresets,
     activePresetId,
-    customizedPayload,
     removePreset,
-    applyPreset,
     setFavoritePreset,
     toggleQuickSelect,
   } = usePresetStore(
     useShallow((s: any) => ({
       userPresets: s.userPresets,
       activePresetId: s.activePresetId,
-      customizedPayload: s.customizedPayload,
       removePreset: s.removePreset,
-      applyPreset: s.applyPreset,
       setFavoritePreset: s.setFavoritePreset,
       toggleQuickSelect: s.toggleQuickSelect,
     }))
   );
 
-  const handleOpenAddModal = () => {
-    void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    usePresetStore.getState().setAddModalVisible(true);
+  const activePreset = userPresets.find((p: Preset) => p.id === activePresetId);
+  const favoritePreset = userPresets.find((p: Preset) => p.isFavorite);
+  const isDefaultActive = activePresetId === 'default';
+  const isCustomizedActive = activePresetId === 'customized';
+
+  const isFavorite = isDefaultActive ? !favoritePreset : (activePreset?.isFavorite ?? false);
+  const inQuickSelect = isDefaultActive || isCustomizedActive ? true : (activePreset?.inQuickSelect ?? false);
+
+  const handleToggleFavorite = () => {
+    void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    if (isDefaultActive) {
+      setFavoritePreset(null);
+    } else if (activePreset) {
+      setFavoritePreset(activePreset.id);
+    }
   };
 
-  const handleToggleQuickSelect = (id: string) => {
+  const handleToggleQuickSelect = () => {
+    if (!activePreset) return;
     try {
-      toggleQuickSelect(id);
+      void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      toggleQuickSelect(activePreset.id);
     } catch (error: any) {
       if (error.message === 'LIMIT_EXCEEDED') {
         Alert.alert(
@@ -52,10 +61,11 @@ export const PresetsDetailPanel = ({ animatedStyle }: PresetsDetailPanelProps) =
     }
   };
 
-  const handleDeletePress = (id: string, name: string) => {
+  const handleDeletePress = () => {
+    if (!activePreset) return;
     Alert.alert(
       t('presets.delete_title', 'Elimina Preset'),
-      t('presets.delete_body', `Sei sicuro di voler eliminare "${name}"?`, { name }),
+      t('presets.delete_body', `Sei sicuro di voler eliminare "${activePreset.name}"?`, { name: activePreset.name }),
       [
         { text: t('presets.cancel', 'Annulla'), style: 'cancel' },
         {
@@ -63,73 +73,43 @@ export const PresetsDetailPanel = ({ animatedStyle }: PresetsDetailPanelProps) =
           style: 'destructive',
           onPress: () => {
             void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-            removePreset(id);
+            removePreset(activePreset.id);
           },
         },
       ]
     );
   };
 
-  const favoritePreset = userPresets.find((p: Preset) => p.isFavorite);
-
   return (
     <View style={styles.wrapper}>
       <ParameterDetailPanelWrapper
         animatedStyle={animatedStyle}
         scrollable={true}
-        gap={8}
-        paddingHorizontal={16}
-        leftAccessory={
-          <TouchableOpacity
-            onPress={handleOpenAddModal}
-            activeOpacity={0.7}
-            style={styles.addButton}
-            accessibilityLabel="Create Preset"
-          >
-            <Ionicons name="add" size={18} color="#FFF" />
-          </TouchableOpacity>
-        }
+        gap={16}
+        paddingHorizontal={24}
       >
-        {/* 1. Default Preset (Immutable) */}
-        <PresetItem
-          id="default"
-          name="Default"
-          isFavorite={!favoritePreset}
-          inQuickSelect={true}
-          isActive={activePresetId === 'default'}
-          isDefault={true}
-          onApply={() => applyPreset('default')}
-          onToggleFavorite={() => setFavoritePreset(null)}
-        />
+        <View style={styles.actionsContainer}>
+          {(!isCustomizedActive) && (
+            <TouchableOpacity style={styles.actionButton} onPress={handleToggleFavorite}>
+              <Ionicons name={isFavorite ? "star" : "star-outline"} size={16} color={isFavorite ? "#FFD700" : "#FFF"} />
+              <Text style={[styles.actionText, isFavorite && { color: "#FFD700" }]}>{t('presets.favorite', 'Preferito')}</Text>
+            </TouchableOpacity>
+          )}
 
-        {/* 2. Customized Preset (Runtime Unsaved State) */}
-        {customizedPayload && (
-          <PresetItem
-            id="customized"
-            name="Personalizzato"
-            isFavorite={false}
-            inQuickSelect={true}
-            isActive={activePresetId === 'customized'}
-            isCustomized={true}
-            onApply={() => applyPreset('customized')}
-          />
-        )}
+          {activePreset && (
+            <TouchableOpacity style={styles.actionButton} onPress={handleToggleQuickSelect}>
+              <Ionicons name={inQuickSelect ? "flash" : "flash-outline"} size={16} color={inQuickSelect ? "#FF9500" : "#FFF"} />
+              <Text style={[styles.actionText, inQuickSelect && { color: "#FF9500" }]}>{t('presets.quick_select', 'Rapida')}</Text>
+            </TouchableOpacity>
+          )}
 
-        {/* 3. User Saved Presets */}
-        {userPresets.map((preset: Preset) => (
-          <PresetItem
-            key={preset.id}
-            id={preset.id}
-            name={preset.name}
-            isFavorite={preset.isFavorite}
-            inQuickSelect={preset.inQuickSelect}
-            isActive={activePresetId === preset.id}
-            onApply={() => applyPreset(preset.id)}
-            onToggleFavorite={() => setFavoritePreset(preset.id)}
-            onToggleQuickSelect={() => handleToggleQuickSelect(preset.id)}
-            onDelete={() => handleDeletePress(preset.id, preset.name)}
-          />
-        ))}
+          {activePreset && (
+            <TouchableOpacity style={[styles.actionButton, styles.deleteButton]} onPress={handleDeletePress}>
+              <Ionicons name="trash-outline" size={16} color="#FF3B30" />
+              <Text style={[styles.actionText, { color: '#FF3B30' }]}>{t('presets.delete', 'Elimina')}</Text>
+            </TouchableOpacity>
+          )}
+        </View>
       </ParameterDetailPanelWrapper>
     </View>
   );
@@ -139,14 +119,31 @@ const styles = StyleSheet.create({
   wrapper: {
     width: '100%',
   },
-  addButton: {
-    width: 36,
-    height: 52,
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderColor: 'rgba(255, 255, 255, 0.12)',
-    borderWidth: 1,
-    borderRadius: 8,
+  actionsContainer: {
+    flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
+    width: '100%',
+    gap: 12,
+  },
+  actionButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+    gap: 6,
+  },
+  deleteButton: {
+    borderColor: 'rgba(255, 59, 48, 0.3)',
+    backgroundColor: 'rgba(255, 59, 48, 0.05)',
+  },
+  actionText: {
+    color: '#FFF',
+    fontSize: 12,
+    fontWeight: '600',
   },
 });

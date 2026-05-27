@@ -12,6 +12,7 @@
     },
     "modules": {
       "preferences": "Preferences",
+      "presets": "Presets",
       "optics": "Optics",
       "flaws": "Flaws",
       "exposure": "Exposure",

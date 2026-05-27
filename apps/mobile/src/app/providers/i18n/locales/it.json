@@ -12,6 +12,7 @@
     },
     "modules": {
       "preferences": "Preferenze",
+      "presets": "Preset",
       "optics": "Ottica",
       "flaws": "Difetti Ottici",
       "exposure": "Esposizione",
