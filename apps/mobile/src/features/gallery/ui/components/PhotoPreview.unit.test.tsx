@@ -1,6 +1,8 @@
 import React from 'react';
 import { render, act } from '@testing-library/react-native';
 import { PhotoPreview } from './PhotoPreview';
+import * as reanimatedModule from 'react-native-reanimated';
+import { Gesture } from 'react-native-gesture-handler';
 import { GalleryItem } from '../../lib/types';
 
 const mockPhotos: GalleryItem[] = [
@@ -10,6 +12,63 @@ const mockPhotos: GalleryItem[] = [
 ];
 
 describe('PhotoPreview', () => {
+  let capturedPanGesture: any;
+  let originalPan: any;
+  let originalTiming: any;
+  let originalSpring: any;
+  let originalUseSharedValue: any;
+
+  beforeAll(() => {
+    originalTiming = reanimatedModule.withTiming;
+    originalSpring = reanimatedModule.withSpring;
+    originalUseSharedValue = reanimatedModule.useSharedValue;
+
+    (reanimatedModule as any).cancelAnimation = jest.fn();
+
+    (reanimatedModule as any).withTiming = (value: any, config: any, callback: any) => {
+      if (typeof callback === 'function') {
+        callback(true);
+      }
+      return value;
+    };
+
+    (reanimatedModule as any).withSpring = (value: any, config: any, callback: any) => {
+      if (typeof callback === 'function') {
+        callback(true);
+      }
+      return value;
+    };
+
+    const useMockSharedValue = (initialVal: any) => {
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      return React.useMemo(() => ({ value: initialVal }), []);
+    };
+
+    (reanimatedModule as any).useSharedValue = useMockSharedValue;
+  });
+
+  afterAll(() => {
+    (reanimatedModule as any).withTiming = originalTiming;
+    (reanimatedModule as any).withSpring = originalSpring;
+    (reanimatedModule as any).useSharedValue = originalUseSharedValue;
+  });
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    capturedPanGesture = null;
+
+    originalPan = Gesture.Pan;
+    Gesture.Pan = (...args: any[]) => {
+      const gesture = originalPan(...args);
+      capturedPanGesture = gesture;
+      return gesture;
+    };
+  });
+
+  afterEach(() => {
+    Gesture.Pan = originalPan;
+  });
+
   it('renders no photos text if empty', () => {
     const { getByText } = render(
       <PhotoPreview selectedPhoto={null} photos={[]} onPhotoVisible={jest.fn()} />
@@ -28,7 +87,7 @@ describe('PhotoPreview', () => {
     expect(toJSON()).toBeDefined();
   });
 
-  it('updates slots on programmatic jump', () => {
+  it('updates slots on programmatic jump (adjacent, diff = 1)', () => {
     const onPhotoVisibleMock = jest.fn();
     const { rerender } = render(
       <PhotoPreview
@@ -38,7 +97,30 @@ describe('PhotoPreview', () => {
       />
     );
 
-    // Programmatic jump to the third photo
+    act(() => {
+      rerender(
+        <PhotoPreview
+          selectedPhoto={mockPhotos[1]}
+          photos={mockPhotos}
+          onPhotoVisible={onPhotoVisibleMock}
+        />
+      );
+    });
+
+    expect(onPhotoVisibleMock).not.toHaveBeenCalled();
+  });
+
+  it('updates slots on programmatic jump (distant, diff > 1 forward and backward)', () => {
+    const onPhotoVisibleMock = jest.fn();
+    const { rerender } = render(
+      <PhotoPreview
+        selectedPhoto={mockPhotos[0]}
+        photos={mockPhotos}
+        onPhotoVisible={onPhotoVisibleMock}
+      />
+    );
+
+    // Jump forward (diff = 2 > 0)
     act(() => {
       rerender(
         <PhotoPreview
@@ -49,7 +131,236 @@ describe('PhotoPreview', () => {
       );
     });
 
-    // For programmatic jumps, onPhotoVisible MUST NOT be called
+    // Jump backward (diff = -2 < 0)
+    act(() => {
+      rerender(
+        <PhotoPreview
+          selectedPhoto={mockPhotos[0]}
+          photos={mockPhotos}
+          onPhotoVisible={onPhotoVisibleMock}
+        />
+      );
+    });
+
     expect(onPhotoVisibleMock).not.toHaveBeenCalled();
   });
+
+  describe('Gesture Handlers', () => {
+    it('simulates gesture pan start, update, and end (swipe left to next photo)', () => {
+      const onPhotoVisibleMock = jest.fn();
+      render(
+        <PhotoPreview
+          selectedPhoto={mockPhotos[0]}
+          photos={mockPhotos}
+          onPhotoVisible={onPhotoVisibleMock}
+        />
+      );
+
+      expect(capturedPanGesture).toBeDefined();
+
+      act(() => {
+        // Start the drag
+        capturedPanGesture._onStart();
+        // Update drag position: drag left by 400px (exceeds default width/2 threshold of 375)
+        capturedPanGesture._onUpdate({ translationX: -400 });
+        // End drag
+        capturedPanGesture._onEnd({ velocityX: -100 });
+      });
+
+      expect(onPhotoVisibleMock).toHaveBeenCalledWith(mockPhotos[1]);
+    });
+
+    it('simulates gesture pan start, update, and end (swipe right to previous photo)', () => {
+      const onPhotoVisibleMock = jest.fn();
+      render(
+        <PhotoPreview
+          selectedPhoto={mockPhotos[1]}
+          photos={mockPhotos}
+          onPhotoVisible={onPhotoVisibleMock}
+        />
+      );
+
+      act(() => {
+        capturedPanGesture._onStart();
+        // Drag right by 400px (exceeds 375)
+        capturedPanGesture._onUpdate({ translationX: 400 });
+        capturedPanGesture._onEnd({ velocityX: 100 });
+      });
+
+      expect(onPhotoVisibleMock).toHaveBeenCalledWith(mockPhotos[0]);
+    });
+
+    it('simulates fast flick gesture (high velocity swipe)', () => {
+      const onPhotoVisibleMock = jest.fn();
+      render(
+        <PhotoPreview
+          selectedPhoto={mockPhotos[0]}
+          photos={mockPhotos}
+          onPhotoVisible={onPhotoVisibleMock}
+        />
+      );
+
+      act(() => {
+        capturedPanGesture._onStart();
+        // Short drag left, but high velocity
+        capturedPanGesture._onUpdate({ translationX: -50 });
+        capturedPanGesture._onEnd({ velocityX: -600 });
+      });
+
+      expect(onPhotoVisibleMock).toHaveBeenCalledWith(mockPhotos[1]);
+    });
+
+    it('simulates slow short gesture that snaps back (no transition)', () => {
+      const onPhotoVisibleMock = jest.fn();
+      render(
+        <PhotoPreview
+          selectedPhoto={mockPhotos[0]}
+          photos={mockPhotos}
+          onPhotoVisible={onPhotoVisibleMock}
+        />
+      );
+
+      act(() => {
+        capturedPanGesture._onStart();
+        // Short drag, slow release
+        capturedPanGesture._onUpdate({ translationX: -10 });
+        capturedPanGesture._onEnd({ velocityX: -100 });
+      });
+
+      expect(onPhotoVisibleMock).not.toHaveBeenCalled();
+    });
+
+    it('does not transition past boundaries (swipe right on first photo)', () => {
+      const onPhotoVisibleMock = jest.fn();
+      render(
+        <PhotoPreview
+          selectedPhoto={mockPhotos[0]}
+          photos={mockPhotos}
+          onPhotoVisible={onPhotoVisibleMock}
+        />
+      );
+
+      act(() => {
+        capturedPanGesture._onStart();
+        capturedPanGesture._onUpdate({ translationX: 400 });
+        capturedPanGesture._onEnd({ velocityX: 600 });
+      });
+
+      expect(onPhotoVisibleMock).not.toHaveBeenCalled();
+    });
+
+    it('does not transition past boundaries (swipe left on last photo)', () => {
+      const onPhotoVisibleMock = jest.fn();
+      render(
+        <PhotoPreview
+          selectedPhoto={mockPhotos[2]}
+          photos={mockPhotos}
+          onPhotoVisible={onPhotoVisibleMock}
+        />
+      );
+
+      act(() => {
+        capturedPanGesture._onStart();
+        capturedPanGesture._onUpdate({ translationX: -400 });
+        capturedPanGesture._onEnd({ velocityX: -600 });
+      });
+
+      expect(onPhotoVisibleMock).not.toHaveBeenCalled();
+    });
+
+    it('handles swipe log when __DEV__ is false', () => {
+      const originalDev = (global as any).__DEV__;
+      (global as any).__DEV__ = false;
+
+      render(
+        <PhotoPreview
+          selectedPhoto={mockPhotos[0]}
+          photos={mockPhotos}
+          onPhotoVisible={jest.fn()}
+        />
+      );
+
+      act(() => {
+        capturedPanGesture._onStart();
+        capturedPanGesture._onUpdate({ translationX: -400 });
+        capturedPanGesture._onEnd({ velocityX: -100 });
+      });
+
+      (global as any).__DEV__ = originalDev;
+    });
+
+    it('handles cancelled/unfinished animations', () => {
+      // Override with timing/spring to mock finished = false
+      (reanimatedModule as any).withTiming = (value: any, config: any, callback: any) => {
+        if (typeof callback === 'function') callback(false);
+        return value;
+      };
+      (reanimatedModule as any).withSpring = (value: any, config: any, callback: any) => {
+        if (typeof callback === 'function') callback(false);
+        return value;
+      };
+
+      const onPhotoVisibleMock = jest.fn();
+      const { rerender } = render(
+        <PhotoPreview
+          selectedPhoto={mockPhotos[0]}
+          photos={mockPhotos}
+          onPhotoVisible={onPhotoVisibleMock}
+        />
+      );
+
+      // Trigger programmatic jump (adjacent)
+      act(() => {
+        rerender(
+          <PhotoPreview
+            selectedPhoto={mockPhotos[1]}
+            photos={mockPhotos}
+            onPhotoVisible={onPhotoVisibleMock}
+          />
+        );
+      });
+
+      // Trigger programmatic jump (distant)
+      act(() => {
+        rerender(
+          <PhotoPreview
+            selectedPhoto={mockPhotos[2]}
+            photos={mockPhotos}
+            onPhotoVisible={onPhotoVisibleMock}
+          />
+        );
+      });
+
+      // Re-mount component to clear ref state and trigger swipe
+      const { unmount } = render(
+        <PhotoPreview
+          selectedPhoto={mockPhotos[0]}
+          photos={mockPhotos}
+          onPhotoVisible={onPhotoVisibleMock}
+        />
+      );
+
+      act(() => {
+        capturedPanGesture._onStart();
+        capturedPanGesture._onUpdate({ translationX: -400 });
+        capturedPanGesture._onEnd({ velocityX: -100 });
+      });
+
+      expect(onPhotoVisibleMock).not.toHaveBeenCalled();
+      unmount();
+    });
+
+    it('handles missing photo in rendering list gracefully', () => {
+      const sparsePhotos = [mockPhotos[0], null as any];
+      const { toJSON } = render(
+        <PhotoPreview
+          selectedPhoto={mockPhotos[0]}
+          photos={sparsePhotos}
+          onPhotoVisible={jest.fn()}
+        />
+      );
+      expect(toJSON()).toBeDefined();
+    });
+  });
 });
+
