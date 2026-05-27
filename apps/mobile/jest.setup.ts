@@ -243,6 +243,7 @@ jest.mock('expo-system-ui', () => ({
 jest.mock('expo-image', () => {
   const actualExpoImage = jest.requireActual('expo-image');
   const { Image } = jest.requireActual('react-native');
+  Image.prefetch = jest.fn().mockImplementation(() => Promise.resolve(true));
   return {
     ...actualExpoImage,
     Image,

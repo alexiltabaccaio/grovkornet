@@ -4,6 +4,7 @@ import { StyleSheet, View, LogBox } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { CameraScreen } from '@screens/camera';
 import { usePresetStore } from '@entities/preset';
+import { Image } from 'expo-image';
 
 // Initialize i18n
 import './providers/i18n';
@@ -21,6 +22,14 @@ void SystemUI.setBackgroundColorAsync('#0e0e0e');
 
 export function App() {
   useEffect(() => {
+    // Prefetch static assets for settings/informazioni panel
+    const staticAssets = [
+      require('../../assets/flags/en.png'),
+      require('../../assets/flags/it.png'),
+      require('../../assets/monoscope.jpg'),
+    ];
+    void Image.prefetch(staticAssets);
+
     // Restore global preferences
     const prefs = usePreferencesStore.getState();
     const bodyStore = useBodyStore.getState();

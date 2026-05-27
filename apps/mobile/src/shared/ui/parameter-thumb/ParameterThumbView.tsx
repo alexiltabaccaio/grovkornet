@@ -1,5 +1,6 @@
 import React, { forwardRef, memo } from 'react';
-import { View, Text, Image, ImageSourcePropType } from 'react-native';
+import { View, Text, ImageSourcePropType } from 'react-native';
+import { Image } from 'expo-image';
 import Animated from 'react-native-reanimated';
 import { ParameterThumbViewProps } from './ParameterThumbView.types';
 import { styles } from './ParameterThumbView.styles';
@@ -44,7 +45,9 @@ const ParameterThumbViewBase = forwardRef<View, ParameterThumbViewProps>((props,
           <Image
             source={imageSource || defaultMonoscope}
             style={[styles.presetImage, !isActive && { opacity: 0.7 }]}
-            resizeMode="cover"
+            contentFit="cover"
+            transition={0}
+            cachePolicy="memory-disk"
           />
         </View>
         <Text

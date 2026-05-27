@@ -3,6 +3,7 @@ import { persist, createJSONStorage, StateStorage } from 'zustand/middleware';
 import { createMMKV } from 'react-native-mmkv';
 import { useFilmStore, setFilmParameterChangeListener } from '@entities/film';
 import { useBodyStore, setBodyParameterChangeListener } from '@entities/body';
+import { Image } from 'expo-image';
 import {
   DEFAULT_GRAIN_INTENSITY,
   DEFAULT_SATURATION,
@@ -405,6 +406,7 @@ usePresetStore.subscribe((state, prevState) => {
         
         lastGenerationUri = uri;
         usePresetStore.setState({ customizedThumbnailUri: uri });
+        void Image.prefetch(uri);
       } catch (err) {
         console.error('Failed to generate customized thumbnail:', err);
       }

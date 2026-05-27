@@ -1,5 +1,5 @@
 import React from 'react';
-import { Image } from 'react-native';
+import { Image } from 'expo-image';
 import { ParameterThumbViewProps } from './ParameterThumbView.types';
 import { styles } from './ParameterThumbView.styles';
 
@@ -13,7 +13,9 @@ export const ImageThumb = ({
     <Image
       source={imageSource}
       style={[styles.imageSource, !isActive && { opacity: 0.3 }]}
-      resizeMode="cover"
+      contentFit="cover"
+      transition={0}
+      cachePolicy="memory-disk"
     />
   );
 };
