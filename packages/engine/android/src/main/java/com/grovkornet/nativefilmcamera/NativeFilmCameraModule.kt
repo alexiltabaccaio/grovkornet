@@ -24,89 +24,12 @@ class NativeFilmCameraModule : Module() {
     AsyncFunction("generatePresetPreview") { inputUriString: String, payload: Map<String, Any> ->
       kotlinx.coroutines.runBlocking {
         val context = appContext.reactContext ?: throw Exception("React context is null")
-        val inputUri = android.net.Uri.parse(inputUriString)
-        
-        val inputStream = context.contentResolver.openInputStream(inputUri) ?: throw Exception("Failed to open input stream")
-        val inputBitmap = android.graphics.BitmapFactory.decodeStream(inputStream) ?: throw Exception("Failed to decode bitmap")
-        inputStream.close()
-        
-        val config = CameraConfiguration().apply {
-            (payload["saturation"] as? Number)?.toFloat()?.let { saturation = it }
-            (payload["contrast"] as? Number)?.toFloat()?.let { contrast = it }
-            (payload["grainIntensity"] as? Number)?.toFloat()?.let { grainIntensity = it }
-            (payload["grainChroma"] as? Number)?.toFloat()?.let { grainChroma = it }
-            (payload["grainSize"] as? Number)?.toFloat()?.let { grainSize = it }
-            (payload["grainSpeed"] as? Number)?.toFloat()?.let { grainSpeed = it }
-            (payload["vignetteIntensity"] as? Number)?.toFloat()?.let { vignetteIntensity = it }
-            (payload["vhsIntensity"] as? Number)?.toFloat()?.let { vhsIntensity = it }
-            ((payload["temperature"] as? Number) ?: (payload["whiteBalance"] as? Number))?.toFloat()?.let { whiteBalance = it }
-            (payload["tint"] as? Number)?.toFloat()?.let { tint = it }
-            (payload["bloomIntensity"] as? Number)?.toFloat()?.let { bloomIntensity = it }
-            (payload["chromaticAberration"] as? Number)?.toFloat()?.let { aberration = it }
-            (payload["aberrationDirection"] as? Number)?.toInt()?.let { aberrationDirection = it }
-            (payload["sharpening"] as? Number)?.toFloat()?.let { sharpening = it }
-            (payload["satRed"] as? Number)?.toFloat()?.let { satRed = it }
-            (payload["satOrange"] as? Number)?.toFloat()?.let { satOrange = it }
-            (payload["satYellow"] as? Number)?.toFloat()?.let { satYellow = it }
-            (payload["satGreen"] as? Number)?.toFloat()?.let { satGreen = it }
-            (payload["satCyan"] as? Number)?.toFloat()?.let { satCyan = it }
-            (payload["satBlue"] as? Number)?.toFloat()?.let { satBlue = it }
-            (payload["satPurple"] as? Number)?.toFloat()?.let { satPurple = it }
-            (payload["satMagenta"] as? Number)?.toFloat()?.let { satMagenta = it }
-            (payload["aberrationInvert"] as? Boolean)?.let { aberrationInvert = it }
-            (payload["boundMagentaRed"] as? Number)?.toFloat()?.let { boundMagentaRed = it }
-            (payload["boundRedOrange"] as? Number)?.toFloat()?.let { boundRedOrange = it }
-            (payload["boundOrangeYellow"] as? Number)?.toFloat()?.let { boundOrangeYellow = it }
-            (payload["boundYellowGreen"] as? Number)?.toFloat()?.let { boundYellowGreen = it }
-            (payload["boundGreenCyan"] as? Number)?.toFloat()?.let { boundGreenCyan = it }
-            (payload["boundCyanBlue"] as? Number)?.toFloat()?.let { boundCyanBlue = it }
-            (payload["boundBluePurple"] as? Number)?.toFloat()?.let { boundBluePurple = it }
-            (payload["boundPurpleMagenta"] as? Number)?.toFloat()?.let { boundPurpleMagenta = it }
-            (payload["grainEnabled"] as? Boolean)?.let { grainEnabled = it }
-            (payload["bloomEnabled"] as? Boolean)?.let { bloomEnabled = it }
-        }
-        
-        val processor = OffscreenFilmProcessor()
-        processor.prepare(inputBitmap.width, inputBitmap.height, context.assets)
-        val outputBitmap = processor.process(inputBitmap, config, context)
-        processor.release()
-        
-        val cacheDir = context.cacheDir
-        val outputFile = java.io.File(cacheDir, "preset_preview_" + java.util.UUID.randomUUID().toString() + ".jpg")
-        val outputStream = java.io.FileOutputStream(outputFile)
-        outputBitmap.compress(android.graphics.Bitmap.CompressFormat.JPEG, 90, outputStream)
-        outputStream.close()
-        
-        if (inputBitmap != outputBitmap) {
-            inputBitmap.recycle()
-        }
-        outputBitmap.recycle()
-        
-        android.net.Uri.fromFile(outputFile).toString()
+        com.grovkornet.nativefilmcamera.services.PresetPreviewService.generatePresetPreview(context, inputUriString, payload)
       }
     }
 
     AsyncFunction("deleteFile") { uriString: String ->
-      try {
-        val uri = android.net.Uri.parse(uriString)
-        if (uri.scheme == "file") {
-          val path = uri.path
-          if (path != null) {
-            val file = java.io.File(path)
-            if (file.exists()) {
-              file.delete()
-            } else {
-              false
-            }
-          } else {
-            false
-          }
-        } else {
-          false
-        }
-      } catch (e: Exception) {
-        false
-      }
+      com.grovkornet.nativefilmcamera.services.FileSystemService.deleteFile(uriString)
     }
 
     View(NativeFilmCameraView::class) {

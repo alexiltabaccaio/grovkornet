@@ -12,8 +12,4 @@
 
 ## [TICKET #08] – Refactoring Gerarchia UI: Controlli Bloom e Inversione Sliders
 
-## [TICKET #10] – Inline Editing del Nome Preset e Fallback Logico
-
 ## [TICKET #11] – Interazione Avanzata: Animazione "Hold-to-Reset" Settoriale
-
-## [TICKET #12] – Architettura Footer: Modulo "Preset Manager" e Preferiti

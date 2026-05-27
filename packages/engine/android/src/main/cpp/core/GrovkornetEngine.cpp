@@ -1,4 +1,5 @@
 #include "GrovkornetEngine.h"
+#include "FrameRenderer.h"
 #include <android/log.h>
 
 #include <filament/Engine.h>
@@ -20,8 +21,6 @@
 #include <utils/EntityManager.h>
 
 #include "pipeline/GeometryBuilder.h"
-#include "utils/MatrixTransformCalculator.h"
-#include <chrono>
 
 #define LOG_TAG "GrovkornetEngine"
 #ifdef NDEBUG
@@ -413,213 +412,17 @@ void GrovkornetEngine::setExternalStream(filament::Stream* stream) {
 }
 
 bool GrovkornetEngine::renderOffscreenFrame(void* pixelsIn, void* pixelsOut, const RenderParams& params) {
-    if (!pixelsIn || !pixelsOut) {
-        return false;
-    }
-
-    // Setup or update input texture
-    if (!inputTexture2D) {
-        inputTexture2D = filament::Texture::Builder()
-            .width(width)
-            .height(height)
-            .levels(1)
-            .sampler(filament::Texture::Sampler::SAMPLER_2D)
-            .format(filament::Texture::InternalFormat::RGBA8)
-            .build(*engine);
-    }
-
-    // Upload input pixels to texture
-    inputTexture2D->setImage(*engine, 0, filament::Texture::PixelBufferDescriptor(
-        pixelsIn, 
-        width * height * 4, 
-        filament::backend::PixelDataFormat::RGBA, 
-        filament::backend::PixelDataType::UBYTE
-    ));
-
-    // Update geometry to use the 2D material
-    auto& rcm = engine->getRenderableManager();
-    auto instance = rcm.getInstance(pipelineRenderer.quadGrading);
-    if (instance) {
-        rcm.setMaterialInstanceAt(instance, 0, shaderManager.getMaterialInstance2D());
-    }
-
-    // Set material parameter u_Texture
-    filament::TextureSampler sampler2d(filament::TextureSampler::MinFilter::LINEAR, filament::TextureSampler::MagFilter::LINEAR);
-    shaderManager.getMaterialInstance2D()->setParameter("u_Texture", inputTexture2D, sampler2d);
-
-    // Apply unified parameters (waitForLut = true)
-    applyShaderParameters(params, shaderManager.getMaterialInstance2D(), true);
-
-    auto start = std::chrono::high_resolution_clock::now();
-
-    // Render and readback
-    if (renderer->beginFrame(swapChain)) {
-        renderer->render(pipelineRenderer.viewGrading);
-        renderer->render(pipelineRenderer.viewDownsample);
-        renderer->render(pipelineRenderer.viewBlurDown);
-        renderer->render(pipelineRenderer.viewBlurUp);
-        renderer->render(view);
-        
-        filament::backend::PixelBufferDescriptor desc(
-            pixelsOut, 
-            width * height * 4, 
-            filament::backend::PixelDataFormat::RGBA, 
-            filament::backend::PixelDataType::UBYTE
-        );
-        renderer->readPixels(0, 0, width, height, std::move(desc));
-        renderer->endFrame();
-    }
-    engine->flushAndWait();
-
-    auto end = std::chrono::high_resolution_clock::now();
-    float frameTimeMs = std::chrono::duration<float, std::milli>(end - start).count();
-    recordFrameTimeAndEvaluate(frameTimeMs);
-
-    return true;
+    return FrameRenderer::renderOffscreenFrame(*this, pixelsIn, pixelsOut, params);
 }
 
 bool GrovkornetEngine::renderHardwareBufferFrame(AHardwareBuffer* ahb, const RenderParams& params) {
-    if (!ahb) {
-        return false;
-    }
-
-    AHardwareBuffer_Desc desc;
-    AHardwareBuffer_describe(ahb, &desc);
-
-    // Setup or update external input texture
-    if (!inputTextureExternal) {
-        inputTextureExternal = filament::Texture::Builder()
-            .width(desc.width)
-            .height(desc.height)
-            .levels(1)
-            .sampler(filament::Texture::Sampler::SAMPLER_EXTERNAL)
-            .format(filament::Texture::InternalFormat::RGBA8)
-            .build(*engine);
-    }
-
-    // Bind the AHardwareBuffer to the external texture
-    inputTextureExternal->setExternalImage(*engine, ahb);
-
-    // Update geometry to use the External material
-    auto& rcm = engine->getRenderableManager();
-    auto instance = rcm.getInstance(pipelineRenderer.quadGrading);
-    if (instance) {
-        rcm.setMaterialInstanceAt(instance, 0, shaderManager.getMaterialInstanceExternal());
-    }
-
-    // Set material parameter u_Texture and u_UvMatrix
-    filament::TextureSampler sampler2d(filament::TextureSampler::MinFilter::LINEAR, filament::TextureSampler::MagFilter::LINEAR);
-    shaderManager.getMaterialInstanceExternal()->setParameter("u_Texture", inputTextureExternal, sampler2d);
-    
-    filament::math::mat4f identityMatrix;
-    shaderManager.getMaterialInstanceExternal()->setParameter("u_UvMatrix", identityMatrix);
-
-    // Apply unified parameters (waitForLut = true)
-    applyShaderParameters(params, shaderManager.getMaterialInstanceExternal(), true);
-
-    auto start = std::chrono::high_resolution_clock::now();
-
-    // Render
-    if (renderer->beginFrame(swapChain)) {
-        renderer->render(pipelineRenderer.viewGrading);
-        renderer->render(pipelineRenderer.viewDownsample);
-        renderer->render(pipelineRenderer.viewBlurDown);
-        renderer->render(pipelineRenderer.viewBlurUp);
-        renderer->render(view);
-        renderer->endFrame();
-    }
-    engine->flushAndWait();
-
-    auto end = std::chrono::high_resolution_clock::now();
-    float frameTimeMs = std::chrono::duration<float, std::milli>(end - start).count();
-    recordFrameTimeAndEvaluate(frameTimeMs);
-
-    return true;
+    return FrameRenderer::renderHardwareBufferFrame(*this, ahb, params);
 }
 
 bool GrovkornetEngine::renderLiveFrame(const RenderParams& params, const float* uvMatrixIn,
                                      int cameraWidth, int cameraHeight, int vpW, int vpH,
                                      bool skipScreenRender, bool isNewFrame,
                                      int& actualFps, int& stampedFps, bool& fpsUpdated) {
-    if (!liveSwapChain || !uvMatrixIn) {
-        return false;
-    }
-
-    int targetFps          = static_cast<int>(params.targetFps);
-    int aspectRatioSetting = static_cast<int>(params.aspectRatio);
-
-    // 1. Run Frame Timing checks natively
-    bool shouldCapture = timingController.shouldCaptureFrame(targetFps);
-    
-    // Update FPS statistics
-    timingController.updateFps(isNewFrame, actualFps, stampedFps, fpsUpdated);
-    
-    if (!shouldCapture) {
-        return false;
-    }
-
-    // 2. Perform aspect ratio matrix calculations natively
-    float scaleMatrix[16];
-    float cropMatrix[16];
-    MatrixTransformCalculator::calculateScaleAndCrop(
-        cameraWidth, cameraHeight, vpW, vpH, aspectRatioSetting, scaleMatrix, cropMatrix
-    );
-
-    // Multiply input UV matrix by calculated crop matrix to get final UV matrix
-    float finalUvMatrix[16];
-    MatrixTransformCalculator::multiplyMM(finalUvMatrix, uvMatrixIn, cropMatrix);
-
-    filament::math::mat4f u_UvMatrix(
-        finalUvMatrix[0], finalUvMatrix[1], finalUvMatrix[2], finalUvMatrix[3],
-        finalUvMatrix[4], finalUvMatrix[5], finalUvMatrix[6], finalUvMatrix[7],
-        finalUvMatrix[8], finalUvMatrix[9], finalUvMatrix[10], finalUvMatrix[11],
-        finalUvMatrix[12], finalUvMatrix[13], finalUvMatrix[14], finalUvMatrix[15]
-    );
-
-    // Calculate viewport based on scale matrix
-    ViewportRect vpRect = MatrixTransformCalculator::calculateViewport(scaleMatrix, vpW, vpH);
-
-    // Update viewport in engine
-    viewportX = vpRect.x;
-    viewportY = vpRect.y;
-    viewportWidth = vpRect.width;
-    viewportHeight = vpRect.height;
-
-    // Update geometry to use the External material
-    auto& rcm = engine->getRenderableManager();
-    auto instance = rcm.getInstance(pipelineRenderer.quadGrading);
-    if (instance) {
-        rcm.setMaterialInstanceAt(instance, 0, shaderManager.getMaterialInstanceExternal());
-    }
-    
-    // Set material parameter u_Texture and u_UvMatrix
-    filament::TextureSampler sampler2d(filament::TextureSampler::MinFilter::LINEAR, filament::TextureSampler::MagFilter::LINEAR);
-    shaderManager.getMaterialInstanceExternal()->setParameter("u_Texture", inputTextureExternal, sampler2d);
-    shaderManager.getMaterialInstanceExternal()->setParameter("u_UvMatrix", u_UvMatrix);
-    
-    // Apply unified parameters (waitForLut = false)
-    applyShaderParameters(params, shaderManager.getMaterialInstanceExternal(), false);
-    
-    auto start = std::chrono::high_resolution_clock::now();
-    
-    // Render
-    if (renderer->beginFrame(liveSwapChain)) {
-        renderer->render(pipelineRenderer.viewGrading);
-        renderer->render(pipelineRenderer.viewDownsample);
-        renderer->render(pipelineRenderer.viewBlurDown);
-        renderer->render(pipelineRenderer.viewBlurUp);
-        if (!skipScreenRender) {
-            renderer->render(view);
-        }
-        renderer->endFrame();
-    }
-    
-    // Flush UI commands asynchronously (don't block the render thread!)
-    engine->flush();
-    
-    auto end = std::chrono::high_resolution_clock::now();
-    float frameTimeMs = std::chrono::duration<float, std::milli>(end - start).count();
-    recordFrameTimeAndEvaluate(frameTimeMs);
-
-    return true;
+    return FrameRenderer::renderLiveFrame(*this, params, uvMatrixIn, cameraWidth, cameraHeight, vpW, vpH,
+                                         skipScreenRender, isNewFrame, actualFps, stampedFps, fpsUpdated);
 }

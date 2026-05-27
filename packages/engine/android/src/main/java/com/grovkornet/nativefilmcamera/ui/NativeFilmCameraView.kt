@@ -173,47 +173,16 @@ class NativeFilmCameraView(context: Context) : SurfaceView(context), SurfaceHold
     }
 
     fun takePhoto() {
-        if (surfaceWidth > 0 && surfaceHeight > 0 && holder.surface.isValid) {
-            val scale = 256f / maxOf(surfaceWidth, surfaceHeight).toFloat()
-            val tw = maxOf(1, (surfaceWidth * scale).toInt())
-            val th = maxOf(1, (surfaceHeight * scale).toInt())
-            
-            val bitmap = Bitmap.createBitmap(tw, th, Bitmap.Config.ARGB_8888)
-            try {
-                PixelCopy.request(this, bitmap, { result ->
-                    if (result == PixelCopy.SUCCESS) {
-                        CoroutineScope(Dispatchers.IO).launch {
-                            try {
-                                val previewFile = File(context.cacheDir, "preview_capture_${System.currentTimeMillis()}.jpg")
-                                previewFile.outputStream().use { os ->
-                                    bitmap.compress(Bitmap.CompressFormat.JPEG, 50, os)
-                                }
-                                val previewUri = android.net.Uri.fromFile(previewFile).toString()
-                                withContext(Dispatchers.Main) {
-                                    if (!isReleased) {
-                                        onPhotoCaptured(mapOf("uri" to previewUri))
-                                    }
-                                }
-                            } catch (e: Exception) {
-                                Log.e("NativeFilmCameraView", "Failed to save PixelCopy thumbnail", e)
-                            } finally {
-                                bitmap.recycle()
-                            }
-                        }
-                    } else {
-                        Log.e("NativeFilmCameraView", "PixelCopy failed with result: $result")
-                        bitmap.recycle()
-                    }
-                }, Handler(Looper.getMainLooper()))
-            } catch (e: Exception) {
-                Log.e("NativeFilmCameraView", "Failed to request PixelCopy", e)
-                bitmap.recycle()
+        com.grovkornet.nativefilmcamera.capture.ThumbnailCaptureService.captureThumbnail(
+            view = this,
+            surfaceWidth = surfaceWidth,
+            surfaceHeight = surfaceHeight,
+            onThumbnailCaptured = { previewUri ->
+                if (!isReleased) {
+                    onPhotoCaptured(mapOf("uri" to previewUri))
+                }
             }
-        } else {
-            if (BuildConfig.DEBUG) {
-                Log.w("NativeFilmCameraView", "Cannot request PixelCopy: surface not ready")
-            }
-        }
+        )
 
         cameraEngine?.takePicture()
     }

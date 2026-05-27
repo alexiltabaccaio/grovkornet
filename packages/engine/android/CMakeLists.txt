@@ -43,6 +43,7 @@ import_filament_lib(zstd)
 # Define our shared library target
 add_library(grovkornet-engine SHARED
     src/main/cpp/core/GrovkornetEngine.cpp
+    src/main/cpp/core/FrameRenderer.cpp
     src/main/cpp/pipeline/PipelineRenderer.cpp
     src/main/cpp/pipeline/GeometryBuilder.cpp
     src/main/cpp/pipeline/LutGenerator.cpp
@@ -98,6 +99,7 @@ if (EXISTS "${ANDROID_NDK}/sources/third_party/googletest")
     add_executable(grovkornet-engine-tests
         src/test/cpp/TestRunner.cpp
         src/test/cpp/GrovkornetEngine.test.cpp
+        src/test/cpp/FrameRenderer.test.cpp
         src/test/cpp/WatermarkEngine.test.cpp
         src/test/cpp/MatrixTransformCalculator.test.cpp
         src/test/cpp/FrameTimingController.test.cpp
@@ -107,6 +109,7 @@ if (EXISTS "${ANDROID_NDK}/sources/third_party/googletest")
         src/test/cpp/OverlayCompositor.test.cpp
         src/test/cpp/DrsManager.test.cpp
         src/main/cpp/core/GrovkornetEngine.cpp
+        src/main/cpp/core/FrameRenderer.cpp
         src/main/cpp/pipeline/PipelineRenderer.cpp
         src/main/cpp/pipeline/GeometryBuilder.cpp
         src/main/cpp/pipeline/LutGenerator.cpp
