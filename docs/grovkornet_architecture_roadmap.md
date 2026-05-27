@@ -8,8 +8,6 @@
 
 ## [TICKET #02] – Le immagini della galleria devono poter ruotare se sposto lo smartphone da verticale a orizzontale e viceversa
 
-## [TICKET #03] – Bug della Torcia. Con la torcia attiva, cambio formato. In quel momento la torica si spegne e si riaccende come giusto che sia, ma il pulsante della torcia si sposta in realtà in off e ci resta per sempre. Questo spiega perchè una volta cambiato formato una seconda volta, la torcia si spegne per non riaccendersi più.
-
 ## [TICKET #04] – Rafforzamento Watermark Anti-Intrusione
 
 ## [TICKET #06] – Architettura Preset: Scratchpad e Viral Loop per Instagram

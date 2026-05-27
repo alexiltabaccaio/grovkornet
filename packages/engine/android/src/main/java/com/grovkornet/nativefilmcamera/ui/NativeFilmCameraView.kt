@@ -64,8 +64,9 @@ class NativeFilmCameraView(context: Context) : SurfaceView(context), SurfaceHold
         val oldCam = config.cameraId
         val oldRes = config.resolutionSetting
         val oldPrev = config.previewIn4k
+        val oldAspect = config.aspectRatio
         config.action()
-        if (oldCam != config.cameraId || oldRes != config.resolutionSetting || oldPrev != config.previewIn4k) {
+        if (oldCam != config.cameraId || oldRes != config.resolutionSetting || oldPrev != config.previewIn4k || oldAspect != config.aspectRatio) {
             lastReconfigureTime = System.currentTimeMillis()
         }
         renderThread?.updateConfig(config)
@@ -79,8 +80,9 @@ class NativeFilmCameraView(context: Context) : SurfaceView(context), SurfaceHold
         val oldCam = config.cameraId
         val oldRes = config.resolutionSetting
         val oldPrev = config.previewIn4k
+        val oldAspect = config.aspectRatio
         config.action()
-        if (oldCam != config.cameraId || oldRes != config.resolutionSetting || oldPrev != config.previewIn4k) {
+        if (oldCam != config.cameraId || oldRes != config.resolutionSetting || oldPrev != config.previewIn4k || oldAspect != config.aspectRatio) {
             lastReconfigureTime = System.currentTimeMillis()
         }
         renderThread?.updateConfig(config)
