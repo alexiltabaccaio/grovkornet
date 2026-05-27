@@ -2,9 +2,15 @@ import React from 'react';
 import { render, fireEvent } from '@testing-library/react-native';
 import { makeMutable } from 'react-native-reanimated';
 import { GalleryViewer } from './GalleryViewer';
-import { useGalleryViewer } from '../lib/useGalleryViewer';
+import { useGalleryViewer } from '@features/gallery';
 
-jest.mock('../lib/useGalleryViewer');
+jest.mock('@features/gallery', () => {
+  const actual = jest.requireActual('@features/gallery');
+  return {
+    ...actual,
+    useGalleryViewer: jest.fn(),
+  };
+});
 
 const mockPhotos = [
   { uri: 'file:///test/1.jpg', id: '1', isVerified: true },

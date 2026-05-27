@@ -48,6 +48,12 @@ jest.mock('@features/gallery', () => {
     CaptureThumbnail: (props: any) => (
       <TouchableOpacity testID="CaptureThumbnail" onPress={props.onPress} />
     ),
+  };
+});
+
+jest.mock('@widgets/gallery-viewer', () => {
+  const { TouchableOpacity } = require('react-native');
+  return {
     GalleryViewer: (props: any) => (
       <TouchableOpacity testID="GalleryViewer" onPress={props.onClose} />
     ),

@@ -5,6 +5,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { CameraScreen } from '@screens/camera';
 import { usePresetStore } from '@entities/preset';
 import { Image } from 'expo-image';
+import { initThumbnailGenerator } from '@features/preset-thumbnails';
 
 // Initialize i18n
 import './providers/i18n';
@@ -52,6 +53,9 @@ export function App() {
       void i18n.changeLanguage(prefs.language).catch(() => {});
     }
 
+    // Inizializza il generatore di thumbnail per i preset in background
+    const unsubscribeThumb = initThumbnailGenerator();
+
     // Apply favorite preset on startup, or default if none
     const { userPresets, applyPreset } = usePresetStore.getState();
     const favorite = userPresets.find((p) => p.isFavorite);
@@ -60,6 +64,10 @@ export function App() {
     } else {
       applyPreset('default');
     }
+
+    return () => {
+      unsubscribeThumb();
+    };
   }, []);
 
   return (

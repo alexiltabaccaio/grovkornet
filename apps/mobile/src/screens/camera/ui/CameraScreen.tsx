@@ -11,7 +11,8 @@ import { Header } from '@widgets/header';
 import { ShutterButton } from '@features/body-controls';
 import { GestureController } from '@features/lens-controls';
 import { DebugOverlay, AddPresetModal } from '@features/system-settings';
-import { GalleryViewer, CaptureThumbnail } from '@features/gallery';
+import { CaptureThumbnail } from '@features/gallery';
+import { GalleryViewer } from '@widgets/gallery-viewer';
 import { logger } from '@shared/lib/logger';
 
 

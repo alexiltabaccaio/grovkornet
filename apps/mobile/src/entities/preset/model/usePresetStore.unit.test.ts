@@ -1,8 +1,6 @@
-import { usePresetStore, DEFAULT_FILM_PAYLOAD, DEFAULT_BODY_PAYLOAD, enablePresetSubscriptionForTesting, disablePresetSubscriptionForTesting, clearPresetSubscriptionTimeout } from './usePresetStore';
+import { usePresetStore, DEFAULT_FILM_PAYLOAD, DEFAULT_BODY_PAYLOAD } from './usePresetStore';
 import { useFilmStore } from '@entities/film';
 import { useBodyStore } from '@entities/body';
-import { Image } from 'expo-image';
-import { generatePresetPreview } from '@grovkornet/engine';
 
 jest.mock('@grovkornet/engine', () => ({
   generatePresetPreview: jest.fn().mockResolvedValue('file:///cache/preset_preview_mock.jpg'),
@@ -20,14 +18,6 @@ jest.mock('expo-asset', () => ({
 }));
 
 describe('usePresetStore', () => {
-  beforeAll(() => {
-    enablePresetSubscriptionForTesting();
-  });
-
-  afterAll(() => {
-    disablePresetSubscriptionForTesting();
-    clearPresetSubscriptionTimeout();
-  });
 
   beforeEach(() => {
     jest.useFakeTimers();
@@ -66,49 +56,7 @@ describe('usePresetStore', () => {
     jest.useRealTimers();
   });
 
-  describe('Dynamic Prefetching & Debounce', () => {
-    it('should call Image.prefetch when a new customized thumbnail is generated', async () => {
-      usePresetStore.getState().markAsCustomized();
-      jest.advanceTimersByTime(500);
 
-      await Promise.resolve();
-      await Promise.resolve();
-      await Promise.resolve();
-
-      expect(generatePresetPreview).toHaveBeenCalled();
-      // eslint-disable-next-line @typescript-eslint/unbound-method
-      expect(Image.prefetch).toHaveBeenCalledWith('file:///cache/preset_preview_mock.jpg');
-      expect(usePresetStore.getState().customizedThumbnailUri).toBe('file:///cache/preset_preview_mock.jpg');
-    });
-
-    it('should respect the 500ms debounce before generating and prefetching', async () => {
-      usePresetStore.getState().markAsCustomized();
-      jest.advanceTimersByTime(300);
-      expect(generatePresetPreview).not.toHaveBeenCalled();
-
-      usePresetStore.getState().markAsCustomized();
-      jest.advanceTimersByTime(300);
-      expect(generatePresetPreview).not.toHaveBeenCalled();
-
-      jest.advanceTimersByTime(200);
-
-      await Promise.resolve();
-      await Promise.resolve();
-      await Promise.resolve();
-
-      expect(generatePresetPreview).toHaveBeenCalledTimes(1);
-    });
-
-    it('should clean up the customized thumbnail when customized payload is reset', () => {
-      usePresetStore.setState({ customizedThumbnailUri: 'file:///cache/custom_thumb.jpg' });
-      usePresetStore.setState({ customizedPayload: { film: DEFAULT_FILM_PAYLOAD, body: DEFAULT_BODY_PAYLOAD } });
-
-      // Reset
-      usePresetStore.setState({ customizedPayload: null });
-
-      expect(usePresetStore.getState().customizedThumbnailUri).toBeNull();
-    });
-  });
 
   describe('Preset CRUD Actions', () => {
     it('adds a preset snapshotting active values when customizedPayload is null', () => {

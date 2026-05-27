@@ -3,10 +3,7 @@ import { StyleSheet, Text, View, ActivityIndicator, Platform } from 'react-nativ
 import Animated, { useAnimatedStyle, SharedValue } from 'react-native-reanimated';
 import { useTranslation } from 'react-i18next';
 import { Header } from '@widgets/header';
-import { ShareButton } from './ShareButton';
-import { useGalleryViewer } from '../lib/useGalleryViewer';
-import { PhotoPreview } from './components/PhotoPreview';
-import { GalleryStrip } from './components/GalleryStrip';
+import { ShareButton, PhotoPreview, GalleryStrip, useGalleryViewer } from '@features/gallery';
 
 import { useDeviceRotation } from '@shared/lib/hooks/useDeviceRotation';
 
@@ -127,4 +124,3 @@ const styles = StyleSheet.create({
     zIndex: 10,
   },
 });
-
