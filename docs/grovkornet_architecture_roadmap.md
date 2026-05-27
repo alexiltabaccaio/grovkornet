@@ -6,8 +6,6 @@
 
 ---
 
-## [TICKET #02] – Le immagini della galleria devono poter ruotare se sposto lo smartphone da verticale a orizzontale e viceversa
-
 ## [TICKET #04] – Rafforzamento Watermark Anti-Intrusione
 
 ## [TICKET #06] – Architettura Preset: Scratchpad e Viral Loop per Instagram

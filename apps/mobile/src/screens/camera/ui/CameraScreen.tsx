@@ -10,7 +10,7 @@ import { Viewfinder } from '@widgets/viewfinder';
 import { Header } from '@widgets/header';
 import { ShutterButton } from '@features/body-controls';
 import { GestureController } from '@features/lens-controls';
-import { DebugOverlay } from '@features/system-settings';
+import { DebugOverlay, AddPresetModal } from '@features/system-settings';
 import { GalleryViewer, CaptureThumbnail } from '@features/gallery';
 import { logger } from '@shared/lib/logger';
 
@@ -141,6 +141,8 @@ const CameraScreenContent = () => {
       </Profiler>
 
       {shouldRenderGallery && <GalleryViewer onClose={closeGallery} initialUri={latestCapturedUri} galleryTransition={galleryTransition} />}
+      
+      <AddPresetModal />
     </View>
   );
 };

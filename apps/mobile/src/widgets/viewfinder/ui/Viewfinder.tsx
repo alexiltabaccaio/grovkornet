@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { useShallow } from 'zustand/react/shallow';
 import { useBodyStore } from '@entities/body';
 import { useLensStore } from '@entities/lens';
@@ -8,6 +8,7 @@ import { useSystemStore } from '@entities/system';
 import { NativeRenderer } from '@entities/lens';
 import { useDerivedValue, SharedValue } from 'react-native-reanimated';
 import { FlashOverlay } from '@features/body-controls';
+import { QuickPresetSelector } from '@features/system-settings';
 import { useCameraCapture } from '../lib/useCameraCapture';
 import { useCameraEvents } from '../lib/useCameraEvents';
 
@@ -177,9 +178,23 @@ export const Viewfinder = ({ cameraKey }: ViewfinderProps) => {
         onTorchStateChanged={torchStateHandler}
       />
       <FlashOverlay />
+      <View style={styles.selectorContainer}>
+        <QuickPresetSelector />
+      </View>
     </>
   );
 };
 
 Viewfinder.whyDidYouRender = true;
+
+const styles = StyleSheet.create({
+  selectorContainer: {
+    position: 'absolute',
+    top: 8,
+    left: 0,
+    right: 0,
+    alignItems: 'center',
+    zIndex: 100,
+  },
+});
 

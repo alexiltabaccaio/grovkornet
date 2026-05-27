@@ -61,7 +61,7 @@ describe('useGalleryPhotos', () => {
   });
 
   it('uses global fallback if Grovkornet album is not found', async () => {
-    (MediaLibrary.getAlbumAsync as jest.Mock).mockResolvedValueOnce(null);
+    (MediaLibrary.getAlbumsAsync as jest.Mock).mockResolvedValueOnce([]);
     (MediaLibrary.getAssetsAsync as jest.Mock).mockResolvedValueOnce({
       assets: [
         { id: '3', uri: 'file:///test/Grovkornet_1.jpg', filename: 'Grovkornet_1.jpg' } as any,
@@ -78,7 +78,7 @@ describe('useGalleryPhotos', () => {
   });
 
   it('handles error in global fallback gracefully', async () => {
-    (MediaLibrary.getAlbumAsync as jest.Mock).mockResolvedValueOnce(null);
+    (MediaLibrary.getAlbumsAsync as jest.Mock).mockResolvedValueOnce([]);
     (MediaLibrary.getAssetsAsync as jest.Mock).mockRejectedValueOnce(new Error('Fallback get assets error'));
 
     const { result } = renderHook(() => useGalleryPhotos(null));
@@ -89,7 +89,7 @@ describe('useGalleryPhotos', () => {
   });
 
   it('handles general loading error and falls back gracefully', async () => {
-    (MediaLibrary.getAlbumAsync as jest.Mock).mockRejectedValueOnce(new Error('General crash'));
+    (MediaLibrary.getAlbumsAsync as jest.Mock).mockRejectedValueOnce(new Error('General crash'));
 
     const { result } = renderHook(() => useGalleryPhotos('file:///test/initial.jpg'));
 

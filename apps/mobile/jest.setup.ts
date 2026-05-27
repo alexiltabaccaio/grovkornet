@@ -210,6 +210,7 @@ jest.mock('expo-media-library', () => ({
   getPermissionsAsync: jest.fn(() => Promise.resolve({ status: 'granted', granted: true, canAskAgain: true })),
   requestPermissionsAsync: jest.fn(() => Promise.resolve({ status: 'granted', granted: true })),
   getAlbumAsync: jest.fn(() => Promise.resolve({ id: 'album-id', title: 'Grovkornet' })),
+  getAlbumsAsync: jest.fn(() => Promise.resolve([{ id: 'album-id', title: 'Grovkornet' }])),
   getAssetsAsync: jest.fn(() => Promise.resolve({
     assets: [
       { id: '1', uri: 'file:///test/1.jpg' },
@@ -258,4 +259,41 @@ jest.mock('expo-sensors', () => ({
     setUpdateInterval: jest.fn(),
   },
 }));
+
+// Mock react-native-nitro-modules
+jest.mock('react-native-nitro-modules', () => ({
+  NitroModules: {},
+}));
+
+// Mock react-native-mmkv
+jest.mock('react-native-mmkv', () => {
+  return {
+    createMMKV: jest.fn(() => {
+      const store = new Map<string, string>();
+      return {
+        set: jest.fn((key: string, value: any) => {
+          store.set(key, String(value));
+        }),
+        getString: jest.fn((key: string) => {
+          return store.get(key) ?? null;
+        }),
+        getNumber: jest.fn((key: string) => {
+          const val = store.get(key);
+          return val ? Number(val) : undefined;
+        }),
+        getBoolean: jest.fn((key: string) => {
+          const val = store.get(key);
+          return val ? val === 'true' : undefined;
+        }),
+        remove: jest.fn((key: string) => {
+          store.delete(key);
+        }),
+        clearAll: jest.fn(() => {
+          store.clear();
+        }),
+      };
+    }),
+  };
+});
+
 

@@ -22,6 +22,7 @@
       "debug": "Debug"
     },
     "parameters": {
+      "presets": "PRESETS",
       "language": "LANGUAGE",
       "debug_ui": "UI OVERLAYS",
       "debug_logs": "CONSOLE LOGS",
@@ -66,6 +67,20 @@
       "blue": "BLUE",
       "purple": "PURPLE",
       "magenta": "MAGENTA"
+    },
+    "presets": {
+      "error_title": "Error",
+      "error_empty": "Name cannot be empty",
+      "error_duplicate": "This name is already in use",
+      "limit_title": "Limit Reached",
+      "limit_body": "You can select up to 5 presets for quick select",
+      "delete_title": "Delete Preset",
+      "delete_body": "Are you sure you want to delete \"{{name}}\"?",
+      "cancel": "CANCEL",
+      "delete": "DELETE",
+      "save_title": "SAVE PRESET",
+      "placeholder": "PRESET NAME",
+      "save": "SAVE"
     }
   }
 }

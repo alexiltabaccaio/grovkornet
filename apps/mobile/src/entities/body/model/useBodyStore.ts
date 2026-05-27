@@ -112,3 +112,32 @@ export const useBodyStore = create<BodyStore>((set, get) => ({
     }));
   },
 }));
+
+let parameterChangeListener: (() => void) | null = null;
+export const setBodyParameterChangeListener = (listener: () => void) => {
+  parameterChangeListener = listener;
+};
+
+const bodyStoreState = useBodyStore.getState();
+const includedBodySetters = [
+  'setIso',
+  'setEv',
+  'setShutterSpeed',
+  'setIsoAuto',
+  'setShutterSpeedAuto',
+  'setEvAuto',
+];
+
+Object.keys(bodyStoreState).forEach((key) => {
+  if (
+    includedBodySetters.includes(key) &&
+    typeof (bodyStoreState as any)[key] === 'function'
+  ) {
+    const originalFn = (bodyStoreState as any)[key];
+    (bodyStoreState as any)[key] = (...args: any[]) => {
+      originalFn(...args);
+      parameterChangeListener?.();
+    };
+  }
+});
+

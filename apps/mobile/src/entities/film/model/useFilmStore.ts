@@ -261,3 +261,26 @@ export const useFilmStore = create<FilmStore>((set, get) => ({
     }
   },
 }));
+
+let parameterChangeListener: (() => void) | null = null;
+export const setFilmParameterChangeListener = (listener: () => void) => {
+  parameterChangeListener = listener;
+};
+
+const filmStoreState = useFilmStore.getState();
+const excludedFilmSetters = ['setCapabilities', 'resetEffect'];
+
+Object.keys(filmStoreState).forEach((key) => {
+  if (
+    key.startsWith('set') &&
+    !excludedFilmSetters.includes(key) &&
+    typeof (filmStoreState as any)[key] === 'function'
+  ) {
+    const originalFn = (filmStoreState as any)[key];
+    (filmStoreState as any)[key] = (...args: any[]) => {
+      originalFn(...args);
+      parameterChangeListener?.();
+    };
+  }
+});
+

@@ -5,7 +5,7 @@ import { useSystemStore } from '@entities/system';
 import Animated, { SharedValue, useAnimatedStyle, interpolate, Extrapolation } from 'react-native-reanimated';
 import { SliderDetailPanel } from './components/SliderDetailPanel';
 
-import { LanguageDetailPanel, DebugDetailPanel } from '@features/system-settings';
+import { LanguageDetailPanel, DebugDetailPanel, PresetsDetailPanel } from '@features/system-settings';
 import { NoiseReductionDetailPanel, GrainDetailPanel, SaturationDetailPanel } from '@features/film-controls';
 import { LensSelectionDetailPanel, ChromaticAberrationDetailPanel } from '@features/lens-controls';
 import { AspectRatioDetailPanel, FpsDetailPanel, ResolutionDetailPanel, TorchDetailPanel } from '@features/body-controls';
@@ -84,6 +84,8 @@ export const ParameterDetailPanels = ({ translateY }: ParameterDetailPanelsProps
             animatedStyle={animatedStyle}
           />
         );
+      case 'presets':
+        return <PresetsDetailPanel animatedStyle={parameterDetailPanelAnimatedStyle} />;
       case 'language':
         return <LanguageDetailPanel animatedStyle={parameterDetailPanelAnimatedStyle} />;
       case 'debug':
