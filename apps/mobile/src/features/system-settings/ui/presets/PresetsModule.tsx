@@ -1,42 +1,35 @@
 import React, { useCallback } from 'react';
-import { StyleSheet, ScrollView, View, TouchableOpacity } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import { useTranslation } from 'react-i18next';
+import { StyleSheet, ScrollView, View, TouchableOpacity, ImageSourcePropType } from 'react-native';
 import { useShallow } from 'zustand/react/shallow';
-import { usePresetStore, Preset } from '@entities/preset';
+import { usePresetStore, Preset, PresetStore } from '@entities/preset';
 import { useSystemStore } from '@entities/system';
 import { ParameterThumbView } from '@shared/ui/parameter-thumb';
-import * as Haptics from 'expo-haptics';
+
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const monoscopeAsset = require('../../../../../assets/monoscope.jpg') as ImageSourcePropType;
 
 export const PresetsModule = () => {
-  const { t } = useTranslation();
   const {
     userPresets,
     activePresetId,
     customizedPayload,
+    customizedThumbnailUri,
     applyPreset,
-    setAddModalVisible,
   } = usePresetStore(
-    useShallow((s: any) => ({
+    useShallow((s: PresetStore) => ({
       userPresets: s.userPresets,
       activePresetId: s.activePresetId,
       customizedPayload: s.customizedPayload,
+      customizedThumbnailUri: s.customizedThumbnailUri,
       applyPreset: s.applyPreset,
-      setAddModalVisible: s.setAddModalVisible,
     }))
   );
 
-  const { activeParameter, setActiveParameter } = useSystemStore(
+  const { setActiveParameter } = useSystemStore(
     useShallow((s) => ({
-      activeParameter: s.activeParameter,
       setActiveParameter: s.setActiveParameter,
     }))
   );
-
-  const handleOpenAddModal = useCallback(() => {
-    void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    setAddModalVisible(true);
-  }, [setAddModalVisible]);
 
   const handlePresetPress = useCallback((id: string) => {
     applyPreset(id);
@@ -50,18 +43,11 @@ export const PresetsModule = () => {
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
       >
-        <TouchableOpacity
-          onPress={handleOpenAddModal}
-          activeOpacity={0.7}
-          style={styles.addButton}
-          accessibilityLabel="Create Preset"
-        >
-          <Ionicons name="add" size={24} color="#FFF" />
-        </TouchableOpacity>
-
         <TouchableOpacity activeOpacity={0.8} onPress={() => handlePresetPress('default')}>
           <ParameterThumbView
             label="Default"
+            variant="preset"
+            imageSource={monoscopeAsset}
             isActive={activePresetId === 'default'}
           />
         </TouchableOpacity>
@@ -70,6 +56,8 @@ export const PresetsModule = () => {
           <TouchableOpacity activeOpacity={0.8} onPress={() => handlePresetPress('customized')}>
             <ParameterThumbView
               label="Personalizzato"
+              variant="preset"
+              imageSource={customizedThumbnailUri ? { uri: customizedThumbnailUri } : monoscopeAsset}
               isActive={activePresetId === 'customized'}
             />
           </TouchableOpacity>
@@ -79,6 +67,8 @@ export const PresetsModule = () => {
           <TouchableOpacity key={preset.id} activeOpacity={0.8} onPress={() => handlePresetPress(preset.id)}>
             <ParameterThumbView
               label={preset.name}
+              variant="preset"
+              imageSource={preset.thumbnailUri ? { uri: preset.thumbnailUri } : monoscopeAsset}
               isActive={activePresetId === preset.id}
             />
           </TouchableOpacity>
@@ -103,15 +93,5 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     gap: 8,
   },
-  addButton: {
-    width: 44,
-    height: 44,
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderColor: 'rgba(255, 255, 255, 0.12)',
-    borderWidth: 1,
-    borderRadius: 22,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: 8,
-  },
 });
+

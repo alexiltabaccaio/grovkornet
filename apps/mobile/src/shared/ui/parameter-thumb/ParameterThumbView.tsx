@@ -1,5 +1,5 @@
 import React, { forwardRef } from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, Image, ImageSourcePropType } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { ParameterThumbViewProps } from './ParameterThumbView.types';
 import { styles } from './ParameterThumbView.styles';
@@ -8,6 +8,9 @@ import { ImageThumb } from './ImageThumb';
 
 
 import { SliderThumb } from './SliderThumb';
+
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const defaultMonoscope = require('../../../../assets/monoscope.jpg') as ImageSourcePropType;
 
 export const ParameterThumbView = forwardRef<View, ParameterThumbViewProps>((props, ref) => {
   const {
@@ -26,6 +29,37 @@ export const ParameterThumbView = forwardRef<View, ParameterThumbViewProps>((pro
 
   const hasValue = !!value || !!staticText || !!imageSource || !!icon;
   const isMainParameter = !renderValue && variant !== 'slider' && !isToggle;
+
+  if (variant === 'preset') {
+    return (
+      <Animated.View
+        ref={ref}
+        {...({ onPress } as Record<string, unknown>)}
+        style={[
+          styles.presetContainer,
+          isActive && styles.presetContainerActive,
+        ]}
+      >
+        <View style={[styles.presetImageContainer, isActive && styles.presetImageContainerActive]}>
+          <Image
+            source={imageSource || defaultMonoscope}
+            style={[styles.presetImage, !isActive && { opacity: 0.7 }]}
+            resizeMode="cover"
+          />
+        </View>
+        <Text
+          allowFontScaling={false}
+          numberOfLines={1}
+          style={[
+            styles.presetLabel,
+            isActive && styles.presetLabelActive,
+          ]}
+        >
+          {label.toUpperCase()}
+        </Text>
+      </Animated.View>
+    );
+  }
 
   if (variant === 'text' && !hasValue) {
     return (

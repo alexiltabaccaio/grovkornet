@@ -1,14 +1,14 @@
 import React from 'react';
-import { StyleSheet, View, TouchableOpacity, Alert, Text } from 'react-native';
+import { StyleSheet, View, TouchableOpacity, Alert, Text, StyleProp, ViewStyle } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { useShallow } from 'zustand/react/shallow';
-import { usePresetStore, Preset } from '@entities/preset';
+import { usePresetStore, Preset, PresetStore } from '@entities/preset';
 import { ParameterDetailPanelWrapper } from '@entities/system';
 import * as Haptics from 'expo-haptics';
 
 interface PresetsDetailPanelProps {
-  animatedStyle?: any;
+  animatedStyle?: StyleProp<ViewStyle>;
 }
 
 export const PresetsDetailPanel = ({ animatedStyle }: PresetsDetailPanelProps) => {
@@ -19,13 +19,15 @@ export const PresetsDetailPanel = ({ animatedStyle }: PresetsDetailPanelProps) =
     removePreset,
     setFavoritePreset,
     toggleQuickSelect,
+    setAddModalVisible,
   } = usePresetStore(
-    useShallow((s: any) => ({
+    useShallow((s: PresetStore) => ({
       userPresets: s.userPresets,
       activePresetId: s.activePresetId,
       removePreset: s.removePreset,
       setFavoritePreset: s.setFavoritePreset,
       toggleQuickSelect: s.toggleQuickSelect,
+      setAddModalVisible: s.setAddModalVisible,
     }))
   );
 
@@ -51,8 +53,9 @@ export const PresetsDetailPanel = ({ animatedStyle }: PresetsDetailPanelProps) =
     try {
       void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
       toggleQuickSelect(activePreset.id);
-    } catch (error: any) {
-      if (error.message === 'LIMIT_EXCEEDED') {
+    } catch (error) {
+      const err = error as Error;
+      if (err.message === 'LIMIT_EXCEEDED') {
         Alert.alert(
           t('presets.limit_title', 'Limite Raggiunto'),
           t('presets.limit_body', 'Puoi selezionare al massimo 5 preset per la scelta rapida')
@@ -80,6 +83,11 @@ export const PresetsDetailPanel = ({ animatedStyle }: PresetsDetailPanelProps) =
     );
   };
 
+  const handleSavePress = () => {
+    void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    setAddModalVisible(true);
+  };
+
   return (
     <View style={styles.wrapper}>
       <ParameterDetailPanelWrapper
@@ -89,6 +97,13 @@ export const PresetsDetailPanel = ({ animatedStyle }: PresetsDetailPanelProps) =
         paddingHorizontal={24}
       >
         <View style={styles.actionsContainer}>
+          {isCustomizedActive && (
+            <TouchableOpacity style={styles.actionButton} onPress={handleSavePress}>
+              <Ionicons name="save-outline" size={16} color="#FFF" />
+              <Text style={styles.actionText}>{t('presets.save', 'Salva')}</Text>
+            </TouchableOpacity>
+          )}
+
           {(!isCustomizedActive) && (
             <TouchableOpacity style={styles.actionButton} onPress={handleToggleFavorite}>
               <Ionicons name={isFavorite ? "star" : "star-outline"} size={16} color={isFavorite ? "#FFD700" : "#FFF"} />

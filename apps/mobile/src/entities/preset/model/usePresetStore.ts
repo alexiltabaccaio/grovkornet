@@ -107,12 +107,13 @@ interface PresetStoreState {
   userPresets: Preset[];
   activePresetId: string;
   customizedPayload: PresetPayload | null;
+  customizedThumbnailUri: string | null;
   isApplyingPreset: boolean;
   isAddModalVisible: boolean;
 }
 
 interface PresetStoreActions {
-  addPreset: (name: string) => void;
+  addPreset: (name: string, thumbnailUri?: string) => void;
   removePreset: (id: string) => void;
   setFavoritePreset: (id: string | null) => void;
   toggleQuickSelect: (id: string) => void;
@@ -133,11 +134,12 @@ export const usePresetStore = create<PresetStore>()(
       userPresets: [],
       activePresetId: 'default',
       customizedPayload: null,
+      customizedThumbnailUri: null,
       isApplyingPreset: false,
       isAddModalVisible: false,
 
       // Actions
-      addPreset: (name: string) => {
+      addPreset: (name: string, thumbnailUri?: string) => {
         const { customizedPayload, userPresets } = get();
         let payload = customizedPayload;
 
@@ -146,21 +148,23 @@ export const usePresetStore = create<PresetStore>()(
           const filmStore = useFilmStore.getState();
           const bodyStore = useBodyStore.getState();
 
-          const filmPayload: any = {};
+          const filmPayload = {} as Record<keyof FilmPresetPayload, unknown>;
           Object.keys(DEFAULT_FILM_PAYLOAD).forEach((key) => {
             const k = key as keyof FilmPresetPayload;
-            const val = filmStore[k];
-            filmPayload[k] = val && typeof val === 'object' && 'value' in val
-              ? (val as any).value
+            const val = filmStore[k] as unknown;
+            const hasValue = val && typeof val === 'object' && 'value' in val;
+            filmPayload[k] = hasValue
+              ? (val as Record<string, unknown>).value
               : DEFAULT_FILM_PAYLOAD[k];
           });
 
-          const bodyPayload: any = {};
+          const bodyPayload = {} as Record<keyof BodyPresetPayload, unknown>;
           Object.keys(DEFAULT_BODY_PAYLOAD).forEach((key) => {
             const k = key as keyof BodyPresetPayload;
-            const val = bodyStore[k];
-            bodyPayload[k] = val && typeof val === 'object' && 'value' in val
-              ? (val as any).value
+            const val = bodyStore[k] as unknown;
+            const hasValue = val && typeof val === 'object' && 'value' in val;
+            bodyPayload[k] = hasValue
+              ? (val as Record<string, unknown>).value
               : DEFAULT_BODY_PAYLOAD[k];
           });
 
@@ -177,12 +181,14 @@ export const usePresetStore = create<PresetStore>()(
           isFavorite: false,
           inQuickSelect: false,
           createdAt: Date.now(),
+          thumbnailUri,
         };
 
         set({
           userPresets: [...userPresets, newPreset],
           activePresetId: newPreset.id,
           customizedPayload: null, // Reset customized once saved
+          customizedThumbnailUri: null,
         });
       },
 
@@ -250,8 +256,9 @@ export const usePresetStore = create<PresetStore>()(
         const targetFilm = { ...DEFAULT_FILM_PAYLOAD, ...payload.film };
         Object.keys(targetFilm).forEach((key) => {
           const k = key as keyof FilmPresetPayload;
-          if (filmStore[k] && typeof filmStore[k] === 'object' && 'value' in filmStore[k]) {
-            (filmStore[k] as any).value = targetFilm[k];
+          const storeItem = filmStore[k] as unknown;
+          if (storeItem && typeof storeItem === 'object' && 'value' in storeItem) {
+            (storeItem as Record<string, unknown>).value = targetFilm[k];
           }
         });
 
@@ -260,8 +267,9 @@ export const usePresetStore = create<PresetStore>()(
         const targetBody = { ...DEFAULT_BODY_PAYLOAD, ...payload.body };
         Object.keys(targetBody).forEach((key) => {
           const k = key as keyof BodyPresetPayload;
-          if (bodyStore[k] && typeof bodyStore[k] === 'object' && 'value' in bodyStore[k]) {
-            (bodyStore[k] as any).value = targetBody[k];
+          const storeItem = bodyStore[k] as unknown;
+          if (storeItem && typeof storeItem === 'object' && 'value' in storeItem) {
+            (storeItem as Record<string, unknown>).value = targetBody[k];
           }
         });
 
@@ -269,27 +277,29 @@ export const usePresetStore = create<PresetStore>()(
       },
 
       markAsCustomized: () => {
-        const { activePresetId, isApplyingPreset } = get();
+        const { isApplyingPreset } = get();
         if (isApplyingPreset) return;
 
         const filmStore = useFilmStore.getState();
         const bodyStore = useBodyStore.getState();
 
-        const filmPayload: any = {};
+        const filmPayload = {} as Record<keyof FilmPresetPayload, unknown>;
         Object.keys(DEFAULT_FILM_PAYLOAD).forEach((key) => {
           const k = key as keyof FilmPresetPayload;
-          const val = filmStore[k];
-          filmPayload[k] = val && typeof val === 'object' && 'value' in val
-            ? (val as any).value
+          const val = filmStore[k] as unknown;
+          const hasValue = val && typeof val === 'object' && 'value' in val;
+          filmPayload[k] = hasValue
+            ? (val as Record<string, unknown>).value
             : DEFAULT_FILM_PAYLOAD[k];
         });
 
-        const bodyPayload: any = {};
+        const bodyPayload = {} as Record<keyof BodyPresetPayload, unknown>;
         Object.keys(DEFAULT_BODY_PAYLOAD).forEach((key) => {
           const k = key as keyof BodyPresetPayload;
-          const val = bodyStore[k];
-          bodyPayload[k] = val && typeof val === 'object' && 'value' in val
-            ? (val as any).value
+          const val = bodyStore[k] as unknown;
+          const hasValue = val && typeof val === 'object' && 'value' in val;
+          bodyPayload[k] = hasValue
+            ? (val as Record<string, unknown>).value
             : DEFAULT_BODY_PAYLOAD[k];
         });
 
@@ -348,7 +358,7 @@ export const usePresetStore = create<PresetStore>()(
       partialize: (state) => ({
         userPresets: state.userPresets,
         activePresetId: state.activePresetId === 'customized' ? 'default' : state.activePresetId,
-      } as any),
+      }),
     }
   )
 );
@@ -364,4 +374,50 @@ if (typeof setBodyParameterChangeListener === 'function') {
     usePresetStore.getState().markAsCustomized();
   });
 }
+
+// Background generation of customized thumbnail
+let customizedThumbTimeout: NodeJS.Timeout | null = null;
+let lastGenerationUri: string | null = null;
+
+usePresetStore.subscribe((state, prevState) => {
+  if (state.customizedPayload && state.customizedPayload !== prevState.customizedPayload) {
+    if (customizedThumbTimeout) clearTimeout(customizedThumbTimeout);
+    
+    customizedThumbTimeout = setTimeout(async () => {
+      try {
+        const { Asset } = require('expo-asset');
+        const { generatePresetPreview, deleteFile } = require('@grovkornet/engine');
+        // eslint-disable-next-line @typescript-eslint/no-require-imports
+        const monoscopeAssetSource = require('../../../../assets/monoscope.jpg') as number;
+        
+        const asset = Asset.fromModule(monoscopeAssetSource);
+        await asset.downloadAsync();
+        const inputUri = asset.localUri || asset.uri;
+        if (!inputUri) return;
+
+        const filmPayload = state.customizedPayload!.film;
+        const uri = await generatePresetPreview(inputUri, filmPayload);
+        
+        const currentUri = usePresetStore.getState().customizedThumbnailUri;
+        if (currentUri && currentUri !== lastGenerationUri) {
+          void deleteFile(currentUri);
+        }
+        
+        lastGenerationUri = uri;
+        usePresetStore.setState({ customizedThumbnailUri: uri });
+      } catch (err) {
+        console.error('Failed to generate customized thumbnail:', err);
+      }
+    }, 500); // 500ms debounce
+  } else if (!state.customizedPayload && prevState.customizedPayload) {
+    // cleanup when customized payload is reset
+    if (customizedThumbTimeout) clearTimeout(customizedThumbTimeout);
+    const currentUri = state.customizedThumbnailUri;
+    if (currentUri) {
+       const { deleteFile } = require('@grovkornet/engine');
+       void deleteFile(currentUri);
+       usePresetStore.setState({ customizedThumbnailUri: null });
+    }
+  }
+});
 

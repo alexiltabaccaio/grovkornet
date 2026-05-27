@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, useWindowDimensions } from 'react-native';
-import Animated, { useAnimatedStyle, withTiming } from 'react-native-reanimated';
+import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 import { Image } from 'expo-image';
 import { GalleryItem } from '../../lib/types';
 

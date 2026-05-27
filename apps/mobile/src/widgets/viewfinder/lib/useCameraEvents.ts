@@ -50,6 +50,7 @@ export const useCameraEvents = () => {
     if (__DEV__ && nativeEvent.timestamp) {
       const bridgeTime = Date.now() - nativeEvent.timestamp;
       if (bridgeTime > 15) {
+        // eslint-disable-next-line no-console
         console.log(`[Bridge Latency] onDebugUpdate took ${bridgeTime}ms to reach JS worklet`);
       }
     }

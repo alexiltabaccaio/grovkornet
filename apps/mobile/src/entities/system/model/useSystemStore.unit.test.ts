@@ -19,6 +19,7 @@ describe('useSystemStore', () => {
       lastActiveParameters: {
         none: 'none',
         preferences: 'language',
+        presets: 'presets',
         optics: 'camera_selection',
         flaws: 'chromatic_aberration',
         exposure: 'iso',

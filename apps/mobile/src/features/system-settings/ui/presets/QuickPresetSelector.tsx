@@ -2,22 +2,18 @@ import React from 'react';
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useShallow } from 'zustand/react/shallow';
-import { usePresetStore, Preset } from '@entities/preset';
+import { usePresetStore, PresetStore } from '@entities/preset';
 import * as Haptics from 'expo-haptics';
 
 export const QuickPresetSelector = () => {
   const {
     activePresetId,
-    userPresets,
-    customizedPayload,
     nextQuickPreset,
     prevQuickPreset,
     getQuickSelectList,
   } = usePresetStore(
-    useShallow((s: any) => ({
+    useShallow((s: PresetStore) => ({
       activePresetId: s.activePresetId,
-      userPresets: s.userPresets,
-      customizedPayload: s.customizedPayload,
       nextQuickPreset: s.nextQuickPreset,
       prevQuickPreset: s.prevQuickPreset,
       getQuickSelectList: s.getQuickSelectList,

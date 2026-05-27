@@ -132,13 +132,15 @@ const includedBodySetters = [
   'setEvAuto',
 ];
 
-Object.keys(bodyStoreState).forEach((key) => {
+const storeRecord = bodyStoreState as unknown as Record<string, unknown>;
+
+Object.keys(storeRecord).forEach((key) => {
   if (
     includedBodySetters.includes(key) &&
-    typeof (bodyStoreState as any)[key] === 'function'
+    typeof storeRecord[key] === 'function'
   ) {
-    const originalFn = (bodyStoreState as any)[key];
-    (bodyStoreState as any)[key] = (...args: any[]) => {
+    const originalFn = storeRecord[key] as (...args: unknown[]) => void;
+    storeRecord[key] = (...args: unknown[]) => {
       originalFn(...args);
       parameterChangeListener?.();
     };

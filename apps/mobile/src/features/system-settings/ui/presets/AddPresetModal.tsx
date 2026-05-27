@@ -1,34 +1,56 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { StyleSheet, View, Text, TextInput, TouchableOpacity, Alert, BackHandler } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useShallow } from 'zustand/react/shallow';
-import { usePresetStore, Preset } from '@entities/preset';
+import { usePresetStore, Preset, DEFAULT_FILM_PAYLOAD, FilmPresetPayload, PresetStore, PresetPayload } from '@entities/preset';
 import * as Haptics from 'expo-haptics';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
+import { Asset } from 'expo-asset';
+import { generatePresetPreview, deleteFile } from '@grovkornet/engine';
+import { useFilmStore } from '@entities/film';
+
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const monoscopeAssetSource = require('../../../../../assets/monoscope.jpg') as number;
+
+const getActiveFilmPayload = (customizedPayload: PresetPayload | null): FilmPresetPayload => {
+  if (customizedPayload?.film) {
+    return customizedPayload.film;
+  }
+  
+  const filmStore = useFilmStore.getState();
+  const filmPayload: Partial<FilmPresetPayload> = {};
+  const target = filmPayload as Record<keyof FilmPresetPayload, unknown>;
+  Object.keys(DEFAULT_FILM_PAYLOAD).forEach((key) => {
+    const k = key as keyof FilmPresetPayload;
+    const val = filmStore[k] as unknown;
+    target[k] = val && typeof val === 'object' && 'value' in val
+      ? (val as { value: number | boolean }).value
+      : DEFAULT_FILM_PAYLOAD[k];
+  });
+  return filmPayload as FilmPresetPayload;
+};
 
 export const AddPresetModal = () => {
   const { t } = useTranslation();
-  const { isAddModalVisible, setAddModalVisible, addPreset, userPresets } = usePresetStore(
-    useShallow((s: any) => ({
+  const { isAddModalVisible, setAddModalVisible, addPreset, userPresets, customizedPayload } = usePresetStore(
+    useShallow((s: PresetStore) => ({
       isAddModalVisible: s.isAddModalVisible,
       setAddModalVisible: s.setAddModalVisible,
       addPreset: s.addPreset,
       userPresets: s.userPresets,
+      customizedPayload: s.customizedPayload,
     }))
   );
 
   const [newPresetName, setNewPresetName] = useState('');
-
-  useEffect(() => {
-    // Reset state before rendering if modal is closed, but don't do it blindly
-    if (!isAddModalVisible && newPresetName !== '') {
-      setNewPresetName('');
-    }
-  }, [isAddModalVisible, newPresetName]);
+  const [tempThumbnailUri, setTempThumbnailUri] = useState<string | null>(null);
+  
+  const isSavedRef = useRef(false);
 
   useEffect(() => {
     const onBackPress = () => {
       if (isAddModalVisible) {
+        setNewPresetName('');
         setAddModalVisible(false);
         return true;
       }
@@ -37,6 +59,49 @@ export const AddPresetModal = () => {
     BackHandler.addEventListener('hardwareBackPress', onBackPress);
     return () => BackHandler.removeEventListener('hardwareBackPress', onBackPress);
   }, [isAddModalVisible, setAddModalVisible]);
+
+  useEffect(() => {
+    let active = true;
+    let localTempUri: string | null = null;
+
+    const generatePreview = async () => {
+      if (!isAddModalVisible) return;
+      isSavedRef.current = false;
+      setTempThumbnailUri(null);
+      try {
+        const asset = Asset.fromModule(monoscopeAssetSource);
+        await asset.downloadAsync();
+        const inputUri = asset.localUri || asset.uri;
+
+        if (!inputUri) {
+          throw new Error('Could not resolve asset URI');
+        }
+
+        const filmPayload = getActiveFilmPayload(customizedPayload);
+        const previewUri = await generatePresetPreview(inputUri, filmPayload);
+        
+        if (active) {
+          setTempThumbnailUri(previewUri);
+          localTempUri = previewUri;
+        } else {
+          void deleteFile(previewUri);
+        }
+      } catch (err) {
+        console.error('Failed to generate preset preview:', err);
+      }
+    };
+
+    if (isAddModalVisible) {
+      void generatePreview();
+    }
+
+    return () => {
+      active = false;
+      if (localTempUri && !isSavedRef.current) {
+        void deleteFile(localTempUri);
+      }
+    };
+  }, [isAddModalVisible, customizedPayload]);
 
   if (!isAddModalVisible) return null;
 
@@ -58,7 +123,9 @@ export const AddPresetModal = () => {
     }
 
     void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-    addPreset(trimmedName);
+    isSavedRef.current = true;
+    addPreset(trimmedName, tempThumbnailUri || undefined);
+    setNewPresetName('');
     setAddModalVisible(false);
   };
 
@@ -88,7 +155,10 @@ export const AddPresetModal = () => {
 
         <View style={styles.modalButtons}>
           <TouchableOpacity
-            onPress={() => setAddModalVisible(false)}
+            onPress={() => {
+              setNewPresetName('');
+              setAddModalVisible(false);
+            }}
             activeOpacity={0.7}
             style={[styles.modalButton, styles.modalCancelButton]}
           >

@@ -78,4 +78,42 @@ export const styles = StyleSheet.create({
     margin: 0,
     letterSpacing: 0.5,
   },
+  presetContainer: {
+    width: 80,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginHorizontal: 2,
+  },
+  presetContainerActive: {
+    // eventuali stili per il contenitore attivo
+  },
+  presetImageContainer: {
+    width: 80,
+    height: 60,
+    borderRadius: 8,
+    borderWidth: 1.5,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+    backgroundColor: '#000',
+    overflow: 'hidden',
+    marginBottom: 6,
+  },
+  presetImageContainerActive: {
+    borderColor: '#FF9500',
+  },
+  presetImage: {
+    width: '100%',
+    height: '100%',
+  },
+  presetLabel: {
+    color: 'rgba(255, 255, 255, 0.4)',
+    fontSize: 9,
+    fontWeight: '900',
+    letterSpacing: 0.8,
+    textAlign: 'center',
+    width: '100%',
+  },
+  presetLabelActive: {
+    color: '#FF9500',
+    fontWeight: '900',
+  },
 });

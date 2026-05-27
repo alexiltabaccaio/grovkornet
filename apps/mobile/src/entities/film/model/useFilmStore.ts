@@ -270,14 +270,16 @@ export const setFilmParameterChangeListener = (listener: () => void) => {
 const filmStoreState = useFilmStore.getState();
 const excludedFilmSetters = ['setCapabilities', 'resetEffect'];
 
-Object.keys(filmStoreState).forEach((key) => {
+const storeRecord = filmStoreState as unknown as Record<string, unknown>;
+
+Object.keys(storeRecord).forEach((key) => {
   if (
     key.startsWith('set') &&
     !excludedFilmSetters.includes(key) &&
-    typeof (filmStoreState as any)[key] === 'function'
+    typeof storeRecord[key] === 'function'
   ) {
-    const originalFn = (filmStoreState as any)[key];
-    (filmStoreState as any)[key] = (...args: any[]) => {
+    const originalFn = storeRecord[key] as (...args: unknown[]) => void;
+    storeRecord[key] = (...args: unknown[]) => {
       originalFn(...args);
       parameterChangeListener?.();
     };

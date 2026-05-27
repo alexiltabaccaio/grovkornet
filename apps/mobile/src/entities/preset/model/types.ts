@@ -65,6 +65,7 @@ export interface Preset {
   isFavorite: boolean;
   inQuickSelect: boolean;
   createdAt: number;
+  thumbnailUri?: string;
 }
 
 // ==========================================

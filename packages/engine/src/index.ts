@@ -78,12 +78,24 @@ try {
 } catch {
   NativeFilmCameraModule = {
     verifyGrovkornetAuthenticity: async () => Promise.resolve(true),
+    generatePresetPreview: async () => Promise.resolve(''),
+    deleteFile: async () => Promise.resolve(false),
   };
 }
 
 export async function verifyGrovkornetAuthenticity(uri: string): Promise<boolean> {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access
   return await NativeFilmCameraModule.verifyGrovkornetAuthenticity(uri);
+}
+
+export async function generatePresetPreview(inputUri: string, payload: any): Promise<string> {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access
+  return await NativeFilmCameraModule.generatePresetPreview(inputUri, payload);
+}
+
+export async function deleteFile(uri: string): Promise<boolean> {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access
+  return await NativeFilmCameraModule.deleteFile(uri);
 }
 
 export { NativeFilmCameraView };
