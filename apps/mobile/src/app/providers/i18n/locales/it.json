@@ -25,6 +25,7 @@
     "parameters": {
       "presets": "PRESET",
       "language": "LINGUA",
+      "vibration": "VIBRAZIONE",
       "debug_ui": "OVERLAY UI",
       "debug_logs": "LOG CONSOLE",
       "amount": "QUANTITÀ",

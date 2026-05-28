@@ -6,8 +6,6 @@
 
 ---
 
-## [TICKET #04] – Rafforzamento Watermark Anti-Intrusione
-
 ## [TICKET #06] – Architettura Preset: Scratchpad e Viral Loop per Instagram
 
 ## [TICKET #08] – Refactoring Gerarchia UI: Controlli Bloom e Inversione Sliders

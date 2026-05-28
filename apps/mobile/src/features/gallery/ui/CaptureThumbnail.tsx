@@ -6,6 +6,7 @@ import { useSystemStore } from '@entities/system';
 import { useShallow } from 'zustand/react/shallow';
 import * as MediaLibrary from 'expo-media-library';
 import { logger } from '@shared/lib/logger';
+import * as Haptics from '@shared/lib/haptics';
 
 interface CaptureThumbnailProps {
   onPress: () => void;
@@ -99,8 +100,13 @@ export const CaptureThumbnail = ({ onPress }: CaptureThumbnailProps) => {
     transform: [{ scale: scale.value }],
   }));
 
+  const handlePress = () => {
+    void Haptics.selectionAsync();
+    onPress();
+  };
+
   return (
-    <Pressable testID="capture-thumbnail" onPress={onPress} style={styles.wrapper}>
+    <Pressable testID="capture-thumbnail" onPress={handlePress} style={styles.wrapper}>
       {!isCapturing && !latestCapturedUri && !latestPreviewUri ? (
         <View style={styles.placeholder} />
       ) : (

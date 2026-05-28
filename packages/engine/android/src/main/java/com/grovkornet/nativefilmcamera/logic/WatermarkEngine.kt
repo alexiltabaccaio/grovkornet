@@ -32,7 +32,6 @@ object WatermarkEngine {
     }
 
     fun verifyGrovkornetAuthenticity(context: Context, uri: Uri): Boolean {
-        // DCT deep path: decode bitmap and verify signature natively
         try {
             val tempFile = java.io.File(context.cacheDir, "temp_verify_${System.currentTimeMillis()}.jpg")
             context.contentResolver.openInputStream(uri)?.use { input ->
@@ -42,30 +41,22 @@ object WatermarkEngine {
             }
 
             try {
-                var bitmap: Bitmap? = null
-                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
-                    val decoder = android.graphics.BitmapRegionDecoder.newInstance(tempFile.absolutePath)
-                    if (decoder != null) {
-                        val rect = android.graphics.Rect(0, 0, 64, 64)
-                        val options = BitmapFactory.Options().apply {
-                            inPreferredConfig = Bitmap.Config.ARGB_8888
-                        }
-                        bitmap = decoder.decodeRegion(rect, options)
-                        decoder.recycle()
+                // 1. Fast Path: Check EXIF Software metadata
+                try {
+                    val exif = android.media.ExifInterface(tempFile.absolutePath)
+                    val software = exif.getAttribute(android.media.ExifInterface.TAG_SOFTWARE)
+                    if (software != null && software.startsWith("Grovkornet")) {
+                        return true
                     }
-                } else {
-                    @Suppress("DEPRECATION")
-                    val decoder = android.graphics.BitmapRegionDecoder.newInstance(tempFile.absolutePath, false)
-                    if (decoder != null) {
-                        val rect = android.graphics.Rect(0, 0, 64, 64)
-                        val options = BitmapFactory.Options().apply {
-                            inPreferredConfig = Bitmap.Config.ARGB_8888
-                        }
-                        bitmap = decoder.decodeRegion(rect, options)
-                        decoder.recycle()
-                    }
+                } catch (e: Exception) {
+                    Log.e(TAG, "Failed to read EXIF software metadata", e)
                 }
-                
+
+                // 2. Fallback: DCT deep path on full image
+                val options = BitmapFactory.Options().apply {
+                    inPreferredConfig = Bitmap.Config.ARGB_8888
+                }
+                val bitmap = BitmapFactory.decodeFile(tempFile.absolutePath, options)
                 if (bitmap == null) {
                     return false
                 }

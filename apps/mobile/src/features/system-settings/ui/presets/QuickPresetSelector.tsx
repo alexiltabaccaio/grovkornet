@@ -3,7 +3,7 @@ import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useShallow } from 'zustand/react/shallow';
 import { usePresetStore, PresetStore } from '@entities/preset';
-import * as Haptics from 'expo-haptics';
+import * as Haptics from '@shared/lib/haptics';
 
 import { nextQuickPreset, prevQuickPreset } from '../../lib/presetActions';
 

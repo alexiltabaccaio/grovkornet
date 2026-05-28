@@ -4,10 +4,22 @@ import Animated, {
   useAnimatedStyle,
   useAnimatedProps,
   useSharedValue,
+  runOnJS,
 } from 'react-native-reanimated';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import { useFilmStore, useFilmWorklets } from '@entities/film';
 import { unwrap, angleToX, xToAngle } from '../../lib/colorMath';
+import * as Haptics from '@shared/lib/haptics';
+import {
+  DEFAULT_BOUND_RED_ORANGE,
+  DEFAULT_BOUND_ORANGE_YELLOW,
+  DEFAULT_BOUND_YELLOW_GREEN,
+  DEFAULT_BOUND_GREEN_CYAN,
+  DEFAULT_BOUND_CYAN_BLUE,
+  DEFAULT_BOUND_BLUE_PURPLE,
+  DEFAULT_BOUND_PURPLE_MAGENTA,
+  DEFAULT_BOUND_MAGENTA_RED,
+} from '@grovkornet/shared';
 
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
@@ -45,6 +57,17 @@ const BOUND_WORKLET_KEYS = [
   'updateBoundPurpleMagenta',
   'updateBoundMagentaRed',
 ] as const;
+
+const BOUND_DEFAULTS = [
+  DEFAULT_BOUND_RED_ORANGE,
+  DEFAULT_BOUND_ORANGE_YELLOW,
+  DEFAULT_BOUND_YELLOW_GREEN,
+  DEFAULT_BOUND_GREEN_CYAN,
+  DEFAULT_BOUND_CYAN_BLUE,
+  DEFAULT_BOUND_BLUE_PURPLE,
+  DEFAULT_BOUND_PURPLE_MAGENTA,
+  DEFAULT_BOUND_MAGENTA_RED,
+];
 
 const AnimatedTextInput = Animated.createAnimatedComponent(TextInput);
 
@@ -146,6 +169,21 @@ export const ColorRangeSlider = ({ activeColorIndex }: ColorRangeSliderProps) =>
         updateRightBound(finalAngle);
       }
     });
+
+  const leftDefault = BOUND_DEFAULTS[(activeColorIndex - 1 + 8) % 8];
+  const rightDefault = BOUND_DEFAULTS[activeColorIndex];
+
+  const doubleTap = Gesture.Tap()
+    .numberOfTaps(2)
+    .maxDistance(20)
+    .onEnd(() => {
+      'worklet';
+      runOnJS(Haptics.impactAsync)(Haptics.ImpactFeedbackStyle.Medium);
+      updateLeftBound(leftDefault);
+      updateRightBound(rightDefault);
+    });
+
+  const combinedGesture = Gesture.Simultaneous(panGesture, doubleTap);
 
   // Animated background track sections
   const leftBgStyle = useAnimatedStyle(() => {
@@ -261,7 +299,7 @@ export const ColorRangeSlider = ({ activeColorIndex }: ColorRangeSliderProps) =>
       </View>
 
       {/* Slider Track with 3-color background sections and two pans */}
-      <GestureDetector gesture={panGesture}>
+      <GestureDetector gesture={combinedGesture}>
         <View
           testID="color-range-slider-track"
           style={styles.sliderTrackContainer}

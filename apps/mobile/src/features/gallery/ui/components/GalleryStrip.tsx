@@ -4,6 +4,7 @@ import { Image } from 'expo-image';
 import { Ionicons } from '@expo/vector-icons';
 import { GalleryItem } from '../../lib/types';
 import { BottomFooter } from '@shared/ui';
+import * as Haptics from '@shared/lib/haptics';
 import Animated, { useAnimatedStyle, interpolate, SharedValue } from 'react-native-reanimated';
 
 const { width } = Dimensions.get('window');
@@ -23,7 +24,10 @@ const GalleryStripItem = React.memo(({ item, isSelected, onSelect }: GalleryStri
         styles.thumbnailWrapper,
         isSelected && styles.thumbnailSelected
       ]}
-      onPress={() => onSelect(item)}
+      onPress={() => {
+        void Haptics.selectionAsync();
+        onSelect(item);
+      }}
     >
       <Image
         source={{ uri: item.uri }}
@@ -71,7 +75,10 @@ export const GalleryStrip = ({ photos, selectedPhoto, onSelectPhoto, onClose, ga
     <BottomFooter style={styles.footerContainer}>
       <Animated.View style={[styles.innerAnimatedContainer, animatedStyle]}>
         <Pressable 
-        onPress={onClose} 
+        onPress={() => {
+          void Haptics.selectionAsync();
+          onClose();
+        }} 
         style={styles.backButton} 
         accessibilityLabel="Go back" 
         accessibilityRole="button"

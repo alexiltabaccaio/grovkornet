@@ -40,6 +40,7 @@ export const SaturationDetailPanel = ({
     activeValue,
     activeSetter,
     activeWorklet,
+    activeReset,
     masterData,
     handleColorPress,
     handlePressWithDouble,
@@ -85,7 +86,7 @@ export const SaturationDetailPanel = ({
             onChange={activeSetter}
             onUpdateWorklet={activeWorklet}
             variant="slider"
-            onReset={isMaster ? masterData.onReset : undefined}
+            onReset={activeReset}
             valueFormatter={isMaster ? masterData.valueFormatter : formatSaturationColor}
             sliderColor={isMaster ? undefined : COLOR_MAPPING[activeColorIndex as number].color}
           />

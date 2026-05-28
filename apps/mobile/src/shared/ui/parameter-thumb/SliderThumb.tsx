@@ -12,6 +12,7 @@ import { ParameterThumbViewProps } from './ParameterThumbView.types';
 import { logger } from '@shared/lib/logger';
 import { AutoButton } from '../auto-button/AutoButton';
 import { globalMeasuredTrackWidth, setGlobalMeasuredTrackWidth } from './globalTrackWidth';
+import * as Haptics from '@shared/lib/haptics';
 
 const AnimatedTextInput = Animated.createAnimatedComponent(TextInput);
 
@@ -38,15 +39,6 @@ export const SliderThumb = React.memo(({
     logger.debug('SliderThumb', `Mounted for param with minValue=${minValue}, maxValue=${maxValue}`);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  const doubleTap = Gesture.Tap()
-    .numberOfTaps(2)
-    .runOnJS(true)
-    .onEnd(() => {
-      if (onReset) {
-        onReset();
-      }
-    });
 
   const animatedTextProps = useAnimatedProps((): Record<string, unknown> => {
     if (!value) return { text: '' };
@@ -190,16 +182,14 @@ export const SliderThumb = React.memo(({
         <Animated.View style={[styles.thumb, animatedThumbStyle]} />
       </View>
 
-      <GestureDetector gesture={doubleTap}>
-        <Animated.View style={styles.valueTextContainer}>
-          <AnimatedTextInput
-            style={[styles.valueText, animatedTextStyle]}
-            animatedProps={animatedTextProps}
-            editable={false}
-            pointerEvents="none"
-          />
-        </Animated.View>
-      </GestureDetector>
+      <Animated.View style={styles.valueTextContainer}>
+        <AnimatedTextInput
+          style={[styles.valueText, animatedTextStyle]}
+          animatedProps={animatedTextProps}
+          editable={false}
+          pointerEvents="none"
+        />
+      </Animated.View>
     </View>
   );
 });

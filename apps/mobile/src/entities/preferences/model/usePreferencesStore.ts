@@ -12,6 +12,7 @@ interface PreferencesState {
   cameraAuto: boolean | null;
   focusDistance: number | null;
   focusAuto: boolean | null;
+  hapticsEnabled: boolean | null;
 }
 
 interface PreferencesActions {
@@ -24,6 +25,7 @@ interface PreferencesActions {
   setCameraAutoPref: (val: boolean) => void;
   setFocusDistancePref: (val: number) => void;
   setFocusAutoPref: (val: boolean) => void;
+  setHapticsEnabledPref: (val: boolean) => void;
 }
 
 export const usePreferencesStore = create<PreferencesState & PreferencesActions>()(
@@ -38,6 +40,7 @@ export const usePreferencesStore = create<PreferencesState & PreferencesActions>
       cameraAuto: null,
       focusDistance: null,
       focusAuto: null,
+      hapticsEnabled: null,
 
       setFpsSettingPref: (val) => set({ fpsSetting: val }),
       setResolutionSettingPref: (val) => set({ resolutionSetting: val }),
@@ -48,6 +51,7 @@ export const usePreferencesStore = create<PreferencesState & PreferencesActions>
       setCameraAutoPref: (val) => set({ cameraAuto: val }),
       setFocusDistancePref: (val) => set({ focusDistance: val }),
       setFocusAutoPref: (val) => set({ focusAuto: val }),
+      setHapticsEnabledPref: (val) => set({ hapticsEnabled: val }),
     }),
     {
       name: 'grovkornet-preferences-storage',

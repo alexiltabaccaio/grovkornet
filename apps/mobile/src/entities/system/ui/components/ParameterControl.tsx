@@ -78,6 +78,7 @@ export const ParameterControl = React.memo(({
     disabled,
     variant,
     hideAutoPlaceholder,
+    onReset,
   });
 
   if (disableGestures) {

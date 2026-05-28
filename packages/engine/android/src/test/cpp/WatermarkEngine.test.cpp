@@ -3,30 +3,33 @@
 #include <vector>
 
 TEST(WatermarkEngineTest, EmbedAndVerifySignature) {
-    // 64x64 dummy RGBA buffer
-    std::vector<uint32_t> pixels(64 * 64, 0xFF808080); // mid-gray with full alpha
-
-    // Print debug details of verifySignature for the un-watermarked buffer
-    printf("DEBUG: Starting verification of un-watermarked buffer:\n");
-
-
-    bool isVerified = WatermarkEngine::verifySignature(pixels.data(), 64, 64, 64);
-    printf("DEBUG: verifySignature returned %s\n", isVerified ? "true" : "false");
+    // 200x200 dummy RGBA buffer
+    std::vector<uint32_t> pixels(200 * 200, 0xFF808080); // mid-gray with full alpha
 
     // Before embedding, it should not verify
-    EXPECT_FALSE(isVerified);
+    EXPECT_FALSE(WatermarkEngine::verifySignature(pixels.data(), 200, 200, 200));
 
-    // Embed signature
-    WatermarkEngine::embedSignature(pixels.data(), 64, 64, 64);
+    // Embed signature (writes to 5 regions)
+    WatermarkEngine::embedSignature(pixels.data(), 200, 200, 200);
 
     // After embedding, it should verify successfully
-    EXPECT_TRUE(WatermarkEngine::verifySignature(pixels.data(), 64, 64, 64));
+    EXPECT_TRUE(WatermarkEngine::verifySignature(pixels.data(), 200, 200, 200));
 
-    // Tamper with the pixels (e.g. clear top half)
-    for (int i = 0; i < 2000; ++i) {
+    // Tamper with the top-left region (0,0 to 64,64)
+    for (int y = 0; y < 64; ++y) {
+        for (int x = 0; x < 64; ++x) {
+            pixels[y * 200 + x] = 0xFF000000;
+        }
+    }
+
+    // It should STILL verify successfully because other regions (corners & center) are intact!
+    EXPECT_TRUE(WatermarkEngine::verifySignature(pixels.data(), 200, 200, 200));
+
+    // Tamper with the entire image
+    for (size_t i = 0; i < pixels.size(); ++i) {
         pixels[i] = 0xFF000000;
     }
 
-    // After tampering, verification should fail
-    EXPECT_FALSE(WatermarkEngine::verifySignature(pixels.data(), 64, 64, 64));
+    // After full tampering, verification should fail
+    EXPECT_FALSE(WatermarkEngine::verifySignature(pixels.data(), 200, 200, 200));
 }

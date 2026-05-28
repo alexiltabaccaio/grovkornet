@@ -1,9 +1,20 @@
 import React, { useMemo, useCallback } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 import { useFilmStore, useFilmWorklets, useFilmParameterControlData } from '@entities/film';
-import { DEFAULT_SELECTIVE_SATURATION } from '@grovkornet/shared';
+import { 
+  DEFAULT_SELECTIVE_SATURATION,
+  DEFAULT_BOUND_RED_ORANGE,
+  DEFAULT_BOUND_ORANGE_YELLOW,
+  DEFAULT_BOUND_YELLOW_GREEN,
+  DEFAULT_BOUND_GREEN_CYAN,
+  DEFAULT_BOUND_CYAN_BLUE,
+  DEFAULT_BOUND_BLUE_PURPLE,
+  DEFAULT_BOUND_PURPLE_MAGENTA,
+  DEFAULT_BOUND_MAGENTA_RED,
+} from '@grovkornet/shared';
 import { useDoublePress } from '@shared/lib/hooks/useDoublePress';
 import { useSystemStore } from '@entities/system';
+import * as Haptics from '@shared/lib/haptics';
 
 export type ColorIndex = 'master' | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7;
 
@@ -30,6 +41,14 @@ export const useSelectiveSaturation = () => {
     satBlue, setSatBlue,
     satPurple, setSatPurple,
     satMagenta, setSatMagenta,
+    setBoundMagentaRed,
+    setBoundRedOrange,
+    setBoundOrangeYellow,
+    setBoundYellowGreen,
+    setBoundGreenCyan,
+    setBoundCyanBlue,
+    setBoundBluePurple,
+    setBoundPurpleMagenta,
   } = useFilmStore(
     useShallow(state => ({
       satRed: state.satRed,
@@ -48,10 +67,25 @@ export const useSelectiveSaturation = () => {
       setSatPurple: state.setSatPurple,
       satMagenta: state.satMagenta,
       setSatMagenta: state.setSatMagenta,
+      setBoundMagentaRed: state.setBoundMagentaRed,
+      setBoundRedOrange: state.setBoundRedOrange,
+      setBoundOrangeYellow: state.setBoundOrangeYellow,
+      setBoundYellowGreen: state.setBoundYellowGreen,
+      setBoundGreenCyan: state.setBoundGreenCyan,
+      setBoundCyanBlue: state.setBoundCyanBlue,
+      setBoundBluePurple: state.setBoundBluePurple,
+      setBoundPurpleMagenta: state.setBoundPurpleMagenta,
     }))
   );
 
-  const handleColorReset = useCallback((colorKey: string) => {
+  // RESET HIERARCHY FOR SELECTIVE SATURATION:
+  // 1. Double tap on main 'Saturation' parameter -> Resets EVERYTHING (all colors and bounds) via useFilmStore resetEffect.
+  // 2. Double tap on multi-color Master dot -> Resets ONLY the master saturation.
+  // 3. Double tap on specific color dot (e.g. Green) -> Resets BOTH the saturation and bounds for that color (handleFullColorReset).
+  // 4. Double tap on top saturation slider -> Resets ONLY the saturation for that color (handleSaturationOnlyReset).
+  // 5. Double tap on bottom ColorRangeSlider -> Resets ONLY the bounds for that color (handled locally in ColorRangeSlider.tsx).
+
+  const handleSaturationOnlyReset = useCallback((colorKey: string) => {
     if (colorKey === 'master') {
       masterData.onReset();
     } else {
@@ -69,7 +103,57 @@ export const useSelectiveSaturation = () => {
     }
   }, [masterData, setSatRed, setSatOrange, setSatYellow, setSatGreen, setSatCyan, setSatBlue, setSatPurple, setSatMagenta]);
 
-  const { handlePressWithDouble } = useDoublePress(handleColorReset);
+  const handleFullColorReset = useCallback((colorKey: string) => {
+    if (colorKey === 'master') {
+      masterData.onReset();
+    } else {
+      const v = DEFAULT_SELECTIVE_SATURATION;
+      switch (colorKey) {
+        case 'red':
+          setSatRed(v);
+          setBoundMagentaRed(DEFAULT_BOUND_MAGENTA_RED);
+          setBoundRedOrange(DEFAULT_BOUND_RED_ORANGE);
+          break;
+        case 'orange':
+          setSatOrange(v);
+          setBoundRedOrange(DEFAULT_BOUND_RED_ORANGE);
+          setBoundOrangeYellow(DEFAULT_BOUND_ORANGE_YELLOW);
+          break;
+        case 'yellow':
+          setSatYellow(v);
+          setBoundOrangeYellow(DEFAULT_BOUND_ORANGE_YELLOW);
+          setBoundYellowGreen(DEFAULT_BOUND_YELLOW_GREEN);
+          break;
+        case 'green':
+          setSatGreen(v);
+          setBoundYellowGreen(DEFAULT_BOUND_YELLOW_GREEN);
+          setBoundGreenCyan(DEFAULT_BOUND_GREEN_CYAN);
+          break;
+        case 'cyan':
+          setSatCyan(v);
+          setBoundGreenCyan(DEFAULT_BOUND_GREEN_CYAN);
+          setBoundCyanBlue(DEFAULT_BOUND_CYAN_BLUE);
+          break;
+        case 'blue':
+          setSatBlue(v);
+          setBoundCyanBlue(DEFAULT_BOUND_CYAN_BLUE);
+          setBoundBluePurple(DEFAULT_BOUND_BLUE_PURPLE);
+          break;
+        case 'purple':
+          setSatPurple(v);
+          setBoundBluePurple(DEFAULT_BOUND_BLUE_PURPLE);
+          setBoundPurpleMagenta(DEFAULT_BOUND_PURPLE_MAGENTA);
+          break;
+        case 'magenta':
+          setSatMagenta(v);
+          setBoundPurpleMagenta(DEFAULT_BOUND_PURPLE_MAGENTA);
+          setBoundMagentaRed(DEFAULT_BOUND_MAGENTA_RED);
+          break;
+      }
+    }
+  }, [masterData, setSatRed, setSatOrange, setSatYellow, setSatGreen, setSatCyan, setSatBlue, setSatPurple, setSatMagenta, setBoundMagentaRed, setBoundRedOrange, setBoundOrangeYellow, setBoundYellowGreen, setBoundGreenCyan, setBoundCyanBlue, setBoundBluePurple, setBoundPurpleMagenta]);
+
+  const { handlePressWithDouble } = useDoublePress(handleFullColorReset);
 
   const handleColorPress = useCallback((key: string, index: number) => {
     handlePressWithDouble(key, () => setActiveColorIndex(index as ColorIndex));
@@ -121,6 +205,12 @@ export const useSelectiveSaturation = () => {
     }
   }, [activeColorIndex, masterData.onUpdateWorklet, worklets]);
 
+  const activeReset = useMemo(() => {
+    if (activeColorIndex === 'master') return masterData.onReset;
+    const colorKeys = ['red', 'orange', 'yellow', 'green', 'cyan', 'blue', 'purple', 'magenta'];
+    return () => handleSaturationOnlyReset(colorKeys[activeColorIndex as number]);
+  }, [activeColorIndex, masterData.onReset, handleSaturationOnlyReset]);
+
   return {
     activeColorIndex,
     setActiveColorIndex,
@@ -128,6 +218,7 @@ export const useSelectiveSaturation = () => {
     activeValue,
     activeSetter,
     activeWorklet,
+    activeReset,
     masterData,
     handleColorPress,
     handlePressWithDouble,

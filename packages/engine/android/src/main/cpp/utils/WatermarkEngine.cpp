@@ -26,83 +26,96 @@ void WatermarkEngine::embedSignature(uint32_t* pixels, int width, int height, in
         return;
     }
 
-    for (int blockIndex = 0; blockIndex < 64; ++blockIndex) {
-        int startX = (blockIndex % 8) * 8;
-        int startY = (blockIndex / 8) * 8;
-        uint64_t bit = (SIGNATURE >> (63 - blockIndex)) & 1ULL;
+    int offsets[5][2] = {
+        { 0, 0 },                                    // Top-Left
+        { width - 64, 0 },                           // Top-Right
+        { 0, height - 64 },                          // Bottom-Left
+        { width - 64, height - 64 },                 // Bottom-Right
+        { width / 2 - 32, height / 2 - 32 }          // Center
+    };
 
-        double luma[8][8];
-        uint32_t alpha[8][8];
+    for (int r = 0; r < 5; ++r) {
+        int offsetX = offsets[r][0];
+        int offsetY = offsets[r][1];
 
-        for (int y = 0; y < 8; ++y) {
-            for (int x = 0; x < 8; ++x) {
-                uint32_t color = pixels[(startY + y) * stride + (startX + x)];
-                int r = (color >> 16) & 0xFF;
-                int g = (color >> 8) & 0xFF;
-                int b = color & 0xFF;
+        for (int blockIndex = 0; blockIndex < 64; ++blockIndex) {
+            int startX = offsetX + (blockIndex % 8) * 8;
+            int startY = offsetY + (blockIndex / 8) * 8;
+            uint64_t bit = (SIGNATURE >> (63 - blockIndex)) & 1ULL;
 
-                luma[y][x] = 0.299 * r + 0.587 * g + 0.114 * b;
-                alpha[y][x] = color & 0xFF000000;
-            }
-        }
+            double luma[8][8];
+            uint32_t alpha[8][8];
 
-        // Forward DCT
-        double dct[8][8];
-        for (int u = 0; u < 8; ++u) {
-            for (int v = 0; v < 8; ++v) {
-                double sum = 0.0;
-                for (int y = 0; y < 8; ++y) {
-                    for (int x = 0; x < 8; ++x) {
-                        sum += luma[y][x] * cosTable[x][u] * cosTable[y][v];
-                    }
+            for (int y = 0; y < 8; ++y) {
+                for (int x = 0; x < 8; ++x) {
+                    uint32_t color = pixels[(startY + y) * stride + (startX + x)];
+                    int r_val = (color >> 16) & 0xFF;
+                    int g = (color >> 8) & 0xFF;
+                    int b = color & 0xFF;
+
+                    luma[y][x] = 0.299 * r_val + 0.587 * g + 0.114 * b;
+                    alpha[y][x] = color & 0xFF000000;
                 }
-                dct[u][v] = 0.25 * cTable[u] * cTable[v] * sum;
             }
-        }
 
-        // Modulate mid-frequency coefficients
-        int u1 = 3; int v1 = 4;
-        int u2 = 4; int v2 = 3;
-
-        if (bit == 1ULL) {
-            if (dct[u1][v1] <= dct[u2][v2] + ALPHA) {
-                double avg = (dct[u1][v1] + dct[u2][v2]) / 2.0;
-                dct[u1][v1] = avg + ALPHA / 2.0;
-                dct[u2][v2] = avg - ALPHA / 2.0;
-            }
-        } else {
-            if (dct[u2][v2] <= dct[u1][v1] + ALPHA) {
-                double avg = (dct[u1][v1] + dct[u2][v2]) / 2.0;
-                dct[u2][v2] = avg + ALPHA / 2.0;
-                dct[u1][v1] = avg - ALPHA / 2.0;
-            }
-        }
-
-        // Inverse DCT
-        for (int y = 0; y < 8; ++y) {
-            for (int x = 0; x < 8; ++x) {
-                double sum = 0.0;
-                for (int u = 0; u < 8; ++u) {
-                    for (int v = 0; v < 8; ++v) {
-                        sum += cTable[u] * cTable[v] * dct[u][v] * cosTable[x][u] * cosTable[y][v];
+            // Forward DCT
+            double dct[8][8];
+            for (int u = 0; u < 8; ++u) {
+                for (int v = 0; v < 8; ++v) {
+                    double sum = 0.0;
+                    for (int y = 0; y < 8; ++y) {
+                        for (int x = 0; x < 8; ++x) {
+                            sum += luma[y][x] * cosTable[x][u] * cosTable[y][v];
+                        }
                     }
+                    dct[u][v] = 0.25 * cTable[u] * cTable[v] * sum;
                 }
-                double newY = 0.25 * sum;
-                if (newY < 0.0) newY = 0.0;
-                if (newY > 255.0) newY = 255.0;
+            }
 
-                uint32_t oldColor = pixels[(startY + y) * stride + (startX + x)];
-                int oldR = (oldColor >> 16) & 0xFF;
-                int oldG = (oldColor >> 8) & 0xFF;
-                int oldB = oldColor & 0xFF;
-                double oldY = 0.299 * oldR + 0.587 * oldG + 0.114 * oldB;
+            // Modulate mid-frequency coefficients
+            int u1 = 3; int v1 = 4;
+            int u2 = 4; int v2 = 3;
 
-                double diff = newY - oldY;
-                int newR = std::max(0, std::min(255, static_cast<int>(oldR + diff)));
-                int newG = std::max(0, std::min(255, static_cast<int>(oldG + diff)));
-                int newB = std::max(0, std::min(255, static_cast<int>(oldB + diff)));
+            if (bit == 1ULL) {
+                if (dct[u1][v1] <= dct[u2][v2] + ALPHA) {
+                    double avg = (dct[u1][v1] + dct[u2][v2]) / 2.0;
+                    dct[u1][v1] = avg + ALPHA / 2.0;
+                    dct[u2][v2] = avg - ALPHA / 2.0;
+                }
+            } else {
+                if (dct[u2][v2] <= dct[u1][v1] + ALPHA) {
+                    double avg = (dct[u1][v1] + dct[u2][v2]) / 2.0;
+                    dct[u2][v2] = avg + ALPHA / 2.0;
+                    dct[u1][v1] = avg - ALPHA / 2.0;
+                }
+            }
 
-                pixels[(startY + y) * stride + (startX + x)] = alpha[y][x] | (newR << 16) | (newG << 8) | newB;
+            // Inverse DCT
+            for (int y = 0; y < 8; ++y) {
+                for (int x = 0; x < 8; ++x) {
+                    double sum = 0.0;
+                    for (int u = 0; u < 8; ++u) {
+                        for (int v = 0; v < 8; ++v) {
+                            sum += cTable[u] * cTable[v] * dct[u][v] * cosTable[x][u] * cosTable[y][v];
+                        }
+                    }
+                    double newY = 0.25 * sum;
+                    if (newY < 0.0) newY = 0.0;
+                    if (newY > 255.0) newY = 255.0;
+
+                    uint32_t oldColor = pixels[(startY + y) * stride + (startX + x)];
+                    int oldR = (oldColor >> 16) & 0xFF;
+                    int oldG = (oldColor >> 8) & 0xFF;
+                    int oldB = oldColor & 0xFF;
+                    double oldY = 0.299 * oldR + 0.587 * oldG + 0.114 * oldB;
+
+                    double diff = newY - oldY;
+                    int newR = std::max(0, std::min(255, static_cast<int>(oldR + diff)));
+                    int newG = std::max(0, std::min(255, static_cast<int>(oldG + diff)));
+                    int newB = std::max(0, std::min(255, static_cast<int>(oldB + diff)));
+
+                    pixels[(startY + y) * stride + (startX + x)] = alpha[y][x] | (newR << 16) | (newG << 8) | newB;
+                }
             }
         }
     }
@@ -114,51 +127,63 @@ bool WatermarkEngine::verifySignature(const uint32_t* pixels, int width, int hei
         return false;
     }
 
-    int matchingBits = 0;
-    for (int blockIndex = 0; blockIndex < 64; ++blockIndex) {
-        int startX = (blockIndex % 8) * 8;
-        int startY = (blockIndex / 8) * 8;
-        uint64_t expectedBit = (SIGNATURE >> (63 - blockIndex)) & 1ULL;
+    int offsets[5][2] = {
+        { 0, 0 },                                    // Top-Left
+        { width - 64, 0 },                           // Top-Right
+        { 0, height - 64 },                          // Bottom-Left
+        { width - 64, height - 64 },                 // Bottom-Right
+        { width / 2 - 32, height / 2 - 32 }          // Center
+    };
 
-        double luma[8][8];
-        for (int y = 0; y < 8; ++y) {
-            for (int x = 0; x < 8; ++x) {
-                uint32_t color = pixels[(startY + y) * stride + (startX + x)];
-                int r = (color >> 16) & 0xFF;
-                int g = (color >> 8) & 0xFF;
-                int b = color & 0xFF;
-                luma[y][x] = 0.299 * r + 0.587 * g + 0.114 * b;
+    for (int r = 0; r < 5; ++r) {
+        int offsetX = offsets[r][0];
+        int offsetY = offsets[r][1];
+
+        int matchingBits = 0;
+        for (int blockIndex = 0; blockIndex < 64; ++blockIndex) {
+            int startX = offsetX + (blockIndex % 8) * 8;
+            int startY = offsetY + (blockIndex / 8) * 8;
+            uint64_t expectedBit = (SIGNATURE >> (63 - blockIndex)) & 1ULL;
+
+            double luma[8][8];
+            for (int y = 0; y < 8; ++y) {
+                for (int x = 0; x < 8; ++x) {
+                    uint32_t color = pixels[(startY + y) * stride + (startX + x)];
+                    int r_val = (color >> 16) & 0xFF;
+                    int g = (color >> 8) & 0xFF;
+                    int b = color & 0xFF;
+                    luma[y][x] = 0.299 * r_val + 0.587 * g + 0.114 * b;
+                }
+            }
+
+            int u1 = 3; int v1 = 4;
+            int u2 = 4; int v2 = 3;
+
+            double sum1 = 0.0; double sum2 = 0.0;
+            for (int y = 0; y < 8; ++y) {
+                for (int x = 0; x < 8; ++x) {
+                    sum1 += luma[y][x] * cosTable[x][u1] * cosTable[y][v1];
+                    sum2 += luma[y][x] * cosTable[x][u2] * cosTable[y][v2];
+                }
+            }
+
+            double dct1 = 0.25 * cTable[u1] * cTable[v1] * sum1;
+            double dct2 = 0.25 * cTable[u2] * cTable[v2] * sum2;
+
+            uint64_t actualBit = (dct1 > dct2) ? 1ULL : 0ULL;
+            if (actualBit == expectedBit) {
+                matchingBits++;
             }
         }
 
-        int u1 = 3; int v1 = 4;
-        int u2 = 4; int v2 = 3;
-
-        double sum1 = 0.0; double sum2 = 0.0;
-        for (int y = 0; y < 8; ++y) {
-            for (int x = 0; x < 8; ++x) {
-                sum1 += luma[y][x] * cosTable[x][u1] * cosTable[y][v1];
-                sum2 += luma[y][x] * cosTable[x][u2] * cosTable[y][v2];
-            }
-        }
-
-        double dct1 = 0.25 * cTable[u1] * cTable[v1] * sum1;
-        double dct2 = 0.25 * cTable[u2] * cTable[v2] * sum2;
-
-        uint64_t actualBit = (dct1 > dct2) ? 1ULL : 0ULL;
-        if (actualBit == expectedBit) {
-            matchingBits++;
-        }
-        if (blockIndex < 5) {
 #ifndef NDEBUG
-            printf("DEBUG Block %d: dct1=%e, dct2=%e, expected=%llu, actual=%llu\n",
-                   blockIndex, dct1, dct2, (unsigned long long)expectedBit, (unsigned long long)actualBit);
+        printf("DEBUG: Region %d matchingBits = %d (threshold = %d)\n", r, matchingBits, MATCH_THRESHOLD);
 #endif
+
+        if (matchingBits >= MATCH_THRESHOLD) {
+            return true;
         }
     }
 
-#ifndef NDEBUG
-    printf("DEBUG: Total matchingBits = %d (threshold = %d)\n", matchingBits, MATCH_THRESHOLD);
-#endif
-    return matchingBits >= MATCH_THRESHOLD;
+    return false;
 }

@@ -5,7 +5,7 @@ import Animated, {
   useAnimatedStyle, 
   withSpring, 
 } from 'react-native-reanimated';
-import * as Haptics from 'expo-haptics';
+import * as Haptics from '@shared/lib/haptics';
 
 interface ShutterButtonProps {
   onPress: () => void;

@@ -3,7 +3,7 @@ import { StyleSheet, View, Text, TextInput, TouchableOpacity, Alert, BackHandler
 import { useTranslation } from 'react-i18next';
 import { useShallow } from 'zustand/react/shallow';
 import { usePresetStore, Preset, DEFAULT_FILM_PAYLOAD, FilmPresetPayload, PresetStore, PresetPayload } from '@entities/preset';
-import * as Haptics from 'expo-haptics';
+import * as Haptics from '@shared/lib/haptics';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 import { Asset } from 'expo-asset';
 import { generatePresetPreview, deleteFile } from '@grovkornet/engine';

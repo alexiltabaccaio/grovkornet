@@ -13,6 +13,7 @@ import { GestureDetector, Gesture } from 'react-native-gesture-handler';
 
 import { useTranslation } from 'react-i18next';
 import { GalleryItem } from '../../lib/types';
+import * as Haptics from '@shared/lib/haptics';
 
 interface PhotoPreviewProps {
   selectedPhoto: GalleryItem | null;
@@ -63,8 +64,11 @@ export const PhotoPreview = ({ selectedPhoto, photos, onPhotoVisible, rotationY 
     animatingToIndexRef.current = null;
     setRenderIndices([newIndex - 1, newIndex, newIndex + 1]);
 
-    if (isManualSwipe && onPhotoVisible && photos[newIndex]) {
-      onPhotoVisible(photos[newIndex]);
+    if (isManualSwipe && photos[newIndex]) {
+      void Haptics.selectionAsync();
+      if (onPhotoVisible) {
+        onPhotoVisible(photos[newIndex]);
+      }
     }
   };
 

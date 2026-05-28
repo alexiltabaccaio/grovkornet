@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { useShallow } from 'zustand/react/shallow';
 import { usePresetStore, Preset, PresetStore } from '@entities/preset';
 import { ParameterDetailPanelWrapper } from '@entities/system';
-import * as Haptics from 'expo-haptics';
+import * as Haptics from '@shared/lib/haptics';
 
 interface PresetsDetailPanelProps {
   animatedStyle?: StyleProp<ViewStyle>;

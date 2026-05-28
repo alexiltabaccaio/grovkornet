@@ -7,6 +7,7 @@ import { useBodyStore, useBodyWorklets } from '@entities/body';
 import Animated, { useAnimatedReaction, runOnJS } from 'react-native-reanimated';
 import { useTranslation } from 'react-i18next';
 import { logger } from '@shared/lib/logger';
+import * as Haptics from '@shared/lib/haptics';
 
 const noop = () => {};
 
@@ -64,6 +65,7 @@ export const TorchDetailPanel = ({ parameterDetailPanelAnimatedStyle, animatedSt
         <ScrollView scrollEnabled={false} contentContainerStyle={styles.scrollContent}>
           <TouchableOpacity
             onPress={() => {
+              void Haptics.selectionAsync();
               logger.debug('TorchDetailPanel', 'Torch toggle pressed');
               const next = torchState.value === 0 ? 1 : 0;
               setTorchState(next);

@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { SectionType, useSystemStore } from '@entities/system';
 import { Ionicons } from '@expo/vector-icons';
 import { BottomFooter } from '@shared/ui';
+import * as Haptics from '@shared/lib/haptics';
 import Animated, { useAnimatedStyle, interpolate, SharedValue } from 'react-native-reanimated';
 
 import { useShallow } from 'zustand/react/shallow';
@@ -23,6 +24,7 @@ export const Sections = ({ galleryTransition }: SectionsProps) => {
   const { t } = useTranslation();
 
   const handleSectionChange = (section: SectionType) => {
+    void Haptics.selectionAsync();
     if (section === activeSection) {
       setActiveSection('none');
     } else {

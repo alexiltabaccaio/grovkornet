@@ -4,6 +4,7 @@ import { Gesture } from 'react-native-gesture-handler';
 import { useSystemStore } from '../model/useSystemStore';
 import { updateSharedValue } from '@shared/lib/reanimated/safeUpdate';
 import { globalMeasuredTrackWidth } from '@shared/ui/parameter-thumb';
+import * as Haptics from '@shared/lib/haptics';
 
 
 interface UseParameterGestureParams {
@@ -15,6 +16,7 @@ interface UseParameterGestureParams {
   onChange?: (val: number) => void;
   onUpdateWorklet?: (val: number) => void;
   onPress: () => void;
+  onReset?: () => void;
   isAuto?: SharedValue<boolean>;
   disabled?: SharedValue<boolean>;
   variant?: 'text' | 'slider';
@@ -31,6 +33,7 @@ export const useParameterGesture = ({
   onChange,
   onUpdateWorklet,
   onPress,
+  onReset,
   isAuto,
   disabled,
   variant,
@@ -43,6 +46,7 @@ export const useParameterGesture = ({
   const fallbackTrackWidth = useSharedValue(globalMeasuredTrackWidth);
   const effectiveTrackWidth = sliderTrackWidth || fallbackTrackWidth;
   const isDebugEnabled = useSystemStore((s) => s.isDebugEnabled);
+  const atBoundary = useSharedValue(false);
 
   const isSlider = variant === 'slider';
   
@@ -51,11 +55,28 @@ export const useParameterGesture = ({
     .onEnd(() => {
       'worklet';
       if (disabled && disabled.value) return;
+      runOnJS(Haptics.selectionAsync)();
       runOnJS(onPress)();
     });
 
   if (isSlider) {
     tap.maxDuration(250);
+  }
+
+  let finalTap: ReturnType<typeof Gesture.Tap> | ReturnType<typeof Gesture.Exclusive> = tap;
+
+  if (onReset) {
+    const doubleTap = Gesture.Tap()
+      .numberOfTaps(2)
+      .maxDistance(20)
+      .onEnd(() => {
+        'worklet';
+        if (disabled && disabled.value) return;
+        runOnJS(Haptics.impactAsync)(Haptics.ImpactFeedbackStyle.Medium);
+        runOnJS(onReset)();
+      });
+      
+    finalTap = Gesture.Exclusive(doubleTap, tap);
   }
 
   let panGesture;
@@ -85,6 +106,14 @@ export const useParameterGesture = ({
         startVal.value = newValue;
         lastX.value = 0;
         accumulatedValue.value = newValue;
+        
+        if (newValue <= minValue || newValue >= maxValue) {
+          atBoundary.value = true;
+        } else {
+          atBoundary.value = false;
+        }
+
+        runOnJS(Haptics.selectionAsync)();
         runOnJS(onPress)();
       })
       .onUpdate((e) => {
@@ -105,6 +134,14 @@ export const useParameterGesture = ({
         const newValue = Math.min(Math.max(accumulatedValue.value + delta, minValue), maxValue);
         accumulatedValue.value = newValue;
         
+        const isCurrentlyAtBoundary = newValue <= minValue || newValue >= maxValue;
+        if (isCurrentlyAtBoundary && !atBoundary.value) {
+          runOnJS(Haptics.impactAsync)(Haptics.ImpactFeedbackStyle.Light);
+          atBoundary.value = true;
+        } else if (!isCurrentlyAtBoundary) {
+          atBoundary.value = false;
+        }
+
         if (newValue !== value.value) {
           if (onUpdateWorklet) {
             onUpdateWorklet(newValue);
@@ -126,7 +163,7 @@ export const useParameterGesture = ({
       });
   }
 
-  const combinedGesture = panGesture ? Gesture.Race(tap, panGesture) : tap;
+  const combinedGesture = panGesture ? Gesture.Race(finalTap, panGesture) : finalTap;
 
   return {
     combinedGesture,

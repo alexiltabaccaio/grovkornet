@@ -2,6 +2,7 @@ import React, { memo, useRef, useEffect } from 'react';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { StyleSheet, StyleProp, ViewStyle, TextStyle, View } from 'react-native';
 import Animated, { useAnimatedStyle, SharedValue } from 'react-native-reanimated';
+import * as Haptics from '@shared/lib/haptics';
 
 export interface PillButtonProps {
   label: string;
@@ -84,6 +85,7 @@ const PillButtonComponent = ({
   }, [onPress]);
 
   const handlePress = React.useCallback(() => {
+    void Haptics.selectionAsync();
     onPressRef.current();
   }, []);
 

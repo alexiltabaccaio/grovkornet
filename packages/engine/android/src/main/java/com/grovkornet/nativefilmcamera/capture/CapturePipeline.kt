@@ -144,6 +144,7 @@ class CapturePipeline(
                 exif.setAttribute(android.media.ExifInterface.TAG_DATETIME, now)
                 exif.setAttribute(android.media.ExifInterface.TAG_DATETIME_ORIGINAL, now)
                 exif.setAttribute(android.media.ExifInterface.TAG_DATETIME_DIGITIZED, now)
+                exif.setAttribute(android.media.ExifInterface.TAG_SOFTWARE, "Grovkornet Engine")
                 exif.saveAttributes()
             } catch (e: Exception) {
                 Log.e(TAG, "Failed to write EXIF data", e)
