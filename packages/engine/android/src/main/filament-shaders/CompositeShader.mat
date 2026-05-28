@@ -22,7 +22,9 @@ material {
         { type : float, name : u_DrsScale },
         { type : float, name : u_Sharpening },
         { type : float2, name : u_TexelSize },
-        { type : float, name : u_TargetResolution }
+        { type : float, name : u_TargetResolution },
+        { type : sampler2d, name : u_GlassTexture },
+        { type : float, name : u_PanelY }
     ],
     requires : [ uv0 ]
 }
@@ -175,6 +177,24 @@ fragment {
         if (materialParams.u_OverlayEnabled > 0.0) {
             vec4 overlay = textureLod(materialParams_u_OverlayTexture, uv, 0.0);
             finalColor = mix(finalColor, overlay.rgb, overlay.a);
+        }
+        
+        // Glassmorphism blur overlay
+        if (materialParams.u_PanelY < 1.0) {
+            // Sample the pre-blurred glass texture
+            vec3 glassColor = texture(materialParams_u_GlassTexture, flippedBloomUv).rgb;
+            
+            // Apply dark tint overlay (mix with dark gray/black)
+            vec3 tintedGlass = mix(glassColor, vec3(0.05, 0.05, 0.05), 0.50);
+            
+            // Panel top Y coordinate (0.0 is top, 1.0 is bottom in Android Surface UV space)
+            float panelTopY = materialParams.u_PanelY;
+            
+            // Antialiased edge transition: 1.0 for uv.y > panelTopY, 0.0 for uv.y < panelTopY
+            float edgeSoftness = 0.002;
+            float insidePanel = smoothstep(panelTopY - edgeSoftness, panelTopY + edgeSoftness, uv.y);
+            
+            finalColor = mix(finalColor, tintedGlass, insidePanel);
         }
         
         material.baseColor = vec4(finalColor, baseColor.a);

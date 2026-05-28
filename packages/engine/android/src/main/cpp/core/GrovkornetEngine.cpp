@@ -73,6 +73,7 @@ RenderParams parseRenderParams(const float* params) {
     rp.boundBluePurple = params[35];
     rp.boundPurpleMagenta = params[36];
     rp.grainRoughness = params[37];
+    rp.panelY = params[38];
     // @@GEN_PARSING_END@@
     return rp;
 }
@@ -255,12 +256,14 @@ GrovkornetEngine::~GrovkornetEngine() {
         engine->destroy(scene);
         LOGI("Destroyed main view and scene");
         
-        utils::Entity cameraEntity = camera->getEntity();
-        engine->destroyCameraComponent(cameraEntity);
-        utils::EntityManager::get().destroy(cameraEntity);
+        if (camera) {
+            utils::Entity camEntity = camera->getEntity();
+            engine->destroyCameraComponent(camEntity);
+            utils::EntityManager::get().destroy(camEntity);
+        }
         LOGI("Destroyed camera");
         
-        engine->destroy(renderer);
+        if (renderer) engine->destroy(renderer);
         LOGI("Destroyed renderer");
         
         LOGI("Calling Engine::destroy()...");
@@ -320,6 +323,7 @@ void GrovkornetEngine::applyShaderParameters(const RenderParams& params, filamen
     composite->setParameter("u_InvertYShift", params.invertYShift);
     composite->setParameter("u_AberrationInvert", params.aberrationInvert);
     composite->setParameter("u_OverlayEnabled", overlayCompositor.isOverlayEnabled() ? 1.0f : 0.0f);
+    composite->setParameter("u_PanelY", params.panelY);
 
     filament::math::float2 texelSize{1.0f / width, 1.0f / height};
     composite->setParameter("u_TexelSize", texelSize);

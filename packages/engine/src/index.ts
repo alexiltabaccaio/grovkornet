@@ -39,6 +39,7 @@ export interface NativeFilmCameraViewProps extends ViewProps {
   boundBluePurple?: number;
   boundPurpleMagenta?: number;
   grainRoughness?: number;
+  panelY?: number;
   grainEnabled?: boolean;
   bloomEnabled?: boolean;
   noiseReduction?: number;

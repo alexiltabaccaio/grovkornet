@@ -13,7 +13,7 @@ TEST(GrovkornetEngineTest, BasicInitializationAndProperties) {
 }
 
 TEST(GrovkornetEngineTest, ParseRenderParams_mapsArrayCorrectly) {
-    float mockParams[37] = {
+    float mockParams[39] = {
         1.2f,  // 0: saturation
         0.9f,  // 1: contrast
         0.5f,  // 2: grainIntensity
@@ -50,7 +50,9 @@ TEST(GrovkornetEngineTest, ParseRenderParams_mapsArrayCorrectly) {
         175.0f,  // 33: boundGreenCyan
         225.0f,  // 34: boundCyanBlue
         285.0f,  // 35: boundBluePurple
-        310.0f   // 36: boundPurpleMagenta
+        310.0f,  // 36: boundPurpleMagenta
+        0.7f,    // 37: grainRoughness
+        0.85f    // 38: panelY
     };
 
     RenderParams rp = parseRenderParams(mockParams);
@@ -92,6 +94,6 @@ TEST(GrovkornetEngineTest, ParseRenderParams_mapsArrayCorrectly) {
     EXPECT_FLOAT_EQ(rp.boundCyanBlue, 225.0f);
     EXPECT_FLOAT_EQ(rp.boundBluePurple, 285.0f);
     EXPECT_FLOAT_EQ(rp.boundPurpleMagenta, 310.0f);
+    EXPECT_FLOAT_EQ(rp.grainRoughness, 0.7f);
+    EXPECT_FLOAT_EQ(rp.panelY, 0.85f);
 }
-
-

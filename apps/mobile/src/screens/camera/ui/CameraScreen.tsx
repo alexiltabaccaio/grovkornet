@@ -121,7 +121,7 @@ const CameraScreenContent = () => {
       <GestureController>
         <View style={{ flex: 1, width: '100%', marginTop: statusBarHeight, marginBottom: 80 }}>
           <Profiler id="Viewfinder" onRender={(id, phase, duration) => { if (__DEV__ && duration > 10) logger.warn('UI', `Viewfinder render took ${duration.toFixed(2)}ms`); }}>
-            <Viewfinder cameraKey={cameraKey} />
+            <Viewfinder cameraKey={cameraKey} translateY={footerTranslateY} drawerAnimation={drawerAnimation} />
           </Profiler>
         </View>
       </GestureController>

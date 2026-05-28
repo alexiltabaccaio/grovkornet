@@ -9,7 +9,6 @@
 #include <filament/Renderer.h>
 #include <utils/Entity.h>
 
-#include "core/RenderParams.h"
 #include "pipeline/ShaderManager.h"
 
 class PipelineRenderer {
@@ -27,6 +26,7 @@ public:
     filament::View* viewBlurUp = nullptr;
     filament::Scene* sceneBlurUp = nullptr;
     
+
     // Geometry entities
     utils::Entity quadGrading;
     utils::Entity quadDownsample;
@@ -34,6 +34,7 @@ public:
     utils::Entity quadBlurUp;
     utils::Entity quadComposite;
     
+
     // Textures & Render Targets
     filament::Texture* gradedTexture = nullptr;
     filament::RenderTarget* gradedRenderTarget = nullptr;
@@ -46,6 +47,7 @@ public:
     
     filament::Texture* bloomTexUp = nullptr;
     filament::RenderTarget* bloomUpRenderTarget = nullptr;
+
 
     bool init(filament::Engine& engine, int width, int height,
               filament::VertexBuffer* vertexBuffer, filament::IndexBuffer* indexBuffer,

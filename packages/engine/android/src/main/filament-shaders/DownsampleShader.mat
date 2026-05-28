@@ -14,14 +14,6 @@ fragment {
         vec2 uv = getUV0() * materialParams.u_DrsScale;
         vec4 color = texture(materialParams_u_Texture, uv);
         
-        // Extract luminance
-        float luma = dot(color.rgb, vec3(0.2126, 0.7152, 0.0722));
-        
-        // Highlight isolate threshold (cinematic smoothstep)
-        float threshold = 0.65;
-        float knee = 0.15;
-        float weight = smoothstep(threshold - knee, threshold + knee, luma);
-        
-        material.baseColor = vec4(color.rgb * weight, color.a);
+        material.baseColor = color;
     }
 }

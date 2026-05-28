@@ -330,6 +330,13 @@
       "zustand": { "default": "0.0", "type": "number", "resetGroup": "grain" }
     },
     {
+      "name": "panelY",
+      "category": "render",
+      "arrayIndex": 38,
+      "kotlin": { "type": "Float", "default": "1.0f" },
+      "ts": { "type": "number" }
+    },
+    {
       "name": "grainEnabled",
       "category": "render",
       "kotlin": { "type": "Boolean", "default": "true" },

@@ -85,6 +85,8 @@ class CameraConfigurationTest {
             boundCyanBlue = 225f
             boundBluePurple = 285f
             boundPurpleMagenta = 310f
+            grainRoughness = 0.7f
+            panelY = 0.85f
         }
 
         val time = 123.45f
@@ -92,7 +94,7 @@ class CameraConfigurationTest {
 
         val array = config.toRenderParamsArray(time = time, targetResolution = targetResolution)
 
-        assertEquals(37, array.size)
+        assertEquals(39, array.size)
         assertEquals(1.2f, array[0])
         assertEquals(0.9f, array[1])
         assertEquals(0.5f, array[2])
@@ -130,6 +132,8 @@ class CameraConfigurationTest {
         assertEquals(225f, array[34]) // boundCyanBlue
         assertEquals(285f, array[35]) // boundBluePurple
         assertEquals(310f, array[36]) // boundPurpleMagenta
+        assertEquals(0.7f, array[37]) // grainRoughness
+        assertEquals(0.85f, array[38]) // panelY
 
         // Test dynamic disabling features
         config.grainEnabled = false

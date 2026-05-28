@@ -1,5 +1,4 @@
 #pragma once
-#include <string>
 #include <filament/Engine.h>
 #include <filament/Material.h>
 #include <filament/MaterialInstance.h>
@@ -7,9 +6,6 @@
 
 class ShaderManager {
 public:
-    ShaderManager();
-    ~ShaderManager();
-
     bool init(filament::Engine& engine, AAssetManager* assetManager);
     void destroy(filament::Engine& engine);
 
@@ -18,6 +14,8 @@ public:
     filament::MaterialInstance* getMaterialInstanceDownsample() const { return materialInstanceDownsample; }
     filament::MaterialInstance* getMaterialInstanceBlurDown() const { return materialInstanceBlurDown; }
     filament::MaterialInstance* getMaterialInstanceBlurUp() const { return materialInstanceBlurUp; }
+    
+
     filament::MaterialInstance* getMaterialInstanceComposite() const { return materialInstanceComposite; }
 
 private:
@@ -36,14 +34,14 @@ private:
     filament::Material* materialBlurUp = nullptr;
     filament::MaterialInstance* materialInstanceBlurUp = nullptr;
     
+
     filament::Material* materialComposite = nullptr;
     filament::MaterialInstance* materialInstanceComposite = nullptr;
 
     bool loadFromAsset(
         filament::Engine& engine, 
         AAssetManager* assetManager,
-        const std::string& assetName, 
-        filament::Material*& outMaterial, 
-        filament::MaterialInstance*& outInstance
-    );
+        const char* name,
+        filament::Material*& outMaterial,
+        filament::MaterialInstance*& outInstance);
 };

@@ -6,7 +6,7 @@ import { useLensStore } from '@entities/lens';
 import { useFilmStore } from '@entities/film';
 import { useSystemStore } from '@entities/system';
 import { NativeRenderer } from '@entities/lens';
-import { useDerivedValue, SharedValue } from 'react-native-reanimated';
+import { useDerivedValue, SharedValue, useSharedValue } from 'react-native-reanimated';
 import { FlashOverlay } from '@features/body-controls';
 import { QuickPresetSelector } from '@features/system-settings';
 import { useCameraCapture } from '../lib/useCameraCapture';
@@ -14,9 +14,11 @@ import { useCameraEvents } from '../lib/useCameraEvents';
 
 interface ViewfinderProps {
   cameraKey?: number;
+  translateY?: SharedValue<number>;
+  drawerAnimation?: SharedValue<number>;
 }
 
-export const Viewfinder = React.memo(({ cameraKey }: ViewfinderProps) => {
+export const Viewfinder = React.memo(({ cameraKey, translateY, drawerAnimation }: ViewfinderProps) => {
   // 1. Stable reference SharedValues (statically extracted to avoid React subscription)
   const {
     iso,
@@ -104,6 +106,21 @@ export const Viewfinder = React.memo(({ cameraKey }: ViewfinderProps) => {
     }
   }, [setLatestPreviewUri, setLatestCapturedUri]);
 
+  const layoutHeight = useSharedValue(1);
+
+  const panelY = useDerivedValue(() => {
+    if (!translateY || !drawerAnimation) return 1.0;
+    const t = translateY.value + drawerAnimation.value;
+    const heightOfGlass = 144.0 - t;
+    const currentHeight = layoutHeight.value || 1.0;
+    const val = 1.0 - (heightOfGlass / currentHeight);
+    return val;
+  });
+
+  const handleLayout = React.useCallback((event: any) => {
+    layoutHeight.value = event.nativeEvent.layout.height;
+  }, [layoutHeight]);
+
   const resolvedNoiseReduction = useDerivedValue(() => {
     return noiseReductionAuto.value ? -1 : noiseReductionMode.value;
   });
@@ -121,7 +138,7 @@ export const Viewfinder = React.memo(({ cameraKey }: ViewfinderProps) => {
   });
 
   return (
-    <>
+    <View style={styles.container} onLayout={handleLayout}>
       <NativeRenderer
         ref={cameraRef}
         key={`camera-${cameraKey}-${isCameraSecure}`}
@@ -179,6 +196,7 @@ export const Viewfinder = React.memo(({ cameraKey }: ViewfinderProps) => {
         force4k60fpsCrop={resolvedForce4k60fpsCrop as unknown as SharedValue<boolean | undefined>}
         secureViewEnabled={isCameraSecure}
         // @@GEN_PROPS_END@@
+        panelY={panelY as unknown as SharedValue<number | undefined>}
         onCapabilitiesUpdate={capabilitiesHandler}
         onDebugUpdate={debugHandler}
         onExposureUpdate={exposureHandler}
@@ -189,7 +207,7 @@ export const Viewfinder = React.memo(({ cameraKey }: ViewfinderProps) => {
       <View style={styles.selectorContainer}>
         <QuickPresetSelector />
       </View>
-    </>
+    </View>
   );
 });
 
@@ -198,6 +216,10 @@ Viewfinder.displayName = 'Viewfinder';
 
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    overflow: 'hidden',
+  },
   selectorContainer: {
     position: 'absolute',
     top: 8,

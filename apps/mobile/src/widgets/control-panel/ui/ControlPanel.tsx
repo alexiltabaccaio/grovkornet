@@ -10,10 +10,8 @@ import { useControlPanelGestures } from '../lib/useControlPanelGestures';
 
 import { GestureDetector } from 'react-native-gesture-handler';
 import Animated, { useAnimatedStyle, useAnimatedProps } from 'react-native-reanimated';
-import { BlurView } from 'expo-blur';
 
 const AnimatedTextInput = Animated.createAnimatedComponent(TextInput);
-const AnimatedBlurView = Animated.createAnimatedComponent(BlurView);
 
 interface ControlPanelProps {
   translateY?: Animated.SharedValue<number>;
@@ -43,12 +41,6 @@ export const ControlPanel = React.memo(({ translateY: externalTranslateY, drawer
     };
   });
 
-  const animatedBackgroundStyle = useAnimatedStyle(() => {
-    return {
-      transform: [{ translateY: translateY.value + drawerAnimation.value }],
-    };
-  });
-
   const animatedTopFooterStyle = useAnimatedStyle(() => {
     return {
       transform: [{ translateY: translateY.value + drawerAnimation.value }],
@@ -59,17 +51,6 @@ export const ControlPanel = React.memo(({ translateY: externalTranslateY, drawer
 
   return (
     <View style={styles.container} pointerEvents="box-none">
-      <BlurView intensity={80} tint="dark" style={[styles.unifiedBackgroundBase, styles.unifiedBackgroundClosed]} pointerEvents="none" />
-      <AnimatedBlurView
-        intensity={80}
-        tint="dark"
-        style={[
-          styles.unifiedBackgroundBase,
-          styles.unifiedBackgroundOpen,
-          animatedBackgroundStyle
-        ]}
-        pointerEvents="none"
-      />
       <Animated.View style={[styles.topFooterContainer, animatedTopFooterStyle]} pointerEvents={isSheetVisible ? "box-none" : "none"}>
         <GestureDetector gesture={panGesture}>
           <View>
@@ -113,21 +94,6 @@ const styles = StyleSheet.create({
     height: 500,
     backgroundColor: 'transparent',
     zIndex: 100,
-  },
-  unifiedBackgroundBase: {
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    backgroundColor: 'transparent',
-    zIndex: 1,
-  },
-  unifiedBackgroundClosed: {
-    bottom: -1000,
-    height: 1000,
-  },
-  unifiedBackgroundOpen: {
-    bottom: -1000,
-    height: 1220,
   },
 
   topFooterContainer: {
