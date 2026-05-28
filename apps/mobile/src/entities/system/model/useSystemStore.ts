@@ -1,17 +1,10 @@
 import { create } from 'zustand';
-import { persist, createJSONStorage, StateStorage } from 'zustand/middleware';
-import { createMMKV } from 'react-native-mmkv';
+import { persist, createJSONStorage } from 'zustand/middleware';
+import { createZustandMMKVStorage } from '@shared/lib/storage/mmkv';
 import { logger } from '@shared/lib/logger';
 import { SystemStore, ModuleType, ParameterType, SectionType, ParameterDetailPanelType } from './types';
 
-// Create MMKV instance
-const storage = createMMKV({ id: 'system-storage' });
 
-const mmkvStorage: StateStorage = {
-  setItem: (name, value) => storage.set(name, value),
-  getItem: (name) => storage.getString(name) ?? null,
-  removeItem: (name) => storage.remove(name),
-};
 
 export const useSystemStore = create<SystemStore>()(
   persist(
@@ -138,7 +131,7 @@ export const useSystemStore = create<SystemStore>()(
     }),
     {
       name: 'grovkornet-system-storage',
-      storage: createJSONStorage(() => mmkvStorage),
+      storage: createJSONStorage(() => createZustandMMKVStorage('system-storage')),
       partialize: (state) => ({
         latestCapturedUri: state.latestCapturedUri,
       }),

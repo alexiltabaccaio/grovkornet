@@ -1,20 +1,6 @@
 import { create } from 'zustand';
-import { persist, createJSONStorage, StateStorage } from 'zustand/middleware';
-import { createMMKV } from 'react-native-mmkv';
-
-const storage = createMMKV({ id: 'grovkornet-global-preferences' });
-
-const mmkvStorage: StateStorage = {
-  setItem: (name, value) => {
-    storage.set(name, value);
-  },
-  getItem: (name) => {
-    return storage.getString(name) ?? null;
-  },
-  removeItem: (name) => {
-    storage.remove(name);
-  },
-};
+import { persist, createJSONStorage } from 'zustand/middleware';
+import { createZustandMMKVStorage } from '@shared/lib/storage/mmkv';
 
 interface PreferencesState {
   fpsSetting: number | null;
@@ -65,7 +51,7 @@ export const usePreferencesStore = create<PreferencesState & PreferencesActions>
     }),
     {
       name: 'grovkornet-preferences-storage',
-      storage: createJSONStorage(() => mmkvStorage),
+      storage: createJSONStorage(() => createZustandMMKVStorage('grovkornet-global-preferences')),
     }
   )
 );

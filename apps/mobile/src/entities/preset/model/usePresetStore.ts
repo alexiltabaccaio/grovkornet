@@ -1,6 +1,6 @@
 import { create } from 'zustand';
-import { persist, createJSONStorage, StateStorage } from 'zustand/middleware';
-import { createMMKV } from 'react-native-mmkv';
+import { persist, createJSONStorage } from 'zustand/middleware';
+import { createZustandMMKVStorage } from '@shared/lib/storage/mmkv';
 import {
   DEFAULT_GRAIN_INTENSITY,
   DEFAULT_SATURATION,
@@ -83,19 +83,7 @@ export const DEFAULT_PRESET_PAYLOAD: PresetPayload = {
 // Storage MMKV Configuration (react-native-mmkv v4+ uses createMMKV)
 // ==========================================
 
-const storage = createMMKV({ id: 'grovkornet-presets' });
 
-const mmkvStorage: StateStorage = {
-  setItem: (name, value) => {
-    storage.set(name, value);
-  },
-  getItem: (name) => {
-    return storage.getString(name) ?? null;
-  },
-  removeItem: (name) => {
-    storage.remove(name);
-  },
-};
 
 // ==========================================
 // Store Definition
@@ -209,7 +197,7 @@ export const usePresetStore = create<PresetStore>()(
     }),
     {
       name: 'grovkornet-presets-storage',
-      storage: createJSONStorage(() => mmkvStorage),
+      storage: createJSONStorage(() => createZustandMMKVStorage('grovkornet-presets')),
       // Persist user presets, active preset ID (including 'customized'), and customized payload
       partialize: (state) => ({
         userPresets: state.userPresets,
