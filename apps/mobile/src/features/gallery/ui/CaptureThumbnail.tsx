@@ -1,7 +1,8 @@
 import React, { useEffect } from 'react';
 import { StyleSheet, View, Pressable, ActivityIndicator, AppState } from 'react-native';
 import { Image } from 'expo-image';
-import Animated, { useSharedValue, useAnimatedStyle, withRepeat, withTiming, Easing, withSpring } from 'react-native-reanimated';
+import Animated, { useSharedValue, useAnimatedStyle, withTiming, Easing, withSpring } from 'react-native-reanimated';
+import { useState } from 'react';
 import { useSystemStore } from '@entities/system';
 import { useShallow } from 'zustand/react/shallow';
 import * as MediaLibrary from 'expo-media-library';
@@ -95,29 +96,65 @@ export const CaptureThumbnail = ({ onPress }: CaptureThumbnailProps) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const rotation = useSharedValue(0);
+  const [prevUri, setPrevUri] = useState<string | null>(null);
+  const [currentUri, setCurrentUri] = useState<string | null>(latestPreviewUri ?? latestCapturedUri ?? null);
+  const animationProgress = useSharedValue(1);
+  const lastSourceRef = React.useRef<'preview' | 'captured' | null>(
+    latestPreviewUri ? 'preview' : (latestCapturedUri ? 'captured' : null)
+  );
+
+  useEffect(() => {
+    const isPreview = latestPreviewUri !== null;
+    const newUri = latestPreviewUri ?? latestCapturedUri ?? null;
+    const currentSource = isPreview ? 'preview' : (newUri ? 'captured' : null);
+
+    if (newUri && newUri !== currentUri) {
+      if (lastSourceRef.current === 'preview' && currentSource === 'captured') {
+        // Transition from preview to final capture: same photo, don't animate twice
+        setCurrentUri(newUri);
+      } else {
+        // New photo preview or first image: animate!
+        setPrevUri(currentUri);
+        setCurrentUri(newUri);
+        animationProgress.value = 0;
+        animationProgress.value = withTiming(1, { duration: 300, easing: Easing.out(Easing.quad) });
+      }
+    } else if (newUri && !currentUri) {
+      setCurrentUri(newUri);
+    } else if (!newUri && currentUri) {
+      setCurrentUri(null);
+      setPrevUri(null);
+    }
+
+    lastSourceRef.current = currentSource;
+  }, [latestPreviewUri, latestCapturedUri, currentUri, animationProgress]);
+
   const scale = useSharedValue(1);
 
   useEffect(() => {
     if (isCapturing) {
-      rotation.value = withRepeat(
-        withTiming(360, { duration: 1000, easing: Easing.linear }),
-        -1,
-        false
-      );
       scale.value = withSpring(0.95);
     } else {
-      rotation.value = 0;
       scale.value = withSpring(1);
     }
-  }, [isCapturing, rotation, scale]);
-
-  const animatedSpinnerStyle = useAnimatedStyle(() => ({
-    transform: [{ rotate: `${rotation.value}deg` }],
-  }));
+  }, [isCapturing, scale]);
 
   const animatedContainerStyle = useAnimatedStyle(() => ({
     transform: [{ scale: scale.value }],
+  }));
+
+  const oldImageStyle = useAnimatedStyle(() => ({
+    position: 'absolute',
+    width: '100%',
+    height: '100%',
+    transform: [{ translateX: animationProgress.value * 50 }],
+  }));
+
+  const newImageStyle = useAnimatedStyle(() => ({
+    position: 'absolute',
+    width: '100%',
+    height: '100%',
+    transform: [{ translateX: (animationProgress.value - 1) * 50 }],
   }));
 
   const handlePress = () => {
@@ -127,24 +164,32 @@ export const CaptureThumbnail = ({ onPress }: CaptureThumbnailProps) => {
 
   return (
     <Pressable testID="capture-thumbnail" onPress={handlePress} style={styles.wrapper}>
-      {!isCapturing && !latestCapturedUri && !latestPreviewUri ? (
+      {!currentUri ? (
         <View style={styles.placeholder} />
       ) : (
         <Animated.View style={[styles.container, animatedContainerStyle]}>
-          {isCapturing ? (
-            <Animated.View style={[styles.spinnerContainer, animatedSpinnerStyle]}>
-              <View style={styles.spinnerRing} />
-              <ActivityIndicator size="small" color="#FF9500" />
+          {prevUri && (
+            <Animated.View style={oldImageStyle}>
+              <Image
+                source={{ uri: prevUri }}
+                style={styles.image}
+                contentFit="cover"
+                transition={0}
+                cachePolicy="memory-disk"
+              />
             </Animated.View>
-          ) : (latestPreviewUri ?? latestCapturedUri) ? (
-            <Image
-              source={{ uri: latestPreviewUri ?? latestCapturedUri! }}
-              style={styles.image}
-              contentFit="cover"
-              transition={0}
-              cachePolicy="memory-disk"
-            />
-          ) : null}
+          )}
+          {currentUri && (
+            <Animated.View style={newImageStyle}>
+              <Image
+                source={{ uri: currentUri }}
+                style={styles.image}
+                contentFit="cover"
+                transition={0}
+                cachePolicy="memory-disk"
+              />
+            </Animated.View>
+          )}
         </Animated.View>
       )}
     </Pressable>
@@ -180,21 +225,6 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.5,
     shadowRadius: 4,
-  },
-  spinnerContainer: {
-    width: '100%',
-    height: '100%',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  spinnerRing: {
-    position: 'absolute',
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    borderWidth: 2,
-    borderColor: 'rgba(255, 149, 0, 0.3)',
-    borderTopColor: '#FF9500',
   },
   image: {
     width: '100%',
