@@ -118,7 +118,7 @@ export const useSystemStore = create<SystemStore>()(
     // Reset after animation
     setTimeout(() => {
       set({ isCapturing: false });
-    }, 200);
+    }, 350);
   },
   
   setLatestPreviewUri: (uri) => {

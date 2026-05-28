@@ -39,8 +39,12 @@ class CapturePipeline(
         fun onPhotoCaptured(uri: String)
     }
 
+    private val activeCaptures = java.util.concurrent.atomic.AtomicInteger(0)
+    private var releasePending = false
+
     fun takePicture(imageCapture: ImageCapture) {
         shutterSound.play(MediaActionSound.SHUTTER_CLICK)
+        activeCaptures.incrementAndGet()
         
         scope.launch {
             try {
@@ -48,6 +52,11 @@ class CapturePipeline(
                 processAndSave(imageProxy)
             } catch (e: Exception) {
                 Log.e(TAG, "Capture or processing failed", e)
+            } finally {
+                if (activeCaptures.decrementAndGet() == 0 && releasePending) {
+                    offscreenProcessor.release()
+                    onCapturesFinished?.invoke()
+                }
             }
         }
     }
@@ -132,33 +141,38 @@ class CapturePipeline(
                 processed.recycle()
             }
 
-            val tempFile = java.io.File(context.cacheDir, "temp_capture_${System.currentTimeMillis()}.jpg")
-            tempFile.outputStream().use { os ->
-                watermarked.compress(Bitmap.CompressFormat.JPEG, 95, os)
+            // 1. Get URI from MediaStore
+            val uri = galleryManager.createGalleryUri()
+            if (uri == null) {
+                Log.e(TAG, "Failed to create Gallery URI")
+                watermarked.recycle()
+                return@withContext
             }
 
+            // 2. Compress directly to MediaStore
+            context.contentResolver.openOutputStream(uri)?.use { os ->
+                watermarked.compress(Bitmap.CompressFormat.JPEG, 95, os)
+            }
+            watermarked.recycle()
+
+            // 3. Write EXIF directly to MediaStore URI
             try {
-                val exif = android.media.ExifInterface(tempFile.absolutePath)
-                val sdf = java.text.SimpleDateFormat("yyyy:MM:dd HH:mm:ss", java.util.Locale.US)
-                val now = sdf.format(java.util.Date())
-                exif.setAttribute(android.media.ExifInterface.TAG_DATETIME, now)
-                exif.setAttribute(android.media.ExifInterface.TAG_DATETIME_ORIGINAL, now)
-                exif.setAttribute(android.media.ExifInterface.TAG_DATETIME_DIGITIZED, now)
-                exif.setAttribute(android.media.ExifInterface.TAG_SOFTWARE, "Grovkornet Engine")
-                exif.saveAttributes()
+                context.contentResolver.openFileDescriptor(uri, "rw")?.use { pfd ->
+                    val exif = android.media.ExifInterface(pfd.fileDescriptor)
+                    val sdf = java.text.SimpleDateFormat("yyyy:MM:dd HH:mm:ss", java.util.Locale.US)
+                    val now = sdf.format(java.util.Date())
+                    exif.setAttribute(android.media.ExifInterface.TAG_DATETIME, now)
+                    exif.setAttribute(android.media.ExifInterface.TAG_DATETIME_ORIGINAL, now)
+                    exif.setAttribute(android.media.ExifInterface.TAG_DATETIME_DIGITIZED, now)
+                    exif.setAttribute(android.media.ExifInterface.TAG_SOFTWARE, "Grovkornet Engine")
+                    exif.saveAttributes()
+                }
             } catch (e: Exception) {
                 Log.e(TAG, "Failed to write EXIF data", e)
             }
 
-            // Save the file to the gallery
-            val uri = galleryManager.saveFileToGallery(tempFile)
-            watermarked.recycle()
-            tempFile.delete()
-
-            uri?.let { 
-                withContext(Dispatchers.Main) {
-                    listener.onPhotoCaptured(it.toString())
-                }
+            withContext(Dispatchers.Main) {
+                listener.onPhotoCaptured(uri.toString())
             }
             if (BuildConfig.DEBUG) {
                 Log.d(TAG, "Processing complete in ${System.currentTimeMillis() - procStartTime}ms: $uri")
@@ -168,7 +182,21 @@ class CapturePipeline(
         }
     }
 
+    fun hasActiveCaptures(): Boolean = activeCaptures.get() > 0
+
+    private var onCapturesFinished: (() -> Unit)? = null
+
+    fun setOnCapturesFinishedListener(listener: () -> Unit) {
+        onCapturesFinished = listener
+    }
+
     fun release() {
-        offscreenProcessor.release()
+        if (activeCaptures.get() > 0) {
+            releasePending = true
+            Log.i(TAG, "Release deferred: ${activeCaptures.get()} captures still processing")
+        } else {
+            offscreenProcessor.release()
+            onCapturesFinished?.invoke()
+        }
     }
 }

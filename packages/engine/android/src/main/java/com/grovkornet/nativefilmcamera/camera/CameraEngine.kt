@@ -108,9 +108,20 @@ class CameraEngine(
     }
 
     fun release() {
-        sessionManager.release()
-        capturePipeline.release()
-        activeCamera = null
-        activeImageCapture = null
+        if (capturePipeline.hasActiveCaptures()) {
+            capturePipeline.setOnCapturesFinishedListener {
+                androidx.core.content.ContextCompat.getMainExecutor(context).execute {
+                    sessionManager.release()
+                    activeCamera = null
+                    activeImageCapture = null
+                }
+            }
+            capturePipeline.release()
+        } else {
+            sessionManager.release()
+            capturePipeline.release()
+            activeCamera = null
+            activeImageCapture = null
+        }
     }
 }

@@ -5,6 +5,7 @@ import Animated, {
   useAnimatedStyle, 
   withTiming, 
   withSequence,
+  cancelAnimation,
 } from 'react-native-reanimated';
 import { useSystemStore } from '@entities/system';
 
@@ -14,9 +15,11 @@ export const FlashOverlay = () => {
 
   useEffect(() => {
     if (isCapturing) {
+      cancelAnimation(opacity);
+      opacity.value = 0; // Reset
       opacity.value = withSequence(
-        withTiming(1, { duration: 50 }),
-        withTiming(0, { duration: 150 })
+        withTiming(1, { duration: 30 }),
+        withTiming(0, { duration: 300 })
       );
     }
   }, [isCapturing, opacity]);

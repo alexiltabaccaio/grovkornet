@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { AppState } from 'react-native';
 import * as MediaLibrary from 'expo-media-library';
 import { logger } from '@shared/lib/logger';
 import { GalleryItem } from './types';
@@ -145,8 +146,15 @@ export const useGalleryPhotos = (initialUri?: string | null) => {
 
     void loadPhotos();
 
+    const subscription = AppState.addEventListener('change', nextAppState => {
+      if (nextAppState === 'active' && active) {
+        void loadPhotos();
+      }
+    });
+
     return () => {
       active = false;
+      subscription.remove();
     };
   }, [initialUri]);
 

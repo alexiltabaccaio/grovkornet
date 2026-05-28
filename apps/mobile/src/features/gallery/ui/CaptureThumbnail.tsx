@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { StyleSheet, View, Pressable, ActivityIndicator } from 'react-native';
+import { StyleSheet, View, Pressable, ActivityIndicator, AppState } from 'react-native';
 import { Image } from 'expo-image';
 import Animated, { useSharedValue, useAnimatedStyle, withRepeat, withTiming, Easing, withSpring } from 'react-native-reanimated';
 import { useSystemStore } from '@entities/system';
@@ -21,13 +21,14 @@ export const CaptureThumbnail = ({ onPress }: CaptureThumbnailProps) => {
   })));
 
   useEffect(() => {
-    if (!latestCapturedUri) {
       const loadInitialThumbnail = async () => {
         try {
           const perms = await MediaLibrary.getPermissionsAsync();
           if (perms.granted) {
             const allAlbums = await MediaLibrary.getAlbumsAsync();
             const grovkornetAlbums = allAlbums.filter(a => a.title.toLowerCase() === 'grovkornet');
+
+            let foundUri: string | null = null;
 
             if (grovkornetAlbums.length > 0) {
               const fetchPromises = grovkornetAlbums.map(album => 
@@ -44,9 +45,11 @@ export const CaptureThumbnail = ({ onPress }: CaptureThumbnailProps) => {
               combinedAssets.sort((a, b) => b.creationTime - a.creationTime);
               
               if (combinedAssets.length > 0) {
-                setLatestCapturedUri(combinedAssets[0].uri);
+                foundUri = combinedAssets[0].uri;
               }
-            } else {
+            }
+            
+            if (!foundUri) {
               // Robust fallback for thumbnail: get recent photos and find the first Grovkornet one
               const recent = await MediaLibrary.getAssetsAsync({
                 first: 200,
@@ -62,16 +65,33 @@ export const CaptureThumbnail = ({ onPress }: CaptureThumbnailProps) => {
               );
               
               if (latestGrovkornet) {
-                setLatestCapturedUri(latestGrovkornet.uri);
+                foundUri = latestGrovkornet.uri;
               }
+            }
+
+            // Always update to keep in sync with external deletions
+            if (foundUri) {
+              setLatestCapturedUri(foundUri);
+            } else {
+              setLatestCapturedUri(null); // No photos left
             }
           }
         } catch (e) {
           logger.warn('CaptureThumbnail', 'Failed to load initial thumbnail', e);
         }
       };
+
       void loadInitialThumbnail();
-    }
+
+      const subscription = AppState.addEventListener('change', nextAppState => {
+        if (nextAppState === 'active') {
+          void loadInitialThumbnail();
+        }
+      });
+
+      return () => {
+        subscription.remove();
+      };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
