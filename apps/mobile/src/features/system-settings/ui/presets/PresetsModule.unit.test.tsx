@@ -4,9 +4,13 @@ import { PresetsModule } from './PresetsModule';
 import { usePresetStore, DEFAULT_FILM_PAYLOAD, DEFAULT_BODY_PAYLOAD } from '@entities/preset';
 import { useSystemStore } from '@entities/system';
 
-describe('PresetsModule', () => {
-  const mockApplyPreset = jest.fn();
+import { applyPreset } from '../../lib/presetActions';
 
+jest.mock('../../lib/presetActions', () => ({
+  applyPreset: jest.fn(),
+}));
+
+describe('PresetsModule', () => {
   beforeEach(() => {
     jest.clearAllMocks();
 
@@ -14,7 +18,6 @@ describe('PresetsModule', () => {
       activePresetId: 'default',
       customizedPayload: null,
       userPresets: [],
-      applyPreset: mockApplyPreset,
     });
 
     useSystemStore.setState({
@@ -49,7 +52,7 @@ describe('PresetsModule', () => {
     expect(userBtn).toBeTruthy();
 
     fireEvent.press(userBtn);
-    expect(mockApplyPreset).toHaveBeenCalledWith('user-1');
+    expect(applyPreset).toHaveBeenCalledWith('user-1');
     expect(useSystemStore.getState().activeParameter).toBe('presets');
   });
 
@@ -65,6 +68,6 @@ describe('PresetsModule', () => {
     expect(customizedBtn).toBeTruthy();
 
     fireEvent.press(customizedBtn);
-    expect(mockApplyPreset).toHaveBeenCalledWith('customized');
+    expect(applyPreset).toHaveBeenCalledWith('customized');
   });
 });

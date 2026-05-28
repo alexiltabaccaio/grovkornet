@@ -37,20 +37,20 @@ const PresetButton = React.memo(({ id, label, thumbnailUri, isActive, onPress }:
 
 PresetButton.displayName = 'PresetButton';
 
+import { applyPreset } from '../../lib/presetActions';
+
 export const PresetsModule = () => {
   const {
     userPresets,
     activePresetId,
     customizedPayload,
     customizedThumbnailUri,
-    applyPreset,
   } = usePresetStore(
     useShallow((s: PresetStore) => ({
       userPresets: s.userPresets,
       activePresetId: s.activePresetId,
       customizedPayload: s.customizedPayload,
       customizedThumbnailUri: s.customizedThumbnailUri,
-      applyPreset: s.applyPreset,
     }))
   );
 
@@ -63,7 +63,7 @@ export const PresetsModule = () => {
   const handlePresetPress = useCallback((id: string) => {
     applyPreset(id);
     setActiveParameter('presets');
-  }, [applyPreset, setActiveParameter]);
+  }, [setActiveParameter]);
 
   return (
     <View style={styles.container}>

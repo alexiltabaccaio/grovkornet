@@ -63,7 +63,7 @@ describe('initThumbnailGenerator', () => {
 
   describe('Dynamic Prefetching & Debounce', () => {
     it('should call Image.prefetch when a new customized thumbnail is generated', async () => {
-      usePresetStore.getState().markAsCustomized();
+      usePresetStore.setState({ customizedPayload: { film: DEFAULT_FILM_PAYLOAD, body: DEFAULT_BODY_PAYLOAD } });
       jest.advanceTimersByTime(500);
 
       await Promise.resolve();
@@ -77,11 +77,11 @@ describe('initThumbnailGenerator', () => {
     });
 
     it('should respect the 500ms debounce before generating and prefetching', async () => {
-      usePresetStore.getState().markAsCustomized();
+      usePresetStore.setState({ customizedPayload: { film: DEFAULT_FILM_PAYLOAD, body: DEFAULT_BODY_PAYLOAD } });
       jest.advanceTimersByTime(300);
       expect(generatePresetPreview).not.toHaveBeenCalled();
 
-      usePresetStore.getState().markAsCustomized();
+      usePresetStore.setState({ customizedPayload: { film: { ...DEFAULT_FILM_PAYLOAD, saturation: 2.0 }, body: DEFAULT_BODY_PAYLOAD } });
       jest.advanceTimersByTime(300);
       expect(generatePresetPreview).not.toHaveBeenCalled();
 

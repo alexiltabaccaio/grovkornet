@@ -9,10 +9,13 @@ import { initThumbnailGenerator } from '@features/preset-thumbnails';
 
 // Initialize i18n
 import './providers/i18n';
+import './store-assertions';
 
 import i18n from 'i18next';
-import { useBodyStore } from '@entities/body';
+import { useBodyStore, setBodyParameterChangeListener } from '@entities/body';
+import { setFilmParameterChangeListener } from '@entities/film';
 import { usePreferencesStore } from '@entities/preferences';
+import { applyPreset, markAsCustomized } from '@features/system-settings';
 
 import * as SystemUI from 'expo-system-ui';
 
@@ -31,8 +34,6 @@ export function App() {
       require('../../assets/monoscope.jpg'),
     ] as unknown as string[];
     /* eslint-enable @typescript-eslint/no-require-imports */
-
-
 
     void Image.prefetch(staticAssets);
 
@@ -56,8 +57,20 @@ export function App() {
     // Inizializza il generatore di thumbnail per i preset in background
     const unsubscribeThumb = initThumbnailGenerator();
 
+    // Register listeners to mark preset as customized on manual changes
+    if (typeof setFilmParameterChangeListener === 'function') {
+      setFilmParameterChangeListener(() => {
+        markAsCustomized();
+      });
+    }
+    if (typeof setBodyParameterChangeListener === 'function') {
+      setBodyParameterChangeListener(() => {
+        markAsCustomized();
+      });
+    }
+
     // Apply favorite preset on startup, or default if none
-    const { userPresets, applyPreset } = usePresetStore.getState();
+    const { userPresets } = usePresetStore.getState();
     const favorite = userPresets.find((p) => p.isFavorite);
     if (favorite) {
       applyPreset(favorite.id);

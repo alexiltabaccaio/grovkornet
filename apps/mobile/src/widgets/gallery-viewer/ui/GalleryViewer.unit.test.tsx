@@ -1,5 +1,6 @@
 import React from 'react';
 import { render, fireEvent } from '@testing-library/react-native';
+import { Text } from 'react-native';
 import { makeMutable } from 'react-native-reanimated';
 import { GalleryViewer } from './GalleryViewer';
 import { useGalleryViewer } from '@features/gallery';
@@ -106,5 +107,24 @@ describe('GalleryViewer', () => {
 
     fireEvent.press(getByLabelText('Go back'));
     expect(onCloseMock).toHaveBeenCalledTimes(1);
+  });
+
+  it('renders header component when provided', () => {
+    mockUseGalleryViewer.mockReturnValue({
+      photos: mockPhotos,
+      selectedPhoto: mockPhotos[0],
+      loading: false,
+      onPhotoVisible: jest.fn(),
+      onSelectPhoto: jest.fn(),
+    });
+
+    const { getByText } = render(
+      <GalleryViewer 
+        onClose={jest.fn()} 
+        initialUri={null} 
+        header={<Text>Test Header</Text>} 
+      />
+    );
+    expect(getByText('Test Header')).toBeTruthy();
   });
 });

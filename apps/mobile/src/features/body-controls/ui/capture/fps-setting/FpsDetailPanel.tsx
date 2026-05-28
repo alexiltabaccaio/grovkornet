@@ -2,6 +2,7 @@ import React from 'react';
 import { StyleProp, ViewStyle } from 'react-native';
 import { useShallow } from 'zustand/react/shallow';
 import { useBodyStore } from '@entities/body';
+import { usePreferencesStore } from '@entities/preferences';
 import { GenericPillDetailPanel } from '@entities/system';
 
 interface FpsDetailPanelProps {
@@ -21,7 +22,10 @@ export const FpsDetailPanel = ({ parameterDetailPanelAnimatedStyle }: FpsDetailP
   return (
     <GenericPillDetailPanel
       options={fpsOptions}
-      onChange={(val) => setFpsSetting(val)}
+      onChange={(val) => {
+        setFpsSetting(val);
+        usePreferencesStore.getState().setFpsSettingPref(val);
+      }}
       value={fpsSetting}
       isActiveShared={(currVal, val) => {
         'worklet';

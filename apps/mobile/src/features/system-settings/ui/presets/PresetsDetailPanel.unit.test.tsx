@@ -11,8 +11,13 @@ jest.mock('react-native', () => {
   return RN;
 });
 
+import { removePreset } from '../../lib/presetActions';
+
+jest.mock('../../lib/presetActions', () => ({
+  removePreset: jest.fn(),
+}));
+
 describe('PresetsDetailPanel', () => {
-  const mockRemovePreset = jest.fn();
   const mockSetFavoritePreset = jest.fn();
   const mockToggleQuickSelect = jest.fn();
   const mockSetAddModalVisible = jest.fn();
@@ -23,7 +28,6 @@ describe('PresetsDetailPanel', () => {
     usePresetStore.setState({
       activePresetId: 'default',
       userPresets: [],
-      removePreset: mockRemovePreset,
       setFavoritePreset: mockSetFavoritePreset,
       toggleQuickSelect: mockToggleQuickSelect,
       setAddModalVisible: mockSetAddModalVisible,
@@ -38,7 +42,7 @@ describe('PresetsDetailPanel', () => {
     usePresetStore.setState({ activePresetId: 'default', userPresets: [] });
 
     const { getByText } = render(<PresetsDetailPanel />);
-    const favBtn = getByText('presets.favorite');
+    const favBtn = getByText('presets.default');
 
     fireEvent.press(favBtn);
     expect(mockSetFavoritePreset).toHaveBeenCalledWith(null);
@@ -72,7 +76,7 @@ describe('PresetsDetailPanel', () => {
     const { getByText } = render(<PresetsDetailPanel />);
     
     // Favorite
-    const favBtn = getByText('presets.favorite');
+    const favBtn = getByText('presets.default');
     fireEvent.press(favBtn);
     expect(mockSetFavoritePreset).toHaveBeenCalledWith('user-123');
 
@@ -138,6 +142,6 @@ describe('PresetsDetailPanel', () => {
     const deleteAction = (Alert.alert as jest.Mock).mock.calls[0][2][1];
     deleteAction.onPress();
 
-    expect(mockRemovePreset).toHaveBeenCalledWith('user-123');
+    expect(removePreset).toHaveBeenCalledWith('user-123');
   });
 });

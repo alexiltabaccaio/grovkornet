@@ -141,7 +141,14 @@ const CameraScreenContent = () => {
         <ControlPanel translateY={footerTranslateY} drawerAnimation={drawerAnimation} galleryTransition={galleryTransition} />
       </Profiler>
 
-      {shouldRenderGallery && <GalleryViewer onClose={closeGallery} initialUri={latestCapturedUri} galleryTransition={galleryTransition} />}
+      {shouldRenderGallery && (
+        <GalleryViewer 
+          onClose={closeGallery} 
+          initialUri={latestCapturedUri} 
+          galleryTransition={galleryTransition} 
+          header={<Header />}
+        />
+      )}
       
       <AddPresetModal />
     </View>

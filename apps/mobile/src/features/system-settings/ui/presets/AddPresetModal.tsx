@@ -30,13 +30,14 @@ const getActiveFilmPayload = (customizedPayload: PresetPayload | null): FilmPres
   return filmPayload as FilmPresetPayload;
 };
 
+import { addPreset } from '../../lib/presetActions';
+
 export const AddPresetModal = () => {
   const { t } = useTranslation();
-  const { isAddModalVisible, setAddModalVisible, addPreset, userPresets, customizedPayload } = usePresetStore(
+  const { isAddModalVisible, setAddModalVisible, userPresets, customizedPayload } = usePresetStore(
     useShallow((s: PresetStore) => ({
       isAddModalVisible: s.isAddModalVisible,
       setAddModalVisible: s.setAddModalVisible,
-      addPreset: s.addPreset,
       userPresets: s.userPresets,
       customizedPayload: s.customizedPayload,
     }))

@@ -1,8 +1,6 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage, StateStorage } from 'zustand/middleware';
 import { createMMKV } from 'react-native-mmkv';
-import { useFilmStore, setFilmParameterChangeListener } from '@entities/film';
-import { useBodyStore, setBodyParameterChangeListener } from '@entities/body';
 import {
   DEFAULT_GRAIN_INTENSITY,
   DEFAULT_SATURATION,
@@ -113,16 +111,16 @@ interface PresetStoreState {
 }
 
 interface PresetStoreActions {
-  addPreset: (name: string, thumbnailUri?: string) => void;
-  removePreset: (id: string) => void;
+  setActivePresetId: (id: string) => void;
+  setCustomizedPayload: (payload: PresetPayload | null) => void;
+  setCustomizedThumbnailUri: (uri: string | null) => void;
+  setApplyingPreset: (applying: boolean) => void;
+  addUserPreset: (preset: Preset) => void;
+  removeUserPreset: (id: string) => void;
   setFavoritePreset: (id: string | null) => void;
   toggleQuickSelect: (id: string) => void;
-  applyPreset: (id: string) => void;
-  markAsCustomized: () => void;
-  getQuickSelectList: () => { id: string; name: string }[];
-  nextQuickPreset: () => void;
-  prevQuickPreset: () => void;
   setAddModalVisible: (visible: boolean) => void;
+  getQuickSelectList: () => { id: string; name: string }[];
 }
 
 export interface PresetStore extends PresetStoreState, PresetStoreActions {}
@@ -139,68 +137,24 @@ export const usePresetStore = create<PresetStore>()(
       isAddModalVisible: false,
 
       // Actions
-      addPreset: (name: string, thumbnailUri?: string) => {
-        const { customizedPayload, userPresets } = get();
-        let payload = customizedPayload;
-
-        if (!payload) {
-          // If no customized payload, snapshot the current active state
-          const filmStore = useFilmStore.getState();
-          const bodyStore = useBodyStore.getState();
-
-          const filmPayload = {} as Record<keyof FilmPresetPayload, unknown>;
-          Object.keys(DEFAULT_FILM_PAYLOAD).forEach((key) => {
-            const k = key as keyof FilmPresetPayload;
-            const val = filmStore[k] as unknown;
-            const hasValue = val && typeof val === 'object' && 'value' in val;
-            filmPayload[k] = hasValue
-              ? (val as Record<string, unknown>).value
-              : DEFAULT_FILM_PAYLOAD[k];
-          });
-
-          const bodyPayload = {} as Record<keyof BodyPresetPayload, unknown>;
-          Object.keys(DEFAULT_BODY_PAYLOAD).forEach((key) => {
-            const k = key as keyof BodyPresetPayload;
-            const val = bodyStore[k] as unknown;
-            const hasValue = val && typeof val === 'object' && 'value' in val;
-            bodyPayload[k] = hasValue
-              ? (val as Record<string, unknown>).value
-              : DEFAULT_BODY_PAYLOAD[k];
-          });
-
-          payload = {
-            film: filmPayload as FilmPresetPayload,
-            body: bodyPayload as BodyPresetPayload,
-          };
-        }
-
-        const newPreset: Preset = {
-          id: Date.now().toString(),
-          name,
-          payload,
-          isFavorite: false,
-          inQuickSelect: false,
-          createdAt: Date.now(),
-          thumbnailUri,
-        };
-
-        set({
-          userPresets: [...userPresets, newPreset],
-          activePresetId: newPreset.id,
+      setActivePresetId: (id: string) => set({ activePresetId: id }),
+      setCustomizedPayload: (payload: PresetPayload | null) => set({ customizedPayload: payload }),
+      setCustomizedThumbnailUri: (uri: string | null) => set({ customizedThumbnailUri: uri }),
+      setApplyingPreset: (applying: boolean) => set({ isApplyingPreset: applying }),
+      
+      addUserPreset: (preset: Preset) => {
+        set((state) => ({
+          userPresets: [...state.userPresets, preset],
+          activePresetId: preset.id,
           customizedPayload: null, // Reset customized once saved
           customizedThumbnailUri: null,
-        });
+        }));
       },
 
-      removePreset: (id: string) => {
-        const { userPresets, activePresetId } = get();
-        const updated = userPresets.filter((p) => p.id !== id);
-        
-        set({ userPresets: updated });
-
-        if (activePresetId === id) {
-          get().applyPreset('default');
-        }
+      removeUserPreset: (id: string) => {
+        set((state) => ({
+          userPresets: state.userPresets.filter((p) => p.id !== id),
+        }));
       },
 
       setFavoritePreset: (id: string | null) => {
@@ -232,88 +186,6 @@ export const usePresetStore = create<PresetStore>()(
         set({ userPresets: updated });
       },
 
-      applyPreset: (id: string) => {
-        const { userPresets, customizedPayload } = get();
-        let payload: PresetPayload | null = null;
-
-        if (id === 'default') {
-          payload = DEFAULT_PRESET_PAYLOAD;
-        } else if (id === 'customized') {
-          payload = customizedPayload;
-        } else {
-          const preset = userPresets.find((p) => p.id === id);
-          if (preset) {
-            payload = preset.payload;
-          }
-        }
-
-        if (!payload) return;
-
-        set({ isApplyingPreset: true, activePresetId: id });
-
-        // Safe Merge & direct update of Film shared values
-        const filmStore = useFilmStore.getState();
-        const targetFilm = { ...DEFAULT_FILM_PAYLOAD, ...payload.film };
-        Object.keys(targetFilm).forEach((key) => {
-          const k = key as keyof FilmPresetPayload;
-          const storeItem = filmStore[k] as unknown;
-          if (storeItem && typeof storeItem === 'object' && 'value' in storeItem) {
-            (storeItem as Record<string, unknown>).value = targetFilm[k];
-          }
-        });
-
-        // Safe Merge & direct update of Body shared values
-        const bodyStore = useBodyStore.getState();
-        const targetBody = { ...DEFAULT_BODY_PAYLOAD, ...payload.body };
-        Object.keys(targetBody).forEach((key) => {
-          const k = key as keyof BodyPresetPayload;
-          const storeItem = bodyStore[k] as unknown;
-          if (storeItem && typeof storeItem === 'object' && 'value' in storeItem) {
-            (storeItem as Record<string, unknown>).value = targetBody[k];
-          }
-        });
-
-        set({ isApplyingPreset: false });
-      },
-
-      markAsCustomized: () => {
-        const { isApplyingPreset } = get();
-        if (isApplyingPreset) return;
-
-        const filmStore = useFilmStore.getState();
-        const bodyStore = useBodyStore.getState();
-
-        const filmPayload = {} as Record<keyof FilmPresetPayload, unknown>;
-        Object.keys(DEFAULT_FILM_PAYLOAD).forEach((key) => {
-          const k = key as keyof FilmPresetPayload;
-          const val = filmStore[k] as unknown;
-          const hasValue = val && typeof val === 'object' && 'value' in val;
-          filmPayload[k] = hasValue
-            ? (val as Record<string, unknown>).value
-            : DEFAULT_FILM_PAYLOAD[k];
-        });
-
-        const bodyPayload = {} as Record<keyof BodyPresetPayload, unknown>;
-        Object.keys(DEFAULT_BODY_PAYLOAD).forEach((key) => {
-          const k = key as keyof BodyPresetPayload;
-          const val = bodyStore[k] as unknown;
-          const hasValue = val && typeof val === 'object' && 'value' in val;
-          bodyPayload[k] = hasValue
-            ? (val as Record<string, unknown>).value
-            : DEFAULT_BODY_PAYLOAD[k];
-        });
-
-        const payload: PresetPayload = {
-          film: filmPayload as FilmPresetPayload,
-          body: bodyPayload as BodyPresetPayload,
-        };
-
-        set({
-          activePresetId: 'customized',
-          customizedPayload: payload,
-        });
-      },
-
       getQuickSelectList: () => {
         const { userPresets, customizedPayload } = get();
         const list = [{ id: 'default', name: 'Default' }];
@@ -331,22 +203,6 @@ export const usePresetStore = create<PresetStore>()(
         return list;
       },
 
-      nextQuickPreset: () => {
-        const list = get().getQuickSelectList();
-        if (list.length <= 1) return;
-        const currentIndex = list.findIndex((p) => p.id === get().activePresetId);
-        const nextIndex = (currentIndex + 1) % list.length;
-        get().applyPreset(list[nextIndex].id);
-      },
-
-      prevQuickPreset: () => {
-        const list = get().getQuickSelectList();
-        if (list.length <= 1) return;
-        const currentIndex = list.findIndex((p) => p.id === get().activePresetId);
-        const prevIndex = (currentIndex - 1 + list.length) % list.length;
-        get().applyPreset(list[prevIndex].id);
-      },
-
       setAddModalVisible: (visible: boolean) => {
         set({ isAddModalVisible: visible });
       },
@@ -354,7 +210,7 @@ export const usePresetStore = create<PresetStore>()(
     {
       name: 'grovkornet-presets-storage',
       storage: createJSONStorage(() => mmkvStorage),
-      // Persist only user presets and active preset ID (active preset ID can be 'default' or a user preset ID)
+      // Persist only user presets and active preset ID
       partialize: (state) => ({
         userPresets: state.userPresets,
         activePresetId: state.activePresetId === 'customized' ? 'default' : state.activePresetId,
@@ -362,19 +218,3 @@ export const usePresetStore = create<PresetStore>()(
     }
   )
 );
-
-// Register listeners to mark preset as customized on manual changes
-if (typeof setFilmParameterChangeListener === 'function') {
-  setFilmParameterChangeListener(() => {
-    usePresetStore.getState().markAsCustomized();
-  });
-}
-if (typeof setBodyParameterChangeListener === 'function') {
-  setBodyParameterChangeListener(() => {
-    usePresetStore.getState().markAsCustomized();
-  });
-}
-
-
-
-

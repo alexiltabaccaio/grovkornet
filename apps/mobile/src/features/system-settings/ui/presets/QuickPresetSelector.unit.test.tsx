@@ -5,9 +5,14 @@ import { usePresetStore } from '@entities/preset';
 import { useSystemStore } from '@entities/system';
 import * as Haptics from 'expo-haptics';
 
+import { nextQuickPreset, prevQuickPreset } from '../../lib/presetActions';
+
+jest.mock('../../lib/presetActions', () => ({
+  nextQuickPreset: jest.fn(),
+  prevQuickPreset: jest.fn(),
+}));
+
 describe('QuickPresetSelector', () => {
-  const mockNextQuickPreset = jest.fn();
-  const mockPrevQuickPreset = jest.fn();
   const mockGetQuickSelectList = jest.fn();
 
   beforeEach(() => {
@@ -15,8 +20,6 @@ describe('QuickPresetSelector', () => {
 
     usePresetStore.setState({
       activePresetId: 'default',
-      nextQuickPreset: mockNextQuickPreset,
-      prevQuickPreset: mockPrevQuickPreset,
       getQuickSelectList: mockGetQuickSelectList,
     });
 
@@ -49,11 +52,11 @@ describe('QuickPresetSelector', () => {
 
     fireEvent.press(prevBtn);
     expect(Haptics.impactAsync).toHaveBeenCalledWith(Haptics.ImpactFeedbackStyle.Light);
-    expect(mockPrevQuickPreset).toHaveBeenCalled();
+    expect(prevQuickPreset).toHaveBeenCalled();
 
     fireEvent.press(nextBtn);
     expect(Haptics.impactAsync).toHaveBeenCalledWith(Haptics.ImpactFeedbackStyle.Light);
-    expect(mockNextQuickPreset).toHaveBeenCalled();
+    expect(nextQuickPreset).toHaveBeenCalled();
   });
 
   it('applies correct preset text colors based on activePresetId', () => {

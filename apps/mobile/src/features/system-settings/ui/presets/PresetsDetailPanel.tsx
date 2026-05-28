@@ -11,12 +11,13 @@ interface PresetsDetailPanelProps {
   animatedStyle?: StyleProp<ViewStyle>;
 }
 
+import { removePreset } from '../../lib/presetActions';
+
 export const PresetsDetailPanel = ({ animatedStyle }: PresetsDetailPanelProps) => {
   const { t } = useTranslation();
   const {
     userPresets,
     activePresetId,
-    removePreset,
     setFavoritePreset,
     toggleQuickSelect,
     setAddModalVisible,
@@ -24,7 +25,6 @@ export const PresetsDetailPanel = ({ animatedStyle }: PresetsDetailPanelProps) =
     useShallow((s: PresetStore) => ({
       userPresets: s.userPresets,
       activePresetId: s.activePresetId,
-      removePreset: s.removePreset,
       setFavoritePreset: s.setFavoritePreset,
       toggleQuickSelect: s.toggleQuickSelect,
       setAddModalVisible: s.setAddModalVisible,

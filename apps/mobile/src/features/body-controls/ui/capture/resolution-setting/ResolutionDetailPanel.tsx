@@ -3,6 +3,7 @@ import { StyleSheet, View, Text, StyleProp, ViewStyle } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { useShallow } from 'zustand/react/shallow';
 import { useBodyStore } from '@entities/body';
+import { usePreferencesStore } from '@entities/preferences';
 import { GenericPillDetailPanel } from '@entities/system';
 import Animated, { useAnimatedReaction, runOnJS } from 'react-native-reanimated';
 import { useTranslation } from 'react-i18next';
@@ -59,7 +60,10 @@ export const ResolutionDetailPanel = ({ parameterDetailPanelAnimatedStyle, anima
     <View style={styles.container}>
       <GenericPillDetailPanel
         options={RESOLUTIONS}
-        onChange={(_, index) => setResolutionSetting(index)}
+        onChange={(_, index) => {
+          setResolutionSetting(index);
+          usePreferencesStore.getState().setResolutionSettingPref(index);
+        }}
         value={resolutionSetting}
         isActiveShared={(currVal, _, index) => {
           'worklet';

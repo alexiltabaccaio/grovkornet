@@ -3,6 +3,7 @@ import { StyleSheet, View, Text, StyleProp, ViewStyle } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { useShallow } from 'zustand/react/shallow';
 import { useBodyStore } from '@entities/body';
+import { usePreferencesStore } from '@entities/preferences';
 import { GenericPillDetailPanel } from '@entities/system';
 import { useTranslation } from 'react-i18next';
 import Animated, { useAnimatedReaction, runOnJS } from 'react-native-reanimated';
@@ -70,7 +71,10 @@ export const AspectRatioDetailPanel = ({ parameterDetailPanelAnimatedStyle, anim
     <View style={styles.container}>
       <GenericPillDetailPanel
         options={ASPECT_RATIOS}
-        onChange={(_, index) => setAspectRatio(index)}
+        onChange={(_, index) => {
+          setAspectRatio(index);
+          usePreferencesStore.getState().setAspectRatioPref(index);
+        }}
         value={aspectRatio}
         isActiveShared={(currVal, _, index) => {
           'worklet';

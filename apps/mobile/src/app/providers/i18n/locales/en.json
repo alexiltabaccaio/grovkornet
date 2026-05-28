@@ -54,6 +54,7 @@
       "crop_active_warning": "Crop mode active. Maintains 60 FPS but reduces field of view.",
       "crop_inactive_warning": "Hardware limit: 30 FPS. Turn ON crop for 60 FPS.",
       "fps_setting": "FPS",
+      "noise_reduction": "NOISE REDUCTION",
       "noise_reduction_mode": "ALGORITHM",
       "sharpening": "SHARPENING",
       "sharpening_mode": "ALGORITHM"

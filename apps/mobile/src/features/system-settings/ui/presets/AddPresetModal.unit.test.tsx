@@ -26,9 +26,14 @@ jest.mock('react-native', () => {
   return RN;
 });
 
+import { addPreset } from '../../lib/presetActions';
+
+jest.mock('../../lib/presetActions', () => ({
+  addPreset: jest.fn(),
+}));
+
 describe('AddPresetModal', () => {
   const mockSetAddModalVisible = jest.fn();
-  const mockAddPreset = jest.fn();
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -37,7 +42,6 @@ describe('AddPresetModal', () => {
       isAddModalVisible: false,
       userPresets: [],
       setAddModalVisible: mockSetAddModalVisible,
-      addPreset: mockAddPreset,
     });
   });
 
@@ -99,7 +103,7 @@ describe('AddPresetModal', () => {
     fireEvent.changeText(input, 'UNIQUE_PRESET');
     fireEvent.press(saveBtn);
 
-    expect(mockAddPreset).toHaveBeenCalledWith('UNIQUE_PRESET', expect.any(String));
+    expect(addPreset).toHaveBeenCalledWith('UNIQUE_PRESET', expect.any(String));
     expect(mockSetAddModalVisible).toHaveBeenCalledWith(false);
   });
 

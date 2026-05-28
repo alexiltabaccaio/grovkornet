@@ -5,17 +5,15 @@ import { useShallow } from 'zustand/react/shallow';
 import { usePresetStore, PresetStore } from '@entities/preset';
 import * as Haptics from 'expo-haptics';
 
+import { nextQuickPreset, prevQuickPreset } from '../../lib/presetActions';
+
 export const QuickPresetSelector = () => {
   const {
     activePresetId,
-    nextQuickPreset,
-    prevQuickPreset,
     getQuickSelectList,
   } = usePresetStore(
     useShallow((s: PresetStore) => ({
       activePresetId: s.activePresetId,
-      nextQuickPreset: s.nextQuickPreset,
-      prevQuickPreset: s.prevQuickPreset,
       getQuickSelectList: s.getQuickSelectList,
     }))
   );

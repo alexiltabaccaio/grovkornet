@@ -2,18 +2,17 @@ import React from 'react';
 import { StyleSheet, Text, View, ActivityIndicator, Platform } from 'react-native';
 import Animated, { useAnimatedStyle, SharedValue } from 'react-native-reanimated';
 import { useTranslation } from 'react-i18next';
-import { Header } from '@widgets/header';
 import { ShareButton, PhotoPreview, GalleryStrip, useGalleryViewer } from '@features/gallery';
-
 import { useDeviceRotation } from '@shared/lib/hooks/useDeviceRotation';
 
 interface GalleryViewerProps {
   onClose: () => void;
   initialUri?: string | null;
   galleryTransition?: SharedValue<number>;
+  header?: React.ReactNode;
 }
 
-export const GalleryViewer = ({ onClose, initialUri, galleryTransition }: GalleryViewerProps) => {
+export const GalleryViewer = ({ onClose, initialUri, galleryTransition, header }: GalleryViewerProps) => {
   const { t } = useTranslation();
   const { photos, selectedPhoto, loading, onPhotoVisible, onSelectPhoto } = useGalleryViewer(initialUri);
   const rotationY = useDeviceRotation();
@@ -28,7 +27,7 @@ export const GalleryViewer = ({ onClose, initialUri, galleryTransition }: Galler
   return (
     <Animated.View style={[styles.absoluteContainer, animatedContainerStyle]} pointerEvents="box-none">
       <View style={styles.topArea} pointerEvents="box-none">
-        <Header />
+        {header}
       </View>
       <View style={styles.safeArea} pointerEvents="box-none">
         
