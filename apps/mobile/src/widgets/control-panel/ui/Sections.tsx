@@ -15,7 +15,7 @@ interface SectionsProps {
   galleryTransition?: SharedValue<number>;
 }
 
-export const Sections = ({ galleryTransition }: SectionsProps) => {
+export const Sections = React.memo(({ galleryTransition }: SectionsProps) => {
   const { activeSection, setActiveSection, isDebugEnabled } = useSystemStore(useShallow(state => ({
     activeSection: state.activeSection,
     setActiveSection: state.setActiveSection,
@@ -85,7 +85,9 @@ export const Sections = ({ galleryTransition }: SectionsProps) => {
     </BottomFooter>
   );
 
-};
+});
+
+Sections.displayName = 'Sections';
 
 const styles = StyleSheet.create({
   bottomFooterPosition: {

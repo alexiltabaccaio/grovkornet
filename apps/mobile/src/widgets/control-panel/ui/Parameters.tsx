@@ -20,7 +20,7 @@ import { PreferencesModule, PresetsModule } from '@features/system-settings';
  * It has been simplified to follow the Single Responsibility Principle, 
  * moving state consumption into the individual modules.
  */
-export const Parameters = () => {
+export const Parameters = React.memo(() => {
   const { activeModule, lastNonNoneModule } = useSystemStore(useShallow(state => ({
     activeModule: state.activeModule,
     lastNonNoneModule: state.lastNonNoneModule,
@@ -108,4 +108,6 @@ export const Parameters = () => {
       {renderModuleContent()}
     </View>
   );
-};
+});
+
+Parameters.displayName = 'Parameters';

@@ -14,7 +14,7 @@ interface ParameterDetailPanelsProps {
   translateY: SharedValue<number>;
 }
 
-export const ParameterDetailPanels = ({ translateY }: ParameterDetailPanelsProps) => {
+export const ParameterDetailPanels = React.memo(({ translateY }: ParameterDetailPanelsProps) => {
   const { activeParameter } = useSystemStore(useShallow(state => ({
     activeParameter: state.activeParameter,
   })));
@@ -142,7 +142,9 @@ export const ParameterDetailPanels = ({ translateY }: ParameterDetailPanelsProps
       {renderContent()}
     </View>
   );
-};
+});
+
+ParameterDetailPanels.displayName = 'ParameterDetailPanels';
 
 const styles = StyleSheet.create({
   container: {

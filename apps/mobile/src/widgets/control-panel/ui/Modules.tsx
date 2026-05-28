@@ -7,7 +7,7 @@ import { useShallow } from 'zustand/react/shallow';
 import { useSystemStore } from '@entities/system';
 import { PillButton } from '@shared/ui';
 
-export const Modules = () => {
+export const Modules = React.memo(() => {
   const { 
     activeSection, 
     activeModule, 
@@ -134,7 +134,9 @@ export const Modules = () => {
       </View>
     </>
   );
-};
+});
+
+Modules.displayName = 'Modules';
 
 const styles = StyleSheet.create({
   container: {
