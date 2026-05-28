@@ -167,6 +167,108 @@ void LutGenerator::waitForLut() {
   });
 }
 
+namespace {
+struct ColorBand {
+  float start;
+  float end;
+  float val;
+};
+
+inline float unwrap_angle(float angle, float ref) {
+  float val = angle;
+  while (val < ref) val += 360.0f;
+  while (val >= ref + 360.0f) val -= 360.0f;
+  return val;
+}
+
+const float INV_2_4 = 1.0f / 2.4f;
+inline float linearToSrgb(float c) {
+  if (c <= 0.0f)
+    return 0.0f;
+  if (c >= 1.0f)
+    return 1.0f;
+  return (c <= 0.0031308f) ? c * 12.92f
+                           : 1.055f * std::pow(c, INV_2_4) - 0.055f;
+}
+
+inline void rgbToLms(float lin_r, float l_lms_bg, float m_lms_bg, float s_lms_bg,
+                     float& l_lms, float& m_lms, float& s_lms) {
+  l_lms = 0.4122214708f * lin_r + l_lms_bg;
+  m_lms = 0.2119034982f * lin_r + m_lms_bg;
+  s_lms = 0.0883024619f * lin_r + s_lms_bg;
+
+  l_lms = std::cbrt(std::max(0.0f, l_lms));
+  m_lms = std::cbrt(std::max(0.0f, m_lms));
+  s_lms = std::cbrt(std::max(0.0f, s_lms));
+}
+
+inline void lmsToOklab(float l_lms, float m_lms, float s_lms, float& oklab_a, float& oklab_b) {
+  oklab_a = 1.9779984951f * l_lms - 2.4285922050f * m_lms + 0.4505937099f * s_lms;
+  oklab_b = 0.0259040371f * l_lms + 0.7827717662f * m_lms - 0.8086757660f * s_lms;
+}
+
+inline float calculateSelectiveSaturationMultiplier(float h, const ColorBand* bands) {
+  int activeBand = -1;
+  for (int i = 0; i < 8; ++i) {
+    bool inside = false;
+    if (bands[i].start > bands[i].end) {
+      if (h >= bands[i].start || h <= bands[i].end) inside = true;
+    } else {
+      if (h >= bands[i].start && h <= bands[i].end) inside = true;
+    }
+    if (inside) {
+      activeBand = i;
+      break;
+    }
+  }
+
+  if (activeBand == -1) {
+    return 1.0f;
+  }
+
+  int prevBand = (activeBand - 1 + 8) % 8;
+  int nextBand = (activeBand + 1) % 8;
+
+  float L = bands[activeBand].start;
+  float R = bands[activeBand].end;
+
+  float valPrev = bands[prevBand].val;
+  float valCurr = bands[activeBand].val;
+  float valNext = bands[nextBand].val;
+
+  float widthCurr = R - L;
+  if (widthCurr < 0.0f) widthCurr += 360.0f;
+
+  float widthPrev = L - bands[prevBand].start;
+  if (widthPrev < 0.0f) widthPrev += 360.0f;
+
+  float widthNext = bands[nextBand].end - R;
+  if (widthNext < 0.0f) widthNext += 360.0f;
+
+  const float MAX_RADIUS = 5.0f;
+  float radiusL = std::min(MAX_RADIUS, std::min(widthPrev * 0.5f, widthCurr * 0.5f));
+  float radiusR = std::min(MAX_RADIUS, std::min(widthCurr * 0.5f, widthNext * 0.5f));
+
+  float h_unwrapped_L = unwrap_angle(h, L - radiusL);
+  float dist_L = h_unwrapped_L - (L - radiusL);
+
+  float h_unwrapped_R = unwrap_angle(h, R - radiusR);
+  float dist_R = h_unwrapped_R - (R - radiusR);
+
+  if (dist_L >= 0.0f && dist_L < 2.0f * radiusL && radiusL > 0.001f) {
+    float t = dist_L / (2.0f * radiusL);
+    t = t * t * (3.0f - 2.0f * t); // Smoothstep
+    return (1.0f - t) * valPrev + t * valCurr;
+  } else if (dist_R >= 0.0f && dist_R < 2.0f * radiusR && radiusR > 0.001f) {
+    float t = dist_R / (2.0f * radiusR);
+    t = t * t * (3.0f - 2.0f * t); // Smoothstep
+    return (1.0f - t) * valCurr + t * valNext;
+  } else {
+    return valCurr;
+  }
+}
+} // namespace
+
 void LutGenerator::lutGenerationLoop() {
   std::vector<uint8_t> tempBuffer(LUT_SIZE * LUT_SIZE * LUT_SIZE * 4);
 
@@ -261,26 +363,6 @@ void LutGenerator::lutGenerationLoop() {
     float finalAdd_b = contrastOffset * evMultiplier * wb_b;
 
     // Definition of perceptual color bands in OKLAB (Core Plateaus).
-    struct ColorBand {
-      float start;
-      float end;
-      float val;
-    };
-    // Bands calculated based on real measured OKLAB values (sRGB -> OKLAB).
-    // Key reference points (theoretical values):
-    //   Pure Red      (255,0,0)   →  29.2°
-    //   CSS Orange    (255,165,0) →  70.7°
-    //   Pure Yellow   (255,255,0) → 109.8°
-    //   Pure Green    (0,255,0)   → 142.5°
-    //   Pure Cyan     (0,255,255) → 194.8°
-    //   Pure Blue     (0,0,255)   → 264.1°
-    //   Pure Magenta  (255,0,255) → 328.4°
-    //
-    // Note: Band limits are intentionally shifted/tuned from these exact
-    // primary values for artistic/perceptual coherence.
-    //
-    // Strategy: no gaps between adjacent bands. Edges touch.
-    // Smooth transition is guaranteed by smoothstep in the logic below.
     const ColorBand bands[8] = {
         {boundMagentaRed, boundRedOrange, satRed / 50.0f},     // 0: Red
         {boundRedOrange, boundOrangeYellow, satOrange / 50.0f},   // 1: Orange
@@ -290,25 +372,6 @@ void LutGenerator::lutGenerationLoop() {
         {boundCyanBlue, boundBluePurple, satBlue / 50.0f},   // 5: Blue
         {boundBluePurple, boundPurpleMagenta, satPurple / 50.0f}, // 6: Purple
         {boundPurpleMagenta, boundMagentaRed, satMagenta / 50.0f} // 7: Magenta
-    };
-
-    // Helper lambdas for angle arithmetic
-    auto unwrap_angle = [](float angle, float ref) -> float {
-      float val = angle;
-      while (val < ref) val += 360.0f;
-      while (val >= ref + 360.0f) val -= 360.0f;
-      return val;
-    };
-
-    // Helper lambda to convert linear value back to sRGB
-    const float INV_2_4 = 1.0f / 2.4f;
-    auto linearToSrgb = [INV_2_4](float c) -> float {
-      if (c <= 0.0f)
-        return 0.0f;
-      if (c >= 1.0f)
-        return 1.0f;
-      return (c <= 0.0031308f) ? c * 12.92f
-                               : 1.055f * std::pow(c, INV_2_4) - 0.055f;
     };
 
     // Compute LUT on CPU
@@ -345,89 +408,18 @@ void LutGenerator::lutGenerationLoop() {
 
           float selectiveMult = 1.0f;
           if (delta > 1e-6f) {
-            // Convert linear RGB to LMS
-            float l_lms = 0.4122214708f * lin_r + l_lms_bg;
-            float m_lms = 0.2119034982f * lin_r + m_lms_bg;
-            float s_lms = 0.0883024619f * lin_r + s_lms_bg;
+            float l_lms, m_lms, s_lms;
+            rgbToLms(lin_r, l_lms_bg, m_lms_bg, s_lms_bg, l_lms, m_lms, s_lms);
 
-            // Non-linear response (cube root)
-            l_lms = std::cbrt(std::max(0.0f, l_lms));
-            m_lms = std::cbrt(std::max(0.0f, m_lms));
-            s_lms = std::cbrt(std::max(0.0f, s_lms));
-
-            // LMS to OKLAB chrominance components a and b
-            float oklab_a = 1.9779984951f * l_lms - 2.4285922050f * m_lms +
-                            0.4505937099f * s_lms;
-            float oklab_b = 0.0259040371f * l_lms + 0.7827717662f * m_lms -
-                            0.8086757660f * s_lms;
+            float oklab_a, oklab_b;
+            lmsToOklab(l_lms, m_lms, s_lms, oklab_a, oklab_b);
 
             // Calculate perceptual Hue angle
             float h = std::atan2(oklab_b, oklab_a) * 180.0f / M_PI;
-            if (h < 0.0f)
-              h += 360.0f;
-            if (h >= 360.0f)
-              h -= 360.0f;
+            if (h < 0.0f) h += 360.0f;
+            if (h >= 360.0f) h -= 360.0f;
 
-            // Find which band h falls into
-            int activeBand = -1;
-            for (int i = 0; i < 8; ++i) {
-              bool inside = false;
-              if (bands[i].start > bands[i].end) {
-                if (h >= bands[i].start || h <= bands[i].end) inside = true;
-              } else {
-                if (h >= bands[i].start && h <= bands[i].end) inside = true;
-              }
-              if (inside) {
-                activeBand = i;
-                break;
-              }
-            }
-
-            if (activeBand != -1) {
-              int prevBand = (activeBand - 1 + 8) % 8;
-              int nextBand = (activeBand + 1) % 8;
-
-              float L = bands[activeBand].start;
-              float R = bands[activeBand].end;
-
-              float valPrev = bands[prevBand].val;
-              float valCurr = bands[activeBand].val;
-              float valNext = bands[nextBand].val;
-
-              // Calculate current, previous, and next band widths
-              float widthCurr = R - L;
-              if (widthCurr < 0.0f) widthCurr += 360.0f;
-
-              float widthPrev = L - bands[prevBand].start;
-              if (widthPrev < 0.0f) widthPrev += 360.0f;
-
-              float widthNext = bands[nextBand].end - R;
-              if (widthNext < 0.0f) widthNext += 360.0f;
-
-              // Transition radius logic (smooth transition zone of max 10 degrees total)
-              const float MAX_RADIUS = 5.0f;
-              float radiusL = std::min(MAX_RADIUS, std::min(widthPrev * 0.5f, widthCurr * 0.5f));
-              float radiusR = std::min(MAX_RADIUS, std::min(widthCurr * 0.5f, widthNext * 0.5f));
-
-              // Local unwrapped coordinates around transitions
-              float h_unwrapped_L = unwrap_angle(h, L - radiusL);
-              float dist_L = h_unwrapped_L - (L - radiusL);
-
-              float h_unwrapped_R = unwrap_angle(h, R - radiusR);
-              float dist_R = h_unwrapped_R - (R - radiusR);
-
-              if (dist_L >= 0.0f && dist_L < 2.0f * radiusL && radiusL > 0.001f) {
-                float t = dist_L / (2.0f * radiusL);
-                t = t * t * (3.0f - 2.0f * t); // Smoothstep
-                selectiveMult = (1.0f - t) * valPrev + t * valCurr;
-              } else if (dist_R >= 0.0f && dist_R < 2.0f * radiusR && radiusR > 0.001f) {
-                float t = dist_R / (2.0f * radiusR);
-                t = t * t * (3.0f - 2.0f * t); // Smoothstep
-                selectiveMult = (1.0f - t) * valCurr + t * valNext;
-              } else {
-                selectiveMult = valCurr;
-              }
-            }
+            selectiveMult = calculateSelectiveSaturationMultiplier(h, bands);
           }
 
           // 1. Saturation (applied in linear space)
@@ -468,3 +460,4 @@ void LutGenerator::lutGenerationLoop() {
     }
   }
 }
+
