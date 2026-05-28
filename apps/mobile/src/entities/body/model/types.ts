@@ -24,6 +24,7 @@ interface BodyState {
   resolutionSetting: SharedValue<number>;
   fpsSetting: SharedValue<number>;
   previewIn4k: SharedValue<number>;
+  force4k60fpsCrop: SharedValue<number>;
   capabilities: BodyCapabilities;
 }
 
@@ -41,6 +42,7 @@ interface BodyActions {
   setResolutionSetting: (value: number) => void;
   setFpsSetting: (value: number) => void;
   setPreviewIn4k: (value: number) => void;
+  setForce4k60fpsCrop: (value: number) => void;
   setCapabilities: (capabilities: BodyCapabilities) => void;
 }
 

@@ -25,6 +25,7 @@ export const useBodyStore = create<BodyStore>((set, get) => ({
   resolutionSetting: makeMutable(1), // 0: 4K, 1: 1080p, 2: 720p, 3: 480p, 4: 360p, 5: 240p, 6: 144p
   fpsSetting: makeMutable(60), // 1 to 60
   previewIn4k: makeMutable(0),
+  force4k60fpsCrop: makeMutable(1), // Default to ON (Apply crop)
   capabilities: {
     hasTorch: false,
     maxTorchStrength: 1,
@@ -102,6 +103,9 @@ export const useBodyStore = create<BodyStore>((set, get) => ({
   },
   setPreviewIn4k: (value) => {
     get().previewIn4k.value = value;
+  },
+  setForce4k60fpsCrop: (value) => {
+    get().force4k60fpsCrop.value = value;
   },
   setCapabilities: (caps) => {
     logger.info('BodyStore', 'Hardware capabilities updated for Body');

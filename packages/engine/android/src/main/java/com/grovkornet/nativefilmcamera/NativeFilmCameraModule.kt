@@ -249,6 +249,12 @@ class NativeFilmCameraModule : Module() {
                         view.updateBoth { previewIn4k = value }
                       }
       }
+
+      Prop("force4k60fpsCrop") { view: NativeFilmCameraView, value: Boolean ->
+        if (view.config.force4k60fpsCrop != value) {
+                        view.updateBoth { force4k60fpsCrop = value }
+                      }
+      }
       // @@GEN_PROPS_END@@
 
       Prop("secureViewEnabled") { view: NativeFilmCameraView, value: Boolean ->

@@ -50,8 +50,10 @@
       "resolution_setting": "RISOLUZIONE",
       "preview_in_4k": "ANTEPRIMA IN 4K",
       "preview_in_4k_warning": "ATTENZIONE SURRISCALDAMENTO",
+      "apply_crop": "APPLICA CROP",
+      "crop_active_warning": "Crop attivo. Mantiene 60 FPS in 4:3 ma riduce il campo visivo.",
+      "crop_inactive_warning": "Limite hardware: 30 FPS. Attiva il crop per avere i 60 FPS.",
       "fps_setting": "FPS",
-      "noise_reduction": "RIDUZIONE RUMORE",
       "noise_reduction_mode": "ALGORITMO",
       "sharpening": "NITIDEZZA",
       "sharpening_mode": "ALGORITMO"

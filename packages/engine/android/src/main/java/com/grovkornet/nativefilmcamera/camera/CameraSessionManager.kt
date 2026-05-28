@@ -64,15 +64,19 @@ class CameraSessionManager(
     fun bindCameraUseCases(surfaceTexture: SurfaceTexture, captureCallback: android.hardware.camera2.CameraCaptureSession.CaptureCallback? = null) {
         val provider = cameraProvider ?: return
 
-        val targetAspectRatio = when (config.aspectRatio) {
-            1, 4 -> AspectRatio.RATIO_16_9 // 16:9 and 65:24 map to 16:9
-            else -> AspectRatio.RATIO_4_3 // 4:3, 1:1, 3:2 map to 4:3
+        val targetAspectRatio = if (config.resolutionSetting == 0 && config.force4k60fpsCrop) {
+            AspectRatio.RATIO_16_9 // Force hardware to 16:9 for 4K to bypass 30fps lock on 4:3 sensors
+        } else {
+            when (config.aspectRatio) {
+                1, 4 -> AspectRatio.RATIO_16_9 // 16:9 and 65:24 map to 16:9
+                else -> AspectRatio.RATIO_4_3 // 4:3, 1:1, 3:2 map to 4:3
+            }
         }
 
         val is169 = targetAspectRatio == AspectRatio.RATIO_16_9
         
         val targetSize = when (config.resolutionSetting) {
-            0 -> null // 4K / Highest
+            0 -> if (is169) Size(3840, 2160) else Size(3264, 2448) // 4K
             1 -> if (is169) Size(1920, 1080) else Size(1920, 1440) // 1080p
             2 -> if (is169) Size(1280, 720) else Size(1280, 960)  // 720p
             3 -> if (is169) Size(720, 480) else Size(720, 540)   // 480p
@@ -82,11 +86,7 @@ class CameraSessionManager(
             else -> if (is169) Size(1920, 1080) else Size(1920, 1440)
         }
 
-        val captureResolutionStrategy = if (targetSize != null) {
-            ResolutionStrategy(targetSize, ResolutionStrategy.FALLBACK_RULE_CLOSEST_HIGHER_THEN_LOWER)
-        } else {
-            ResolutionStrategy.HIGHEST_AVAILABLE_STRATEGY
-        }
+        val captureResolutionStrategy = ResolutionStrategy(targetSize, ResolutionStrategy.FALLBACK_RULE_CLOSEST_HIGHER_THEN_LOWER)
 
         val captureResolutionSelector = ResolutionSelector.Builder()
             .setAspectRatioStrategy(AspectRatioStrategy(targetAspectRatio, AspectRatioStrategy.FALLBACK_RULE_AUTO))
@@ -96,10 +96,8 @@ class CameraSessionManager(
         val previewResolutionStrategy = if (config.resolutionSetting == 0 && !config.previewIn4k) {
             val defaultPreview = if (is169) Size(1920, 1080) else Size(1920, 1440)
             ResolutionStrategy(defaultPreview, ResolutionStrategy.FALLBACK_RULE_CLOSEST_HIGHER_THEN_LOWER)
-        } else if (targetSize != null) {
-            ResolutionStrategy(targetSize, ResolutionStrategy.FALLBACK_RULE_CLOSEST_HIGHER_THEN_LOWER)
         } else {
-            ResolutionStrategy.HIGHEST_AVAILABLE_STRATEGY
+            ResolutionStrategy(targetSize, ResolutionStrategy.FALLBACK_RULE_CLOSEST_HIGHER_THEN_LOWER)
         }
 
         val previewResolutionSelector = ResolutionSelector.Builder()

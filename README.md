@@ -59,6 +59,9 @@ To ensure maximum realism, the engine processes the image in the exact physical 
    turbo run dev
    ```
 
+> [!WARNING]
+> **Expo Commands & Monorepo Context**: Never run `npx expo run:android` or other `npx expo` commands directly in the project root directory. Doing so will generate native files in the wrong location and cause build errors (due to mismatched `minSdkVersion`). Always use the root-level scripts (e.g. `npm run android` / `npm run dev:android`) or run commands inside `apps/mobile/`.
+
 ## 🧪 Testing & Quality
 The project includes a comprehensive test suite:
 - **Lint**: `npm run lint` (ESLint) via Turbo.

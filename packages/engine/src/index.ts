@@ -54,6 +54,7 @@ export interface NativeFilmCameraViewProps extends ViewProps {
   cameraId?: string;
   resolutionSetting?: number;
   previewIn4k?: boolean;
+  force4k60fpsCrop?: boolean;
   secureViewEnabled?: boolean;
   // @@GEN_PROPS_END@@
   onDebugUpdate?: (event: { nativeEvent: { fps: number; hwFps: number; resolution: string } }) => void;

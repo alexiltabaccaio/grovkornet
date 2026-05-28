@@ -30,6 +30,7 @@ export const Viewfinder = React.memo(({ cameraKey }: ViewfinderProps) => {
     resolutionSetting,
     fpsSetting,
     previewIn4k,
+    force4k60fpsCrop,
   } = useBodyStore.getState();
 
   const {
@@ -114,6 +115,10 @@ export const Viewfinder = React.memo(({ cameraKey }: ViewfinderProps) => {
     return previewIn4k.value === 1;
   });
 
+  const resolvedForce4k60fpsCrop = useDerivedValue(() => {
+    return force4k60fpsCrop.value === 1;
+  });
+
   return (
     <>
       <NativeRenderer
@@ -169,6 +174,7 @@ export const Viewfinder = React.memo(({ cameraKey }: ViewfinderProps) => {
         cameraId={cameraAuto ? undefined : cameraId}
         resolutionSetting={resolutionSetting as unknown as SharedValue<number | undefined>}
         previewIn4k={resolvedPreviewIn4k as unknown as SharedValue<boolean | undefined>}
+        force4k60fpsCrop={resolvedForce4k60fpsCrop as unknown as SharedValue<boolean | undefined>}
         secureViewEnabled={isCameraSecure}
         // @@GEN_PROPS_END@@
         onCapabilitiesUpdate={capabilitiesHandler}

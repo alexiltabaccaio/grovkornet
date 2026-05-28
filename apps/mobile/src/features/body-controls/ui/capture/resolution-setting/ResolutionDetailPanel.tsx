@@ -53,6 +53,8 @@ export const ResolutionDetailPanel = ({ parameterDetailPanelAnimatedStyle, anima
     [previewIn4k]
   );
 
+
+
   return (
     <View style={styles.container}>
       <GenericPillDetailPanel
@@ -95,7 +97,7 @@ export const ResolutionDetailPanel = ({ parameterDetailPanelAnimatedStyle, anima
               </Text>
             </TouchableOpacity>
           </View>
-
+            
           <View style={styles.warningContainer}>
             <Ionicons name="warning-outline" size={14} color="#FF453A" style={{ marginRight: 4 }} />
             <Text style={styles.warningText} allowFontScaling={false}>
