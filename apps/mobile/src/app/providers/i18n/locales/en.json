@@ -33,6 +33,7 @@
       "chroma": "CHROMA",
       "size": "SIZE",
       "speed": "SPEED",
+      "roughness": "ROUGHNESS",
       "saturation": "SATURATION",
       "contrast": "CONTRAST",
       "chromatic_aberration": "CHROMATIC ABERRATION",

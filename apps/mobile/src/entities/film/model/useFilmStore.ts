@@ -52,6 +52,7 @@ export const useFilmStore = create<FilmStore>((set, get) => ({
   boundCyanBlue: makeMutable(DEFAULT_BOUND_CYAN_BLUE),
   boundBluePurple: makeMutable(DEFAULT_BOUND_BLUE_PURPLE),
   boundPurpleMagenta: makeMutable(DEFAULT_BOUND_PURPLE_MAGENTA),
+  grainRoughness: makeMutable(0.0),
   grainEnabled: makeMutable(false),
   bloomEnabled: makeMutable(false),
   noiseReductionMode: makeMutable(1),
@@ -171,6 +172,9 @@ export const useFilmStore = create<FilmStore>((set, get) => ({
   setBoundPurpleMagenta: (value) => {
     get().boundPurpleMagenta.value = value;
   },
+  setGrainRoughness: (value) => {
+    get().grainRoughness.value = value;
+  },
   setGrainEnabled: (value) => {
     get().grainEnabled.value = value;
   },
@@ -233,6 +237,7 @@ export const useFilmStore = create<FilmStore>((set, get) => ({
         state.grainChroma.value = 0.0;
         state.grainSize.value = 1.0;
         state.grainSpeed.value = DEFAULT_GRAIN_SPEED;
+        state.grainRoughness.value = 0.0;
         state.grainEnabled.value = false;
         break;
       case 'temperature':

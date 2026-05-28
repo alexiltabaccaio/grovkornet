@@ -33,6 +33,7 @@ export interface FilmPresetPayload {
   boundCyanBlue: number;
   boundBluePurple: number;
   boundPurpleMagenta: number;
+  grainRoughness: number;
   grainEnabled: boolean;
   bloomEnabled: boolean;
   noiseReductionMode: number;

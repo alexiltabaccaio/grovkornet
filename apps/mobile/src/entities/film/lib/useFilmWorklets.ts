@@ -28,6 +28,11 @@ export const useFilmWorklets = () => {
       updateSharedValue(film.grainSpeed, value);
     };
 
+    const updateGrainRoughness = (value: number) => {
+      'worklet';
+      updateSharedValue(film.grainRoughness, value);
+    };
+
     const updateSaturation = (value: number) => {
       'worklet';
       updateSharedValue(film.saturation, value);
@@ -162,6 +167,7 @@ export const useFilmWorklets = () => {
       updateGrainChroma,
       updateGrainSize,
       updateGrainSpeed,
+      updateGrainRoughness,
       updateSaturation,
       updateSatRed,
       updateSatOrange,

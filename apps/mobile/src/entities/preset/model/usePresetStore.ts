@@ -61,6 +61,7 @@ export const DEFAULT_FILM_PAYLOAD: FilmPresetPayload = {
   boundCyanBlue: DEFAULT_BOUND_CYAN_BLUE,
   boundBluePurple: DEFAULT_BOUND_BLUE_PURPLE,
   boundPurpleMagenta: DEFAULT_BOUND_PURPLE_MAGENTA,
+  grainRoughness: 0.0,
   grainEnabled: false,
   bloomEnabled: false,
   noiseReductionMode: 1,

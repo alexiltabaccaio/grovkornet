@@ -8,6 +8,7 @@ material {
         { type : float, name : u_GrainChroma },
         { type : float, name : u_GrainSize },
         { type : float, name : u_GrainSpeed },
+        { type : float, name : u_GrainRoughness },
         { type : float, name : u_VignetteIntensity },
         { type : float, name : u_VhsIntensity },
         { type : float, name : u_Time },
@@ -29,6 +30,12 @@ material {
 fragment {
     highp float rand(highp vec2 co) {
         return fract(sin(dot(co, vec2(12.9898, 78.233))) * 43758.5453);
+    }
+    highp float rand2(highp vec2 co) {
+        return fract(sin(dot(co, vec2(39.346, 11.135))) * 43758.5453);
+    }
+    highp float rand3(highp vec2 co) {
+        return fract(sin(dot(co, vec2(73.156, 52.235))) * 43758.5453);
     }
     void material(inout MaterialInputs material) {
         prepareMaterial(material);
@@ -132,13 +139,34 @@ fragment {
             highp float size = materialParams.u_GrainSize;
             highp vec2 grainUv = floor(uv * (1080.0 / clamp(size, 0.1, 10.0))) * clamp(size, 0.1, 10.0) / 1080.0;
             
-            highp float noiseR = fract(rand(grainUv) + materialParams.u_Time * materialParams.u_GrainSpeed * 0.13);
-            highp float noiseG = fract(rand(grainUv + vec2(17.0, 31.0)) + materialParams.u_Time * materialParams.u_GrainSpeed * 0.21);
-            highp float noiseB = fract(rand(grainUv + vec2(43.0, 71.0)) + materialParams.u_Time * materialParams.u_GrainSpeed * 0.37);
+            highp float randR = rand(grainUv);
+            highp float randG = rand2(grainUv);
+            highp float randB = rand3(grainUv);
+            highp float t = materialParams.u_Time * materialParams.u_GrainSpeed;
+            
+            highp float noiseR = fract(randR + t * 0.11);
+            highp float noiseG = fract(randG + t * 0.19);
+            highp float noiseB = fract(randB + t * 0.33);
             
             highp vec3 noise = vec3(noiseR, noiseG, noiseB);
-            highp float monoNoise = (noise.r + noise.g + noise.b) / 3.0;
-            highp vec3 finalNoise = mix(vec3(monoNoise), noise, materialParams.u_GrainChroma) - 0.5;
+            
+            // MONO: custom speeds to match RGB perceived speed (around 0.18) but slightly detuned to prevent Moiré circles
+            highp float monoFastR = fract(randR + t * 0.171);
+            highp float monoFastG = fract(randG + t * 0.180);
+            highp float monoFastB = fract(randB + t * 0.189);
+            
+            // MONO: soft (bell curve average - 0.5) vs rough (single channel - 0.5)
+            highp float softMono = (monoFastR + monoFastG + monoFastB) / 3.0 - 0.5;
+            highp float roughMono = monoFastB - 0.5;
+            highp float finalMono = mix(softMono, roughMono, materialParams.u_GrainRoughness);
+            
+            // RGB: soft (balanced chroma scaled by 1/sqrt(3)) vs rough (pure chroma)
+            highp vec3 softRgb = (noise - 0.5) * 0.577350269;
+            highp vec3 roughRgb = noise - 0.5;
+            highp vec3 finalRgb = mix(softRgb, roughRgb, materialParams.u_GrainRoughness);
+            
+            // Blend MONO and RGB based on u_GrainChroma
+            highp vec3 finalNoise = mix(vec3(finalMono), finalRgb, materialParams.u_GrainChroma);
             
             finalColor += finalNoise * materialParams.u_GrainIntensity;
         }

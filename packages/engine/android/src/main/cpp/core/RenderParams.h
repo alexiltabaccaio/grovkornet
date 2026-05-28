@@ -39,6 +39,7 @@ struct RenderParams {
     float boundCyanBlue;
     float boundBluePurple;
     float boundPurpleMagenta;
+    float grainRoughness;
     // @@GEN_STRUCT_END@@
 };
 

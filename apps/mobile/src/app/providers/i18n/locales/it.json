@@ -33,6 +33,7 @@
       "chroma": "CROMINANZA",
       "size": "DIMENSIONE",
       "speed": "VELOCITÀ",
+      "roughness": "RUGOSITÀ",
       "saturation": "SATURAZIONE",
       "contrast": "CONTRASTO",
       "chromatic_aberration": "ABERRAZIONE CROMATICA",

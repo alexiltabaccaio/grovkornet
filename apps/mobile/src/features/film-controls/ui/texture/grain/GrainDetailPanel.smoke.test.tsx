@@ -23,18 +23,24 @@ jest.mock('@entities/system', () => ({
 }));
 
 jest.mock('@entities/film', () => ({
-  useFilmStore: jest.fn((fn?: (state: { grainChroma: { value: number }; setGrainChroma: jest.Mock; grainSize: { value: number }; setGrainSize: jest.Mock }) => unknown) => {
+  useFilmStore: jest.fn((fn?: (state: any) => unknown) => {
     const state = {
       grainChroma: { value: 0 },
       setGrainChroma: jest.fn(),
       grainSize: { value: 2.0 },
       setGrainSize: jest.fn(),
+      grainSpeed: { value: 1.0 },
+      setGrainSpeed: jest.fn(),
+      grainRoughness: { value: 0.0 },
+      setGrainRoughness: jest.fn(),
     };
     return fn ? fn(state) : state;
   }),
   useFilmWorklets: () => ({
     updateGrainChroma: jest.fn(),
     updateGrainSize: jest.fn(),
+    updateGrainSpeed: jest.fn(),
+    updateGrainRoughness: jest.fn(),
   }),
 }));
 

@@ -37,6 +37,7 @@ data class CameraConfiguration(
     var boundCyanBlue: Float = 230.0f,
     var boundBluePurple: Float = 280.0f,
     var boundPurpleMagenta: Float = 315.0f,
+    var grainRoughness: Float = 0.0f,
     var grainEnabled: Boolean = true,
     var bloomEnabled: Boolean = false,
 
@@ -85,7 +86,7 @@ fun CameraConfiguration.toRenderParamsArray(
     targetFpsOverride: Float = targetFps.toFloat(),
     invertYShift: Boolean = false
 ): FloatArray = // @@GEN_ARRAY_START@@
-FloatArray(37).apply {
+FloatArray(38).apply {
     this[0 ] = saturation
     this[1 ] = contrast
     this[2 ] = if (grainEnabled) grainIntensity else 0f
@@ -123,6 +124,7 @@ FloatArray(37).apply {
     this[34] = boundCyanBlue
     this[35] = boundBluePurple
     this[36] = boundPurpleMagenta
+    this[37] = grainRoughness
 }
 // @@GEN_ARRAY_END@@
 

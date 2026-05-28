@@ -181,6 +181,10 @@ class NativeFilmCameraModule : Module() {
         view.updateEffect { boundPurpleMagenta = value }
       }
 
+      Prop("grainRoughness") { view: NativeFilmCameraView, value: Float ->
+        view.updateEffect { grainRoughness = value }
+      }
+
       Prop("grainEnabled") { view: NativeFilmCameraView, value: Boolean ->
         view.updateEffect { grainEnabled = value }
       }

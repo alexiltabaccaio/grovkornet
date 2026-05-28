@@ -14,12 +14,22 @@ const formatGrainValue = (v: number) => {
   return `${v.toFixed(1)}x`;
 };
 
+const formatRoughnessValue = (v: number) => {
+  'worklet';
+  return `${Math.round(v * 100)}`;
+};
+
 const noop = () => {};
 
 export const GrainDetailPanel = () => {
   const { t } = useTranslation();
   const isDebugEnabled = useSystemStore((s) => s.isDebugEnabled);
-  const { grainChroma, setGrainChroma, grainSize, setGrainSize, grainSpeed, setGrainSpeed } = useFilmStore(
+  const { 
+    grainChroma, setGrainChroma, 
+    grainSize, setGrainSize, 
+    grainSpeed, setGrainSpeed,
+    grainRoughness, setGrainRoughness
+  } = useFilmStore(
     useShallow(state => ({
       grainChroma: state.grainChroma,
       setGrainChroma: state.setGrainChroma,
@@ -27,6 +37,8 @@ export const GrainDetailPanel = () => {
       setGrainSize: state.setGrainSize,
       grainSpeed: state.grainSpeed,
       setGrainSpeed: state.setGrainSpeed,
+      grainRoughness: state.grainRoughness,
+      setGrainRoughness: state.setGrainRoughness,
     }))
   );
 
@@ -85,7 +97,21 @@ export const GrainDetailPanel = () => {
         </View>
       </View>
       <View style={styles.row}>
-        <View style={styles.placeholderContainer} />
+        <View style={styles.roughnessContainer}>
+          <ParameterControl
+            label={t('parameters.roughness')}
+            isActive={true}
+            onPress={noop}
+            value={grainRoughness}
+            minValue={0.0}
+            maxValue={1.0}
+            onChange={setGrainRoughness}
+            onUpdateWorklet={worklets.updateGrainRoughness}
+            variant="slider"
+            hideAutoPlaceholder={true}
+            valueFormatter={formatRoughnessValue}
+          />
+        </View>
         <View style={styles.speedContainer}>
           <ParameterControl
             label={t('parameters.speed')}
@@ -136,7 +162,7 @@ const styles = StyleSheet.create({
   sizeContainer: {
     flex: 1,
   },
-  placeholderContainer: {
+  roughnessContainer: {
     flex: 1,
   },
   speedContainer: {

@@ -322,6 +322,14 @@
       "zustand": { "default": "DEFAULT_BOUND_PURPLE_MAGENTA", "type": "number", "resetGroup": "saturation" }
     },
     {
+      "name": "grainRoughness",
+      "category": "render",
+      "arrayIndex": 37,
+      "kotlin": { "type": "Float", "default": "0.0f" },
+      "ts": { "type": "number" },
+      "zustand": { "default": "0.0", "type": "number", "resetGroup": "grain" }
+    },
+    {
       "name": "grainEnabled",
       "category": "render",
       "kotlin": { "type": "Boolean", "default": "true" },

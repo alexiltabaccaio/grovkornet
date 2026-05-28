@@ -36,6 +36,7 @@ interface FilmState {
   boundCyanBlue: SharedValue<number>;
   boundBluePurple: SharedValue<number>;
   boundPurpleMagenta: SharedValue<number>;
+  grainRoughness: SharedValue<number>;
   grainEnabled: SharedValue<boolean>;
   bloomEnabled: SharedValue<boolean>;
   noiseReductionMode: SharedValue<number>;
@@ -76,6 +77,7 @@ interface FilmActions {
   setBoundCyanBlue: (value: number) => void;
   setBoundBluePurple: (value: number) => void;
   setBoundPurpleMagenta: (value: number) => void;
+  setGrainRoughness: (value: number) => void;
   setGrainEnabled: (value: boolean) => void;
   setBloomEnabled: (value: boolean) => void;
   setNoiseReductionMode: (mode: number) => void;

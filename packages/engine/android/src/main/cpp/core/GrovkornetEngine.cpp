@@ -72,6 +72,7 @@ RenderParams parseRenderParams(const float* params) {
     rp.boundCyanBlue = params[34];
     rp.boundBluePurple = params[35];
     rp.boundPurpleMagenta = params[36];
+    rp.grainRoughness = params[37];
     // @@GEN_PARSING_END@@
     return rp;
 }
@@ -309,6 +310,7 @@ void GrovkornetEngine::applyShaderParameters(const RenderParams& params, filamen
     composite->setParameter("u_GrainChroma", params.grainChroma);
     composite->setParameter("u_GrainSize", params.grainSize);
     composite->setParameter("u_GrainSpeed", params.grainSpeed);
+    composite->setParameter("u_GrainRoughness", params.grainRoughness);
     composite->setParameter("u_VignetteIntensity", params.vignetteIntensity);
     composite->setParameter("u_VhsIntensity", params.vhsIntensity);
     composite->setParameter("u_Time", params.time);

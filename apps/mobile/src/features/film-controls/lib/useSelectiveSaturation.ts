@@ -14,7 +14,6 @@ import {
 } from '@grovkornet/shared';
 import { useDoublePress } from '@shared/lib/hooks/useDoublePress';
 import { useSystemStore } from '@entities/system';
-import * as Haptics from '@shared/lib/haptics';
 
 export type ColorIndex = 'master' | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7;
 

@@ -7,12 +7,10 @@ import Animated, {
   interpolate,
   Extrapolation
 } from 'react-native-reanimated';
-import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import { ParameterThumbViewProps } from './ParameterThumbView.types';
 import { logger } from '@shared/lib/logger';
 import { AutoButton } from '../auto-button/AutoButton';
 import { globalMeasuredTrackWidth, setGlobalMeasuredTrackWidth } from './globalTrackWidth';
-import * as Haptics from '@shared/lib/haptics';
 
 const AnimatedTextInput = Animated.createAnimatedComponent(TextInput);
 

@@ -69,6 +69,7 @@ export const Viewfinder = React.memo(({ cameraKey }: ViewfinderProps) => {
     boundCyanBlue,
     boundBluePurple,
     boundPurpleMagenta,
+    grainRoughness,
     grainEnabled,
     bloomEnabled,
     noiseReductionMode,
@@ -158,6 +159,7 @@ export const Viewfinder = React.memo(({ cameraKey }: ViewfinderProps) => {
         boundCyanBlue={boundCyanBlue as unknown as SharedValue<number | undefined>}
         boundBluePurple={boundBluePurple as unknown as SharedValue<number | undefined>}
         boundPurpleMagenta={boundPurpleMagenta as unknown as SharedValue<number | undefined>}
+        grainRoughness={grainRoughness as unknown as SharedValue<number | undefined>}
         grainEnabled={grainEnabled as unknown as SharedValue<boolean | undefined>}
         bloomEnabled={bloomEnabled as unknown as SharedValue<boolean | undefined>}
         noiseReduction={resolvedNoiseReduction as unknown as SharedValue<number | undefined>}

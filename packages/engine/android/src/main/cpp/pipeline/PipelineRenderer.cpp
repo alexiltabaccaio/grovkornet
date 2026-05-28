@@ -213,6 +213,7 @@ void PipelineRenderer::setStaticParameters(int width, int height, ShaderManager&
     shaderManager.getMaterialInstanceComposite()->setParameter("u_GrainIntensity", 0.0f);
     shaderManager.getMaterialInstanceComposite()->setParameter("u_GrainChroma", 0.0f);
     shaderManager.getMaterialInstanceComposite()->setParameter("u_GrainSize", 1.0f);
+    shaderManager.getMaterialInstanceComposite()->setParameter("u_GrainRoughness", 0.0f);
     shaderManager.getMaterialInstanceComposite()->setParameter("u_VignetteIntensity", 0.0f);
     shaderManager.getMaterialInstanceComposite()->setParameter("u_VhsIntensity", 0.0f);
     shaderManager.getMaterialInstanceComposite()->setParameter("u_Time", 0.0f);

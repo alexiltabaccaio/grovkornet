@@ -17,6 +17,7 @@ describe('useFilmWorklets', () => {
     film.setGrainChroma(0);
     film.setGrainSize(1);
     film.setGrainSpeed(DEFAULT_GRAIN_SPEED);
+    film.setGrainRoughness(0.0);
     film.setSaturation(DEFAULT_SATURATION);
     film.setContrast(DEFAULT_CONTRAST);
     film.setChromaticAberration(DEFAULT_CHROMATIC_ABERRATION);
@@ -53,6 +54,9 @@ describe('useFilmWorklets', () => {
 
     worklets.updateGrainSpeed(0.8);
     expect(useFilmStore.getState().grainSpeed.value).toBe(0.8);
+
+    worklets.updateGrainRoughness(0.7);
+    expect(useFilmStore.getState().grainRoughness.value).toBe(0.7);
   });
 
   it('correctly updates color and contrast parameters in worklets', () => {

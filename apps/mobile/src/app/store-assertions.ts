@@ -15,6 +15,7 @@ type FilmActionsKeys =
   | 'setGrainChroma'
   | 'setGrainSize'
   | 'setGrainSpeed'
+  | 'setGrainRoughness'
   | 'setTemperature'
   | 'setTint'
   | 'setBloomIntensity'
