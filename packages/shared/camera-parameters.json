@@ -438,6 +438,26 @@
       "ts": { "type": "boolean" }
     },
     {
+      "name": "force4k60fpsCrop",
+      "category": "hardware",
+      "kotlin": {
+        "type": "Boolean",
+        "default": "true",
+        "propHandler": "if (view.config.force4k60fpsCrop != value) {\n          view.updateBoth { force4k60fpsCrop = value }\n        }"
+      },
+      "ts": { "type": "boolean" }
+    },
+    {
+      "name": "secureViewEnabled",
+      "category": "hardware",
+      "kotlin": {
+        "type": "Boolean",
+        "default": "false",
+        "propHandler": "view.setSecureMode(value)"
+      },
+      "ts": { "type": "boolean" }
+    },
+    {
       "name": "viewportWidth",
       "category": "viewport",
       "kotlin": { "type": "Float", "default": "1080f" }

@@ -14,7 +14,9 @@ const FILE_PATHS = {
   cppSource: 'packages/engine/android/src/main/cpp/core/GrovkornetEngine.cpp',
   zustandTypes: 'apps/mobile/src/entities/film/model/types.ts',
   zustandStore: 'apps/mobile/src/entities/film/model/useFilmStore.ts',
-  zustandViewfinder: 'apps/mobile/src/widgets/viewfinder/ui/Viewfinder.tsx'
+  zustandViewfinder: 'apps/mobile/src/widgets/viewfinder/ui/Viewfinder.tsx',
+  presetTypes: 'apps/mobile/src/entities/preset/model/types.ts',
+  presetStore: 'apps/mobile/src/entities/preset/model/usePresetStore.ts'
 };
 
 function replaceBetweenMarkers(filePath, startMarker, endMarker, newContent, indent = '') {
@@ -399,7 +401,9 @@ function generateViewfinderProps(parameters) {
     cameraAspectRatio: 'aspectRatio as unknown as SharedValue<number | undefined>',
     cameraId: 'cameraAuto ? undefined : cameraId',
     autoFocus: 'focusAuto as unknown as SharedValue<boolean | undefined>',
-    torchState: 'torchState as unknown as SharedValue<number | undefined>'
+    torchState: 'torchState as unknown as SharedValue<number | undefined>',
+    force4k60fpsCrop: 'resolvedForce4k60fpsCrop as unknown as SharedValue<boolean | undefined>',
+    secureViewEnabled: 'isCameraSecure'
   };
 
   // 1. Selector destructuring
@@ -444,6 +448,45 @@ function generateViewfinderProps(parameters) {
   replaceBetweenMarkers(FILE_PATHS.zustandViewfinder, '        // @@GEN_PROPS_START@@', '        // @@GEN_PROPS_END@@', propsContent, '        ');
 }
 
+function generatePresetSettings(parameters) {
+  console.log('\n--- Generating Preset Settings (Step 6) ---');
+  
+  const zustandParams = parameters.filter(p => p.zustand);
+  
+  // 1. Generate FilmPresetPayload fields in types.ts
+  const fieldsContent = zustandParams
+    .map(p => {
+      const name = p.zustand.name || p.name;
+      const type = p.zustand.type || (p.ts?.type === 'boolean' ? 'boolean' : 'number');
+      return `${name}: ${type};`;
+    })
+    .join('\n');
+  replaceBetweenMarkers(FILE_PATHS.presetTypes, '  // @@GEN_FILM_PAYLOAD_START@@', '  // @@GEN_FILM_PAYLOAD_END@@', fieldsContent, '  ');
+
+  // 2. Generate @grovkornet/shared imports in usePresetStore.ts
+  const defaults = new Set(['DEFAULT_ISO', 'DEFAULT_EV', 'DEFAULT_SHUTTER_SPEED']);
+  parameters.forEach(p => {
+    if (p.zustand && p.zustand.default && p.zustand.default.startsWith('DEFAULT_')) {
+      defaults.add(p.zustand.default);
+    }
+  });
+  const importsContent = Array.from(defaults)
+    .sort()
+    .map(d => `${d},`)
+    .join('\n');
+  replaceBetweenMarkers(FILE_PATHS.presetStore, '  // @@GEN_IMPORTS_START@@', '  // @@GEN_IMPORTS_END@@', importsContent, '  ');
+
+  // 3. Generate DEFAULT_FILM_PAYLOAD in usePresetStore.ts
+  const defaultsContent = zustandParams
+    .map(p => {
+      const name = p.zustand.name || p.name;
+      const def = p.zustand.default;
+      return `${name}: ${def},`;
+    })
+    .join('\n');
+  replaceBetweenMarkers(FILE_PATHS.presetStore, '  // @@GEN_DEFAULTS_START@@', '  // @@GEN_DEFAULTS_END@@', defaultsContent, '  ');
+}
+
 function main() {
   const isDryRun = process.argv.includes('--dry-run');
   
@@ -459,6 +502,7 @@ function main() {
       generateZustandTypes(parameters);
       generateZustandStore(parameters);
       generateViewfinderProps(parameters);
+      generatePresetSettings(parameters);
       console.log("\nCodegen execution completed successfully!");
     }
   } catch (err) {

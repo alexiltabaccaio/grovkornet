@@ -2,25 +2,27 @@ import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import { createZustandMMKVStorage } from '@shared/lib/storage/mmkv';
 import {
-  DEFAULT_GRAIN_INTENSITY,
-  DEFAULT_SATURATION,
-  DEFAULT_CONTRAST,
+  // @@GEN_IMPORTS_START@@
+  DEFAULT_BOUND_BLUE_PURPLE,
+  DEFAULT_BOUND_CYAN_BLUE,
+  DEFAULT_BOUND_GREEN_CYAN,
+  DEFAULT_BOUND_MAGENTA_RED,
+  DEFAULT_BOUND_ORANGE_YELLOW,
+  DEFAULT_BOUND_PURPLE_MAGENTA,
+  DEFAULT_BOUND_RED_ORANGE,
+  DEFAULT_BOUND_YELLOW_GREEN,
   DEFAULT_CHROMATIC_ABERRATION,
+  DEFAULT_CONTRAST,
+  DEFAULT_EV,
+  DEFAULT_GRAIN_INTENSITY,
+  DEFAULT_GRAIN_SPEED,
+  DEFAULT_ISO,
+  DEFAULT_SATURATION,
+  DEFAULT_SELECTIVE_SATURATION,
+  DEFAULT_SHUTTER_SPEED,
   DEFAULT_TEMPERATURE,
   DEFAULT_TINT,
-  DEFAULT_GRAIN_SPEED,
-  DEFAULT_SELECTIVE_SATURATION,
-  DEFAULT_BOUND_MAGENTA_RED,
-  DEFAULT_BOUND_RED_ORANGE,
-  DEFAULT_BOUND_ORANGE_YELLOW,
-  DEFAULT_BOUND_YELLOW_GREEN,
-  DEFAULT_BOUND_GREEN_CYAN,
-  DEFAULT_BOUND_CYAN_BLUE,
-  DEFAULT_BOUND_BLUE_PURPLE,
-  DEFAULT_BOUND_PURPLE_MAGENTA,
-  DEFAULT_ISO,
-  DEFAULT_EV,
-  DEFAULT_SHUTTER_SPEED,
+  // @@GEN_IMPORTS_END@@
 } from '@grovkornet/shared';
 import { Preset, PresetPayload, FilmPresetPayload, BodyPresetPayload } from './types';
 
@@ -29,6 +31,7 @@ import { Preset, PresetPayload, FilmPresetPayload, BodyPresetPayload } from './t
 // ==========================================
 
 export const DEFAULT_FILM_PAYLOAD: FilmPresetPayload = {
+  // @@GEN_DEFAULTS_START@@
   saturation: DEFAULT_SATURATION,
   contrast: DEFAULT_CONTRAST,
   grainIntensity: DEFAULT_GRAIN_INTENSITY,
@@ -63,6 +66,7 @@ export const DEFAULT_FILM_PAYLOAD: FilmPresetPayload = {
   noiseReductionMode: 1,
   noiseReductionAuto: true,
   temperatureAuto: true,
+  // @@GEN_DEFAULTS_END@@
 };
 
 export const DEFAULT_BODY_PAYLOAD: BodyPresetPayload = {

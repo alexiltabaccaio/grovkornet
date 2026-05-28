@@ -255,11 +255,11 @@ class NativeFilmCameraModule : Module() {
                         view.updateBoth { force4k60fpsCrop = value }
                       }
       }
-      // @@GEN_PROPS_END@@
 
       Prop("secureViewEnabled") { view: NativeFilmCameraView, value: Boolean ->
         view.setSecureMode(value)
       }
+      // @@GEN_PROPS_END@@
 
       AsyncFunction("takePhoto") { view: NativeFilmCameraView ->
         view.takePhoto()

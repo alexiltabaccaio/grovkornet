@@ -86,19 +86,16 @@ export function App() {
       });
     }
 
-    // Apply the active preset from storage, or fallback to favorite/default
+    // Apply the favorite preset or fallback to default on startup, 
+    // ignoring the last active preset (which might have been 'customized')
     const presetStore = usePresetStore.getState();
-    const { userPresets, activePresetId } = presetStore;
+    const { userPresets } = presetStore;
     
-    if (activePresetId && activePresetId !== 'default') {
-      applyPreset(activePresetId);
+    const favorite = userPresets.find((p) => p.isFavorite);
+    if (favorite) {
+      applyPreset(favorite.id);
     } else {
-      const favorite = userPresets.find((p) => p.isFavorite);
-      if (favorite) {
-        applyPreset(favorite.id);
-      } else {
-        applyPreset('default');
-      }
+      applyPreset('default');
     }
 
     return () => {

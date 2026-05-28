@@ -3,6 +3,7 @@
  * Serialized Look & Feel parameters from FilmStore
  */
 export interface FilmPresetPayload {
+  // @@GEN_FILM_PAYLOAD_START@@
   saturation: number;
   contrast: number;
   grainIntensity: number;
@@ -37,6 +38,7 @@ export interface FilmPresetPayload {
   noiseReductionMode: number;
   noiseReductionAuto: boolean;
   temperatureAuto: boolean;
+  // @@GEN_FILM_PAYLOAD_END@@
 }
 
 /**
