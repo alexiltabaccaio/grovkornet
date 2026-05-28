@@ -126,7 +126,7 @@ export const useSystemStore = create<SystemStore>()(
   },
   
   setLatestCapturedUri: (uri) => {
-    set({ latestCapturedUri: uri });
+    set({ latestCapturedUri: uri, latestPreviewUri: null });
   },
     }),
     {

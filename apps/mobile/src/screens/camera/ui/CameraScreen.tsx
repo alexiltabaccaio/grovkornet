@@ -25,10 +25,11 @@ export const CameraScreen = () => {
 CameraScreen.whyDidYouRender = true;
 
 const CameraScreenContent = () => {
-  const { isDebugEnabled, triggerCapture, latestCapturedUri } = useSystemStore(useShallow(state => ({
+  const { isDebugEnabled, triggerCapture, latestCapturedUri, latestPreviewUri } = useSystemStore(useShallow(state => ({
     isDebugEnabled: state.isDebugEnabled,
     triggerCapture: state.triggerCapture,
     latestCapturedUri: state.latestCapturedUri,
+    latestPreviewUri: state.latestPreviewUri,
   })));
 
   const footerTranslateY = useSharedValue(0);
@@ -144,7 +145,7 @@ const CameraScreenContent = () => {
       {shouldRenderGallery && (
         <GalleryViewer 
           onClose={closeGallery} 
-          initialUri={latestCapturedUri} 
+          initialUri={latestPreviewUri ?? latestCapturedUri} 
           galleryTransition={galleryTransition} 
           header={<Header />}
         />
