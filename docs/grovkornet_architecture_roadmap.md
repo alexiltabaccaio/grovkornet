@@ -13,5 +13,3 @@
 ## [TICKET #08] – Refactoring Gerarchia UI: Controlli Bloom e Inversione Sliders
 
 ## [TICKET #11] – Interazione Avanzata: Animazione "Hold-to-Reset" Settoriale
-
-## [TICKET #13] – nel modulo Preset non sono presenti i pulsanti sotto ai parametri a meno che non premiamo un preset prima. (esempio: sotto a Default non compare la stella di preferito se prima non clicchiamo il riquadro)
