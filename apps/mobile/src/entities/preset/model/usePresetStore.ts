@@ -210,10 +210,11 @@ export const usePresetStore = create<PresetStore>()(
     {
       name: 'grovkornet-presets-storage',
       storage: createJSONStorage(() => mmkvStorage),
-      // Persist only user presets and active preset ID
+      // Persist user presets, active preset ID (including 'customized'), and customized payload
       partialize: (state) => ({
         userPresets: state.userPresets,
-        activePresetId: state.activePresetId === 'customized' ? 'default' : state.activePresetId,
+        activePresetId: state.activePresetId,
+        customizedPayload: state.customizedPayload,
       }),
     }
   )

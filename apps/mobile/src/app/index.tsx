@@ -13,6 +13,7 @@ import './store-assertions';
 
 import i18n from 'i18next';
 import { useBodyStore, setBodyParameterChangeListener } from '@entities/body';
+import { useLensStore } from '@entities/lens';
 import { setFilmParameterChangeListener } from '@entities/film';
 import { usePreferencesStore } from '@entities/preferences';
 import { applyPreset, markAsCustomized } from '@features/system-settings';
@@ -40,6 +41,7 @@ export function App() {
     // Restore global preferences
     const prefs = usePreferencesStore.getState();
     const bodyStore = useBodyStore.getState();
+    const lensStore = useLensStore.getState();
     
     if (prefs.resolutionSetting !== null) {
       bodyStore.resolutionSetting.value = prefs.resolutionSetting;
@@ -50,8 +52,23 @@ export function App() {
     if (prefs.aspectRatio !== null) {
       bodyStore.aspectRatio.value = prefs.aspectRatio;
     }
+    if (prefs.force4k60fpsCrop !== null) {
+      bodyStore.force4k60fpsCrop.value = prefs.force4k60fpsCrop;
+    }
     if (prefs.language !== null) {
       void i18n.changeLanguage(prefs.language).catch(() => {});
+    }
+    if (prefs.cameraId !== null) {
+      lensStore.cameraId = prefs.cameraId;
+    }
+    if (prefs.cameraAuto !== null) {
+      lensStore.cameraAuto = prefs.cameraAuto;
+    }
+    if (prefs.focusDistance !== null) {
+      lensStore.focusDistance.value = prefs.focusDistance;
+    }
+    if (prefs.focusAuto !== null) {
+      lensStore.focusAuto.value = prefs.focusAuto;
     }
 
     // Inizializza il generatore di thumbnail per i preset in background
@@ -69,13 +86,19 @@ export function App() {
       });
     }
 
-    // Apply favorite preset on startup, or default if none
-    const { userPresets } = usePresetStore.getState();
-    const favorite = userPresets.find((p) => p.isFavorite);
-    if (favorite) {
-      applyPreset(favorite.id);
+    // Apply the active preset from storage, or fallback to favorite/default
+    const presetStore = usePresetStore.getState();
+    const { userPresets, activePresetId } = presetStore;
+    
+    if (activePresetId && activePresetId !== 'default') {
+      applyPreset(activePresetId);
     } else {
-      applyPreset('default');
+      const favorite = userPresets.find((p) => p.isFavorite);
+      if (favorite) {
+        applyPreset(favorite.id);
+      } else {
+        applyPreset('default');
+      }
     }
 
     return () => {

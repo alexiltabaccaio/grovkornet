@@ -96,6 +96,7 @@ export const AspectRatioDetailPanel = ({ parameterDetailPanelAnimatedStyle, anim
                 const next = force4k60fpsCrop.value === 0 ? 1 : 0;
                 setForce4k60fpsCrop(next);
                 setLocalForce4k60fpsCrop(next);
+                usePreferencesStore.getState().setForce4k60fpsCropPref(next);
               }}
               activeOpacity={0.8}
               accessible={true}

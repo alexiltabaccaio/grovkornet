@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { makeMutable } from 'react-native-reanimated';
 import { logger } from '@shared/lib/logger';
+import { usePreferencesStore } from '@entities/preferences';
 import { LensStore } from './types';
 
 export const useLensStore = create<LensStore>((set, get) => ({
@@ -21,16 +22,21 @@ export const useLensStore = create<LensStore>((set, get) => ({
     logger.debug('LensStore', `Setting Focus Distance: ${value}`);
     get().focusDistance.value = value;
     get().focusAuto.value = false;
+    usePreferencesStore.getState().setFocusDistancePref(value);
+    usePreferencesStore.getState().setFocusAutoPref(false);
   },
   setFocusAuto: (value) => {
     get().focusAuto.value = value;
+    usePreferencesStore.getState().setFocusAutoPref(value);
   },
   setCameraId: (value) => {
     set({ cameraId: value });
+    usePreferencesStore.getState().setCameraIdPref(value);
   },
   setCameraAuto: (value) => {
     logger.debug('LensStore', `Setting Camera Auto: ${value}`);
     set({ cameraAuto: value });
+    usePreferencesStore.getState().setCameraAutoPref(value);
   },
   setCapabilities: (caps) => {
     logger.info('LensStore', 'Hardware capabilities updated for Lens');
