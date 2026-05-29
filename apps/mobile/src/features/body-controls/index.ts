@@ -7,3 +7,4 @@ export * from './ui/FlashOverlay';
 export * from './ui/capture/aspect-ratio/AspectRatioDetailPanel';
 export * from './ui/capture/fps-setting/FpsDetailPanel';
 export * from './ui/capture/resolution-setting/ResolutionDetailPanel';
+export * from './ui/CameraFlipButton';

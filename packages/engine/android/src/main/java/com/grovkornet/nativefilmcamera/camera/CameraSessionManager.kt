@@ -157,6 +157,9 @@ class CameraSessionManager(
     }
 
     private fun calculateCameraSelector(): Pair<CameraSelector, Float?> {
+        if (config.isSelfieCamera) {
+            return Pair(CameraSelector.DEFAULT_FRONT_CAMERA, null)
+        }
         val cameraId = config.cameraId
         var selectedSelector = CameraSelector.DEFAULT_BACK_CAMERA
         var targetZoomRatio: Float? = null

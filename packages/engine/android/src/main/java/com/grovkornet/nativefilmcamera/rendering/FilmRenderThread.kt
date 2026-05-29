@@ -31,6 +31,15 @@ class FilmRenderThread(
     @Volatile private var cameraWidth = 0
     @Volatile private var cameraHeight = 0
 
+    @Volatile private var hardwareChangeTime = 0L
+    @Volatile private var isTransitioningCamera = false
+    @Volatile private var lastFrameTimestamp = 0L
+
+    fun notifyHardwareChange() {
+        hardwareChangeTime = System.currentTimeMillis()
+        isTransitioningCamera = true
+    }
+
     private val isFrameAvailable = AtomicBoolean(false)
     private val isReleased = AtomicBoolean(false)
     
@@ -104,7 +113,15 @@ class FilmRenderThread(
             val renderStartTime = if (BuildConfig.DEBUG) System.currentTimeMillis() else 0L
 
             val wasFrameAvailable = isFrameAvailable.getAndSet(false)
-            if (wasFrameAvailable) {
+            val nowMs = System.currentTimeMillis()
+
+            if (isTransitioningCamera && (nowMs - hardwareChangeTime > 2500)) {
+                // Fallback timeout
+                isTransitioningCamera = false
+                framesProcessed = 0
+            }
+
+            if (!isTransitioningCamera && wasFrameAvailable) {
                 framesProcessed++
             }
 
@@ -120,15 +137,12 @@ class FilmRenderThread(
                 cameraHeight,
                 width,
                 height,
-                framesProcessed < 2,
+                framesProcessed < 5 || isTransitioningCamera,
                 wasFrameAvailable
             ) { actualFps, stampedFps ->
                 if (!isReleased.get()) {
                     val now = System.currentTimeMillis()
                     if (now - lastDebugUpdateTime >= 500) {
-                        if (BuildConfig.DEBUG) {
-                            Log.d(TAG, "Sending onDebugUpdate at $now")
-                        }
                         onDebugUpdate(mapOf(
                             "fps" to stampedFps,
                             "resolution" to "${cameraWidth}x${cameraHeight}",
@@ -139,6 +153,19 @@ class FilmRenderThread(
                     }
                 }
             }
+
+            val newTimestamp = st.timestamp
+            if (newTimestamp != lastFrameTimestamp && lastFrameTimestamp != 0L) {
+                val gap = newTimestamp - lastFrameTimestamp
+                if (isTransitioningCamera && gap > 150_000_000L) {
+                    if (BuildConfig.DEBUG) {
+                        Log.d(TAG, "Camera transition complete. Gap: ${gap / 1_000_000}ms")
+                    }
+                    isTransitioningCamera = false
+                    framesProcessed = 0
+                }
+            }
+            lastFrameTimestamp = newTimestamp
 
             if (BuildConfig.DEBUG) {
                 val renderDuration = System.currentTimeMillis() - renderStartTime

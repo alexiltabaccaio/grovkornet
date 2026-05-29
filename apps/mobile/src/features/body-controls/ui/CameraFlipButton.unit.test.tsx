@@ -1,0 +1,45 @@
+import React from 'react';
+import { render, fireEvent } from '@testing-library/react-native';
+import { CameraFlipButton } from './CameraFlipButton';
+import { useFilmStore } from '@entities/film';
+import { useBodyStore } from '@entities/body';
+import { useSystemStore } from '@entities/system';
+import * as Haptics from 'expo-haptics';
+
+describe('CameraFlipButton Unit Tests', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    useFilmStore.getState().isSelfieCamera.value = false;
+    useBodyStore.getState().setTorchState(1);
+    useSystemStore.getState().activeSection = 'none';
+  });
+
+  it('renders correctly', () => {
+    const { getByTestId } = render(<CameraFlipButton />);
+    expect(getByTestId('camera-flip-button')).toBeTruthy();
+  });
+
+  it('toggles isSelfieCamera and triggers haptic on press', () => {
+    const { getByTestId } = render(<CameraFlipButton />);
+    const button = getByTestId('camera-flip-button');
+
+    fireEvent.press(button);
+
+    expect(useFilmStore.getState().isSelfieCamera.value).toBe(true);
+    expect(Haptics.selectionAsync).toHaveBeenCalledTimes(1);
+  });
+
+  it('turns off the torch but leaves activeSection untouched when switching to selfie mode', () => {
+    useSystemStore.getState().activeSection = 'lens';
+    
+    const { getByTestId } = render(<CameraFlipButton />);
+    const button = getByTestId('camera-flip-button');
+
+    fireEvent.press(button);
+
+    // Switch to selfie is true, so torch should go off
+    expect(useBodyStore.getState().torchState.value).toBe(0);
+    // Active section should remain 'lens'
+    expect(useSystemStore.getState().activeSection).toBe('lens');
+  });
+});

@@ -473,6 +473,21 @@
       "ts": { "type": "boolean" }
     },
     {
+      "name": "isSelfieCamera",
+      "category": "hardware",
+      "kotlin": {
+        "type": "Boolean",
+        "default": "false",
+        "propHandler": "if (view.config.isSelfieCamera != value) view.updateHardware { isSelfieCamera = value }"
+      },
+      "ts": { "type": "boolean" },
+      "zustand": {
+        "default": "false",
+        "type": "boolean",
+        "resetGroup": "camera_facing"
+      }
+    },
+    {
       "name": "viewportWidth",
       "category": "viewport",
       "kotlin": { "type": "Float", "default": "1080f" }

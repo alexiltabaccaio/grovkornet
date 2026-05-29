@@ -45,6 +45,7 @@ type FilmActionsKeys =
   | 'setNoiseReductionAuto'
   | 'setTemperatureAuto'
   | 'setCapabilities'
+  | 'setIsSelfieCamera'
   | 'resetEffect';
 
 type FilmExcludedKeys = 'capabilities';

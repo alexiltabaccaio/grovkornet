@@ -8,7 +8,7 @@ import { useSystemStore } from '@entities/system';
 import { ControlPanel } from '@widgets/control-panel';
 import { Viewfinder } from '@widgets/viewfinder';
 import { Header } from '@widgets/header';
-import { ShutterButton } from '@features/body-controls';
+import { ShutterButton, CameraFlipButton } from '@features/body-controls';
 import { GestureController } from '@features/lens-controls';
 import { DebugOverlay, AddPresetModal } from '@features/system-settings';
 import { CaptureThumbnail, useImageVerification } from '@features/gallery';
@@ -47,57 +47,59 @@ const CameraScreenContent = () => {
     let timer: NodeJS.Timeout;
 
     InteractionManager.runAfterInteractions(() => {
-      timer = setTimeout(async () => {
-        try {
-          const currentPerm = await MediaLibrary.getPermissionsAsync();
-          if (!active || !currentPerm.granted) return;
+      timer = setTimeout(() => {
+        void (async () => {
+          try {
+            const currentPerm = await MediaLibrary.getPermissionsAsync();
+            if (!active || !currentPerm.granted) return;
 
-          logger.debug('CameraScreen', 'Startup pre-fetch: permissions granted. Fetching recent photos...');
+            logger.debug('CameraScreen', 'Startup pre-fetch: permissions granted. Fetching recent photos...');
 
-          const allAlbums = await MediaLibrary.getAlbumsAsync();
-          if (!active) return;
+            const allAlbums = await MediaLibrary.getAlbumsAsync();
+            if (!active) return;
 
-          const grovkornetAlbums = allAlbums.filter(
-            (a) => a.title.toLowerCase() === 'grovkornet'
-          );
+            const grovkornetAlbums = allAlbums.filter(
+              (a) => a.title.toLowerCase() === 'grovkornet'
+            );
 
-          let assets: MediaLibrary.Asset[] = [];
-          if (grovkornetAlbums.length > 0) {
-            const fetchPromises = grovkornetAlbums.map((album) =>
-              MediaLibrary.getAssetsAsync({
-                album: album.id,
-                first: 15,
+            let assets: MediaLibrary.Asset[] = [];
+            if (grovkornetAlbums.length > 0) {
+              const fetchPromises = grovkornetAlbums.map((album) =>
+                MediaLibrary.getAssetsAsync({
+                  album: album.id,
+                  first: 15,
+                  sortBy: [[MediaLibrary.SortBy.creationTime, false]],
+                  mediaType: MediaLibrary.MediaType.photo,
+                })
+              );
+              const results = await Promise.all(fetchPromises);
+              assets = results.flatMap((r) => r.assets).slice(0, 15);
+            } else {
+              const recent = await MediaLibrary.getAssetsAsync({
+                first: 100,
                 sortBy: [[MediaLibrary.SortBy.creationTime, false]],
                 mediaType: MediaLibrary.MediaType.photo,
-              })
-            );
-            const results = await Promise.all(fetchPromises);
-            assets = results.flatMap((r) => r.assets).slice(0, 15);
-          } else {
-            const recent = await MediaLibrary.getAssetsAsync({
-              first: 100,
-              sortBy: [[MediaLibrary.SortBy.creationTime, false]],
-              mediaType: MediaLibrary.MediaType.photo,
-            });
-            assets = recent.assets
-              .filter(
-                (a) =>
-                  a.uri.includes('Grovkornet') ||
-                  a.filename.includes('Grovkornet') ||
-                  a.filename.startsWith('Grovkornet_') ||
-                  a.filename.startsWith('GVK_')
-              )
-              .slice(0, 15);
+              });
+              assets = recent.assets
+                .filter(
+                  (a) =>
+                    a.uri.includes('Grovkornet') ||
+                    a.filename.includes('Grovkornet') ||
+                    a.filename.startsWith('Grovkornet_') ||
+                    a.filename.startsWith('GVK_')
+                )
+                .slice(0, 15);
+            }
+
+            if (!active || assets.length === 0) return;
+
+            const uris = assets.map((a) => a.uri).filter(Boolean);
+            logger.debug('CameraScreen', `Startup pre-fetch: starting validation for ${uris.length} photos`);
+            void verifyPhotosBatch(uris);
+          } catch (error) {
+            logger.error('CameraScreen', 'Startup pre-fetch verification failed', error);
           }
-
-          if (!active || assets.length === 0) return;
-
-          const uris = assets.map((a) => a.uri).filter(Boolean);
-          logger.debug('CameraScreen', `Startup pre-fetch: starting validation for ${uris.length} photos`);
-          void verifyPhotosBatch(uris);
-        } catch (error) {
-          logger.error('CameraScreen', 'Startup pre-fetch verification failed', error);
-        }
+        })();
       }, 3000);
     });
 
@@ -205,7 +207,9 @@ const CameraScreenContent = () => {
           <CaptureThumbnail onPress={openGallery} />
         </View>
         <ShutterButton onPress={triggerCapture} translateY={footerTranslateY} />
-        <View style={styles.sideControl} pointerEvents="box-none" />
+        <View style={styles.sideControl} pointerEvents="box-none">
+          <CameraFlipButton />
+        </View>
       </Animated.View>
 
       {/* 60ms threshold filters out initial mount/unmount and dev overhead but flags real rendering bottlenecks */}

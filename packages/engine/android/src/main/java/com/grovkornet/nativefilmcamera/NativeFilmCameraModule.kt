@@ -267,6 +267,10 @@ class NativeFilmCameraModule : Module() {
       Prop("secureViewEnabled") { view: NativeFilmCameraView, value: Boolean ->
         view.setSecureMode(value)
       }
+
+      Prop("isSelfieCamera") { view: NativeFilmCameraView, value: Boolean ->
+        if (view.config.isSelfieCamera != value) view.updateHardware { isSelfieCamera = value }
+      }
       // @@GEN_PROPS_END@@
 
       AsyncFunction("takePhoto") { view: NativeFilmCameraView ->

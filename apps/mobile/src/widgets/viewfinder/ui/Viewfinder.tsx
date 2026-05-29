@@ -78,6 +78,7 @@ export const Viewfinder = React.memo(({ cameraKey, translateY, drawerAnimation }
     noiseReductionMode,
     noiseReductionAuto,
     temperatureAuto,
+    isSelfieCamera,
     // @@GEN_SELECTOR_END@@
   } = useFilmStore.getState();
 
@@ -198,6 +199,7 @@ export const Viewfinder = React.memo(({ cameraKey, translateY, drawerAnimation }
         previewIn4k={resolvedPreviewIn4k as unknown as SharedValue<boolean | undefined>}
         force4k60fpsCrop={resolvedForce4k60fpsCrop as unknown as SharedValue<boolean | undefined>}
         secureViewEnabled={isCameraSecure}
+        isSelfieCamera={isSelfieCamera as unknown as SharedValue<boolean | undefined>}
         // @@GEN_PROPS_END@@
         panelY={panelY as unknown as SharedValue<number | undefined>}
         onCapabilitiesUpdate={capabilitiesHandler}

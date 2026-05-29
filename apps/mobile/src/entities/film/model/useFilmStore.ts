@@ -58,6 +58,7 @@ export const useFilmStore = create<FilmStore>((set, get) => ({
   noiseReductionMode: makeMutable(1),
   noiseReductionAuto: makeMutable(true),
   temperatureAuto: makeMutable(true),
+  isSelfieCamera: makeMutable(false),
   // @@GEN_INIT_END@@
   capabilities: {
     availableNoiseReductionModes: [],
@@ -196,6 +197,9 @@ export const useFilmStore = create<FilmStore>((set, get) => ({
     }
 
   },
+  setIsSelfieCamera: (value) => {
+    get().isSelfieCamera.value = value;
+  },
   // @@GEN_SETTERS_END@@
   setCapabilities: (caps) => {
     logger.info('FilmStore', 'Capabilities updated for Film');
@@ -230,7 +234,7 @@ export const useFilmStore = create<FilmStore>((set, get) => ({
         state.boundPurpleMagenta.value = DEFAULT_BOUND_PURPLE_MAGENTA;
         break;
       case 'contrast':
-        state.setContrast(DEFAULT_CONTRAST);
+        state.contrast.value = DEFAULT_CONTRAST;
         break;
       case 'grain':
         state.grainIntensity.value = DEFAULT_GRAIN_INTENSITY;
@@ -261,6 +265,9 @@ export const useFilmStore = create<FilmStore>((set, get) => ({
       case 'noise_reduction':
         state.noiseReductionMode.value = 1;
         state.noiseReductionAuto.value = true;
+        break;
+      case 'camera_facing':
+        state.isSelfieCamera.value = false;
         break;
       // @@GEN_RESET_END@@
     }

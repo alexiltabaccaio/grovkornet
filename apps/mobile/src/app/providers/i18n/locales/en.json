@@ -2,7 +2,8 @@
   "translation": {
     "camera": {
       "requesting_permissions": "Requesting camera permissions...",
-      "not_found": "Camera not found"
+      "not_found": "Camera not found",
+      "flip": "Switch camera"
     },
     "sections": {
       "system": "SYSTEM",

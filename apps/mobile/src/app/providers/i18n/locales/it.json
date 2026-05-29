@@ -2,7 +2,8 @@
   "translation": {
     "camera": {
       "requesting_permissions": "Richiesta permessi fotocamera...",
-      "not_found": "Fotocamera non trovata"
+      "not_found": "Fotocamera non trovata",
+      "flip": "Cambia fotocamera"
     },
     "sections": {
       "system": "SISTEMA",

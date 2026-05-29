@@ -65,6 +65,7 @@ jest.mock('@widgets/gallery-viewer', () => {
 
 jest.mock('@features/body-controls', () => ({
   ShutterButton: 'ShutterButton',
+  CameraFlipButton: 'CameraFlipButton',
 }));
 
 jest.mock('@features/lens-controls', () => {

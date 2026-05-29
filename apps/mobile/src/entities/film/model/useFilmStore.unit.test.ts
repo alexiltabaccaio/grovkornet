@@ -162,4 +162,15 @@ describe('useFilmStore', () => {
     expect(useFilmStore.getState().tint.value).toBe(DEFAULT_TINT);
     expect(useFilmStore.getState().temperatureAuto.value).toBe(true);
   });
+
+  it('sets isSelfieCamera correctly and resets it', () => {
+    const store = useFilmStore.getState();
+    expect(store.isSelfieCamera.value).toBe(false);
+
+    store.setIsSelfieCamera(true);
+    expect(useFilmStore.getState().isSelfieCamera.value).toBe(true);
+
+    store.resetEffect('camera_facing');
+    expect(useFilmStore.getState().isSelfieCamera.value).toBe(false);
+  });
 });

@@ -61,6 +61,7 @@ data class CameraConfiguration(
     var previewIn4k: Boolean = false,
     var force4k60fpsCrop: Boolean = true,
     var secureViewEnabled: Boolean = false,
+    var isSelfieCamera: Boolean = false,
 
     // Viewport Props
     var viewportWidth: Float = 1080f,

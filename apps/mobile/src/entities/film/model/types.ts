@@ -42,6 +42,7 @@ interface FilmState {
   noiseReductionMode: SharedValue<number>;
   noiseReductionAuto: SharedValue<boolean>;
   temperatureAuto: SharedValue<boolean>;
+  isSelfieCamera: SharedValue<boolean>;
   // @@GEN_STATE_END@@
   capabilities?: FilmCapabilities;
 }
@@ -83,6 +84,7 @@ interface FilmActions {
   setNoiseReductionMode: (mode: number) => void;
   setNoiseReductionAuto: (value: boolean) => void;
   setTemperatureAuto: (value: boolean) => void;
+  setIsSelfieCamera: (value: boolean) => void;
   // @@GEN_ACTIONS_END@@
   setCapabilities?: (capabilities: FilmCapabilities) => void;
   resetEffect: (effect: string) => void;
