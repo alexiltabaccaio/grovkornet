@@ -1,6 +1,7 @@
 import { renderHook, waitFor, act } from '@testing-library/react-native';
 import { useImageVerification } from './useImageVerification';
 import { verifyGrovkornetAuthenticity } from '@grovkornet/engine';
+import { useVerificationStore } from '@entities/verification';
 import { GalleryItem } from './types';
 
 jest.mock('@grovkornet/engine', () => ({
@@ -8,17 +9,15 @@ jest.mock('@grovkornet/engine', () => ({
 }));
 
 describe('useImageVerification', () => {
-  let mockSetPhotos: jest.Mock;
-
   beforeEach(() => {
-    mockSetPhotos = jest.fn();
+    useVerificationStore.setState({ verifiedMap: {} });
     jest.clearAllMocks();
   });
 
-  it('verifies photo authenticity successfully', async () => {
+  it('verifies photo authenticity successfully and writes to store', async () => {
     (verifyGrovkornetAuthenticity as jest.Mock).mockResolvedValueOnce(true);
 
-    const { result } = renderHook(() => useImageVerification([], mockSetPhotos));
+    const { result } = renderHook(() => useImageVerification());
 
     const item: GalleryItem = { id: '1', uri: 'file:///test/1.jpg' };
 
@@ -30,14 +29,14 @@ describe('useImageVerification', () => {
 
     await waitFor(() => expect(result.current.verifying).toBe(false));
 
-    expect(result.current.selectedPhoto?.isVerified).toBe(true);
-    expect(mockSetPhotos).toHaveBeenCalled();
+    expect(useVerificationStore.getState().verifiedMap['file:///test/1.jpg']).toBe(true);
+    expect(result.current.selectedPhoto?.uri).toBe('file:///test/1.jpg');
   });
 
-  it('handles verification failure gracefully', async () => {
+  it('handles verification failure gracefully and writes false to store', async () => {
     (verifyGrovkornetAuthenticity as jest.Mock).mockRejectedValueOnce(new Error('Verification failed'));
 
-    const { result } = renderHook(() => useImageVerification([], mockSetPhotos));
+    const { result } = renderHook(() => useImageVerification());
 
     const item: GalleryItem = { id: '2', uri: 'file:///test/2.jpg' };
 
@@ -47,55 +46,24 @@ describe('useImageVerification', () => {
 
     await waitFor(() => expect(result.current.verifying).toBe(false));
 
-    expect(result.current.selectedPhoto?.isVerified).toBe(false);
+    expect(useVerificationStore.getState().verifiedMap['file:///test/2.jpg']).toBe(false);
   });
 
-  it('runs background verification loop for unverified photos and updates them', async () => {
-    (verifyGrovkornetAuthenticity as jest.Mock)
-      .mockResolvedValueOnce(true)   // photo 1 passes
-      .mockResolvedValueOnce(false); // photo 2 fails
-
-    const photos: GalleryItem[] = [
-      { id: '1', uri: 'file:///test/1.jpg' },
-      { id: '2', uri: 'file:///test/2.jpg' },
-    ];
-
-    renderHook(() => useImageVerification(photos, mockSetPhotos));
-
-    await waitFor(() => {
-      expect(verifyGrovkornetAuthenticity).toHaveBeenCalledWith('file:///test/1.jpg');
-      expect(verifyGrovkornetAuthenticity).toHaveBeenCalledWith('file:///test/2.jpg');
+  it('skips verification if photo is already verified in store', async () => {
+    useVerificationStore.setState({
+      verifiedMap: { 'file:///test/3.jpg': true },
     });
 
-    expect(mockSetPhotos).toHaveBeenCalled();
-  });
+    const { result } = renderHook(() => useImageVerification());
 
-  it('handles background verification errors gracefully', async () => {
-    (verifyGrovkornetAuthenticity as jest.Mock)
-      .mockRejectedValueOnce(new Error('Verify error'));
+    const item: GalleryItem = { id: '3', uri: 'file:///test/3.jpg' };
 
-    const photos: GalleryItem[] = [
-      { id: '1', uri: 'file:///test/1.jpg' },
-    ];
-
-    renderHook(() => useImageVerification(photos, mockSetPhotos));
-
-    await waitFor(() => {
-      expect(verifyGrovkornetAuthenticity).toHaveBeenCalledWith('file:///test/1.jpg');
+    act(() => {
+      void result.current.verifyPhoto(item);
     });
 
-    expect(mockSetPhotos).toHaveBeenCalled();
-  });
-
-  it('skips background verification if photo is already verified or currently in queue', async () => {
-    const photos: GalleryItem[] = [
-      { id: '1', uri: 'file:///test/1.jpg', isVerified: true },
-    ];
-
-    renderHook(() => useImageVerification(photos, mockSetPhotos));
-
-    // Wait a tiny bit to check that it is not called
-    await new Promise((resolve) => setTimeout(resolve, 50));
+    expect(result.current.verifying).toBe(false);
     expect(verifyGrovkornetAuthenticity).not.toHaveBeenCalled();
+    expect(result.current.selectedPhoto?.uri).toBe('file:///test/3.jpg');
   });
 });

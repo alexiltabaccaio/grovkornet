@@ -1,11 +1,13 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useRef } from 'react';
 import { StyleSheet, View, FlatList, Pressable, Image as RNImage, Dimensions } from 'react-native';
 import { Image } from 'expo-image';
 import { Ionicons } from '@expo/vector-icons';
 import { GalleryItem } from '../../lib/types';
 import { BottomFooter } from '@shared/ui';
 import * as Haptics from '@shared/lib/haptics';
-import Animated, { useAnimatedStyle, interpolate, SharedValue } from 'react-native-reanimated';
+import Animated, { useAnimatedStyle, interpolate, SharedValue, withTiming } from 'react-native-reanimated';
+import { useVerificationStore } from '@entities/verification';
+import { useImageVerification } from '../../lib/useImageVerification';
 
 const { width } = Dimensions.get('window');
 const ITEM_SIZE = 56 + 10; // thumbnailWidth (56) + marginRight (10) = 66px
@@ -17,6 +19,16 @@ interface GalleryStripItemProps {
 }
 
 const GalleryStripItem = React.memo(({ item, isSelected, onSelect }: GalleryStripItemProps) => {
+  const isVerified = useVerificationStore(state => state.verifiedMap[item.uri]);
+
+  const badgeStyle = useAnimatedStyle(() => {
+    const show = isVerified === true;
+    return {
+      opacity: withTiming(show ? 1 : 0, { duration: 250 }),
+      transform: [{ scale: withTiming(show ? 1 : 0.8, { duration: 250 }) }],
+    };
+  }, [isVerified]);
+
   return (
     <Pressable
       testID={`gallery-strip-item-${item.id}`}
@@ -35,12 +47,10 @@ const GalleryStripItem = React.memo(({ item, isSelected, onSelect }: GalleryStri
         contentFit="cover"
         recyclingKey={item.uri}
       />
-      {item.isVerified === true && (
-        <View style={[styles.miniBadge, { backgroundColor: 'transparent' }]}>
-          {/* eslint-disable-next-line @typescript-eslint/no-require-imports, @typescript-eslint/no-unsafe-assignment */}
-          <RNImage source={require('../../../../../assets/logo-badge.png')} style={{ width: 10, height: 10, resizeMode: 'contain', opacity: 0.85 }} />
-        </View>
-      )}
+      <Animated.View style={[styles.miniBadge, { backgroundColor: 'transparent' }, badgeStyle]}>
+        {/* eslint-disable-next-line @typescript-eslint/no-require-imports, @typescript-eslint/no-unsafe-assignment */}
+        <RNImage source={require('../../../../../assets/logo-badge.png')} style={{ width: 10, height: 10, resizeMode: 'contain', opacity: 0.85 }} />
+      </Animated.View>
     </Pressable>
   );
 });
@@ -55,6 +65,50 @@ interface GalleryStripProps {
 }
 
 export const GalleryStrip = ({ photos, selectedPhoto, onSelectPhoto, onClose, galleryTransition }: GalleryStripProps) => {
+  const { verifyPhotosBatch } = useImageVerification();
+
+  const photosRef = useRef(photos);
+  photosRef.current = photos;
+
+  const verifyBatchRef = useRef(verifyPhotosBatch);
+  verifyBatchRef.current = verifyPhotosBatch;
+
+  const onViewableItemsChanged = useRef(({ viewableItems }: { viewableItems: Array<{ item: GalleryItem, index: number | null }> }) => {
+    if (viewableItems.length === 0) return;
+
+    let minIndex = Infinity;
+    let maxIndex = -Infinity;
+
+    viewableItems.forEach(vi => {
+      if (vi.index !== null) {
+        if (vi.index < minIndex) minIndex = vi.index;
+        if (vi.index > maxIndex) maxIndex = vi.index;
+      }
+    });
+
+    if (minIndex === Infinity || maxIndex === -Infinity) {
+      const uris = viewableItems.map(vi => vi.item.uri).filter(Boolean);
+      void verifyBatchRef.current(uris);
+      return;
+    }
+
+    const allPhotos = photosRef.current;
+    const start = Math.max(0, minIndex - 5);
+    const end = Math.min(allPhotos.length - 1, maxIndex + 5);
+
+    const urisToVerify: string[] = [];
+    for (let i = start; i <= end; i++) {
+      if (allPhotos[i]?.uri) {
+        urisToVerify.push(allPhotos[i].uri);
+      }
+    }
+    void verifyBatchRef.current(urisToVerify);
+  }).current;
+
+  const viewabilityConfig = useRef({
+    itemVisiblePercentThreshold: 50,
+  }).current;
+
   const animatedStyle = useAnimatedStyle(() => {
     if (!galleryTransition) return {};
     const translateX = interpolate(galleryTransition.value, [0, 1], [-width, 0]);
@@ -103,6 +157,8 @@ export const GalleryStrip = ({ photos, selectedPhoto, onSelectPhoto, onClose, ga
             offset: ITEM_SIZE * index,
             index,
           })}
+          onViewableItemsChanged={onViewableItemsChanged}
+          viewabilityConfig={viewabilityConfig}
         />
       </View>
       </Animated.View>

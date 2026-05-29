@@ -14,7 +14,7 @@ import { GalleryItem } from './types';
  */
 export const useGalleryViewer = (initialUri?: string | null) => {
   const { photos, setPhotos, loading, permissionGranted } = useGalleryPhotos(initialUri);
-  const { selectedPhoto, verifyPhoto } = useImageVerification(photos, setPhotos);
+  const { selectedPhoto, verifyPhoto } = useImageVerification();
 
   // Auto-select the initial photo once loading is complete
   useEffect(() => {

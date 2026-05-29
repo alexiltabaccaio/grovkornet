@@ -1,5 +1,5 @@
 import React, { useEffect, useState, Profiler } from 'react';
-import { StyleSheet, View, AppState, AppStateStatus, PermissionsAndroid, Platform, StatusBar } from 'react-native';
+import { StyleSheet, View, AppState, AppStateStatus, PermissionsAndroid, Platform, StatusBar, InteractionManager } from 'react-native';
 import Animated, { useSharedValue, useAnimatedStyle, interpolate, withTiming, runOnJS } from 'react-native-reanimated';
 
 
@@ -11,9 +11,10 @@ import { Header } from '@widgets/header';
 import { ShutterButton } from '@features/body-controls';
 import { GestureController } from '@features/lens-controls';
 import { DebugOverlay, AddPresetModal } from '@features/system-settings';
-import { CaptureThumbnail } from '@features/gallery';
+import { CaptureThumbnail, useImageVerification } from '@features/gallery';
 import { GalleryViewer } from '@widgets/gallery-viewer';
 import { logger } from '@shared/lib/logger';
+import * as MediaLibrary from 'expo-media-library';
 
 
 export const CameraScreen = () => {
@@ -38,6 +39,75 @@ const CameraScreenContent = () => {
   const [cameraKey, setCameraKey] = useState(0);
   const [shouldRenderGallery, setShouldRenderGallery] = useState(false);
   const galleryTransition = useSharedValue(0);
+
+  const { verifyPhotosBatch } = useImageVerification();
+
+  useEffect(() => {
+    let active = true;
+    let timer: NodeJS.Timeout;
+
+    InteractionManager.runAfterInteractions(() => {
+      timer = setTimeout(async () => {
+        try {
+          const currentPerm = await MediaLibrary.getPermissionsAsync();
+          if (!active || !currentPerm.granted) return;
+
+          logger.debug('CameraScreen', 'Startup pre-fetch: permissions granted. Fetching recent photos...');
+
+          const allAlbums = await MediaLibrary.getAlbumsAsync();
+          if (!active) return;
+
+          const grovkornetAlbums = allAlbums.filter(
+            (a) => a.title.toLowerCase() === 'grovkornet'
+          );
+
+          let assets: MediaLibrary.Asset[] = [];
+          if (grovkornetAlbums.length > 0) {
+            const fetchPromises = grovkornetAlbums.map((album) =>
+              MediaLibrary.getAssetsAsync({
+                album: album.id,
+                first: 15,
+                sortBy: [[MediaLibrary.SortBy.creationTime, false]],
+                mediaType: MediaLibrary.MediaType.photo,
+              })
+            );
+            const results = await Promise.all(fetchPromises);
+            assets = results.flatMap((r) => r.assets).slice(0, 15);
+          } else {
+            const recent = await MediaLibrary.getAssetsAsync({
+              first: 100,
+              sortBy: [[MediaLibrary.SortBy.creationTime, false]],
+              mediaType: MediaLibrary.MediaType.photo,
+            });
+            assets = recent.assets
+              .filter(
+                (a) =>
+                  a.uri.includes('Grovkornet') ||
+                  a.filename.includes('Grovkornet') ||
+                  a.filename.startsWith('Grovkornet_') ||
+                  a.filename.startsWith('GVK_')
+              )
+              .slice(0, 15);
+          }
+
+          if (!active || assets.length === 0) return;
+
+          const uris = assets.map((a) => a.uri).filter(Boolean);
+          logger.debug('CameraScreen', `Startup pre-fetch: starting validation for ${uris.length} photos`);
+          void verifyPhotosBatch(uris);
+        } catch (error) {
+          logger.error('CameraScreen', 'Startup pre-fetch verification failed', error);
+        }
+      }, 3000);
+    });
+
+    return () => {
+      active = false;
+      if (timer) {
+        clearTimeout(timer);
+      }
+    };
+  }, [verifyPhotosBatch]);
 
   const openGallery = () => {
     setShouldRenderGallery(true);

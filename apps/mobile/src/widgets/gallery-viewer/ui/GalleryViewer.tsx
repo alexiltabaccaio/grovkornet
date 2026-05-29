@@ -4,6 +4,7 @@ import Animated, { useAnimatedStyle, SharedValue } from 'react-native-reanimated
 import { useTranslation } from 'react-i18next';
 import { ShareButton, PhotoPreview, GalleryStrip, useGalleryViewer } from '@features/gallery';
 import { useDeviceRotation } from '@shared/lib/hooks/useDeviceRotation';
+import { useVerificationStore } from '@entities/verification';
 
 interface GalleryViewerProps {
   onClose: () => void;
@@ -16,6 +17,10 @@ export const GalleryViewer = ({ onClose, initialUri, galleryTransition, header }
   const { t } = useTranslation();
   const { photos, selectedPhoto, loading, onPhotoVisible, onSelectPhoto } = useGalleryViewer(initialUri);
   const rotationY = useDeviceRotation();
+
+  const isVerified = useVerificationStore(state =>
+    selectedPhoto ? !!state.verifiedMap[selectedPhoto.uri] : false
+  );
 
   const animatedContainerStyle = useAnimatedStyle(() => {
     if (!galleryTransition) return {};
@@ -55,7 +60,7 @@ export const GalleryViewer = ({ onClose, initialUri, galleryTransition, header }
                   <ShareButton
                     id={selectedPhoto.id}
                     uri={selectedPhoto.uri}
-                    isVerified={selectedPhoto.isVerified ?? false}
+                    isVerified={isVerified}
                   />
                 </View>
               )}

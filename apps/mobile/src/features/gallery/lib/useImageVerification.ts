@@ -1,27 +1,29 @@
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import { verifyGrovkornetAuthenticity } from '@grovkornet/engine';
 import { logger } from '@shared/lib/logger';
+import { useVerificationStore } from '@entities/verification';
 import { GalleryItem } from './types';
 
-export const useImageVerification = (
-  photos: GalleryItem[],
-  setPhotos: React.Dispatch<React.SetStateAction<GalleryItem[]>>
-) => {
+// Module-level singleton queue to prevent duplicate verification work
+const verifyingQueue = new Set<string>();
+
+export const useImageVerification = () => {
   const [selectedPhoto, setSelectedPhoto] = useState<GalleryItem | null>(null);
   const [verifying, setVerifying] = useState(false);
-  const verifyingQueue = useRef<Set<string>>(new Set());
 
   const verifyPhoto = useCallback(async (item: GalleryItem) => {
     logger.debug('Gallery', `verifyPhoto for: ${item.uri}`);
     setSelectedPhoto(item);
-    if (item.isVerified !== undefined) {
+
+    const verifiedMap = useVerificationStore.getState().verifiedMap;
+    if (verifiedMap[item.uri] !== undefined) {
       return;
     }
 
     setVerifying(true);
-    verifyingQueue.current.add(item.uri);
+    verifyingQueue.add(item.uri);
     try {
-      logger.debug('Gallery', 'Running real verifyGrovkornetAuthenticity with 5s timeout...');
+      logger.debug('Gallery', `Running verifyGrovkornetAuthenticity for selected photo: ${item.uri}`);
       const verifyTimeout = new Promise<boolean>((_, reject) =>
         setTimeout(() => reject(new Error('VERIFY_TIMEOUT')), 5000)
       );
@@ -31,68 +33,67 @@ export const useImageVerification = (
         verifyTimeout
       ]);
 
-      logger.debug('Gallery', `Verification result: ${verified}`);
-      setSelectedPhoto(prev => prev?.uri === item.uri ? { ...prev, isVerified: verified } : prev);
-      setPhotos(prev => prev.map(p => p.uri === item.uri ? { ...p, isVerified: verified } : p));
+      logger.debug('Gallery', `Verification result for ${item.uri}: ${verified}`);
+      useVerificationStore.getState().setVerified(item.uri, verified);
     } catch (error) {
-      logger.error('Gallery', 'Verification error or timeout', error);
-      setSelectedPhoto(prev => prev?.uri === item.uri ? { ...prev, isVerified: false } : prev);
-      setPhotos(prev => prev.map(p => p.uri === item.uri ? { ...p, isVerified: false } : p));
+      logger.error('Gallery', `Verification error or timeout for ${item.uri}`, error);
+      useVerificationStore.getState().setVerified(item.uri, false);
     } finally {
+      verifyingQueue.delete(item.uri);
       setVerifying(false);
     }
-  }, [setPhotos]);
+  }, []);
 
-  const photosArray = Array.isArray(photos) ? photos : [];
-  const photosUris = photosArray.map(p => p.uri).join(',');
+  const verifyPhotosBatch = useCallback(async (uris: string[]) => {
+    const verifiedMap = useVerificationStore.getState().verifiedMap;
+    // Filter out URIs that are already verified or currently in the queue
+    const toVerify = uris.filter(
+      (uri) => verifiedMap[uri] === undefined && !verifyingQueue.has(uri)
+    );
 
-  // Background verification loop
-  useEffect(() => {
-    let active = true;
+    if (toVerify.length === 0) {
+      return;
+    }
 
-    const runBackgroundVerification = async () => {
-      // Find all photos that haven't been verified and aren't currently verifying
-      const toVerify = photosArray.filter(
-        p => p.isVerified === undefined && !verifyingQueue.current.has(p.uri)
+    logger.debug('Gallery', `Starting batch verification for ${toVerify.length} photos`);
+
+    // Add all to queue immediately to prevent other calls from verifying them
+    toVerify.forEach((uri) => verifyingQueue.add(uri));
+
+    const chunkSize = 3;
+    for (let i = 0; i < toVerify.length; i += chunkSize) {
+      const chunk = toVerify.slice(i, i + chunkSize);
+
+      await Promise.all(
+        chunk.map(async (uri) => {
+          try {
+            logger.debug('Gallery', `Background verifying: ${uri}`);
+            const verifyTimeout = new Promise<boolean>((_, reject) =>
+              setTimeout(() => reject(new Error('VERIFY_TIMEOUT')), 5000)
+            );
+
+            const verified = await Promise.race([
+              verifyGrovkornetAuthenticity(uri),
+              verifyTimeout
+            ]);
+
+            useVerificationStore.getState().setVerified(uri, verified);
+          } catch (error) {
+            logger.error('Gallery', `Background verification failed for ${uri}`, error);
+            useVerificationStore.getState().setVerified(uri, false);
+          } finally {
+            verifyingQueue.delete(uri);
+          }
+        })
       );
-
-      for (const item of toVerify) {
-        if (!active) break;
-
-        verifyingQueue.current.add(item.uri);
-        try {
-          logger.debug('Gallery', `Background verifying: ${item.uri}`);
-          const verifyTimeout = new Promise<boolean>((_, reject) =>
-            setTimeout(() => reject(new Error('VERIFY_TIMEOUT')), 5000)
-          );
-
-          const verified = await Promise.race([
-            verifyGrovkornetAuthenticity(item.uri),
-            verifyTimeout
-          ]);
-
-          setPhotos(prev => prev.map(p => p.uri === item.uri ? { ...p, isVerified: verified } : p));
-          setSelectedPhoto(prev => prev?.uri === item.uri ? { ...prev, isVerified: verified } : prev);
-        } catch (error) {
-          logger.error('Gallery', `Background verification failed for ${item.uri}`, error);
-          setPhotos(prev => prev.map(p => p.uri === item.uri ? { ...p, isVerified: false } : p));
-          setSelectedPhoto(prev => prev?.uri === item.uri ? { ...prev, isVerified: false } : prev);
-        }
-      }
-    };
-
-    void runBackgroundVerification();
-
-    return () => {
-      active = false;
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [photosUris]);
+    }
+  }, []);
 
   return {
     selectedPhoto,
     setSelectedPhoto,
     verifying,
     verifyPhoto,
+    verifyPhotosBatch,
   };
 };

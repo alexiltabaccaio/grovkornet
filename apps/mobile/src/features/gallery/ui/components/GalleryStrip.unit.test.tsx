@@ -2,14 +2,24 @@ import React from 'react';
 import { render, fireEvent } from '@testing-library/react-native';
 import { GalleryStrip } from './GalleryStrip';
 import { GalleryItem } from '../../lib/types';
+import { useVerificationStore } from '@entities/verification';
 
 const mockPhotos: GalleryItem[] = [
-  { uri: 'file:///test/1.jpg', id: '1', isVerified: true },
-  { uri: 'file:///test/2.jpg', id: '2', isVerified: false },
+  { uri: 'file:///test/1.jpg', id: '1' },
+  { uri: 'file:///test/2.jpg', id: '2' },
   { uri: 'file:///test/3.jpg', id: '3' },
 ];
 
 describe('GalleryStrip', () => {
+  beforeEach(() => {
+    useVerificationStore.setState({
+      verifiedMap: {
+        'file:///test/1.jpg': true,
+        'file:///test/2.jpg': false,
+      },
+    });
+  });
+
   it('renders correctly with photos', () => {
     const { toJSON, getByLabelText, getByTestId } = render(
       <GalleryStrip

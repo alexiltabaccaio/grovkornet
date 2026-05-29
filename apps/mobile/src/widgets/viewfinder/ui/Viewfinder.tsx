@@ -7,6 +7,7 @@ import { useFilmStore } from '@entities/film';
 import { useSystemStore } from '@entities/system';
 import { NativeRenderer } from '@entities/lens';
 import { useDerivedValue, SharedValue, useSharedValue } from 'react-native-reanimated';
+import { useVerificationStore } from '@entities/verification';
 import { FlashOverlay } from '@features/body-controls';
 import { QuickPresetSelector } from '@features/system-settings';
 import { useCameraCapture } from '../lib/useCameraCapture';
@@ -103,6 +104,8 @@ export const Viewfinder = React.memo(({ cameraKey, translateY, drawerAnimation }
       setLatestPreviewUri(uri);
     } else {
       setLatestCapturedUri(uri);
+      // Mark as verified instantly!
+      useVerificationStore.getState().setVerified(uri, true);
     }
   }, [setLatestPreviewUri, setLatestCapturedUri]);
 

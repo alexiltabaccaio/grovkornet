@@ -4,6 +4,7 @@ import { Text } from 'react-native';
 import { makeMutable } from 'react-native-reanimated';
 import { GalleryViewer } from './GalleryViewer';
 import { useGalleryViewer } from '@features/gallery';
+import { useVerificationStore } from '@entities/verification';
 
 jest.mock('@features/gallery', () => {
   const actual = jest.requireActual('@features/gallery');
@@ -14,8 +15,8 @@ jest.mock('@features/gallery', () => {
 });
 
 const mockPhotos = [
-  { uri: 'file:///test/1.jpg', id: '1', isVerified: true },
-  { uri: 'file:///test/2.jpg', id: '2', isVerified: false },
+  { uri: 'file:///test/1.jpg', id: '1' },
+  { uri: 'file:///test/2.jpg', id: '2' },
 ];
 
 describe('GalleryViewer', () => {
@@ -23,6 +24,12 @@ describe('GalleryViewer', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+    useVerificationStore.setState({
+      verifiedMap: {
+        'file:///test/1.jpg': true,
+        'file:///test/2.jpg': false,
+      },
+    });
   });
 
   it('renders loading state correctly', () => {
