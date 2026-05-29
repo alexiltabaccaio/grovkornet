@@ -1,4 +1,4 @@
-import React, { useCallback, useRef } from 'react';
+import React, { useCallback, useRef, useEffect } from 'react';
 import { StyleSheet, View, FlatList, Pressable, Image as RNImage, Dimensions } from 'react-native';
 import { Image } from 'expo-image';
 import { Ionicons } from '@expo/vector-icons';
@@ -11,6 +11,10 @@ import { useImageVerification } from '../../lib/useImageVerification';
 
 const { width } = Dimensions.get('window');
 const ITEM_SIZE = 56 + 10; // thumbnailWidth (56) + marginRight (10) = 66px
+
+const viewabilityConfig = {
+  itemVisiblePercentThreshold: 50,
+};
 
 interface GalleryStripItemProps {
   item: GalleryItem;
@@ -68,12 +72,17 @@ export const GalleryStrip = ({ photos, selectedPhoto, onSelectPhoto, onClose, ga
   const { verifyPhotosBatch } = useImageVerification();
 
   const photosRef = useRef(photos);
-  photosRef.current = photos;
-
   const verifyBatchRef = useRef(verifyPhotosBatch);
-  verifyBatchRef.current = verifyPhotosBatch;
 
-  const onViewableItemsChanged = useRef(({ viewableItems }: { viewableItems: Array<{ item: GalleryItem, index: number | null }> }) => {
+  useEffect(() => {
+    photosRef.current = photos;
+  }, [photos]);
+
+  useEffect(() => {
+    verifyBatchRef.current = verifyPhotosBatch;
+  }, [verifyPhotosBatch]);
+
+  const onViewableItemsChanged = useCallback(({ viewableItems }: { viewableItems: Array<{ item: GalleryItem, index: number | null }> }) => {
     if (viewableItems.length === 0) return;
 
     let minIndex = Infinity;
@@ -103,11 +112,7 @@ export const GalleryStrip = ({ photos, selectedPhoto, onSelectPhoto, onClose, ga
       }
     }
     void verifyBatchRef.current(urisToVerify);
-  }).current;
-
-  const viewabilityConfig = useRef({
-    itemVisiblePercentThreshold: 50,
-  }).current;
+  }, []);
 
   const animatedStyle = useAnimatedStyle(() => {
     if (!galleryTransition) return {};

@@ -49,7 +49,7 @@ describe('useImageVerification', () => {
     expect(useVerificationStore.getState().verifiedMap['file:///test/2.jpg']).toBe(false);
   });
 
-  it('skips verification if photo is already verified in store', async () => {
+  it('skips verification if photo is already verified in store', () => {
     useVerificationStore.setState({
       verifiedMap: { 'file:///test/3.jpg': true },
     });
