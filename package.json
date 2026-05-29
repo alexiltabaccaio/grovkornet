@@ -13,8 +13,8 @@
   "scripts": {
     "dev": "turbo run dev",
     "dev:web": "turbo run dev --filter=@grovkornet/web",
-    "dev:android": "npm run codegen && npm run dev -w @grovkornet/mobile",
-    "dev:mobile": "npm run codegen && npm run dev -w @grovkornet/mobile",
+    "dev:android": "node packages/shared/scripts/watch-codegen.js",
+    "dev:mobile": "node packages/shared/scripts/watch-codegen.js",
     "build": "turbo run build",
     "build:web": "turbo run build --filter=@grovkornet/web",
     "build:android": "npm run codegen && turbo run build --filter=@grovkornet/mobile",
