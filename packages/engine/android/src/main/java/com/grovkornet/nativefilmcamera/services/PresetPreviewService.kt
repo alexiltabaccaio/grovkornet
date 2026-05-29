@@ -61,6 +61,13 @@ object PresetPreviewService {
         (payload["boundPurpleMagenta"] as? Number)?.toFloat()?.let { boundPurpleMagenta = it }
         (payload["grainEnabled"] as? Boolean)?.let { grainEnabled = it }
         (payload["bloomEnabled"] as? Boolean)?.let { bloomEnabled = it }
+        (payload["blackLevel"] as? Number)?.toFloat()?.let { blackLevel = it }
+        (payload["highlights"] as? Number)?.toFloat()?.let { highlights = it }
+        (payload["pivot"] as? Number)?.toFloat()?.let { pivot = it }
+        (payload["contrastAuto"] as? Boolean)?.let { contrastAuto = it }
+        (payload["blackLevelAuto"] as? Boolean)?.let { blackLevelAuto = it }
+        (payload["highlightsAuto"] as? Boolean)?.let { highlightsAuto = it }
+        (payload["pivotAuto"] as? Boolean)?.let { pivotAuto = it }
     }
     
     android.util.Log.i("PresetPreviewService", "Parsed Configuration: saturation=${config.saturation}, contrast=${config.contrast}, grainEnabled=${config.grainEnabled}, tint=${config.tint}")

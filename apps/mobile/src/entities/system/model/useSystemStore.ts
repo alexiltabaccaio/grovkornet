@@ -30,7 +30,7 @@ export const useSystemStore = create<SystemStore>()(
     system: 'preferences',
     lens: 'optics',
     body: 'exposure',
-    film: 'development',
+    film: 'tone',
   },
 
   lastActiveParameters: {
@@ -41,7 +41,8 @@ export const useSystemStore = create<SystemStore>()(
     flaws: 'chromatic_aberration',
     exposure: 'iso',
     lighting: 'torch',
-    development: 'temperature',
+    tone: 'contrast',
+    color: 'temperature',
     texture: 'grain',
     capture: 'aspect_ratio',
   },

@@ -54,7 +54,9 @@ void LutGenerator::triggerLutUpdate(float saturation, float contrast, float ev,
                                     float satCyan, float satBlue,
                                     float satPurple, float satMagenta,
                                     float boundMagentaRed, float boundRedOrange, float boundOrangeYellow, float boundYellowGreen,
-                                    float boundGreenCyan, float boundCyanBlue, float boundBluePurple, float boundPurpleMagenta) {
+                                    float boundGreenCyan, float boundCyanBlue, float boundBluePurple, float boundPurpleMagenta,
+                                    float blackLevel, float highlights, float pivot,
+                                    float contrastAuto, float blackLevelAuto, float highlightsAuto, float pivotAuto) {
   std::unique_lock<std::mutex> lock(lutMutex);
 
   // Check if parameters actually changed
@@ -72,7 +74,14 @@ void LutGenerator::triggerLutUpdate(float saturation, float contrast, float ev,
       boundGreenCyan == currentBoundGreenCyan &&
       boundCyanBlue == currentBoundCyanBlue &&
       boundBluePurple == currentBoundBluePurple &&
-      boundPurpleMagenta == currentBoundPurpleMagenta) {
+      boundPurpleMagenta == currentBoundPurpleMagenta &&
+      blackLevel == currentBlackLevel &&
+      highlights == currentHighlights &&
+      pivot == currentPivot &&
+      contrastAuto == currentContrastAuto &&
+      blackLevelAuto == currentBlackLevelAuto &&
+      highlightsAuto == currentHighlightsAuto &&
+      pivotAuto == currentPivotAuto) {
     return;
   }
 
@@ -97,6 +106,13 @@ void LutGenerator::triggerLutUpdate(float saturation, float contrast, float ev,
   currentBoundCyanBlue = boundCyanBlue;
   currentBoundBluePurple = boundBluePurple;
   currentBoundPurpleMagenta = boundPurpleMagenta;
+  currentBlackLevel = blackLevel;
+  currentHighlights = highlights;
+  currentPivot = pivot;
+  currentContrastAuto = contrastAuto;
+  currentBlackLevelAuto = blackLevelAuto;
+  currentHighlightsAuto = highlightsAuto;
+  currentPivotAuto = pivotAuto;
 
   lutParametersDirty = true;
   lutCv.notify_one();
@@ -284,7 +300,7 @@ void LutGenerator::lutGenerationLoop() {
   // Linear equivalent of sRGB 0.5 (used as contrast midpoint)
   const float CONTRAST_MIDPOINT = std::pow((0.5f + 0.055f) / 1.055f, 2.4f);
 
-  while (true) {
+    while (true) {
     float saturation = 1.0f;
     float contrast = 1.0f;
     float ev = 0.0f;
@@ -306,6 +322,13 @@ void LutGenerator::lutGenerationLoop() {
     float boundCyanBlue = 230.0f;
     float boundBluePurple = 280.0f;
     float boundPurpleMagenta = 315.0f;
+    float blackLevel = 0.0f;
+    float highlights = 1.0f;
+    float pivot = 0.5f;
+    float contrastAuto = 1.0f;
+    float blackLevelAuto = 1.0f;
+    float highlightsAuto = 1.0f;
+    float pivotAuto = 1.0f;
 
     {
       std::unique_lock<std::mutex> lock(lutMutex);
@@ -337,9 +360,30 @@ void LutGenerator::lutGenerationLoop() {
       boundCyanBlue = currentBoundCyanBlue;
       boundBluePurple = currentBoundBluePurple;
       boundPurpleMagenta = currentBoundPurpleMagenta;
+      blackLevel = currentBlackLevel;
+      highlights = currentHighlights;
+      pivot = currentPivot;
+      contrastAuto = currentContrastAuto;
+      blackLevelAuto = currentBlackLevelAuto;
+      highlightsAuto = currentHighlightsAuto;
+      pivotAuto = currentPivotAuto;
 
       lutParametersDirty = false;
       isComputingLut = true;
+    }
+
+    // Resolve auto flags
+    if (contrastAuto > 0.5f) {
+      contrast = 1.0f;
+    }
+    if (blackLevelAuto > 0.5f) {
+      blackLevel = 0.0f;
+    }
+    if (highlightsAuto > 0.5f) {
+      highlights = 1.0f;
+    }
+    if (pivotAuto > 0.5f) {
+      pivot = 0.5f;
     }
 
     // Compute EV multiplier and White Balance factors outside the loops
@@ -350,17 +394,16 @@ void LutGenerator::lutGenerationLoop() {
     float wb_g = 1.0f - tintOffset * 0.2f;
     float wb_b = (1.0f / temp) * (1.0f + tintOffset * 0.2f);
 
-    // Precompute combined multipliers and offsets for Contrast, EV, and WB
-    float activeContrast = std::max(contrast, 0.0f);
-    float contrastOffset = CONTRAST_MIDPOINT * (1.0f - activeContrast);
+    // S-Curve parameters setup
+    // Invert parameters so positive slider (+100) = brighter, negative (-100) = darker
+    float actualBlackLevel = -blackLevel;
+    float actualWhitePoint = 2.0f - highlights;
 
-    float finalMult_r = activeContrast * evMultiplier * wb_r;
-    float finalMult_g = activeContrast * evMultiplier * wb_g;
-    float finalMult_b = activeContrast * evMultiplier * wb_b;
-
-    float finalAdd_r = contrastOffset * evMultiplier * wb_r;
-    float finalAdd_g = contrastOffset * evMultiplier * wb_g;
-    float finalAdd_b = contrastOffset * evMultiplier * wb_b;
+    float safeP = std::max(0.01f, std::min(0.99f, pivot));
+    float denom = actualWhitePoint - actualBlackLevel;
+    if (std::abs(denom) < 0.001f) {
+      denom = denom >= 0.0f ? 0.001f : -0.001f;
+    }
 
     // Definition of perceptual color bands in OKLAB (Core Plateaus).
     const ColorBand bands[8] = {
@@ -433,10 +476,32 @@ void LutGenerator::lutGenerationLoop() {
           float out_b =
               lin_luminance + (lin_b - lin_luminance) * effectiveSaturation;
 
-          // 2. Apply precomputed Contrast, EV, and White Balance (linear space)
-          out_r = out_r * finalMult_r + finalAdd_r;
-          out_g = out_g * finalMult_g + finalAdd_g;
-          out_b = out_b * finalMult_b + finalAdd_b;
+          // 2. Apply EV and White Balance (linear space)
+          out_r = out_r * evMultiplier * wb_r;
+          out_g = out_g * evMultiplier * wb_g;
+          out_b = out_b * evMultiplier * wb_b;
+
+          // 3. Apply Tone Curve (S-Curve with actualBlackLevel, actualWhitePoint, contrast, pivot)
+          float x_prime_r = std::max(0.0f, std::min(1.0f, (out_r - actualBlackLevel) / denom));
+          if (x_prime_r <= safeP) {
+            out_r = safeP * std::pow(x_prime_r / safeP, contrast);
+          } else {
+            out_r = 1.0f - (1.0f - safeP) * std::pow((1.0f - x_prime_r) / (1.0f - safeP), contrast);
+          }
+
+          float x_prime_g = std::max(0.0f, std::min(1.0f, (out_g - actualBlackLevel) / denom));
+          if (x_prime_g <= safeP) {
+            out_g = safeP * std::pow(x_prime_g / safeP, contrast);
+          } else {
+            out_g = 1.0f - (1.0f - safeP) * std::pow((1.0f - x_prime_g) / (1.0f - safeP), contrast);
+          }
+
+          float x_prime_b = std::max(0.0f, std::min(1.0f, (out_b - actualBlackLevel) / denom));
+          if (x_prime_b <= safeP) {
+            out_b = safeP * std::pow(x_prime_b / safeP, contrast);
+          } else {
+            out_b = 1.0f - (1.0f - safeP) * std::pow((1.0f - x_prime_b) / (1.0f - safeP), contrast);
+          }
 
           // Convert back to sRGB and write to buffer (linearToSrgb clamps to
           // [0.0, 1.0])

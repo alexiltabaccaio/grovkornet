@@ -86,8 +86,8 @@ class CameraControlManager(
 
             if (config.noiseReduction != -1) {
                 builder.setCaptureRequestOption(CaptureRequest.NOISE_REDUCTION_MODE, config.noiseReduction)
-                builder.setCaptureRequestOption(CaptureRequest.EDGE_MODE, config.noiseReduction)
             }
+            builder.setCaptureRequestOption(CaptureRequest.EDGE_MODE, CaptureRequest.EDGE_MODE_FAST)
 
             builder.setCaptureRequestOption(CaptureRequest.CONTROL_AWB_MODE, if (config.whiteBalanceAuto) CaptureRequest.CONTROL_AWB_MODE_AUTO else CaptureRequest.CONTROL_AWB_MODE_OFF)
 

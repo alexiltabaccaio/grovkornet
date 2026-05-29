@@ -10,7 +10,7 @@ import { useDoublePress } from '@shared/lib/hooks/useDoublePress';
 import { controlPanelStyles } from './ControlPanel.styles';
 
 // Import modules from feature slices
-import { DevelopmentModule, TextureModule } from '@features/film-controls';
+import { ColorModule, ToneModule, TextureModule } from '@features/film-controls';
 import { FlawsModule, OpticsModule } from '@features/lens-controls';
 import { CaptureModule, ExposureModule, LightingModule } from '@features/body-controls';
 import { PreferencesModule, PresetsModule } from '@features/system-settings';
@@ -26,9 +26,20 @@ export const Parameters = React.memo(() => {
     lastNonNoneModule: state.lastNonNoneModule,
   })));
 
-  const { resetEffect, setTemperatureAuto } = useFilmStore(useShallow(s => ({
+  const {
+    resetEffect,
+    setTemperatureAuto,
+    setContrastAuto,
+    setBlackLevelAuto,
+    setHighlightsAuto,
+    setPivotAuto,
+  } = useFilmStore(useShallow(s => ({
     resetEffect: s.resetEffect,
     setTemperatureAuto: s.setTemperatureAuto,
+    setContrastAuto: s.setContrastAuto,
+    setBlackLevelAuto: s.setBlackLevelAuto,
+    setHighlightsAuto: s.setHighlightsAuto,
+    setPivotAuto: s.setPivotAuto,
   })));
 
   const { 
@@ -56,6 +67,13 @@ export const Parameters = React.memo(() => {
     else if (tool === 'shutter_speed') setShutterSpeedAuto(true);
     else if (tool === 'focus') setFocusAuto(true);
     else if (tool === 'temperature' || tool === 'tint') setTemperatureAuto(true);
+    else if (tool === 'contrast') {
+      setContrastAuto(true);
+      setPivotAuto(true);
+    }
+    else if (tool === 'blackLevel') setBlackLevelAuto(true);
+    else if (tool === 'highlights') setHighlightsAuto(true);
+    else if (tool === 'pivot') setPivotAuto(true);
     else if (tool === 'camera_selection') setCameraAuto(true);
     else if (tool === 'torch') setTorchState(0);
     else if (tool === 'fps_setting') {
@@ -66,7 +84,7 @@ export const Parameters = React.memo(() => {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any, @typescript-eslint/no-unnecessary-type-assertion
       resetEffect(tool as any); 
     }
-  }, [setEvAuto, setIsoAuto, setShutterSpeedAuto, setFocusAuto, setTemperatureAuto, setCameraAuto, setTorchState, maxFps, setFpsSetting, resetEffect]);
+  }, [setEvAuto, setIsoAuto, setShutterSpeedAuto, setFocusAuto, setTemperatureAuto, setContrastAuto, setBlackLevelAuto, setHighlightsAuto, setPivotAuto, setCameraAuto, setTorchState, maxFps, setFpsSetting, resetEffect]);
 
   const { handlePressWithDouble } = useDoublePress(resetTool);
 
@@ -76,8 +94,10 @@ export const Parameters = React.memo(() => {
     switch (renderActiveModule) {
       case 'texture':
         return <TextureModule handlePressWithDouble={handlePressWithDouble} />;
-      case 'development':
-        return <DevelopmentModule handlePressWithDouble={handlePressWithDouble} />;
+      case 'color':
+        return <ColorModule handlePressWithDouble={handlePressWithDouble} />;
+      case 'tone':
+        return <ToneModule handlePressWithDouble={handlePressWithDouble} />;
       case 'flaws':
         return <FlawsModule handlePressWithDouble={handlePressWithDouble} />;
       case 'exposure':

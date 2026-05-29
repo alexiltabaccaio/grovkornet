@@ -20,7 +20,9 @@ public:
                           float satRed, float satOrange, float satYellow, float satGreen,
                           float satCyan, float satBlue, float satPurple, float satMagenta,
                           float boundMagentaRed, float boundRedOrange, float boundOrangeYellow, float boundYellowGreen,
-                          float boundGreenCyan, float boundCyanBlue, float boundBluePurple, float boundPurpleMagenta);
+                          float boundGreenCyan, float boundCyanBlue, float boundBluePurple, float boundPurpleMagenta,
+                          float blackLevel, float highlights, float pivot,
+                          float contrastAuto, float blackLevelAuto, float highlightsAuto, float pivotAuto);
     void applyLutTextureUpdate(filament::Engine& engine, filament::Texture* lutTexture);
     void waitForLut();
 
@@ -61,6 +63,13 @@ private:
     float currentBoundCyanBlue = 230.0f;
     float currentBoundBluePurple = 280.0f;
     float currentBoundPurpleMagenta = 315.0f;
+    float currentBlackLevel = 0.0f;
+    float currentHighlights = 1.0f;
+    float currentPivot = 0.5f;
+    float currentContrastAuto = 1.0f;
+    float currentBlackLevelAuto = 1.0f;
+    float currentHighlightsAuto = 1.0f;
+    float currentPivotAuto = 1.0f;
 
     // Cache of active parameters mapped into GPU texture
     float activeSaturation = -1.0f;
@@ -84,6 +93,13 @@ private:
     float activeBoundCyanBlue = -1.0f;
     float activeBoundBluePurple = -1.0f;
     float activeBoundPurpleMagenta = -1.0f;
+    float activeBlackLevel = -1.0f;
+    float activeHighlights = -1.0f;
+    float activePivot = -1.0f;
+    float activeContrastAuto = -1.0f;
+    float activeBlackLevelAuto = -1.0f;
+    float activeHighlightsAuto = -1.0f;
+    float activePivotAuto = -1.0f;
 
     std::vector<uint8_t> lutBuffer;
 };

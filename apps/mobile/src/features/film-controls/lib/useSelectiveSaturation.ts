@@ -86,7 +86,7 @@ export const useSelectiveSaturation = () => {
 
   const handleSaturationOnlyReset = useCallback((colorKey: string) => {
     if (colorKey === 'master') {
-      masterData.onReset();
+      masterData.onReset?.();
     } else {
       const v = DEFAULT_SELECTIVE_SATURATION;
       switch (colorKey) {
@@ -104,7 +104,7 @@ export const useSelectiveSaturation = () => {
 
   const handleFullColorReset = useCallback((colorKey: string) => {
     if (colorKey === 'master') {
-      masterData.onReset();
+      masterData.onReset?.();
     } else {
       const v = DEFAULT_SELECTIVE_SATURATION;
       switch (colorKey) {

@@ -271,6 +271,34 @@ class NativeFilmCameraModule : Module() {
       Prop("isSelfieCamera") { view: NativeFilmCameraView, value: Boolean ->
         if (view.config.isSelfieCamera != value) view.updateHardware { isSelfieCamera = value }
       }
+
+      Prop("blackLevel") { view: NativeFilmCameraView, value: Float ->
+        view.updateEffect { blackLevel = value }
+      }
+
+      Prop("highlights") { view: NativeFilmCameraView, value: Float ->
+        view.updateEffect { highlights = value }
+      }
+
+      Prop("pivot") { view: NativeFilmCameraView, value: Float ->
+        view.updateEffect { pivot = value }
+      }
+
+      Prop("contrastAuto") { view: NativeFilmCameraView, value: Boolean ->
+        view.updateEffect { contrastAuto = value }
+      }
+
+      Prop("blackLevelAuto") { view: NativeFilmCameraView, value: Boolean ->
+        view.updateEffect { blackLevelAuto = value }
+      }
+
+      Prop("highlightsAuto") { view: NativeFilmCameraView, value: Boolean ->
+        view.updateEffect { highlightsAuto = value }
+      }
+
+      Prop("pivotAuto") { view: NativeFilmCameraView, value: Boolean ->
+        view.updateEffect { pivotAuto = value }
+      }
       // @@GEN_PROPS_END@@
 
       AsyncFunction("takePhoto") { view: NativeFilmCameraView ->

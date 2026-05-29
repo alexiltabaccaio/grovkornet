@@ -121,6 +121,25 @@ export const useFilmWorklets = () => {
     const updateContrast = (value: number) => {
       'worklet';
       updateSharedValue(film.contrast, value);
+      updateSharedValue(film.contrastAuto, false);
+    };
+
+    const updateBlackLevel = (value: number) => {
+      'worklet';
+      updateSharedValue(film.blackLevel, value);
+      updateSharedValue(film.blackLevelAuto, false);
+    };
+
+    const updateHighlights = (value: number) => {
+      'worklet';
+      updateSharedValue(film.highlights, value);
+      updateSharedValue(film.highlightsAuto, false);
+    };
+
+    const updatePivot = (value: number) => {
+      'worklet';
+      updateSharedValue(film.pivot, value);
+      updateSharedValue(film.pivotAuto, false);
     };
 
     const updateChromaticAberration = (value: number) => {
@@ -186,6 +205,9 @@ export const useFilmWorklets = () => {
       updateBoundBluePurple,
       updateBoundPurpleMagenta,
       updateContrast,
+      updateBlackLevel,
+      updateHighlights,
+      updatePivot,
       updateChromaticAberration,
       updateAberrationDirection,
       updateAberrationInvert,

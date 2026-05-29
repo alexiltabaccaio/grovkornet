@@ -20,7 +20,9 @@ TEST(LutGeneratorTest, BasicLutGenerationAndBaking) {
                                50.0f, 50.0f, 50.0f, 50.0f,
                                50.0f, 50.0f, 50.0f, 50.0f,
                                350.0f, 45.0f, 80.0f, 125.0f,
-                               170.0f, 230.0f, 280.0f, 315.0f);
+                               170.0f, 230.0f, 280.0f, 315.0f,
+                               0.0f, 1.0f, 0.5f,
+                               1.0f, 1.0f, 1.0f, 1.0f);
 
     // Give it a brief moment to process the update on the background thread
     std::this_thread::sleep_for(std::chrono::milliseconds(100));

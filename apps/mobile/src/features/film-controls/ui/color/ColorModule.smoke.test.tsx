@@ -1,19 +1,19 @@
 import React from 'react';
 import { render } from '@testing-library/react-native';
-import { DevelopmentModule } from './DevelopmentModule';
+import { ColorModule } from './ColorModule';
 
 jest.mock('@entities/system', () => ({
   ...jest.requireActual('@entities/system'),
   GenericParameterModule: 'GenericParameterModule',
 }));
 
-describe('DevelopmentModule', () => {
+describe('ColorModule', () => {
   const mockProps = {
     handlePressWithDouble: jest.fn(),
   };
 
   it('renders correctly', () => {
-    const { toJSON } = render(<DevelopmentModule {...mockProps} />);
+    const { toJSON } = render(<ColorModule {...mockProps} />);
     expect(toJSON()).toBeDefined();
   });
 });

@@ -15,7 +15,7 @@ describe('useSystemStore', () => {
         system: 'preferences',
         lens: 'optics',
         body: 'exposure',
-        film: 'development',
+        film: 'tone',
       },
       lastActiveParameters: {
         none: 'none',
@@ -25,7 +25,8 @@ describe('useSystemStore', () => {
         flaws: 'chromatic_aberration',
         exposure: 'iso',
         lighting: 'torch',
-        development: 'temperature',
+        tone: 'contrast',
+        color: 'temperature',
         texture: 'grain',
         capture: 'aspect_ratio',
       },
@@ -49,24 +50,24 @@ describe('useSystemStore', () => {
   it('sets active module and restores last active parameter', () => {
     const { setActiveModule, setActiveParameter } = useSystemStore.getState();
     
-    // Set development module (which has 'temperature' as default in lastActiveParameters)
-    setActiveModule('development');
+    // Set color module (which has 'temperature' as default in lastActiveParameters)
+    setActiveModule('color');
     let state = useSystemStore.getState();
-    expect(state.activeModule).toBe('development');
+    expect(state.activeModule).toBe('color');
     expect(state.activeParameter).toBe('temperature');
 
     // Change parameter
-    setActiveParameter('contrast');
-    expect(useSystemStore.getState().activeParameter).toBe('contrast');
+    setActiveParameter('saturation');
+    expect(useSystemStore.getState().activeParameter).toBe('saturation');
 
     // Switch to another module and back
     setActiveModule('texture');
     expect(useSystemStore.getState().activeModule).toBe('texture');
     expect(useSystemStore.getState().activeParameter).toBe('grain');
 
-    setActiveModule('development');
-    expect(useSystemStore.getState().activeModule).toBe('development');
-    expect(useSystemStore.getState().activeParameter).toBe('contrast'); // Should be restored
+    setActiveModule('color');
+    expect(useSystemStore.getState().activeModule).toBe('color');
+    expect(useSystemStore.getState().activeParameter).toBe('saturation'); // Should be restored
   });
 
   it('updates debug mode correctly', () => {
@@ -114,8 +115,8 @@ describe('useSystemStore', () => {
     // 1. Go to film section
     setActiveSection('film');
     expect(useSystemStore.getState().activeSection).toBe('film');
-    expect(useSystemStore.getState().activeModule).toBe('development');
-    expect(useSystemStore.getState().activeParameter).toBe('temperature');
+    expect(useSystemStore.getState().activeModule).toBe('tone');
+    expect(useSystemStore.getState().activeParameter).toBe('contrast');
 
     // 2. Change module to texture and parameter to sharpening
     setActiveModule('texture');

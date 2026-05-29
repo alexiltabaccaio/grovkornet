@@ -114,9 +114,17 @@ export const Modules = React.memo(() => {
             <>
               <PillButton
                 variant="module"
-                label={t('modules.development')}
-                isActive={renderModule === 'development'}
-                onPress={() => setActiveModule('development')}
+                label={t('modules.tone')}
+                isActive={renderModule === 'tone'}
+                onPress={() => setActiveModule('tone')}
+                isDebugEnabled={isDebugEnabled}
+                style={styles.pill}
+              />
+              <PillButton
+                variant="module"
+                label={t('modules.color')}
+                isActive={renderModule === 'color'}
+                onPress={() => setActiveModule('color')}
                 isDebugEnabled={isDebugEnabled}
                 style={styles.pill}
               />

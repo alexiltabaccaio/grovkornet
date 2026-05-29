@@ -44,17 +44,20 @@ appId: com.grovkornet.app
 - assertVisible: "Illuminazione"
 - assertVisible: "Acquisizione"
 - assertNotVisible: "Ottica"
-- assertNotVisible: "Sviluppo"
+- assertNotVisible: "Colore"
+- assertNotVisible: "Tono"
 
 # 4. Navigation to the FILM section
 - tapOn: "PELLICOLA"
 - assertVisible: "PELLICOLA"
-- assertVisible: "Sviluppo"
+- assertVisible: "Colore"
+- assertVisible: "Tono"
 - assertVisible: "Texture"
 - assertNotVisible: "Esposizione"
 - assertNotVisible: "Preferenze"
 
 # 5. Closing the panel by tapping the active section again (FILM)
 - tapOn: "PELLICOLA"
-- assertNotVisible: "Sviluppo"
+- assertNotVisible: "Colore"
+- assertNotVisible: "Tono"
 - assertNotVisible: "Texture"

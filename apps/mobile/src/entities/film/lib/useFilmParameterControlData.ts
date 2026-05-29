@@ -10,6 +10,9 @@ export type FilmParameterType =
   | 'sharpening'
   | 'saturation'
   | 'contrast'
+  | 'blackLevel'
+  | 'highlights'
+  | 'pivot'
   | 'chromatic_aberration'
   | 'bloom'
   | 'temperature'
@@ -25,6 +28,20 @@ type SelectedFilmState = Pick<
   | 'setSaturation'
   | 'contrast'
   | 'setContrast'
+  | 'contrastAuto'
+  | 'setContrastAuto'
+  | 'blackLevel'
+  | 'setBlackLevel'
+  | 'blackLevelAuto'
+  | 'setBlackLevelAuto'
+  | 'highlights'
+  | 'setHighlights'
+  | 'highlightsAuto'
+  | 'setHighlightsAuto'
+  | 'pivot'
+  | 'setPivot'
+  | 'pivotAuto'
+  | 'setPivotAuto'
   | 'chromaticAberration'
   | 'setChromaticAberration'
   | 'bloomIntensity'
@@ -62,6 +79,30 @@ export const useFilmParameterControlData = (
           return {
             contrast: s.contrast,
             setContrast: s.setContrast,
+            contrastAuto: s.contrastAuto,
+            setContrastAuto: s.setContrastAuto,
+            setPivotAuto: s.setPivotAuto,
+          };
+        case 'blackLevel':
+          return {
+            blackLevel: s.blackLevel,
+            setBlackLevel: s.setBlackLevel,
+            blackLevelAuto: s.blackLevelAuto,
+            setBlackLevelAuto: s.setBlackLevelAuto,
+          };
+        case 'highlights':
+          return {
+            highlights: s.highlights,
+            setHighlights: s.setHighlights,
+            highlightsAuto: s.highlightsAuto,
+            setHighlightsAuto: s.setHighlightsAuto,
+          };
+        case 'pivot':
+          return {
+            pivot: s.pivot,
+            setPivot: s.setPivot,
+            pivotAuto: s.pivotAuto,
+            setPivotAuto: s.setPivotAuto,
           };
         case 'chromatic_aberration':
           return {
@@ -154,9 +195,56 @@ export const useFilmParameterControlData = (
             const val = Math.round((v - 1) * 100);
             return val > 0 ? `+${val}` : `${val}`;
           },
-          hideValueInAuto: false,
-          autoValueText: 'AUTO',
-          onReset: () => film.setContrast(1.0),
+          onReset: () => {
+            film.setContrastAuto(true);
+            film.setPivotAuto(true);
+          },
+        };
+      case 'blackLevel':
+        return {
+          value: film.blackLevel,
+          minValue: -0.5,
+          maxValue: 0.5,
+          centerValue: 0.0,
+          onChange: film.setBlackLevel,
+          onUpdateWorklet: filmWorklets.updateBlackLevel,
+          valueFormatter: (v: number) => {
+            'worklet';
+            // Moltiplico per 200 in modo che il range interno [-0.5, 0.5] sia mostrato come [-100, +100]
+            const rounded = Math.round(v * 200);
+            return rounded > 0 ? `+${rounded}` : `${rounded}`;
+          },
+        };
+      case 'highlights':
+        return {
+          value: film.highlights,
+          minValue: 0.0,
+          maxValue: 2.0,
+          centerValue: 1.0,
+          onChange: film.setHighlights,
+          onUpdateWorklet: filmWorklets.updateHighlights,
+          valueFormatter: (v: number) => {
+            'worklet';
+            const val = Math.round((v - 1) * 100);
+            return val > 0 ? `+${val}` : `${val}`;
+          },
+        };
+      case 'pivot':
+        return {
+          value: film.pivot,
+          minValue: 0.0,
+          maxValue: 1.0,
+          centerValue: 0.5,
+          onChange: film.setPivot,
+          onUpdateWorklet: filmWorklets.updatePivot,
+          valueFormatter: (v: number) => {
+            'worklet';
+            const val = Math.round((v - 0.5) * 200);
+            return val > 0 ? `+${val}` : `${val}`;
+          },
+          onReset: () => {
+            film.setPivotAuto(true);
+          },
         };
       case 'chromatic_aberration':
         return {

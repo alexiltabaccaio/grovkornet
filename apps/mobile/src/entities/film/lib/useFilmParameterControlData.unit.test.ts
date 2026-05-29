@@ -10,7 +10,10 @@ describe('useFilmParameterControlData', () => {
     film.setGrainIntensity(0);
     film.setSharpening(0);
     film.setSaturation(1.0);
-    film.setContrast(1.0);
+    film.setContrastAuto(true);
+    film.setBlackLevelAuto(true);
+    film.setHighlightsAuto(true);
+    film.setPivotAuto(true);
     film.setChromaticAberration(0);
     film.setBloomIntensity(0);
     film.setTemperatureAuto(true);
@@ -80,6 +83,7 @@ describe('useFilmParameterControlData', () => {
     expect(result.current.minValue).toBe(0);
     expect(result.current.maxValue).toBe(2.0);
     expect(result.current.centerValue).toBe(1.0);
+    expect(result.current.isAuto).toBeUndefined();
 
     result.current.onChange(1.15);
     expect(useFilmStore.getState().contrast.value).toBe(1.15);
@@ -87,8 +91,63 @@ describe('useFilmParameterControlData', () => {
     expect(result.current.valueFormatter(1.15)).toBe('+15');
     expect(result.current.valueFormatter(0.9)).toBe('-10');
 
+    // Test onReset resets both contrast and pivot
+    useFilmStore.getState().setContrast(1.5);
+    useFilmStore.getState().setPivot(0.7);
     result.current.onReset?.();
     expect(useFilmStore.getState().contrast.value).toBe(1.0);
+    expect(useFilmStore.getState().pivot.value).toBe(0.5);
+  });
+
+  it('maps "blackLevel" parameter correctly', () => {
+    const { result } = renderHook(() => useFilmParameterControlData('blackLevel'));
+
+    expect(result.current.minValue).toBe(-0.5);
+    expect(result.current.maxValue).toBe(0.5);
+    expect(result.current.centerValue).toBe(0.0);
+    expect(result.current.isAuto).toBeUndefined();
+
+    result.current.onChange(0.12);
+    expect(useFilmStore.getState().blackLevel.value).toBe(0.12);
+
+    expect(result.current.valueFormatter(0.12)).toBe('+24');
+    expect(result.current.valueFormatter(-0.08)).toBe('-16');
+  });
+
+  it('maps "highlights" parameter correctly', () => {
+    const { result } = renderHook(() => useFilmParameterControlData('highlights'));
+
+    expect(result.current.minValue).toBe(0.0);
+    expect(result.current.maxValue).toBe(2.0);
+    expect(result.current.centerValue).toBe(1.0);
+    expect(result.current.isAuto).toBeUndefined();
+
+    result.current.onChange(1.3);
+    expect(useFilmStore.getState().highlights.value).toBe(1.3);
+
+    expect(result.current.valueFormatter(1.3)).toBe('+30');
+    expect(result.current.valueFormatter(0.7)).toBe('-30');
+  });
+
+  it('maps "pivot" parameter correctly', () => {
+    const { result } = renderHook(() => useFilmParameterControlData('pivot'));
+
+    expect(result.current.minValue).toBe(0.0);
+    expect(result.current.maxValue).toBe(1.0);
+    expect(result.current.centerValue).toBe(0.5);
+    expect(result.current.isAuto).toBeUndefined();
+
+    result.current.onChange(0.4);
+    expect(useFilmStore.getState().pivot.value).toBe(0.4);
+
+    expect(result.current.valueFormatter(0.4)).toBe('-20');
+    expect(result.current.valueFormatter(0.5)).toBe('0');
+    expect(result.current.valueFormatter(0.6)).toBe('+20');
+
+    // Test onReset resets pivot
+    useFilmStore.getState().setPivot(0.7);
+    result.current.onReset?.();
+    expect(useFilmStore.getState().pivot.value).toBe(0.5);
   });
 
   it('maps "chromatic_aberration" parameter correctly', () => {

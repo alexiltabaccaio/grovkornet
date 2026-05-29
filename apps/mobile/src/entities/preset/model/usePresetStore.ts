@@ -67,6 +67,13 @@ export const DEFAULT_FILM_PAYLOAD: FilmPresetPayload = {
   noiseReductionMode: 1,
   noiseReductionAuto: true,
   temperatureAuto: true,
+  blackLevel: 0.0,
+  highlights: 1.0,
+  pivot: 0.5,
+  contrastAuto: true,
+  blackLevelAuto: true,
+  highlightsAuto: true,
+  pivotAuto: true,
   // @@GEN_DEFAULTS_END@@
 };
 

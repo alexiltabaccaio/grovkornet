@@ -39,6 +39,13 @@ export interface FilmPresetPayload {
   noiseReductionMode: number;
   noiseReductionAuto: boolean;
   temperatureAuto: boolean;
+  blackLevel: number;
+  highlights: number;
+  pivot: number;
+  contrastAuto: boolean;
+  blackLevelAuto: boolean;
+  highlightsAuto: boolean;
+  pivotAuto: boolean;
   // @@GEN_FILM_PAYLOAD_END@@
 }
 

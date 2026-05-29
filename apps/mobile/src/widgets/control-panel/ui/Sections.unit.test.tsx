@@ -23,7 +23,7 @@ describe('Sections', () => {
     fireEvent.press(getByLabelText('sections.film'));
     
     expect(useSystemStore.getState().activeSection).toBe('film');
-    expect(useSystemStore.getState().activeModule).toBe('development');
+    expect(useSystemStore.getState().activeModule).toBe('tone');
   });
 
   it('toggles section off if clicked again', () => {

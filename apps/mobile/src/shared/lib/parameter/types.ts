@@ -9,9 +9,9 @@ export interface ParameterControlData {
   onUpdateWorklet?: (v: number) => void;
   isAuto?: SharedValue<boolean>;
   valueFormatter: (v: number) => string;
-  hideValueInAuto: boolean;
-  autoValueText: string;
-  onReset: () => void;
+  hideValueInAuto?: boolean;
+  autoValueText?: string;
+  onReset?: () => void;
   onToggleAuto?: (auto: boolean) => void;
   disabled?: SharedValue<boolean>;
 }

@@ -59,6 +59,13 @@ export const useFilmStore = create<FilmStore>((set, get) => ({
   noiseReductionAuto: makeMutable(true),
   temperatureAuto: makeMutable(true),
   isSelfieCamera: makeMutable(false),
+  blackLevel: makeMutable(0.0),
+  highlights: makeMutable(1.0),
+  pivot: makeMutable(0.5),
+  contrastAuto: makeMutable(true),
+  blackLevelAuto: makeMutable(true),
+  highlightsAuto: makeMutable(true),
+  pivotAuto: makeMutable(true),
   // @@GEN_INIT_END@@
   capabilities: {
     availableNoiseReductionModes: [],
@@ -71,8 +78,11 @@ export const useFilmStore = create<FilmStore>((set, get) => ({
     get().saturation.value = value;
   },
   setContrast: (value) => {
+    const { contrast, contrastAuto } = get();
     logger.debug('FilmStore', `Setting Contrast: ${value}`);
-    get().contrast.value = value;
+    contrast.value = value;
+    contrastAuto.value = false;
+
   },
   setGrainIntensity: (value) => {
     const { grainIntensity, grainEnabled } = get();
@@ -200,6 +210,56 @@ export const useFilmStore = create<FilmStore>((set, get) => ({
   setIsSelfieCamera: (value) => {
     get().isSelfieCamera.value = value;
   },
+  setBlackLevel: (value) => {
+    const { blackLevel, blackLevelAuto } = get();
+    blackLevel.value = value;
+    blackLevelAuto.value = false;
+
+  },
+  setHighlights: (value) => {
+    const { highlights, highlightsAuto } = get();
+    highlights.value = value;
+    highlightsAuto.value = false;
+
+  },
+  setPivot: (value) => {
+    const { pivot, pivotAuto } = get();
+    pivot.value = value;
+    pivotAuto.value = false;
+
+  },
+  setContrastAuto: (value) => {
+    const { contrastAuto, contrast } = get();
+    contrastAuto.value = value;
+    if (value) {
+      contrast.value = DEFAULT_CONTRAST;
+    }
+
+  },
+  setBlackLevelAuto: (value) => {
+    const { blackLevelAuto, blackLevel } = get();
+    blackLevelAuto.value = value;
+    if (value) {
+      blackLevel.value = 0.0;
+    }
+
+  },
+  setHighlightsAuto: (value) => {
+    const { highlightsAuto, highlights } = get();
+    highlightsAuto.value = value;
+    if (value) {
+      highlights.value = 1.0;
+    }
+
+  },
+  setPivotAuto: (value) => {
+    const { pivotAuto, pivot } = get();
+    pivotAuto.value = value;
+    if (value) {
+      pivot.value = 0.5;
+    }
+
+  },
   // @@GEN_SETTERS_END@@
   setCapabilities: (caps) => {
     logger.info('FilmStore', 'Capabilities updated for Film');
@@ -268,6 +328,15 @@ export const useFilmStore = create<FilmStore>((set, get) => ({
         break;
       case 'camera_facing':
         state.isSelfieCamera.value = false;
+        break;
+      case 'tone':
+        state.blackLevel.value = 0.0;
+        state.highlights.value = 1.0;
+        state.pivot.value = 0.5;
+        state.contrastAuto.value = true;
+        state.blackLevelAuto.value = true;
+        state.highlightsAuto.value = true;
+        state.pivotAuto.value = true;
         break;
       // @@GEN_RESET_END@@
     }

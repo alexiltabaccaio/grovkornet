@@ -18,10 +18,16 @@ jest.mock('@features/film-controls', () => {
         handlePressWithDouble('grain', () => {});
       }} />
     ),
-    DevelopmentModule: ({ handlePressWithDouble }: any) => (
-      <Button testID="btn-temp" title="Development" onPress={() => {
+    ColorModule: ({ handlePressWithDouble }: any) => (
+      <Button testID="btn-temp" title="Color" onPress={() => {
         handlePressWithDouble('temperature', () => {});
         handlePressWithDouble('temperature', () => {});
+      }} />
+    ),
+    ToneModule: ({ handlePressWithDouble }: any) => (
+      <Button testID="btn-contrast" title="Tone" onPress={() => {
+        handlePressWithDouble('contrast', () => {});
+        handlePressWithDouble('contrast', () => {});
       }} />
     ),
   };
@@ -92,6 +98,10 @@ describe('Parameters', () => {
   let spySetShutterSpeedAuto: jest.SpyInstance;
   let spySetFocusAuto: jest.SpyInstance;
   let spySetTemperatureAuto: jest.SpyInstance;
+  let spySetContrastAuto: jest.SpyInstance;
+  let spySetBlackLevelAuto: jest.SpyInstance;
+  let spySetHighlightsAuto: jest.SpyInstance;
+  let spySetPivotAuto: jest.SpyInstance;
   let spySetCameraAuto: jest.SpyInstance;
   let spySetTorchState: jest.SpyInstance;
   let spySetFpsSetting: jest.SpyInstance;
@@ -105,6 +115,10 @@ describe('Parameters', () => {
     spySetShutterSpeedAuto = jest.spyOn(useBodyStore.getState(), 'setShutterSpeedAuto');
     spySetFocusAuto = jest.spyOn(useLensStore.getState(), 'setFocusAuto');
     spySetTemperatureAuto = jest.spyOn(useFilmStore.getState(), 'setTemperatureAuto');
+    spySetContrastAuto = jest.spyOn(useFilmStore.getState(), 'setContrastAuto');
+    spySetBlackLevelAuto = jest.spyOn(useFilmStore.getState(), 'setBlackLevelAuto');
+    spySetHighlightsAuto = jest.spyOn(useFilmStore.getState(), 'setHighlightsAuto');
+    spySetPivotAuto = jest.spyOn(useFilmStore.getState(), 'setPivotAuto');
     spySetCameraAuto = jest.spyOn(useLensStore.getState(), 'setCameraAuto');
     spySetTorchState = jest.spyOn(useBodyStore.getState(), 'setTorchState');
     spySetFpsSetting = jest.spyOn(useBodyStore.getState(), 'setFpsSetting');
@@ -117,6 +131,10 @@ describe('Parameters', () => {
     spySetShutterSpeedAuto.mockRestore();
     spySetFocusAuto.mockRestore();
     spySetTemperatureAuto.mockRestore();
+    spySetContrastAuto.mockRestore();
+    spySetBlackLevelAuto.mockRestore();
+    spySetHighlightsAuto.mockRestore();
+    spySetPivotAuto.mockRestore();
     spySetCameraAuto.mockRestore();
     spySetTorchState.mockRestore();
     spySetFpsSetting.mockRestore();
@@ -142,15 +160,26 @@ describe('Parameters', () => {
     expect(spyResetEffect).toHaveBeenCalledWith('grain');
   });
 
-  it('renders DevelopmentModule and resets temperature', () => {
+  it('renders ColorModule and resets temperature', () => {
     act(() => {
-      useSystemStore.getState().setActiveModule('development');
+      useSystemStore.getState().setActiveModule('color');
     });
     const { getByTestId } = render(<Parameters />);
     const button = getByTestId('btn-temp');
     
     fireEvent.press(button);
     expect(spySetTemperatureAuto).toHaveBeenCalledWith(true);
+  });
+
+  it('renders ToneModule and resets contrast', () => {
+    act(() => {
+      useSystemStore.getState().setActiveModule('tone');
+    });
+    const { getByTestId } = render(<Parameters />);
+    const button = getByTestId('btn-contrast');
+    
+    fireEvent.press(button);
+    expect(spySetContrastAuto).toHaveBeenCalledWith(true);
   });
 
   it('renders FlawsModule and resets chromatic_aberration effect', () => {
@@ -260,7 +289,7 @@ describe('Parameters', () => {
     expect(getByTestId('btn-grain')).toBeDefined();
 
     act(() => {
-      useSystemStore.getState().setActiveModule('development');
+      useSystemStore.getState().setActiveModule('color');
     });
     rerender(<Parameters />);
     expect(getByTestId('btn-temp')).toBeDefined();

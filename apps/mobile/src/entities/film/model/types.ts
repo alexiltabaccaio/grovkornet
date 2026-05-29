@@ -43,6 +43,13 @@ interface FilmState {
   noiseReductionAuto: SharedValue<boolean>;
   temperatureAuto: SharedValue<boolean>;
   isSelfieCamera: SharedValue<boolean>;
+  blackLevel: SharedValue<number>;
+  highlights: SharedValue<number>;
+  pivot: SharedValue<number>;
+  contrastAuto: SharedValue<boolean>;
+  blackLevelAuto: SharedValue<boolean>;
+  highlightsAuto: SharedValue<boolean>;
+  pivotAuto: SharedValue<boolean>;
   // @@GEN_STATE_END@@
   capabilities?: FilmCapabilities;
 }
@@ -85,6 +92,13 @@ interface FilmActions {
   setNoiseReductionAuto: (value: boolean) => void;
   setTemperatureAuto: (value: boolean) => void;
   setIsSelfieCamera: (value: boolean) => void;
+  setBlackLevel: (value: number) => void;
+  setHighlights: (value: number) => void;
+  setPivot: (value: number) => void;
+  setContrastAuto: (value: boolean) => void;
+  setBlackLevelAuto: (value: boolean) => void;
+  setHighlightsAuto: (value: boolean) => void;
+  setPivotAuto: (value: boolean) => void;
   // @@GEN_ACTIONS_END@@
   setCapabilities?: (capabilities: FilmCapabilities) => void;
   resetEffect: (effect: string) => void;

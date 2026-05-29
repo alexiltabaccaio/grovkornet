@@ -25,22 +25,26 @@ describe('Modules', () => {
       useSystemStore.getState().setActiveSection('film');
     });
     const { getByText } = render(<Modules />);
-    expect(getByText('modules.development')).toBeDefined();
+    expect(getByText('modules.tone')).toBeDefined();
+    expect(getByText('modules.color')).toBeDefined();
     expect(getByText('modules.texture')).toBeDefined();
   });
 
   it('switches active module on press in film section', () => {
     act(() => {
       useSystemStore.getState().setActiveSection('film');
-      useSystemStore.getState().setActiveModule('development');
+      useSystemStore.getState().setActiveModule('tone');
     });
     const { getByText } = render(<Modules />);
     
     fireEvent.press(getByText('modules.texture'));
     expect(useSystemStore.getState().activeModule).toBe('texture');
 
-    fireEvent.press(getByText('modules.development'));
-    expect(useSystemStore.getState().activeModule).toBe('development');
+    fireEvent.press(getByText('modules.color'));
+    expect(useSystemStore.getState().activeModule).toBe('color');
+
+    fireEvent.press(getByText('modules.tone'));
+    expect(useSystemStore.getState().activeModule).toBe('tone');
   });
 
   it('renders correct modules and handles press for system section', () => {

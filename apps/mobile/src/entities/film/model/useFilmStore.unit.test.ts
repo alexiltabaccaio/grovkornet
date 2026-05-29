@@ -117,6 +117,42 @@ describe('useFilmStore', () => {
     expect(useFilmStore.getState().tint.value).toBe(10);
   });
 
+  it('sets Tone parameters: blackLevel, highlights, pivot, contrastAuto', () => {
+    const store = useFilmStore.getState();
+    
+    store.setContrast(1.5);
+    expect(useFilmStore.getState().contrast.value).toBe(1.5);
+    expect(useFilmStore.getState().contrastAuto.value).toBe(false);
+
+    store.setBlackLevel(0.2);
+    expect(useFilmStore.getState().blackLevel.value).toBe(0.2);
+    expect(useFilmStore.getState().blackLevelAuto.value).toBe(false);
+
+    store.setHighlights(0.8);
+    expect(useFilmStore.getState().highlights.value).toBe(0.8);
+    expect(useFilmStore.getState().highlightsAuto.value).toBe(false);
+
+    store.setPivot(0.4);
+    expect(useFilmStore.getState().pivot.value).toBe(0.4);
+    expect(useFilmStore.getState().pivotAuto.value).toBe(false);
+
+    store.setContrastAuto(true);
+    expect(useFilmStore.getState().contrastAuto.value).toBe(true);
+    expect(useFilmStore.getState().contrast.value).toBe(DEFAULT_CONTRAST);
+
+    store.setBlackLevelAuto(true);
+    expect(useFilmStore.getState().blackLevelAuto.value).toBe(true);
+    expect(useFilmStore.getState().blackLevel.value).toBe(0.0);
+
+    store.setHighlightsAuto(true);
+    expect(useFilmStore.getState().highlightsAuto.value).toBe(true);
+    expect(useFilmStore.getState().highlights.value).toBe(1.0);
+
+    store.setPivotAuto(true);
+    expect(useFilmStore.getState().pivotAuto.value).toBe(true);
+    expect(useFilmStore.getState().pivot.value).toBe(0.5);
+  });
+
   it('resets effects correctly', () => {
     const store = useFilmStore.getState();
     
@@ -161,6 +197,17 @@ describe('useFilmStore', () => {
     expect(useFilmStore.getState().temperature.value).toBe(DEFAULT_TEMPERATURE);
     expect(useFilmStore.getState().tint.value).toBe(DEFAULT_TINT);
     expect(useFilmStore.getState().temperatureAuto.value).toBe(true);
+
+    store.setBlackLevel(0.3);
+    store.setHighlights(1.4);
+    store.setPivot(0.7);
+    store.resetEffect('tone');
+    expect(useFilmStore.getState().blackLevel.value).toBe(0.0);
+    expect(useFilmStore.getState().highlights.value).toBe(1.0);
+    expect(useFilmStore.getState().pivot.value).toBe(0.5);
+    expect(useFilmStore.getState().blackLevelAuto.value).toBe(true);
+    expect(useFilmStore.getState().highlightsAuto.value).toBe(true);
+    expect(useFilmStore.getState().pivotAuto.value).toBe(true);
   });
 
   it('sets isSelfieCamera correctly and resets it', () => {

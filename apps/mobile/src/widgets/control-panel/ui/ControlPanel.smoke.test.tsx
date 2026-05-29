@@ -112,7 +112,7 @@ describe('ControlPanel Component Stability Test', () => {
     (useSystemStore as unknown as jest.Mock).mockReturnValue({
       ...mockSystemStoreValue,
       activeSection: 'film',
-      activeModule: 'development',
+      activeModule: 'tone',
     });
     const { toJSON } = render(<ControlPanel />);
     expect(toJSON()).toBeDefined();

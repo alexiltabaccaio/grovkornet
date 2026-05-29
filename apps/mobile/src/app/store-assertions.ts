@@ -46,6 +46,13 @@ type FilmActionsKeys =
   | 'setTemperatureAuto'
   | 'setCapabilities'
   | 'setIsSelfieCamera'
+  | 'setBlackLevel'
+  | 'setHighlights'
+  | 'setPivot'
+  | 'setContrastAuto'
+  | 'setBlackLevelAuto'
+  | 'setHighlightsAuto'
+  | 'setPivotAuto'
   | 'resetEffect';
 
 type FilmExcludedKeys = 'capabilities' | 'isSelfieCamera';

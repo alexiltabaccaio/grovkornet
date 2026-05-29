@@ -59,6 +59,13 @@ export interface NativeFilmCameraViewProps extends ViewProps {
   force4k60fpsCrop?: boolean;
   secureViewEnabled?: boolean;
   isSelfieCamera?: boolean;
+  blackLevel?: number;
+  highlights?: number;
+  pivot?: number;
+  contrastAuto?: boolean;
+  blackLevelAuto?: boolean;
+  highlightsAuto?: boolean;
+  pivotAuto?: boolean;
   // @@GEN_PROPS_END@@
   onDebugUpdate?: (event: { nativeEvent: { fps: number; hwFps: number; resolution: string } }) => void;
   onExposureUpdate?: (event: { nativeEvent: { iso: number; shutterSpeed: number; focusDistance?: number } }) => void;

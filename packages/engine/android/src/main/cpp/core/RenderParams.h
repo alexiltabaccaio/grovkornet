@@ -41,6 +41,13 @@ struct RenderParams {
     float boundPurpleMagenta;
     float grainRoughness;
     float panelY;
+    float blackLevel;
+    float highlights;
+    float pivot;
+    float contrastAuto;
+    float blackLevelAuto;
+    float highlightsAuto;
+    float pivotAuto;
     // @@GEN_STRUCT_END@@
 };
 

@@ -6,7 +6,7 @@ import Animated, { SharedValue, useAnimatedStyle, interpolate, Extrapolation } f
 import { SliderDetailPanel } from './components/SliderDetailPanel';
 
 import { LanguageDetailPanel, DebugDetailPanel, PresetsDetailPanel, VibrationDetailPanel } from '@features/system-settings';
-import { NoiseReductionDetailPanel, GrainDetailPanel, SaturationDetailPanel } from '@features/film-controls';
+import { NoiseReductionDetailPanel, GrainDetailPanel, SaturationDetailPanel, ContrastDetailPanel } from '@features/film-controls';
 import { LensSelectionDetailPanel, ChromaticAberrationDetailPanel } from '@features/lens-controls';
 import { AspectRatioDetailPanel, FpsDetailPanel, ResolutionDetailPanel, TorchDetailPanel } from '@features/body-controls';
 
@@ -115,10 +115,23 @@ export const ParameterDetailPanels = React.memo(({ translateY }: ParameterDetail
             animatedStyle={animatedStyle}
           />
         );
+      case 'contrast':
+        return (
+          <>
+            <SliderDetailPanel
+              parameter="contrast"
+              parameterDetailPanelAnimatedStyle={parameterDetailPanelAnimatedStyle}
+            />
+            <Animated.View style={[styles.childSubContainer, animatedStyle]}>
+              <ContrastDetailPanel />
+            </Animated.View>
+          </>
+        );
 
       // Slider-only parameters (no children)
       case 'bloom':
-      case 'contrast':
+      case 'blackLevel':
+      case 'highlights':
       case 'temperature':
       case 'tint':
       case 'sharpening':

@@ -33,6 +33,12 @@
         "default": "DEFAULT_CONTRAST",
         "type": "number",
         "resetGroup": "contrast",
+        "setSideEffects": [
+          {
+            "target": "contrastAuto",
+            "value": "false"
+          }
+        ],
         "store": "film"
       }
     },
@@ -1162,6 +1168,178 @@
       "kotlin": {
         "type": "Float",
         "default": "1920f"
+      }
+    },
+    {
+      "name": "blackLevel",
+      "category": "render",
+      "arrayIndex": 39,
+      "kotlin": {
+        "type": "Float",
+        "default": "0.0f"
+      },
+      "ts": {
+        "type": "number"
+      },
+      "zustand": {
+        "default": "0.0",
+        "type": "number",
+        "resetGroup": "tone",
+        "setSideEffects": [
+          {
+            "target": "blackLevelAuto",
+            "value": "false"
+          }
+        ],
+        "store": "film"
+      }
+    },
+    {
+      "name": "highlights",
+      "category": "render",
+      "arrayIndex": 40,
+      "kotlin": {
+        "type": "Float",
+        "default": "1.0f"
+      },
+      "ts": {
+        "type": "number"
+      },
+      "zustand": {
+        "default": "1.0",
+        "type": "number",
+        "resetGroup": "tone",
+        "setSideEffects": [
+          {
+            "target": "highlightsAuto",
+            "value": "false"
+          }
+        ],
+        "store": "film"
+      }
+    },
+    {
+      "name": "pivot",
+      "category": "render",
+      "arrayIndex": 41,
+      "kotlin": {
+        "type": "Float",
+        "default": "0.5f"
+      },
+      "ts": {
+        "type": "number"
+      },
+      "zustand": {
+        "default": "0.5",
+        "type": "number",
+        "resetGroup": "tone",
+        "setSideEffects": [
+          {
+            "target": "pivotAuto",
+            "value": "false"
+          }
+        ],
+        "store": "film"
+      }
+    },
+    {
+      "name": "contrastAuto",
+      "category": "render",
+      "arrayIndex": 42,
+      "kotlin": {
+        "type": "Boolean",
+        "default": "true"
+      },
+      "ts": {
+        "type": "boolean"
+      },
+      "zustand": {
+        "default": "true",
+        "type": "boolean",
+        "resetGroup": "tone",
+        "setSideEffects": [
+          {
+            "target": "contrast",
+            "value": "DEFAULT_CONTRAST",
+            "condition": "value"
+          }
+        ],
+        "store": "film"
+      }
+    },
+    {
+      "name": "blackLevelAuto",
+      "category": "render",
+      "arrayIndex": 43,
+      "kotlin": {
+        "type": "Boolean",
+        "default": "true"
+      },
+      "ts": {
+        "type": "boolean"
+      },
+      "zustand": {
+        "default": "true",
+        "type": "boolean",
+        "resetGroup": "tone",
+        "setSideEffects": [
+          {
+            "target": "blackLevel",
+            "value": "0.0",
+            "condition": "value"
+          }
+        ],
+        "store": "film"
+      }
+    },
+    {
+      "name": "highlightsAuto",
+      "category": "render",
+      "arrayIndex": 44,
+      "kotlin": {
+        "type": "Boolean",
+        "default": "true"
+      },
+      "ts": {
+        "type": "boolean"
+      },
+      "zustand": {
+        "default": "true",
+        "type": "boolean",
+        "resetGroup": "tone",
+        "setSideEffects": [
+          {
+            "target": "highlights",
+            "value": "1.0",
+            "condition": "value"
+          }
+        ],
+        "store": "film"
+      }
+    },
+    {
+      "name": "pivotAuto",
+      "category": "render",
+      "arrayIndex": 45,
+      "kotlin": {
+        "type": "Boolean",
+        "default": "true"
+      },
+      "ts": {
+        "type": "boolean"
+      },
+      "zustand": {
+        "default": "true",
+        "type": "boolean",
+        "resetGroup": "tone",
+        "setSideEffects": [
+          {
+            "target": "pivot",
+            "value": "0.5",
+            "condition": "value"
+          }
+        ],
+        "store": "film"
       }
     }
   ]
