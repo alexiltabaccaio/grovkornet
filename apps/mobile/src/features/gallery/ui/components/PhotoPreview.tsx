@@ -5,6 +5,7 @@ import Animated, {
   useSharedValue,
   withSpring,
   withTiming,
+  withDecay,
   runOnJS,
   cancelAnimation,
   SharedValue,
@@ -62,6 +63,8 @@ export const PhotoPreview = ({ selectedPhoto, photos, onPhotoVisible, rotationY 
   const savedZoomTranslateY = useSharedValue(0);
   const isZoomed = useSharedValue(false);
   const panMode = useSharedValue<'swipe' | 'pan'>('swipe');
+  const isDecaying = useSharedValue(0);
+  const recentlyStoppedDecay = useSharedValue(0);
 
   useLayoutEffect(() => {
     if (pendingTeleportRef.current !== null) {
@@ -93,6 +96,10 @@ export const PhotoPreview = ({ selectedPhoto, photos, onPhotoVisible, rotationY 
   };
 
   useEffect(() => {
+    if (!selectedPhoto || photos.length === 0) return;
+    const idx = photos.findIndex(p => p.uri === selectedPhoto.uri);
+    if (idx === -1 || idx === currentIndex.value || idx === animatingToIndexRef.current) return;
+
     // Reset zoom whenever the active photo changes
     zoomScale.value = 1;
     zoomTranslateX.value = 0;
@@ -101,10 +108,6 @@ export const PhotoPreview = ({ selectedPhoto, photos, onPhotoVisible, rotationY 
     savedZoomTranslateX.value = 0;
     savedZoomTranslateY.value = 0;
     isZoomed.value = false;
-
-    if (!selectedPhoto || photos.length === 0) return;
-    const idx = photos.findIndex(p => p.uri === selectedPhoto.uri);
-    if (idx === -1 || idx === currentIndex.value || idx === animatingToIndexRef.current) return;
 
     const diff = idx - currentIndex.value;
     animatingToIndexRef.current = idx;
@@ -148,6 +151,20 @@ export const PhotoPreview = ({ selectedPhoto, photos, onPhotoVisible, rotationY 
 
   const panGesture = Gesture.Pan()
     .maxPointers(1)
+    .onBegin(() => {
+      'worklet';
+      if (isZoomed.value) {
+        if (isDecaying.value === 1) {
+          recentlyStoppedDecay.value = 1;
+          recentlyStoppedDecay.value = withTiming(0, { duration: 500 });
+        }
+        cancelAnimation(zoomTranslateX);
+        cancelAnimation(zoomTranslateY);
+        isDecaying.value = 0;
+      } else {
+        cancelAnimation(translateX);
+      }
+    })
     .onStart((event) => {
       'worklet';
       if (isZoomed.value) {
@@ -156,8 +173,6 @@ export const PhotoPreview = ({ selectedPhoto, photos, onPhotoVisible, rotationY 
         savedZoomTranslateY.value = zoomTranslateY.value;
       } else {
         panMode.value = 'swipe';
-        // Cancel any in-progress spring so it doesn't fight the new drag
-        cancelAnimation(translateX);
         dragOffset.value = translateX.value;
       }
     })
@@ -190,7 +205,31 @@ export const PhotoPreview = ({ selectedPhoto, photos, onPhotoVisible, rotationY 
     .onEnd((event) => {
       'worklet';
       if (panMode.value === 'pan') {
-        // Panning inside the zoomed image completed. No extra snapping needed.
+        const angle = rotationY ? rotationY.value : 0;
+        const rad = (angle * Math.PI) / 180;
+        const sinSq = Math.sin(rad) * Math.sin(rad);
+        const cosSq = Math.cos(rad) * Math.cos(rad);
+        const currentWidth = width * cosSq + height * sinSq;
+        const currentHeight = height * cosSq + width * sinSq;
+
+        const maxTx = (currentWidth * (zoomScale.value - 1)) / 2;
+        const minTx = -maxTx;
+        const maxTy = (currentHeight * (zoomScale.value - 1)) / 2;
+        const minTy = -maxTy;
+
+        isDecaying.value = 1;
+        zoomTranslateX.value = withDecay({
+          velocity: event.velocityX,
+          clamp: [minTx, maxTx],
+        }, (finished) => {
+          if (finished) isDecaying.value = 0;
+        });
+        zoomTranslateY.value = withDecay({
+          velocity: event.velocityY,
+          clamp: [minTy, maxTy],
+        }, (finished) => {
+          if (finished) isDecaying.value = 0;
+        });
       } else {
         const dragThreshold = width / 2;
         const velocityThreshold = 500;
@@ -238,6 +277,13 @@ export const PhotoPreview = ({ selectedPhoto, photos, onPhotoVisible, rotationY 
     });
 
   const pinchGesture = Gesture.Pinch()
+    .onBegin(() => {
+      'worklet';
+      cancelAnimation(zoomScale);
+      cancelAnimation(zoomTranslateX);
+      cancelAnimation(zoomTranslateY);
+      isDecaying.value = 0;
+    })
     .onStart(() => {
       'worklet';
       savedZoomScale.value = zoomScale.value;
@@ -279,9 +325,15 @@ export const PhotoPreview = ({ selectedPhoto, photos, onPhotoVisible, rotationY 
 
   const doubleTapGesture = Gesture.Tap()
     .numberOfTaps(2)
+    .maxDelay(200)
+    .maxDuration(250)
     .onEnd((event) => {
       'worklet';
       if (isZoomed.value) {
+        if (recentlyStoppedDecay.value > 0) {
+          recentlyStoppedDecay.value = 0;
+          return;
+        }
         isZoomed.value = false;
         zoomScale.value = withTiming(1);
         zoomTranslateX.value = withTiming(0);
