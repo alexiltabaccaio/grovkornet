@@ -1,0 +1,85 @@
+// Generated from camera-errors.json. Do not modify directly.
+
+export enum CameraErrorCode {
+  E_CAMERA_UNAUTHORIZED = 'E_CAMERA_UNAUTHORIZED',
+  E_SHADER_COMPILE_FAILED = 'E_SHADER_COMPILE_FAILED',
+  E_PRESET_PREVIEW_FAILED = 'E_PRESET_PREVIEW_FAILED',
+  E_FILE_DELETE_FAILED = 'E_FILE_DELETE_FAILED',
+  E_ENGINE_LIBRARY_LOAD_FAILED = 'E_ENGINE_LIBRARY_LOAD_FAILED',
+  E_CAMERA_BIND_FAILED = 'E_CAMERA_BIND_FAILED',
+  E_GALLERY_WRITE_FAILED = 'E_GALLERY_WRITE_FAILED',
+  E_WATERMARK_EMBED_FAILED = 'E_WATERMARK_EMBED_FAILED',
+  E_AUTHENTICITY_VERIFICATION_FAILED = 'E_AUTHENTICITY_VERIFICATION_FAILED',
+  E_TORCH_SET_FAILED = 'E_TORCH_SET_FAILED',
+  E_FILAMENT_INIT_FAILED = 'E_FILAMENT_INIT_FAILED',
+  E_PIPELINE_INIT_FAILED = 'E_PIPELINE_INIT_FAILED',
+}
+
+export interface CameraErrorDetail {
+  code: number;
+  severity: 'fatal' | 'warning';
+  description: string;
+}
+
+export const CAMERA_ERROR_DETAILS: Record<CameraErrorCode, CameraErrorDetail> = {
+  [CameraErrorCode.E_CAMERA_UNAUTHORIZED]: {
+    code: 1001,
+    severity: 'fatal',
+    description: "L'utente non ha fornito i permessi per la fotocamera."
+  },
+  [CameraErrorCode.E_SHADER_COMPILE_FAILED]: {
+    code: 1002,
+    severity: 'fatal',
+    description: "Impossibile compilare lo shader per il rendering."
+  },
+  [CameraErrorCode.E_PRESET_PREVIEW_FAILED]: {
+    code: 1003,
+    severity: 'warning',
+    description: "Generazione dell'anteprima del preset fallita."
+  },
+  [CameraErrorCode.E_FILE_DELETE_FAILED]: {
+    code: 1004,
+    severity: 'warning',
+    description: "Cancellazione del file fallita."
+  },
+  [CameraErrorCode.E_ENGINE_LIBRARY_LOAD_FAILED]: {
+    code: 1005,
+    severity: 'fatal',
+    description: "Impossibile caricare la libreria nativa grovkornet-engine."
+  },
+  [CameraErrorCode.E_CAMERA_BIND_FAILED]: {
+    code: 1006,
+    severity: 'fatal',
+    description: "Associazione dei moduli di cattura e anteprima della fotocamera fallita."
+  },
+  [CameraErrorCode.E_GALLERY_WRITE_FAILED]: {
+    code: 1007,
+    severity: 'warning',
+    description: "Impossibile salvare l'immagine nella galleria di sistema."
+  },
+  [CameraErrorCode.E_WATERMARK_EMBED_FAILED]: {
+    code: 1008,
+    severity: 'warning',
+    description: "Impossibile imprimere la firma filigrana nativa sull'immagine."
+  },
+  [CameraErrorCode.E_AUTHENTICITY_VERIFICATION_FAILED]: {
+    code: 1009,
+    severity: 'warning',
+    description: "Verifica di autenticità della foto fallita."
+  },
+  [CameraErrorCode.E_TORCH_SET_FAILED]: {
+    code: 1010,
+    severity: 'warning',
+    description: "Impossibile impostare la modalità flash/torcia."
+  },
+  [CameraErrorCode.E_FILAMENT_INIT_FAILED]: {
+    code: 1011,
+    severity: 'fatal',
+    description: "Inizializzazione nativa di Filament fallita (puntatore nullo)."
+  },
+  [CameraErrorCode.E_PIPELINE_INIT_FAILED]: {
+    code: 1012,
+    severity: 'fatal',
+    description: "Creazione della pipeline di rendering (textures/render targets) fallita."
+  },
+};

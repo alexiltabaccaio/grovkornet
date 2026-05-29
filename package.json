@@ -19,7 +19,7 @@
     "build:web": "turbo run build --filter=@grovkornet/web",
     "build:android": "turbo run build --filter=@grovkornet/mobile",
     "build:mobile": "turbo run build --filter=@grovkornet/mobile",
-    "codegen": "node packages/shared/scripts/codegen-parameters.js",
+    "codegen": "node packages/shared/scripts/codegen-parameters.js && node packages/shared/scripts/codegen-errors.js",
     "lint": "turbo run lint",
     "android": "npm run android -w @grovkornet/mobile",
     "ios": "npm run ios -w @grovkornet/mobile",
