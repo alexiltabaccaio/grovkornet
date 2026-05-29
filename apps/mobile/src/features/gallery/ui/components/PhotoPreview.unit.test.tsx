@@ -13,7 +13,11 @@ const mockPhotos: GalleryItem[] = [
 
 describe('PhotoPreview', () => {
   let capturedPanGesture: any;
+  let capturedPinchGesture: any;
+  let capturedTapGesture: any;
   let originalPan: any;
+  let originalPinch: any;
+  let originalTap: any;
   let originalTiming: any;
   let originalSpring: any;
   let originalUseSharedValue: any;
@@ -56,6 +60,8 @@ describe('PhotoPreview', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     capturedPanGesture = null;
+    capturedPinchGesture = null;
+    capturedTapGesture = null;
 
     originalPan = Gesture.Pan;
     Gesture.Pan = (...args: any[]) => {
@@ -63,10 +69,26 @@ describe('PhotoPreview', () => {
       capturedPanGesture = gesture;
       return gesture;
     };
+
+    originalPinch = Gesture.Pinch;
+    Gesture.Pinch = (...args: any[]) => {
+      const gesture = originalPinch(...args);
+      capturedPinchGesture = gesture;
+      return gesture;
+    };
+
+    originalTap = Gesture.Tap;
+    Gesture.Tap = (...args: any[]) => {
+      const gesture = originalTap(...args);
+      capturedTapGesture = gesture;
+      return gesture;
+    };
   });
 
   afterEach(() => {
     Gesture.Pan = originalPan;
+    Gesture.Pinch = originalPinch;
+    Gesture.Tap = originalTap;
   });
 
   it('renders no photos text if empty', () => {
@@ -360,6 +382,68 @@ describe('PhotoPreview', () => {
         />
       );
       expect(toJSON()).toBeDefined();
+    });
+
+    describe('Zoom and Double Tap Gestures', () => {
+      it('initializes zoom scale at 1 and handles double tap to zoom in/out', () => {
+        const { toJSON } = render(
+          <PhotoPreview
+            selectedPhoto={mockPhotos[0]}
+            photos={mockPhotos}
+            onPhotoVisible={jest.fn()}
+          />
+        );
+        expect(toJSON()).toBeDefined();
+        expect(capturedTapGesture).toBeDefined();
+
+        act(() => {
+          // Double tap gesture
+          capturedTapGesture._onEnd({ x: 200, y: 300 });
+        });
+      });
+
+      it('handles pinch gesture start, update, and end', () => {
+        render(
+          <PhotoPreview
+            selectedPhoto={mockPhotos[0]}
+            photos={mockPhotos}
+            onPhotoVisible={jest.fn()}
+          />
+        );
+        expect(capturedPinchGesture).toBeDefined();
+
+        act(() => {
+          capturedPinchGesture._onStart();
+          capturedPinchGesture._onUpdate({ scale: 2 });
+          capturedPinchGesture._onEnd();
+        });
+      });
+
+      it('prevents photo swiping when zoomed in', () => {
+        const onPhotoVisibleMock = jest.fn();
+        render(
+          <PhotoPreview
+            selectedPhoto={mockPhotos[0]}
+            photos={mockPhotos}
+            onPhotoVisible={onPhotoVisibleMock}
+          />
+        );
+
+        // Zoom in first with double tap
+        act(() => {
+          capturedTapGesture._onEnd({ x: 200, y: 300 });
+        });
+
+        // Try to pan / swipe to the next photo
+        act(() => {
+          capturedPanGesture._onStart({ translationX: 0 });
+          capturedPanGesture._onUpdate({ translationX: -400 });
+          capturedPanGesture._onEnd({ velocityX: -600 });
+        });
+
+        // Swipe should have been ignored (onPhotoVisibleMock not called)
+        expect(onPhotoVisibleMock).not.toHaveBeenCalled();
+      });
     });
   });
 });

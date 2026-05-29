@@ -155,6 +155,7 @@ jest.mock('react-native-gesture-handler', () => {
     Gesture: {
       ...actual.Gesture,
       Pan: () => createChainable(),
+      Pinch: () => createChainable(),
       Tap: () => createChainable(),
       LongPress: () => createChainable(),
       Race: (...gestures: any[]) => ({ gestures, type: 'race' }),

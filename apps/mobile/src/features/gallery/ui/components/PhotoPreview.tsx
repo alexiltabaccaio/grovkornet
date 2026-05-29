@@ -27,7 +27,7 @@ import { AnimatedSlot } from './AnimatedSlot';
 
 export const PhotoPreview = ({ selectedPhoto, photos, onPhotoVisible, rotationY }: PhotoPreviewProps) => {
   const { t } = useTranslation();
-  const { width } = useWindowDimensions();
+  const { width, height } = useWindowDimensions();
   const GAP = 20;
   const slotWidth = width + GAP;
 
@@ -51,6 +51,17 @@ export const PhotoPreview = ({ selectedPhoto, photos, onPhotoVisible, rotationY 
 
   const translateX = useSharedValue(-initialIndex * slotWidth);
   const dragOffset = useSharedValue(0);
+
+  // Zoom-specific SharedValues
+  const zoomScale = useSharedValue(1);
+  const zoomTranslateX = useSharedValue(0);
+  const zoomTranslateY = useSharedValue(0);
+
+  const savedZoomScale = useSharedValue(1);
+  const savedZoomTranslateX = useSharedValue(0);
+  const savedZoomTranslateY = useSharedValue(0);
+  const isZoomed = useSharedValue(false);
+  const panMode = useSharedValue<'swipe' | 'pan'>('swipe');
 
   useLayoutEffect(() => {
     if (pendingTeleportRef.current !== null) {
@@ -82,6 +93,15 @@ export const PhotoPreview = ({ selectedPhoto, photos, onPhotoVisible, rotationY 
   };
 
   useEffect(() => {
+    // Reset zoom whenever the active photo changes
+    zoomScale.value = 1;
+    zoomTranslateX.value = 0;
+    zoomTranslateY.value = 0;
+    savedZoomScale.value = 1;
+    savedZoomTranslateX.value = 0;
+    savedZoomTranslateY.value = 0;
+    isZoomed.value = false;
+
     if (!selectedPhoto || photos.length === 0) return;
     const idx = photos.findIndex(p => p.uri === selectedPhoto.uri);
     if (idx === -1 || idx === currentIndex.value || idx === animatingToIndexRef.current) return;
@@ -127,66 +147,179 @@ export const PhotoPreview = ({ selectedPhoto, photos, onPhotoVisible, rotationY 
   };
 
   const panGesture = Gesture.Pan()
-    .onStart(() => {
+    .maxPointers(1)
+    .onStart((event) => {
       'worklet';
-      // Cancel any in-progress spring so it doesn't fight the new drag
-      cancelAnimation(translateX);
-      dragOffset.value = translateX.value;
+      if (isZoomed.value) {
+        panMode.value = 'pan';
+        savedZoomTranslateX.value = zoomTranslateX.value;
+        savedZoomTranslateY.value = zoomTranslateY.value;
+      } else {
+        panMode.value = 'swipe';
+        // Cancel any in-progress spring so it doesn't fight the new drag
+        cancelAnimation(translateX);
+        dragOffset.value = translateX.value;
+      }
     })
     .onUpdate((event) => {
       'worklet';
-      const proposedVal = dragOffset.value + event.translationX;
+      if (panMode.value === 'pan') {
+        // Calculate the current active width and height considering device rotation
+        const angle = rotationY ? rotationY.value : 0;
+        const rad = (angle * Math.PI) / 180;
+        const sinSq = Math.sin(rad) * Math.sin(rad);
+        const cosSq = Math.cos(rad) * Math.cos(rad);
+        const currentWidth = width * cosSq + height * sinSq;
+        const currentHeight = height * cosSq + width * sinSq;
 
-      const maxTranslateX = 0;
-      const minTranslateX = -(photosLength - 1) * slotWidth;
+        // Clamp values to prevent panning outside the zoomed image borders
+        const maxTx = (currentWidth * (zoomScale.value - 1)) / 2;
+        const minTx = -maxTx;
+        const maxTy = (currentHeight * (zoomScale.value - 1)) / 2;
+        const minTy = -maxTy;
 
-      translateX.value = Math.max(minTranslateX, Math.min(maxTranslateX, proposedVal));
+        zoomTranslateX.value = Math.max(minTx, Math.min(maxTx, savedZoomTranslateX.value + event.translationX));
+        zoomTranslateY.value = Math.max(minTy, Math.min(maxTy, savedZoomTranslateY.value + event.translationY));
+      } else {
+        const proposedVal = dragOffset.value + event.translationX;
+        const maxTranslateX = 0;
+        const minTranslateX = -(photosLength - 1) * slotWidth;
+        translateX.value = Math.max(minTranslateX, Math.min(maxTranslateX, proposedVal));
+      }
     })
     .onEnd((event) => {
       'worklet';
-      const dragThreshold = width / 2;
-      const velocityThreshold = 500;
-      // Read from SharedValue — always up-to-date on the UI thread
-      const idx = currentIndex.value;
-      const currentBaseX = -idx * slotWidth;
-      const shiftX = translateX.value - currentBaseX; // positive = dragged right (previous photo)
-      const velocity = event.velocityX;
+      if (panMode.value === 'pan') {
+        // Panning inside the zoomed image completed. No extra snapping needed.
+      } else {
+        const dragThreshold = width / 2;
+        const velocityThreshold = 500;
+        // Read from SharedValue — always up-to-date on the UI thread
+        const idx = currentIndex.value;
+        const currentBaseX = -idx * slotWidth;
+        const shiftX = translateX.value - currentBaseX; // positive = dragged right (previous photo)
+        const velocity = event.velocityX;
 
-      let targetIndex = idx;
+        let targetIndex = idx;
 
-      if (shiftX > dragThreshold || velocity > velocityThreshold) {
-        if (idx > 0) targetIndex = idx - 1;
-      } else if (shiftX < -dragThreshold || velocity < -velocityThreshold) {
-        if (idx < photosLength - 1) targetIndex = idx + 1;
-      }
+        if (shiftX > dragThreshold || velocity > velocityThreshold) {
+          if (idx > 0) targetIndex = idx - 1;
+        } else if (shiftX < -dragThreshold || velocity < -velocityThreshold) {
+          if (idx < photosLength - 1) targetIndex = idx + 1;
+        }
 
-      // Log decision variables for debugging — remove once stable
-      runOnJS(logSwipeDecision)(idx, shiftX, velocity, targetIndex, dragThreshold);
+        // Log decision variables for debugging — remove once stable
+        runOnJS(logSwipeDecision)(idx, shiftX, velocity, targetIndex, dragThreshold);
 
-      const targetTranslateX = -targetIndex * slotWidth;
+        const targetTranslateX = -targetIndex * slotWidth;
 
-      if (targetIndex !== idx) {
-        translateX.value = withSpring(
-          targetTranslateX,
-          {
+        if (targetIndex !== idx) {
+          translateX.value = withSpring(
+            targetTranslateX,
+            {
+              velocity: velocity,
+              overshootClamping: true,
+              restDisplacementThreshold: 0.01,
+              restSpeedThreshold: 0.01,
+            },
+            (finished) => {
+              if (finished) runOnJS(finalizeTransition)(targetIndex, true);
+            }
+          );
+        } else {
+          translateX.value = withSpring(targetTranslateX, {
             velocity: velocity,
             overshootClamping: true,
             restDisplacementThreshold: 0.01,
             restSpeedThreshold: 0.01,
-          },
-          (finished) => {
-            if (finished) runOnJS(finalizeTransition)(targetIndex, true);
-          }
-        );
-      } else {
-        translateX.value = withSpring(targetTranslateX, {
-          velocity: velocity,
-          overshootClamping: true,
-          restDisplacementThreshold: 0.01,
-          restSpeedThreshold: 0.01,
-        });
+          });
+        }
       }
     });
+
+  const pinchGesture = Gesture.Pinch()
+    .onStart(() => {
+      'worklet';
+      savedZoomScale.value = zoomScale.value;
+      savedZoomTranslateX.value = zoomTranslateX.value;
+      savedZoomTranslateY.value = zoomTranslateY.value;
+    })
+    .onUpdate((event) => {
+      'worklet';
+      let nextScale = savedZoomScale.value * event.scale;
+      if (nextScale < 1) {
+        nextScale = 1;
+      } else if (nextScale > 4) {
+        nextScale = 4;
+      }
+      zoomScale.value = nextScale;
+
+      if (nextScale > 1.05) {
+        isZoomed.value = true;
+      }
+
+      if (nextScale === 1) {
+        zoomTranslateX.value = 0;
+        zoomTranslateY.value = 0;
+      } else {
+        // Pinch zooming in progress. We keep standard scale zoom.
+      }
+    })
+    .onEnd(() => {
+      'worklet';
+      if (zoomScale.value < 1.1) {
+        isZoomed.value = false;
+        zoomScale.value = withTiming(1);
+        zoomTranslateX.value = withTiming(0);
+        zoomTranslateY.value = withTiming(0);
+      } else {
+        isZoomed.value = true;
+      }
+    });
+
+  const doubleTapGesture = Gesture.Tap()
+    .numberOfTaps(2)
+    .onEnd((event) => {
+      'worklet';
+      if (isZoomed.value) {
+        isZoomed.value = false;
+        zoomScale.value = withTiming(1);
+        zoomTranslateX.value = withTiming(0);
+        zoomTranslateY.value = withTiming(0);
+      } else {
+        isZoomed.value = true;
+        zoomScale.value = withTiming(2.5);
+        
+        // Calculate dimensions considering device rotation
+        const angle = rotationY ? rotationY.value : 0;
+        const rad = (angle * Math.PI) / 180;
+        const sinSq = Math.sin(rad) * Math.sin(rad);
+        const cosSq = Math.cos(rad) * Math.cos(rad);
+        const currentWidth = width * cosSq + height * sinSq;
+        const currentHeight = height * cosSq + width * sinSq;
+
+        // Zoom in focused on tap point. Scale factor is 2.5, difference factor is (2.5 - 1) = 1.5
+        const centerX = width / 2;
+        const centerY = height / 2;
+        const targetX = (centerX - event.x) * 1.5;
+        const targetY = (centerY - event.y) * 1.5;
+
+        // Clamp the zoom focus within maximum allowed bounds
+        const maxTx = (currentWidth * 1.5) / 2;
+        const minTx = -maxTx;
+        const maxTy = (currentHeight * 1.5) / 2;
+        const minTy = -maxTy;
+
+        zoomTranslateX.value = withTiming(Math.max(minTx, Math.min(maxTx, targetX)));
+        zoomTranslateY.value = withTiming(Math.max(minTy, Math.min(maxTy, targetY)));
+      }
+    });
+
+  const composedGesture = Gesture.Simultaneous(
+    panGesture,
+    pinchGesture,
+    doubleTapGesture
+  );
 
   if (!selectedPhoto || photos.length === 0) {
     return (
@@ -201,7 +334,7 @@ export const PhotoPreview = ({ selectedPhoto, photos, onPhotoVisible, rotationY 
 
   return (
     <View style={styles.previewWrapper}>
-      <GestureDetector gesture={panGesture}>
+      <GestureDetector gesture={composedGesture}>
         <Animated.View style={StyleSheet.absoluteFill}>
           {uniqueIndices.map(index => {
             const photo = slotOverrides[index] || photos[index];
@@ -215,6 +348,10 @@ export const PhotoPreview = ({ selectedPhoto, photos, onPhotoVisible, rotationY 
                 slotWidth={slotWidth}
                 gap={GAP}
                 rotationY={rotationY}
+                zoomScale={zoomScale}
+                zoomTranslateX={zoomTranslateX}
+                zoomTranslateY={zoomTranslateY}
+                currentIndex={currentIndex}
               />
             );
           })}

@@ -11,6 +11,10 @@ interface AnimatedSlotProps {
   slotWidth: number;
   gap: number;
   rotationY?: Animated.SharedValue<number>;
+  zoomScale?: Animated.SharedValue<number>;
+  zoomTranslateX?: Animated.SharedValue<number>;
+  zoomTranslateY?: Animated.SharedValue<number>;
+  currentIndex?: Animated.SharedValue<number>;
 }
 
 export const AnimatedSlot = ({
@@ -20,6 +24,10 @@ export const AnimatedSlot = ({
   slotWidth,
   gap,
   rotationY,
+  zoomScale,
+  zoomTranslateX,
+  zoomTranslateY,
+  currentIndex,
 }: AnimatedSlotProps) => {
   const { width: screenW, height: screenH } = useWindowDimensions();
 
@@ -35,6 +43,23 @@ export const AnimatedSlot = ({
       transform: [{ translateX: currentX }],
       zIndex: isFocused ? 10 : 0,
       opacity: (!isFocused && isRotating) ? 0 : 1,
+    };
+  });
+
+  const zoomStyle = useAnimatedStyle(() => {
+    if (!zoomScale || !zoomTranslateX || !zoomTranslateY || !currentIndex) {
+      return {};
+    }
+    const isActive = index === currentIndex.value;
+    if (!isActive) {
+      return {};
+    }
+    return {
+      transform: [
+        { translateX: zoomTranslateX.value },
+        { translateY: zoomTranslateY.value },
+        { scale: zoomScale.value },
+      ],
     };
   });
 
@@ -65,12 +90,14 @@ export const AnimatedSlot = ({
         outerStyle,
       ]}
     >
-      <Animated.View style={innerStyle}>
-        <Image
-          source={photo.uri}
-          style={styles.previewImage}
-          contentFit="contain"
-        />
+      <Animated.View style={zoomStyle}>
+        <Animated.View style={innerStyle}>
+          <Image
+            source={photo.uri}
+            style={styles.previewImage}
+            contentFit="contain"
+          />
+        </Animated.View>
       </Animated.View>
     </Animated.View>
   );
