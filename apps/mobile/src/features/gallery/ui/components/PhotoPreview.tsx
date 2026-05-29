@@ -308,7 +308,20 @@ export const PhotoPreview = ({ selectedPhoto, photos, onPhotoVisible, rotationY 
         zoomTranslateX.value = 0;
         zoomTranslateY.value = 0;
       } else {
-        // Pinch zooming in progress. We keep standard scale zoom.
+        const angle = rotationY ? rotationY.value : 0;
+        const rad = (angle * Math.PI) / 180;
+        const sinSq = Math.sin(rad) * Math.sin(rad);
+        const cosSq = Math.cos(rad) * Math.cos(rad);
+        const currentWidth = width * cosSq + height * sinSq;
+        const currentHeight = height * cosSq + width * sinSq;
+
+        const maxTx = (currentWidth * (nextScale - 1)) / 2;
+        const minTx = -maxTx;
+        const maxTy = (currentHeight * (nextScale - 1)) / 2;
+        const minTy = -maxTy;
+
+        zoomTranslateX.value = Math.max(minTx, Math.min(maxTx, savedZoomTranslateX.value));
+        zoomTranslateY.value = Math.max(minTy, Math.min(maxTy, savedZoomTranslateY.value));
       }
     })
     .onEnd(() => {
