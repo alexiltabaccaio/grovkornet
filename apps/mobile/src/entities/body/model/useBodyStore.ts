@@ -118,6 +118,8 @@ export const useBodyStore = create<BodyStore>((set, get) => ({
 }));
 
 let parameterChangeListener: (() => void) | null = null;
+let bodyListenerTimeout: NodeJS.Timeout | null = null;
+
 export const setBodyParameterChangeListener = (listener: () => void) => {
   parameterChangeListener = listener;
 };
@@ -142,8 +144,12 @@ Object.keys(storeRecord).forEach((key) => {
     const originalFn = storeRecord[key] as (...args: unknown[]) => void;
     storeRecord[key] = (...args: unknown[]) => {
       originalFn(...args);
-      parameterChangeListener?.();
+      if (bodyListenerTimeout) clearTimeout(bodyListenerTimeout);
+      bodyListenerTimeout = setTimeout(() => {
+        parameterChangeListener?.();
+      }, 50);
     };
   }
 });
+
 

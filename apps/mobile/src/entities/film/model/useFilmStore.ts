@@ -230,7 +230,7 @@ export const useFilmStore = create<FilmStore>((set, get) => ({
         state.boundPurpleMagenta.value = DEFAULT_BOUND_PURPLE_MAGENTA;
         break;
       case 'contrast':
-        state.contrast.value = DEFAULT_CONTRAST;
+        state.setContrast(DEFAULT_CONTRAST);
         break;
       case 'grain':
         state.grainIntensity.value = DEFAULT_GRAIN_INTENSITY;
@@ -264,10 +264,17 @@ export const useFilmStore = create<FilmStore>((set, get) => ({
         break;
       // @@GEN_RESET_END@@
     }
+    logger.debug('FilmStore', 'end of resetEffect, triggering listener');
+    if (filmListenerTimeout) clearTimeout(filmListenerTimeout);
+    filmListenerTimeout = setTimeout(() => {
+      parameterChangeListener?.();
+    }, 50);
   },
 }));
 
 let parameterChangeListener: (() => void) | null = null;
+let filmListenerTimeout: NodeJS.Timeout | null = null;
+
 export const setFilmParameterChangeListener = (listener: () => void) => {
   parameterChangeListener = listener;
 };
@@ -286,8 +293,12 @@ Object.keys(storeRecord).forEach((key) => {
     const originalFn = storeRecord[key] as (...args: unknown[]) => void;
     storeRecord[key] = (...args: unknown[]) => {
       originalFn(...args);
-      parameterChangeListener?.();
+      if (filmListenerTimeout) clearTimeout(filmListenerTimeout);
+      filmListenerTimeout = setTimeout(() => {
+        parameterChangeListener?.();
+      }, 50);
     };
   }
 });
+
 

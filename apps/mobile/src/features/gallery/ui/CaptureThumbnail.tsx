@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { StyleSheet, View, Pressable, ActivityIndicator, AppState } from 'react-native';
+import { StyleSheet, View, Pressable, AppState } from 'react-native';
 import { Image } from 'expo-image';
 import Animated, { useSharedValue, useAnimatedStyle, withTiming, Easing, withSpring } from 'react-native-reanimated';
 import { useState } from 'react';
@@ -103,6 +103,7 @@ export const CaptureThumbnail = ({ onPress }: CaptureThumbnailProps) => {
     latestPreviewUri ? 'preview' : (latestCapturedUri ? 'captured' : null)
   );
 
+  /* eslint-disable react-hooks/set-state-in-effect */
   useEffect(() => {
     const isPreview = latestPreviewUri !== null;
     const newUri = latestPreviewUri ?? latestCapturedUri ?? null;
@@ -128,6 +129,7 @@ export const CaptureThumbnail = ({ onPress }: CaptureThumbnailProps) => {
 
     lastSourceRef.current = currentSource;
   }, [latestPreviewUri, latestCapturedUri, currentUri, animationProgress]);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   const scale = useSharedValue(1);
 

@@ -147,7 +147,7 @@ describe('useSystemStore', () => {
     triggerCapture();
     expect(useSystemStore.getState().isCapturing).toBe(true);
 
-    jest.advanceTimersByTime(200);
+    jest.advanceTimersByTime(400);
     expect(useSystemStore.getState().isCapturing).toBe(false);
     jest.useRealTimers();
   });

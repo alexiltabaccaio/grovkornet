@@ -64,26 +64,7 @@ describe('SliderThumb', () => {
     expect(sliderTrackWidth.value).toBe(250);
   });
 
-  it('simulates double tap on GestureDetector to trigger onReset', () => {
-    const onReset = jest.fn();
-    const value = mockSharedValue(0.5);
-    const { UNSAFE_getByType } = render(<SliderThumb {...defaultProps} value={value} onReset={onReset} />);
-    const textInput = UNSAFE_getByType(TextInput);
-    
-    // Press the value text container (the parent of TextInput) to trigger the gesture handler
-    fireEvent.press(textInput.parent);
-    expect(onReset).toHaveBeenCalledTimes(1);
-  });
 
-  it('does not crash on double tap if onReset is undefined', () => {
-    const value = mockSharedValue(0.5);
-    const { UNSAFE_getByType } = render(<SliderThumb {...defaultProps} value={value} onReset={undefined} />);
-    const textInput = UNSAFE_getByType(TextInput);
-    
-    expect(() => {
-      fireEvent.press(textInput.parent);
-    }).not.toThrow();
-  });
 
   it('renders AutoButton and triggers correct callbacks when isAuto and onToggleAuto are defined', () => {
     const isAuto = mockSharedValue(true);

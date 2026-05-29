@@ -17,6 +17,7 @@ import { useLensStore } from '@entities/lens';
 import { setFilmParameterChangeListener } from '@entities/film';
 import { usePreferencesStore } from '@entities/preferences';
 import { applyPreset, markAsCustomized } from '@features/system-settings';
+import { setHapticsEnabledChecker } from '@shared/lib/haptics';
 
 import * as SystemUI from 'expo-system-ui';
 
@@ -27,6 +28,12 @@ void SystemUI.setBackgroundColorAsync('#0e0e0e');
 
 export function App() {
   useEffect(() => {
+    // Connect shared haptics service to preferences store (resolving FSD layer violation)
+    setHapticsEnabledChecker(() => {
+      const { hapticsEnabled } = usePreferencesStore.getState();
+      return hapticsEnabled !== false;
+    });
+
     /* eslint-disable @typescript-eslint/no-require-imports */
     // Prefetch static assets for settings/informazioni panel
     const staticAssets = [

@@ -1,10 +1,17 @@
 import * as Haptics from 'expo-haptics';
-import { usePreferencesStore } from '@entities/preferences';
+
+let hapticsEnabledChecker: (() => boolean) | null = null;
+
+export const setHapticsEnabledChecker = (checker: () => boolean) => {
+  hapticsEnabledChecker = checker;
+};
 
 const isHapticsEnabled = () => {
-  const { hapticsEnabled } = usePreferencesStore.getState();
-  // Se è null, di default è true.
-  return hapticsEnabled !== false;
+  if (hapticsEnabledChecker) {
+    return hapticsEnabledChecker();
+  }
+  // If no checker is registered, default to enabled.
+  return true;
 };
 
 export const impactAsync = async (style?: Haptics.ImpactFeedbackStyle) => {

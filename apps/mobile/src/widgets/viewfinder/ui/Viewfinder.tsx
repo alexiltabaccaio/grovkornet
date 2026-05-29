@@ -117,7 +117,7 @@ export const Viewfinder = React.memo(({ cameraKey, translateY, drawerAnimation }
     return val;
   });
 
-  const handleLayout = React.useCallback((event: any) => {
+  const handleLayout = React.useCallback((event: import('react-native').LayoutChangeEvent) => {
     layoutHeight.value = event.nativeEvent.layout.height;
   }, [layoutHeight]);
 
