@@ -14,6 +14,7 @@ import { GestureDetector, Gesture } from 'react-native-gesture-handler';
 import { useTranslation } from 'react-i18next';
 import { GalleryItem } from '../../lib/types';
 import * as Haptics from '@shared/lib/haptics';
+import { logger } from '@shared/lib/logger';
 
 interface PhotoPreviewProps {
   selectedPhoto: GalleryItem | null;
@@ -119,12 +120,10 @@ export const PhotoPreview = ({ selectedPhoto, photos, onPhotoVisible, rotationY 
     targetIndex: number,
     dragThreshold: number,
   ) => {
-    if (__DEV__) {
-      // eslint-disable-next-line no-console
-      console.log(
-        `[PhotoPreview] onEnd | currentIdx=${idx} shiftX=${shiftX.toFixed(1)} vel=${velocity.toFixed(0)} threshold=${dragThreshold.toFixed(0)} → targetIdx=${targetIndex}`,
-      );
-    }
+    logger.debug(
+      'PhotoPreview',
+      `onEnd | currentIdx=${idx} shiftX=${shiftX.toFixed(1)} vel=${velocity.toFixed(0)} threshold=${dragThreshold.toFixed(0)} → targetIdx=${targetIndex}`
+    );
   };
 
   const panGesture = Gesture.Pan()

@@ -20,6 +20,6 @@ export const DevelopmentModule = React.memo(({ handlePressWithDouble }: Developm
 
 DevelopmentModule.displayName = 'DevelopmentModule';
 
-(DevelopmentModule as React.NamedExoticComponent<DevelopmentModuleProps> & { whyDidYouRender?: boolean }).whyDidYouRender = true;
+// (DevelopmentModule as React.NamedExoticComponent<DevelopmentModuleProps> & { whyDidYouRender?: boolean }).whyDidYouRender = true;
 
 

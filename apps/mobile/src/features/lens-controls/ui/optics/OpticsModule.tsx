@@ -36,5 +36,5 @@ export const OpticsModule = ({ handlePressWithDouble }: OpticsModuleProps) => {
   );
 };
 
-OpticsModule.whyDidYouRender = true;
+// OpticsModule.whyDidYouRender = true;
 

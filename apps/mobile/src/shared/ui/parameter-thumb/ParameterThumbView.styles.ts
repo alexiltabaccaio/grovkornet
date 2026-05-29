@@ -85,7 +85,7 @@ export const styles = StyleSheet.create({
     marginHorizontal: 2,
   },
   presetContainerActive: {
-    // eventuali stili per il contenitore attivo
+    // any styles for the active container
   },
   presetImageContainer: {
     width: 80,

@@ -132,8 +132,14 @@ export const useSystemStore = create<SystemStore>()(
     {
       name: 'grovkornet-system-storage',
       storage: createJSONStorage(() => createZustandMMKVStorage('system-storage')),
+      onRehydrateStorage: () => (state) => {
+        if (state) {
+          logger.setDebugEnabled(state.isLogsEnabled);
+        }
+      },
       partialize: (state) => ({
         latestCapturedUri: state.latestCapturedUri,
+        isLogsEnabled: state.isLogsEnabled,
       }),
     }
   )

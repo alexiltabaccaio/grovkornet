@@ -121,6 +121,6 @@ const styles = StyleSheet.create({
   },
 });
 
-PresetsModule.whyDidYouRender = true;
+// PresetsModule.whyDidYouRender = true;
 
 

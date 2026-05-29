@@ -74,8 +74,8 @@ export const ShareButton = ({ id, uri, isVerified }: ShareButtonProps) => {
       let shareUri = uri;
       
       if (Platform.OS === 'android') {
-        // Copiamo il file nella cache per assicurarci che react-native-share abbia 
-        // i permessi corretti tramite FileProvider (stesso workaround usato per IG)
+        // Copy the file to the cache to ensure react-native-share has 
+        // the correct permissions via FileProvider (same workaround used for IG)
         const cachePath = getCachePath('share_generic');
         await FileSystem.copyAsync({ from: uri, to: cachePath });
         shareUri = cachePath;

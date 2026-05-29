@@ -22,7 +22,7 @@ export const CameraScreen = () => {
   );
 };
 
-CameraScreen.whyDidYouRender = true;
+// CameraScreen.whyDidYouRender = true;
 
 const CameraScreenContent = () => {
   const { isDebugEnabled, triggerCapture, latestCapturedUri, latestPreviewUri } = useSystemStore(useShallow(state => ({
@@ -120,12 +120,12 @@ const CameraScreenContent = () => {
     <View style={styles.container}>
       <GestureController>
         <View style={{ flex: 1, width: '100%', marginTop: statusBarHeight, marginBottom: 80 }}>
-          <Profiler id="Viewfinder" onRender={(id, phase, duration) => { if (__DEV__ && duration > 10) logger.warn('UI', `Viewfinder render took ${duration.toFixed(2)}ms`); }}>
+          {/* 60ms threshold is set to monitor realistic frame drops, avoiding dev mode / bundler overhead noise */}
+          <Profiler id="Viewfinder" onRender={(id, phase, duration) => { if (__DEV__ && duration > 60) logger.warn('UI', `Viewfinder render took ${duration.toFixed(2)}ms`); }}>
             <Viewfinder cameraKey={cameraKey} translateY={footerTranslateY} drawerAnimation={drawerAnimation} />
           </Profiler>
         </View>
       </GestureController>
-
       <Header />
 
       {isDebugEnabled && <DebugOverlay />}
@@ -138,7 +138,8 @@ const CameraScreenContent = () => {
         <View style={styles.sideControl} pointerEvents="box-none" />
       </Animated.View>
 
-      <Profiler id="ControlPanel" onRender={(id, phase, duration) => { if (__DEV__ && duration > 10) logger.warn('UI', `ControlPanel render took ${duration.toFixed(2)}ms`); }}>
+      {/* 60ms threshold filters out initial mount/unmount and dev overhead but flags real rendering bottlenecks */}
+      <Profiler id="ControlPanel" onRender={(id, phase, duration) => { if (__DEV__ && duration > 60) logger.warn('UI', `ControlPanel render took ${duration.toFixed(2)}ms`); }}>
         <ControlPanel translateY={footerTranslateY} drawerAnimation={drawerAnimation} galleryTransition={galleryTransition} />
       </Profiler>
 
@@ -156,7 +157,7 @@ const CameraScreenContent = () => {
   );
 };
 
-CameraScreenContent.whyDidYouRender = true;
+// CameraScreenContent.whyDidYouRender = true;
 
 const styles = StyleSheet.create({
   container: {

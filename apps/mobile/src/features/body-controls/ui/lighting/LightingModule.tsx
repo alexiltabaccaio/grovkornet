@@ -28,5 +28,5 @@ export const LightingModule = ({ handlePressWithDouble }: LightingModuleProps) =
   );
 };
 
-LightingModule.whyDidYouRender = true;
+// LightingModule.whyDidYouRender = true;
 

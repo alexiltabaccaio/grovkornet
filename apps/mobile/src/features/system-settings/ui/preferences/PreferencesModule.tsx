@@ -18,5 +18,5 @@ export const PreferencesModule = () => {
   );
 };
 
-PreferencesModule.whyDidYouRender = true;
+// PreferencesModule.whyDidYouRender = true;
 

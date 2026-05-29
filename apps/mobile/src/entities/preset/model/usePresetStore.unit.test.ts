@@ -119,4 +119,28 @@ describe('usePresetStore', () => {
       expect(usePresetStore.getState().isAddModalVisible).toBe(true);
     });
   });
+
+  describe('Zustand Persist Configuration', () => {
+    it('partializes only userPresets, activePresetId, and customizedPayload', () => {
+      const persistOptions = (usePresetStore as any).persist?.getOptions();
+      expect(persistOptions).toBeDefined();
+      expect(persistOptions.name).toBe('grovkornet-presets-storage');
+      
+      const mockState = {
+        userPresets: [{ id: '1', name: 'Preset 1' }],
+        activePresetId: '1',
+        customizedPayload: { film: DEFAULT_FILM_PAYLOAD, body: DEFAULT_BODY_PAYLOAD },
+        isApplyingPreset: true,
+        isAddModalVisible: true,
+        customizedThumbnailUri: 'file:///cached.jpg',
+      };
+      
+      const partialized = persistOptions.partialize(mockState);
+      expect(partialized).toEqual({
+        userPresets: [{ id: '1', name: 'Preset 1' }],
+        activePresetId: '1',
+        customizedPayload: { film: DEFAULT_FILM_PAYLOAD, body: DEFAULT_BODY_PAYLOAD },
+      });
+    });
+  });
 });

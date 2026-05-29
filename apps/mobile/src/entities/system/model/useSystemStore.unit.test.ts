@@ -1,4 +1,5 @@
 import { useSystemStore } from './useSystemStore';
+import { logger } from '@shared/lib/logger';
 
 describe('useSystemStore', () => {
   beforeEach(() => {
@@ -160,5 +161,46 @@ describe('useSystemStore', () => {
 
     setActiveModule('unknown_module' as any);
     expect(useSystemStore.getState().activeParameter).toBe('none');
+  });
+
+  describe('Zustand Persist Configuration', () => {
+    it('partializes only necessary system storage state keys', () => {
+      const persistOptions = (useSystemStore as any).persist?.getOptions();
+      expect(persistOptions).toBeDefined();
+      
+      const mockState = {
+        latestCapturedUri: 'file:///captured.jpg',
+        isLogsEnabled: true,
+        activeParameter: 'contrast',
+        activeSection: 'film',
+      };
+      
+      const partialized = persistOptions.partialize(mockState);
+      expect(partialized).toEqual({
+        latestCapturedUri: 'file:///captured.jpg',
+        isLogsEnabled: true,
+      });
+    });
+
+    it('sets the logger debug level on store rehydration', () => {
+      const persistOptions = (useSystemStore as any).persist?.getOptions();
+      expect(persistOptions).toBeDefined();
+
+      const spy = jest.spyOn(logger, 'setDebugEnabled');
+      
+      // Get the onRehydrateStorage callback and execute it
+      const onRehydrate = persistOptions.onRehydrateStorage();
+      expect(typeof onRehydrate).toBe('function');
+      
+      // Simulate successful rehydration with isLogsEnabled: true
+      onRehydrate({ isLogsEnabled: true }, null);
+      expect(spy).toHaveBeenCalledWith(true);
+
+      // Simulate successful rehydration with isLogsEnabled: false
+      onRehydrate({ isLogsEnabled: false }, null);
+      expect(spy).toHaveBeenCalledWith(false);
+
+      spy.mockRestore();
+    });
   });
 });

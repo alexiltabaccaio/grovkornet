@@ -78,7 +78,7 @@ export function App() {
       lensStore.focusAuto.value = prefs.focusAuto;
     }
 
-    // Inizializza il generatore di thumbnail per i preset in background
+    // Initialize the preset thumbnail generator in the background
     const unsubscribeThumb = initThumbnailGenerator();
 
     // Register listeners to mark preset as customized on manual changes

@@ -145,5 +145,3 @@ export const ParameterControl = React.memo(({
 });
 
 ParameterControl.displayName = 'ParameterControl';
-// @ts-expect-error - whyDidYouRender is a property dynamically read by why-did-you-render in development
-ParameterControl.whyDidYouRender = true;

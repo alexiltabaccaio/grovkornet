@@ -18,5 +18,5 @@ export const FlawsModule = ({ handlePressWithDouble }: FlawsModuleProps) => {
   );
 };
 
-FlawsModule.whyDidYouRender = true;
+// FlawsModule.whyDidYouRender = true;
 

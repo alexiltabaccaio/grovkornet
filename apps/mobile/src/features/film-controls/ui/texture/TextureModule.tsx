@@ -18,5 +18,5 @@ export const TextureModule = ({ handlePressWithDouble }: TextureModuleProps) => 
   );
 };
 
-TextureModule.whyDidYouRender = true;
+// TextureModule.whyDidYouRender = true;
 

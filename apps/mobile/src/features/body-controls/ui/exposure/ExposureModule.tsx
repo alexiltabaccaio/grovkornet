@@ -18,5 +18,5 @@ export const ExposureModule = ({ handlePressWithDouble }: ExposureModuleProps) =
   );
 };
 
-ExposureModule.whyDidYouRender = true;
+// ExposureModule.whyDidYouRender = true;
 

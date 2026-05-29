@@ -21,7 +21,7 @@ class ThumbnailCaptureServiceTest {
         val latch = CountDownLatch(1)
         var capturedUri: String? = null
 
-        // Simuliamo un fallimento del PixelCopy.request
+        // Simulate a PixelCopy.request failure
         ThumbnailCaptureService.captureThumbnail(
             view = view,
             surfaceWidth = 100,
@@ -39,7 +39,7 @@ class ThumbnailCaptureServiceTest {
         )
 
         latch.await(2, TimeUnit.SECONDS)
-        assertNull("Non dovrebbe catturare la thumbnail in caso di errore", capturedUri)
+        assertNull("Should not capture thumbnail in case of error", capturedUri)
     }
 
     @Test
@@ -49,7 +49,7 @@ class ThumbnailCaptureServiceTest {
         val latch = CountDownLatch(1)
         var capturedUri: String? = null
 
-        // Simuliamo un successo di PixelCopy.request
+        // Simulate a PixelCopy.request success
         ThumbnailCaptureService.captureThumbnail(
             view = view,
             surfaceWidth = 100,
@@ -66,10 +66,10 @@ class ThumbnailCaptureServiceTest {
         )
 
         latch.await(5, TimeUnit.SECONDS)
-        assertNotNull("Dovrebbe catturare la thumbnail in caso di successo", capturedUri)
-        assertTrue("La URI catturata deve iniziare con file://", capturedUri!!.startsWith("file://"))
+        assertNotNull("Should capture thumbnail in case of success", capturedUri)
+        assertTrue("Captured URI must start with file://", capturedUri!!.startsWith("file://"))
         
-        // Pulizia
+        // Cleanup
         try {
             val file = java.io.File(android.net.Uri.parse(capturedUri).path!!)
             if (file.exists()) file.delete()

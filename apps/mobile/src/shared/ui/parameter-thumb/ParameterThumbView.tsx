@@ -186,6 +186,4 @@ const arePropsEqual = (prev: ParameterThumbViewProps, next: ParameterThumbViewPr
 
 export const ParameterThumbView = memo(ParameterThumbViewBase, arePropsEqual);
 
-// @ts-expect-error - whyDidYouRender is a property dynamically read by why-did-you-render in development
-ParameterThumbView.whyDidYouRender = true;
 

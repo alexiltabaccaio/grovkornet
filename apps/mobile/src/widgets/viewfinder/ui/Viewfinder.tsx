@@ -212,7 +212,7 @@ export const Viewfinder = React.memo(({ cameraKey, translateY, drawerAnimation }
 });
 
 Viewfinder.displayName = 'Viewfinder';
-(Viewfinder as React.NamedExoticComponent<ViewfinderProps> & { whyDidYouRender?: boolean }).whyDidYouRender = true;
+// (Viewfinder as React.NamedExoticComponent<ViewfinderProps> & { whyDidYouRender?: boolean }).whyDidYouRender = true;
 
 
 const styles = StyleSheet.create({
