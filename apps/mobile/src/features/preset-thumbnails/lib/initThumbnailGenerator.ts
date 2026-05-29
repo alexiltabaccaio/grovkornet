@@ -50,8 +50,18 @@ export const initThumbnailGenerator = () => {
             lastGenerationUri = uri;
             usePresetStore.setState({ customizedThumbnailUri: uri });
             void Image.prefetch(uri);
-          } catch (err) {
-            console.error('Failed to generate customized thumbnail:', err);
+          } catch (err: unknown) {
+            const error = err as { code?: string; message?: string };
+            console.error('Failed to generate customized thumbnail:', error);
+            if (error?.code) {
+              const { CameraErrorCode, CAMERA_ERROR_DETAILS } = require('@grovkornet/engine') as {
+                CameraErrorCode: Record<string, string>;
+                CAMERA_ERROR_DETAILS: Record<string, { description: string }>;
+              };
+              if (Object.values(CameraErrorCode).includes(error.code)) {
+                console.warn('Camera Error:', CAMERA_ERROR_DETAILS[error.code].description);
+              }
+            }
           }
           /* eslint-enable @typescript-eslint/no-require-imports, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call */
         })();

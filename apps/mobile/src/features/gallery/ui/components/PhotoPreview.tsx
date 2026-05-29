@@ -15,7 +15,6 @@ import { GestureDetector, Gesture } from 'react-native-gesture-handler';
 import { useTranslation } from 'react-i18next';
 import { GalleryItem } from '../../lib/types';
 import * as Haptics from '@shared/lib/haptics';
-import { logger } from '@shared/lib/logger';
 
 interface PhotoPreviewProps {
   selectedPhoto: GalleryItem | null;
@@ -136,19 +135,6 @@ export const PhotoPreview = ({ selectedPhoto, photos, onPhotoVisible, rotationY 
   // Capture photos.length as a plain number for the worklet closure
   const photosLength = photos.length;
 
-  const logSwipeDecision = (
-    idx: number,
-    shiftX: number,
-    velocity: number,
-    targetIndex: number,
-    dragThreshold: number,
-  ) => {
-    logger.debug(
-      'PhotoPreview',
-      `onEnd | currentIdx=${idx} shiftX=${shiftX.toFixed(1)} vel=${velocity.toFixed(0)} threshold=${dragThreshold.toFixed(0)} → targetIdx=${targetIndex}`
-    );
-  };
-
   const panGesture = Gesture.Pan()
     .maxPointers(1)
     .onBegin(() => {
@@ -246,9 +232,6 @@ export const PhotoPreview = ({ selectedPhoto, photos, onPhotoVisible, rotationY 
         } else if (shiftX < -dragThreshold || velocity < -velocityThreshold) {
           if (idx < photosLength - 1) targetIndex = idx + 1;
         }
-
-        // Log decision variables for debugging — remove once stable
-        runOnJS(logSwipeDecision)(idx, shiftX, velocity, targetIndex, dragThreshold);
 
         const targetTranslateX = -targetIndex * slotWidth;
 

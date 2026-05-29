@@ -3,6 +3,8 @@ package com.grovkornet.nativefilmcamera.rendering
 import android.graphics.Bitmap
 import android.util.Log
 import com.grovkornet.nativefilmcamera.BuildConfig
+import com.grovkornet.nativefilmcamera.errors.CameraCodedException
+import com.grovkornet.nativefilmcamera.errors.CameraErrorCode
 import com.grovkornet.nativefilmcamera.state.CameraConfiguration
 import com.grovkornet.nativefilmcamera.state.getTargetResolutionValue
 import com.grovkornet.nativefilmcamera.state.toRenderParamsArray
@@ -77,7 +79,7 @@ class OffscreenFilmProcessor {
 
             nativeEnginePtr = nativePrepare(width, height, assetManager)
             if (nativeEnginePtr == 0L) {
-                throw RuntimeException("nativePrepare returned 0 pointer")
+                throw CameraCodedException(CameraErrorCode.E_FILAMENT_INIT_FAILED, "nativePrepare returned 0 pointer")
             }
 
             currentWidth = width

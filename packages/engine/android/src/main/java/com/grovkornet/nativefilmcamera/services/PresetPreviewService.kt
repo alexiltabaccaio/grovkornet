@@ -4,6 +4,8 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
+import com.grovkornet.nativefilmcamera.errors.CameraCodedException
+import com.grovkornet.nativefilmcamera.errors.CameraErrorCode
 import com.grovkornet.nativefilmcamera.rendering.OffscreenFilmProcessor
 import com.grovkornet.nativefilmcamera.state.CameraConfiguration
 import java.io.File
@@ -17,14 +19,14 @@ object PresetPreviewService {
 
     val inputStream = if (inputUriString.startsWith("http") || inputUriString.startsWith("file") || inputUriString.startsWith("content")) {
         val inputUri = Uri.parse(inputUriString)
-        context.contentResolver.openInputStream(inputUri) ?: throw Exception("Failed to open URI stream: $inputUriString")
+        context.contentResolver.openInputStream(inputUri) ?: throw CameraCodedException(CameraErrorCode.E_PRESET_PREVIEW_FAILED, "Failed to open URI stream: $inputUriString")
     } else {
         val resId = context.resources.getIdentifier(inputUriString, "drawable", context.packageName)
-        if (resId == 0) throw Exception("Drawable resource not found: $inputUriString")
+        if (resId == 0) throw CameraCodedException(CameraErrorCode.E_PRESET_PREVIEW_FAILED, "Drawable resource not found: $inputUriString")
         context.resources.openRawResource(resId)
     }
     
-    val inputBitmap = BitmapFactory.decodeStream(inputStream) ?: throw Exception("Failed to decode bitmap")
+    val inputBitmap = BitmapFactory.decodeStream(inputStream) ?: throw CameraCodedException(CameraErrorCode.E_PRESET_PREVIEW_FAILED, "Failed to decode bitmap")
     inputStream.close()
 
     val config = CameraConfiguration().apply {

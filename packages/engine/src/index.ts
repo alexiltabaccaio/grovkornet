@@ -109,4 +109,5 @@ export async function deleteFile(uri: string): Promise<boolean> {
   return await NativeFilmCameraModule.deleteFile(uri);
 }
 
+export * from './errors';
 export { NativeFilmCameraView };

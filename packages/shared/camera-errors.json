@@ -1,4 +1,5 @@
 {
+  "__note": "This file is the Single Source of Truth (SSOT) for all camera errors. After editing, run `npm run codegen` to update the TypeScript and Kotlin generated definitions.",
   "errors": [
     {
       "name": "E_CAMERA_UNAUTHORIZED",

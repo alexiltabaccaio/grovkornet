@@ -6,7 +6,7 @@ import { usePresetStore, Preset, DEFAULT_FILM_PAYLOAD, FilmPresetPayload, Preset
 import * as Haptics from '@shared/lib/haptics';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 import { Asset } from 'expo-asset';
-import { generatePresetPreview, deleteFile } from '@grovkornet/engine';
+import { generatePresetPreview, deleteFile, CameraErrorCode, CAMERA_ERROR_DETAILS } from '@grovkornet/engine';
 import { useFilmStore } from '@entities/film';
 
 // eslint-disable-next-line @typescript-eslint/no-require-imports
@@ -87,8 +87,16 @@ export const AddPresetModal = () => {
         } else {
           void deleteFile(previewUri);
         }
-      } catch (err) {
-        console.error('Failed to generate preset preview:', err);
+      } catch (err: unknown) {
+        const error = err as { code?: string; message?: string };
+        console.error('Failed to generate preset preview:', error);
+        if (error?.code && Object.values(CameraErrorCode).includes(error.code as CameraErrorCode)) {
+          const detail = CAMERA_ERROR_DETAILS[error.code as CameraErrorCode];
+          Alert.alert(
+            detail.severity === 'fatal' ? t('presets.error_fatal', 'Errore Fatale') : t('presets.error_warning', 'Attenzione'),
+            detail.description
+          );
+        }
       }
     };
 
@@ -102,7 +110,7 @@ export const AddPresetModal = () => {
         void deleteFile(localTempUri);
       }
     };
-  }, [isAddModalVisible, customizedPayload]);
+  }, [isAddModalVisible, customizedPayload, t]);
 
   if (!isAddModalVisible) return null;
 

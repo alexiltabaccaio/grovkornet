@@ -5,6 +5,8 @@ import android.graphics.SurfaceTexture
 import android.util.Log
 import com.grovkornet.nativefilmcamera.BuildConfig
 import android.view.Surface
+import com.grovkornet.nativefilmcamera.errors.CameraCodedException
+import com.grovkornet.nativefilmcamera.errors.CameraErrorCode
 import com.grovkornet.nativefilmcamera.state.CameraConfiguration
 import com.grovkornet.nativefilmcamera.state.getTargetResolutionValue
 import com.grovkornet.nativefilmcamera.state.toRenderParamsArray
@@ -68,7 +70,7 @@ class LiveFilmProcessor {
 
             nativeEnginePtr = nativePrepare(width, height, assetManager)
             if (nativeEnginePtr == 0L) {
-                throw RuntimeException("nativePrepare returned 0 pointer")
+                throw CameraCodedException(CameraErrorCode.E_FILAMENT_INIT_FAILED, "nativePrepare returned 0 pointer")
             }
 
             // Bind the Stream to the Engine's inputTextureExternal
