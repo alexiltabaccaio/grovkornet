@@ -87,8 +87,13 @@ class CapturePipeline(
             buffer.get(bytes)
             
             val rawBitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
-            if (rotation != 0) {
-                val matrix = Matrix().apply { postRotate(rotation.toFloat()) }
+            if (rotation != 0 || config.isSelfieCamera) {
+                val matrix = Matrix().apply { 
+                    postRotate(rotation.toFloat())
+                    if (config.isSelfieCamera) {
+                        postScale(-1f, 1f)
+                    }
+                }
                 bitmap = Bitmap.createBitmap(rawBitmap, 0, 0, rawBitmap.width, rawBitmap.height, matrix, true)
                 rawBitmap.recycle()
             } else {
