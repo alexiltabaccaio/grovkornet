@@ -12,19 +12,21 @@ export const useBodyStore = create<BodyStore>((set, get) => ({
   fps: makeMutable(0),
   hwFps: makeMutable(0),
   resolution: makeMutable(''),
-  iso: makeMutable(DEFAULT_ISO),
+  evAuto: makeMutable(true),
+  // @@GEN_STATE_START@@
   ev: makeMutable(DEFAULT_EV),
-  shutterSpeed: makeMutable(DEFAULT_SHUTTER_SPEED),
+  fpsSetting: makeMutable(60),
+  aspectRatio: makeMutable(1),
   isoAuto: makeMutable(true),
   shutterSpeedAuto: makeMutable(true),
-  evAuto: makeMutable(true),
+  iso: makeMutable(DEFAULT_ISO),
+  shutterSpeed: makeMutable(DEFAULT_SHUTTER_SPEED),
   torchState: makeMutable(0),
   torchStrength: makeMutable(1),
-  aspectRatio: makeMutable(1), // 0: 4:3, 1: 16:9, 2: 1:1, 3: 3:2, 4: 65:24
-  resolutionSetting: makeMutable(1), // 0: 4K, 1: 1080p, 2: 720p, 3: 480p, 4: 360p, 5: 240p, 6: 144p
-  fpsSetting: makeMutable(60), // 1 to 60
+  resolutionSetting: makeMutable(1),
   previewIn4k: makeMutable(0),
-  force4k60fpsCrop: makeMutable(1), // Default to ON (Apply crop)
+  force4k60fpsCrop: makeMutable(1),
+  // @@GEN_STATE_END@@
   capabilities: {
     hasTorch: false,
     maxTorchStrength: 1,
@@ -39,48 +41,65 @@ export const useBodyStore = create<BodyStore>((set, get) => ({
     resolution.value = resVal;
     hwFps.value = hwFpsVal;
   },
-  setIso: (value) => {
-    logger.debug('BodyStore', `Setting ISO: ${value}`);
-    get().iso.value = value;
-    get().isoAuto.value = false;
-    get().shutterSpeedAuto.value = false;
-    get().evAuto.value = true;
-    get().ev.value = DEFAULT_EV;
-  },
-  setEv: (value) => {
-    logger.debug('BodyStore', `Setting EV: ${value}`);
-    get().ev.value = value;
-    get().evAuto.value = false;
-    get().isoAuto.value = true;
-    get().shutterSpeedAuto.value = true;
-  },
-  setShutterSpeed: (value) => {
-    logger.debug('BodyStore', `Setting Shutter Speed: ${value}`);
-    get().shutterSpeed.value = value;
-    get().shutterSpeedAuto.value = false;
-    get().isoAuto.value = false;
-    get().evAuto.value = true;
-    get().ev.value = DEFAULT_EV;
-  },
-  setIsoAuto: (value) => {
-    get().isoAuto.value = value;
-    get().shutterSpeedAuto.value = value;
-    if (value) {
-      get().iso.value = DEFAULT_ISO;
-      get().shutterSpeed.value = DEFAULT_SHUTTER_SPEED;
-    }
-  },
-  setShutterSpeedAuto: (value) => {
-    get().shutterSpeedAuto.value = value;
-    get().isoAuto.value = value;
-    if (value) {
-      get().shutterSpeed.value = DEFAULT_SHUTTER_SPEED;
-      get().iso.value = DEFAULT_ISO;
-    }
-  },
   setEvAuto: (value) => {
     get().evAuto.value = value;
     if (value) get().ev.value = DEFAULT_EV;
+  },
+  // @@GEN_SETTERS_START@@
+  setEv: (value) => {
+    const { ev, evAuto, isoAuto, shutterSpeedAuto } = get();
+    logger.debug('BodyStore', `Setting Ev: ${value}`);
+    ev.value = value;
+    evAuto.value = false;
+    isoAuto.value = true;
+    shutterSpeedAuto.value = true;
+
+  },
+  setFpsSetting: (value) => {
+    get().fpsSetting.value = value;
+  },
+  setAspectRatio: (value) => {
+    get().aspectRatio.value = value;
+  },
+  setIsoAuto: (value) => {
+    const { isoAuto, shutterSpeedAuto, iso, shutterSpeed } = get();
+    isoAuto.value = value;
+    shutterSpeedAuto.value = value;
+    if (value) {
+      iso.value = DEFAULT_ISO;
+      shutterSpeed.value = DEFAULT_SHUTTER_SPEED;
+    }
+
+  },
+  setShutterSpeedAuto: (value) => {
+    const { shutterSpeedAuto, isoAuto, shutterSpeed, iso } = get();
+    shutterSpeedAuto.value = value;
+    isoAuto.value = value;
+    if (value) {
+      shutterSpeed.value = DEFAULT_SHUTTER_SPEED;
+      iso.value = DEFAULT_ISO;
+    }
+
+  },
+  setIso: (value) => {
+    const { iso, isoAuto, shutterSpeedAuto, evAuto, ev } = get();
+    logger.debug('BodyStore', `Setting Iso: ${value}`);
+    iso.value = value;
+    isoAuto.value = false;
+    shutterSpeedAuto.value = false;
+    evAuto.value = true;
+    ev.value = DEFAULT_EV;
+
+  },
+  setShutterSpeed: (value) => {
+    const { shutterSpeed, shutterSpeedAuto, isoAuto, evAuto, ev } = get();
+    logger.debug('BodyStore', `Setting Shutter Speed: ${value}`);
+    shutterSpeed.value = value;
+    shutterSpeedAuto.value = false;
+    isoAuto.value = false;
+    evAuto.value = true;
+    ev.value = DEFAULT_EV;
+
   },
   setTorchState: (value) => {
     get().torchState.value = value;
@@ -88,14 +107,8 @@ export const useBodyStore = create<BodyStore>((set, get) => ({
   setTorchStrength: (value) => {
     get().torchStrength.value = value;
   },
-  setAspectRatio: (value) => {
-    get().aspectRatio.value = value;
-  },
   setResolutionSetting: (value) => {
     get().resolutionSetting.value = value;
-  },
-  setFpsSetting: (value) => {
-    get().fpsSetting.value = value;
   },
   setPreviewIn4k: (value) => {
     get().previewIn4k.value = value;
@@ -103,6 +116,7 @@ export const useBodyStore = create<BodyStore>((set, get) => ({
   setForce4k60fpsCrop: (value) => {
     get().force4k60fpsCrop.value = value;
   },
+  // @@GEN_SETTERS_END@@
   setCapabilities: (caps) => {
     logger.info('BodyStore', 'Hardware capabilities updated for Body');
     if (caps.maxFps && get().fpsSetting.value > caps.maxFps) {
@@ -125,20 +139,13 @@ export const setBodyParameterChangeListener = (listener: () => void) => {
 };
 
 const bodyStoreState = useBodyStore.getState();
-const includedBodySetters = [
-  'setIso',
-  'setEv',
-  'setShutterSpeed',
-  'setIsoAuto',
-  'setShutterSpeedAuto',
-  'setEvAuto',
-];
-
 const storeRecord = bodyStoreState as unknown as Record<string, unknown>;
 
 Object.keys(storeRecord).forEach((key) => {
   if (
-    includedBodySetters.includes(key) &&
+    key.startsWith('set') &&
+    key !== 'setCapabilities' &&
+    key !== 'setDebugInfo' &&
     typeof storeRecord[key] === 'function'
   ) {
     const originalFn = storeRecord[key] as (...args: unknown[]) => void;

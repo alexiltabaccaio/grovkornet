@@ -12,37 +12,41 @@ interface BodyState {
   fps: SharedValue<number>;
   hwFps: SharedValue<number>;
   resolution: SharedValue<string>;
-  iso: SharedValue<number>;
+  evAuto: SharedValue<boolean>;
+  // @@GEN_STATE_START@@
   ev: SharedValue<number>;
-  shutterSpeed: SharedValue<number>;
+  fpsSetting: SharedValue<number>;
+  aspectRatio: SharedValue<number>;
   isoAuto: SharedValue<boolean>;
   shutterSpeedAuto: SharedValue<boolean>;
-  evAuto: SharedValue<boolean>;
+  iso: SharedValue<number>;
+  shutterSpeed: SharedValue<number>;
   torchState: SharedValue<number>;
   torchStrength: SharedValue<number>;
-  aspectRatio: SharedValue<number>;
   resolutionSetting: SharedValue<number>;
-  fpsSetting: SharedValue<number>;
   previewIn4k: SharedValue<number>;
   force4k60fpsCrop: SharedValue<number>;
+  // @@GEN_STATE_END@@
   capabilities: BodyCapabilities;
 }
 
 interface BodyActions {
   setDebugInfo: (fps: number, resolution: string, hwFps: number) => void;
-  setIso: (value: number) => void;
+  setEvAuto: (value: boolean) => void;
+  // @@GEN_ACTIONS_START@@
   setEv: (value: number) => void;
-  setShutterSpeed: (value: number) => void;
+  setFpsSetting: (value: number) => void;
+  setAspectRatio: (value: number) => void;
   setIsoAuto: (value: boolean) => void;
   setShutterSpeedAuto: (value: boolean) => void;
-  setEvAuto: (value: boolean) => void;
+  setIso: (value: number) => void;
+  setShutterSpeed: (value: number) => void;
   setTorchState: (value: number) => void;
   setTorchStrength: (value: number) => void;
-  setAspectRatio: (value: number) => void;
   setResolutionSetting: (value: number) => void;
-  setFpsSetting: (value: number) => void;
   setPreviewIn4k: (value: number) => void;
   setForce4k60fpsCrop: (value: number) => void;
+  // @@GEN_ACTIONS_END@@
   setCapabilities: (capabilities: BodyCapabilities) => void;
 }
 

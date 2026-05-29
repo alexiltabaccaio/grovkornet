@@ -14,6 +14,10 @@ const FILE_PATHS = {
   cppSource: 'packages/engine/android/src/main/cpp/core/GrovkornetEngine.cpp',
   zustandTypes: 'apps/mobile/src/entities/film/model/types.ts',
   zustandStore: 'apps/mobile/src/entities/film/model/useFilmStore.ts',
+  bodyTypes: 'apps/mobile/src/entities/body/model/types.ts',
+  bodyStore: 'apps/mobile/src/entities/body/model/useBodyStore.ts',
+  lensTypes: 'apps/mobile/src/entities/lens/model/types.ts',
+  lensStore: 'apps/mobile/src/entities/lens/model/useLensStore.ts',
   zustandViewfinder: 'apps/mobile/src/widgets/viewfinder/ui/Viewfinder.tsx',
   presetTypes: 'apps/mobile/src/entities/preset/model/types.ts',
   presetStore: 'apps/mobile/src/entities/preset/model/usePresetStore.ts'
@@ -250,23 +254,25 @@ function generateNativeBridge(parameters, renderParams) {
   replaceBetweenMarkers(FILE_PATHS.cppSource, '// @@GEN_PARSING_START@@', '// @@GEN_PARSING_END@@', cppParsingContent, '    ');
 }
 
-function generateZustandTypes(parameters) {
-  console.log('\n--- Generating Zustand Types (Step 3) ---');
+function generateZustandTypesForStore(parameters, storeName, filePath) {
+  console.log(`Generating types for store: ${storeName}`);
+  const storeParams = parameters.filter(p => p.zustand && (p.zustand.store || 'film') === storeName);
   
-  const zustandParams = parameters.filter(p => p.zustand);
-  
-  // 1. Generate FilmState fields
-  const stateContent = zustandParams
+  // 1. Generate state fields
+  const stateContent = storeParams
     .map(p => {
       const name = p.zustand.name || p.name;
       const type = p.zustand.type || (p.ts?.type === 'boolean' ? 'boolean' : 'number');
+      if (type === 'string') {
+        return `${name}: ${type};`;
+      }
       return `${name}: SharedValue<${type}>;`;
     })
     .join('\n');
-  replaceBetweenMarkers(FILE_PATHS.zustandTypes, '  // @@GEN_STATE_START@@', '  // @@GEN_STATE_END@@', stateContent, '  ');
+  replaceBetweenMarkers(filePath, '  // @@GEN_STATE_START@@', '  // @@GEN_STATE_END@@', stateContent, '  ');
   
-  // 2. Generate FilmActions setters
-  const actionsContent = zustandParams
+  // 2. Generate actions setters
+  const actionsContent = storeParams
     .map(p => {
       const name = p.zustand.name || p.name;
       const type = p.zustand.type || (p.ts?.type === 'boolean' ? 'boolean' : 'number');
@@ -275,72 +281,134 @@ function generateZustandTypes(parameters) {
       return `set${capitalized}: (${argName}: ${type}) => void;`;
     })
     .join('\n');
-  replaceBetweenMarkers(FILE_PATHS.zustandTypes, '  // @@GEN_ACTIONS_START@@', '  // @@GEN_ACTIONS_END@@', actionsContent, '  ');
+  replaceBetweenMarkers(filePath, '  // @@GEN_ACTIONS_START@@', '  // @@GEN_ACTIONS_END@@', actionsContent, '  ');
 }
 
-function generateZustandStore(parameters) {
-  console.log('\n--- Generating Zustand Store (Step 4) ---');
-  
-  const zustandParams = parameters.filter(p => p.zustand);
+function generateZustandTypes(parameters) {
+  console.log('\n--- Generating Zustand Types (Step 3) ---');
+  generateZustandTypesForStore(parameters, 'film', FILE_PATHS.zustandTypes);
+  generateZustandTypesForStore(parameters, 'body', FILE_PATHS.bodyTypes);
+  generateZustandTypesForStore(parameters, 'lens', FILE_PATHS.lensTypes);
+}
+
+function isSharedValue(parameters, paramName) {
+  const p = parameters.find(x => (x.zustand?.name || x.name) === paramName);
+  if (!p) return true;
+  return p.zustand?.type !== 'string';
+}
+
+function generateZustandStoreForStore(parameters, storeName, filePath, initMarkerStart = '  // @@GEN_INIT_START@@', initMarkerEnd = '  // @@GEN_INIT_END@@') {
+  console.log(`Generating store implementation for: ${storeName}`);
+  const storeParams = parameters.filter(p => p.zustand && (p.zustand.store || 'film') === storeName);
   
   // 1. Generate state initializers
-  const initContent = zustandParams
+  const initContent = storeParams
     .map(p => {
       const name = p.zustand.name || p.name;
       const def = p.zustand.default;
+      const type = p.zustand.type || (p.ts?.type === 'boolean' ? 'boolean' : 'number');
+      if (type === 'string') {
+        return `${name}: ${def},`;
+      }
       return `${name}: makeMutable(${def}),`;
     })
     .join('\n');
-  replaceBetweenMarkers(FILE_PATHS.zustandStore, '  // @@GEN_INIT_START@@', '  // @@GEN_INIT_END@@', initContent, '  ');
+  replaceBetweenMarkers(filePath, initMarkerStart, initMarkerEnd, initContent, '  ');
   
   // 2. Generate setters
-  const settersContent = zustandParams
+  const settersContent = storeParams
     .map(p => {
       const name = p.zustand.name || p.name;
+      const type = p.zustand.type || (p.ts?.type === 'boolean' ? 'boolean' : 'number');
       const capitalized = name.charAt(0).toUpperCase() + name.slice(1);
       const argName = name === 'noiseReductionMode' ? 'mode' : 'value';
       
-      const needsLogger = ['saturation', 'contrast', 'grainIntensity', 'chromaticAberration', 'sharpening', 'bloomIntensity', 'temperature', 'tint'].includes(name);
-      const loggerLine = needsLogger ? `logger.debug('FilmStore', \`Setting ${capitalized.replace(/([A-Z])/g, ' $1').trim()}: \${${argName}}\`);` : '';
+      const needsLogger = ['saturation', 'contrast', 'grainIntensity', 'chromaticAberration', 'sharpening', 'bloomIntensity', 'temperature', 'tint', 'iso', 'ev', 'shutterSpeed', 'focusDistance'].includes(name);
+      const storeLabel = storeName.charAt(0).toUpperCase() + storeName.slice(1) + 'Store';
+      const loggerLine = needsLogger ? `logger.debug('${storeLabel}', \`Setting ${capitalized.replace(/([A-Z])/g, ' $1').trim()}: \${${argName}}\`);` : '';
       
       let body = '';
       if (p.zustand.setSideEffects && p.zustand.setSideEffects.length > 0) {
-        const targets = p.zustand.setSideEffects.map(se => se.target);
-        const allVars = [name, ...targets];
+        const localTargets = p.zustand.setSideEffects
+          .filter(se => !se.store || se.store === storeName)
+          .map(se => se.target);
+        const allVars = [name, ...localTargets].filter(v => isSharedValue(parameters, v));
         
-        body += `const { ${allVars.join(', ')} } = get();\n`;
+        if (allVars.length > 0) {
+          body += `const { ${allVars.join(', ')} } = get();\n`;
+        }
         if (loggerLine) body += `${loggerLine}\n`;
-        body += `${name}.value = ${argName};\n`;
+        
+        if (isSharedValue(parameters, name)) {
+          body += `${name}.value = ${argName};\n`;
+        } else {
+          body += `set({ ${name}: ${argName} });\n`;
+        }
         
         const conditionalEffects = p.zustand.setSideEffects.filter(se => se.condition);
         const directEffects = p.zustand.setSideEffects.filter(se => !se.condition);
         
         for (const se of directEffects) {
-          body += `${se.target}.value = ${se.value};\n`;
+          if (se.store === 'preferences') {
+            body += `usePreferencesStore.getState().${se.target}(${se.value});\n`;
+          } else {
+            if (isSharedValue(parameters, se.target)) {
+              body += `${se.target}.value = ${se.value};\n`;
+            } else {
+              body += `set({ ${se.target}: ${se.value} });\n`;
+            }
+          }
         }
         
         if (conditionalEffects.length > 0) {
           const conditions = [...new Set(conditionalEffects.map(se => se.condition))];
           for (const cond of conditions) {
             const effectsForCond = conditionalEffects.filter(se => se.condition === cond);
-            body += `if (${cond}) {\n  ` + effectsForCond.map(se => `${se.target}.value = ${se.value};`).join('\n  ') + '\n}\n';
+            body += `if (${cond}) {\n  ` + effectsForCond.map(se => {
+              if (se.store === 'preferences') {
+                return `usePreferencesStore.getState().${se.target}(${se.value});`;
+              } else {
+                if (isSharedValue(parameters, se.target)) {
+                  return `${se.target}.value = ${se.value};`;
+                } else {
+                  return `set({ ${se.target}: ${se.value} });`;
+                }
+              }
+            }).join('\n  ') + '\n}\n';
           }
         }
       } else {
         if (loggerLine) {
           body += `${loggerLine}\n`;
         }
-        body += `get().${name}.value = ${argName};`;
+        if (isSharedValue(parameters, name)) {
+          body += `get().${name}.value = ${argName};`;
+        } else {
+          body += `set({ ${name}: ${argName} });`;
+        }
       }
       
       return `set${capitalized}: (${argName}) => {\n  ${body.split('\n').join('\n  ')}\n},`;
     })
     .join('\n');
-  replaceBetweenMarkers(FILE_PATHS.zustandStore, '  // @@GEN_SETTERS_START@@', '  // @@GEN_SETTERS_END@@', settersContent, '  ');
+  replaceBetweenMarkers(filePath, '  // @@GEN_SETTERS_START@@', '  // @@GEN_SETTERS_END@@', settersContent, '  ');
+}
+
+function generateZustandStore(parameters) {
+  console.log('\n--- Generating Zustand Store (Step 4) ---');
+  // 1. Generate Film Store
+  generateZustandStoreForStore(parameters, 'film', FILE_PATHS.zustandStore, '  // @@GEN_INIT_START@@', '  // @@GEN_INIT_END@@');
   
-  // 3. Generate reset cases
+  // 2. Generate Body Store
+  generateZustandStoreForStore(parameters, 'body', FILE_PATHS.bodyStore, '  // @@GEN_STATE_START@@', '  // @@GEN_STATE_END@@');
+  
+  // 3. Generate Lens Store
+  generateZustandStoreForStore(parameters, 'lens', FILE_PATHS.lensStore, '  // @@GEN_STATE_START@@', '  // @@GEN_STATE_END@@');
+
+  // 4. Generate Reset Cases specifically for Film Store
+  const filmParams = parameters.filter(p => p.zustand && (p.zustand.store || 'film') === 'film');
   const groups = {};
-  for (const p of zustandParams) {
+  for (const p of filmParams) {
     if (p.zustand.resetGroup) {
       const rg = p.zustand.resetGroup;
       if (!groups[rg]) groups[rg] = [];
@@ -406,8 +474,8 @@ function generateViewfinderProps(parameters) {
     secureViewEnabled: 'isCameraSecure'
   };
 
-  // 1. Selector destructuring
-  const selectorParams = parameters.filter(p => p.zustand);
+  // 1. Selector destructuring (FILM store parameters ONLY)
+  const selectorParams = parameters.filter(p => p.zustand && (p.zustand.store || 'film') === 'film');
   const selectorContent = selectorParams
     .map(p => {
       const name = p.zustand.name || p.name;
@@ -451,7 +519,7 @@ function generateViewfinderProps(parameters) {
 function generatePresetSettings(parameters) {
   console.log('\n--- Generating Preset Settings (Step 6) ---');
   
-  const zustandParams = parameters.filter(p => p.zustand && !p.excludeFromPreset);
+  const zustandParams = parameters.filter(p => p.zustand && (p.zustand.store || 'film') === 'film' && !p.excludeFromPreset);
   
   // 1. Generate FilmPresetPayload fields in types.ts
   const fieldsContent = zustandParams

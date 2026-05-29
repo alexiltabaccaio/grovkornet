@@ -10,22 +10,26 @@ export interface LensCapabilities {
 }
 
 interface LensState {
-  focusDistance: SharedValue<number>;
-  focusAuto: SharedValue<boolean>;
-  cameraId: string;
   cameraAuto: boolean;
   chromaticAberration: SharedValue<number>;
   aberrationDirection: SharedValue<number>;
   bloomEnabled: SharedValue<boolean>;
   bloomIntensity: SharedValue<number>;
+  // @@GEN_STATE_START@@
+  focusAuto: SharedValue<boolean>;
+  focusDistance: SharedValue<number>;
+  cameraId: string;
+  // @@GEN_STATE_END@@
   capabilities: LensCapabilities;
 }
 
 interface LensActions {
-  setFocusDistance: (value: number) => void;
-  setFocusAuto: (value: boolean) => void;
-  setCameraId: (value: string) => void;
   setCameraAuto: (value: boolean) => void;
+  // @@GEN_ACTIONS_START@@
+  setFocusAuto: (value: boolean) => void;
+  setFocusDistance: (value: number) => void;
+  setCameraId: (value: string) => void;
+  // @@GEN_ACTIONS_END@@
   setCapabilities: (capabilities: LensCapabilities) => void;
 }
 
