@@ -48,9 +48,7 @@ jest.mock('@features/gallery', () => {
     CaptureThumbnail: (props: any) => (
       <TouchableOpacity testID="CaptureThumbnail" onPress={props.onPress} />
     ),
-    useImageVerification: () => ({
-      verifyPhotosBatch: jest.fn(),
-    }),
+    useGalleryPrefetch: jest.fn(),
   };
 });
 
