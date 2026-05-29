@@ -451,7 +451,7 @@ function generateViewfinderProps(parameters) {
 function generatePresetSettings(parameters) {
   console.log('\n--- Generating Preset Settings (Step 6) ---');
   
-  const zustandParams = parameters.filter(p => p.zustand);
+  const zustandParams = parameters.filter(p => p.zustand && !p.excludeFromPreset);
   
   // 1. Generate FilmPresetPayload fields in types.ts
   const fieldsContent = zustandParams

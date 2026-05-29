@@ -67,7 +67,6 @@ export const DEFAULT_FILM_PAYLOAD: FilmPresetPayload = {
   noiseReductionMode: 1,
   noiseReductionAuto: true,
   temperatureAuto: true,
-  isSelfieCamera: false,
   // @@GEN_DEFAULTS_END@@
 };
 

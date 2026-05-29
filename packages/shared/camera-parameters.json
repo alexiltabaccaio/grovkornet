@@ -485,7 +485,8 @@
         "default": "false",
         "type": "boolean",
         "resetGroup": "camera_facing"
-      }
+      },
+      "excludeFromPreset": true
     },
     {
       "name": "viewportWidth",

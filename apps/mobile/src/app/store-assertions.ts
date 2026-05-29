@@ -48,7 +48,7 @@ type FilmActionsKeys =
   | 'setIsSelfieCamera'
   | 'resetEffect';
 
-type FilmExcludedKeys = 'capabilities';
+type FilmExcludedKeys = 'capabilities' | 'isSelfieCamera';
 
 type IsFilmStoreFullyCategorized = Exclude<
   keyof FilmStore,

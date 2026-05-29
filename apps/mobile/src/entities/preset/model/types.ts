@@ -39,7 +39,6 @@ export interface FilmPresetPayload {
   noiseReductionMode: number;
   noiseReductionAuto: boolean;
   temperatureAuto: boolean;
-  isSelfieCamera: boolean;
   // @@GEN_FILM_PAYLOAD_END@@
 }
 
