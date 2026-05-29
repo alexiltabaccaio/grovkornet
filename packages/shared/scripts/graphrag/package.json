@@ -1,0 +1,13 @@
+{
+  "name": "grovkornet-graphrag",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "main": "builder.js",
+  "dependencies": {
+    "tree-sitter": "^0.21.0",
+    "tree-sitter-typescript": "^0.21.0",
+    "graphology": "^0.25.4",
+    "tsconfig-paths": "^4.2.0"
+  }
+}

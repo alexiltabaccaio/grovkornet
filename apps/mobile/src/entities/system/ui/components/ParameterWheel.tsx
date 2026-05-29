@@ -10,8 +10,7 @@ import Animated, {
   runOnJS,
   useAnimatedReaction,
 } from 'react-native-reanimated';
-import { ParameterType } from '@entities/system';
-
+import { ParameterType } from '../../model/types';
 const ITEM_WIDTH = 120;
 
 export interface WheelItem {
