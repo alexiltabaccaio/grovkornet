@@ -184,8 +184,8 @@ fragment {
             // Sample the pre-blurred glass texture
             vec3 glassColor = texture(materialParams_u_GlassTexture, flippedBloomUv).rgb;
             
-            // Apply dark tint overlay (mix with dark gray/black)
-            vec3 tintedGlass = mix(glassColor, vec3(0.05, 0.05, 0.05), 0.50);
+            // Tinting is now delegated to the React Native UI layer across the full screen width
+            vec3 tintedGlass = glassColor;
             
             // Panel top Y coordinate (0.0 is top, 1.0 is bottom in Android Surface UV space)
             float panelTopY = materialParams.u_PanelY;

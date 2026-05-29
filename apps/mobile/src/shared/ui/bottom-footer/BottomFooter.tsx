@@ -17,9 +17,10 @@ export const BottomFooter = ({ children, style }: BottomFooterProps) => {
 const styles = StyleSheet.create({
   bottomFooterWrapper: {
     height: 80,
+    // NOTE: Solid background. Only the sliding ControlPanel has the frosted glass effect.
     backgroundColor: '#0e0e0e',
-    borderTopWidth: 1,
-    borderTopColor: '#222',
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: 'rgba(255, 255, 255, 0.15)',
     justifyContent: 'center',
     overflow: 'hidden',
   },

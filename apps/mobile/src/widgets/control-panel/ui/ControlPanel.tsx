@@ -102,6 +102,9 @@ const styles = StyleSheet.create({
     bottom: -323, // Mathematically calculated to align perfectly with the red sections
     zIndex: 5,
     elevation: 5,
+    backgroundColor: 'rgba(18, 18, 18, 0.75)',
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: 'rgba(255, 255, 255, 0.15)',
   },
 
   topFooter: {
