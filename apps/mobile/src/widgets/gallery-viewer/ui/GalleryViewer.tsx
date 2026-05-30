@@ -39,7 +39,7 @@ export const GalleryViewer = ({ onClose, initialUri, galleryTransition, header }
         {/* Loading Gallery View */}
         {loading ? (
           <View style={styles.center}>
-            <ActivityIndicator size="large" color="#FF9500" />
+            <ActivityIndicator size="large" color="#FF5722" />
             <Text style={styles.loadingText}>{t('gallery.loading', 'Loading gallery...')}</Text>
           </View>
         ) : (

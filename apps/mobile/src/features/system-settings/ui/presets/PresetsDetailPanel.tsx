@@ -113,8 +113,8 @@ export const PresetsDetailPanel = ({ animatedStyle }: PresetsDetailPanelProps) =
 
           {activePreset && (
             <TouchableOpacity style={styles.actionButton} onPress={handleToggleQuickSelect}>
-              <Ionicons name={inQuickSelect ? "flash" : "flash-outline"} size={16} color={inQuickSelect ? "#FF9500" : "#FFF"} />
-              <Text style={[styles.actionText, inQuickSelect && { color: "#FF9500" }]}>{t('presets.quick_select', 'Rapida')}</Text>
+              <Ionicons name={inQuickSelect ? "flash" : "flash-outline"} size={16} color={inQuickSelect ? "#FF5722" : "#FFF"} />
+              <Text style={[styles.actionText, inQuickSelect && { color: "#FF5722" }]}>{t('presets.quick_select', 'Rapida')}</Text>
             </TouchableOpacity>
           )}
 

@@ -77,7 +77,7 @@ describe('QuickPresetSelector', () => {
     ]);
     rerender(<QuickPresetSelector />);
     expect(getByText('UserPreset1').props.style).toEqual(
-      expect.arrayContaining([expect.objectContaining({ color: '#FF9500' })])
+      expect.arrayContaining([expect.objectContaining({ color: '#FF5722' })])
     );
   });
 });

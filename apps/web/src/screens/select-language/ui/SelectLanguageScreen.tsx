@@ -173,7 +173,7 @@ export default function SelectLanguageScreen() {
               </div>
             </div>
             {isSystemLangDetected && currentLang === systemLang && (
-              <span style={{ color: "#ff5238", display: "flex", alignItems: "center" }}>
+              <span style={{ color: "#ff5722", display: "flex", alignItems: "center" }}>
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
                   <polyline points="20 6 9 17 4 12" />
                 </svg>
@@ -232,7 +232,7 @@ export default function SelectLanguageScreen() {
                 </span>
               </div>
               {currentLang === 'en' && (
-                <span style={{ color: "#ff5238", display: "flex", alignItems: "center" }}>
+                <span style={{ color: "#ff5722", display: "flex", alignItems: "center" }}>
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
                     <polyline points="20 6 9 17 4 12" />
                   </svg>
@@ -271,7 +271,7 @@ export default function SelectLanguageScreen() {
                 </span>
               </div>
               {currentLang === 'it' && (
-                <span style={{ color: "#ff5238", display: "flex", alignItems: "center" }}>
+                <span style={{ color: "#ff5722", display: "flex", alignItems: "center" }}>
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
                     <polyline points="20 6 9 17 4 12" />
                   </svg>

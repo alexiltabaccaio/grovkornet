@@ -161,7 +161,7 @@ const styles = StyleSheet.create({
     borderColor: 'transparent',
   },
   sectionTitle: {
-    color: '#FF9500',
+    color: '#FF5722',
     fontSize: 10,
     lineHeight: 14,
     fontWeight: '800',

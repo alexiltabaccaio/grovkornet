@@ -37,7 +37,7 @@ export const QuickPresetSelector = () => {
   const getPresetColor = () => {
     if (activePresetId === 'customized') return '#FF2D55'; // Pink/Red for customized
     if (activePresetId === 'default') return '#FFF'; // White for default
-    return '#FF9500'; // Orange for user presets
+    return '#FF5722'; // Orange for user presets
   };
 
   return (

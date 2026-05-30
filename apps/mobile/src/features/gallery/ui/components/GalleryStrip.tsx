@@ -206,7 +206,7 @@ const styles = StyleSheet.create({
     borderColor: 'transparent',
   },
   thumbnailSelected: {
-    borderColor: '#FF9500',
+    borderColor: '#FF5722',
   },
   thumbnailImage: {
     width: '100%',

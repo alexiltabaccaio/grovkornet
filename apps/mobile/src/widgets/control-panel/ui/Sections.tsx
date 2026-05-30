@@ -74,7 +74,7 @@ export const Sections = React.memo(({ galleryTransition }: SectionsProps) => {
                 <Ionicons 
                   name={section.icon} 
                   size={24} 
-                  color={isActive ? '#FF9500' : '#888'} 
+                  color={isActive ? '#FF5722' : '#888'} 
                 />
               </View>
             </Pressable>

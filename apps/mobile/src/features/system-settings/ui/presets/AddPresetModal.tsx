@@ -213,7 +213,7 @@ const styles = StyleSheet.create({
   modalTitle: {
     fontSize: 11,
     fontWeight: '900',
-    color: '#FF9500',
+    color: '#FF5722',
     letterSpacing: 1.5,
     marginBottom: 12,
     textTransform: 'uppercase',
@@ -252,7 +252,7 @@ const styles = StyleSheet.create({
   },
   modalSaveButton: {
     backgroundColor: 'rgba(255, 149, 0, 0.08)',
-    borderColor: '#FF9500',
+    borderColor: '#FF5722',
   },
   modalButtonText: {
     fontSize: 10,
@@ -261,6 +261,6 @@ const styles = StyleSheet.create({
     letterSpacing: 0.8,
   },
   modalSaveText: {
-    color: '#FF9500',
+    color: '#FF5722',
   },
 });

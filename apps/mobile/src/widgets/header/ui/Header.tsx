@@ -35,7 +35,7 @@ const styles = StyleSheet.create({
   statusBarHeaderDebug: {
     backgroundColor: 'rgba(255, 149, 0, 0.35)', // orange semi-transparent
     borderBottomWidth: 1,
-    borderBottomColor: '#FF9500',
+    borderBottomColor: '#FF5722',
     alignItems: 'center',
     justifyContent: 'center',
   },

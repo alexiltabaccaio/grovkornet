@@ -98,7 +98,7 @@ export const styles = StyleSheet.create({
     marginBottom: 6,
   },
   presetImageContainerActive: {
-    borderColor: '#FF9500',
+    borderColor: '#FF5722',
   },
   presetImage: {
     width: '100%',
@@ -113,7 +113,7 @@ export const styles = StyleSheet.create({
     width: '100%',
   },
   presetLabelActive: {
-    color: '#FF9500',
+    color: '#FF5722',
     fontWeight: '900',
   },
 });
