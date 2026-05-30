@@ -108,6 +108,7 @@ interface PresetStoreState {
   customizedThumbnailUri: string | null;
   isApplyingPreset: boolean;
   isAddModalVisible: boolean;
+  isDeleteModalVisible: boolean;
 }
 
 interface PresetStoreActions {
@@ -120,6 +121,7 @@ interface PresetStoreActions {
   setFavoritePreset: (id: string | null) => void;
   toggleQuickSelect: (id: string) => void;
   setAddModalVisible: (visible: boolean) => void;
+  setDeleteModalVisible: (visible: boolean) => void;
   getQuickSelectList: () => { id: string; name: string }[];
 }
 
@@ -135,6 +137,7 @@ export const usePresetStore = create<PresetStore>()(
       customizedThumbnailUri: null,
       isApplyingPreset: false,
       isAddModalVisible: false,
+      isDeleteModalVisible: false,
 
       // Actions
       setActivePresetId: (id: string) => set({ activePresetId: id }),
@@ -213,6 +216,10 @@ export const usePresetStore = create<PresetStore>()(
 
       setAddModalVisible: (visible: boolean) => {
         set({ isAddModalVisible: visible });
+      },
+
+      setDeleteModalVisible: (visible: boolean) => {
+        set({ isDeleteModalVisible: visible });
       },
     }),
     {

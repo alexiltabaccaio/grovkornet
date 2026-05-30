@@ -10,7 +10,7 @@ import { Viewfinder } from '@widgets/viewfinder';
 import { Header } from '@widgets/header';
 import { ShutterButton, CameraFlipButton } from '@features/body-controls';
 import { GestureController } from '@features/lens-controls';
-import { DebugOverlay, AddPresetModal, QuickPresetSelector } from '@features/system-settings';
+import { DebugOverlay, AddPresetModal, DeletePresetModal, QuickPresetSelector } from '@features/system-settings';
 import { CaptureThumbnail, useGalleryPrefetch } from '@features/gallery';
 import { GalleryViewer } from '@widgets/gallery-viewer';
 import { logger } from '@shared/lib/logger';
@@ -164,6 +164,7 @@ const CameraScreenContent = () => {
       )}
       
       <AddPresetModal />
+      <DeletePresetModal />
     </View>
   );
 };

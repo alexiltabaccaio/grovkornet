@@ -7,4 +7,5 @@ export * from './ui/presets/PresetsModule';
 export * from './ui/presets/PresetsDetailPanel';
 export * from './ui/presets/QuickPresetSelector';
 export * from './ui/presets/AddPresetModal';
+export * from './ui/presets/DeletePresetModal';
 export * from './lib/presetActions';
