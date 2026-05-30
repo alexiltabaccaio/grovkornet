@@ -101,7 +101,7 @@ export const useBodyParameterControlData = (
             'worklet';
             return `${Math.round(v)}`;
           },
-          hideValueInAuto: true,
+          hideValueInAuto: false,
           autoValueText: 'AUTO',
           onReset: () => body.setIsoAuto(true),
           onToggleAuto: body.setIsoAuto,
@@ -118,7 +118,7 @@ export const useBodyParameterControlData = (
             'worklet';
             return `1/${Math.round(v)}`;
           },
-          hideValueInAuto: true,
+          hideValueInAuto: false,
           autoValueText: 'AUTO',
           onReset: () => body.setShutterSpeedAuto(true),
           onToggleAuto: body.setShutterSpeedAuto,
