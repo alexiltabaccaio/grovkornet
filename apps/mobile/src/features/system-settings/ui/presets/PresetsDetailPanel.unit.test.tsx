@@ -3,7 +3,6 @@ import { render, fireEvent } from '@testing-library/react-native';
 import { PresetsDetailPanel } from './PresetsDetailPanel';
 import { usePresetStore, DEFAULT_FILM_PAYLOAD, DEFAULT_BODY_PAYLOAD } from '@entities/preset';
 import { useSystemStore } from '@entities/system';
-import { Alert } from 'react-native';
 
 jest.mock('react-native', () => {
   const RN = jest.requireActual('react-native');

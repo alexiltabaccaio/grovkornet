@@ -32,3 +32,12 @@ TEST(DrsManagerTest, EvaluateDrsScaleUp) {
     // It should scale up from 0.8 to 0.85
     EXPECT_FLOAT_EQ(manager.getScale(), 0.85f);
 }
+
+TEST(DrsManagerTest, WindowSlidingAndErase) {
+    DrsManager manager;
+    // Record more frames than the window size to trigger sliding window erase
+    for (size_t i = 0; i < DrsManager::FRAME_TIME_WINDOW_SIZE + 5; ++i) {
+        manager.recordFrameTimeAndEvaluate(16.0f);
+    }
+}
+

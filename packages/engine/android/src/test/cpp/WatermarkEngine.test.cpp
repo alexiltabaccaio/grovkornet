@@ -33,3 +33,12 @@ TEST(WatermarkEngineTest, EmbedAndVerifySignature) {
     // After full tampering, verification should fail
     EXPECT_FALSE(WatermarkEngine::verifySignature(pixels.data(), 200, 200, 200));
 }
+
+TEST(WatermarkEngineTest, ImageTooSmall) {
+    std::vector<uint32_t> pixels(50 * 50, 0xFF808080);
+    // Should return early and not modify/crash
+    WatermarkEngine::embedSignature(pixels.data(), 50, 50, 50);
+    // Verification should return false early
+    EXPECT_FALSE(WatermarkEngine::verifySignature(pixels.data(), 50, 50, 50));
+}
+

@@ -1,5 +1,6 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
+apply plugin: 'jacoco'
 
 group = 'com.grovkornet.nativefilmcamera'
 version = '1.0.0'
@@ -195,4 +196,30 @@ dependencies {
   androidTestImplementation 'androidx.test:runner:1.5.2'
   androidTestImplementation 'androidx.test:rules:1.5.0'
   androidTestImplementation 'androidx.test.ext:junit:1.1.5'
+}
+
+jacoco {
+  toolVersion = "0.8.12"
+}
+
+tasks.withType(Test).configureEach {
+  jacoco.includeNoLocationClasses = true
+  jacoco.excludes = ['jdk.internal.*']
+}
+
+task jacocoTestReport(type: JacocoReport, dependsOn: ['testDebugUnitTest']) {
+  reports {
+    xml.required = true
+    html.required = true
+  }
+
+  def fileFilter = ['**/R.class', '**/R$*.class', '**/BuildConfig.*', '**/Manifest*.*', '**/*Test*.*', 'android/**/*.*']
+  def debugTree = fileTree(dir: "${buildDir}/tmp/kotlin-classes/debug", excludes: fileFilter)
+  def mainSrc = "${projectDir}/src/main/java"
+
+  sourceDirectories.setFrom(files([mainSrc]))
+  classDirectories.setFrom(files([debugTree]))
+  executionData.setFrom(fileTree(dir: "$buildDir", include: [
+    "jacoco/testDebugUnitTest.exec"
+  ]))
 }

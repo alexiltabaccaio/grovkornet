@@ -122,6 +122,9 @@ if (EXISTS "${ANDROID_NDK}/sources/third_party/googletest")
     )
     
     # Include headers
+    target_compile_options(grovkornet-engine-tests PRIVATE -fprofile-instr-generate -fcoverage-mapping)
+    target_link_options(grovkornet-engine-tests PRIVATE -fprofile-instr-generate)
+
     target_include_directories(grovkornet-engine-tests PRIVATE
         src/main/cpp
         src/main/cpp/core

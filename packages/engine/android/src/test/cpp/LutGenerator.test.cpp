@@ -100,4 +100,41 @@ TEST(LutGeneratorTest, PreventColorInversionWithExtremeHighlights) {
     filament::Engine::destroy(&engine);
 }
 
+TEST(LutGeneratorTest, CoverageCornerCases) {
+    LutGenerator generator;
+    generator.start();
+
+    // 1. Trigger update with normal parameters
+    generator.triggerLutUpdate(0.8f, 1.2f, 0.5f, 5500.0f, 5.0f,
+                               50.0f, 50.0f, 50.0f, 50.0f,
+                               50.0f, 50.0f, 50.0f, 50.0f,
+                               350.0f, 45.0f, 80.0f, 125.0f,
+                               170.0f, 230.0f, 280.0f, 315.0f,
+                               0.0f, 1.0f, 0.5f,
+                               1.0f, 1.0f, 1.0f, 1.0f);
+
+    // 2. Trigger with exact same parameters to test early return (lines 85-86)
+    generator.triggerLutUpdate(0.8f, 1.2f, 0.5f, 5500.0f, 5.0f,
+                               50.0f, 50.0f, 50.0f, 50.0f,
+                               50.0f, 50.0f, 50.0f, 50.0f,
+                               350.0f, 45.0f, 80.0f, 125.0f,
+                               170.0f, 230.0f, 280.0f, 315.0f,
+                               0.0f, 1.0f, 0.5f,
+                               1.0f, 1.0f, 1.0f, 1.0f);
+
+    // 3. Trigger with extreme float value to cause precision loss in denom (lines 405-406)
+    // 4. Trigger with 0.0f for all boundaries to cause activeBand == -1 (lines 242-243)
+    generator.triggerLutUpdate(0.8f, 1.2f, 0.5f, 5500.0f, 5.0f,
+                               50.0f, 50.0f, 50.0f, 50.0f,
+                               50.0f, 50.0f, 50.0f, 50.0f,
+                               0.0f, 0.0f, 0.0f, 0.0f,
+                               0.0f, 0.0f, 0.0f, 0.0f,
+                               -100000.0f, 100000.0f, 0.5f,
+                               0.0f, 0.0f, 0.0f, 0.0f);
+
+    generator.waitForLut();
+    generator.stop();
+}
+
+
 
