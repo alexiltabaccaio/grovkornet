@@ -62,11 +62,12 @@ export const QuickPresetSelector = () => {
         disabled={!areArrowsEnabled}
         style={[styles.arrowButton, !areArrowsEnabled && styles.disabledArrow]}
         accessibilityLabel="Previous preset"
+        hitSlop={{ left: 30, right: 70 }}
       >
         <Ionicons name="chevron-back" size={12} color="rgba(255, 255, 255, 0.4)" />
       </TouchableOpacity>
 
-      <View style={styles.textContainer}>
+      <View style={styles.textContainer} pointerEvents="none">
         <Text
           style={[styles.presetText, { color: getPresetColor() }]}
           allowFontScaling={false}
@@ -82,6 +83,7 @@ export const QuickPresetSelector = () => {
         disabled={!areArrowsEnabled}
         style={[styles.arrowButton, !areArrowsEnabled && styles.disabledArrow]}
         accessibilityLabel="Next preset"
+        hitSlop={{ left: 70, right: 30 }}
       >
         <Ionicons name="chevron-forward" size={12} color="rgba(255, 255, 255, 0.4)" />
       </TouchableOpacity>
@@ -106,8 +108,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     justifyContent: 'center',
     alignItems: 'center',
-    minWidth: 80,
-    maxWidth: 150,
+    width: 150,
   },
   presetText: {
     fontSize: 9,
