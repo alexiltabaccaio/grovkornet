@@ -163,7 +163,7 @@ describe('presetActions', () => {
       expect(usePresetStore.getState().activePresetId).toBe('user-1');
     });
 
-    it('clears customized state when applying a non-customized preset', () => {
+    it('preserves customized state when applying a non-customized preset', () => {
       const customPayload = {
         film: { ...DEFAULT_FILM_PAYLOAD, contrast: 1.8 },
         body: { ...DEFAULT_BODY_PAYLOAD, ev: 1.0 },
@@ -176,8 +176,8 @@ describe('presetActions', () => {
       applyPreset('default');
 
       const store = usePresetStore.getState();
-      expect(store.customizedPayload).toBeNull();
-      expect(store.customizedThumbnailUri).toBeNull();
+      expect(store.customizedPayload).toEqual(customPayload);
+      expect(store.customizedThumbnailUri).toBe('file:///thumb.jpg');
     });
   });
 

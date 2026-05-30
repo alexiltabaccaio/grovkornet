@@ -128,10 +128,9 @@ export const applyPreset = (id: string): void => {
   store.setApplyingPreset(true);
   store.setActivePresetId(id);
 
-  if (id !== 'customized') {
-    store.setCustomizedPayload(null);
-    store.setCustomizedThumbnailUri(null);
-  }
+  // Do not clear customized payload/thumbnail when switching presets,
+  // so the user can easily switch back to their "Personalizzato" preset
+  // without losing their unsaved changes.
 
   // Safe Merge & direct update of Film shared values
   const filmStore = useFilmStore.getState();
