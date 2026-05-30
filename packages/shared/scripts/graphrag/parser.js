@@ -20,6 +20,8 @@ export function parseFile(filePath) {
     parser.setLanguage(Kotlin);
   } else if (ext === '.cpp' || ext === '.h') {
     parser.setLanguage(Cpp);
+  } else if (ext === '.mat') {
+    return { isMat: true, text: sourceCode };
   } else {
     // Default to TSX/TypeScript
     parser.setLanguage(TypeScript.tsx);
@@ -54,7 +56,7 @@ export function scanDirectory(dirPath) {
     } else {
       const ext = path.extname(filePath);
       if (
-        (ext === '.ts' || ext === '.tsx' || ext === '.kt' || ext === '.cpp' || ext === '.h') && 
+        (ext === '.ts' || ext === '.tsx' || ext === '.kt' || ext === '.cpp' || ext === '.h' || ext === '.mat') && 
         !filePath.endsWith('.d.ts')
       ) {
         results.push(filePath);

@@ -2,6 +2,7 @@ import { parseFile, scanDirectory } from './parser.js';
 import * as typescriptLang from './languages/typescript.js';
 import * as kotlinLang from './languages/kotlin.js';
 import * as cppLang from './languages/cpp.js';
+import * as filamentLang from './languages/filament.js';
 import graphology from 'graphology';
 import fs from 'fs';
 import path from 'path';
@@ -48,6 +49,7 @@ const languageHandlers = {
   '.kt': kotlinLang,
   '.cpp': cppLang,
   '.h': cppLang,
+  '.mat': filamentLang,
 };
 
 function getLanguageHandler(filePath) {
@@ -75,7 +77,7 @@ for (const file of allFiles) {
     // Register exported symbols as nodes in the graph
     for (const exportName of exports) {
       let symbolId;
-      if (exportName.startsWith('jni:') || exportName.startsWith('expo-module:')) {
+      if (exportName.startsWith('jni:') || exportName.startsWith('expo-module:') || exportName.startsWith('filament-shader:')) {
         symbolId = exportName;
       } else {
         symbolId = `${relPath}:${exportName}`;
@@ -86,6 +88,8 @@ for (const file of allFiles) {
           graph.addNode(symbolId, { type: 'jni-symbol', name: exportName.replace('jni:', ''), file: relPath });
         } else if (exportName.startsWith('expo-module:')) {
           graph.addNode(symbolId, { type: 'expo-module', name: exportName.replace('expo-module:', ''), file: relPath });
+        } else if (exportName.startsWith('filament-shader:')) {
+          graph.addNode(symbolId, { type: 'filament-shader', name: exportName.replace('filament-shader:', ''), file: relPath });
         } else {
           graph.addNode(symbolId, { type: 'export', name: exportName, file: relPath });
         }
@@ -115,7 +119,7 @@ for (const file of allFiles) {
     const dependencies = handler.extractDependencies(tree);
     
     for (const dep of dependencies) {
-      const { source, symbols, isExpoModule, isJni } = dep;
+      const { source, symbols, isExpoModule, isJni, isFilamentShader } = dep;
       
       // Map Expo Native Module dependency
       if (isExpoModule) {
@@ -138,6 +142,19 @@ for (const file of allFiles) {
         }
         if (!graph.hasEdge(relPath, jniSymbolId)) {
           graph.addEdge(relPath, jniSymbolId, { relation: 'calls_native' });
+        }
+        continue;
+      }
+
+      // Map Filament Shader dependency
+      if (isFilamentShader) {
+        const shaderName = source.split(':')[1];
+        const shaderNodeId = `filament-shader:${shaderName}`;
+        if (!graph.hasNode(shaderNodeId)) {
+          graph.addNode(shaderNodeId, { type: 'filament-shader', name: shaderName });
+        }
+        if (!graph.hasEdge(relPath, shaderNodeId)) {
+          graph.addEdge(relPath, shaderNodeId, { relation: 'uses_shader' });
         }
         continue;
       }

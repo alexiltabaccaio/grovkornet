@@ -105,6 +105,22 @@ export function extractDependencies(tree) {
     }
   }
 
+  // Look for references to Filament Shaders in string literals
+  const stringLiterals = findNodesByType(tree.rootNode, 'string_literal');
+  for (const strNode of stringLiterals) {
+    const text = strNode.text.slice(1, -1); // strip quotes
+    if (text.endsWith('Shader') || text.startsWith('FilmShader')) {
+      // Exclude strings with spaces, slashes or special characters (likely logs or paths)
+      if (!/\s|\/|\\|!/.test(text)) {
+        dependencies.push({
+          source: `filament-shader:${text}`,
+          symbols: [],
+          isFilamentShader: true
+        });
+      }
+    }
+  }
+
   return dependencies;
 }
 
