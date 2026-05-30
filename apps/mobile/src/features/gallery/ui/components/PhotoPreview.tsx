@@ -109,7 +109,7 @@ const styles = StyleSheet.create({
     height: '100%',
     borderRadius: 0,
     overflow: 'hidden',
-    backgroundColor: '#111',
+    backgroundColor: '#0e0e0e',
     position: 'relative',
   },
 });

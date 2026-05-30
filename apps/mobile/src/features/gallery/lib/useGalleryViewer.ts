@@ -58,7 +58,7 @@ export const useGalleryViewer = (initialUri?: string | null) => {
   return {
     photos: permissionGranted ? photos : [],
     selectedPhoto,
-    loading,
+    loading: loading || (photos.length > 0 && !selectedPhoto),
     onPhotoVisible,
     onSelectPhoto,
   };

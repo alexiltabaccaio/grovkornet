@@ -248,7 +248,7 @@ bool FrameRenderer::renderLiveFrame(GrovkornetEngine& gEngine, const RenderParam
             gEngine.renderer->endFrame();
         }
     }
-    // Flush UI commands asynchronously (don't block the render thread!)
+    // Flush UI commands asynchronously (don't block the render thread!)
     gEngine.engine->flush();
 
     auto end = std::chrono::high_resolution_clock::now();

@@ -100,6 +100,12 @@ bool GrovkornetEngine::init(AAssetManager* assetManager) {
     
     renderer = engine->createRenderer();
     
+    // Set clear color to #0e0e0e to fill letterboxing margins automatically
+    filament::Renderer::ClearOptions clearOpts;
+    clearOpts.clearColor = {0.05490196f, 0.05490196f, 0.05490196f, 1.0f};
+    clearOpts.clear = true;
+    renderer->setClearOptions(clearOpts);
+    
     // Create views and scenes
     view = engine->createView();
     scene = engine->createScene();

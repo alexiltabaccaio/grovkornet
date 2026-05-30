@@ -1,6 +1,7 @@
-import React from 'react';
-import { StyleSheet, Text, View, ActivityIndicator, Platform } from 'react-native';
-import Animated, { useAnimatedStyle, SharedValue } from 'react-native-reanimated';
+import React, { useState, useEffect } from 'react';
+import { StyleSheet, Text, View, ActivityIndicator, Platform, useWindowDimensions } from 'react-native';
+import { Image } from 'expo-image';
+import Animated, { useAnimatedStyle, SharedValue, interpolate } from 'react-native-reanimated';
 import { useTranslation } from 'react-i18next';
 import { ShareButton, PhotoPreview, GalleryStrip, useGalleryViewer } from '@features/gallery';
 import { useDeviceRotation } from '@shared/lib/hooks/useDeviceRotation';
@@ -17,15 +18,49 @@ export const GalleryViewer = ({ onClose, initialUri, galleryTransition, header }
   const { t } = useTranslation();
   const { photos, selectedPhoto, loading, onPhotoVisible, onSelectPhoto } = useGalleryViewer(initialUri);
   const rotationY = useDeviceRotation();
+  const { width, height } = useWindowDimensions();
 
   const isVerified = useVerificationStore(state =>
     selectedPhoto ? !!state.verifiedMap[selectedPhoto.uri] : false
   );
 
+  const [showPlaceholder, setShowPlaceholder] = useState(true);
+
+  useEffect(() => {
+    if (!loading) {
+      // Delay unmounting the placeholder to allow PhotoPreview to render completely,
+      // avoiding the React component unmount/mount black screen flash.
+      const timer = setTimeout(() => setShowPlaceholder(false), 50);
+      return () => clearTimeout(timer);
+    } else {
+      setShowPlaceholder(true);
+    }
+  }, [loading]);
+
   const animatedContainerStyle = useAnimatedStyle(() => {
     if (!galleryTransition) return {};
     return {
       opacity: galleryTransition.value,
+    };
+  });
+
+  const animatedPlaceholderStyle = useAnimatedStyle(() => {
+    if (!galleryTransition) return {};
+    const t = galleryTransition.value;
+    
+    // Animate from thumbnail approximate position (bottom left) to center screen
+    const translateX = interpolate(t, [0, 1], [-80, 0]);
+    const translateY = interpolate(t, [0, 1], [height / 2 - 120, 0]);
+    const scale = interpolate(t, [0, 1], [50 / width, 1]);
+    
+    return {
+      transform: [
+        { translateX },
+        { translateY },
+        { scale }
+      ],
+      borderRadius: interpolate(t, [0, 1], [8, 0]),
+      overflow: 'hidden',
     };
   });
 
@@ -36,46 +71,69 @@ export const GalleryViewer = ({ onClose, initialUri, galleryTransition, header }
       </View>
       <View style={styles.safeArea} pointerEvents="box-none">
         
-        {/* Loading Gallery View */}
-        {loading ? (
-          <View style={styles.center}>
-            <ActivityIndicator size="large" color="#FF5722" />
-            <Text style={styles.loadingText}>{t('gallery.loading', 'Loading gallery...')}</Text>
-          </View>
-        ) : (
-          <View style={styles.content}>
+        {/* Main Content (Always rendered so layout is stable from frame 1) */}
+        <View style={styles.content}>
+          
+          {/* Main Preview Area */}
+          <View style={styles.previewContainer}>
             
-            {/* Main Preview Area */}
-            <View style={styles.previewContainer}>
-              <PhotoPreview
-                selectedPhoto={selectedPhoto}
-                photos={photos}
-                onPhotoVisible={onPhotoVisible}
-                rotationY={rotationY}
-              />
-              
-              {/* Share Instagram Action */}
-              {selectedPhoto && (
-                <View style={styles.shareContainer}>
-                  <ShareButton
-                    id={selectedPhoto.id}
-                    uri={selectedPhoto.uri}
-                    isVerified={isVerified}
-                  />
-                </View>
-              )}
-            </View>
+            {/* Real Gallery Image (mounted underneath) */}
+            {!loading && (
+              <>
+                <PhotoPreview
+                  selectedPhoto={selectedPhoto}
+                  photos={photos}
+                  onPhotoVisible={onPhotoVisible}
+                  rotationY={rotationY}
+                />
+                
+                {/* Share Instagram Action */}
+                {selectedPhoto && (
+                  <View style={styles.shareContainer}>
+                    <ShareButton
+                      id={selectedPhoto.id}
+                      uri={selectedPhoto.uri}
+                      isVerified={isVerified}
+                    />
+                  </View>
+                )}
+              </>
+            )}
 
-            {/* Media Gallery Strip */}
-            <GalleryStrip
-              photos={photos}
-              selectedPhoto={selectedPhoto}
-              onSelectPhoto={onSelectPhoto}
-              onClose={onClose}
-              galleryTransition={galleryTransition}
-            />
+            {/* Placeholder Overlay (sits EXACTLY over PhotoPreview) */}
+            {showPlaceholder && (
+              <View style={[StyleSheet.absoluteFillObject, styles.center]} pointerEvents="none">
+                {initialUri ? (
+                  <Animated.View style={[StyleSheet.absoluteFillObject, animatedPlaceholderStyle]}>
+                    <Image
+                      source={{ uri: initialUri }}
+                      style={StyleSheet.absoluteFillObject}
+                      contentFit="contain"
+                      transition={0}
+                      cachePolicy="memory-disk"
+                      testID="gallery-placeholder-image"
+                    />
+                  </Animated.View>
+                ) : loading ? (
+                  <>
+                    <ActivityIndicator size="large" color="#FF5722" />
+                    <Text style={styles.loadingText}>{t('gallery.loading', 'Loading gallery...')}</Text>
+                  </>
+                ) : null}
+              </View>
+            )}
+
           </View>
-        )}
+
+          {/* Media Gallery Strip (Always rendered so it animates in correctly) */}
+          <GalleryStrip
+            photos={photos}
+            selectedPhoto={selectedPhoto}
+            onSelectPhoto={onSelectPhoto}
+            onClose={onClose}
+            galleryTransition={galleryTransition}
+          />
+        </View>
       </View>
 
     </Animated.View>
@@ -93,7 +151,7 @@ const styles = StyleSheet.create({
     zIndex: 999,
   },
   topArea: {
-    backgroundColor: '#000',
+    backgroundColor: '#0e0e0e',
   },
   safeArea: {
     flex: 1,
@@ -103,6 +161,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: '#0e0e0e',
   },
 
   loadingText: {
@@ -119,7 +178,7 @@ const styles = StyleSheet.create({
     padding: 0,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#000',
+    backgroundColor: '#0e0e0e',
   },
   shareContainer: {
     position: 'absolute',

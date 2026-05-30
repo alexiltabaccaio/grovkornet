@@ -32,7 +32,7 @@ describe('GalleryViewer', () => {
     });
   });
 
-  it('renders loading state correctly', () => {
+  it('renders loading state with spinner when initialUri is null', () => {
     mockUseGalleryViewer.mockReturnValue({
       photos: [],
       selectedPhoto: null,
@@ -47,6 +47,26 @@ describe('GalleryViewer', () => {
 
     expect(toJSON()).toBeDefined();
     expect(getByText('gallery.loading')).toBeTruthy();
+  });
+
+  it('renders loading state with preview image and no spinner when initialUri is provided', () => {
+    mockUseGalleryViewer.mockReturnValue({
+      photos: [],
+      selectedPhoto: null,
+      loading: true,
+      onPhotoVisible: jest.fn(),
+      onSelectPhoto: jest.fn(),
+    });
+
+    const testUri = 'file:///test/preview.jpg';
+    const { toJSON, queryByText, getByTestId } = render(
+      <GalleryViewer onClose={jest.fn()} initialUri={testUri} />
+    );
+
+    expect(toJSON()).toBeDefined();
+    expect(queryByText('gallery.loading')).toBeNull();
+    expect(getByTestId('gallery-placeholder-image')).toBeTruthy();
+    expect(getByTestId('gallery-placeholder-image').props.source.uri).toBe(testUri);
   });
 
   it('renders content when not loading', () => {
