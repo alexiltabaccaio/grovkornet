@@ -10,7 +10,7 @@ import { Viewfinder } from '@widgets/viewfinder';
 import { Header } from '@widgets/header';
 import { ShutterButton, CameraFlipButton } from '@features/body-controls';
 import { GestureController } from '@features/lens-controls';
-import { DebugOverlay, AddPresetModal } from '@features/system-settings';
+import { DebugOverlay, AddPresetModal, QuickPresetSelector } from '@features/system-settings';
 import { CaptureThumbnail, useGalleryPrefetch } from '@features/gallery';
 import { GalleryViewer } from '@widgets/gallery-viewer';
 import { logger } from '@shared/lib/logger';
@@ -135,12 +135,17 @@ const CameraScreenContent = () => {
       {isDebugEnabled && <DebugOverlay />}
       
       <Animated.View style={[styles.bottomControlsContainer, animatedBottomControlsStyle]} pointerEvents="box-none">
-        <View style={styles.sideControl} pointerEvents="box-none">
-          <CaptureThumbnail onPress={openGallery} />
+        <View style={styles.controlsRow} pointerEvents="box-none">
+          <View style={styles.sideControl} pointerEvents="box-none">
+            <CaptureThumbnail onPress={openGallery} />
+          </View>
+          <ShutterButton onPress={triggerCapture} translateY={footerTranslateY} />
+          <View style={styles.sideControl} pointerEvents="box-none">
+            <CameraFlipButton />
+          </View>
         </View>
-        <ShutterButton onPress={triggerCapture} translateY={footerTranslateY} />
-        <View style={styles.sideControl} pointerEvents="box-none">
-          <CameraFlipButton />
+        <View style={styles.presetSelectorContainer} pointerEvents="box-none">
+          <QuickPresetSelector />
         </View>
       </Animated.View>
 
@@ -172,13 +177,22 @@ const styles = StyleSheet.create({
   },
   bottomControlsContainer: {
     position: 'absolute',
-    bottom: 100,
+    bottom: 96,
     left: 0,
     right: 0,
-    flexDirection: 'row',
+    flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
     zIndex: 50,
+  },
+  controlsRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '100%',
+  },
+  presetSelectorContainer: {
+    marginTop: 16,
   },
   sideControl: {
     width: 80,

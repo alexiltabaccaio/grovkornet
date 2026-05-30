@@ -10,7 +10,6 @@ import Animated, { useDerivedValue, SharedValue, useSharedValue, withSpring } fr
 import { GestureDetector, Gesture } from 'react-native-gesture-handler';
 import { useVerificationStore } from '@entities/verification';
 import { FlashOverlay } from '@features/body-controls';
-import { QuickPresetSelector } from '@features/system-settings';
 import { useCameraCapture } from '../lib/useCameraCapture';
 import { useCameraEvents } from '../lib/useCameraEvents';
 
@@ -285,9 +284,6 @@ export const Viewfinder = React.memo(({ cameraKey, translateY, drawerAnimation }
         </Animated.View>
       </GestureDetector>
       <FlashOverlay />
-      <View style={styles.selectorContainer}>
-        <QuickPresetSelector />
-      </View>
     </View>
   );
 });
@@ -300,14 +296,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     overflow: 'hidden',
-  },
-  selectorContainer: {
-    position: 'absolute',
-    top: 8,
-    left: 0,
-    right: 0,
-    alignItems: 'center',
-    zIndex: 100,
   },
 });
 

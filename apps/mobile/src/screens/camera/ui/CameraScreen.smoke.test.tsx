@@ -76,6 +76,7 @@ jest.mock('@features/lens-controls', () => {
 jest.mock('@features/system-settings', () => ({
   DebugOverlay: 'DebugOverlay',
   AddPresetModal: 'AddPresetModal',
+  QuickPresetSelector: 'QuickPresetSelector',
 }));
 
 jest.mock('react-native-reanimated', () => {
