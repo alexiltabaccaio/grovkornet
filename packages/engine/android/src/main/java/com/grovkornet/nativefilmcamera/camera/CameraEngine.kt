@@ -75,7 +75,7 @@ class CameraEngine(
             }
             return
         }
-        activeCamera?.let { controlManager.updateControls(it) }
+        activeCamera?.let { controlManager.updateControls(it, sessionManager.currentBaseZoom) }
     }
 
     fun takePicture() {

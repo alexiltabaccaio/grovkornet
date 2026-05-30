@@ -4,6 +4,8 @@ import { updateSharedValue } from '@shared/lib/reanimated/safeUpdate';
 import { DEFAULT_EV } from '@grovkornet/shared';
 
 export const useBodyWorklets = () => {
+  const capabilities = useBodyStore((state) => state.capabilities);
+
   return useMemo(() => {
     const body = useBodyStore.getState();
 
@@ -38,11 +40,20 @@ export const useBodyWorklets = () => {
       updateSharedValue(body.torchStrength, value);
     };
 
+    const updateZoom = (value: number) => {
+      'worklet';
+      const minZoom = capabilities.minZoom ?? 1.0;
+      const maxZoom = capabilities.maxZoom ?? 1.0;
+      const capped = Math.min(Math.max(value, minZoom), maxZoom);
+      updateSharedValue(body.zoom, capped);
+    };
+
     return {
       updateIso,
       updateEv,
       updateShutterSpeed,
       updateTorchStrength,
+      updateZoom,
     };
-  }, []);
+  }, [capabilities.minZoom, capabilities.maxZoom]);
 };

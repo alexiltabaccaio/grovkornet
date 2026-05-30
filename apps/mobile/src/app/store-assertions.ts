@@ -82,7 +82,8 @@ type BodyActionsKeys =
   | 'setFpsSetting'
   | 'setPreviewIn4k'
   | 'setForce4k60fpsCrop'
-  | 'setCapabilities';
+  | 'setCapabilities'
+  | 'setZoom';
 
 type BodyExcludedKeys =
   | 'fps'
@@ -95,7 +96,8 @@ type BodyExcludedKeys =
   | 'fpsSetting'
   | 'previewIn4k'
   | 'force4k60fpsCrop'
-  | 'capabilities';
+  | 'capabilities'
+  | 'zoom';
 
 type IsBodyStoreFullyCategorized = Exclude<
   keyof BodyStore,

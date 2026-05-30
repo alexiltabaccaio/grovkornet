@@ -16,6 +16,7 @@ class CameraConfigurationTest {
         assertEquals(400, config.iso)
         assertNull(config.cameraId)
         assertFalse(config.previewIn4k)
+        assertEquals(1.0f, config.zoom)
     }
 
     @Test
@@ -24,6 +25,7 @@ class CameraConfigurationTest {
         config.iso = 800
         config.isoAuto = false
         config.saturation = 0.5f
+        config.zoom = 2.0f
         config.satRed = 80.0f
         config.satBlue = 20.0f
         config.previewIn4k = true
@@ -31,6 +33,7 @@ class CameraConfigurationTest {
         assertEquals(800, config.iso)
         assertFalse(config.isoAuto)
         assertEquals(0.5f, config.saturation)
+        assertEquals(2.0f, config.zoom)
         assertEquals(80.0f, config.satRed)
         assertEquals(20.0f, config.satBlue)
         assertTrue(config.previewIn4k)

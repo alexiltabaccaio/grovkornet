@@ -8,7 +8,7 @@ import { SliderDetailPanel } from './components/SliderDetailPanel';
 import { LanguageDetailPanel, DebugDetailPanel, PresetsDetailPanel, VibrationDetailPanel } from '@features/system-settings';
 import { NoiseReductionDetailPanel, GrainDetailPanel, SaturationDetailPanel, ContrastDetailPanel } from '@features/film-controls';
 import { LensSelectionDetailPanel, ChromaticAberrationDetailPanel } from '@features/lens-controls';
-import { AspectRatioDetailPanel, FpsDetailPanel, ResolutionDetailPanel, TorchDetailPanel } from '@features/body-controls';
+import { AspectRatioDetailPanel, FpsDetailPanel, ResolutionDetailPanel, TorchDetailPanel, ZoomControl } from '@features/body-controls';
 
 interface ParameterDetailPanelsProps {
   translateY: SharedValue<number>;
@@ -124,6 +124,18 @@ export const ParameterDetailPanels = React.memo(({ translateY }: ParameterDetail
             />
             <Animated.View style={[styles.childSubContainer, animatedStyle]}>
               <ContrastDetailPanel />
+            </Animated.View>
+          </>
+        );
+      case 'zoom':
+        return (
+          <>
+            <SliderDetailPanel
+              parameter="zoom"
+              parameterDetailPanelAnimatedStyle={parameterDetailPanelAnimatedStyle}
+            />
+            <Animated.View style={[styles.childSubContainer, animatedStyle]}>
+              <ZoomControl />
             </Animated.View>
           </>
         );

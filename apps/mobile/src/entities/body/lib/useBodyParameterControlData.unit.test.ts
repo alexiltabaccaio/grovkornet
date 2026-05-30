@@ -10,6 +10,11 @@ describe('useBodyParameterControlData', () => {
     body.setShutterSpeedAuto(true);
     body.setIso(800);
     body.setEv(0);
+    body.setCapabilities({
+      minZoom: 1.0,
+      maxZoom: 4.0,
+    });
+    body.setZoom(1.0);
   });
 
   it('maps "iso" parameter correctly', () => {
@@ -85,5 +90,27 @@ describe('useBodyParameterControlData', () => {
     // Test reset
     result.current.onReset?.();
     expect(useBodyStore.getState().shutterSpeedAuto.value).toBe(true);
+  });
+
+  it('maps "zoom" parameter correctly', () => {
+    const { result } = renderHook(() => useBodyParameterControlData('zoom'));
+
+    expect(result.current).toBeDefined();
+    expect(result.current.minValue).toBe(1.0);
+    expect(result.current.maxValue).toBe(4.0);
+    expect(result.current.autoValueText).toBe('AUTO');
+    expect(result.current.hideValueInAuto).toBe(false);
+
+    // Test onChange
+    result.current.onChange(2.5);
+    expect(useBodyStore.getState().zoom.value).toBe(2.5);
+
+    // Test formatter
+    const formatted = result.current.valueFormatter(2.45);
+    expect(formatted).toBe('2.5x');
+
+    // Test reset
+    result.current.onReset?.();
+    expect(useBodyStore.getState().zoom.value).toBe(1.0);
   });
 });

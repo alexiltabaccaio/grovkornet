@@ -32,6 +32,7 @@ export const GestureController = ({ children }: GestureControllerProps) => {
       });
 
     const pan = Gesture.Pan()
+      .maxPointers(1)
       .onChange((event) => {
         if (activeSection !== 'none' && event.translationY < 0) {
           translateY.value = event.translationY;

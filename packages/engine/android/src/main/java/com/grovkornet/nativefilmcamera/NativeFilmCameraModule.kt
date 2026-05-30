@@ -301,6 +301,10 @@ class NativeFilmCameraModule : Module() {
       Prop("pivotAuto") { view: NativeFilmCameraView, value: Boolean ->
         view.updateEffect { pivotAuto = value }
       }
+
+      Prop("zoom") { view: NativeFilmCameraView, value: Float ->
+        if (view.config.zoom != value) view.updateHardware { zoom = value }
+      }
       // @@GEN_PROPS_END@@
 
       AsyncFunction("takePhoto") { view: NativeFilmCameraView ->

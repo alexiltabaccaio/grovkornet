@@ -1,12 +1,13 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { useShallow } from 'zustand/react/shallow';
-import { useBodyStore } from '@entities/body';
+import { useBodyStore, useBodyWorklets } from '@entities/body';
 import { useLensStore } from '@entities/lens';
 import { useFilmStore } from '@entities/film';
 import { useSystemStore } from '@entities/system';
 import { NativeRenderer } from '@entities/lens';
-import { useDerivedValue, SharedValue, useSharedValue } from 'react-native-reanimated';
+import Animated, { useDerivedValue, SharedValue, useSharedValue, withSpring } from 'react-native-reanimated';
+import { GestureDetector, Gesture } from 'react-native-gesture-handler';
 import { useVerificationStore } from '@entities/verification';
 import { FlashOverlay } from '@features/body-controls';
 import { QuickPresetSelector } from '@features/system-settings';
@@ -34,6 +35,7 @@ export const Viewfinder = React.memo(({ cameraKey, translateY, drawerAnimation }
     fpsSetting,
     previewIn4k,
     force4k60fpsCrop,
+    zoom,
   } = useBodyStore.getState();
 
   const {
@@ -182,13 +184,36 @@ export const Viewfinder = React.memo(({ cameraKey, translateY, drawerAnimation }
     return force4k60fpsCrop.value === 1;
   });
 
+  const startZoom = useSharedValue(1.0);
+  const bodyWorklets = useBodyWorklets();
+
+  const gestures = React.useMemo(() => {
+    const pinch = Gesture.Pinch()
+      .onStart(() => {
+        startZoom.value = zoom.value;
+      })
+      .onChange((event) => {
+        bodyWorklets.updateZoom(startZoom.value * event.scale);
+      });
+
+    const doubleTap = Gesture.Tap()
+      .numberOfTaps(2)
+      .onEnd(() => {
+        zoom.value = withSpring(1.0, { damping: 20, stiffness: 150 });
+      });
+
+    return Gesture.Simultaneous(pinch, doubleTap);
+  }, [zoom, bodyWorklets, startZoom]);
+
   return (
     <View style={styles.container} onLayout={handleLayout}>
-      <NativeRenderer
-        ref={cameraRef}
-        key={`camera-${cameraKey}-${isCameraSecure}`}
-        style={StyleSheet.absoluteFill}
-        // @@GEN_PROPS_START@@
+      <GestureDetector gesture={gestures}>
+        <Animated.View style={StyleSheet.absoluteFill}>
+          <NativeRenderer
+            ref={cameraRef}
+            key={`camera-${cameraKey}-${isCameraSecure}`}
+            style={StyleSheet.absoluteFill}
+            // @@GEN_PROPS_START@@
         saturation={saturation as unknown as SharedValue<number | undefined>}
         contrast={contrast as unknown as SharedValue<number | undefined>}
         grainIntensity={grainIntensity as unknown as SharedValue<number | undefined>}
@@ -248,14 +273,17 @@ export const Viewfinder = React.memo(({ cameraKey, translateY, drawerAnimation }
         blackLevelAuto={blackLevelAuto as unknown as SharedValue<boolean | undefined>}
         highlightsAuto={highlightsAuto as unknown as SharedValue<boolean | undefined>}
         pivotAuto={pivotAuto as unknown as SharedValue<boolean | undefined>}
+        zoom={zoom as unknown as SharedValue<number | undefined>}
         // @@GEN_PROPS_END@@
-        panelY={panelY as unknown as SharedValue<number | undefined>}
-        onCapabilitiesUpdate={capabilitiesHandler}
-        onDebugUpdate={debugHandler}
-        onExposureUpdate={exposureHandler}
-        onPhotoCaptured={photoHandler}
-        onTorchStateChanged={torchStateHandler}
-      />
+            panelY={panelY as unknown as SharedValue<number | undefined>}
+            onCapabilitiesUpdate={capabilitiesHandler}
+            onDebugUpdate={debugHandler}
+            onExposureUpdate={exposureHandler}
+            onPhotoCaptured={photoHandler}
+            onTorchStateChanged={torchStateHandler}
+          />
+        </Animated.View>
+      </GestureDetector>
       <FlashOverlay />
       <View style={styles.selectorContainer}>
         <QuickPresetSelector />

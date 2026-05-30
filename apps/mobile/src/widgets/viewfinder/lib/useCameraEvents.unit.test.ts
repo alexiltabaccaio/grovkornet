@@ -115,10 +115,14 @@ describe('useCameraEvents', () => {
     // Test with event payload directly (no nativeEvent wrapper)
     result.current.capabilitiesHandler({
       availableCameras: [{ id: 'back', focalLength: 24, focalLength35mm: 24 }],
+      minZoom: 1.0,
+      maxZoom: 4.0,
     });
 
     expect(useLensStore.getState().capabilities.availableCameras).toEqual([{ id: 'back', focalLength: 24, focalLength35mm: 24 }]);
     expect(mockSetCapabilities).toHaveBeenCalled();
+    expect(useBodyStore.getState().capabilities.minZoom).toBe(1.0);
+    expect(useBodyStore.getState().capabilities.maxZoom).toBe(4.0);
 
     // Test null/undefined check
     expect(() => {

@@ -91,6 +91,13 @@ class HardwareCapabilitiesManager(private val context: Context) {
                 event.putInt("isoMax", range.upper)
             }
 
+            // Zoom range
+            it.cameraInfo.zoomState.value?.let { zoomState ->
+                event.putDouble("minZoom", zoomState.minZoomRatio.toDouble())
+                event.putDouble("maxZoom", zoomState.maxZoomRatio.toDouble())
+            }
+
+
             // Noise Reduction Modes
             info.getCameraCharacteristic(CameraCharacteristics.NOISE_REDUCTION_AVAILABLE_NOISE_REDUCTION_MODES)?.let { modes ->
                 val modesArray = Arguments.createArray()

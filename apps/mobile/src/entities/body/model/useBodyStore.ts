@@ -26,6 +26,7 @@ export const useBodyStore = create<BodyStore>((set, get) => ({
   resolutionSetting: makeMutable(1),
   previewIn4k: makeMutable(0),
   force4k60fpsCrop: makeMutable(1),
+  zoom: makeMutable(1.0),
   // @@GEN_STATE_END@@
   capabilities: {
     hasTorch: false,
@@ -116,11 +117,20 @@ export const useBodyStore = create<BodyStore>((set, get) => ({
   setForce4k60fpsCrop: (value) => {
     get().force4k60fpsCrop.value = value;
   },
+  setZoom: (value) => {
+    get().zoom.value = value;
+  },
   // @@GEN_SETTERS_END@@
   setCapabilities: (caps) => {
     logger.info('BodyStore', 'Hardware capabilities updated for Body');
     if (caps.maxFps && get().fpsSetting.value > caps.maxFps) {
       get().fpsSetting.value = caps.maxFps;
+    }
+    if (caps.maxZoom && get().zoom.value > caps.maxZoom) {
+      get().zoom.value = caps.maxZoom;
+    }
+    if (caps.minZoom && get().zoom.value < caps.minZoom) {
+      get().zoom.value = caps.minZoom;
     }
     set((state) => ({
       capabilities: {

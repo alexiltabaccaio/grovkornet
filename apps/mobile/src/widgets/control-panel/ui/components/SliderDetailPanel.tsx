@@ -30,7 +30,7 @@ const isFilmParameter = (p: ParameterType): p is FilmParameterType => {
 };
 
 const isBodyParameter = (p: ParameterType): p is BodyParameterType => {
-  return ['ev', 'iso', 'shutter_speed'].includes(p);
+  return ['ev', 'iso', 'shutter_speed', 'zoom'].includes(p);
 };
 
 const isLensParameter = (p: ParameterType): p is LensParameterType => {

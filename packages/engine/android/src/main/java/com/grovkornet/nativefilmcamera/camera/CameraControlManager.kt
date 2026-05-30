@@ -29,8 +29,9 @@ class CameraControlManager(
         fun onExposureUpdate(iso: Int, shutterSpeed: Double, focusDistance: Float, noiseReduction: Int)
     }
 
-    fun updateControls(camera: Camera) {
+    fun updateControls(camera: Camera, baseZoom: Float = 1.0f) {
         try {
+            camera.cameraControl.setZoomRatio(baseZoom * config.zoom)
             val control = Camera2CameraControl.from(camera.cameraControl)
             val info = Camera2CameraInfo.from(camera.cameraInfo)
             val builder = CaptureRequestOptions.Builder()

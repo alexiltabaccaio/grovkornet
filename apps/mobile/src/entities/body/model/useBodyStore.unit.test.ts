@@ -6,6 +6,54 @@ describe('useBodyStore', () => {
     const state = useBodyStore.getState();
     expect(state.iso.value).toBe(DEFAULT_ISO);
     expect(state.ev.value).toBe(DEFAULT_EV);
+    expect(state.zoom.value).toBe(1.0);
+  });
+
+  it('sets zoom correctly', () => {
+    const store = useBodyStore.getState();
+    store.setZoom(2.5);
+    expect(useBodyStore.getState().zoom.value).toBe(2.5);
+  });
+
+  it('sets Capabilities and caps zoom if needed', () => {
+    const store = useBodyStore.getState();
+    store.setZoom(5.0);
+    store.setCapabilities({
+      minZoom: 1.0,
+      maxZoom: 4.0,
+    });
+    expect(useBodyStore.getState().zoom.value).toBe(4.0);
+
+    store.setZoom(0.5);
+    store.setCapabilities({
+      minZoom: 1.5,
+      maxZoom: 4.0,
+    });
+    expect(useBodyStore.getState().zoom.value).toBe(1.5);
+  });
+
+  it('sets Capabilities and caps fpsSetting if needed', () => {
+    const store = useBodyStore.getState();
+    store.setFpsSetting(60);
+    store.setCapabilities({
+      hasTorch: true,
+      maxTorchStrength: 1,
+      isoMin: 100,
+      isoMax: 3200,
+      maxFps: 30, // < 60
+    });
+    expect(useBodyStore.getState().capabilities.maxFps).toBe(30);
+    expect(useBodyStore.getState().fpsSetting.value).toBe(30);
+
+    // Capabilities where maxFps is higher
+    store.setCapabilities({
+      hasTorch: true,
+      maxTorchStrength: 1,
+      isoMin: 100,
+      isoMax: 3200,
+      maxFps: 120,
+    });
+    expect(useBodyStore.getState().capabilities.maxFps).toBe(120);
   });
 
   it('sets debug info correctly', () => {

@@ -1341,6 +1341,23 @@
         ],
         "store": "film"
       }
+    },
+    {
+      "name": "zoom",
+      "category": "hardware",
+      "kotlin": {
+        "type": "Float",
+        "default": "1.0f",
+        "propHandler": "if (view.config.zoom != value) view.updateHardware { zoom = value }"
+      },
+      "ts": {
+        "type": "number"
+      },
+      "zustand": {
+        "store": "body",
+        "default": "1.0",
+        "type": "number"
+      }
     }
   ]
 }

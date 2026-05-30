@@ -6,7 +6,7 @@ import { useBodyWorklets } from './useBodyWorklets';
 import { ParameterControlData } from '@shared/lib/parameter/types';
 import { BodyStore } from '../model/types';
 
-export type BodyParameterType = 'ev' | 'iso' | 'shutter_speed';
+export type BodyParameterType = 'ev' | 'iso' | 'shutter_speed' | 'zoom';
 
 type SelectedBodyState = Pick<
   BodyStore,
@@ -20,6 +20,8 @@ type SelectedBodyState = Pick<
   | 'setShutterSpeed'
   | 'shutterSpeedAuto'
   | 'setShutterSpeedAuto'
+  | 'zoom'
+  | 'setZoom'
   | 'capabilities'
 >;
 
@@ -50,6 +52,12 @@ export const useBodyParameterControlData = (
             setShutterSpeed: s.setShutterSpeed,
             shutterSpeedAuto: s.shutterSpeedAuto,
             setShutterSpeedAuto: s.setShutterSpeedAuto,
+          };
+        case 'zoom':
+          return {
+            zoom: s.zoom,
+            setZoom: s.setZoom,
+            capabilities: s.capabilities,
           };
       }
     })
@@ -114,6 +122,21 @@ export const useBodyParameterControlData = (
           autoValueText: 'AUTO',
           onReset: () => body.setShutterSpeedAuto(true),
           onToggleAuto: body.setShutterSpeedAuto,
+        };
+      case 'zoom':
+        return {
+          value: body.zoom,
+          minValue: body.capabilities.minZoom ?? 1.0,
+          maxValue: body.capabilities.maxZoom ?? 1.0,
+          onChange: body.setZoom,
+          onUpdateWorklet: bodyWorklets.updateZoom,
+          valueFormatter: (v: number) => {
+            'worklet';
+            return `${v.toFixed(1)}x`;
+          },
+          hideValueInAuto: false,
+          autoValueText: 'AUTO',
+          onReset: () => body.setZoom(1.0),
         };
     }
   }, [parameter, body, bodyWorklets, isEvDisabled]);

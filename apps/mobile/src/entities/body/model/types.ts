@@ -6,6 +6,8 @@ export interface BodyCapabilities {
   isoMin?: number;
   isoMax?: number;
   maxFps?: number;
+  minZoom?: number;
+  maxZoom?: number;
 }
 
 interface BodyState {
@@ -26,6 +28,7 @@ interface BodyState {
   resolutionSetting: SharedValue<number>;
   previewIn4k: SharedValue<number>;
   force4k60fpsCrop: SharedValue<number>;
+  zoom: SharedValue<number>;
   // @@GEN_STATE_END@@
   capabilities: BodyCapabilities;
 }
@@ -46,6 +49,7 @@ interface BodyActions {
   setResolutionSetting: (value: number) => void;
   setPreviewIn4k: (value: number) => void;
   setForce4k60fpsCrop: (value: number) => void;
+  setZoom: (value: number) => void;
   // @@GEN_ACTIONS_END@@
   setCapabilities: (capabilities: BodyCapabilities) => void;
 }

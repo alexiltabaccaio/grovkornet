@@ -37,6 +37,7 @@ class CameraSessionManager(
     private var cameraProvider: ProcessCameraProvider? = null
     private var camera: Camera? = null
     private var imageCapture: ImageCapture? = null
+    var currentBaseZoom: Float = 1.0f
 
     private val orientationEventListener by lazy {
         object : OrientationEventListener(context) {
@@ -139,9 +140,9 @@ class CameraSessionManager(
 
             camera = provider.bindToLifecycle(lifecycleOwner, selector, preview, imageCapture)
 
-            targetZoomRatio?.let {
-                camera?.cameraControl?.setZoomRatio(it)
-            }
+            currentBaseZoom = targetZoomRatio ?: 1.0f
+            camera?.cameraControl?.setZoomRatio(currentBaseZoom * config.zoom)
+
 
             camera?.let {
                 listener.onCameraReady(it, imageCapture!!)

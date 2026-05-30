@@ -13,6 +13,11 @@ describe('useBodyWorklets', () => {
     body.setEv(DEFAULT_EV);
     body.setShutterSpeed(DEFAULT_SHUTTER_SPEED);
     body.setTorchStrength(1.0);
+    body.setCapabilities({
+      minZoom: 1.0,
+      maxZoom: 4.0,
+    });
+    body.setZoom(1.0);
   });
 
   it('correctly updates ISO and related modes in updateIso worklet', () => {
@@ -64,5 +69,23 @@ describe('useBodyWorklets', () => {
 
     const state = useBodyStore.getState();
     expect(state.torchStrength.value).toBe(0.5);
+  });
+
+  it('correctly updates zoom in updateZoom worklet', () => {
+    const { result } = renderHook(() => useBodyWorklets());
+    const worklets = result.current;
+
+    worklets.updateZoom(2.5);
+
+    const state = useBodyStore.getState();
+    expect(state.zoom.value).toBe(2.5);
+
+    // Test capping at maxZoom
+    worklets.updateZoom(5.0);
+    expect(useBodyStore.getState().zoom.value).toBe(4.0);
+
+    // Test capping at minZoom
+    worklets.updateZoom(0.5);
+    expect(useBodyStore.getState().zoom.value).toBe(1.0);
   });
 });
