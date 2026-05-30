@@ -162,6 +162,23 @@ describe('presetActions', () => {
       expect(useBodyStore.getState().iso.value).toBe(400);
       expect(usePresetStore.getState().activePresetId).toBe('user-1');
     });
+
+    it('clears customized state when applying a non-customized preset', () => {
+      const customPayload = {
+        film: { ...DEFAULT_FILM_PAYLOAD, contrast: 1.8 },
+        body: { ...DEFAULT_BODY_PAYLOAD, ev: 1.0 },
+      };
+      usePresetStore.setState({
+        customizedPayload: customPayload,
+        customizedThumbnailUri: 'file:///thumb.jpg',
+      });
+
+      applyPreset('default');
+
+      const store = usePresetStore.getState();
+      expect(store.customizedPayload).toBeNull();
+      expect(store.customizedThumbnailUri).toBeNull();
+    });
   });
 
   describe('markAsCustomized', () => {
@@ -175,6 +192,77 @@ describe('presetActions', () => {
       expect(store.activePresetId).toBe('customized');
       expect(store.customizedPayload?.film.saturation).toBe(1.8);
       expect(store.customizedPayload?.body.iso).toBe(1200);
+    });
+
+    it('switches back to default if manual changes match the default parameters', () => {
+      usePresetStore.setState({
+        activePresetId: 'customized',
+        customizedPayload: {
+          film: { ...DEFAULT_FILM_PAYLOAD, saturation: 1.8 },
+          body: { ...DEFAULT_BODY_PAYLOAD, iso: 1200 },
+        },
+      });
+
+      (useFilmStore.getState().saturation as any).value = DEFAULT_FILM_PAYLOAD.saturation;
+      (useBodyStore.getState().iso as any).value = DEFAULT_BODY_PAYLOAD.iso;
+
+      markAsCustomized();
+
+      const store = usePresetStore.getState();
+      expect(store.activePresetId).toBe('default');
+      expect(store.customizedPayload).toBeNull();
+      expect(store.customizedThumbnailUri).toBeNull();
+    });
+
+    it('switches to matching user preset if manual changes match a user preset', () => {
+      const targetPayload = {
+        film: { ...DEFAULT_FILM_PAYLOAD, saturation: 0.7 },
+        body: { ...DEFAULT_BODY_PAYLOAD, iso: 400 },
+      };
+      const userPreset = {
+        id: 'user-matched',
+        name: 'Matched Preset',
+        payload: targetPayload,
+        isFavorite: false,
+        inQuickSelect: false,
+        createdAt: Date.now(),
+      };
+      usePresetStore.setState({
+        userPresets: [userPreset],
+        activePresetId: 'customized',
+        customizedPayload: {
+          film: { ...DEFAULT_FILM_PAYLOAD, saturation: 1.8 },
+          body: { ...DEFAULT_BODY_PAYLOAD, iso: 1200 },
+        },
+      });
+
+      (useFilmStore.getState().saturation as any).value = 0.7;
+      (useBodyStore.getState().iso as any).value = 400;
+
+      markAsCustomized();
+
+      const store = usePresetStore.getState();
+      expect(store.activePresetId).toBe('user-matched');
+      expect(store.customizedPayload).toBeNull();
+      expect(store.customizedThumbnailUri).toBeNull();
+    });
+
+    it('handles floating point inaccuracies within epsilon tolerance', () => {
+      usePresetStore.setState({
+        activePresetId: 'default',
+      });
+
+      (useFilmStore.getState().saturation as any).value = DEFAULT_FILM_PAYLOAD.saturation + 0.0000002;
+
+      markAsCustomized();
+
+      expect(usePresetStore.getState().activePresetId).toBe('default');
+
+      (useFilmStore.getState().saturation as any).value = DEFAULT_FILM_PAYLOAD.saturation + 0.00002;
+
+      markAsCustomized();
+
+      expect(usePresetStore.getState().activePresetId).toBe('customized');
     });
   });
 

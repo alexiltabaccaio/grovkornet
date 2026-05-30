@@ -35,6 +35,76 @@ export const snapshotCurrentPayload = (): PresetPayload => {
   };
 };
 
+const normalizePayload = (p: PresetPayload): PresetPayload => {
+  const film: Record<string, unknown> = { ...DEFAULT_FILM_PAYLOAD };
+  if (p.film) {
+    Object.keys(p.film).forEach((key) => {
+      const k = key as keyof FilmPresetPayload;
+      if (p.film[k] !== undefined && p.film[k] !== null) {
+        film[k] = p.film[k];
+      }
+    });
+  }
+
+  const body: Record<string, unknown> = { ...DEFAULT_BODY_PAYLOAD };
+  if (p.body) {
+    Object.keys(p.body).forEach((key) => {
+      const k = key as keyof BodyPresetPayload;
+      if (p.body[k] !== undefined && p.body[k] !== null) {
+        body[k] = p.body[k];
+      }
+    });
+  }
+
+  return {
+    film: film as unknown as FilmPresetPayload,
+    body: body as unknown as BodyPresetPayload,
+  };
+};
+
+export const arePayloadsEqual = (p1: PresetPayload, p2: PresetPayload): boolean => {
+  if (!p1 || !p2) return false;
+
+  const n1 = normalizePayload(p1);
+  const n2 = normalizePayload(p2);
+
+  const filmKeys = Object.keys(DEFAULT_FILM_PAYLOAD) as Array<keyof FilmPresetPayload>;
+  for (const key of filmKeys) {
+    // Ignore numeric values of parameters that are in Auto mode for BOTH payloads
+    if ((key === 'temperature' || key === 'tint') && n1.film.temperatureAuto && n2.film.temperatureAuto) continue;
+    if (key === 'contrast' && n1.film.contrastAuto && n2.film.contrastAuto) continue;
+    if (key === 'blackLevel' && n1.film.blackLevelAuto && n2.film.blackLevelAuto) continue;
+    if (key === 'highlights' && n1.film.highlightsAuto && n2.film.highlightsAuto) continue;
+    if (key === 'pivot' && n1.film.pivotAuto && n2.film.pivotAuto) continue;
+    if (key === 'noiseReductionMode' && n1.film.noiseReductionAuto && n2.film.noiseReductionAuto) continue;
+
+    const val1 = n1.film[key];
+    const val2 = n2.film[key];
+    if (typeof val1 === 'number' && typeof val2 === 'number') {
+      if (Math.abs(val1 - val2) >= 0.000001) return false;
+    } else if (val1 !== val2) {
+      return false;
+    }
+  }
+
+  const bodyKeys = Object.keys(DEFAULT_BODY_PAYLOAD) as Array<keyof BodyPresetPayload>;
+  for (const key of bodyKeys) {
+    if (key === 'iso' && n1.body.isoAuto && n2.body.isoAuto) continue;
+    if (key === 'shutterSpeed' && n1.body.shutterSpeedAuto && n2.body.shutterSpeedAuto) continue;
+    if (key === 'ev' && n1.body.evAuto && n2.body.evAuto) continue;
+
+    const val1 = n1.body[key];
+    const val2 = n2.body[key];
+    if (typeof val1 === 'number' && typeof val2 === 'number') {
+      if (Math.abs(val1 - val2) >= 0.000001) return false;
+    } else if (val1 !== val2) {
+      return false;
+    }
+  }
+
+  return true;
+};
+
 /**
  * Applies a preset by updating the FilmStore and BodyStore shared values
  */
@@ -57,6 +127,11 @@ export const applyPreset = (id: string): void => {
 
   store.setApplyingPreset(true);
   store.setActivePresetId(id);
+
+  if (id !== 'customized') {
+    store.setCustomizedPayload(null);
+    store.setCustomizedThumbnailUri(null);
+  }
 
   // Safe Merge & direct update of Film shared values
   const filmStore = useFilmStore.getState();
@@ -125,6 +200,26 @@ export const markAsCustomized = (): void => {
   if (store.isApplyingPreset) return;
 
   const payload = snapshotCurrentPayload();
+
+  // Check if it matches the default preset
+  if (arePayloadsEqual(payload, DEFAULT_PRESET_PAYLOAD)) {
+    store.setActivePresetId('default');
+    store.setCustomizedPayload(null);
+    store.setCustomizedThumbnailUri(null);
+    return;
+  }
+
+  // Check if it matches any user preset
+  const matchingUserPreset = store.userPresets.find((preset) =>
+    arePayloadsEqual(payload, preset.payload)
+  );
+
+  if (matchingUserPreset) {
+    store.setActivePresetId(matchingUserPreset.id);
+    store.setCustomizedPayload(null);
+    store.setCustomizedThumbnailUri(null);
+    return;
+  }
 
   store.setActivePresetId('customized');
   store.setCustomizedPayload(payload);
