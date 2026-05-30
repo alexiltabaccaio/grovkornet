@@ -19,7 +19,9 @@ export default function PrivacyPolicyScreen() {
         flexDirection: "column",
         alignItems: "center",
         padding: "4rem 2rem",
-        fontFamily: "var(--font-body, sans-serif)"
+        fontFamily: "var(--font-body, sans-serif)",
+        overflowX: "hidden",
+        position: "relative"
       }}
     >
       {/* Background Glow */}
