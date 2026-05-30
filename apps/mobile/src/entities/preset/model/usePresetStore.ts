@@ -171,11 +171,6 @@ export const usePresetStore = create<PresetStore>()(
         const preset = userPresets.find((p) => p.id === id);
         if (!preset) return;
 
-        const currentlyPinned = userPresets.filter((p) => p.inQuickSelect).length;
-        if (!preset.inQuickSelect && currentlyPinned >= 5) {
-          throw new Error('LIMIT_EXCEEDED');
-        }
-
         const updated = userPresets.map((p) => {
           if (p.id === id) {
             return { ...p, inQuickSelect: !p.inQuickSelect };
@@ -187,15 +182,28 @@ export const usePresetStore = create<PresetStore>()(
       },
 
       getQuickSelectList: () => {
-        const { userPresets, customizedPayload } = get();
+        const { userPresets, customizedPayload, activePresetId } = get();
         const list = [{ id: 'default', name: 'Default' }];
         
         if (customizedPayload) {
           list.push({ id: 'customized', name: 'Personalizzato' });
         }
 
-        userPresets.forEach((p) => {
-          if (p.inQuickSelect) {
+        const sortedPresets = [...userPresets].sort((a, b) => {
+          // 1. Favorite preset first
+          if (a.isFavorite && !b.isFavorite) return -1;
+          if (!a.isFavorite && b.isFavorite) return 1;
+
+          // 2. Quick select (pinned) next
+          if (a.inQuickSelect && !b.inQuickSelect) return -1;
+          if (!a.inQuickSelect && b.inQuickSelect) return 1;
+
+          // 3. Alphabetical sorting
+          return a.name.localeCompare(b.name, undefined, { sensitivity: 'base', numeric: true });
+        });
+
+        sortedPresets.forEach((p) => {
+          if (p.inQuickSelect || p.id === activePresetId) {
             list.push({ id: p.id, name: p.name });
           }
         });

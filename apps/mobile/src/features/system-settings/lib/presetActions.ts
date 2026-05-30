@@ -170,7 +170,7 @@ export const addPreset = (name: string, thumbnailUri?: string): void => {
     name,
     payload,
     isFavorite: false,
-    inQuickSelect: false,
+    inQuickSelect: true,
     createdAt: Date.now(),
     thumbnailUri,
   };

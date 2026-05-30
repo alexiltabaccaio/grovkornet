@@ -28,17 +28,17 @@ describe('QuickPresetSelector', () => {
     });
   });
 
-  it('renders default preset name and hides arrows when quick select list is single item', () => {
+  it('renders default preset name and disables arrows when quick select list is single item', () => {
     mockGetQuickSelectList.mockReturnValue([{ id: 'default', name: 'Default' }]);
 
-    const { getByText, queryByLabelText } = render(<QuickPresetSelector />);
+    const { getByText, getByLabelText } = render(<QuickPresetSelector />);
 
     expect(getByText('Default')).toBeTruthy();
-    expect(queryByLabelText('Previous preset')).toBeNull();
-    expect(queryByLabelText('Next preset')).toBeNull();
+    expect(getByLabelText('Previous preset').props.accessibilityState?.disabled).toBe(true);
+    expect(getByLabelText('Next preset').props.accessibilityState?.disabled).toBe(true);
   });
 
-  it('renders chevron arrows and navigates when quick list has multiple items', () => {
+  it('renders enabled chevron arrows and navigates when quick list has multiple items', () => {
     mockGetQuickSelectList.mockReturnValue([
       { id: 'default', name: 'Default' },
       { id: 'customized', name: 'Personalizzato' },
@@ -49,6 +49,9 @@ describe('QuickPresetSelector', () => {
     expect(getByText('Default')).toBeTruthy();
     const prevBtn = getByLabelText('Previous preset');
     const nextBtn = getByLabelText('Next preset');
+
+    expect(prevBtn.props.accessibilityState?.disabled).toBeFalsy();
+    expect(nextBtn.props.accessibilityState?.disabled).toBeFalsy();
 
     fireEvent.press(prevBtn);
     expect(Haptics.impactAsync).toHaveBeenCalledWith(Haptics.ImpactFeedbackStyle.Light);
@@ -67,7 +70,7 @@ describe('QuickPresetSelector', () => {
     ]);
     const { getByText, rerender } = render(<QuickPresetSelector />);
     expect(getByText('Personalizzato').props.style).toEqual(
-      expect.arrayContaining([expect.objectContaining({ color: '#FF2D55' })])
+      expect.arrayContaining([expect.objectContaining({ color: '#FFF' })])
     );
 
     // 2. Custom user preset color
@@ -77,7 +80,7 @@ describe('QuickPresetSelector', () => {
     ]);
     rerender(<QuickPresetSelector />);
     expect(getByText('UserPreset1').props.style).toEqual(
-      expect.arrayContaining([expect.objectContaining({ color: '#FF5722' })])
+      expect.arrayContaining([expect.objectContaining({ color: '#FFF' })])
     );
   });
 });

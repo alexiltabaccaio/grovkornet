@@ -1,5 +1,5 @@
-import React from 'react';
-import { StyleSheet, View, TouchableOpacity, Alert, Text, StyleProp, ViewStyle } from 'react-native';
+import React, { useState } from 'react';
+import { StyleSheet, View, TouchableOpacity, Text, StyleProp, ViewStyle, Modal } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { useShallow } from 'zustand/react/shallow';
@@ -15,6 +15,8 @@ import { removePreset } from '../../lib/presetActions';
 
 export const PresetsDetailPanel = ({ animatedStyle }: PresetsDetailPanelProps) => {
   const { t } = useTranslation();
+  const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
+
   const {
     userPresets,
     activePresetId,
@@ -50,37 +52,14 @@ export const PresetsDetailPanel = ({ animatedStyle }: PresetsDetailPanelProps) =
 
   const handleToggleQuickSelect = () => {
     if (!activePreset) return;
-    try {
-      void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-      toggleQuickSelect(activePreset.id);
-    } catch (error) {
-      const err = error as Error;
-      if (err.message === 'LIMIT_EXCEEDED') {
-        Alert.alert(
-          t('presets.limit_title', 'Limite Raggiunto'),
-          t('presets.limit_body', 'Puoi selezionare al massimo 5 preset per la scelta rapida')
-        );
-      }
-    }
+    void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    toggleQuickSelect(activePreset.id);
   };
 
   const handleDeletePress = () => {
     if (!activePreset) return;
-    Alert.alert(
-      t('presets.delete_title', 'Elimina Preset'),
-      t('presets.delete_body', `Sei sicuro di voler eliminare "${activePreset.name}"?`, { name: activePreset.name }),
-      [
-        { text: t('presets.cancel', 'Annulla'), style: 'cancel' },
-        {
-          text: t('presets.delete', 'Elimina'),
-          style: 'destructive',
-          onPress: () => {
-            void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-            removePreset(activePreset.id);
-          },
-        },
-      ]
-    );
+    void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    setIsDeleteModalVisible(true);
   };
 
   const handleSavePress = () => {
@@ -119,13 +98,64 @@ export const PresetsDetailPanel = ({ animatedStyle }: PresetsDetailPanelProps) =
           )}
 
           {activePreset && (
-            <TouchableOpacity style={[styles.actionButton, styles.deleteButton]} onPress={handleDeletePress}>
+            <TouchableOpacity 
+              style={[styles.actionButton, styles.deleteButton]} 
+              onPress={handleDeletePress}
+              accessibilityLabel="Delete preset"
+            >
               <Ionicons name="trash-outline" size={16} color="#FF3B30" />
-              <Text style={[styles.actionText, { color: '#FF3B30' }]}>{t('presets.delete', 'Elimina')}</Text>
             </TouchableOpacity>
           )}
         </View>
       </ParameterDetailPanelWrapper>
+
+      <Modal
+        visible={isDeleteModalVisible}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={() => setIsDeleteModalVisible(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle} allowFontScaling={false}>
+              {t('presets.delete_title', 'ELIMINA PRESET')}
+            </Text>
+            
+            <Text style={styles.modalBody} allowFontScaling={false}>
+              {t('presets.delete_body', `Sei sicuro di voler eliminare "${activePreset?.name}"?`, { name: activePreset?.name })}
+            </Text>
+
+            <View style={styles.modalButtons}>
+              <TouchableOpacity
+                onPress={() => setIsDeleteModalVisible(false)}
+                activeOpacity={0.7}
+                style={[styles.modalButton, styles.modalCancelButton]}
+              >
+                <Text style={styles.modalButtonText} allowFontScaling={false}>
+                  {t('presets.cancel', 'ANNULLA')}
+                </Text>
+              </TouchableOpacity>
+              
+              <TouchableOpacity
+                onPress={() => {
+                  setIsDeleteModalVisible(false);
+                  void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+                  if (activePreset) {
+                    removePreset(activePreset.id);
+                  }
+                }}
+                activeOpacity={0.7}
+                style={[styles.modalButton, styles.modalDeleteButton]}
+                accessibilityLabel="Confirm delete"
+              >
+                <Text style={[styles.modalButtonText, styles.modalDeleteText]} allowFontScaling={false}>
+                  {t('presets.delete', 'ELIMINA')}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 };
@@ -155,10 +185,77 @@ const styles = StyleSheet.create({
   deleteButton: {
     borderColor: 'rgba(255, 59, 48, 0.3)',
     backgroundColor: 'rgba(255, 59, 48, 0.05)',
+    paddingHorizontal: 0,
+    width: 38,
+    height: 38,
+    borderRadius: 19,
+    justifyContent: 'center',
   },
   actionText: {
     color: '#FFF',
     fontSize: 12,
     fontWeight: '600',
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.65)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  modalContent: {
+    width: '80%',
+    maxWidth: 290,
+    backgroundColor: '#161616',
+    borderColor: 'rgba(255, 255, 255, 0.08)',
+    borderWidth: 1,
+    borderRadius: 12,
+    padding: 18,
+    alignItems: 'center',
+  },
+  modalTitle: {
+    fontSize: 11,
+    fontWeight: '900',
+    color: '#FF5722',
+    letterSpacing: 1.5,
+    marginBottom: 12,
+    textTransform: 'uppercase',
+  },
+  modalBody: {
+    color: 'rgba(255, 255, 255, 0.7)',
+    fontSize: 12,
+    fontWeight: '600',
+    textAlign: 'center',
+    marginBottom: 20,
+    lineHeight: 16,
+  },
+  modalButtons: {
+    flexDirection: 'row',
+    width: '100%',
+    gap: 8,
+  },
+  modalButton: {
+    flex: 1,
+    height: 36,
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+  },
+  modalCancelButton: {
+    backgroundColor: 'rgba(255, 255, 255, 0.02)',
+    borderColor: 'rgba(255, 255, 255, 0.08)',
+  },
+  modalDeleteButton: {
+    backgroundColor: 'rgba(255, 59, 48, 0.08)',
+    borderColor: '#FF3B30',
+  },
+  modalButtonText: {
+    fontSize: 10,
+    fontWeight: '900',
+    color: '#8e8e93',
+    letterSpacing: 0.8,
+  },
+  modalDeleteText: {
+    color: '#FF3B30',
   },
 });

@@ -86,31 +86,7 @@ describe('PresetsDetailPanel', () => {
     expect(mockToggleQuickSelect).toHaveBeenCalledWith('user-123');
   });
 
-  it('handles toggleQuickSelect limit exceeded correctly', () => {
-    const activeUserPreset = {
-      id: 'user-123',
-      name: 'Retro123',
-      payload: { film: DEFAULT_FILM_PAYLOAD, body: DEFAULT_BODY_PAYLOAD },
-      isFavorite: false,
-      inQuickSelect: false,
-      createdAt: Date.now(),
-    };
 
-    usePresetStore.setState({
-      activePresetId: 'user-123',
-      userPresets: [activeUserPreset],
-    });
-
-    mockToggleQuickSelect.mockImplementationOnce(() => {
-      throw new Error('LIMIT_EXCEEDED');
-    });
-
-    const { getByText } = render(<PresetsDetailPanel />);
-    const quickBtn = getByText('presets.quick_select');
-
-    fireEvent.press(quickBtn);
-    expect(Alert.alert).toHaveBeenCalledWith('presets.limit_title', 'presets.limit_body');
-  });
 
   it('handles preset deletion confirmation dialog', () => {
     const activeUserPreset = {
@@ -127,20 +103,14 @@ describe('PresetsDetailPanel', () => {
       userPresets: [activeUserPreset],
     });
 
-    const { getByText } = render(<PresetsDetailPanel />);
-    const deleteBtn = getByText('presets.delete');
+    const { getByText, getByLabelText } = render(<PresetsDetailPanel />);
+    const deleteBtn = getByLabelText('Delete preset');
 
     fireEvent.press(deleteBtn);
 
-    expect(Alert.alert).toHaveBeenCalledWith(
-      'presets.delete_title',
-      expect.any(String),
-      expect.any(Array)
-    );
-
-    // Trigger deletion action directly from mock
-    const deleteAction = (Alert.alert as jest.Mock).mock.calls[0][2][1];
-    deleteAction.onPress();
+    // Press the confirmation button in the custom modal
+    const confirmDeleteBtn = getByLabelText('Confirm delete');
+    fireEvent.press(confirmDeleteBtn);
 
     expect(removePreset).toHaveBeenCalledWith('user-123');
   });

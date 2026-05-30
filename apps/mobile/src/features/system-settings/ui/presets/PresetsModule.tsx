@@ -65,6 +65,21 @@ export const PresetsModule = () => {
     setActiveParameter('presets');
   }, [setActiveParameter]);
 
+  const sortedUserPresets = React.useMemo(() => {
+    return [...userPresets].sort((a, b) => {
+      // 1. Favorite preset first
+      if (a.isFavorite && !b.isFavorite) return -1;
+      if (!a.isFavorite && b.isFavorite) return 1;
+
+      // 2. Quick select (pinned) next
+      if (a.inQuickSelect && !b.inQuickSelect) return -1;
+      if (!a.inQuickSelect && b.inQuickSelect) return 1;
+
+      // 3. Alphabetical sorting
+      return a.name.localeCompare(b.name, undefined, { sensitivity: 'base', numeric: true });
+    });
+  }, [userPresets]);
+
   return (
     <View style={styles.container}>
       <ScrollView
@@ -89,7 +104,7 @@ export const PresetsModule = () => {
           />
         )}
 
-        {userPresets.map((preset: Preset) => (
+        {sortedUserPresets.map((preset: Preset) => (
           <PresetButton
             key={preset.id}
             id={preset.id}

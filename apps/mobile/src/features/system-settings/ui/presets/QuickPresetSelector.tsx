@@ -11,47 +11,60 @@ export const QuickPresetSelector = () => {
   const {
     activePresetId,
     getQuickSelectList,
+    userPresets,
   } = usePresetStore(
     useShallow((s: PresetStore) => ({
       activePresetId: s.activePresetId,
       getQuickSelectList: s.getQuickSelectList,
+      userPresets: s.userPresets,
     }))
   );
 
   const quickSelectList = getQuickSelectList();
-  const showArrows = quickSelectList.length > 1;
+  const areArrowsEnabled = quickSelectList.length > 1;
 
-  const activePreset = quickSelectList.find((p: { id: string; name: string }) => p.id === activePresetId);
-  const activeName = activePreset?.name || 'Default';
+  let activeName = 'Default';
+  if (activePresetId === 'customized') {
+    activeName = 'Personalizzato';
+  } else if (activePresetId === 'default') {
+    activeName = 'Default';
+  } else {
+    const quickPreset = quickSelectList.find((p) => p.id === activePresetId);
+    if (quickPreset) {
+      activeName = quickPreset.name;
+    } else {
+      const activePreset = userPresets.find((p) => p.id === activePresetId);
+      activeName = activePreset ? activePreset.name : 'Default';
+    }
+  }
 
   const handleNext = () => {
+    if (!areArrowsEnabled) return;
     void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     nextQuickPreset();
   };
 
   const handlePrev = () => {
+    if (!areArrowsEnabled) return;
     void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     prevQuickPreset();
   };
 
   const getPresetColor = () => {
-    if (activePresetId === 'customized') return '#FF2D55'; // Pink/Red for customized
-    if (activePresetId === 'default') return '#FFF'; // White for default
-    return '#FF5722'; // Orange for user presets
+    return '#FFF';
   };
 
   return (
     <View style={styles.container}>
-      {showArrows && (
-        <TouchableOpacity
-          onPress={handlePrev}
-          activeOpacity={0.6}
-          style={styles.arrowButton}
-          accessibilityLabel="Previous preset"
-        >
-          <Ionicons name="chevron-back" size={12} color="rgba(255, 255, 255, 0.4)" />
-        </TouchableOpacity>
-      )}
+      <TouchableOpacity
+        onPress={handlePrev}
+        activeOpacity={0.6}
+        disabled={!areArrowsEnabled}
+        style={[styles.arrowButton, !areArrowsEnabled && styles.disabledArrow]}
+        accessibilityLabel="Previous preset"
+      >
+        <Ionicons name="chevron-back" size={12} color="rgba(255, 255, 255, 0.4)" />
+      </TouchableOpacity>
 
       <View style={styles.textContainer}>
         <Text
@@ -63,16 +76,15 @@ export const QuickPresetSelector = () => {
         </Text>
       </View>
 
-      {showArrows && (
-        <TouchableOpacity
-          onPress={handleNext}
-          activeOpacity={0.6}
-          style={styles.arrowButton}
-          accessibilityLabel="Next preset"
-        >
-          <Ionicons name="chevron-forward" size={12} color="rgba(255, 255, 255, 0.4)" />
-        </TouchableOpacity>
-      )}
+      <TouchableOpacity
+        onPress={handleNext}
+        activeOpacity={0.6}
+        disabled={!areArrowsEnabled}
+        style={[styles.arrowButton, !areArrowsEnabled && styles.disabledArrow]}
+        accessibilityLabel="Next preset"
+      >
+        <Ionicons name="chevron-forward" size={12} color="rgba(255, 255, 255, 0.4)" />
+      </TouchableOpacity>
     </View>
   );
 };
@@ -109,5 +121,8 @@ const styles = StyleSheet.create({
     height: '100%',
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  disabledArrow: {
+    opacity: 0.2,
   },
 });

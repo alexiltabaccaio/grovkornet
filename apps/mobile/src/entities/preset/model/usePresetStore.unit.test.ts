@@ -67,29 +67,19 @@ describe('usePresetStore', () => {
       expect(updated.find(p => p.id === '2')?.isFavorite).toBe(true);
     });
 
-    it('toggles quick select state and respects maximum limit of 5', () => {
-      const presets = Array.from({ length: 6 }, (_, i) => ({
-        id: `${i}`,
-        name: `P${i}`,
-        payload: { film: DEFAULT_FILM_PAYLOAD, body: DEFAULT_BODY_PAYLOAD },
-        isFavorite: false,
-        inQuickSelect: i < 5,
-        createdAt: Date.now(),
-      }));
+    it('toggles quick select state', () => {
+      const presets = [
+        { id: '1', name: 'P1', payload: { film: DEFAULT_FILM_PAYLOAD, body: DEFAULT_BODY_PAYLOAD }, isFavorite: false, inQuickSelect: false, createdAt: Date.now() },
+      ];
       usePresetStore.setState({ userPresets: presets });
 
-      // Toggle off
-      usePresetStore.getState().toggleQuickSelect('0');
-      expect(usePresetStore.getState().userPresets[0].inQuickSelect).toBe(false);
-
       // Toggle on
-      usePresetStore.getState().toggleQuickSelect('0');
+      usePresetStore.getState().toggleQuickSelect('1');
       expect(usePresetStore.getState().userPresets[0].inQuickSelect).toBe(true);
 
-      // Try pinning 6th preset (should fail)
-      expect(() => {
-        usePresetStore.getState().toggleQuickSelect('5');
-      }).toThrow('LIMIT_EXCEEDED');
+      // Toggle off
+      usePresetStore.getState().toggleQuickSelect('1');
+      expect(usePresetStore.getState().userPresets[0].inQuickSelect).toBe(false);
     });
   });
 
