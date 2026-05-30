@@ -6,7 +6,12 @@
 #define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
 
 bool ShaderManager::init(filament::Engine& engine, AAssetManager* assetManager) {
+    if (!assetManager) {
+        LOGE("Failed to initialize ShaderManager: assetManager is null.");
+        return false;
+    }
     if (!loadFromAsset(engine, assetManager, "FilmShader2D", material2D, materialInstance2D)) return false;
+
     if (!loadFromAsset(engine, assetManager, "FilmShaderExternal", materialExternal, materialInstanceExternal)) return false;
     if (!loadFromAsset(engine, assetManager, "DownsampleShader", materialDownsample, materialInstanceDownsample)) return false;
     if (!loadFromAsset(engine, assetManager, "BlurDownShader", materialBlurDown, materialInstanceBlurDown)) return false;

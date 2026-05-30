@@ -397,12 +397,12 @@ void LutGenerator::lutGenerationLoop() {
     // S-Curve parameters setup
     // Invert parameters so positive slider (+100) = brighter, negative (-100) = darker
     float actualBlackLevel = -blackLevel;
-    float actualWhitePoint = 2.0f - highlights;
+    float actualWhitePoint = std::max(actualBlackLevel + 0.001f, 2.0f - highlights);
 
     float safeP = std::max(0.01f, std::min(0.99f, pivot));
     float denom = actualWhitePoint - actualBlackLevel;
-    if (std::abs(denom) < 0.001f) {
-      denom = denom >= 0.0f ? 0.001f : -0.001f;
+    if (denom < 0.001f) {
+      denom = 0.001f;
     }
 
     // Definition of perceptual color bands in OKLAB (Core Plateaus).

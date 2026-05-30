@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, fireEvent, waitFor } from '@testing-library/react-native';
+import { render, fireEvent, waitFor, act } from '@testing-library/react-native';
 import { AddPresetModal } from './AddPresetModal';
 import { usePresetStore, DEFAULT_FILM_PAYLOAD, DEFAULT_BODY_PAYLOAD } from '@entities/preset';
 import { Alert, BackHandler } from 'react-native';
@@ -100,10 +100,12 @@ describe('AddPresetModal', () => {
     expect(Alert.alert).toHaveBeenCalledWith('presets.error_title', 'presets.error_duplicate');
 
     // 3. Save valid preset
-    fireEvent.changeText(input, 'UNIQUE_PRESET');
-    fireEvent.press(saveBtn);
-
-    expect(addPreset).toHaveBeenCalledWith('UNIQUE_PRESET', expect.any(String));
+    (addPreset as jest.Mock).mockClear();
+    await waitFor(() => {
+      fireEvent.changeText(input, 'UNIQUE_PRESET');
+      fireEvent.press(saveBtn);
+      expect(addPreset).toHaveBeenCalledWith('UNIQUE_PRESET', expect.any(String));
+    });
     expect(mockSetAddModalVisible).toHaveBeenCalledWith(false);
   });
 

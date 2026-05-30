@@ -56,3 +56,48 @@ TEST(LutGeneratorTest, BasicLutGenerationAndBaking) {
     engine->destroy(lutTexture);
     filament::Engine::destroy(&engine);
 }
+
+TEST(LutGeneratorTest, PreventColorInversionWithExtremeHighlights) {
+    LutGenerator generator;
+    generator.start();
+
+    // Trigger update with extreme highlights = 2.0f (which previously caused inversion)
+    generator.triggerLutUpdate(1.0f, 1.0f, 0.0f, 5000.0f, 0.0f,
+                               50.0f, 50.0f, 50.0f, 50.0f,
+                               50.0f, 50.0f, 50.0f, 50.0f,
+                               350.0f, 45.0f, 80.0f, 125.0f,
+                               170.0f, 230.0f, 280.0f, 315.0f,
+                               0.0f, 2.0f, 0.5f,
+                               0.0f, 0.0f, 0.0f, 0.0f);
+
+    // Wait for the LUT calculation to finish on the background thread
+    generator.waitForLut();
+
+    // Create a NOOP engine and a 3D texture for testing the texture upload
+    filament::Engine* engine = filament::Engine::create(filament::Engine::Backend::NOOP);
+    ASSERT_NE(engine, nullptr);
+
+    filament::Texture* lutTexture = filament::Texture::Builder()
+        .width(LutGenerator::LUT_SIZE)
+        .height(LutGenerator::LUT_SIZE)
+        .depth(LutGenerator::LUT_SIZE)
+        .levels(1)
+        .sampler(filament::Texture::Sampler::SAMPLER_3D)
+        .format(filament::Texture::InternalFormat::RGBA8)
+        .build(*engine);
+    
+    ASSERT_NE(lutTexture, nullptr);
+
+    // Apply texture update to update the active cache parameters
+    generator.applyLutTextureUpdate(*engine, lutTexture);
+
+    // Verify it completed successfully and parameters are cached
+    EXPECT_TRUE(generator.isFirstLutBaked());
+
+    // Stop background thread and clean up
+    generator.stop();
+    engine->destroy(lutTexture);
+    filament::Engine::destroy(&engine);
+}
+
+

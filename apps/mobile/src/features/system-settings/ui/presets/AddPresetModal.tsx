@@ -110,7 +110,7 @@ export const AddPresetModal = () => {
         void deleteFile(localTempUri);
       }
     };
-  }, [isAddModalVisible, customizedPayload, t]);
+  }, [isAddModalVisible, customizedPayload]);
 
   if (!isAddModalVisible) return null;
 
