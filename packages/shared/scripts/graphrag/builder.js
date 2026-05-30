@@ -1,5 +1,7 @@
 import { parseFile, scanDirectory } from './parser.js';
-import { resolveImport } from './resolver.js';
+import * as typescriptLang from './languages/typescript.js';
+import * as kotlinLang from './languages/kotlin.js';
+import * as cppLang from './languages/cpp.js';
 import graphology from 'graphology';
 import fs from 'fs';
 import path from 'path';
@@ -13,56 +15,47 @@ console.log("==== Building Grovkornet GraphRAG ====");
 
 const graph = new MultiDirectedGraph();
 
-// Cartelle target del monorepo
+// Target directories for scanning
 const mobileSrc = path.resolve(__dirname, '../../../../apps/mobile/src');
 const sharedSrc = path.resolve(__dirname, '../../../shared/src');
+const engineSrc = path.resolve(__dirname, '../../../../packages/engine/android/src/main');
+const engineTsSrc = path.resolve(__dirname, '../../../../packages/engine/src');
 
-console.log(`🔍 Scansione Mobile: ${mobileSrc}`);
-console.log(`🔍 Scansione Shared: ${sharedSrc}`);
+console.log(`🔍 Scanning Mobile: ${mobileSrc}`);
+console.log(`🔍 Scanning Shared: ${sharedSrc}`);
+console.log(`🔍 Scanning Engine: ${engineSrc}`);
+console.log(`🔍 Scanning Engine TS: ${engineTsSrc}`);
 
 const allFiles = [
   ...scanDirectory(mobileSrc),
-  ...scanDirectory(sharedSrc)
+  ...scanDirectory(sharedSrc),
+  ...scanDirectory(engineSrc),
+  ...scanDirectory(engineTsSrc)
 ];
 
-console.log(`📁 File sorgente trovati: ${allFiles.length}`);
+console.log(`📁 Source files found: ${allFiles.length}`);
 
-// Helper per normalizzare i percorsi e renderli relativi alla root del monorepo
+// Helper to normalize paths and make them relative to the monorepo root
 const rootDir = path.resolve(__dirname, '../../../../');
 function getRelativePath(absPath) {
   return path.relative(rootDir, absPath).replace(/\\/g, '/');
 }
 
-/**
- * Funzione helper per trovare ricorsivamente tutti i nodi di un certo tipo all'interno di un AST
- */
-function findNodesByType(node, type) {
-  const results = [];
-  function walk(n) {
-    if (n.type === type) {
-      results.push(n);
-    }
-    for (let i = 0; i < n.childCount; i++) {
-      walk(n.child(i));
-    }
-  }
-  walk(node);
-  return results;
+// Map extensions to language handlers
+const languageHandlers = {
+  '.ts': typescriptLang,
+  '.tsx': typescriptLang,
+  '.kt': kotlinLang,
+  '.cpp': cppLang,
+  '.h': cppLang,
+};
+
+function getLanguageHandler(filePath) {
+  const ext = path.extname(filePath);
+  return languageHandlers[ext] || null;
 }
 
-/**
- * Trova il primo nodo di tipo identifier all'interno di un sotto-albero
- */
-function findFirstIdentifier(node) {
-  if (node.type === 'identifier') return node.text;
-  for (let i = 0; i < node.childCount; i++) {
-    const found = findFirstIdentifier(node.child(i));
-    if (found) return found;
-  }
-  return null;
-}
-
-// 1. Registrazione dei nodi File ed estrazione degli Export (Definitions)
+// 1. File registration and export (definition) extraction
 const fileExports = new Map();
 
 for (const file of allFiles) {
@@ -73,113 +66,110 @@ for (const file of allFiles) {
   }
 
   try {
+    const handler = getLanguageHandler(file);
+    if (!handler) continue;
+
     const tree = parseFile(file);
-    const exports = new Set();
+    const exports = handler.extractDefinitions(tree);
     
-    // Trova tutti gli export statement
-    const exportStatements = findNodesByType(tree.rootNode, 'export_statement');
-    
-    for (const expStmt of exportStatements) {
-      // Un export statement contiene solitamente una dichiarazione come figlio (function_declaration, class_declaration, etc.)
-      for (let i = 0; i < expStmt.childCount; i++) {
-        const child = expStmt.child(i);
-        
-        if (
-          child.type === 'function_declaration' ||
-          child.type === 'class_declaration' ||
-          child.type === 'interface_declaration' ||
-          child.type === 'type_alias_declaration'
-        ) {
-          const name = findFirstIdentifier(child);
-          if (name) exports.add(name);
-        } 
-        else if (child.type === 'lexical_declaration') {
-          // export const X = ... o export let Y = ...
-          const declarators = findNodesByType(child, 'variable_declarator');
-          for (const dec of declarators) {
-            const name = findFirstIdentifier(dec);
-            if (name) exports.add(name);
-          }
-        }
-        else if (child.type === 'export_clause') {
-          // export { a, b }
-          const specifiers = findNodesByType(child, 'export_specifier');
-          for (const spec of specifiers) {
-            const name = findFirstIdentifier(spec);
-            if (name) exports.add(name);
-          }
+    // Register exported symbols as nodes in the graph
+    for (const exportName of exports) {
+      let symbolId;
+      if (exportName.startsWith('jni:') || exportName.startsWith('expo-module:')) {
+        symbolId = exportName;
+      } else {
+        symbolId = `${relPath}:${exportName}`;
+      }
+
+      if (!graph.hasNode(symbolId)) {
+        if (exportName.startsWith('jni:')) {
+          graph.addNode(symbolId, { type: 'jni-symbol', name: exportName.replace('jni:', ''), file: relPath });
+        } else if (exportName.startsWith('expo-module:')) {
+          graph.addNode(symbolId, { type: 'expo-module', name: exportName.replace('expo-module:', ''), file: relPath });
+        } else {
+          graph.addNode(symbolId, { type: 'export', name: exportName, file: relPath });
         }
       }
-    }
-    
-    // Registra i simboli esportati come nodi nel grafo
-    for (const exportName of exports) {
-      const symbolId = `${relPath}:${exportName}`;
-      if (!graph.hasNode(symbolId)) {
-        graph.addNode(symbolId, { type: 'export', name: exportName, file: relPath });
+      
+      // Link file to symbol
+      if (!graph.hasEdge(relPath, symbolId)) {
         graph.addEdge(relPath, symbolId, { relation: 'exports' });
       }
     }
     
     fileExports.set(relPath, exports);
   } catch (err) {
-    console.warn(`⚠️ Errore nel parsing delle esportazioni per ${relPath}:`, err.message);
+    console.warn(`⚠️ Error parsing exports for ${relPath}:`, err.message);
   }
 }
 
-// 2. Risoluzione dei percorsi e creazione dei collegamenti (Archi)
+// 2. Import path resolution and edge linking
 for (const file of allFiles) {
   const relPath = getRelativePath(file);
   
   try {
+    const handler = getLanguageHandler(file);
+    if (!handler) continue;
+
     const tree = parseFile(file);
-    const importStatements = findNodesByType(tree.rootNode, 'import_statement');
+    const dependencies = handler.extractDependencies(tree);
     
-    // Trova anche le esportazioni con sorgente (re-export, es: export * from './foo')
-    const exportStatementsWithSource = findNodesByType(tree.rootNode, 'export_statement')
-      .filter(node => findNodesByType(node, 'string').length > 0);
+    for (const dep of dependencies) {
+      const { source, symbols, isExpoModule, isJni } = dep;
       
-    const dependencyNodes = [...importStatements, ...exportStatementsWithSource];
-    
-    for (const depNode of dependencyNodes) {
-      // Trova la stringa sorgente dell'import/export
-      const stringNodes = findNodesByType(depNode, 'string');
-      if (stringNodes.length === 0) continue;
+      // Map Expo Native Module dependency
+      if (isExpoModule) {
+        const moduleName = source.split(':')[1];
+        const moduleNodeId = `expo-module:${moduleName}`;
+        if (!graph.hasNode(moduleNodeId)) {
+          graph.addNode(moduleNodeId, { type: 'expo-module', name: moduleName });
+        }
+        if (!graph.hasEdge(relPath, moduleNodeId)) {
+          graph.addEdge(relPath, moduleNodeId, { relation: 'requires_expo_module' });
+        }
+        continue;
+      }
+
+      // Map JNI dependency
+      if (isJni) {
+        const jniSymbolId = source;
+        if (!graph.hasNode(jniSymbolId)) {
+          graph.addNode(jniSymbolId, { type: 'jni-symbol', name: jniSymbolId.replace('jni:', '') });
+        }
+        if (!graph.hasEdge(relPath, jniSymbolId)) {
+          graph.addEdge(relPath, jniSymbolId, { relation: 'calls_native' });
+        }
+        continue;
+      }
       
-      // Rimuoviamo le virgolette esterne
-      const importSource = stringNodes[0].text.slice(1, -1);
-      
-      // Estrae i simboli associati all'import o all'export nominativo
-      const specifierType = depNode.type === 'import_statement' ? 'import_specifier' : 'export_specifier';
-      const specifiers = findNodesByType(depNode, specifierType);
-      const importedSymbols = specifiers.map(spec => findFirstIdentifier(spec)).filter(Boolean);
-      
-      const resolvedAbsPath = resolveImport(file, importSource);
+      const resolvedAbsPath = handler.resolve(file, source);
       if (resolvedAbsPath) {
         const resolvedRelPath = getRelativePath(resolvedAbsPath);
         
-        // Collega File A -> IMPORTS -> File B
+        // Link File A -> IMPORTS -> File B
         if (graph.hasNode(resolvedRelPath)) {
           if (!graph.hasEdge(relPath, resolvedRelPath)) {
             graph.addEdge(relPath, resolvedRelPath, { relation: 'imports_file' });
           }
           
-          // Collega File A -> USES -> Simbolo esportato da File B
-          for (const symbol of importedSymbols) {
+          // Link File A -> USES -> Exported Symbol of File B
+          for (const symbol of symbols) {
             const symbolId = `${resolvedRelPath}:${symbol}`;
             if (graph.hasNode(symbolId)) {
-              graph.addEdge(relPath, symbolId, { relation: 'uses_symbol' });
+              if (!graph.hasEdge(relPath, symbolId)) {
+                graph.addEdge(relPath, symbolId, { relation: 'uses_symbol' });
+              }
             }
           }
         }
       }
     }
   } catch (err) {
-    console.warn(`⚠️ Errore nel processamento degli import per ${relPath}:`, err.message);
+    console.warn(`⚠️ Error processing imports for ${relPath}:`, err.message);
   }
 }
 
-// 3. Serializzazione ed esportazione su file JSON
+// 3. Serialization and output to JSON
 const graphData = {
   nodes: [],
   edges: []
@@ -196,5 +186,6 @@ graph.forEachEdge((edge, attributes, source, target) => {
 const outputPath = path.resolve(__dirname, './output.graph.json');
 fs.writeFileSync(outputPath, JSON.stringify(graphData, null, 2));
 
-console.log(`🎉 Grafo costruito con successo! Salvato in: ${getRelativePath(outputPath)}`);
-console.log(`Nodi Totali: ${graphData.nodes.length}, Archi Totali: ${graphData.edges.length}`);
+console.log(`🎉 Graph built successfully! Saved in: ${getRelativePath(outputPath)}`);
+console.log(`Total Nodes: ${graphData.nodes.length}, Total Edges: ${graphData.edges.length}`);
+

@@ -1,8 +1,11 @@
 import { scanDirectory, parseFile } from '../parser.js';
-import { resolveImport } from '../resolver.js';
+import { resolve as resolveImport } from '../languages/typescript.js';
+import * as kotlinLang from '../languages/kotlin.js';
+import * as cppLang from '../languages/cpp.js';
 import { Query } from 'tree-sitter';
 import TypeScript from 'tree-sitter-typescript';
 import path from 'path';
+import fs from 'fs';
 import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -12,8 +15,8 @@ const files = scanDirectory(fixturesDir);
 
 // 1. Test scanning
 console.log("Found files:", files.map(f => path.basename(f)));
-if (files.length !== 2) {
-  console.error(`❌ Test Failed: expected 2 files, found ${files.length}`);
+if (files.length !== 5) {
+  console.error(`❌ Test Failed: expected 5 files, found ${files.length}`);
   process.exit(1);
 }
 console.log("✅ Scan Directory passed.");
@@ -59,4 +62,93 @@ if (!foundAdd) {
 }
 console.log("✅ AST Query Export passed.");
 
-console.log("🎉 All GraphRAG Core Tests Passed successfully!");
+// 4. Test Kotlin parsing
+console.log("\n---- Testing Kotlin Parser ----");
+const kotlinFile = files.find(f => f.endsWith('CameraView.kt'));
+if (!kotlinFile) {
+  console.error("❌ Test Failed: expected to find CameraView.kt in fixtures");
+  process.exit(1);
+}
+console.log("Found Kotlin fixture:", path.basename(kotlinFile));
+
+const ktTree = parseFile(kotlinFile);
+const ktDefinitions = kotlinLang.extractDefinitions(ktTree);
+console.log("Kotlin definitions:", [...ktDefinitions]);
+
+if (!ktDefinitions.has('com.grovkornet.nativefilmcamera.ui.CameraView')) {
+  console.error("❌ Test Failed: expected to find com.grovkornet.nativefilmcamera.ui.CameraView definition");
+  process.exit(1);
+}
+
+const ktDependencies = kotlinLang.extractDependencies(ktTree);
+console.log("Kotlin dependencies:", ktDependencies);
+
+const hasEngineImport = ktDependencies.some(d => d.source === 'com.grovkornet.nativefilmcamera.camera.CameraEngine');
+const hasJniDep = ktDependencies.some(d => d.source === 'jni:com.grovkornet.nativefilmcamera.ui.CameraView.nativePrepare' && d.isJni);
+
+if (!hasEngineImport || !hasJniDep) {
+  console.error("❌ Test Failed: missing expected imports or JNI dependencies in Kotlin file");
+  process.exit(1);
+}
+console.log("✅ Kotlin parser AST checks passed.");
+
+// 5. Test Kotlin path resolver (using a real file in codebase)
+console.log("Testing Kotlin resolver for: com.grovkornet.nativefilmcamera.ui.NativeFilmCameraView");
+const resolvedKt = kotlinLang.resolve(kotlinFile, 'com.grovkornet.nativefilmcamera.ui.NativeFilmCameraView');
+console.log("Resolved Kotlin path:", resolvedKt);
+if (!resolvedKt || !resolvedKt.endsWith('NativeFilmCameraView.kt') || !fs.existsSync(resolvedKt)) {
+  console.error("❌ Test Failed: could not resolve NativeFilmCameraView");
+  process.exit(1);
+}
+console.log("✅ Kotlin resolver passed.");
+
+// 6. Test C++ parsing
+console.log("\n---- Testing C++ Parser ----");
+const cppFile = files.find(f => f.endsWith('Renderer.cpp'));
+const hFile = files.find(f => f.endsWith('Renderer.h'));
+if (!cppFile || !hFile) {
+  console.error("❌ Test Failed: expected to find Renderer.cpp and Renderer.h in fixtures");
+  process.exit(1);
+}
+console.log("Found C++ fixtures:", path.basename(cppFile), "and", path.basename(hFile));
+
+const cppTree = parseFile(cppFile);
+const cppDefinitions = cppLang.extractDefinitions(cppTree);
+console.log("C++ definitions:", [...cppDefinitions]);
+
+if (!cppDefinitions.has('jni:com.grovkornet.nativefilmcamera.rendering.OffscreenFilmProcessor.nativePrepare')) {
+  console.error("❌ Test Failed: expected JNI symbol in C++ definitions");
+  process.exit(1);
+}
+
+const cppDependencies = cppLang.extractDependencies(cppTree);
+console.log("C++ dependencies:", cppDependencies);
+
+const hasHeaderInclude = cppDependencies.some(d => d.source === 'Renderer.h');
+const hasVectorInclude = cppDependencies.some(d => d.source.includes('vector'));
+
+if (!hasHeaderInclude || hasVectorInclude) {
+  console.error("❌ Test Failed: incorrect preprocessor includes in C++ dependencies");
+  process.exit(1);
+}
+console.log("✅ C++ parser AST checks passed.");
+
+// 7. Test C++ resolver
+console.log("Testing C++ resolver for relative: Renderer.h");
+const resolvedRelativeCpp = cppLang.resolve(cppFile, 'Renderer.h');
+console.log("Resolved relative path:", resolvedRelativeCpp);
+if (resolvedRelativeCpp !== hFile) {
+  console.error("❌ Test Failed: could not resolve relative include Renderer.h");
+  process.exit(1);
+}
+
+console.log("Testing C++ resolver for real include: core/FrameRenderer.h");
+const resolvedRealCpp = cppLang.resolve(cppFile, 'core/FrameRenderer.h');
+console.log("Resolved C++ path:", resolvedRealCpp);
+if (!resolvedRealCpp || !resolvedRealCpp.endsWith('FrameRenderer.h') || !fs.existsSync(resolvedRealCpp)) {
+  console.error("❌ Test Failed: could not resolve real include core/FrameRenderer.h");
+  process.exit(1);
+}
+console.log("✅ C++ resolver passed.");
+
+console.log("\n🎉 All GraphRAG Core Tests Passed successfully!");

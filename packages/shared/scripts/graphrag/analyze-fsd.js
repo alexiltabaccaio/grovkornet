@@ -7,13 +7,13 @@ const __dirname = path.dirname(__filename);
 
 const graphPath = path.resolve(__dirname, './output.graph.json');
 if (!fs.existsSync(graphPath)) {
-  console.error("❌ Grafo non trovato! Lancia prima 'node builder.js'.");
+  console.error("❌ Graph not found! Please run 'node builder.js' first.");
   process.exit(1);
 }
 
 const graphData = JSON.parse(fs.readFileSync(graphPath, 'utf8'));
 
-// Gerarchia FSD
+// FSD Hierarchy
 const layers = ['app', 'screens', 'widgets', 'features', 'entities', 'shared'];
 
 function getLayer(filePath) {
@@ -50,7 +50,7 @@ for (const edge of graphData.edges) {
       adjListIn.get(edge.target).push(edge.source);
     }
     
-    // Controlla violazioni FSD
+    // Check FSD violations
     const sourceLayer = getLayer(edge.source);
     const targetLayer = getLayer(edge.target);
     
@@ -71,7 +71,7 @@ for (const edge of graphData.edges) {
 }
 
 // --------------------------------------------------
-// 1. Rilevamento Cicli (Dipendenze Circolari)
+// 1. Cycle Detection (Circular Dependencies)
 // --------------------------------------------------
 const visited = new Set();
 const recStack = new Set();
@@ -104,7 +104,7 @@ for (const node of allNodes) {
 }
 
 // --------------------------------------------------
-// 2. Rilevamento File Orfani (Mai Importati da nessuno)
+// 2. Orphaned Files Detection (Never imported by anyone)
 // --------------------------------------------------
 const orphanedFiles = [];
 
@@ -114,12 +114,14 @@ for (const node of allNodes) {
     
     if (importers.length === 0) {
       const basename = path.basename(node);
+      const ext = path.extname(node);
+      const isTsFile = ext === '.ts' || ext === '.tsx';
       const isEntryPoint = node.includes('app/index.tsx') || node.includes('app/App.tsx');
       const isTestFile = node.includes('.test.') || node.includes('.spec.') || node.includes('.smoke.');
       const isFsdIndex = basename === 'index.ts' || basename === 'index.tsx';
       const isConfig = basename.includes('config') || basename.includes('setup');
 
-      if (!isEntryPoint && !isTestFile && !isFsdIndex && !isConfig) {
+      if (isTsFile && !isEntryPoint && !isTestFile && !isFsdIndex && !isConfig) {
         orphanedFiles.push(node);
       }
     }
@@ -127,16 +129,16 @@ for (const node of allNodes) {
 }
 
 // --------------------------------------------------
-// Output dei Report
+// Report Output
 // --------------------------------------------------
-console.log("==== REPORT DI ANALISI ARCHITETTURALE (GraphRAG) ====\n");
+console.log("==== ARCHITECTURAL ANALYSIS REPORT (GraphRAG) ====\n");
 
-// 1. Report FSD
-console.log("1. VERIFICA REGOLE FSD (Feature-Sliced Design):");
+// 1. FSD Report
+console.log("1. FEATURE-SLICED DESIGN (FSD) RULE VERIFICATION:");
 if (violations.length === 0) {
-  console.log("  ✅ Complimenti! Nessuna violazione dei confini FSD rilevata.");
+  console.log("  ✅ Congratulations! No FSD boundary violations detected.");
 } else {
-  console.log(`  ❌ Rilevate ${violations.length} violazioni architetturali FSD:`);
+  console.log(`  ❌ Detected ${violations.length} FSD architectural violations:`);
   const grouped = new Map();
   for (const v of violations) {
     if (!grouped.has(v.source)) {
@@ -148,25 +150,25 @@ if (violations.length === 0) {
   grouped.forEach((data, file) => {
     console.log(`\n  File: ${file} [Layer: ${data.layer.toUpperCase()}]`);
     for (const imp of data.imports) {
-      console.log(`    ⚠️ Tenta di importare da un layer superiore: [${imp.layer.toUpperCase()}]`);
-      console.log(`      Importa: ${imp.path}`);
+      console.log(`    ⚠️ Tries to import from a higher layer: [${imp.layer.toUpperCase()}]`);
+      console.log(`      Imported: ${imp.path}`);
     }
   });
 }
 
 console.log("\n--------------------------------------------------");
 
-// 2. Report Cicli
-console.log("2. RILEVAMENTO DIPENDENZE CIRCOLARI (Cycles):");
+// 2. Cycle Report
+console.log("2. CIRCULAR DEPENDENCIES DETECTION (Cycles):");
 if (cycles.length === 0) {
-  console.log("  ✅ Complimenti! Nessuna dipendenza circolare rilevata tra i file.");
+  console.log("  ✅ Congratulations! No circular dependencies detected between files.");
 } else {
-  console.log(`  ❌ Rilevati ${cycles.length} cicli di dipendenze (Circular Imports):`);
+  console.log(`  ❌ Detected ${cycles.length} dependency cycles (Circular Imports):`);
   cycles.forEach((cycle, index) => {
-    console.log(`\n  Ciclo #${index + 1}:`);
+    console.log(`\n  Cycle #${index + 1}:`);
     const pathFormatted = cycle.map(node => path.basename(node)).join(" ──> ");
-    console.log(`    Percorso: ${pathFormatted}`);
-    console.log("    File coinvolti:");
+    console.log(`    Path: ${pathFormatted}`);
+    console.log("    Involved files:");
     cycle.slice(0, -1).forEach((node, i) => {
       console.log(`      ${i + 1}. ${node}`);
     });
@@ -175,13 +177,13 @@ if (cycles.length === 0) {
 
 console.log("\n--------------------------------------------------");
 
-// 3. Report File Orfani
-console.log("3. RILEVAMENTO FILE ORFANI (Mai Importati):");
+// 3. Orphaned Files Report
+console.log("3. ORPHANED FILES DETECTION (Never Imported):");
 if (orphanedFiles.length === 0) {
-  console.log("  ✅ Complimenti! Nessun file orfano (non utilizzato) rilevato.");
+  console.log("  ✅ Congratulations! No orphaned (unused) files detected.");
 } else {
-  console.log(`  ⚠️ Rilevati ${orphanedFiles.length} file orfani (presenti ma mai importati da altri sorgenti):`);
-  console.log("  (Potrebbero essere file obsoleti rimasti nella cartella o vecchie utility)");
+  console.log(`  ⚠️ Detected ${orphanedFiles.length} orphaned files (present in filesystem but never imported by other source files):`);
+  console.log("  (These might be obsolete files left in the workspace or unused utilities)");
   orphanedFiles.forEach((file, index) => {
     console.log(`    ${index + 1}. ${file}`);
   });
