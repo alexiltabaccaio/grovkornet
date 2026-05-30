@@ -23,6 +23,8 @@
   box-sizing: border-box;
   padding: 0;
   margin: 0;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
 }
 
 body {
@@ -36,17 +38,7 @@ body {
 
 /* Custom Scrollbar */
 ::-webkit-scrollbar {
-  width: 8px;
-}
-::-webkit-scrollbar-track {
-  background: var(--bg-primary);
-}
-::-webkit-scrollbar-thumb {
-  background: var(--bg-secondary);
-  border-radius: 4px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: var(--border-glass);
+  display: none;
 }
 
 /* Utility Animations */
