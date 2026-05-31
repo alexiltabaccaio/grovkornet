@@ -6,6 +6,8 @@
 
 class ShaderManager {
 public:
+    friend class ShaderManagerTesting;
+
     bool init(filament::Engine& engine, AAssetManager* assetManager);
     void destroy(filament::Engine& engine);
 

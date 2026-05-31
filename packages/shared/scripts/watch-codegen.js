@@ -88,8 +88,18 @@ async function start() {
   console.log('👀 Watchers are active. Monitoring files for changes...');
 
   // 5. Spawn React Native Metro bundler
+  const helper = require('./android-helper');
+  const args = process.argv.slice(2);
+  const mode = args.includes('--simulator') ? '--simulator' : '--device';
+  const targetArgs = helper.getTargetDeviceArg(mode);
+
   console.log('\n📱 Spawning Metro Bundler...');
-  const metro = spawn('npm', ['run', 'dev', '-w', '@grovkornet/mobile'], {
+  const metroArgs = ['run', 'dev', '-w', '@grovkornet/mobile'];
+  if (targetArgs.length > 0) {
+    metroArgs.push('--', ...targetArgs);
+  }
+
+  const metro = spawn('npm', metroArgs, {
     stdio: 'inherit',
     shell: true,
     cwd: PROJECT_ROOT

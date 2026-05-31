@@ -107,6 +107,7 @@ if (EXISTS "${ANDROID_NDK}/sources/third_party/googletest")
         src/test/cpp/LutGenerator.test.cpp
         src/test/cpp/ShaderManager.test.cpp
         src/test/cpp/OverlayCompositor.test.cpp
+        src/test/cpp/PipelineRenderer.test.cpp
         src/test/cpp/DrsManager.test.cpp
         src/main/cpp/core/GrovkornetEngine.cpp
         src/main/cpp/core/FrameRenderer.cpp

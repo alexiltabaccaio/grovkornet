@@ -130,6 +130,10 @@ try {
   console.log(`📤 Pushing ${path.basename(libCppPath)} to /data/local/tmp/...`);
   execSync(`adb push "${libCppPath}" /data/local/tmp/`, { stdio: 'inherit' });
 
+  console.log(`📤 Pushing materials to /data/local/tmp/materials/...`);
+  const materialsDir = path.resolve(__dirname, '../android/src/main/assets/materials');
+  execSync(`adb push "${materialsDir}" /data/local/tmp/`, { stdio: 'inherit' });
+
   console.log(`🔑 Setting execution permissions...`);
   execSync('adb shell chmod +x /data/local/tmp/grovkornet-engine-tests');
 
