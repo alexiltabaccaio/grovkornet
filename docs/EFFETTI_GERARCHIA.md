@@ -9,8 +9,8 @@ Il sistema è progettato per essere rapido da usare con una mano (run-and-gun), 
 2. **[Section Header] Section Header:** La grande scritta in alto nel pannello aperto che identifica la sezione attiva.
 3. **[Module] Module:** Il sottomenù o famiglia di effetti all'interno della sezione (es. Esposizione, Texture).
 4. **[Parameter] Parameter:** L'etichetta del parametro (es. Grana, Torcia), visibile come pulsante nella riga dei controlli. La sua selezione attiva il parametro e apre la tendina inferiore.
-5. **[Parameter Extension] Estensione del Parametro (Core Slot / Dock):** Lo spazio a -35px che si crea immediatamente sotto il parametro appena selezionato. Ospita il controllo primario (l'interruttore ON/OFF o lo slider principale come l'Intensità della Grana) ancorato visivamente al parametro.
-6. **[SubParameter] SubParameter:** Regolazioni aggiuntive e di fino (es. Dimensione Grana, Chroma). Sono collocate nella parte più profonda del pannello (a -90px) e diventano visibili solo tirando attivamente su la bottom sheet.
+5. **[Panel] Parameter Panel (Pannello Generale):** Lo spazio visibile di default quando la bottom sheet viene aperta a `-50px`. Ospita il controllo primario essenziale (l'interruttore ON/OFF o lo slider principale, es. l'Intensità della Grana o la Saturazione Master) ancorato visivamente al parametro.
+6. **[SubPanel] SubParameter Panel (Zona Avanzata/Premium):** Regolazioni aggiuntive e di fino (es. Dimensione Grana, Chroma, Saturazione Specifica per Colore). Sono collocate nella parte più profonda del pannello (zona nascosta sotto lo zero, ad es. a `-90px`) e diventano visibili unicamente tramite "progressive disclosure", ovvero tirando attivamente in alto la bottom sheet.
 
 ---
 
@@ -49,7 +49,8 @@ Per garantire il massimo realismo, l'Uber Shader elabora l'immagine applicando i
     * ↳ `[SubParameter]` *Intensità Torcia (Dimmer)*
 * **Module: Acquisizione (Capture)**
   * `[Parameter]` **Aspect Ratio** (Formato, es. 65:24)
-  * `[Parameter]` **Resolution Setting** (Risoluzione video)
+  * `[Parameter]` **Resolution Setting** (Risoluzione video, es. 1080p)
+    * ↳ `[SubParameter]` *4K Preview Warning Toggle*
   * `[Parameter]` **FPS Setting** (Framerate)
 
 ### 4. 🎞️ FILM (Pellicola)
@@ -57,7 +58,8 @@ Per garantire il massimo realismo, l'Uber Shader elabora l'immagine applicando i
 * **Module: Sviluppo (Development / Color)**
   * `[Parameter]` **Temperature** (Bilanciamento colore)
   * `[Parameter]` **Tint** (Tinta verde/magenta)
-  * `[Parameter]` **Saturazione**
+  * `[Parameter]` **Saturazione** (Generale Master)
+    * ↳ `[SubParameter]` *Saturazione Selettiva (Range per colore specifico)*
   * `[Parameter]` **Contrasto**
 * **Module: Texture (Materiale visibile)**
   * `[Parameter]` **Grana** (Amount / Intensità)

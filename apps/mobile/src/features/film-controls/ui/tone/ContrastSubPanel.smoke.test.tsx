@@ -1,0 +1,55 @@
+import React from 'react';
+import { render } from '@testing-library/react-native';
+import { ContrastSubPanel } from './ContrastSubPanel';
+
+jest.mock('react-i18next', () => ({
+  useTranslation: () => ({
+    t: (key: string) => key,
+  }),
+}));
+
+const mockSetPivot = jest.fn();
+const mockSetPivotAuto = jest.fn();
+const mockUpdatePivot = jest.fn();
+
+jest.mock('@entities/film', () => ({
+  useFilmStore: (fn: (state: any) => any) => {
+    const state = {
+      pivot: 0.5,
+      setPivot: mockSetPivot,
+      pivotAuto: true,
+      setPivotAuto: mockSetPivotAuto,
+    };
+    return fn(state);
+  },
+  useFilmWorklets: () => ({
+    updatePivot: mockUpdatePivot,
+  }),
+}));
+
+jest.mock('@entities/system', () => {
+  const React = require('react');
+  const { View } = require('react-native');
+  return {
+    ParameterControl: (props: any) => {
+      React.useEffect(() => {
+        if (props.valueFormatter) {
+          props.valueFormatter(0.7);
+        }
+      }, [props.valueFormatter]);
+      return <View testID="ParameterControl" />;
+    },
+  };
+});
+
+describe('ContrastSubPanel', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('renders correctly', () => {
+    const { toJSON, getByTestId } = render(<ContrastSubPanel />);
+    expect(toJSON()).toBeDefined();
+    expect(getByTestId('ParameterControl')).toBeDefined();
+  });
+});

@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import { useTranslation } from 'react-i18next';
 
@@ -32,9 +32,6 @@ export const Modules = React.memo(() => {
 
   return (
     <>
-      <View style={[styles.sectionHeaderFrame, isDebugEnabled && styles.debugFrame]}>
-        <Text style={styles.sectionTitle}>{t(`sections.${renderSection}`)}</Text>
-      </View>
       <View style={[styles.container, isDebugEnabled && styles.debugContainerWrapper]}>
         <ScrollView
           horizontal

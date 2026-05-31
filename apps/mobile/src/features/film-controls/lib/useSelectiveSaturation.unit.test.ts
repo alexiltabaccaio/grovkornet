@@ -1,41 +1,32 @@
 import { renderHook, act } from '@testing-library/react-native';
 import { useSelectiveSaturation } from './useSelectiveSaturation';
 import { useFilmStore } from '@entities/film';
-import { useSystemStore } from '@entities/system';
+
+
+jest.mock('@entities/system');
+jest.mock('@shared/lib/hooks/useDoublePress', () => ({
+  useDoublePress: () => ({
+    handlePressWithDouble: (key: string, cb: () => void) => cb(),
+  }),
+}));
 
 describe('useSelectiveSaturation', () => {
-  beforeEach(() => {
-    act(() => {
-      useSystemStore.getState().setActiveParameter('none');
-    });
-  });
-
-  it('initializes with activeColorIndex as master', () => {
+  it('should initialize with activeColorIndex 0', () => {
     const { result } = renderHook(() => useSelectiveSaturation());
-    expect(result.current.activeColorIndex).toBe('master');
-    expect(result.current.isMaster).toBe(true);
+
+    expect(result.current.activeColorIndex).toBe(0);
+    expect(result.current.activeValue).toBe(useFilmStore.getState().satRed);
   });
 
-  it('changes active parameter to saturation and resets activeColorIndex to master', () => {
-    const { result, rerender } = renderHook(() => useSelectiveSaturation());
-    
-    act(() => {
-      useSystemStore.getState().setActiveParameter('saturation');
-    });
-    
-    rerender(undefined);
-    expect(result.current.activeColorIndex).toBe('master');
-  });
-
-  it('handles color pressing and updates active index', () => {
+  it('should update activeColorIndex when handleColorPress is called', () => {
     const { result } = renderHook(() => useSelectiveSaturation());
 
     act(() => {
+      // Mock the handlePressWithDouble to immediately execute the callback
       result.current.handleColorPress('red', 0);
     });
 
     expect(result.current.activeColorIndex).toBe(0);
-    expect(result.current.isMaster).toBe(false);
     expect(result.current.activeValue).toBe(useFilmStore.getState().satRed);
   });
 });

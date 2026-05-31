@@ -3,9 +3,11 @@ import { StyleSheet, View, TextInput } from 'react-native';
 import { useShallow } from 'zustand/react/shallow';
 import { useSystemStore } from '@entities/system';
 import { Sections } from './Sections';
+import { TopSection } from './TopSection';
 import { Modules } from './Modules';
 import { Parameters } from './Parameters';
-import { ParameterDetailPanels } from './ParameterDetailPanels';
+import { Panels } from './Panels';
+import { SubPanels } from './SubPanels';
 import { useControlPanelGestures } from '../lib/useControlPanelGestures';
 
 import { GestureDetector } from 'react-native-gesture-handler';
@@ -55,6 +57,7 @@ export const ControlPanel = React.memo(({ translateY: externalTranslateY, drawer
         <GestureDetector gesture={panGesture}>
           <View>
             <View style={styles.topFooter}>
+              <TopSection />
               <Modules />
               <Parameters />
             </View>
@@ -69,7 +72,8 @@ export const ControlPanel = React.memo(({ translateY: externalTranslateY, drawer
             )}
             {/* Expanded area that fills the gap underneath when pulled up */}
             <View style={styles.expandedBackground}>
-              <ParameterDetailPanels translateY={translateY} />
+              <Panels translateY={translateY} />
+              <SubPanels translateY={translateY} />
             </View>
           </View>
         </GestureDetector>
@@ -101,17 +105,13 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: -323, // Mathematically calculated to align perfectly with the red sections
     zIndex: 5,
-    elevation: 5,
-    backgroundColor: 'rgba(18, 18, 18, 0.75)',
-    borderTopWidth: StyleSheet.hairlineWidth,
-    borderTopColor: 'rgba(255, 255, 255, 0.15)',
+    backgroundColor: 'rgba(18, 18, 18, 0.75)', // Restored translucent glass effect
   },
 
   topFooter: {
     paddingTop: 0,
     height: 147,
   },
-
 
   expandedBackground: {
     height: 400, // Ample height to cover the gap
