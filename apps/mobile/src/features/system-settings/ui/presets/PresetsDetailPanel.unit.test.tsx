@@ -1,6 +1,7 @@
 import React from 'react';
 import { render, fireEvent } from '@testing-library/react-native';
 import { PresetsDetailPanel } from './PresetsDetailPanel';
+import { DeletePresetModal } from './DeletePresetModal';
 import { usePresetStore, DEFAULT_FILM_PAYLOAD, DEFAULT_BODY_PAYLOAD } from '@entities/preset';
 import { useSystemStore } from '@entities/system';
 
@@ -102,7 +103,12 @@ describe('PresetsDetailPanel', () => {
       userPresets: [activeUserPreset],
     });
 
-    const { getByText, getByLabelText } = render(<PresetsDetailPanel />);
+    const { getByText, getByLabelText } = render(
+      <>
+        <PresetsDetailPanel />
+        <DeletePresetModal />
+      </>
+    );
     const deleteBtn = getByLabelText('Delete preset');
 
     fireEvent.press(deleteBtn);

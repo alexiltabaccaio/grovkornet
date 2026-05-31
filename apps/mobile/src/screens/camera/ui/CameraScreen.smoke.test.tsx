@@ -76,6 +76,7 @@ jest.mock('@features/lens-controls', () => {
 jest.mock('@features/system-settings', () => ({
   DebugOverlay: 'DebugOverlay',
   AddPresetModal: 'AddPresetModal',
+  DeletePresetModal: 'DeletePresetModal',
   QuickPresetSelector: 'QuickPresetSelector',
 }));
 

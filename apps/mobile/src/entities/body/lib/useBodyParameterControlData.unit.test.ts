@@ -24,7 +24,7 @@ describe('useBodyParameterControlData', () => {
     expect(result.current.minValue).toBe(100); // default capabilities value in store
     expect(result.current.maxValue).toBe(3200); // default capabilities value in store
     expect(result.current.autoValueText).toBe('AUTO');
-    expect(result.current.hideValueInAuto).toBe(true);
+    expect(result.current.hideValueInAuto).toBe(false);
 
     result.current.onChange(1600);
     expect(useBodyStore.getState().iso.value).toBe(1600);
@@ -77,7 +77,7 @@ describe('useBodyParameterControlData', () => {
     expect(result.current.minValue).toBe(1);
     expect(result.current.maxValue).toBe(1000);
     expect(result.current.autoValueText).toBe('AUTO');
-    expect(result.current.hideValueInAuto).toBe(true);
+    expect(result.current.hideValueInAuto).toBe(false);
 
     // Test onChange
     result.current.onChange(500);
