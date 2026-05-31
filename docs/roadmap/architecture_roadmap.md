@@ -8,6 +8,6 @@
 
 ## [TICKET #06] – Architettura Preset: Scratchpad e Viral Loop per Instagram
 
-## [TICKET #08] – Refactoring Gerarchia UI: Controlli Bloom e Inversione Sliders
+## [TICKET #08] – Refactoring Gerarchia UI: Controlli Bloom
 
 ## [TICKET #11] – Interazione Avanzata: Animazione "Hold-to-Reset" Settoriale

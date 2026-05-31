@@ -79,6 +79,7 @@ class CapturePipeline(
     private suspend fun processAndSave(image: ImageProxy) = withContext(Dispatchers.Default) {
         val procStartTime = System.currentTimeMillis()
         var bitmap: Bitmap? = null
+        val originalExifMap = mutableMapOf<String, String>()
         
         try {
             val rotation = image.imageInfo.rotationDegrees
@@ -86,6 +87,36 @@ class CapturePipeline(
             val bytes = ByteArray(buffer.remaining())
             buffer.get(bytes)
             
+            try {
+                java.io.ByteArrayInputStream(bytes).use { stream ->
+                    val originalExif = android.media.ExifInterface(stream)
+                    val tagsToCopy = arrayOf(
+                        android.media.ExifInterface.TAG_F_NUMBER,
+                        android.media.ExifInterface.TAG_ISO_SPEED_RATINGS,
+                        android.media.ExifInterface.TAG_EXPOSURE_TIME,
+                        android.media.ExifInterface.TAG_FOCAL_LENGTH,
+                        android.media.ExifInterface.TAG_WHITE_BALANCE,
+                        android.media.ExifInterface.TAG_FLASH,
+                        android.media.ExifInterface.TAG_GPS_LATITUDE,
+                        android.media.ExifInterface.TAG_GPS_LATITUDE_REF,
+                        android.media.ExifInterface.TAG_GPS_LONGITUDE,
+                        android.media.ExifInterface.TAG_GPS_LONGITUDE_REF,
+                        android.media.ExifInterface.TAG_GPS_ALTITUDE,
+                        android.media.ExifInterface.TAG_GPS_ALTITUDE_REF,
+                        android.media.ExifInterface.TAG_GPS_PROCESSING_METHOD,
+                        android.media.ExifInterface.TAG_GPS_TIMESTAMP,
+                        android.media.ExifInterface.TAG_GPS_DATESTAMP
+                    )
+                    for (tag in tagsToCopy) {
+                        originalExif.getAttribute(tag)?.let { value ->
+                            originalExifMap[tag] = value
+                        }
+                    }
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "Failed to read original EXIF metadata", e)
+            }
+
             val rawBitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
             if (rotation != 0 || config.isSelfieCamera) {
                 val matrix = Matrix().apply { 
@@ -170,6 +201,17 @@ class CapturePipeline(
                     exif.setAttribute(android.media.ExifInterface.TAG_DATETIME_ORIGINAL, now)
                     exif.setAttribute(android.media.ExifInterface.TAG_DATETIME_DIGITIZED, now)
                     exif.setAttribute(android.media.ExifInterface.TAG_SOFTWARE, "Grovkornet Engine")
+                    exif.setAttribute(android.media.ExifInterface.TAG_MAKE, android.os.Build.MANUFACTURER)
+                    exif.setAttribute(android.media.ExifInterface.TAG_MODEL, android.os.Build.MODEL)
+                    exif.setAttribute(android.media.ExifInterface.TAG_RESOLUTION_UNIT, "2")
+                    exif.setAttribute(android.media.ExifInterface.TAG_X_RESOLUTION, "72/1")
+                    exif.setAttribute(android.media.ExifInterface.TAG_Y_RESOLUTION, "72/1")
+                    
+                    // Copy original EXIF tags back
+                    for ((tag, value) in originalExifMap) {
+                        exif.setAttribute(tag, value)
+                    }
+                    
                     exif.saveAttributes()
                 }
             } catch (e: Exception) {
