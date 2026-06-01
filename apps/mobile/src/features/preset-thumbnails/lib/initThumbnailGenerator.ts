@@ -49,7 +49,7 @@ export const initThumbnailGenerator = () => {
             
             lastGenerationUri = uri;
             usePresetStore.setState({ customizedThumbnailUri: uri });
-            void Image.prefetch(uri);
+
           } catch (err: unknown) {
             const error = err as { code?: string; message?: string };
             console.error('Failed to generate customized thumbnail:', error);

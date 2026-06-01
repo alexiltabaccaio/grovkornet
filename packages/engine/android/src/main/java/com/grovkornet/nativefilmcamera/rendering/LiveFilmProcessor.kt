@@ -22,6 +22,10 @@ class LiveFilmProcessor {
     private var isPrepared = false
     private var currentWidth = 0
     private var currentHeight = 0
+    private val outFpsStats = IntArray(3)
+
+    private var lastConfigHash: Int = 0
+    private var cachedFloatParams: FloatArray? = null
 
     companion object {
         init {
@@ -117,9 +121,17 @@ class LiveFilmProcessor {
 
             val time = ((System.currentTimeMillis() / 1000.0) % (Math.PI * 2.0)).toFloat()
             
-            val floatParams = params.toRenderParamsArray(time, params.getTargetResolutionValue())
+            val currentHash = params.hashCode()
+            var floatParams = cachedFloatParams
+            if (floatParams == null || currentHash != lastConfigHash) {
+                floatParams = params.toRenderParamsArray(time, params.getTargetResolutionValue())
+                cachedFloatParams = floatParams
+                lastConfigHash = currentHash
+            } else {
+                // Config hasn't changed, reuse the array and just update the time uniform (index 8)
+                floatParams[8] = time
+            }
 
-            val outFpsStats = IntArray(3) // [hasNewFps, actualFps, stampedFps]
             val rendered = nativeRenderLiveFrame(
                 nativeEnginePtr,
                 floatParams,

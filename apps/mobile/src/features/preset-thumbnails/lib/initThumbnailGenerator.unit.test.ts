@@ -71,8 +71,7 @@ describe('initThumbnailGenerator', () => {
       await Promise.resolve();
 
       expect(generatePresetPreview).toHaveBeenCalled();
-      // eslint-disable-next-line @typescript-eslint/unbound-method
-      expect(Image.prefetch).toHaveBeenCalledWith('file:///cache/preset_preview_mock.jpg');
+
       expect(usePresetStore.getState().customizedThumbnailUri).toBe('file:///cache/preset_preview_mock.jpg');
     });
 

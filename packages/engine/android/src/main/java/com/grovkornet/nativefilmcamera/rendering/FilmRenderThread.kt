@@ -24,6 +24,7 @@ class FilmRenderThread(
     private var choreographer: Choreographer? = null
     private var liveProcessor: LiveFilmProcessor? = null
     private var surfaceTexture: SurfaceTexture? = null
+    private val transformMatrix = FloatArray(16)
 
     @Volatile private var renderConfig = CameraConfiguration()
     @Volatile private var width = 0
@@ -125,14 +126,15 @@ class FilmRenderThread(
                 framesProcessed++
             }
 
+
+
             val currentConfig = renderConfig
-            val matrix = FloatArray(16)
-            st.getTransformMatrix(matrix)
+            st.getTransformMatrix(transformMatrix)
 
             liveProcessor?.renderLiveFrame(
                 surface,
                 currentConfig,
-                matrix,
+                transformMatrix,
                 cameraWidth,
                 cameraHeight,
                 width,
