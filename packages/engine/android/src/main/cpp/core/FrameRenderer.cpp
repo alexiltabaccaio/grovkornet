@@ -75,9 +75,11 @@ bool FrameRenderer::renderOffscreenFrame(GrovkornetEngine& gEngine, void* pixels
     // Render and readback
     if (gEngine.renderer->beginFrame(gEngine.swapChain)) {
         gEngine.renderer->render(gEngine.pipelineRenderer.viewGrading);
-        gEngine.renderer->render(gEngine.pipelineRenderer.viewDownsample);
-        gEngine.renderer->render(gEngine.pipelineRenderer.viewBlurDown);
-        gEngine.renderer->render(gEngine.pipelineRenderer.viewBlurUp);
+        if (params.bloomIntensity > 0.0f || params.panelY < 1.0f) {
+            gEngine.renderer->render(gEngine.pipelineRenderer.viewDownsample);
+            gEngine.renderer->render(gEngine.pipelineRenderer.viewBlurDown);
+            gEngine.renderer->render(gEngine.pipelineRenderer.viewBlurUp);
+        }
         gEngine.renderer->render(gEngine.view);
         
         filament::backend::PixelBufferDescriptor desc(
@@ -142,9 +144,11 @@ bool FrameRenderer::renderHardwareBufferFrame(GrovkornetEngine& gEngine, AHardwa
     // Render
     if (gEngine.renderer->beginFrame(gEngine.swapChain)) {
         gEngine.renderer->render(gEngine.pipelineRenderer.viewGrading);
-        gEngine.renderer->render(gEngine.pipelineRenderer.viewDownsample);
-        gEngine.renderer->render(gEngine.pipelineRenderer.viewBlurDown);
-        gEngine.renderer->render(gEngine.pipelineRenderer.viewBlurUp);
+        if (params.bloomIntensity > 0.0f || params.panelY < 1.0f) {
+            gEngine.renderer->render(gEngine.pipelineRenderer.viewDownsample);
+            gEngine.renderer->render(gEngine.pipelineRenderer.viewBlurDown);
+            gEngine.renderer->render(gEngine.pipelineRenderer.viewBlurUp);
+        }
         gEngine.renderer->render(gEngine.view);
         gEngine.renderer->endFrame();
     }
@@ -240,9 +244,11 @@ bool FrameRenderer::renderLiveFrame(GrovkornetEngine& gEngine, const RenderParam
             
             // Render pipeline
             gEngine.renderer->render(gEngine.pipelineRenderer.viewGrading);
-            gEngine.renderer->render(gEngine.pipelineRenderer.viewDownsample);
-            gEngine.renderer->render(gEngine.pipelineRenderer.viewBlurDown);
-            gEngine.renderer->render(gEngine.pipelineRenderer.viewBlurUp);
+            if (params.bloomIntensity > 0.0f || params.panelY < 1.0f) {
+                gEngine.renderer->render(gEngine.pipelineRenderer.viewDownsample);
+                gEngine.renderer->render(gEngine.pipelineRenderer.viewBlurDown);
+                gEngine.renderer->render(gEngine.pipelineRenderer.viewBlurUp);
+            }
             gEngine.renderer->render(gEngine.view);
             
             gEngine.renderer->endFrame();
