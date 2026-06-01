@@ -57,7 +57,7 @@ export const Panels = React.memo(({ translateY }: PanelsProps) => {
       case 'chroma_shift':
       case 'tape_jitter':
       case 'scanlines':
-        return <SliderPanel key={activeParameter} parameter={activeParameter} parameterDetailPanelAnimatedStyle={parameterDetailPanelAnimatedStyle} />;
+        return <SliderPanel parameter={activeParameter} parameterDetailPanelAnimatedStyle={parameterDetailPanelAnimatedStyle} />;
       case 'torch':
         return <TorchPanel parameterDetailPanelAnimatedStyle={parameterDetailPanelAnimatedStyle} />;
       case 'presets':

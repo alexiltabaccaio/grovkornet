@@ -44,7 +44,7 @@ const isLensParameter = (p: ParameterType): p is LensParameterType => {
 
 const NOOP = () => {};
 
-export const SliderPanel = ({
+export const SliderPanel = React.memo(({
   parameter,
   parameterDetailPanelAnimatedStyle,
   isActiveOverride,
@@ -103,7 +103,9 @@ export const SliderPanel = ({
       />
     </Animated.View>
   );
-};
+});
+
+SliderPanel.displayName = 'SliderPanel';
 
 const styles = StyleSheet.create({
   parameterDetailPanelContainer: {
