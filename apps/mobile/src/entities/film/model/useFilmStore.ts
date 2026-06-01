@@ -20,6 +20,31 @@ import {
   DEFAULT_BOUND_BLUE_PURPLE,
   DEFAULT_BOUND_PURPLE_MAGENTA,
   DEFAULT_PIXELATION_FACTOR,
+  DEFAULT_GRAIN_CHROMA,
+  DEFAULT_GRAIN_SIZE,
+  DEFAULT_VIGNETTE_INTENSITY,
+  DEFAULT_CHROMA_SHIFT,
+  DEFAULT_BLOOM_INTENSITY,
+  DEFAULT_CHROMA_SHIFT_DIRECTION,
+  DEFAULT_SHARPENING,
+  DEFAULT_ABERRATION_INVERT,
+  DEFAULT_GRAIN_ROUGHNESS,
+  DEFAULT_GRAIN_ENABLED,
+  DEFAULT_BLOOM_ENABLED,
+  DEFAULT_NOISE_REDUCTION_MODE,
+  DEFAULT_NOISE_REDUCTION_AUTO,
+  DEFAULT_TEMPERATURE_AUTO,
+  DEFAULT_IS_SELFIE_CAMERA,
+  DEFAULT_BLACK_LEVEL,
+  DEFAULT_HIGHLIGHTS,
+  DEFAULT_PIVOT,
+  DEFAULT_CONTRAST_AUTO,
+  DEFAULT_BLACK_LEVEL_AUTO,
+  DEFAULT_HIGHLIGHTS_AUTO,
+  DEFAULT_PIVOT_AUTO,
+  DEFAULT_TAPE_JITTER,
+  DEFAULT_SCANLINES,
+  DEFAULT_CHROMA_SHIFT_INVERT,
 } from '@grovkornet/shared';
 
 export const useFilmStore = create<FilmStore>((set, get) => ({
@@ -27,17 +52,17 @@ export const useFilmStore = create<FilmStore>((set, get) => ({
   saturation: makeMutable(DEFAULT_SATURATION),
   contrast: makeMutable(DEFAULT_CONTRAST),
   grainIntensity: makeMutable(DEFAULT_GRAIN_INTENSITY),
-  grainChroma: makeMutable(0.0),
-  grainSize: makeMutable(1.0),
+  grainChroma: makeMutable(DEFAULT_GRAIN_CHROMA),
+  grainSize: makeMutable(DEFAULT_GRAIN_SIZE),
   grainSpeed: makeMutable(DEFAULT_GRAIN_SPEED),
-  vignetteIntensity: makeMutable(0.0),
-  chromaShift: makeMutable(0.0),
+  vignetteIntensity: makeMutable(DEFAULT_VIGNETTE_INTENSITY),
+  chromaShift: makeMutable(DEFAULT_CHROMA_SHIFT),
   temperature: makeMutable(DEFAULT_TEMPERATURE),
   tint: makeMutable(DEFAULT_TINT),
-  bloomIntensity: makeMutable(0.0),
+  bloomIntensity: makeMutable(DEFAULT_BLOOM_INTENSITY),
   chromaticAberration: makeMutable(DEFAULT_CHROMATIC_ABERRATION),
-  chromaShiftDirection: makeMutable(0),
-  sharpening: makeMutable(0.0),
+  chromaShiftDirection: makeMutable(DEFAULT_CHROMA_SHIFT_DIRECTION),
+  sharpening: makeMutable(DEFAULT_SHARPENING),
   satRed: makeMutable(DEFAULT_SELECTIVE_SATURATION),
   satOrange: makeMutable(DEFAULT_SELECTIVE_SATURATION),
   satYellow: makeMutable(DEFAULT_SELECTIVE_SATURATION),
@@ -46,7 +71,7 @@ export const useFilmStore = create<FilmStore>((set, get) => ({
   satBlue: makeMutable(DEFAULT_SELECTIVE_SATURATION),
   satPurple: makeMutable(DEFAULT_SELECTIVE_SATURATION),
   satMagenta: makeMutable(DEFAULT_SELECTIVE_SATURATION),
-  aberrationInvert: makeMutable(false),
+  aberrationInvert: makeMutable(DEFAULT_ABERRATION_INVERT),
   boundMagentaRed: makeMutable(DEFAULT_BOUND_MAGENTA_RED),
   boundRedOrange: makeMutable(DEFAULT_BOUND_RED_ORANGE),
   boundOrangeYellow: makeMutable(DEFAULT_BOUND_ORANGE_YELLOW),
@@ -55,24 +80,24 @@ export const useFilmStore = create<FilmStore>((set, get) => ({
   boundCyanBlue: makeMutable(DEFAULT_BOUND_CYAN_BLUE),
   boundBluePurple: makeMutable(DEFAULT_BOUND_BLUE_PURPLE),
   boundPurpleMagenta: makeMutable(DEFAULT_BOUND_PURPLE_MAGENTA),
-  grainRoughness: makeMutable(0.0),
-  grainEnabled: makeMutable(false),
-  bloomEnabled: makeMutable(false),
-  noiseReductionMode: makeMutable(1),
-  noiseReductionAuto: makeMutable(true),
-  temperatureAuto: makeMutable(true),
-  isSelfieCamera: makeMutable(false),
-  blackLevel: makeMutable(0.0),
-  highlights: makeMutable(1.0),
-  pivot: makeMutable(0.5),
-  contrastAuto: makeMutable(true),
-  blackLevelAuto: makeMutable(true),
-  highlightsAuto: makeMutable(true),
-  pivotAuto: makeMutable(true),
+  grainRoughness: makeMutable(DEFAULT_GRAIN_ROUGHNESS),
+  grainEnabled: makeMutable(DEFAULT_GRAIN_ENABLED),
+  bloomEnabled: makeMutable(DEFAULT_BLOOM_ENABLED),
+  noiseReductionMode: makeMutable(DEFAULT_NOISE_REDUCTION_MODE),
+  noiseReductionAuto: makeMutable(DEFAULT_NOISE_REDUCTION_AUTO),
+  temperatureAuto: makeMutable(DEFAULT_TEMPERATURE_AUTO),
+  isSelfieCamera: makeMutable(DEFAULT_IS_SELFIE_CAMERA),
+  blackLevel: makeMutable(DEFAULT_BLACK_LEVEL),
+  highlights: makeMutable(DEFAULT_HIGHLIGHTS),
+  pivot: makeMutable(DEFAULT_PIVOT),
+  contrastAuto: makeMutable(DEFAULT_CONTRAST_AUTO),
+  blackLevelAuto: makeMutable(DEFAULT_BLACK_LEVEL_AUTO),
+  highlightsAuto: makeMutable(DEFAULT_HIGHLIGHTS_AUTO),
+  pivotAuto: makeMutable(DEFAULT_PIVOT_AUTO),
   pixelationFactor: makeMutable(DEFAULT_PIXELATION_FACTOR),
-  tapeJitter: makeMutable(0.0),
-  scanlines: makeMutable(0.0),
-  chromaShiftInvert: makeMutable(false),
+  tapeJitter: makeMutable(DEFAULT_TAPE_JITTER),
+  scanlines: makeMutable(DEFAULT_SCANLINES),
+  chromaShiftInvert: makeMutable(DEFAULT_CHROMA_SHIFT_INVERT),
   // @@GEN_INIT_END@@
   capabilities: {
     availableNoiseReductionModes: [],
@@ -253,7 +278,7 @@ export const useFilmStore = create<FilmStore>((set, get) => ({
     const { blackLevelAuto, blackLevel } = get();
     blackLevelAuto.value = value;
     if (value) {
-      blackLevel.value = 0.0;
+      blackLevel.value = DEFAULT_BLACK_LEVEL;
     }
 
   },
@@ -261,7 +286,7 @@ export const useFilmStore = create<FilmStore>((set, get) => ({
     const { highlightsAuto, highlights } = get();
     highlightsAuto.value = value;
     if (value) {
-      highlights.value = 1.0;
+      highlights.value = DEFAULT_HIGHLIGHTS;
     }
 
   },
@@ -269,7 +294,7 @@ export const useFilmStore = create<FilmStore>((set, get) => ({
     const { pivotAuto, pivot } = get();
     pivotAuto.value = value;
     if (value) {
-      pivot.value = 0.5;
+      pivot.value = DEFAULT_PIVOT;
     }
 
   },
@@ -323,61 +348,61 @@ export const useFilmStore = create<FilmStore>((set, get) => ({
         break;
       case 'grain':
         state.grainIntensity.value = DEFAULT_GRAIN_INTENSITY;
-        state.grainChroma.value = 0.0;
-        state.grainSize.value = 1.0;
+        state.grainChroma.value = DEFAULT_GRAIN_CHROMA;
+        state.grainSize.value = DEFAULT_GRAIN_SIZE;
         state.grainSpeed.value = DEFAULT_GRAIN_SPEED;
-        state.grainRoughness.value = 0.0;
-        state.grainEnabled.value = false;
+        state.grainRoughness.value = DEFAULT_GRAIN_ROUGHNESS;
+        state.grainEnabled.value = DEFAULT_GRAIN_ENABLED;
         break;
       case 'vignette':
-        state.vignetteIntensity.value = 0.0;
+        state.vignetteIntensity.value = DEFAULT_VIGNETTE_INTENSITY;
         break;
       case 'chroma_shift':
-        state.chromaShift.value = 0.0;
-        state.chromaShiftDirection.value = 0;
-        state.chromaShiftInvert.value = false;
+        state.chromaShift.value = DEFAULT_CHROMA_SHIFT;
+        state.chromaShiftDirection.value = DEFAULT_CHROMA_SHIFT_DIRECTION;
+        state.chromaShiftInvert.value = DEFAULT_CHROMA_SHIFT_INVERT;
         break;
       case 'temperature':
       case 'tint':
         state.temperature.value = DEFAULT_TEMPERATURE;
-        state.temperatureAuto.value = true;
+        state.temperatureAuto.value = DEFAULT_TEMPERATURE_AUTO;
         state.tint.value = DEFAULT_TINT;
         break;
       case 'bloom':
-        state.bloomIntensity.value = 0.0;
-        state.bloomEnabled.value = false;
+        state.bloomIntensity.value = DEFAULT_BLOOM_INTENSITY;
+        state.bloomEnabled.value = DEFAULT_BLOOM_ENABLED;
         break;
       case 'chromatic_aberration':
         state.chromaticAberration.value = DEFAULT_CHROMATIC_ABERRATION;
-        state.aberrationInvert.value = false;
+        state.aberrationInvert.value = DEFAULT_ABERRATION_INVERT;
         break;
       case 'sharpening':
-        state.sharpening.value = 0.0;
+        state.sharpening.value = DEFAULT_SHARPENING;
         break;
       case 'noise_reduction':
-        state.noiseReductionMode.value = 1;
-        state.noiseReductionAuto.value = true;
+        state.noiseReductionMode.value = DEFAULT_NOISE_REDUCTION_MODE;
+        state.noiseReductionAuto.value = DEFAULT_NOISE_REDUCTION_AUTO;
         break;
       case 'camera_facing':
-        state.isSelfieCamera.value = false;
+        state.isSelfieCamera.value = DEFAULT_IS_SELFIE_CAMERA;
         break;
       case 'tone':
-        state.blackLevel.value = 0.0;
-        state.highlights.value = 1.0;
-        state.pivot.value = 0.5;
-        state.contrastAuto.value = true;
-        state.blackLevelAuto.value = true;
-        state.highlightsAuto.value = true;
-        state.pivotAuto.value = true;
+        state.blackLevel.value = DEFAULT_BLACK_LEVEL;
+        state.highlights.value = DEFAULT_HIGHLIGHTS;
+        state.pivot.value = DEFAULT_PIVOT;
+        state.contrastAuto.value = DEFAULT_CONTRAST_AUTO;
+        state.blackLevelAuto.value = DEFAULT_BLACK_LEVEL_AUTO;
+        state.highlightsAuto.value = DEFAULT_HIGHLIGHTS_AUTO;
+        state.pivotAuto.value = DEFAULT_PIVOT_AUTO;
         break;
       case 'pixelation':
         state.pixelationFactor.value = DEFAULT_PIXELATION_FACTOR;
         break;
       case 'tape_jitter':
-        state.tapeJitter.value = 0.0;
+        state.tapeJitter.value = DEFAULT_TAPE_JITTER;
         break;
       case 'scanlines':
-        state.scanlines.value = 0.0;
+        state.scanlines.value = DEFAULT_SCANLINES;
         break;
       // @@GEN_RESET_END@@
     }

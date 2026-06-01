@@ -79,7 +79,7 @@
         "type": "number"
       },
       "zustand": {
-        "default": "0.0",
+        "default": "DEFAULT_GRAIN_CHROMA",
         "type": "number",
         "resetGroup": "grain",
         "store": "film"
@@ -97,7 +97,7 @@
         "type": "number"
       },
       "zustand": {
-        "default": "1.0",
+        "default": "DEFAULT_GRAIN_SIZE",
         "type": "number",
         "resetGroup": "grain",
         "store": "film"
@@ -133,7 +133,7 @@
         "type": "number"
       },
       "zustand": {
-        "default": "0.0",
+        "default": "DEFAULT_VIGNETTE_INTENSITY",
         "type": "number",
         "resetGroup": "vignette",
         "store": "film"
@@ -151,7 +151,7 @@
         "type": "number"
       },
       "zustand": {
-        "default": "0.0",
+        "default": "DEFAULT_CHROMA_SHIFT",
         "type": "number",
         "resetGroup": "chroma_shift",
         "store": "film"
@@ -261,7 +261,7 @@
         "type": "number"
       },
       "zustand": {
-        "default": "0.0",
+        "default": "DEFAULT_BLOOM_INTENSITY",
         "type": "number",
         "resetGroup": "bloom",
         "setSideEffects": [
@@ -305,7 +305,7 @@
         "type": "number"
       },
       "zustand": {
-        "default": "0",
+        "default": "DEFAULT_CHROMA_SHIFT_DIRECTION",
         "type": "number",
         "resetGroup": "chroma_shift",
         "store": "film"
@@ -323,7 +323,7 @@
         "type": "number"
       },
       "zustand": {
-        "default": "0.0",
+        "default": "DEFAULT_SHARPENING",
         "type": "number",
         "resetGroup": "sharpening",
         "store": "film"
@@ -489,7 +489,7 @@
       "zustand": {
         "name": "fpsSetting",
         "store": "body",
-        "default": "60",
+        "default": "DEFAULT_FPS_SETTING",
         "type": "number"
       }
     },
@@ -513,7 +513,7 @@
       "zustand": {
         "name": "aspectRatio",
         "store": "body",
-        "default": "1",
+        "default": "DEFAULT_ASPECT_RATIO",
         "type": "number"
       }
     },
@@ -551,7 +551,7 @@
         "type": "boolean"
       },
       "zustand": {
-        "default": "false",
+        "default": "DEFAULT_ABERRATION_INVERT",
         "type": "boolean",
         "resetGroup": "chromatic_aberration",
         "store": "film"
@@ -713,7 +713,7 @@
         "type": "number"
       },
       "zustand": {
-        "default": "0.0",
+        "default": "DEFAULT_GRAIN_ROUGHNESS",
         "type": "number",
         "resetGroup": "grain",
         "store": "film"
@@ -742,7 +742,7 @@
         "type": "boolean"
       },
       "zustand": {
-        "default": "false",
+        "default": "DEFAULT_GRAIN_ENABLED",
         "type": "boolean",
         "resetGroup": "grain",
         "store": "film"
@@ -759,7 +759,7 @@
         "type": "boolean"
       },
       "zustand": {
-        "default": "false",
+        "default": "DEFAULT_BLOOM_ENABLED",
         "type": "boolean",
         "resetGroup": "bloom",
         "store": "film"
@@ -778,7 +778,7 @@
       },
       "zustand": {
         "name": "noiseReductionMode",
-        "default": "1",
+        "default": "DEFAULT_NOISE_REDUCTION_MODE",
         "type": "number",
         "resetGroup": "noise_reduction",
         "store": "film"
@@ -791,7 +791,7 @@
         "type": "boolean"
       },
       "zustand": {
-        "default": "true",
+        "default": "DEFAULT_NOISE_REDUCTION_AUTO",
         "type": "boolean",
         "resetGroup": "noise_reduction",
         "store": "film"
@@ -810,7 +810,7 @@
       },
       "zustand": {
         "store": "body",
-        "default": "true",
+        "default": "DEFAULT_ISO_AUTO",
         "type": "boolean",
         "setSideEffects": [
           {
@@ -843,7 +843,7 @@
       },
       "zustand": {
         "store": "body",
-        "default": "true",
+        "default": "DEFAULT_SHUTTER_SPEED_AUTO",
         "type": "boolean",
         "setSideEffects": [
           {
@@ -876,7 +876,7 @@
       },
       "zustand": {
         "name": "temperatureAuto",
-        "default": "true",
+        "default": "DEFAULT_TEMPERATURE_AUTO",
         "type": "boolean",
         "resetGroup": "temperature",
         "setSideEffects": [
@@ -908,7 +908,7 @@
       "zustand": {
         "name": "focusAuto",
         "store": "lens",
-        "default": "true",
+        "default": "DEFAULT_FOCUS_AUTO",
         "type": "boolean",
         "setSideEffects": [
           {
@@ -1003,7 +1003,7 @@
       },
       "zustand": {
         "store": "lens",
-        "default": "0",
+        "default": "DEFAULT_FOCUS_DISTANCE",
         "type": "number",
         "setSideEffects": [
           {
@@ -1039,7 +1039,7 @@
       "zustand": {
         "name": "torchState",
         "store": "body",
-        "default": "0",
+        "default": "DEFAULT_TORCH_STATE",
         "type": "number"
       }
     },
@@ -1056,7 +1056,7 @@
       },
       "zustand": {
         "store": "body",
-        "default": "1",
+        "default": "DEFAULT_TORCH_STRENGTH",
         "type": "number"
       }
     },
@@ -1073,7 +1073,7 @@
       },
       "zustand": {
         "store": "lens",
-        "default": "\"\"",
+        "default": "DEFAULT_CAMERA_ID",
         "type": "string",
         "setSideEffects": [
           {
@@ -1097,7 +1097,7 @@
       },
       "zustand": {
         "store": "body",
-        "default": "1",
+        "default": "DEFAULT_RESOLUTION_SETTING",
         "type": "number"
       }
     },
@@ -1114,7 +1114,7 @@
       },
       "zustand": {
         "store": "body",
-        "default": "0",
+        "default": "DEFAULT_PREVIEW_IN_4K",
         "type": "number"
       }
     },
@@ -1131,7 +1131,7 @@
       },
       "zustand": {
         "store": "body",
-        "default": "1",
+        "default": "DEFAULT_FORCE_4K_60FPS_CROP",
         "type": "number"
       }
     },
@@ -1159,7 +1159,7 @@
         "type": "boolean"
       },
       "zustand": {
-        "default": "false",
+        "default": "DEFAULT_IS_SELFIE_CAMERA",
         "type": "boolean",
         "resetGroup": "camera_facing",
         "store": "film"
@@ -1194,7 +1194,7 @@
         "type": "number"
       },
       "zustand": {
-        "default": "0.0",
+        "default": "DEFAULT_BLACK_LEVEL",
         "type": "number",
         "resetGroup": "tone",
         "setSideEffects": [
@@ -1218,7 +1218,7 @@
         "type": "number"
       },
       "zustand": {
-        "default": "1.0",
+        "default": "DEFAULT_HIGHLIGHTS",
         "type": "number",
         "resetGroup": "tone",
         "setSideEffects": [
@@ -1242,7 +1242,7 @@
         "type": "number"
       },
       "zustand": {
-        "default": "0.5",
+        "default": "DEFAULT_PIVOT",
         "type": "number",
         "resetGroup": "tone",
         "setSideEffects": [
@@ -1266,7 +1266,7 @@
         "type": "boolean"
       },
       "zustand": {
-        "default": "true",
+        "default": "DEFAULT_CONTRAST_AUTO",
         "type": "boolean",
         "resetGroup": "tone",
         "setSideEffects": [
@@ -1291,13 +1291,13 @@
         "type": "boolean"
       },
       "zustand": {
-        "default": "true",
+        "default": "DEFAULT_BLACK_LEVEL_AUTO",
         "type": "boolean",
         "resetGroup": "tone",
         "setSideEffects": [
           {
             "target": "blackLevel",
-            "value": "0.0",
+            "value": "DEFAULT_BLACK_LEVEL",
             "condition": "value"
           }
         ],
@@ -1316,13 +1316,13 @@
         "type": "boolean"
       },
       "zustand": {
-        "default": "true",
+        "default": "DEFAULT_HIGHLIGHTS_AUTO",
         "type": "boolean",
         "resetGroup": "tone",
         "setSideEffects": [
           {
             "target": "highlights",
-            "value": "1.0",
+            "value": "DEFAULT_HIGHLIGHTS",
             "condition": "value"
           }
         ],
@@ -1341,13 +1341,13 @@
         "type": "boolean"
       },
       "zustand": {
-        "default": "true",
+        "default": "DEFAULT_PIVOT_AUTO",
         "type": "boolean",
         "resetGroup": "tone",
         "setSideEffects": [
           {
             "target": "pivot",
-            "value": "0.5",
+            "value": "DEFAULT_PIVOT",
             "condition": "value"
           }
         ],
@@ -1367,7 +1367,7 @@
       },
       "zustand": {
         "store": "body",
-        "default": "1.0",
+        "default": "DEFAULT_ZOOM",
         "type": "number"
       }
     },
@@ -1401,7 +1401,7 @@
         "type": "number"
       },
       "zustand": {
-        "default": "0.0",
+        "default": "DEFAULT_TAPE_JITTER",
         "type": "number",
         "resetGroup": "tape_jitter",
         "store": "film"
@@ -1419,7 +1419,7 @@
         "type": "number"
       },
       "zustand": {
-        "default": "0.0",
+        "default": "DEFAULT_SCANLINES",
         "type": "number",
         "resetGroup": "scanlines",
         "store": "film"
@@ -1438,7 +1438,7 @@
         "type": "boolean"
       },
       "zustand": {
-        "default": "false",
+        "default": "DEFAULT_CHROMA_SHIFT_INVERT",
         "type": "boolean",
         "resetGroup": "chroma_shift",
         "store": "film"

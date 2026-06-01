@@ -20,7 +20,8 @@ type FilmActionsKeys =
   | 'setTint'
   | 'setBloomIntensity'
   | 'setChromaticAberration'
-  | 'setAberrationDirection'
+  | 'setChromaShift'
+  | 'setChromaShiftDirection'
   | 'setSharpening'
   | 'setSatRed'
   | 'setSatOrange'
@@ -55,6 +56,9 @@ type FilmActionsKeys =
   | 'setPivotAuto'
   | 'setVignetteIntensity'
   | 'setPixelationFactor'
+  | 'setTapeJitter'
+  | 'setScanlines'
+  | 'setChromaShiftInvert'
   | 'resetEffect';
 
 type FilmExcludedKeys = 'capabilities' | 'isSelfieCamera';

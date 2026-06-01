@@ -125,6 +125,57 @@ function validateAndLoadParameters() {
   }
   
   console.log("Validation Successful! All render parameter indices are sequential with no gaps or duplicates.");
+
+  // Validate that all defaults defined as DEFAULT_ in JSON are exported in index.ts
+  const indexPath = path.join(PROJECT_ROOT, 'packages/shared/src/index.ts');
+  if (fs.existsSync(indexPath)) {
+    const indexContent = fs.readFileSync(indexPath, 'utf8');
+    const exports = new Set();
+    const regex = /export\s+const\s+(\w+)/g;
+    let match;
+    while ((match = regex.exec(indexContent)) !== null) {
+      exports.add(match[1]);
+    }
+    
+    parameters.forEach(p => {
+      if (p.zustand && p.zustand.default && p.zustand.default.startsWith('DEFAULT_')) {
+        const def = p.zustand.default;
+        if (!exports.has(def)) {
+          throw new Error(`ValidationError: Parameter '${p.name}' references default '${def}' but it is not exported in packages/shared/src/index.ts`);
+        }
+      }
+      
+      if (p.zustand && p.zustand.setSideEffects) {
+        p.zustand.setSideEffects.forEach(se => {
+          if (se.value && se.value.startsWith('DEFAULT_')) {
+            if (!exports.has(se.value)) {
+              throw new Error(`ValidationError: Side effect on parameter '${p.name}' targets '${se.target}' with value '${se.value}' but it is not exported in packages/shared/src/index.ts`);
+            }
+          }
+        });
+      }
+    });
+    console.log("Validation of DEFAULT_ constants in index.ts completed successfully.");
+  }
+
+  // Verify side effect targets exist as parameter names in the same store
+  const validParamNames = new Set(parameters.map(p => p.zustand?.name || p.name));
+  validParamNames.add('evAuto'); // Manually added store property in useBodyStore.ts
+  parameters.forEach(p => {
+    if (p.zustand && p.zustand.setSideEffects) {
+      p.zustand.setSideEffects.forEach(se => {
+        const targetStore = se.store || p.zustand.store || 'film';
+        const currentStore = p.zustand.store || 'film';
+        if (targetStore === currentStore) {
+          if (!validParamNames.has(se.target)) {
+            throw new Error(`ValidationError: Side effect on parameter '${p.name}' targets non-existent parameter '${se.target}' in store '${currentStore}'`);
+          }
+        }
+      });
+    }
+  });
+  console.log("Validation of side effect targets completed successfully.");
+
   return { parameters, renderParams };
 }
 

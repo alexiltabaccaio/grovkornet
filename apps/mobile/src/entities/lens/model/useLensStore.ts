@@ -2,6 +2,11 @@ import { create } from 'zustand';
 import { makeMutable } from 'react-native-reanimated';
 import { logger } from '@shared/lib/logger';
 import { usePreferencesStore } from '@entities/preferences';
+import { 
+  DEFAULT_FOCUS_AUTO,
+  DEFAULT_FOCUS_DISTANCE,
+  DEFAULT_CAMERA_ID,
+} from '@grovkornet/shared';
 import { LensStore } from './types';
 
 export const useLensStore = create<LensStore>((set, get) => ({
@@ -11,9 +16,9 @@ export const useLensStore = create<LensStore>((set, get) => ({
   bloomEnabled: makeMutable(false),
   bloomIntensity: makeMutable(0),
   // @@GEN_STATE_START@@
-  focusAuto: makeMutable(true),
-  focusDistance: makeMutable(0),
-  cameraId: "",
+  focusAuto: makeMutable(DEFAULT_FOCUS_AUTO),
+  focusDistance: makeMutable(DEFAULT_FOCUS_DISTANCE),
+  cameraId: DEFAULT_CAMERA_ID,
   // @@GEN_STATE_END@@
   capabilities: {
     supportsFocus: true,

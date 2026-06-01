@@ -9,6 +9,12 @@ import {
   DEFAULT_GRAIN_SPEED,
   DEFAULT_SELECTIVE_SATURATION,
   DEFAULT_BOUND_MAGENTA_RED,
+  DEFAULT_BLACK_LEVEL,
+  DEFAULT_HIGHLIGHTS,
+  DEFAULT_PIVOT,
+  DEFAULT_GRAIN_CHROMA,
+  DEFAULT_GRAIN_SIZE,
+  DEFAULT_TEMPERATURE_AUTO,
 } from '@grovkornet/shared';
 
 describe('useFilmStore', () => {
@@ -151,15 +157,15 @@ describe('useFilmStore', () => {
 
     store.setBlackLevelAuto(true);
     expect(useFilmStore.getState().blackLevelAuto.value).toBe(true);
-    expect(useFilmStore.getState().blackLevel.value).toBe(0.0);
+    expect(useFilmStore.getState().blackLevel.value).toBe(DEFAULT_BLACK_LEVEL);
 
     store.setHighlightsAuto(true);
     expect(useFilmStore.getState().highlightsAuto.value).toBe(true);
-    expect(useFilmStore.getState().highlights.value).toBe(1.0);
+    expect(useFilmStore.getState().highlights.value).toBe(DEFAULT_HIGHLIGHTS);
 
     store.setPivotAuto(true);
     expect(useFilmStore.getState().pivotAuto.value).toBe(true);
-    expect(useFilmStore.getState().pivot.value).toBe(0.5);
+    expect(useFilmStore.getState().pivot.value).toBe(DEFAULT_PIVOT);
   });
 
   it('resets effects correctly', () => {
@@ -169,8 +175,8 @@ describe('useFilmStore', () => {
     store.resetEffect('grain');
     expect(useFilmStore.getState().grainIntensity.value).toBe(DEFAULT_GRAIN_INTENSITY);
     expect(useFilmStore.getState().grainEnabled.value).toBe(false);
-    expect(useFilmStore.getState().grainChroma.value).toBe(0);
-    expect(useFilmStore.getState().grainSize.value).toBe(1);
+    expect(useFilmStore.getState().grainChroma.value).toBe(DEFAULT_GRAIN_CHROMA);
+    expect(useFilmStore.getState().grainSize.value).toBe(DEFAULT_GRAIN_SIZE);
     expect(useFilmStore.getState().grainSpeed.value).toBe(DEFAULT_GRAIN_SPEED);
 
     store.setSaturation(2.0);
@@ -218,9 +224,9 @@ describe('useFilmStore', () => {
     store.setHighlights(1.4);
     store.setPivot(0.7);
     store.resetEffect('tone');
-    expect(useFilmStore.getState().blackLevel.value).toBe(0.0);
-    expect(useFilmStore.getState().highlights.value).toBe(1.0);
-    expect(useFilmStore.getState().pivot.value).toBe(0.5);
+    expect(useFilmStore.getState().blackLevel.value).toBe(DEFAULT_BLACK_LEVEL);
+    expect(useFilmStore.getState().highlights.value).toBe(DEFAULT_HIGHLIGHTS);
+    expect(useFilmStore.getState().pivot.value).toBe(DEFAULT_PIVOT);
     expect(useFilmStore.getState().blackLevelAuto.value).toBe(true);
     expect(useFilmStore.getState().highlightsAuto.value).toBe(true);
     expect(useFilmStore.getState().pivotAuto.value).toBe(true);

@@ -1,12 +1,12 @@
 import { useBodyStore } from './useBodyStore';
-import { DEFAULT_ISO, DEFAULT_EV, DEFAULT_SHUTTER_SPEED } from '@grovkornet/shared';
+import { DEFAULT_ISO, DEFAULT_EV, DEFAULT_SHUTTER_SPEED, DEFAULT_ZOOM } from '@grovkornet/shared';
 
 describe('useBodyStore', () => {
   it('initializes correctly', () => {
     const state = useBodyStore.getState();
     expect(state.iso.value).toBe(DEFAULT_ISO);
     expect(state.ev.value).toBe(DEFAULT_EV);
-    expect(state.zoom.value).toBe(1.0);
+    expect(state.zoom.value).toBe(DEFAULT_ZOOM);
   });
 
   it('sets zoom correctly', () => {
