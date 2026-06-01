@@ -136,6 +136,9 @@ export const useSystemStore = create<SystemStore>()(
       storage: createJSONStorage(() => createZustandMMKVStorage('system-storage')),
       onRehydrateStorage: () => (state) => {
         if (state) {
+          if (!__DEV__) {
+            state.isLogsEnabled = false;
+          }
           logger.setDebugEnabled(state.isLogsEnabled);
         }
       },

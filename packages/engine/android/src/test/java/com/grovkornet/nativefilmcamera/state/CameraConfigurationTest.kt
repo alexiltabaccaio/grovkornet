@@ -197,5 +197,33 @@ class CameraConfigurationTest {
         config.resolutionSetting = 999
         assertEquals(1080f, config.getTargetResolutionValue(), 0.001f)
     }
+
+    @Test
+    fun loadFromMap_loadsParametersCorrectly() {
+        val config = CameraConfiguration()
+        val payload = mapOf(
+            "saturation" to 1.5f,
+            "contrast" to 1.1f,
+            "grainEnabled" to true,
+            "grainIntensity" to 0.7f,
+            "temperature" to 4200.0f,
+            "tint" to -3.0f,
+            "aspectRatio" to 2,
+            "aberrationInvert" to true,
+            "fpsSetting" to 30
+        )
+
+        config.loadFromMap(payload)
+
+        assertEquals(1.5f, config.saturation, 0.001f)
+        assertEquals(1.1f, config.contrast, 0.001f)
+        assertTrue(config.grainEnabled)
+        assertEquals(0.7f, config.grainIntensity, 0.001f)
+        assertEquals(4200.0f, config.whiteBalance, 0.001f) // mapped from "temperature"
+        assertEquals(-3.0f, config.tint, 0.001f)
+        assertEquals(2, config.aspectRatio) // mapped from "aspectRatio"
+        assertTrue(config.aberrationInvert)
+        assertEquals(30, config.targetFps) // mapped from "fpsSetting"
+    }
 }
 

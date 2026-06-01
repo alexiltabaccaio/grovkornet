@@ -1,10 +1,11 @@
 module.exports = function(api) {
   api.cache(true);
+  const isProduction = process.env.NODE_ENV === 'production' || process.env.BABEL_ENV === 'production';
   return {
     presets: [['babel-preset-expo', { jsxRuntime: 'classic' }]],
     plugins: [
       'react-native-reanimated/plugin',
-      ...(process.env.NODE_ENV === 'production' ? ['transform-remove-console'] : []),
+      ...(isProduction ? ['transform-remove-console'] : []),
     ],
   };
 };

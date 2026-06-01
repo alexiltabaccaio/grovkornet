@@ -14,7 +14,7 @@ class Logger {
   }
 
   public setDebugEnabled(enabled: boolean) {
-    this.isDebugEnabled = enabled;
+    this.isDebugEnabled = __DEV__ && enabled;
   }
 
   private formatMessage(level: LogLevel, component: string, message: string): string {
@@ -23,27 +23,29 @@ class Logger {
   }
 
   public debug(component: string, message: string, data?: unknown) {
-    if (this.isDebugEnabled) {
+    if (__DEV__ && this.isDebugEnabled) {
       // eslint-disable-next-line no-console
       console.log(this.formatMessage('debug', component, message), data ?? '');
     }
   }
 
   public info(component: string, message: string, data?: unknown) {
-    if (this.isDebugEnabled) {
+    if (__DEV__ && this.isDebugEnabled) {
       // eslint-disable-next-line no-console
       console.log(this.formatMessage('info', component, message), data ?? '');
     }
   }
 
   public warn(component: string, message: string, data?: unknown) {
-    if (this.isDebugEnabled) {
+    if (__DEV__ && this.isDebugEnabled) {
       console.warn(this.formatMessage('warn', component, message), data ?? '');
     }
   }
 
   public error(component: string, message: string, error?: unknown) {
-    console.error(this.formatMessage('error', component, message), error ?? '');
+    if (__DEV__) {
+      console.error(this.formatMessage('error', component, message), error ?? '');
+    }
   }
 }
 

@@ -7,7 +7,11 @@
 #include <algorithm>
 
 #define LOG_TAG "PipelineRenderer"
+#ifdef NDEBUG
+#define LOGI(...) ((void)0)
+#else
 #define LOGI(...) __android_log_print(ANDROID_LOG_INFO, LOG_TAG, __VA_ARGS__)
+#endif
 #define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
 
 bool PipelineRenderer::init(filament::Engine& engine, int width, int height,

@@ -12,6 +12,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import com.grovkornet.nativefilmcamera.BuildConfig
 
 object ThumbnailCaptureService {
     fun captureThumbnail(
@@ -24,7 +25,9 @@ object ThumbnailCaptureService {
         }
     ) {
         if (surfaceWidth <= 0 || surfaceHeight <= 0 || !view.holder.surface.isValid) {
-            Log.w("ThumbnailCaptureService", "Cannot request PixelCopy: surface not ready")
+            if (BuildConfig.DEBUG) {
+                Log.w("ThumbnailCaptureService", "Cannot request PixelCopy: surface not ready")
+            }
             return
         }
 

@@ -3,7 +3,6 @@ package com.grovkornet.nativefilmcamera.capture
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.graphics.Matrix
 import android.media.MediaActionSound
 import android.util.Log
 import androidx.camera.core.ImageCapture
@@ -14,6 +13,8 @@ import com.grovkornet.nativefilmcamera.rendering.OffscreenFilmProcessor
 import com.grovkornet.nativefilmcamera.managers.GalleryManager
 import com.grovkornet.nativefilmcamera.logic.ImageUtils
 import com.grovkornet.nativefilmcamera.logic.WatermarkEngine
+import com.grovkornet.nativefilmcamera.logic.ExifMetadataManager
+import com.grovkornet.nativefilmcamera.logic.ImageProcessorPipeline
 import com.grovkornet.nativefilmcamera.state.CameraConfiguration
 import com.grovkornet.nativefilmcamera.BuildConfig
 import kotlinx.coroutines.CoroutineScope
@@ -79,7 +80,7 @@ class CapturePipeline(
     private suspend fun processAndSave(image: ImageProxy) = withContext(Dispatchers.Default) {
         val procStartTime = System.currentTimeMillis()
         var bitmap: Bitmap? = null
-        val originalExifMap = mutableMapOf<String, String>()
+        var originalExifMap: Map<String, String> = emptyMap()
         
         try {
             val rotation = image.imageInfo.rotationDegrees
@@ -87,49 +88,12 @@ class CapturePipeline(
             val bytes = ByteArray(buffer.remaining())
             buffer.get(bytes)
             
-            try {
-                java.io.ByteArrayInputStream(bytes).use { stream ->
-                    val originalExif = android.media.ExifInterface(stream)
-                    val tagsToCopy = arrayOf(
-                        android.media.ExifInterface.TAG_F_NUMBER,
-                        android.media.ExifInterface.TAG_ISO_SPEED_RATINGS,
-                        android.media.ExifInterface.TAG_EXPOSURE_TIME,
-                        android.media.ExifInterface.TAG_FOCAL_LENGTH,
-                        android.media.ExifInterface.TAG_WHITE_BALANCE,
-                        android.media.ExifInterface.TAG_FLASH,
-                        android.media.ExifInterface.TAG_GPS_LATITUDE,
-                        android.media.ExifInterface.TAG_GPS_LATITUDE_REF,
-                        android.media.ExifInterface.TAG_GPS_LONGITUDE,
-                        android.media.ExifInterface.TAG_GPS_LONGITUDE_REF,
-                        android.media.ExifInterface.TAG_GPS_ALTITUDE,
-                        android.media.ExifInterface.TAG_GPS_ALTITUDE_REF,
-                        android.media.ExifInterface.TAG_GPS_PROCESSING_METHOD,
-                        android.media.ExifInterface.TAG_GPS_TIMESTAMP,
-                        android.media.ExifInterface.TAG_GPS_DATESTAMP
-                    )
-                    for (tag in tagsToCopy) {
-                        originalExif.getAttribute(tag)?.let { value ->
-                            originalExifMap[tag] = value
-                        }
-                    }
-                }
-            } catch (e: Exception) {
-                Log.e(TAG, "Failed to read original EXIF metadata", e)
+            originalExifMap = java.io.ByteArrayInputStream(bytes).use { stream ->
+                ExifMetadataManager.extractMetadata(stream)
             }
 
             val rawBitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
-            if (rotation != 0 || config.isSelfieCamera) {
-                val matrix = Matrix().apply { 
-                    postRotate(rotation.toFloat())
-                    if (config.isSelfieCamera) {
-                        postScale(-1f, 1f)
-                    }
-                }
-                bitmap = Bitmap.createBitmap(rawBitmap, 0, 0, rawBitmap.width, rawBitmap.height, matrix, true)
-                rawBitmap.recycle()
-            } else {
-                bitmap = rawBitmap
-            }
+            bitmap = ImageProcessorPipeline.rotateAndMirror(rawBitmap, rotation, config.isSelfieCamera)
         } catch (e: Exception) {
             Log.e(TAG, "Failed to decode photo buffer", e)
         } finally {
@@ -147,30 +111,14 @@ class CapturePipeline(
                 bitmap = cropped
             }
 
-            var finalInput = bitmap
-            val targetRes = when(config.resolutionSetting) {
-                0 -> 2160
-                1 -> 1080
-                2 -> 720
-                3 -> 480
-                4 -> 360
-                5 -> 240
-                6 -> 144
-                else -> 1080
-            }
-            val scale = targetRes.toFloat() / minOf(finalInput.width, finalInput.height).toFloat()
-            if (scale < 1f) {
-                // scale down without filtering to maintain retro look if small
-                val scaled = Bitmap.createScaledBitmap(finalInput, (finalInput.width * scale).toInt(), (finalInput.height * scale).toInt(), targetRes > 480)
-                if (scaled != finalInput) {
-                    finalInput.recycle()
-                    finalInput = scaled
-                }
-            }
-
+            // Scale to target resolution
+            val scaled = ImageProcessorPipeline.scaleToTargetResolution(bitmap, config.resolutionSetting)
+            
             // Process the full-resolution image
-            val processed = offscreenProcessor.process(finalInput, config, context)
-            finalInput.recycle()
+            val processed = ImageProcessorPipeline.processRenderPipeline(scaled, config, context, offscreenProcessor)
+            if (scaled != processed) {
+                scaled.recycle()
+            }
 
             val watermarked = WatermarkEngine.embedSignature(processed)
             if (watermarked != processed) {
@@ -192,31 +140,7 @@ class CapturePipeline(
             watermarked.recycle()
 
             // 3. Write EXIF directly to MediaStore URI
-            try {
-                context.contentResolver.openFileDescriptor(uri, "rw")?.use { pfd ->
-                    val exif = android.media.ExifInterface(pfd.fileDescriptor)
-                    val sdf = java.text.SimpleDateFormat("yyyy:MM:dd HH:mm:ss", java.util.Locale.US)
-                    val now = sdf.format(java.util.Date())
-                    exif.setAttribute(android.media.ExifInterface.TAG_DATETIME, now)
-                    exif.setAttribute(android.media.ExifInterface.TAG_DATETIME_ORIGINAL, now)
-                    exif.setAttribute(android.media.ExifInterface.TAG_DATETIME_DIGITIZED, now)
-                    exif.setAttribute(android.media.ExifInterface.TAG_SOFTWARE, "Grovkornet Engine")
-                    exif.setAttribute(android.media.ExifInterface.TAG_MAKE, android.os.Build.MANUFACTURER)
-                    exif.setAttribute(android.media.ExifInterface.TAG_MODEL, android.os.Build.MODEL)
-                    exif.setAttribute(android.media.ExifInterface.TAG_RESOLUTION_UNIT, "2")
-                    exif.setAttribute(android.media.ExifInterface.TAG_X_RESOLUTION, "72/1")
-                    exif.setAttribute(android.media.ExifInterface.TAG_Y_RESOLUTION, "72/1")
-                    
-                    // Copy original EXIF tags back
-                    for ((tag, value) in originalExifMap) {
-                        exif.setAttribute(tag, value)
-                    }
-                    
-                    exif.saveAttributes()
-                }
-            } catch (e: Exception) {
-                Log.e(TAG, "Failed to write EXIF data", e)
-            }
+            ExifMetadataManager.writeMetadata(context, uri, originalExifMap)
 
             withContext(Dispatchers.Main) {
                 listener.onPhotoCaptured(uri.toString())
@@ -240,7 +164,9 @@ class CapturePipeline(
     fun release() {
         if (activeCaptures.get() > 0) {
             releasePending = true
-            Log.i(TAG, "Release deferred: ${activeCaptures.get()} captures still processing")
+            if (BuildConfig.DEBUG) {
+                Log.i(TAG, "Release deferred: ${activeCaptures.get()} captures still processing")
+            }
         } else {
             offscreenProcessor.release()
             onCapturesFinished?.invoke()

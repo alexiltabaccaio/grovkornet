@@ -234,6 +234,37 @@ function generateNativeBridge(parameters, renderParams) {
   const toRenderParamsContent = `FloatArray(${arraySize}).apply {\n${arrayMappingsContent.split('\n').map(line => '    ' + line).join('\n')}\n}`;
   replaceBetweenMarkers(FILE_PATHS.kotlinConfig, '// @@GEN_ARRAY_START@@', '// @@GEN_ARRAY_END@@', toRenderParamsContent, '');
 
+  // 4b. Generate CameraConfiguration.kt loadFromMap mapping
+  const mapLoaderContent = parameters
+    .filter(p => p.kotlin && !p.kotlin.transient)
+    .map(p => {
+      const kotlinName = p.kotlin.name || p.name;
+      const jsKey = p.zustand?.name || p.ts?.name || p.name;
+      
+      let castExpr = '';
+      if (p.kotlin.type === 'Float') {
+        castExpr = `(rawValue as? Number)?.toFloat()?.let { ${kotlinName} = it }`;
+      } else if (p.kotlin.type === 'Int') {
+        castExpr = `(rawValue as? Number)?.toInt()?.let { ${kotlinName} = it }`;
+      } else if (p.kotlin.type === 'Long') {
+        castExpr = `(rawValue as? Number)?.toLong()?.let { ${kotlinName} = it }`;
+      } else if (p.kotlin.type === 'Boolean') {
+        castExpr = `(rawValue as? Boolean)?.let { ${kotlinName} = it }`;
+      } else if (p.kotlin.type === 'String' || p.kotlin.type === 'String?') {
+        castExpr = `(rawValue as? String)?.let { ${kotlinName} = it }`;
+      } else {
+        castExpr = `// Unhandled type: ${p.kotlin.type}`;
+      }
+      
+      if (jsKey !== p.name) {
+        return `val raw_${kotlinName} = payload["${jsKey}"] ?: payload["${p.name}"]\nraw_${kotlinName}?.let { rawValue ->\n    ${castExpr}\n}`;
+      } else {
+        return `payload["${jsKey}"]?.let { rawValue ->\n    ${castExpr}\n}`;
+      }
+    })
+    .join('\n');
+  replaceBetweenMarkers(FILE_PATHS.kotlinConfig, '// @@GEN_MAP_LOADER_START@@', '// @@GEN_MAP_LOADER_END@@', mapLoaderContent, '    ');
+
   // 5. Generate RenderParams.h struct fields
   const cppFieldsContent = renderParams
     .map(p => {
