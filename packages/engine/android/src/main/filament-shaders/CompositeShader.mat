@@ -102,7 +102,8 @@ fragment {
             
             vec2 dir = normalize(uv - 0.5);
             float dist = length(uv - 0.5);
-            vec2 caShift = dir * dist * 2.0 * caIntensity;
+            float falloff = dist * dist * 4.0; // Caduta esponenziale per sweet-spot al centro
+            vec2 caShift = dir * falloff * caIntensity;
             caShift.y *= aspect;
             
             if (materialParams.u_InvertYShift > 0.5) {
@@ -113,8 +114,10 @@ fragment {
                 caShift = -caShift;
             }
 
+            // Split Magenta/Verde per differenziarsi dallo shift Rosso/Ciano
+            gUv += caShift;
             rUv -= caShift;
-            bUv += caShift;
+            bUv -= caShift;
         }
 
         vec4 colR = texture(materialParams_u_Texture, rUv);
