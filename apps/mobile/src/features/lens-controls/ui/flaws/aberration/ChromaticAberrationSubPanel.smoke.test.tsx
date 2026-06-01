@@ -2,12 +2,9 @@ import React from 'react';
 import { render, fireEvent } from '@testing-library/react-native';
 import { ChromaticAberrationSubPanel } from './ChromaticAberrationSubPanel';
 
-const mockSetAberrationDirection = jest.fn();
 const mockSetAberrationInvert = jest.fn();
-const mockUpdateAberrationDirection = jest.fn();
 const mockUpdateAberrationInvert = jest.fn();
 let mockIsDebugEnabled = false;
-let mockAberrationDirectionVal = 0;
 let mockAberrationInvertVal = false;
 
 jest.mock('react-i18next', () => ({
@@ -23,15 +20,12 @@ jest.mock('react-i18next', () => ({
 jest.mock('@entities/film', () => ({
   useFilmStore: jest.fn((fn?: (state: any) => unknown) => {
     const state = {
-      aberrationDirection: { value: mockAberrationDirectionVal },
-      setAberrationDirection: mockSetAberrationDirection,
       aberrationInvert: { value: mockAberrationInvertVal },
       setAberrationInvert: mockSetAberrationInvert,
     };
     return fn ? fn(state) : state;
   }),
   useFilmWorklets: () => ({
-    updateAberrationDirection: mockUpdateAberrationDirection,
     updateAberrationInvert: mockUpdateAberrationInvert,
   }),
 }));
@@ -47,36 +41,16 @@ describe('ChromaticAberrationSubPanel', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     mockIsDebugEnabled = false;
-    mockAberrationDirectionVal = 0;
     mockAberrationInvertVal = false;
   });
 
   it('renders correctly in default state', () => {
-    const { toJSON, getByText } = render(<ChromaticAberrationSubPanel />);
+    const { toJSON, getByText, queryByText } = render(<ChromaticAberrationSubPanel />);
     expect(toJSON()).toBeDefined();
-    expect(getByText('STD')).toBeTruthy();
-    expect(getByText('HOR')).toBeTruthy();
-    expect(getByText('RAD')).toBeTruthy();
     expect(getByText('INV')).toBeTruthy();
-  });
-
-  it('handles direction changes on STD, HOR, RAD press', () => {
-    const { getByText } = render(<ChromaticAberrationSubPanel />);
-
-    // Press HOR
-    fireEvent.press(getByText('HOR'));
-    expect(mockSetAberrationDirection).toHaveBeenCalledWith(1);
-    expect(mockUpdateAberrationDirection).toHaveBeenCalledWith(1);
-
-    // Press RAD
-    fireEvent.press(getByText('RAD'));
-    expect(mockSetAberrationDirection).toHaveBeenCalledWith(2);
-    expect(mockUpdateAberrationDirection).toHaveBeenCalledWith(2);
-
-    // Press STD
-    fireEvent.press(getByText('STD'));
-    expect(mockSetAberrationDirection).toHaveBeenCalledWith(0);
-    expect(mockUpdateAberrationDirection).toHaveBeenCalledWith(0);
+    expect(queryByText('STD')).toBeNull();
+    expect(queryByText('HOR')).toBeNull();
+    expect(queryByText('RAD')).toBeNull();
   });
 
   it('handles invert press', () => {
@@ -103,4 +77,3 @@ describe('ChromaticAberrationSubPanel', () => {
     expect(toJSON()).toBeDefined();
   });
 });
-

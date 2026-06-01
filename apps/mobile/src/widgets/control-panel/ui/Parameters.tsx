@@ -10,8 +10,8 @@ import { useDoublePress } from '@shared/lib/hooks/useDoublePress';
 import { controlPanelStyles } from './ControlPanel.styles';
 
 // Import modules from feature slices
-import { ColorModule, ToneModule, TextureModule } from '@features/film-controls';
-import { FlawsModule, OpticsModule } from '@features/lens-controls';
+import { ColorModule, ToneModule, TextureModule, FlawsModule as FilmFlawsModule } from '@features/film-controls';
+import { FlawsModule as LensFlawsModule, OpticsModule } from '@features/lens-controls';
 import { CaptureModule, ExposureModule, LightingModule } from '@features/body-controls';
 import { PreferencesModule, PresetsModule } from '@features/system-settings';
 
@@ -21,7 +21,9 @@ import { PreferencesModule, PresetsModule } from '@features/system-settings';
  * moving state consumption into the individual modules.
  */
 export const Parameters = React.memo(() => {
-  const { activeModule, lastNonNoneModule } = useSystemStore(useShallow(state => ({
+  const { activeSection, lastNonNoneSection, activeModule, lastNonNoneModule } = useSystemStore(useShallow(state => ({
+    activeSection: state.activeSection,
+    lastNonNoneSection: state.lastNonNoneSection,
     activeModule: state.activeModule,
     lastNonNoneModule: state.lastNonNoneModule,
   })));
@@ -98,8 +100,14 @@ export const Parameters = React.memo(() => {
         return <ColorModule handlePressWithDouble={handlePressWithDouble} />;
       case 'tone':
         return <ToneModule handlePressWithDouble={handlePressWithDouble} />;
-      case 'flaws':
-        return <FlawsModule handlePressWithDouble={handlePressWithDouble} />;
+      case 'flaws': {
+        const section = activeSection === 'none' ? lastNonNoneSection : activeSection;
+        if (section === 'lens') {
+          return <LensFlawsModule handlePressWithDouble={handlePressWithDouble} />;
+        } else {
+          return <FilmFlawsModule handlePressWithDouble={handlePressWithDouble} />;
+        }
+      }
       case 'exposure':
         return <ExposureModule handlePressWithDouble={handlePressWithDouble} />;
       case 'optics':

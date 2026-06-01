@@ -30,6 +30,12 @@ jest.mock('@features/film-controls', () => {
         handlePressWithDouble('contrast', () => {});
       }} />
     ),
+    FlawsModule: ({ handlePressWithDouble }: any) => (
+      <Button testID="btn-film-flaws" title="Film Flaws" onPress={() => {
+        handlePressWithDouble('chroma_shift', () => {});
+        handlePressWithDouble('chroma_shift', () => {});
+      }} />
+    ),
   };
 });
 
@@ -182,15 +188,26 @@ describe('Parameters', () => {
     expect(spySetContrastAuto).toHaveBeenCalledWith(true);
   });
 
-  it('renders FlawsModule and resets chromatic_aberration effect', () => {
+  it('renders LensFlawsModule and resets chromatic_aberration effect', () => {
     act(() => {
-      useSystemStore.getState().setActiveModule('flaws');
+      useSystemStore.setState({ activeSection: 'lens', activeModule: 'flaws' });
     });
     const { getByTestId } = render(<Parameters />);
     const button = getByTestId('btn-flaws');
     
     fireEvent.press(button);
     expect(spyResetEffect).toHaveBeenCalledWith('chromatic_aberration');
+  });
+
+  it('renders FilmFlawsModule and resets chroma_shift effect', () => {
+    act(() => {
+      useSystemStore.setState({ activeSection: 'film', activeModule: 'flaws' });
+    });
+    const { getByTestId } = render(<Parameters />);
+    const button = getByTestId('btn-film-flaws');
+    
+    fireEvent.press(button);
+    expect(spyResetEffect).toHaveBeenCalledWith('chroma_shift');
   });
 
   it('renders OpticsModule and resets focus / camera_selection', () => {

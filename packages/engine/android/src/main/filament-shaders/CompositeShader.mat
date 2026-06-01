@@ -10,11 +10,14 @@ material {
         { type : float, name : u_GrainSpeed },
         { type : float, name : u_GrainRoughness },
         { type : float, name : u_VignetteIntensity },
-        { type : float, name : u_VhsIntensity },
+        { type : float, name : u_ChromaShift },
+        { type : float, name : u_ChromaShiftDirection },
+        { type : float, name : u_ChromaShiftInvert },
+        { type : float, name : u_TapeJitter },
+        { type : float, name : u_Scanlines },
         { type : float, name : u_Time },
         { type : float, name : u_BloomIntensity },
         { type : float, name : u_ChromaticAberration },
-        { type : float, name : u_AberrationDirection },
         { type : float, name : u_InvertYShift },
         { type : float, name : u_AberrationInvert },
         { type : sampler2d, name : u_OverlayTexture },
@@ -70,31 +73,37 @@ fragment {
         vec2 gUv = compositeUv;
         vec2 bUv = compositeUv;
 
-        if (materialParams.u_VhsIntensity > 0.0) {
-            float jitter = sin(uv.y * 50.0 + materialParams.u_Time * 10.0) * 0.002 * materialParams.u_VhsIntensity;
+        if (materialParams.u_TapeJitter > 0.0) {
+            float jitter = sin(uv.y * 50.0 + materialParams.u_Time * 10.0) * 0.002 * materialParams.u_TapeJitter;
             compositeUv.x += jitter;
-            
-            float shift = 0.005 * materialParams.u_VhsIntensity;
-            rUv = vec2(compositeUv.x - shift, compositeUv.y);
-            gUv = compositeUv;
-            bUv = vec2(compositeUv.x + shift, compositeUv.y);
+            rUv.x += jitter;
+            gUv.x += jitter;
+            bUv.x += jitter;
+        }
+
+        if (materialParams.u_ChromaShift > 0.0) {
+            float shift = 0.02 * materialParams.u_ChromaShift;
+            if (materialParams.u_ChromaShiftInvert > 0.5) {
+                shift = -shift;
+            }
+            if (materialParams.u_ChromaShiftDirection < 0.5) {
+                rUv.x -= shift;
+                bUv.x += shift;
+            } else {
+                float aspect = materialParams.u_TexelSize.y / materialParams.u_TexelSize.x;
+                rUv.y -= shift * aspect;
+                bUv.y += shift * aspect;
+            }
         }
 
         if (materialParams.u_ChromaticAberration > 0.0) {
             float caIntensity = materialParams.u_ChromaticAberration * 0.02;
-            vec2 caShift = vec2(0.0);
             float aspect = materialParams.u_TexelSize.y / materialParams.u_TexelSize.x;
             
-            if (materialParams.u_AberrationDirection < 0.5) {
-                caShift = vec2(0.0, caIntensity * aspect);
-            } else if (materialParams.u_AberrationDirection < 1.5) {
-                caShift = vec2(caIntensity, 0.0);
-            } else {
-                vec2 dir = normalize(uv - 0.5);
-                float dist = length(uv - 0.5);
-                caShift = dir * dist * 2.0 * caIntensity;
-                caShift.y *= aspect;
-            }
+            vec2 dir = normalize(uv - 0.5);
+            float dist = length(uv - 0.5);
+            vec2 caShift = dir * dist * 2.0 * caIntensity;
+            caShift.y *= aspect;
             
             if (materialParams.u_InvertYShift > 0.5) {
                 caShift.y = -caShift.y;
@@ -124,9 +133,9 @@ fragment {
             baseColor.rgb += laplacian * materialParams.u_Sharpening * 10.0;
         }
 
-        if (materialParams.u_VhsIntensity > 0.0) {
+        if (materialParams.u_Scanlines > 0.0) {
             // Scanlines
-            float scanline = sin(uv.y * 800.0) * 0.04 * materialParams.u_VhsIntensity;
+            float scanline = sin(uv.y * 800.0) * 0.04 * materialParams.u_Scanlines;
             baseColor.rgb -= vec3(scanline);
         }
         

@@ -11,13 +11,13 @@ export interface NativeFilmCameraViewProps extends ViewProps {
   grainSize?: number;
   grainSpeed?: number;
   vignetteIntensity?: number;
-  vhsIntensity?: number;
+  chromaShift?: number;
   ev?: number;
   whiteBalance?: number;
   tint?: number;
   bloomIntensity?: number;
   chromaticAberration?: number;
-  aberrationDirection?: number;
+  chromaShiftDirection?: number;
   sharpening?: number;
   satRed?: number;
   satOrange?: number;
@@ -68,6 +68,9 @@ export interface NativeFilmCameraViewProps extends ViewProps {
   pivotAuto?: boolean;
   zoom?: number;
   pixelationFactor?: number;
+  tapeJitter?: number;
+  scanlines?: number;
+  chromaShiftInvert?: boolean;
   // @@GEN_PROPS_END@@
   onDebugUpdate?: (event: { nativeEvent: { fps: number; hwFps: number; resolution: string } }) => void;
   onExposureUpdate?: (event: { nativeEvent: { iso: number; shutterSpeed: number; focusDistance?: number } }) => void;

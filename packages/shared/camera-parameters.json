@@ -140,7 +140,7 @@
       }
     },
     {
-      "name": "vhsIntensity",
+      "name": "chromaShift",
       "category": "render",
       "arrayIndex": 7,
       "kotlin": {
@@ -149,6 +149,12 @@
       },
       "ts": {
         "type": "number"
+      },
+      "zustand": {
+        "default": "0.0",
+        "type": "number",
+        "resetGroup": "chroma_shift",
+        "store": "film"
       }
     },
     {
@@ -287,13 +293,13 @@
       }
     },
     {
-      "name": "aberrationDirection",
+      "name": "chromaShiftDirection",
       "category": "render",
       "arrayIndex": 14,
       "kotlin": {
         "type": "Int",
         "default": "0",
-        "arrayMapping": "aberrationDirection.toFloat()"
+        "arrayMapping": "chromaShiftDirection.toFloat()"
       },
       "ts": {
         "type": "number"
@@ -301,7 +307,7 @@
       "zustand": {
         "default": "0",
         "type": "number",
-        "resetGroup": "chromatic_aberration",
+        "resetGroup": "chroma_shift",
         "store": "film"
       }
     },
@@ -1380,6 +1386,61 @@
         "default": "DEFAULT_PIXELATION_FACTOR",
         "type": "number",
         "resetGroup": "pixelation",
+        "store": "film"
+      }
+    },
+    {
+      "name": "tapeJitter",
+      "category": "render",
+      "arrayIndex": 47,
+      "kotlin": {
+        "type": "Float",
+        "default": "0.0f"
+      },
+      "ts": {
+        "type": "number"
+      },
+      "zustand": {
+        "default": "0.0",
+        "type": "number",
+        "resetGroup": "tape_jitter",
+        "store": "film"
+      }
+    },
+    {
+      "name": "scanlines",
+      "category": "render",
+      "arrayIndex": 48,
+      "kotlin": {
+        "type": "Float",
+        "default": "0.0f"
+      },
+      "ts": {
+        "type": "number"
+      },
+      "zustand": {
+        "default": "0.0",
+        "type": "number",
+        "resetGroup": "scanlines",
+        "store": "film"
+      }
+    },
+    {
+      "name": "chromaShiftInvert",
+      "category": "render",
+      "arrayIndex": 49,
+      "kotlin": {
+        "type": "Boolean",
+        "default": "false",
+        "arrayMapping": "if (chromaShiftInvert) 1.0f else 0.0f"
+      },
+      "ts": {
+        "type": "boolean"
+      },
+      "zustand": {
+        "default": "false",
+        "type": "boolean",
+        "resetGroup": "chroma_shift",
         "store": "film"
       }
     }

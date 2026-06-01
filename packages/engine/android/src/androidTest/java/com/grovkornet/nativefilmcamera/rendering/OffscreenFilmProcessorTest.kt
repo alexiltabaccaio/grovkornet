@@ -175,7 +175,7 @@ class OffscreenFilmProcessorTest {
             tint = 0.0f,
             grainEnabled = false,
             vignetteIntensity = 0.0f,
-            vhsIntensity = 0.0f
+            chromaShift = 0.0f
         )
         val outIdentity = processor.process(inputBitmap, identityParams, context)
         val cornerIdentity = outIdentity.getPixel(2, 2)
@@ -189,7 +189,7 @@ class OffscreenFilmProcessorTest {
             tint = 0.0f,
             grainEnabled = false,
             vignetteIntensity = 1.0f,
-            vhsIntensity = 0.0f
+            chromaShift = 0.0f
         )
         val outVignette = processor.process(inputBitmap, vignetteParams, context)
         val cornerVignette = outVignette.getPixel(2, 2)
@@ -209,7 +209,7 @@ class OffscreenFilmProcessorTest {
             grainChroma = 0.5f,
             grainSize = 1.0f,
             vignetteIntensity = 0.0f,
-            vhsIntensity = 0.0f
+            chromaShift = 0.0f
         )
         val outGrain = processor.process(inputBitmap, grainParams, context)
         
@@ -256,7 +256,7 @@ class OffscreenFilmProcessorTest {
             tint = 0.0f,
             grainEnabled = false,
             vignetteIntensity = 0.0f,
-            vhsIntensity = 0.0f
+            chromaShift = 0.0f
         )
         
         val output = processor.process(inputBitmap, params, context)

@@ -72,8 +72,8 @@ class NativeFilmCameraModule : Module() {
         view.updateEffect { vignetteIntensity = value }
       }
 
-      Prop("vhsIntensity") { view: NativeFilmCameraView, value: Float ->
-        view.updateEffect { vhsIntensity = value }
+      Prop("chromaShift") { view: NativeFilmCameraView, value: Float ->
+        view.updateEffect { chromaShift = value }
       }
 
       Prop("ev") { view: NativeFilmCameraView, value: Float ->
@@ -96,8 +96,8 @@ class NativeFilmCameraModule : Module() {
         view.updateEffect { aberration = value }
       }
 
-      Prop("aberrationDirection") { view: NativeFilmCameraView, value: Int ->
-        view.updateEffect { aberrationDirection = value }
+      Prop("chromaShiftDirection") { view: NativeFilmCameraView, value: Int ->
+        view.updateEffect { chromaShiftDirection = value }
       }
 
       Prop("sharpening") { view: NativeFilmCameraView, value: Float ->
@@ -308,6 +308,18 @@ class NativeFilmCameraModule : Module() {
 
       Prop("pixelationFactor") { view: NativeFilmCameraView, value: Float ->
         view.updateEffect { pixelationFactor = value }
+      }
+
+      Prop("tapeJitter") { view: NativeFilmCameraView, value: Float ->
+        view.updateEffect { tapeJitter = value }
+      }
+
+      Prop("scanlines") { view: NativeFilmCameraView, value: Float ->
+        view.updateEffect { scanlines = value }
+      }
+
+      Prop("chromaShiftInvert") { view: NativeFilmCameraView, value: Boolean ->
+        view.updateEffect { chromaShiftInvert = value }
       }
       // @@GEN_PROPS_END@@
 

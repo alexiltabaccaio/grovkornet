@@ -133,6 +133,14 @@ export const Modules = React.memo(() => {
                 isDebugEnabled={isDebugEnabled}
                 style={styles.pill}
               />
+              <PillButton
+                variant="module"
+                label={t('modules.flaws')}
+                isActive={renderModule === 'flaws'}
+                onPress={() => setActiveModule('flaws')}
+                isDebugEnabled={isDebugEnabled}
+                style={styles.pill}
+              />
             </>
           )}
         </ScrollView>

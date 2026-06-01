@@ -11,11 +11,12 @@ export interface FilmPresetPayload {
   grainSize: number;
   grainSpeed: number;
   vignetteIntensity: number;
+  chromaShift: number;
   temperature: number;
   tint: number;
   bloomIntensity: number;
   chromaticAberration: number;
-  aberrationDirection: number;
+  chromaShiftDirection: number;
   sharpening: number;
   satRed: number;
   satOrange: number;
@@ -48,6 +49,9 @@ export interface FilmPresetPayload {
   highlightsAuto: boolean;
   pivotAuto: boolean;
   pixelationFactor: number;
+  tapeJitter: number;
+  scanlines: number;
+  chromaShiftInvert: boolean;
   // @@GEN_FILM_PAYLOAD_END@@
 }
 

@@ -14,11 +14,12 @@ interface FilmState {
   grainSize: SharedValue<number>;
   grainSpeed: SharedValue<number>;
   vignetteIntensity: SharedValue<number>;
+  chromaShift: SharedValue<number>;
   temperature: SharedValue<number>;
   tint: SharedValue<number>;
   bloomIntensity: SharedValue<number>;
   chromaticAberration: SharedValue<number>;
-  aberrationDirection: SharedValue<number>;
+  chromaShiftDirection: SharedValue<number>;
   sharpening: SharedValue<number>;
   satRed: SharedValue<number>;
   satOrange: SharedValue<number>;
@@ -52,6 +53,9 @@ interface FilmState {
   highlightsAuto: SharedValue<boolean>;
   pivotAuto: SharedValue<boolean>;
   pixelationFactor: SharedValue<number>;
+  tapeJitter: SharedValue<number>;
+  scanlines: SharedValue<number>;
+  chromaShiftInvert: SharedValue<boolean>;
   // @@GEN_STATE_END@@
   capabilities?: FilmCapabilities;
 }
@@ -65,11 +69,12 @@ interface FilmActions {
   setGrainSize: (value: number) => void;
   setGrainSpeed: (value: number) => void;
   setVignetteIntensity: (value: number) => void;
+  setChromaShift: (value: number) => void;
   setTemperature: (value: number) => void;
   setTint: (value: number) => void;
   setBloomIntensity: (value: number) => void;
   setChromaticAberration: (value: number) => void;
-  setAberrationDirection: (value: number) => void;
+  setChromaShiftDirection: (value: number) => void;
   setSharpening: (value: number) => void;
   setSatRed: (value: number) => void;
   setSatOrange: (value: number) => void;
@@ -103,6 +108,9 @@ interface FilmActions {
   setHighlightsAuto: (value: boolean) => void;
   setPivotAuto: (value: boolean) => void;
   setPixelationFactor: (value: number) => void;
+  setTapeJitter: (value: number) => void;
+  setScanlines: (value: number) => void;
+  setChromaShiftInvert: (value: boolean) => void;
   // @@GEN_ACTIONS_END@@
   setCapabilities?: (capabilities: FilmCapabilities) => void;
   resetEffect: (effect: string) => void;

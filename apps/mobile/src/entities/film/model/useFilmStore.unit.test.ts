@@ -83,13 +83,16 @@ describe('useFilmStore', () => {
     expect(useFilmStore.getState().boundPurpleMagenta.value).toBe(310);
   });
 
-  it('sets Chromatic Aberration and Direction', () => {
+  it('sets Chromatic Aberration and Chroma Shift Direction/Invert', () => {
     const store = useFilmStore.getState();
     store.setChromaticAberration(0.05);
     expect(useFilmStore.getState().chromaticAberration.value).toBe(0.05);
 
-    store.setAberrationDirection(1);
-    expect(useFilmStore.getState().aberrationDirection.value).toBe(1);
+    store.setChromaShiftDirection(1);
+    expect(useFilmStore.getState().chromaShiftDirection.value).toBe(1);
+
+    store.setChromaShiftInvert(true);
+    expect(useFilmStore.getState().chromaShiftInvert.value).toBe(true);
   });
 
   it('sets GrainEnabled, NoiseReductionAuto, NoiseReductionMode, Sharpening', () => {
@@ -188,7 +191,14 @@ describe('useFilmStore', () => {
     store.setChromaticAberration(0.5);
     store.resetEffect('chromatic_aberration');
     expect(useFilmStore.getState().chromaticAberration.value).toBe(DEFAULT_CHROMATIC_ABERRATION);
-    expect(useFilmStore.getState().aberrationDirection.value).toBe(0);
+
+    store.setChromaShift(1.0);
+    store.setChromaShiftDirection(1);
+    store.setChromaShiftInvert(true);
+    store.resetEffect('chroma_shift');
+    expect(useFilmStore.getState().chromaShift.value).toBe(0.0);
+    expect(useFilmStore.getState().chromaShiftDirection.value).toBe(0);
+    expect(useFilmStore.getState().chromaShiftInvert.value).toBe(false);
 
     store.setSharpening(1.0);
     store.resetEffect('sharpening');

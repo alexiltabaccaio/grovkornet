@@ -2,21 +2,19 @@ import React from 'react';
 import { ParameterType } from '@entities/system';
 import { GenericParameterModule } from '@entities/system';
 
-
-interface TextureModuleProps {
+interface FlawsModuleProps {
   handlePressWithDouble: (param: ParameterType, action: () => void) => void;
 }
 
-const TEXTURE_PARAMETERS: ParameterType[] = ['grain', 'sharpening', 'noise_reduction'];
+const FLAWS_PARAMETERS: ParameterType[] = ['chroma_shift', 'tape_jitter', 'scanlines', 'pixelation'];
 
-export const TextureModule = ({ handlePressWithDouble }: TextureModuleProps) => {
+export const FlawsModule = React.memo(({ handlePressWithDouble }: FlawsModuleProps) => {
   return (
     <GenericParameterModule
-      parameters={TEXTURE_PARAMETERS}
+      parameters={FLAWS_PARAMETERS}
       handlePressWithDouble={handlePressWithDouble}
     />
   );
-};
+});
 
-// TextureModule.whyDidYouRender = true;
-
+FlawsModule.displayName = 'FlawsModule';

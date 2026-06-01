@@ -9,14 +9,14 @@ struct RenderParams {
     float grainSize;
     float grainSpeed;
     float vignetteIntensity;
-    float vhsIntensity;
+    float chromaShift;
     float time;
     float ev;
     float whiteBalance;
     float tint;
     float bloomIntensity;
     float chromaticAberration;
-    float aberrationDirection;
+    float chromaShiftDirection;
     float sharpening;
     float satRed;
     float satOrange;
@@ -49,6 +49,9 @@ struct RenderParams {
     float highlightsAuto;
     float pivotAuto;
     float pixelationFactor;
+    float tapeJitter;
+    float scanlines;
+    float chromaShiftInvert;
     // @@GEN_STRUCT_END@@
 };
 

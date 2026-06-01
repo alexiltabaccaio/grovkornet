@@ -40,11 +40,12 @@ export const DEFAULT_FILM_PAYLOAD: FilmPresetPayload = {
   grainSize: 1.0,
   grainSpeed: DEFAULT_GRAIN_SPEED,
   vignetteIntensity: 0.0,
+  chromaShift: 0.0,
   temperature: DEFAULT_TEMPERATURE,
   tint: DEFAULT_TINT,
   bloomIntensity: 0.0,
   chromaticAberration: DEFAULT_CHROMATIC_ABERRATION,
-  aberrationDirection: 0,
+  chromaShiftDirection: 0,
   sharpening: 0.0,
   satRed: DEFAULT_SELECTIVE_SATURATION,
   satOrange: DEFAULT_SELECTIVE_SATURATION,
@@ -77,6 +78,9 @@ export const DEFAULT_FILM_PAYLOAD: FilmPresetPayload = {
   highlightsAuto: true,
   pivotAuto: true,
   pixelationFactor: DEFAULT_PIXELATION_FACTOR,
+  tapeJitter: 0.0,
+  scanlines: 0.0,
+  chromaShiftInvert: false,
   // @@GEN_DEFAULTS_END@@
 };
 

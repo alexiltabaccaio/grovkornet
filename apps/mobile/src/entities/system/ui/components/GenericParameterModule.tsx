@@ -1,4 +1,4 @@
-import React, { useMemo, useCallback } from 'react';
+import React, { useMemo, useCallback, useEffect } from 'react';
 import { StyleSheet } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { useShallow } from 'zustand/react/shallow';
@@ -60,6 +60,15 @@ export const GenericParameterModule = ({
     }
     return list;
   }, [parameters, t, pressHandler]);
+
+  useEffect(() => {
+    if (items.length > 0 && activeParameter !== 'none') {
+      const isValid = items.some(item => item.id === activeParameter);
+      if (!isValid) {
+        setActiveParameter(items[0].id);
+      }
+    }
+  }, [items, activeParameter, setActiveParameter]);
 
   if (items.length === 0) return null;
 

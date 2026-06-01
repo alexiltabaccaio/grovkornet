@@ -7,28 +7,38 @@ import { useTranslation } from 'react-i18next';
 import { useSystemStore } from '@entities/system';
 import { PillButton } from '@shared/ui';
 
-interface ChromaticAberrationSubPanelProps {
+interface ChromaShiftSubPanelProps {
   animatedStyle?: StyleProp<ViewStyle>;
 }
 
-export const ChromaticAberrationSubPanel = ({ animatedStyle }: ChromaticAberrationSubPanelProps) => {
+export const ChromaShiftSubPanel = ({ animatedStyle }: ChromaShiftSubPanelProps) => {
   const { t } = useTranslation();
   const isDebugEnabled = useSystemStore((s) => s.isDebugEnabled);
-  const { aberrationInvert, setAberrationInvert } = useFilmStore(
+  
+  const { chromaShiftDirection, setChromaShiftDirection, chromaShiftInvert, setChromaShiftInvert } = useFilmStore(
     useShallow((state) => ({
-      aberrationInvert: state.aberrationInvert,
-      setAberrationInvert: state.setAberrationInvert,
+      chromaShiftDirection: state.chromaShiftDirection,
+      setChromaShiftDirection: state.setChromaShiftDirection,
+      chromaShiftInvert: state.chromaShiftInvert,
+      setChromaShiftInvert: state.setChromaShiftInvert,
     }))
   );
   const worklets = useFilmWorklets();
 
-  const handleInvertPress = () => {
-    const newVal = !aberrationInvert.value;
-    setAberrationInvert(newVal);
-    worklets.updateAberrationInvert(newVal);
+  const handleDirectionPress = (val: number) => {
+    setChromaShiftDirection(val);
+    worklets.updateChromaShiftDirection(val);
   };
 
-  const isInverted = useDerivedValue(() => aberrationInvert.value);
+  const handleInvertPress = () => {
+    const newVal = !chromaShiftInvert.value;
+    setChromaShiftInvert(newVal);
+    worklets.updateChromaShiftInvert(newVal);
+  };
+
+  const isHorActive = useDerivedValue(() => chromaShiftDirection.value === 0);
+  const isVerActive = useDerivedValue(() => chromaShiftDirection.value === 1);
+  const isInverted = useDerivedValue(() => chromaShiftInvert.value);
 
   return (
     <View style={[
@@ -36,9 +46,24 @@ export const ChromaticAberrationSubPanel = ({ animatedStyle }: ChromaticAberrati
       isDebugEnabled && { backgroundColor: 'rgba(0, 255, 0, 0.2)', borderColor: 'green' }
     ]}>
       <Text allowFontScaling={false} style={styles.label}>
-        {t('parameters.options').toUpperCase()}
+        {t('parameters.direction').toUpperCase()}
       </Text>
       <View style={styles.buttonRow}>
+        <PillButton
+          label="HOR"
+          isActive={isHorActive}
+          onPress={() => handleDirectionPress(0)}
+          isDebugEnabled={isDebugEnabled}
+          style={styles.pressable}
+        />
+        <PillButton
+          label="VER"
+          isActive={isVerActive}
+          onPress={() => handleDirectionPress(1)}
+          isDebugEnabled={isDebugEnabled}
+          style={styles.pressable}
+        />
+        <View style={styles.divider} />
         <PillButton
           label="INV"
           isActive={isInverted}
@@ -72,7 +97,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 12,
   },
+  pressable: {
+    width: 60,
+  },
   pressableInvert: {
     width: 50,
+  },
+  divider: {
+    width: 1,
+    height: 24,
+    backgroundColor: '#333',
+    marginHorizontal: 4,
   },
 });

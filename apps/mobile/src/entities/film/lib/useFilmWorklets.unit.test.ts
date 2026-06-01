@@ -21,7 +21,8 @@ describe('useFilmWorklets', () => {
     film.setSaturation(DEFAULT_SATURATION);
     film.setContrast(DEFAULT_CONTRAST);
     film.setChromaticAberration(DEFAULT_CHROMATIC_ABERRATION);
-    film.setAberrationDirection(0);
+    film.setChromaShiftDirection(0);
+    film.setChromaShiftInvert(false);
     film.setSharpening(0);
     film.setBloomIntensity(0);
     film.setVignetteIntensity(0);
@@ -123,9 +124,20 @@ describe('useFilmWorklets', () => {
 
     worklets.updateChromaticAberration(0.15);
     expect(useFilmStore.getState().chromaticAberration.value).toBe(0.15);
+  });
 
-    worklets.updateAberrationDirection(2);
-    expect(useFilmStore.getState().aberrationDirection.value).toBe(2);
+  it('correctly updates chroma shift parameters in worklets', () => {
+    const { result } = renderHook(() => useFilmWorklets());
+    const worklets = result.current;
+
+    worklets.updateChromaShift(0.85);
+    expect(useFilmStore.getState().chromaShift.value).toBe(0.85);
+
+    worklets.updateChromaShiftDirection(1);
+    expect(useFilmStore.getState().chromaShiftDirection.value).toBe(1);
+
+    worklets.updateChromaShiftInvert(true);
+    expect(useFilmStore.getState().chromaShiftInvert.value).toBe(true);
   });
 
   it('correctly updates temperature and tint parameters, disabling auto mode', () => {

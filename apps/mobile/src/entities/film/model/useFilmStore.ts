@@ -31,11 +31,12 @@ export const useFilmStore = create<FilmStore>((set, get) => ({
   grainSize: makeMutable(1.0),
   grainSpeed: makeMutable(DEFAULT_GRAIN_SPEED),
   vignetteIntensity: makeMutable(0.0),
+  chromaShift: makeMutable(0.0),
   temperature: makeMutable(DEFAULT_TEMPERATURE),
   tint: makeMutable(DEFAULT_TINT),
   bloomIntensity: makeMutable(0.0),
   chromaticAberration: makeMutable(DEFAULT_CHROMATIC_ABERRATION),
-  aberrationDirection: makeMutable(0),
+  chromaShiftDirection: makeMutable(0),
   sharpening: makeMutable(0.0),
   satRed: makeMutable(DEFAULT_SELECTIVE_SATURATION),
   satOrange: makeMutable(DEFAULT_SELECTIVE_SATURATION),
@@ -69,6 +70,9 @@ export const useFilmStore = create<FilmStore>((set, get) => ({
   highlightsAuto: makeMutable(true),
   pivotAuto: makeMutable(true),
   pixelationFactor: makeMutable(DEFAULT_PIXELATION_FACTOR),
+  tapeJitter: makeMutable(0.0),
+  scanlines: makeMutable(0.0),
+  chromaShiftInvert: makeMutable(false),
   // @@GEN_INIT_END@@
   capabilities: {
     availableNoiseReductionModes: [],
@@ -106,6 +110,9 @@ export const useFilmStore = create<FilmStore>((set, get) => ({
   setVignetteIntensity: (value) => {
     get().vignetteIntensity.value = value;
   },
+  setChromaShift: (value) => {
+    get().chromaShift.value = value;
+  },
   setTemperature: (value) => {
     const { temperature, temperatureAuto } = get();
     logger.debug('FilmStore', `Setting Temperature: ${value}`);
@@ -131,8 +138,8 @@ export const useFilmStore = create<FilmStore>((set, get) => ({
     logger.debug('FilmStore', `Setting Chromatic Aberration: ${value}`);
     get().chromaticAberration.value = value;
   },
-  setAberrationDirection: (value) => {
-    get().aberrationDirection.value = value;
+  setChromaShiftDirection: (value) => {
+    get().chromaShiftDirection.value = value;
   },
   setSharpening: (value) => {
     logger.debug('FilmStore', `Setting Sharpening: ${value}`);
@@ -269,6 +276,15 @@ export const useFilmStore = create<FilmStore>((set, get) => ({
   setPixelationFactor: (value) => {
     get().pixelationFactor.value = value;
   },
+  setTapeJitter: (value) => {
+    get().tapeJitter.value = value;
+  },
+  setScanlines: (value) => {
+    get().scanlines.value = value;
+  },
+  setChromaShiftInvert: (value) => {
+    get().chromaShiftInvert.value = value;
+  },
   // @@GEN_SETTERS_END@@
   setCapabilities: (caps) => {
     logger.info('FilmStore', 'Capabilities updated for Film');
@@ -316,6 +332,11 @@ export const useFilmStore = create<FilmStore>((set, get) => ({
       case 'vignette':
         state.vignetteIntensity.value = 0.0;
         break;
+      case 'chroma_shift':
+        state.chromaShift.value = 0.0;
+        state.chromaShiftDirection.value = 0;
+        state.chromaShiftInvert.value = false;
+        break;
       case 'temperature':
       case 'tint':
         state.temperature.value = DEFAULT_TEMPERATURE;
@@ -328,7 +349,6 @@ export const useFilmStore = create<FilmStore>((set, get) => ({
         break;
       case 'chromatic_aberration':
         state.chromaticAberration.value = DEFAULT_CHROMATIC_ABERRATION;
-        state.aberrationDirection.value = 0;
         state.aberrationInvert.value = false;
         break;
       case 'sharpening':
@@ -352,6 +372,12 @@ export const useFilmStore = create<FilmStore>((set, get) => ({
         break;
       case 'pixelation':
         state.pixelationFactor.value = DEFAULT_PIXELATION_FACTOR;
+        break;
+      case 'tape_jitter':
+        state.tapeJitter.value = 0.0;
+        break;
+      case 'scanlines':
+        state.scanlines.value = 0.0;
         break;
       // @@GEN_RESET_END@@
     }

@@ -51,11 +51,12 @@ export const Viewfinder = React.memo(({ cameraKey, translateY, drawerAnimation }
     grainSize,
     grainSpeed,
     vignetteIntensity,
+    chromaShift,
     temperature,
     tint,
     bloomIntensity,
     chromaticAberration,
-    aberrationDirection,
+    chromaShiftDirection,
     sharpening,
     satRed,
     satOrange,
@@ -89,6 +90,9 @@ export const Viewfinder = React.memo(({ cameraKey, translateY, drawerAnimation }
     highlightsAuto,
     pivotAuto,
     pixelationFactor,
+    tapeJitter,
+    scanlines,
+    chromaShiftInvert,
     // @@GEN_SELECTOR_END@@
   } = useFilmStore.getState();
 
@@ -222,12 +226,13 @@ export const Viewfinder = React.memo(({ cameraKey, translateY, drawerAnimation }
         grainSize={grainSize as unknown as SharedValue<number | undefined>}
         grainSpeed={grainSpeed as unknown as SharedValue<number | undefined>}
         vignetteIntensity={vignetteIntensity as unknown as SharedValue<number | undefined>}
+        chromaShift={chromaShift as unknown as SharedValue<number | undefined>}
         ev={ev as unknown as SharedValue<number | undefined>}
         whiteBalance={temperature as unknown as SharedValue<number | undefined>}
         tint={tint as unknown as SharedValue<number | undefined>}
         bloomIntensity={bloomIntensity as unknown as SharedValue<number | undefined>}
         chromaticAberration={chromaticAberration as unknown as SharedValue<number | undefined>}
-        aberrationDirection={aberrationDirection as unknown as SharedValue<number | undefined>}
+        chromaShiftDirection={chromaShiftDirection as unknown as SharedValue<number | undefined>}
         sharpening={sharpening as unknown as SharedValue<number | undefined>}
         satRed={satRed as unknown as SharedValue<number | undefined>}
         satOrange={satOrange as unknown as SharedValue<number | undefined>}
@@ -277,6 +282,9 @@ export const Viewfinder = React.memo(({ cameraKey, translateY, drawerAnimation }
         pivotAuto={pivotAuto as unknown as SharedValue<boolean | undefined>}
         zoom={zoom as unknown as SharedValue<number | undefined>}
         pixelationFactor={pixelationFactor as unknown as SharedValue<number | undefined>}
+        tapeJitter={tapeJitter as unknown as SharedValue<number | undefined>}
+        scanlines={scanlines as unknown as SharedValue<number | undefined>}
+        chromaShiftInvert={chromaShiftInvert as unknown as SharedValue<boolean | undefined>}
         // @@GEN_PROPS_END@@
             panelY={panelY as unknown as SharedValue<number | undefined>}
             onCapabilitiesUpdate={capabilitiesHandler}

@@ -63,15 +63,16 @@ class CameraConfigurationTest {
             grainSize = 1.1f
             grainSpeed = 2.0f
             vignetteIntensity = 0.15f
-            vhsIntensity = 0.7f
+            chromaShift = 0.7f
             ev = -0.5f
             whiteBalance = 5500f
             tint = 5f
             bloomEnabled = true
             bloomIntensity = 0.4f
             aberration = 0.1f
-            aberrationDirection = 90
+            chromaShiftDirection = 1
             aberrationInvert = true
+            chromaShiftInvert = true
             sharpening = 0.8f
             satRed = 45f
             satOrange = 46f
@@ -93,6 +94,8 @@ class CameraConfigurationTest {
             boundPurpleMagenta = 310f
             grainRoughness = 0.7f
             panelY = 0.85f
+            tapeJitter = 0.2f
+            scanlines = 0.3f
         }
 
         val time = 123.45f
@@ -100,7 +103,7 @@ class CameraConfigurationTest {
 
         val array = config.toRenderParamsArray(time = time, targetResolution = targetResolution)
 
-        assertEquals(47, array.size)
+        assertEquals(50, array.size)
         assertEquals(1.2f, array[0])
         assertEquals(0.9f, array[1])
         assertEquals(0.5f, array[2])
@@ -115,7 +118,7 @@ class CameraConfigurationTest {
         assertEquals(5f, array[11])
         assertEquals(0.4f, array[12])
         assertEquals(0.1f, array[13])
-        assertEquals(90f, array[14])
+        assertEquals(1.0f, array[14]) // chromaShiftDirection
         assertEquals(0.8f, array[15])
         assertEquals(45f, array[16])
         assertEquals(46f, array[17])
@@ -148,6 +151,9 @@ class CameraConfigurationTest {
         assertEquals(1.0f, array[44]) // highlightsAuto
         assertEquals(1.0f, array[45]) // pivotAuto
         assertEquals(1.0f, array[46]) // pixelationFactor
+        assertEquals(0.2f, array[47]) // tapeJitter
+        assertEquals(0.3f, array[48]) // scanlines
+        assertEquals(1.0f, array[49]) // chromaShiftInvert (true -> 1.0f)
 
 
         // Test dynamic disabling features

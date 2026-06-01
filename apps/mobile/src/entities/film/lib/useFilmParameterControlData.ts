@@ -18,7 +18,10 @@ export type FilmParameterType =
   | 'temperature'
   | 'tint'
   | 'pixelation'
-  | 'vignette';
+  | 'vignette'
+  | 'chroma_shift'
+  | 'tape_jitter'
+  | 'scanlines';
 
 type SelectedFilmState = Pick<
   FilmStore,
@@ -58,6 +61,12 @@ type SelectedFilmState = Pick<
   | 'setPixelationFactor'
   | 'vignetteIntensity'
   | 'setVignetteIntensity'
+  | 'chromaShift'
+  | 'setChromaShift'
+  | 'tapeJitter'
+  | 'setTapeJitter'
+  | 'scanlines'
+  | 'setScanlines'
 >;
 
 export const useFilmParameterControlData = (
@@ -143,6 +152,21 @@ export const useFilmParameterControlData = (
           return {
             vignetteIntensity: s.vignetteIntensity,
             setVignetteIntensity: s.setVignetteIntensity,
+          };
+        case 'chroma_shift':
+          return {
+            chromaShift: s.chromaShift,
+            setChromaShift: s.setChromaShift,
+          };
+        case 'tape_jitter':
+          return {
+            tapeJitter: s.tapeJitter,
+            setTapeJitter: s.setTapeJitter,
+          };
+        case 'scanlines':
+          return {
+            scanlines: s.scanlines,
+            setScanlines: s.setScanlines,
           };
       }
     })
@@ -357,6 +381,45 @@ export const useFilmParameterControlData = (
           hideValueInAuto: false,
           autoValueText: 'AUTO',
           onReset: () => film.setVignetteIntensity(0.0),
+        };
+      case 'chroma_shift':
+        return {
+          value: film.chromaShift,
+          minValue: 0.0,
+          maxValue: 2.0,
+          onChange: film.setChromaShift,
+          onUpdateWorklet: filmWorklets.updateChromaShift,
+          valueFormatter: (v: number) => {
+            'worklet';
+            return `${Math.round(v * 100)}`;
+          },
+          onReset: () => film.setChromaShift(0.0),
+        };
+      case 'tape_jitter':
+        return {
+          value: film.tapeJitter,
+          minValue: 0.0,
+          maxValue: 1.0,
+          onChange: film.setTapeJitter,
+          onUpdateWorklet: filmWorklets.updateTapeJitter,
+          valueFormatter: (v: number) => {
+            'worklet';
+            return `${Math.round(v * 100)}`;
+          },
+          onReset: () => film.setTapeJitter(0.0),
+        };
+      case 'scanlines':
+        return {
+          value: film.scanlines,
+          minValue: 0.0,
+          maxValue: 1.0,
+          onChange: film.setScanlines,
+          onUpdateWorklet: filmWorklets.updateScanlines,
+          valueFormatter: (v: number) => {
+            'worklet';
+            return `${Math.round(v * 100)}`;
+          },
+          onReset: () => film.setScanlines(0.0),
         };
     }
   }, [parameter, film, filmWorklets]);

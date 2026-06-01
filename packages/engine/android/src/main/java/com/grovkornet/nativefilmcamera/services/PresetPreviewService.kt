@@ -37,12 +37,14 @@ object PresetPreviewService {
         (payload["grainSize"] as? Number)?.toFloat()?.let { grainSize = it }
         (payload["grainSpeed"] as? Number)?.toFloat()?.let { grainSpeed = it }
         (payload["vignetteIntensity"] as? Number)?.toFloat()?.let { vignetteIntensity = it }
-        (payload["vhsIntensity"] as? Number)?.toFloat()?.let { vhsIntensity = it }
+        (payload["chromaShift"] as? Number)?.toFloat()?.let { chromaShift = it }
+        (payload["tapeJitter"] as? Number)?.toFloat()?.let { tapeJitter = it }
+        (payload["scanlines"] as? Number)?.toFloat()?.let { scanlines = it }
         ((payload["temperature"] as? Number) ?: (payload["whiteBalance"] as? Number))?.toFloat()?.let { whiteBalance = it }
         (payload["tint"] as? Number)?.toFloat()?.let { tint = it }
         (payload["bloomIntensity"] as? Number)?.toFloat()?.let { bloomIntensity = it }
         (payload["chromaticAberration"] as? Number)?.toFloat()?.let { aberration = it }
-        (payload["aberrationDirection"] as? Number)?.toInt()?.let { aberrationDirection = it }
+        (payload["chromaShiftDirection"] as? Number)?.toInt()?.let { chromaShiftDirection = it }
         (payload["sharpening"] as? Number)?.toFloat()?.let { sharpening = it }
         (payload["satRed"] as? Number)?.toFloat()?.let { satRed = it }
         (payload["satOrange"] as? Number)?.toFloat()?.let { satOrange = it }
@@ -53,6 +55,7 @@ object PresetPreviewService {
         (payload["satPurple"] as? Number)?.toFloat()?.let { satPurple = it }
         (payload["satMagenta"] as? Number)?.toFloat()?.let { satMagenta = it }
         (payload["aberrationInvert"] as? Boolean)?.let { aberrationInvert = it }
+        (payload["chromaShiftInvert"] as? Boolean)?.let { chromaShiftInvert = it }
         (payload["boundMagentaRed"] as? Number)?.toFloat()?.let { boundMagentaRed = it }
         (payload["boundRedOrange"] as? Number)?.toFloat()?.let { boundRedOrange = it }
         (payload["boundOrangeYellow"] as? Number)?.toFloat()?.let { boundOrangeYellow = it }

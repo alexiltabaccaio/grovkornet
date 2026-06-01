@@ -13,12 +13,12 @@ data class CameraConfiguration(
     var grainSize: Float = 1.0f,
     var grainSpeed: Float = 1.0f,
     var vignetteIntensity: Float = 0.0f,
-    var vhsIntensity: Float = 0.0f,
+    var chromaShift: Float = 0.0f,
     var whiteBalance: Float = 5000.0f,
     var tint: Float = 0.0f,
     var bloomIntensity: Float = 0.35f,
     var aberration: Float = 0.0f,
-    var aberrationDirection: Int = 0,
+    var chromaShiftDirection: Int = 0,
     var sharpening: Float = 0.0f,
     var satRed: Float = 50.0f,
     var satOrange: Float = 50.0f,
@@ -49,6 +49,9 @@ data class CameraConfiguration(
     var highlightsAuto: Boolean = true,
     var pivotAuto: Boolean = true,
     var pixelationFactor: Float = 1.0f,
+    var tapeJitter: Float = 0.0f,
+    var scanlines: Float = 0.0f,
+    var chromaShiftInvert: Boolean = false,
 
     // Hardware Props
     var ev: Float = 0.0f,
@@ -97,7 +100,7 @@ fun CameraConfiguration.toRenderParamsArray(
     targetFpsOverride: Float = targetFps.toFloat(),
     invertYShift: Boolean = false
 ): FloatArray = // @@GEN_ARRAY_START@@
-FloatArray(47).apply {
+FloatArray(50).apply {
     this[0 ] = saturation
     this[1 ] = contrast
     this[2 ] = if (grainEnabled) grainIntensity else 0f
@@ -105,14 +108,14 @@ FloatArray(47).apply {
     this[4 ] = grainSize
     this[5 ] = grainSpeed
     this[6 ] = vignetteIntensity
-    this[7 ] = vhsIntensity
+    this[7 ] = chromaShift
     this[8 ] = time
     this[9 ] = ev
     this[10] = whiteBalance
     this[11] = tint
     this[12] = if (bloomEnabled) bloomIntensity else 0f
     this[13] = aberration
-    this[14] = aberrationDirection.toFloat()
+    this[14] = chromaShiftDirection.toFloat()
     this[15] = sharpening
     this[16] = satRed
     this[17] = satOrange
@@ -145,6 +148,9 @@ FloatArray(47).apply {
     this[44] = if (highlightsAuto) 1.0f else 0.0f
     this[45] = if (pivotAuto) 1.0f else 0.0f
     this[46] = pixelationFactor
+    this[47] = tapeJitter
+    this[48] = scanlines
+    this[49] = if (chromaShiftInvert) 1.0f else 0.0f
 }
 // @@GEN_ARRAY_END@@
 

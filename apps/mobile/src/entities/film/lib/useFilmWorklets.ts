@@ -147,14 +147,34 @@ export const useFilmWorklets = () => {
       updateSharedValue(film.chromaticAberration, value);
     };
 
-    const updateAberrationDirection = (value: number) => {
-      'worklet';
-      updateSharedValue(film.aberrationDirection, value);
-    };
-
     const updateAberrationInvert = (value: boolean) => {
       'worklet';
       updateSharedValue(film.aberrationInvert, value);
+    };
+
+    const updateChromaShift = (value: number) => {
+      'worklet';
+      updateSharedValue(film.chromaShift, value);
+    };
+
+    const updateChromaShiftDirection = (value: number) => {
+      'worklet';
+      updateSharedValue(film.chromaShiftDirection, value);
+    };
+
+    const updateChromaShiftInvert = (value: boolean) => {
+      'worklet';
+      updateSharedValue(film.chromaShiftInvert, value);
+    };
+
+    const updateTapeJitter = (value: number) => {
+      'worklet';
+      updateSharedValue(film.tapeJitter, value);
+    };
+
+    const updateScanlines = (value: number) => {
+      'worklet';
+      updateSharedValue(film.scanlines, value);
     };
 
     const updateTemperature = (value: number) => {
@@ -219,8 +239,12 @@ export const useFilmWorklets = () => {
       updateHighlights,
       updatePivot,
       updateChromaticAberration,
-      updateAberrationDirection,
       updateAberrationInvert,
+      updateChromaShift,
+      updateChromaShiftDirection,
+      updateChromaShiftInvert,
+      updateTapeJitter,
+      updateScanlines,
       updateTemperature,
       updateTint,
       updateSharpening,

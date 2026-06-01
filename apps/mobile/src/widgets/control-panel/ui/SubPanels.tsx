@@ -5,7 +5,7 @@ import { useShallow } from 'zustand/react/shallow';
 import { useSystemStore } from '@entities/system';
 
 // We will import the new SubPanels here once they are ready.
-import { GrainSubPanel, ContrastSubPanel, SaturationSubPanel } from '@features/film-controls';
+import { GrainSubPanel, ContrastSubPanel, SaturationSubPanel, ChromaShiftSubPanel } from '@features/film-controls';
 import { ChromaticAberrationSubPanel } from '@features/lens-controls';
 import { ZoomSubPanel, TorchSubPanel, ResolutionSubPanel, AspectRatioSubPanel } from '@features/body-controls';
 
@@ -41,6 +41,8 @@ export const SubPanels = React.memo(({ translateY }: SubPanelsProps) => {
         return <ZoomSubPanel animatedStyle={dummyStyle} />;
       case 'saturation':
         return <SaturationSubPanel animatedStyle={dummyStyle} />;
+      case 'chroma_shift':
+        return <ChromaShiftSubPanel animatedStyle={dummyStyle} />;
       case 'torch': return <TorchSubPanel animatedStyle={dummyStyle} />;
       case 'resolution_setting': return <ResolutionSubPanel animatedStyle={dummyStyle} />;
       case 'aspect_ratio': return <AspectRatioSubPanel animatedStyle={dummyStyle} />;

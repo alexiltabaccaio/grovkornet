@@ -28,6 +28,7 @@ describe('Modules', () => {
     expect(getByText('modules.tone')).toBeDefined();
     expect(getByText('modules.color')).toBeDefined();
     expect(getByText('modules.texture')).toBeDefined();
+    expect(getByText('modules.flaws')).toBeDefined();
   });
 
   it('switches active module on press in film section', () => {
@@ -42,6 +43,9 @@ describe('Modules', () => {
 
     fireEvent.press(getByText('modules.color'));
     expect(useSystemStore.getState().activeModule).toBe('color');
+
+    fireEvent.press(getByText('modules.flaws'));
+    expect(useSystemStore.getState().activeModule).toBe('flaws');
 
     fireEvent.press(getByText('modules.tone'));
     expect(useSystemStore.getState().activeModule).toBe('tone');

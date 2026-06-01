@@ -28,6 +28,9 @@ const isFilmParameter = (p: ParameterType): p is FilmParameterType => {
     'tint',
     'pixelation',
     'vignette',
+    'chroma_shift',
+    'tape_jitter',
+    'scanlines',
   ].includes(p);
 };
 

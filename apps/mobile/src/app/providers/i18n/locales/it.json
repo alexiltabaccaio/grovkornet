@@ -41,9 +41,10 @@
       "blackLevel": "OMBRE",
       "highlights": "LUCI",
       "pivot": "PERNO",
-      "chromatic_aberration": "ABERRAZIONE CROMATICA",
+      "chromatic_aberration": "ABERRAZIONE",
       "bloom": "BLOOM",
       "direction": "DIREZIONE",
+      "options": "OPZIONI",
       "iso": "ISO",
       "ev": "EV",
       "shutter_speed": "TEMPI",
@@ -66,7 +67,10 @@
       "sharpening": "NITIDEZZA",
       "sharpening_mode": "ALGORITMO",
       "pixelation": "PIXELAZIONE",
-      "vignette": "VIGNETTATURA"
+      "vignette": "VIGNETTATURA",
+      "chroma_shift": "SCOSTAMENTO",
+      "tape_jitter": "JITTER",
+      "scanlines": "SCANLINES"
     },
     "footer": {
       "coming_soon": "IN ARRIVO"

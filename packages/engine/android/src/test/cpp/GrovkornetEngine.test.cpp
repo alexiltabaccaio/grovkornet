@@ -13,7 +13,7 @@ TEST(GrovkornetEngineTest, BasicInitializationAndProperties) {
 }
 
 TEST(GrovkornetEngineTest, ParseRenderParams_mapsArrayCorrectly) {
-    float mockParams[39] = {
+    float mockParams[50] = {
         1.2f,  // 0: saturation
         0.9f,  // 1: contrast
         0.5f,  // 2: grainIntensity
@@ -21,14 +21,14 @@ TEST(GrovkornetEngineTest, ParseRenderParams_mapsArrayCorrectly) {
         1.1f,  // 4: grainSize
         2.0f,  // 5: grainSpeed
         0.15f, // 6: vignetteIntensity
-        0.7f,  // 7: vhsIntensity
+        0.7f,  // 7: chromaShift
         123.45f, // 8: time
         -0.5f, // 9: ev
         5500.0f, // 10: whiteBalance
         5.0f,    // 11: tint
         0.4f,  // 12: bloomIntensity
         0.1f,  // 13: chromaticAberration
-        90.0f,   // 14: aberrationDirection
+        1.0f,  // 14: chromaShiftDirection
         0.8f,  // 15: sharpening
         45.0f,   // 16: satRed
         46.0f,   // 17: satOrange
@@ -52,7 +52,18 @@ TEST(GrovkornetEngineTest, ParseRenderParams_mapsArrayCorrectly) {
         285.0f,  // 35: boundBluePurple
         310.0f,  // 36: boundPurpleMagenta
         0.7f,    // 37: grainRoughness
-        0.85f    // 38: panelY
+        0.85f,   // 38: panelY
+        0.0f,    // 39: blackLevel
+        1.0f,    // 40: highlights
+        0.5f,    // 41: pivot
+        1.0f,    // 42: contrastAuto
+        1.0f,    // 43: blackLevelAuto
+        1.0f,    // 44: highlightsAuto
+        1.0f,    // 45: pivotAuto
+        1.0f,    // 46: pixelationFactor
+        0.2f,    // 47: tapeJitter
+        0.3f,    // 48: scanlines
+        1.0f     // 49: chromaShiftInvert
     };
 
     RenderParams rp = parseRenderParams(mockParams);
@@ -64,14 +75,14 @@ TEST(GrovkornetEngineTest, ParseRenderParams_mapsArrayCorrectly) {
     EXPECT_FLOAT_EQ(rp.grainSize, 1.1f);
     EXPECT_FLOAT_EQ(rp.grainSpeed, 2.0f);
     EXPECT_FLOAT_EQ(rp.vignetteIntensity, 0.15f);
-    EXPECT_FLOAT_EQ(rp.vhsIntensity, 0.7f);
+    EXPECT_FLOAT_EQ(rp.chromaShift, 0.7f);
     EXPECT_FLOAT_EQ(rp.time, 123.45f);
     EXPECT_FLOAT_EQ(rp.ev, -0.5f);
     EXPECT_FLOAT_EQ(rp.whiteBalance, 5500.0f);
     EXPECT_FLOAT_EQ(rp.tint, 5.0f);
     EXPECT_FLOAT_EQ(rp.bloomIntensity, 0.4f);
     EXPECT_FLOAT_EQ(rp.chromaticAberration, 0.1f);
-    EXPECT_FLOAT_EQ(rp.aberrationDirection, 90.0f);
+    EXPECT_FLOAT_EQ(rp.chromaShiftDirection, 1.0f);
     EXPECT_FLOAT_EQ(rp.sharpening, 0.8f);
     EXPECT_FLOAT_EQ(rp.satRed, 45.0f);
     EXPECT_FLOAT_EQ(rp.satOrange, 46.0f);
@@ -96,4 +107,7 @@ TEST(GrovkornetEngineTest, ParseRenderParams_mapsArrayCorrectly) {
     EXPECT_FLOAT_EQ(rp.boundPurpleMagenta, 310.0f);
     EXPECT_FLOAT_EQ(rp.grainRoughness, 0.7f);
     EXPECT_FLOAT_EQ(rp.panelY, 0.85f);
+    EXPECT_FLOAT_EQ(rp.tapeJitter, 0.2f);
+    EXPECT_FLOAT_EQ(rp.scanlines, 0.3f);
+    EXPECT_FLOAT_EQ(rp.chromaShiftInvert, 1.0f);
 }

@@ -42,14 +42,14 @@ RenderParams parseRenderParams(const float* params) {
     rp.grainSize = params[4];
     rp.grainSpeed = params[5];
     rp.vignetteIntensity = params[6];
-    rp.vhsIntensity = params[7];
+    rp.chromaShift = params[7];
     rp.time = params[8];
     rp.ev = params[9];
     rp.whiteBalance = params[10];
     rp.tint = params[11];
     rp.bloomIntensity = params[12];
     rp.chromaticAberration = params[13];
-    rp.aberrationDirection = params[14];
+    rp.chromaShiftDirection = params[14];
     rp.sharpening = params[15];
     rp.satRed = params[16];
     rp.satOrange = params[17];
@@ -82,6 +82,9 @@ RenderParams parseRenderParams(const float* params) {
     rp.highlightsAuto = params[44];
     rp.pivotAuto = params[45];
     rp.pixelationFactor = params[46];
+    rp.tapeJitter = params[47];
+    rp.scanlines = params[48];
+    rp.chromaShiftInvert = params[49];
     // @@GEN_PARSING_END@@
     return rp;
 }
@@ -337,11 +340,14 @@ void GrovkornetEngine::applyShaderParameters(const RenderParams& params, filamen
     composite->setParameter("u_GrainSpeed", params.grainSpeed);
     composite->setParameter("u_GrainRoughness", params.grainRoughness);
     composite->setParameter("u_VignetteIntensity", params.vignetteIntensity);
-    composite->setParameter("u_VhsIntensity", params.vhsIntensity);
+    composite->setParameter("u_ChromaShift", params.chromaShift);
+    composite->setParameter("u_ChromaShiftDirection", params.chromaShiftDirection);
+    composite->setParameter("u_ChromaShiftInvert", params.chromaShiftInvert);
+    composite->setParameter("u_TapeJitter", params.tapeJitter);
+    composite->setParameter("u_Scanlines", params.scanlines);
     composite->setParameter("u_Time", params.time);
     composite->setParameter("u_BloomIntensity", params.bloomIntensity);
     composite->setParameter("u_ChromaticAberration", params.chromaticAberration);
-    composite->setParameter("u_AberrationDirection", params.aberrationDirection);
     composite->setParameter("u_InvertYShift", params.invertYShift);
     composite->setParameter("u_AberrationInvert", params.aberrationInvert);
     composite->setParameter("u_OverlayEnabled", overlayCompositor.isOverlayEnabled() ? 1.0f : 0.0f);
