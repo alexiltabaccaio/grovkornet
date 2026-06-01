@@ -182,6 +182,14 @@ export const addPreset = (name: string, thumbnailUri?: string): void => {
  */
 export const removePreset = (id: string): void => {
   const store = usePresetStore.getState();
+
+  if (id === 'customized') {
+    store.setCustomizedPayload(null);
+    store.setCustomizedThumbnailUri(null);
+    applyPreset('default');
+    return;
+  }
+
   const wasActive = store.activePresetId === id;
 
   store.removeUserPreset(id);

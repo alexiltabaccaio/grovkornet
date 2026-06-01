@@ -57,7 +57,7 @@ export const PresetsPanel = ({ animatedStyle }: PresetsPanelProps) => {
   };
 
   const handleDeletePress = () => {
-    if (!activePreset) return;
+    if (!activePreset && !isCustomizedActive) return;
     void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     setDeleteModalVisible(true);
   };
@@ -97,7 +97,7 @@ export const PresetsPanel = ({ animatedStyle }: PresetsPanelProps) => {
             </TouchableOpacity>
           )}
 
-          {activePreset && (
+          {(activePreset || isCustomizedActive) && (
             <TouchableOpacity 
               style={[styles.actionButton, styles.deleteButton]} 
               onPress={handleDeletePress}

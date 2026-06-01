@@ -21,6 +21,8 @@ export const DeletePresetModal = () => {
   if (!isDeleteModalVisible) return null;
 
   const activePreset = userPresets.find((p: Preset) => p.id === activePresetId);
+  const isCustomized = activePresetId === 'customized';
+  const presetName = isCustomized ? t('presets.customized', 'Personalizzato') : activePreset?.name;
 
   return (
     <Animated.View 
@@ -39,7 +41,7 @@ export const DeletePresetModal = () => {
         </Text>
         
         <Text style={styles.modalBody} allowFontScaling={false}>
-          {t('presets.delete_body', `Sei sicuro di voler eliminare "${activePreset?.name}"?`, { name: activePreset?.name })}
+          {t('presets.delete_body', `Sei sicuro di voler eliminare "${presetName}"?`, { name: presetName })}
         </Text>
 
         <View style={styles.modalButtons}>
@@ -57,8 +59,8 @@ export const DeletePresetModal = () => {
             onPress={() => {
               setDeleteModalVisible(false);
               void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-              if (activePreset) {
-                removePreset(activePreset.id);
+              if (activePreset || isCustomized) {
+                removePreset(activePresetId);
               }
             }}
             activeOpacity={0.7}

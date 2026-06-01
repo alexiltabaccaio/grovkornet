@@ -72,17 +72,17 @@ describe('AddPresetModal', () => {
     usePresetStore.setState({ isAddModalVisible: true });
 
     const { getByText, getByPlaceholderText } = render(<AddPresetModal />);
-    const saveBtn = getByText('presets.save');
+    const saveBtn = getByText('PRESETS.SAVE');
     const input = getByPlaceholderText('presets.placeholder');
 
     await waitFor(() => {
       expect(generatePresetPreview).toHaveBeenCalled();
     });
 
-    // 1. Save empty name
+    // 1. Save empty name (should be disabled, so no alert is shown)
     fireEvent.changeText(input, '   ');
     fireEvent.press(saveBtn);
-    expect(Alert.alert).toHaveBeenCalledWith('presets.error_title', 'presets.error_empty');
+    expect(Alert.alert).not.toHaveBeenCalled();
 
     // 2. Save duplicate name
     const duplicatePreset = {

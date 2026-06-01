@@ -97,8 +97,10 @@
       "delete": "DELETE",
       "save_title": "SAVE PRESET",
       "placeholder": "PRESET NAME",
-      "save": "SAVE",
-      "default": "Default"
+      "save": "Save",
+      "default": "Default",
+      "quick_select": "Quick",
+      "customized": "Personalized"
     }
   }
 }

@@ -179,10 +179,22 @@ export const AddPresetModal = () => {
           <TouchableOpacity
             onPress={handleSavePreset}
             activeOpacity={0.7}
-            style={[styles.modalButton, styles.modalSaveButton]}
+            disabled={!newPresetName.trim()}
+            style={[
+              styles.modalButton,
+              styles.modalSaveButton,
+              !newPresetName.trim() && styles.modalSaveButtonDisabled
+            ]}
           >
-            <Text style={[styles.modalButtonText, styles.modalSaveText]} allowFontScaling={false}>
-              {t('presets.save', 'SALVA')}
+            <Text 
+              style={[
+                styles.modalButtonText,
+                styles.modalSaveText,
+                !newPresetName.trim() && styles.modalSaveTextDisabled
+              ]} 
+              allowFontScaling={false}
+            >
+              {t('presets.save', 'SALVA').toUpperCase()}
             </Text>
           </TouchableOpacity>
         </View>
@@ -254,6 +266,10 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255, 149, 0, 0.08)',
     borderColor: '#FF5722',
   },
+  modalSaveButtonDisabled: {
+    backgroundColor: 'rgba(255, 255, 255, 0.02)',
+    borderColor: 'rgba(255, 255, 255, 0.05)',
+  },
   modalButtonText: {
     fontSize: 10,
     fontWeight: '900',
@@ -262,5 +278,8 @@ const styles = StyleSheet.create({
   },
   modalSaveText: {
     color: '#FF5722',
+  },
+  modalSaveTextDisabled: {
+    color: 'rgba(255, 255, 255, 0.2)',
   },
 });
