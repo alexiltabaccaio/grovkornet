@@ -107,6 +107,12 @@ describe('useFilmStore', () => {
     expect(useFilmStore.getState().sharpening.value).toBe(0.8);
   });
 
+  it('sets Vignette Intensity', () => {
+    const store = useFilmStore.getState();
+    store.setVignetteIntensity(0.7);
+    expect(useFilmStore.getState().vignetteIntensity.value).toBe(0.7);
+  });
+
   it('sets Temperature and Tint', () => {
     const store = useFilmStore.getState();
     store.setTemperature(6500);
@@ -208,6 +214,10 @@ describe('useFilmStore', () => {
     expect(useFilmStore.getState().blackLevelAuto.value).toBe(true);
     expect(useFilmStore.getState().highlightsAuto.value).toBe(true);
     expect(useFilmStore.getState().pivotAuto.value).toBe(true);
+
+    store.setVignetteIntensity(0.8);
+    store.resetEffect('vignette');
+    expect(useFilmStore.getState().vignetteIntensity.value).toBe(0.0);
   });
 
   it('sets isSelfieCamera correctly and resets it', () => {

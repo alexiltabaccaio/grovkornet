@@ -17,7 +17,8 @@ export type FilmParameterType =
   | 'bloom'
   | 'temperature'
   | 'tint'
-  | 'pixelation';
+  | 'pixelation'
+  | 'vignette';
 
 type SelectedFilmState = Pick<
   FilmStore,
@@ -55,6 +56,8 @@ type SelectedFilmState = Pick<
   | 'setTint'
   | 'pixelationFactor'
   | 'setPixelationFactor'
+  | 'vignetteIntensity'
+  | 'setVignetteIntensity'
 >;
 
 export const useFilmParameterControlData = (
@@ -135,6 +138,11 @@ export const useFilmParameterControlData = (
           return {
             pixelationFactor: s.pixelationFactor,
             setPixelationFactor: s.setPixelationFactor,
+          };
+        case 'vignette':
+          return {
+            vignetteIntensity: s.vignetteIntensity,
+            setVignetteIntensity: s.setVignetteIntensity,
           };
       }
     })
@@ -334,6 +342,21 @@ export const useFilmParameterControlData = (
           hideValueInAuto: false,
           autoValueText: 'AUTO',
           onReset: () => film.setPixelationFactor(1.0),
+        };
+      case 'vignette':
+        return {
+          value: film.vignetteIntensity,
+          minValue: 0.0,
+          maxValue: 1.0,
+          onChange: film.setVignetteIntensity,
+          onUpdateWorklet: filmWorklets.updateVignetteIntensity,
+          valueFormatter: (v: number) => {
+            'worklet';
+            return `${Math.round(v * 100)}`;
+          },
+          hideValueInAuto: false,
+          autoValueText: 'AUTO',
+          onReset: () => film.setVignetteIntensity(0.0),
         };
     }
   }, [parameter, film, filmWorklets]);

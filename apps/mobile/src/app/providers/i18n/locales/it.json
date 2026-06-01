@@ -65,7 +65,8 @@
       "noise_reduction_mode": "ALGORITMO",
       "sharpening": "NITIDEZZA",
       "sharpening_mode": "ALGORITMO",
-      "pixelation": "PIXELAZIONE"
+      "pixelation": "PIXELAZIONE",
+      "vignette": "VIGNETTATURA"
     },
     "footer": {
       "coming_soon": "IN ARRIVO"

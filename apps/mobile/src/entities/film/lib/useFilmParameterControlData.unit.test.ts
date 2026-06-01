@@ -16,6 +16,7 @@ describe('useFilmParameterControlData', () => {
     film.setPivotAuto(true);
     film.setChromaticAberration(0);
     film.setBloomIntensity(0);
+    film.setVignetteIntensity(0);
     film.setTemperatureAuto(true);
   });
 
@@ -222,5 +223,20 @@ describe('useFilmParameterControlData', () => {
 
     result.current.onToggleAuto?.(false);
     expect(useFilmStore.getState().temperatureAuto.value).toBe(false);
+  });
+
+  it('maps "vignette" parameter correctly', () => {
+    const { result } = renderHook(() => useFilmParameterControlData('vignette'));
+
+    expect(result.current.minValue).toBe(0.0);
+    expect(result.current.maxValue).toBe(1.0);
+
+    result.current.onChange(0.65);
+    expect(useFilmStore.getState().vignetteIntensity.value).toBe(0.65);
+
+    expect(result.current.valueFormatter(0.65)).toBe('65');
+
+    result.current.onReset?.();
+    expect(useFilmStore.getState().vignetteIntensity.value).toBe(0.0);
   });
 });

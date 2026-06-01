@@ -30,6 +30,7 @@ export const useFilmStore = create<FilmStore>((set, get) => ({
   grainChroma: makeMutable(0.0),
   grainSize: makeMutable(1.0),
   grainSpeed: makeMutable(DEFAULT_GRAIN_SPEED),
+  vignetteIntensity: makeMutable(0.0),
   temperature: makeMutable(DEFAULT_TEMPERATURE),
   tint: makeMutable(DEFAULT_TINT),
   bloomIntensity: makeMutable(0.0),
@@ -101,6 +102,9 @@ export const useFilmStore = create<FilmStore>((set, get) => ({
   },
   setGrainSpeed: (value) => {
     get().grainSpeed.value = value;
+  },
+  setVignetteIntensity: (value) => {
+    get().vignetteIntensity.value = value;
   },
   setTemperature: (value) => {
     const { temperature, temperatureAuto } = get();
@@ -308,6 +312,9 @@ export const useFilmStore = create<FilmStore>((set, get) => ({
         state.grainSpeed.value = DEFAULT_GRAIN_SPEED;
         state.grainRoughness.value = 0.0;
         state.grainEnabled.value = false;
+        break;
+      case 'vignette':
+        state.vignetteIntensity.value = 0.0;
         break;
       case 'temperature':
       case 'tint':

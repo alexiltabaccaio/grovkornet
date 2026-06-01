@@ -179,6 +179,11 @@ export const useFilmWorklets = () => {
       updateSharedValue(film.pixelationFactor, value);
     };
 
+    const updateVignetteIntensity = (value: number) => {
+      'worklet';
+      updateSharedValue(film.vignetteIntensity, value);
+    };
+
     const updateBloomIntensity = (value: number) => {
       'worklet';
       const safeValue = Math.max(value, 0);
@@ -221,6 +226,7 @@ export const useFilmWorklets = () => {
       updateSharpening,
       updateBloomIntensity,
       updatePixelationFactor,
+      updateVignetteIntensity,
     };
   }, []);
 };

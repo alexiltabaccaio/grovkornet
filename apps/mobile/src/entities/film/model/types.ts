@@ -13,6 +13,7 @@ interface FilmState {
   grainChroma: SharedValue<number>;
   grainSize: SharedValue<number>;
   grainSpeed: SharedValue<number>;
+  vignetteIntensity: SharedValue<number>;
   temperature: SharedValue<number>;
   tint: SharedValue<number>;
   bloomIntensity: SharedValue<number>;
@@ -63,6 +64,7 @@ interface FilmActions {
   setGrainChroma: (value: number) => void;
   setGrainSize: (value: number) => void;
   setGrainSpeed: (value: number) => void;
+  setVignetteIntensity: (value: number) => void;
   setTemperature: (value: number) => void;
   setTint: (value: number) => void;
   setBloomIntensity: (value: number) => void;

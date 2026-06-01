@@ -53,6 +53,8 @@ type FilmActionsKeys =
   | 'setBlackLevelAuto'
   | 'setHighlightsAuto'
   | 'setPivotAuto'
+  | 'setVignetteIntensity'
+  | 'setPixelationFactor'
   | 'resetEffect';
 
 type FilmExcludedKeys = 'capabilities' | 'isSelfieCamera';

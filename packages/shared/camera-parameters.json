@@ -131,6 +131,12 @@
       },
       "ts": {
         "type": "number"
+      },
+      "zustand": {
+        "default": "0.0",
+        "type": "number",
+        "resetGroup": "vignette",
+        "store": "film"
       }
     },
     {

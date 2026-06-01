@@ -24,6 +24,7 @@ describe('useFilmWorklets', () => {
     film.setAberrationDirection(0);
     film.setSharpening(0);
     film.setBloomIntensity(0);
+    film.setVignetteIntensity(0);
     film.setTemperatureAuto(true);
     film.resetEffect('saturation');
   });
@@ -161,5 +162,13 @@ describe('useFilmWorklets', () => {
     worklets.updateBloomIntensity(-0.2);
     expect(useFilmStore.getState().bloomIntensity.value).toBe(0.0);
     expect(useFilmStore.getState().bloomEnabled.value).toBe(false);
+  });
+
+  it('correctly updates vignette intensity in worklets', () => {
+    const { result } = renderHook(() => useFilmWorklets());
+    const worklets = result.current;
+
+    worklets.updateVignetteIntensity(0.75);
+    expect(useFilmStore.getState().vignetteIntensity.value).toBe(0.75);
   });
 });

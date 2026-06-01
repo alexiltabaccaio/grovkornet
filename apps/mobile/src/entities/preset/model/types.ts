@@ -10,6 +10,7 @@ export interface FilmPresetPayload {
   grainChroma: number;
   grainSize: number;
   grainSpeed: number;
+  vignetteIntensity: number;
   temperature: number;
   tint: number;
   bloomIntensity: number;

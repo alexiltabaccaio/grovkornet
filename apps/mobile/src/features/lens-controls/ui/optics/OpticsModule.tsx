@@ -25,6 +25,7 @@ export const OpticsModule = ({ handlePressWithDouble }: OpticsModuleProps) => {
       });
     }
     list.push('focus');
+    list.push('vignette');
     return list;
   }, [capabilities.availableCameras.length]);
 

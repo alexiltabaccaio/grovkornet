@@ -39,6 +39,7 @@ export const DEFAULT_FILM_PAYLOAD: FilmPresetPayload = {
   grainChroma: 0.0,
   grainSize: 1.0,
   grainSpeed: DEFAULT_GRAIN_SPEED,
+  vignetteIntensity: 0.0,
   temperature: DEFAULT_TEMPERATURE,
   tint: DEFAULT_TINT,
   bloomIntensity: 0.0,

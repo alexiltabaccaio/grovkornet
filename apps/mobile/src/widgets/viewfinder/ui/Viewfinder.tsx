@@ -50,6 +50,7 @@ export const Viewfinder = React.memo(({ cameraKey, translateY, drawerAnimation }
     grainChroma,
     grainSize,
     grainSpeed,
+    vignetteIntensity,
     temperature,
     tint,
     bloomIntensity,
@@ -220,6 +221,7 @@ export const Viewfinder = React.memo(({ cameraKey, translateY, drawerAnimation }
         grainChroma={grainChroma as unknown as SharedValue<number | undefined>}
         grainSize={grainSize as unknown as SharedValue<number | undefined>}
         grainSpeed={grainSpeed as unknown as SharedValue<number | undefined>}
+        vignetteIntensity={vignetteIntensity as unknown as SharedValue<number | undefined>}
         ev={ev as unknown as SharedValue<number | undefined>}
         whiteBalance={temperature as unknown as SharedValue<number | undefined>}
         tint={tint as unknown as SharedValue<number | undefined>}

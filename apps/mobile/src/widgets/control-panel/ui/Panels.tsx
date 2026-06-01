@@ -53,6 +53,7 @@ export const Panels = React.memo(({ translateY }: PanelsProps) => {
       case 'zoom':
       case 'chromatic_aberration':
       case 'saturation':
+      case 'vignette':
         return <SliderPanel parameter={activeParameter} parameterDetailPanelAnimatedStyle={parameterDetailPanelAnimatedStyle} />;
       case 'torch':
         return <TorchPanel parameterDetailPanelAnimatedStyle={parameterDetailPanelAnimatedStyle} />;
