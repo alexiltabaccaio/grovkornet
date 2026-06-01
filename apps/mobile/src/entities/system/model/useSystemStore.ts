@@ -3,6 +3,7 @@ import { persist, createJSONStorage } from 'zustand/middleware';
 import { createZustandMMKVStorage } from '@shared/lib/storage/mmkv';
 import { logger } from '@shared/lib/logger';
 import { SystemStore, ModuleType, ParameterType, SectionType, ParameterDetailPanelType } from './types';
+import { SECTION_MODULES } from './constants';
 
 
 
@@ -27,10 +28,10 @@ export const useSystemStore = create<SystemStore>()(
 
   lastActiveModules: {
     none: 'none',
-    system: 'preferences',
-    lens: 'optics',
-    body: 'exposure',
-    film: 'tone',
+    system: SECTION_MODULES.system[0],
+    lens: SECTION_MODULES.lens[0],
+    body: SECTION_MODULES.body[0],
+    film: SECTION_MODULES.film[0],
   },
 
   lastActiveParameters: {

@@ -118,7 +118,7 @@ const ParameterThumbViewBase = forwardRef<View, ParameterThumbViewProps>((props,
       <View style={[
         styles.filterPlaceholder,
         { marginBottom: 0 },
-        !!imageSource && { height: 32 },
+        !!imageSource && { width: 40, height: 30 },
         !!imageSource && !!label && { marginTop: 8, marginBottom: 14 },
         variant === 'text' && !imageSource && styles.textVariantPlaceholder,
         variant === 'text' && !imageSource && { width: 'auto', height: 'auto' },

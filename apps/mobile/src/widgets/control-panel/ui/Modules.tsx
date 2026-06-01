@@ -4,7 +4,7 @@ import { ScrollView } from 'react-native-gesture-handler';
 import { useTranslation } from 'react-i18next';
 
 import { useShallow } from 'zustand/react/shallow';
-import { useSystemStore } from '@entities/system';
+import { useSystemStore, SECTION_MODULES } from '@entities/system';
 import { PillButton } from '@shared/ui';
 
 export const Modules = React.memo(() => {
@@ -39,110 +39,17 @@ export const Modules = React.memo(() => {
           contentContainerStyle={styles.pillMenuContainer}
           style={styles.pillMenuWrapper}
         >
-          {renderSection === 'system' && (
-            <>
-              <PillButton
-                variant="module"
-                label={t('modules.presets')}
-                isActive={renderModule === 'presets'}
-                onPress={() => setActiveModule('presets')}
-                isDebugEnabled={isDebugEnabled}
-                style={styles.pill}
-              />
-              <PillButton
-                variant="module"
-                label={t('modules.preferences')}
-                isActive={renderModule === 'preferences'}
-                onPress={() => setActiveModule('preferences')}
-                isDebugEnabled={isDebugEnabled}
-                style={styles.pill}
-              />
-            </>
-          )}
-          {renderSection === 'lens' && (
-            <>
-              <PillButton
-                variant="module"
-                label={t('modules.optics')}
-                isActive={renderModule === 'optics'}
-                onPress={() => setActiveModule('optics')}
-                isDebugEnabled={isDebugEnabled}
-                style={styles.pill}
-              />
-              <PillButton
-                variant="module"
-                label={t('modules.flaws')}
-                isActive={renderModule === 'flaws'}
-                onPress={() => setActiveModule('flaws')}
-                isDebugEnabled={isDebugEnabled}
-                style={styles.pill}
-              />
-            </>
-          )}
-          {renderSection === 'body' && (
-            <>
-              <PillButton
-                variant="module"
-                label={t('modules.exposure')}
-                isActive={renderModule === 'exposure'}
-                onPress={() => setActiveModule('exposure')}
-                isDebugEnabled={isDebugEnabled}
-                style={styles.pill}
-              />
-              <PillButton
-                variant="module"
-                label={t('modules.lighting')}
-                isActive={renderModule === 'lighting'}
-                onPress={() => setActiveModule('lighting')}
-                isDebugEnabled={isDebugEnabled}
-                style={styles.pill}
-              />
-              <PillButton
-                variant="module"
-                label={t('modules.capture')}
-                isActive={renderModule === 'capture'}
-                onPress={() => setActiveModule('capture')}
-                isDebugEnabled={isDebugEnabled}
-                style={styles.pill}
-              />
-            </>
-          )}
-          {renderSection === 'film' && (
-            <>
-              <PillButton
-                variant="module"
-                label={t('modules.tone')}
-                isActive={renderModule === 'tone'}
-                onPress={() => setActiveModule('tone')}
-                isDebugEnabled={isDebugEnabled}
-                style={styles.pill}
-              />
-              <PillButton
-                variant="module"
-                label={t('modules.color')}
-                isActive={renderModule === 'color'}
-                onPress={() => setActiveModule('color')}
-                isDebugEnabled={isDebugEnabled}
-                style={styles.pill}
-              />
-              <PillButton
-                variant="module"
-                label={t('modules.texture')}
-                isActive={renderModule === 'texture'}
-                onPress={() => setActiveModule('texture')}
-                isDebugEnabled={isDebugEnabled}
-                style={styles.pill}
-              />
-              <PillButton
-                variant="module"
-                label={t('modules.flaws')}
-                isActive={renderModule === 'flaws'}
-                onPress={() => setActiveModule('flaws')}
-                isDebugEnabled={isDebugEnabled}
-                style={styles.pill}
-              />
-            </>
-          )}
+          {SECTION_MODULES[renderSection].map((moduleName) => (
+            <PillButton
+              key={moduleName}
+              variant="module"
+              label={t(`modules.${moduleName}`)}
+              isActive={renderModule === moduleName}
+              onPress={() => setActiveModule(moduleName)}
+              isDebugEnabled={isDebugEnabled}
+              style={styles.pill}
+            />
+          ))}
         </ScrollView>
       </View>
     </>
