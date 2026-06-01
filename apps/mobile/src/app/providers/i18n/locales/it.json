@@ -64,7 +64,8 @@
       "noise_reduction": "RIDUZIONE RUMORE",
       "noise_reduction_mode": "ALGORITMO",
       "sharpening": "NITIDEZZA",
-      "sharpening_mode": "ALGORITMO"
+      "sharpening_mode": "ALGORITMO",
+      "pixelation": "PIXELAZIONE"
     },
     "footer": {
       "coming_soon": "IN ARRIVO"

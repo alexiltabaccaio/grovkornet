@@ -67,6 +67,7 @@ export interface NativeFilmCameraViewProps extends ViewProps {
   highlightsAuto?: boolean;
   pivotAuto?: boolean;
   zoom?: number;
+  pixelationFactor?: number;
   // @@GEN_PROPS_END@@
   onDebugUpdate?: (event: { nativeEvent: { fps: number; hwFps: number; resolution: string } }) => void;
   onExposureUpdate?: (event: { nativeEvent: { iso: number; shutterSpeed: number; focusDistance?: number } }) => void;

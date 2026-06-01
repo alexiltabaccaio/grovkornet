@@ -7,7 +7,7 @@ interface TextureModuleProps {
   handlePressWithDouble: (param: ParameterType, action: () => void) => void;
 }
 
-const TEXTURE_PARAMETERS: ParameterType[] = ['grain', 'sharpening', 'noise_reduction'];
+const TEXTURE_PARAMETERS: ParameterType[] = ['grain', 'sharpening', 'noise_reduction', 'pixelation'];
 
 export const TextureModule = ({ handlePressWithDouble }: TextureModuleProps) => {
   return (

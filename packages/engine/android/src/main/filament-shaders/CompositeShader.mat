@@ -24,6 +24,7 @@ material {
         { type : float2, name : u_TexelSize },
         { type : float, name : u_TargetResolution },
         { type : sampler2d, name : u_GlassTexture },
+        { type : float, name : u_PixelationFactor },
         { type : float, name : u_PanelY }
     ],
     requires : [ uv0 ]
@@ -52,6 +53,13 @@ fragment {
                 vec2 gridSize = vec2(screenW * scale, screenH * scale);
                 uv = (floor(uv * gridSize) + 0.5) / gridSize;
             }
+        }
+
+        if (materialParams.u_PixelationFactor > 1.0) {
+            float minDim = min(1.0 / materialParams.u_TexelSize.x, 1.0 / materialParams.u_TexelSize.y);
+            float scaledFactor = max(1.0, materialParams.u_PixelationFactor * (minDim / 1080.0));
+            vec2 gridSize = vec2(1.0 / materialParams.u_TexelSize.x, 1.0 / materialParams.u_TexelSize.y) / scaledFactor;
+            uv = (floor(uv * gridSize) + 0.5) / gridSize;
         }
 
         vec2 baseUv = uv * materialParams.u_DrsScale;

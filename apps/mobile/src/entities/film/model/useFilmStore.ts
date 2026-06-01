@@ -19,6 +19,7 @@ import {
   DEFAULT_BOUND_CYAN_BLUE,
   DEFAULT_BOUND_BLUE_PURPLE,
   DEFAULT_BOUND_PURPLE_MAGENTA,
+  DEFAULT_PIXELATION_FACTOR,
 } from '@grovkornet/shared';
 
 export const useFilmStore = create<FilmStore>((set, get) => ({
@@ -66,6 +67,7 @@ export const useFilmStore = create<FilmStore>((set, get) => ({
   blackLevelAuto: makeMutable(true),
   highlightsAuto: makeMutable(true),
   pivotAuto: makeMutable(true),
+  pixelationFactor: makeMutable(DEFAULT_PIXELATION_FACTOR),
   // @@GEN_INIT_END@@
   capabilities: {
     availableNoiseReductionModes: [],
@@ -260,6 +262,9 @@ export const useFilmStore = create<FilmStore>((set, get) => ({
     }
 
   },
+  setPixelationFactor: (value) => {
+    get().pixelationFactor.value = value;
+  },
   // @@GEN_SETTERS_END@@
   setCapabilities: (caps) => {
     logger.info('FilmStore', 'Capabilities updated for Film');
@@ -337,6 +342,9 @@ export const useFilmStore = create<FilmStore>((set, get) => ({
         state.blackLevelAuto.value = true;
         state.highlightsAuto.value = true;
         state.pivotAuto.value = true;
+        break;
+      case 'pixelation':
+        state.pixelationFactor.value = DEFAULT_PIXELATION_FACTOR;
         break;
       // @@GEN_RESET_END@@
     }

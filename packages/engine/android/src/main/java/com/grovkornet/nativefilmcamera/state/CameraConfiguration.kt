@@ -48,6 +48,7 @@ data class CameraConfiguration(
     var blackLevelAuto: Boolean = true,
     var highlightsAuto: Boolean = true,
     var pivotAuto: Boolean = true,
+    var pixelationFactor: Float = 1.0f,
 
     // Hardware Props
     var ev: Float = 0.0f,
@@ -96,7 +97,7 @@ fun CameraConfiguration.toRenderParamsArray(
     targetFpsOverride: Float = targetFps.toFloat(),
     invertYShift: Boolean = false
 ): FloatArray = // @@GEN_ARRAY_START@@
-FloatArray(46).apply {
+FloatArray(47).apply {
     this[0 ] = saturation
     this[1 ] = contrast
     this[2 ] = if (grainEnabled) grainIntensity else 0f
@@ -143,6 +144,7 @@ FloatArray(46).apply {
     this[43] = if (blackLevelAuto) 1.0f else 0.0f
     this[44] = if (highlightsAuto) 1.0f else 0.0f
     this[45] = if (pivotAuto) 1.0f else 0.0f
+    this[46] = pixelationFactor
 }
 // @@GEN_ARRAY_END@@
 

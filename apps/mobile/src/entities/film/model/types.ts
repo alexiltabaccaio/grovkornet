@@ -50,6 +50,7 @@ interface FilmState {
   blackLevelAuto: SharedValue<boolean>;
   highlightsAuto: SharedValue<boolean>;
   pivotAuto: SharedValue<boolean>;
+  pixelationFactor: SharedValue<number>;
   // @@GEN_STATE_END@@
   capabilities?: FilmCapabilities;
 }
@@ -99,6 +100,7 @@ interface FilmActions {
   setBlackLevelAuto: (value: boolean) => void;
   setHighlightsAuto: (value: boolean) => void;
   setPivotAuto: (value: boolean) => void;
+  setPixelationFactor: (value: number) => void;
   // @@GEN_ACTIONS_END@@
   setCapabilities?: (capabilities: FilmCapabilities) => void;
   resetEffect: (effect: string) => void;

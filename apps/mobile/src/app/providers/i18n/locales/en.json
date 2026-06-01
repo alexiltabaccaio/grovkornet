@@ -64,7 +64,8 @@
       "noise_reduction": "NOISE REDUCTION",
       "noise_reduction_mode": "ALGORITHM",
       "sharpening": "SHARPENING",
-      "sharpening_mode": "ALGORITHM"
+      "sharpening_mode": "ALGORITHM",
+      "pixelation": "PIXELATION"
     },
     "footer": {
       "coming_soon": "COMING SOON"

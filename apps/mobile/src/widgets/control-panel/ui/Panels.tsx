@@ -44,6 +44,7 @@ export const Panels = React.memo(({ translateY }: PanelsProps) => {
       case 'temperature':
       case 'tint':
       case 'sharpening':
+      case 'pixelation':
       case 'ev':
       case 'iso':
       case 'shutter_speed':

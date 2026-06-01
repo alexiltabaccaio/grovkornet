@@ -17,6 +17,7 @@ import {
   DEFAULT_GRAIN_INTENSITY,
   DEFAULT_GRAIN_SPEED,
   DEFAULT_ISO,
+  DEFAULT_PIXELATION_FACTOR,
   DEFAULT_SATURATION,
   DEFAULT_SELECTIVE_SATURATION,
   DEFAULT_SHUTTER_SPEED,
@@ -74,6 +75,7 @@ export const DEFAULT_FILM_PAYLOAD: FilmPresetPayload = {
   blackLevelAuto: true,
   highlightsAuto: true,
   pivotAuto: true,
+  pixelationFactor: DEFAULT_PIXELATION_FACTOR,
   // @@GEN_DEFAULTS_END@@
 };
 

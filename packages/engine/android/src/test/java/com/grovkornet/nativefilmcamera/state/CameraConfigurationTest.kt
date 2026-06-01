@@ -17,6 +17,7 @@ class CameraConfigurationTest {
         assertNull(config.cameraId)
         assertFalse(config.previewIn4k)
         assertEquals(1.0f, config.zoom)
+        assertEquals(1.0f, config.pixelationFactor)
     }
 
     @Test
@@ -37,6 +38,8 @@ class CameraConfigurationTest {
         assertEquals(80.0f, config.satRed)
         assertEquals(20.0f, config.satBlue)
         assertTrue(config.previewIn4k)
+        config.pixelationFactor = 4.0f
+        assertEquals(4.0f, config.pixelationFactor)
     }
 
     @Test
@@ -97,7 +100,7 @@ class CameraConfigurationTest {
 
         val array = config.toRenderParamsArray(time = time, targetResolution = targetResolution)
 
-        assertEquals(46, array.size)
+        assertEquals(47, array.size)
         assertEquals(1.2f, array[0])
         assertEquals(0.9f, array[1])
         assertEquals(0.5f, array[2])
@@ -144,6 +147,7 @@ class CameraConfigurationTest {
         assertEquals(1.0f, array[43]) // blackLevelAuto
         assertEquals(1.0f, array[44]) // highlightsAuto
         assertEquals(1.0f, array[45]) // pivotAuto
+        assertEquals(1.0f, array[46]) // pixelationFactor
 
 
         // Test dynamic disabling features

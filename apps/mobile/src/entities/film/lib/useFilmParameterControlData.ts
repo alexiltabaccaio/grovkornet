@@ -16,7 +16,8 @@ export type FilmParameterType =
   | 'chromatic_aberration'
   | 'bloom'
   | 'temperature'
-  | 'tint';
+  | 'tint'
+  | 'pixelation';
 
 type SelectedFilmState = Pick<
   FilmStore,
@@ -52,6 +53,8 @@ type SelectedFilmState = Pick<
   | 'setTemperatureAuto'
   | 'tint'
   | 'setTint'
+  | 'pixelationFactor'
+  | 'setPixelationFactor'
 >;
 
 export const useFilmParameterControlData = (
@@ -127,6 +130,11 @@ export const useFilmParameterControlData = (
             setTint: s.setTint,
             temperatureAuto: s.temperatureAuto,
             setTemperatureAuto: s.setTemperatureAuto,
+          };
+        case 'pixelation':
+          return {
+            pixelationFactor: s.pixelationFactor,
+            setPixelationFactor: s.setPixelationFactor,
           };
       }
     })
@@ -311,6 +319,21 @@ export const useFilmParameterControlData = (
           autoValueText: 'AWB',
           onReset: () => film.setTemperatureAuto(true),
           onToggleAuto: film.setTemperatureAuto,
+        };
+      case 'pixelation':
+        return {
+          value: film.pixelationFactor,
+          minValue: 1.0,
+          maxValue: 16.0,
+          onChange: film.setPixelationFactor,
+          onUpdateWorklet: filmWorklets.updatePixelationFactor,
+          valueFormatter: (v: number) => {
+            'worklet';
+            return `${Math.round(v * 10) / 10}x`;
+          },
+          hideValueInAuto: false,
+          autoValueText: 'AUTO',
+          onReset: () => film.setPixelationFactor(1.0),
         };
     }
   }, [parameter, film, filmWorklets]);

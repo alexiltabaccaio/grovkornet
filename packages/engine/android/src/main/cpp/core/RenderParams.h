@@ -48,6 +48,7 @@ struct RenderParams {
     float blackLevelAuto;
     float highlightsAuto;
     float pivotAuto;
+    float pixelationFactor;
     // @@GEN_STRUCT_END@@
 };
 

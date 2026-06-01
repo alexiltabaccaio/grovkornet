@@ -26,6 +26,7 @@ const isFilmParameter = (p: ParameterType): p is FilmParameterType => {
     'bloom',
     'temperature',
     'tint',
+    'pixelation',
   ].includes(p);
 };
 

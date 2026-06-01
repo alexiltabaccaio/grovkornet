@@ -81,6 +81,7 @@ RenderParams parseRenderParams(const float* params) {
     rp.blackLevelAuto = params[43];
     rp.highlightsAuto = params[44];
     rp.pivotAuto = params[45];
+    rp.pixelationFactor = params[46];
     // @@GEN_PARSING_END@@
     return rp;
 }
@@ -350,6 +351,7 @@ void GrovkornetEngine::applyShaderParameters(const RenderParams& params, filamen
     composite->setParameter("u_TexelSize", texelSize);
     composite->setParameter("u_Sharpening", params.sharpening);
     composite->setParameter("u_TargetResolution", params.targetResolution);
+    composite->setParameter("u_PixelationFactor", params.pixelationFactor);
 
     // 4. Update DRS and viewports
     updateDrsAndViewport();

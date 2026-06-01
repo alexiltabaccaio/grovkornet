@@ -46,6 +46,7 @@ export interface FilmPresetPayload {
   blackLevelAuto: boolean;
   highlightsAuto: boolean;
   pivotAuto: boolean;
+  pixelationFactor: number;
   // @@GEN_FILM_PAYLOAD_END@@
 }
 

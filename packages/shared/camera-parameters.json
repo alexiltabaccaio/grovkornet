@@ -1358,6 +1358,24 @@
         "default": "1.0",
         "type": "number"
       }
+    },
+    {
+      "name": "pixelationFactor",
+      "category": "render",
+      "arrayIndex": 46,
+      "kotlin": {
+        "type": "Float",
+        "default": "1.0f"
+      },
+      "ts": {
+        "type": "number"
+      },
+      "zustand": {
+        "default": "DEFAULT_PIXELATION_FACTOR",
+        "type": "number",
+        "resetGroup": "pixelation",
+        "store": "film"
+      }
     }
   ]
 }

@@ -305,6 +305,10 @@ class NativeFilmCameraModule : Module() {
       Prop("zoom") { view: NativeFilmCameraView, value: Float ->
         if (view.config.zoom != value) view.updateHardware { zoom = value }
       }
+
+      Prop("pixelationFactor") { view: NativeFilmCameraView, value: Float ->
+        view.updateEffect { pixelationFactor = value }
+      }
       // @@GEN_PROPS_END@@
 
       AsyncFunction("takePhoto") { view: NativeFilmCameraView ->

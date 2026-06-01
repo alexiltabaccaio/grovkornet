@@ -87,6 +87,7 @@ export const Viewfinder = React.memo(({ cameraKey, translateY, drawerAnimation }
     blackLevelAuto,
     highlightsAuto,
     pivotAuto,
+    pixelationFactor,
     // @@GEN_SELECTOR_END@@
   } = useFilmStore.getState();
 
@@ -273,6 +274,7 @@ export const Viewfinder = React.memo(({ cameraKey, translateY, drawerAnimation }
         highlightsAuto={highlightsAuto as unknown as SharedValue<boolean | undefined>}
         pivotAuto={pivotAuto as unknown as SharedValue<boolean | undefined>}
         zoom={zoom as unknown as SharedValue<number | undefined>}
+        pixelationFactor={pixelationFactor as unknown as SharedValue<number | undefined>}
         // @@GEN_PROPS_END@@
             panelY={panelY as unknown as SharedValue<number | undefined>}
             onCapabilitiesUpdate={capabilitiesHandler}
