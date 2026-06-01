@@ -10,6 +10,29 @@ import { PresetsPanel, LanguagePanel, VibrationPanel, DebugPanel } from '@featur
 import { LensSelectionPanel } from '@features/lens-controls';
 import { NoiseReductionPanel } from '@features/film-controls';
 
+const SLIDER_PARAMETERS = [
+  'grain',
+  'bloom',
+  'blackLevel',
+  'highlights',
+  'temperature',
+  'tint',
+  'sharpening',
+  'pixelation',
+  'ev',
+  'iso',
+  'shutter_speed',
+  'focus',
+  'contrast',
+  'zoom',
+  'chromatic_aberration',
+  'saturation',
+  'vignette',
+  'chroma_shift',
+  'tape_jitter',
+  'scanlines',
+];
+
 interface PanelsProps {
   translateY: Animated.SharedValue<number>;
 }
@@ -33,31 +56,11 @@ export const Panels = React.memo(({ translateY }: PanelsProps) => {
     };
   });
 
-  if (activeParameter === 'none') return null;
+  const isSlider = SLIDER_PARAMETERS.includes(activeParameter);
+  const sliderParameter = isSlider ? activeParameter : 'grain';
 
   const renderContent = () => {
     switch (activeParameter) {
-      case 'grain':
-      case 'bloom':
-      case 'blackLevel':
-      case 'highlights':
-      case 'temperature':
-      case 'tint':
-      case 'sharpening':
-      case 'pixelation':
-      case 'ev':
-      case 'iso':
-      case 'shutter_speed':
-      case 'focus':
-      case 'contrast':
-      case 'zoom':
-      case 'chromatic_aberration':
-      case 'saturation':
-      case 'vignette':
-      case 'chroma_shift':
-      case 'tape_jitter':
-      case 'scanlines':
-        return <SliderPanel parameter={activeParameter} parameterDetailPanelAnimatedStyle={parameterDetailPanelAnimatedStyle} />;
       case 'torch':
         return <TorchPanel parameterDetailPanelAnimatedStyle={parameterDetailPanelAnimatedStyle} />;
       case 'presets':
@@ -85,6 +88,13 @@ export const Panels = React.memo(({ translateY }: PanelsProps) => {
 
   return (
     <Animated.View style={[styles.contentContainer, parameterDetailPanelAnimatedStyle]}>
+      <SliderPanel
+        parameter={sliderParameter}
+        parameterDetailPanelAnimatedStyle={[
+          parameterDetailPanelAnimatedStyle,
+          !isSlider && styles.hidden,
+        ]}
+      />
       {renderContent()}
     </Animated.View>
   );
@@ -97,5 +107,8 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     alignItems: 'center',
     width: '100%',
+  },
+  hidden: {
+    display: 'none',
   },
 });

@@ -27,22 +27,44 @@ jest.mock('./Parameters', () => ({
 }));
 
 jest.mock('@entities/system', () => ({
-  useSystemStore: jest.fn()
+  useSystemStore: jest.fn(),
+  ParameterControl: 'ParameterControl',
 }));
 
 jest.mock('@entities/body', () => ({
   useBodyStore: jest.fn(),
+  useBodyParameterControlData: () => ({
+    value: 0,
+    minValue: 0,
+    maxValue: 1,
+    onChange: jest.fn(),
+  }),
   useBodyWorklets: () => ({
     updateTorchStrength: jest.fn(),
   }),
 }));
 
 jest.mock('@entities/lens', () => ({
-  useLensStore: jest.fn()
+  useLensStore: jest.fn(),
+  useLensParameterControlData: () => ({
+    value: 0,
+    minValue: 0,
+    maxValue: 1,
+    onChange: jest.fn(),
+  }),
 }));
 
 jest.mock('@entities/film', () => ({
-  useFilmStore: jest.fn()
+  useFilmStore: jest.fn(),
+  useFilmParameterControlData: () => ({
+    value: 0,
+    minValue: 0,
+    maxValue: 1,
+    onChange: jest.fn(),
+  }),
+  useFilmWorklets: () => ({
+    updateGrain: jest.fn(),
+  }),
 }));
 
 describe('ControlPanel Component Stability Test', () => {

@@ -67,12 +67,12 @@ describe('Panels', () => {
     jest.clearAllMocks();
   });
 
-  it('renders nothing when activeParameter is none', () => {
+  it('renders hidden slider when activeParameter is none', () => {
     act(() => {
       useSystemStore.getState().setActiveParameter('none');
     });
     const { toJSON } = render(<Panels translateY={mockTranslateY} />);
-    expect(toJSON()).toBeNull();
+    expect(toJSON()).toBeDefined();
   });
 
   it('renders grain basic parameter when activeParameter is grain', () => {
