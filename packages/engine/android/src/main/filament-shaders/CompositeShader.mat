@@ -34,34 +34,32 @@ material {
 }
 
 fragment {
-    highp float rand(highp vec2 co) {
-        return fract(sin(dot(co, vec2(12.9898, 78.233))) * 43758.5453);
+    highp vec3 randVec3(highp vec2 co) {
+        highp vec3 dots = vec3(
+            dot(co, vec2(12.9898, 78.233)),
+            dot(co, vec2(39.346, 11.135)),
+            dot(co, vec2(73.156, 52.235))
+        );
+        return fract(sin(dots) * 43758.5453);
     }
-    highp float rand2(highp vec2 co) {
-        return fract(sin(dot(co, vec2(39.346, 11.135))) * 43758.5453);
-    }
-    highp float rand3(highp vec2 co) {
-        return fract(sin(dot(co, vec2(73.156, 52.235))) * 43758.5453);
-    }
+
     void material(inout MaterialInputs material) {
         prepareMaterial(material);
         vec2 uv = getUV0();
+        vec2 res = 1.0 / materialParams.u_TexelSize;
+        float minDim = min(res.x, res.y);
         
         if (materialParams.u_TargetResolution > 0.0) {
-            float minDim = min(1.0 / materialParams.u_TexelSize.x, 1.0 / materialParams.u_TexelSize.y);
             if (materialParams.u_TargetResolution < minDim) {
-                float screenW = 1.0 / materialParams.u_TexelSize.x;
-                float screenH = 1.0 / materialParams.u_TexelSize.y;
                 float scale = materialParams.u_TargetResolution / minDim;
-                vec2 gridSize = vec2(screenW * scale, screenH * scale);
+                vec2 gridSize = res * scale;
                 uv = (floor(uv * gridSize) + 0.5) / gridSize;
             }
         }
 
         if (materialParams.u_PixelationFactor > 1.0) {
-            float minDim = min(1.0 / materialParams.u_TexelSize.x, 1.0 / materialParams.u_TexelSize.y);
             float scaledFactor = max(1.0, materialParams.u_PixelationFactor * (minDim / 1080.0));
-            vec2 gridSize = vec2(1.0 / materialParams.u_TexelSize.x, 1.0 / materialParams.u_TexelSize.y) / scaledFactor;
+            vec2 gridSize = res / scaledFactor;
             uv = (floor(uv * gridSize) + 0.5) / gridSize;
         }
 
@@ -72,6 +70,8 @@ fragment {
         vec2 rUv = compositeUv;
         vec2 gUv = compositeUv;
         vec2 bUv = compositeUv;
+
+        bool hasChromaEffects = materialParams.u_ChromaShift > 0.0 || materialParams.u_ChromaticAberration > 0.0 || materialParams.u_TapeJitter > 0.0;
 
         if (materialParams.u_TapeJitter > 0.0) {
             float jitter = sin(uv.y * 50.0 + materialParams.u_Time * 10.0) * 0.002 * materialParams.u_TapeJitter;
@@ -90,7 +90,7 @@ fragment {
                 rUv.x -= shift;
                 bUv.x += shift;
             } else {
-                float aspect = materialParams.u_TexelSize.y / materialParams.u_TexelSize.x;
+                float aspect = res.x / res.y;
                 rUv.y -= shift * aspect;
                 bUv.y += shift * aspect;
             }
@@ -98,7 +98,7 @@ fragment {
 
         if (materialParams.u_ChromaticAberration > 0.0) {
             float caIntensity = materialParams.u_ChromaticAberration * 0.02;
-            float aspect = materialParams.u_TexelSize.y / materialParams.u_TexelSize.x;
+            float aspect = res.x / res.y;
             
             vec2 dir = normalize(uv - 0.5);
             float dist = length(uv - 0.5);
@@ -120,10 +120,14 @@ fragment {
             bUv -= caShift;
         }
 
-        vec4 colR = texture(materialParams_u_Texture, rUv);
-        vec4 colG = texture(materialParams_u_Texture, gUv);
-        vec4 colB = texture(materialParams_u_Texture, bUv);
-        baseColor = vec4(colR.r, colG.g, colB.b, colG.a);
+        if (hasChromaEffects) {
+            vec4 colR = texture(materialParams_u_Texture, rUv);
+            vec4 colG = texture(materialParams_u_Texture, gUv);
+            vec4 colB = texture(materialParams_u_Texture, bUv);
+            baseColor = vec4(colR.r, colG.g, colB.b, colG.a);
+        } else {
+            baseColor = texture(materialParams_u_Texture, compositeUv);
+        }
 
         if (materialParams.u_Sharpening > 0.0) {
             vec2 texel = materialParams.u_TexelSize;
@@ -142,12 +146,14 @@ fragment {
             baseColor.rgb -= vec3(scanline);
         }
         
-        // Fix for inverted bloom reflection: flip the V coordinate within the valid DRS range
         vec2 flippedBloomUv = vec2(compositeUv.x, materialParams.u_DrsScale - compositeUv.y);
-        vec3 bloomColor = texture(materialParams_u_BloomTexture, flippedBloomUv).rgb;
-        
-        // Soft additive blend in linear space
-        vec3 finalColor = baseColor.rgb + bloomColor * materialParams.u_BloomIntensity;
+        vec3 finalColor = baseColor.rgb;
+
+        if (materialParams.u_BloomIntensity > 0.0) {
+            vec3 bloomColor = texture(materialParams_u_BloomTexture, flippedBloomUv).rgb;
+            // Soft additive blend in linear space
+            finalColor += bloomColor * materialParams.u_BloomIntensity;
+        }
         
         // Vignette
         if (materialParams.u_VignetteIntensity > 0.0) {
@@ -161,25 +167,15 @@ fragment {
             highp float size = materialParams.u_GrainSize;
             highp vec2 grainUv = floor(uv * (1080.0 / clamp(size, 0.1, 10.0))) * clamp(size, 0.1, 10.0) / 1080.0;
             
-            highp float randR = rand(grainUv);
-            highp float randG = rand2(grainUv);
-            highp float randB = rand3(grainUv);
+            highp vec3 rands = randVec3(grainUv);
             highp float t = materialParams.u_Time * materialParams.u_GrainSpeed;
             
-            highp float noiseR = fract(randR + t * 0.11);
-            highp float noiseG = fract(randG + t * 0.19);
-            highp float noiseB = fract(randB + t * 0.33);
-            
-            highp vec3 noise = vec3(noiseR, noiseG, noiseB);
-            
-            // MONO: custom speeds to match RGB perceived speed (around 0.18) but slightly detuned to prevent Moiré circles
-            highp float monoFastR = fract(randR + t * 0.171);
-            highp float monoFastG = fract(randG + t * 0.180);
-            highp float monoFastB = fract(randB + t * 0.189);
+            highp vec3 noise = fract(rands + t * vec3(0.11, 0.19, 0.33));
+            highp vec3 monoFast = fract(rands + t * vec3(0.171, 0.180, 0.189));
             
             // MONO: soft (bell curve average - 0.5) vs rough (single channel - 0.5)
-            highp float softMono = (monoFastR + monoFastG + monoFastB) / 3.0 - 0.5;
-            highp float roughMono = monoFastB - 0.5;
+            highp float softMono = dot(monoFast, vec3(0.3333333)) - 0.5;
+            highp float roughMono = monoFast.z - 0.5;
             highp float finalMono = mix(softMono, roughMono, materialParams.u_GrainRoughness);
             
             // RGB: soft (balanced chroma scaled by 1/sqrt(3)) vs rough (pure chroma)
