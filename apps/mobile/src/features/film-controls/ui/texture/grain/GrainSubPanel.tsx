@@ -1,12 +1,18 @@
 import React from 'react';
-import { View, StyleSheet, Text, StyleProp, ViewStyle } from 'react-native';
+import { View, StyleSheet, StyleProp, ViewStyle } from 'react-native';
 import Animated, { useDerivedValue } from 'react-native-reanimated';
 import { useShallow } from 'zustand/react/shallow';
 import { useFilmStore, useFilmWorklets } from '@entities/film';
 import { ParameterControl } from '@entities/system';
 import { useTranslation } from 'react-i18next';
 import { useSystemStore } from '@entities/system';
-import { PillButton } from '@shared/ui';
+import { PillButton, ResettableLabel } from '@shared/ui';
+import { 
+  DEFAULT_GRAIN_SIZE, 
+  DEFAULT_GRAIN_SPEED, 
+  DEFAULT_GRAIN_ROUGHNESS,
+  DEFAULT_GRAIN_CHROMA,
+} from '@grovkornet/shared';
 
 const formatGrainValue = (v: number) => {
   'worklet';
@@ -25,7 +31,7 @@ interface GrainSubPanelProps {
   animatedStyle?: StyleProp<ViewStyle>;
 }
 
-export const GrainSubPanel = ({ parameterDetailPanelAnimatedStyle, animatedStyle }: GrainSubPanelProps) => {
+export const GrainSubPanel = ({ parameterDetailPanelAnimatedStyle: _parameterDetailPanelAnimatedStyle, animatedStyle: _animatedStyle }: GrainSubPanelProps) => {
   const { t } = useTranslation();
   const isDebugEnabled = useSystemStore((s) => s.isDebugEnabled);
   const { 
@@ -52,15 +58,20 @@ export const GrainSubPanel = ({ parameterDetailPanelAnimatedStyle, animatedStyle
   const isRgbActive = useDerivedValue(() => grainChroma.value === 1);
 
   return (
-    <Animated.View style={[styles.container, animatedStyle]}>
+    <Animated.View style={[styles.container, _animatedStyle]}>
       <View style={styles.row}>
           <View style={[
             styles.chromaContainer,
             isDebugEnabled && { backgroundColor: 'rgba(0, 255, 0, 0.2)', borderColor: 'green' }
           ]}>
-            <Text allowFontScaling={false} style={styles.label}>
-              {t('parameters.chroma').toUpperCase()}
-            </Text>
+            <ResettableLabel
+              label={t('parameters.chroma').toUpperCase()}
+              style={styles.label}
+              onReset={() => {
+                setGrainChroma(DEFAULT_GRAIN_CHROMA);
+                worklets.updateGrainChroma(DEFAULT_GRAIN_CHROMA);
+              }}
+            />
             <View style={styles.buttonRow}>
               <PillButton
                 label="MONO"
@@ -97,6 +108,10 @@ export const GrainSubPanel = ({ parameterDetailPanelAnimatedStyle, animatedStyle
             variant="slider"
             hideAutoPlaceholder={true}
             valueFormatter={formatGrainValue}
+            onReset={() => {
+              setGrainSize(DEFAULT_GRAIN_SIZE);
+              worklets.updateGrainSize(DEFAULT_GRAIN_SIZE);
+            }}
           />
         </View>
       </View>
@@ -114,6 +129,10 @@ export const GrainSubPanel = ({ parameterDetailPanelAnimatedStyle, animatedStyle
             variant="slider"
             hideAutoPlaceholder={true}
             valueFormatter={formatRoughnessValue}
+            onReset={() => {
+              setGrainRoughness(DEFAULT_GRAIN_ROUGHNESS);
+              worklets.updateGrainRoughness(DEFAULT_GRAIN_ROUGHNESS);
+            }}
           />
         </View>
         <View style={styles.speedContainer}>
@@ -129,6 +148,10 @@ export const GrainSubPanel = ({ parameterDetailPanelAnimatedStyle, animatedStyle
             variant="slider"
             hideAutoPlaceholder={true}
             valueFormatter={formatGrainValue}
+            onReset={() => {
+              setGrainSpeed(DEFAULT_GRAIN_SPEED);
+              worklets.updateGrainSpeed(DEFAULT_GRAIN_SPEED);
+            }}
           />
         </View>
       </View>

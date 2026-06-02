@@ -5,6 +5,7 @@ import { useSystemStore, ParameterControl } from '@entities/system';
 import { useBodyStore, useBodyWorklets } from '@entities/body';
 import Animated from 'react-native-reanimated';
 import { useTranslation } from 'react-i18next';
+import { DEFAULT_TORCH_STRENGTH } from '@grovkornet/shared';
 
 const formatTorchStrength = (v: number) => {
   'worklet';
@@ -15,7 +16,7 @@ interface TorchSubPanelProps {
   animatedStyle?: StyleProp<ViewStyle>;
 }
 
-export const TorchSubPanel = ({ animatedStyle }: TorchSubPanelProps) => {
+export const TorchSubPanel = ({ animatedStyle: _animatedStyle }: TorchSubPanelProps) => {
   const { t } = useTranslation();
   const bodyWorklets = useBodyWorklets();
 
@@ -33,7 +34,7 @@ export const TorchSubPanel = ({ animatedStyle }: TorchSubPanelProps) => {
   })));
 
   return (
-    <Animated.View style={[styles.childSubContainer, animatedStyle]}>
+    <Animated.View style={[styles.childSubContainer, _animatedStyle]}>
       <ParameterControl
         label={t('parameters.torch_dimmer')}
         isActive={activeDetailPanel === 'torch_strength'}
@@ -46,6 +47,10 @@ export const TorchSubPanel = ({ animatedStyle }: TorchSubPanelProps) => {
         variant="slider"
         renderValue={true}
         valueFormatter={formatTorchStrength}
+        onReset={() => {
+          setTorchStrength(DEFAULT_TORCH_STRENGTH);
+          bodyWorklets.updateTorchStrength(DEFAULT_TORCH_STRENGTH);
+        }}
       />
     </Animated.View>
   );

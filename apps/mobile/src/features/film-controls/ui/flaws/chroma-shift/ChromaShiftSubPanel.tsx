@@ -1,17 +1,18 @@
 import React from 'react';
-import { StyleSheet, View, Text, StyleProp, ViewStyle } from 'react-native';
+import { StyleSheet, View, StyleProp, ViewStyle } from 'react-native';
 import { useDerivedValue } from 'react-native-reanimated';
 import { useShallow } from 'zustand/react/shallow';
 import { useFilmStore, useFilmWorklets } from '@entities/film';
 import { useTranslation } from 'react-i18next';
 import { useSystemStore } from '@entities/system';
-import { PillButton } from '@shared/ui';
+import { PillButton, ResettableLabel } from '@shared/ui';
+import { DEFAULT_CHROMA_SHIFT_DIRECTION } from '@grovkornet/shared';
 
 interface ChromaShiftSubPanelProps {
   animatedStyle?: StyleProp<ViewStyle>;
 }
 
-export const ChromaShiftSubPanel = ({ animatedStyle }: ChromaShiftSubPanelProps) => {
+export const ChromaShiftSubPanel = ({ animatedStyle: _animatedStyle }: ChromaShiftSubPanelProps) => {
   const { t } = useTranslation();
   const isDebugEnabled = useSystemStore((s) => s.isDebugEnabled);
   
@@ -45,9 +46,14 @@ export const ChromaShiftSubPanel = ({ animatedStyle }: ChromaShiftSubPanelProps)
       styles.container,
       isDebugEnabled && { backgroundColor: 'rgba(0, 255, 0, 0.2)', borderColor: 'green' }
     ]}>
-      <Text allowFontScaling={false} style={styles.label}>
-        {t('parameters.direction').toUpperCase()}
-      </Text>
+      <ResettableLabel
+        label={t('parameters.direction').toUpperCase()}
+        style={styles.label}
+        onReset={() => {
+          setChromaShiftDirection(DEFAULT_CHROMA_SHIFT_DIRECTION);
+          worklets.updateChromaShiftDirection(DEFAULT_CHROMA_SHIFT_DIRECTION);
+        }}
+      />
       <View style={styles.buttonRow}>
         <PillButton
           label="HOR"
