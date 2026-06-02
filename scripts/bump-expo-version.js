@@ -10,6 +10,15 @@ module.exports = {
     const json = JSON.parse(contents);
     json.expo.version = version;
     
+    // Automatically increment Android versionCode if it exists, otherwise initialize it to 1
+    if (json.expo && json.expo.android) {
+      if (typeof json.expo.android.versionCode === 'number') {
+        json.expo.android.versionCode += 1;
+      } else {
+        json.expo.android.versionCode = 1;
+      }
+    }
+    
     // Return formatted JSON with a trailing newline
     return JSON.stringify(json, null, 2) + '\n';
   }
