@@ -128,7 +128,7 @@ describe('useControlPanelGestures', () => {
     });
     expect(result.current.translateY.value).toBe(-50);
 
-    // Snapping points: -50, -110, -250
+    // Snapping points: -50, -115, -150, -250
     act(() => {
       result.current.translateY.value = -70;
       capturedPanGesture._onEnd({ velocityY: 0 });
@@ -139,7 +139,13 @@ describe('useControlPanelGestures', () => {
       result.current.translateY.value = -100;
       capturedPanGesture._onEnd({ velocityY: 0 });
     });
-    expect(result.current.translateY.value).toBe(-110);
+    expect(result.current.translateY.value).toBe(-115);
+
+    act(() => {
+      result.current.translateY.value = -140;
+      capturedPanGesture._onEnd({ velocityY: 0 });
+    });
+    expect(result.current.translateY.value).toBe(-150);
 
     act(() => {
       result.current.translateY.value = -220;
@@ -150,9 +156,16 @@ describe('useControlPanelGestures', () => {
     // Snapping points with velocity estimation (estimatedY = translateY.value + e.velocityY * 0.1)
     act(() => {
       result.current.translateY.value = -50;
-      // velocityY = -600 -> estimatedY = -50 + -60 = -110 -> snaps to -110
+      // velocityY = -600 -> estimatedY = -50 + -60 = -110 -> snaps to -115
       capturedPanGesture._onEnd({ velocityY: -600 });
     });
-    expect(result.current.translateY.value).toBe(-110);
+    expect(result.current.translateY.value).toBe(-115);
+
+    act(() => {
+      result.current.translateY.value = -50;
+      // velocityY = -950 -> estimatedY = -50 + -95 = -145 -> snaps to -150
+      capturedPanGesture._onEnd({ velocityY: -950 });
+    });
+    expect(result.current.translateY.value).toBe(-150);
   });
 });

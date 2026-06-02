@@ -60,7 +60,7 @@ export const useControlPanelGestures = ({
       })
       .onEnd((e) => {
         const estimatedY = translateY.value + e.velocityY * 0.1;
-        const snapPoints = [-50, -110, MAX_UP];
+        const snapPoints = [-50, -115, -150, MAX_UP];
 
         const targetY = snapPoints.reduce((prev, curr) =>
           Math.abs(curr - estimatedY) < Math.abs(prev - estimatedY) ? curr : prev
