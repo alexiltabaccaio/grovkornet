@@ -32,7 +32,7 @@
         "android.permission.RECORD_AUDIO"
       ],
       "package": "com.grovkornet.app",
-      "versionCode": 1
+      "versionCode": 2
     },
     "androidNavigationBar": {
       "backgroundColor": "#0e0e0e"
