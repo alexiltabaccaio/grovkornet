@@ -17,7 +17,7 @@ jest.mock('@entities/system', () => ({
     };
     return fn ? fn(state) : state;
   }),
-  ParameterDetailPanelWrapper: 'ParameterDetailPanelWrapper',
+  ParameterPanelWrapper: 'ParameterPanelWrapper',
 }));
 
 describe('DebugPanel', () => {

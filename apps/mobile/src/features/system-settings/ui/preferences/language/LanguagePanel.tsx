@@ -3,7 +3,7 @@ import { StyleProp, ViewStyle, ImageSourcePropType } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useShallow } from 'zustand/react/shallow';
 import { useSystemStore } from '@entities/system';
-import { ParameterControl, ParameterDetailPanelWrapper } from '@entities/system';
+import { ParameterControl, ParameterPanelWrapper } from '@entities/system';
 import { usePreferencesStore } from '@entities/preferences';
 
 import { logger } from '@shared/lib/logger';
@@ -26,7 +26,7 @@ export const LanguagePanel = ({ animatedStyle }: LanguagePanelProps) => {
   })));
 
   return (
-    <ParameterDetailPanelWrapper animatedStyle={animatedStyle} gap={40}>
+    <ParameterPanelWrapper animatedStyle={animatedStyle} gap={40}>
       <ParameterControl
         label=""
         isActive={activeDetailPanel === 'lang_en' || i18n.language.startsWith('en')}
@@ -53,7 +53,7 @@ export const LanguagePanel = ({ animatedStyle }: LanguagePanelProps) => {
         }}
         imageSource={itFlag}
       />
-    </ParameterDetailPanelWrapper>
+    </ParameterPanelWrapper>
   );
 };
 

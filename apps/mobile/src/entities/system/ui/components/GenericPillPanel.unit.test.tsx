@@ -1,9 +1,9 @@
 import React from 'react';
 import { render, fireEvent } from '@testing-library/react-native';
 import { Text } from 'react-native';
-import { GenericPillDetailPanel } from './GenericPillDetailPanel';
+import { GenericPillPanel } from './GenericPillPanel';
 
-describe('GenericPillDetailPanel', () => {
+describe('GenericPillPanel', () => {
   const options = ['Option 1', 'Option 2', 'Option 3'];
   const onChangeMock = jest.fn();
   const getLabelMock = (option: string) => option;
@@ -16,7 +16,7 @@ describe('GenericPillDetailPanel', () => {
     const isActiveStaticMock = jest.fn((option) => option === 'Option 2');
 
     const { getByText } = render(
-      <GenericPillDetailPanel
+      <GenericPillPanel
         options={options}
         onChange={onChangeMock}
         getLabel={getLabelMock}
@@ -41,7 +41,7 @@ describe('GenericPillDetailPanel', () => {
     const isActiveSharedMock = jest.fn((currValue, option, index) => index === currValue);
 
     const { getByText } = render(
-      <GenericPillDetailPanel
+      <GenericPillPanel
         options={options}
         onChange={onChangeMock}
         getLabel={getLabelMock}
@@ -61,7 +61,7 @@ describe('GenericPillDetailPanel', () => {
     const opacityFnMock = jest.fn(() => 0.5);
 
     const { getByText } = render(
-      <GenericPillDetailPanel
+      <GenericPillPanel
         options={options}
         onChange={onChangeMock}
         getLabel={getLabelMock}
@@ -71,7 +71,7 @@ describe('GenericPillDetailPanel', () => {
         opacity={opacityFnMock}
       >
         <Text>Inner Child</Text>
-      </GenericPillDetailPanel>
+      </GenericPillPanel>
     );
 
     expect(getByText('Left Accessory')).toBeDefined();

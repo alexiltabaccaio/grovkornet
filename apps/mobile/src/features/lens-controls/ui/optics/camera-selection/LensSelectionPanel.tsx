@@ -2,14 +2,14 @@ import React from 'react';
 import { StyleProp, ViewStyle } from 'react-native';
 import { useShallow } from 'zustand/react/shallow';
 import { useLensStore } from '@entities/lens';
-import { useSystemStore, GenericPillDetailPanel } from '@entities/system';
+import { useSystemStore, GenericPillPanel } from '@entities/system';
 import { AutoButton } from '@shared/ui';
 
 interface LensSelectionPanelProps {
-  parameterDetailPanelAnimatedStyle?: StyleProp<ViewStyle>;
+  animatedStyle?: StyleProp<ViewStyle>;
 }
 
-export const LensSelectionPanel = ({ parameterDetailPanelAnimatedStyle }: LensSelectionPanelProps) => {
+export const LensSelectionPanel = ({ animatedStyle }: LensSelectionPanelProps) => {
   const { capabilities, cameraId, setCameraId, cameraAuto, setCameraAuto } = useLensStore(useShallow(state => ({
     capabilities: state.capabilities,
     cameraId: state.cameraId,
@@ -20,7 +20,7 @@ export const LensSelectionPanel = ({ parameterDetailPanelAnimatedStyle }: LensSe
   const isDebugEnabled = useSystemStore((s) => s.isDebugEnabled);
 
   return (
-    <GenericPillDetailPanel
+    <GenericPillPanel
       options={capabilities.availableCameras}
       onChange={(cam) => {
         setCameraAuto(false);
@@ -28,7 +28,7 @@ export const LensSelectionPanel = ({ parameterDetailPanelAnimatedStyle }: LensSe
       }}
       isActiveStatic={(cam) => !cameraAuto && cameraId === cam.id}
       getLabel={(cam) => `${cam.focalLength35mm}mm`}
-      parameterDetailPanelAnimatedStyle={parameterDetailPanelAnimatedStyle}
+      animatedStyle={animatedStyle}
       pillMaxWidth={75}
       gap={8}
       paddingHorizontal={24}

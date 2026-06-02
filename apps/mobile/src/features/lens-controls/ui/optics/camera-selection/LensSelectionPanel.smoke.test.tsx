@@ -25,7 +25,7 @@ jest.mock('@entities/system', () => ({
     const state = { isDebugEnabled: false };
     return fn ? fn(state) : state;
   }),
-  GenericPillDetailPanel: 'GenericPillDetailPanel',
+  GenericPillPanel: 'GenericPillPanel',
 }));
 
 describe('LensSelectionPanel', () => {

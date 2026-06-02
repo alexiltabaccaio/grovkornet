@@ -3,7 +3,6 @@ import { StyleSheet, StyleProp, ViewStyle } from 'react-native';
 import { useShallow } from 'zustand/react/shallow';
 import { useSystemStore, ParameterControl } from '@entities/system';
 import { useBodyStore, useBodyWorklets } from '@entities/body';
-import Animated from 'react-native-reanimated';
 import { useTranslation } from 'react-i18next';
 import { DEFAULT_TORCH_STRENGTH } from '@grovkornet/shared';
 import { SubPanelContainer } from '@shared/ui';
@@ -21,9 +20,10 @@ export const TorchSubPanel = ({ animatedStyle: _animatedStyle }: TorchSubPanelPr
   const { t } = useTranslation();
   const bodyWorklets = useBodyWorklets();
 
-  const { activeDetailPanel, setActiveDetailPanel } = useSystemStore(useShallow(state => ({
+  const { activeDetailPanel, setActiveDetailPanel, isDebugEnabled } = useSystemStore(useShallow(state => ({
     activeDetailPanel: state.activeDetailPanel,
     setActiveDetailPanel: state.setActiveDetailPanel,
+    isDebugEnabled: state.isDebugEnabled,
   })));
 
   const {
@@ -35,7 +35,7 @@ export const TorchSubPanel = ({ animatedStyle: _animatedStyle }: TorchSubPanelPr
   })));
 
   return (
-    <SubPanelContainer style={[styles.childSubContainer, _animatedStyle]}>
+    <SubPanelContainer style={[styles.childSubContainer, _animatedStyle]} isDebugEnabled={isDebugEnabled}>
       <ParameterControl
         label={t('parameters.torch_dimmer')}
         isActive={activeDetailPanel === 'torch_strength'}

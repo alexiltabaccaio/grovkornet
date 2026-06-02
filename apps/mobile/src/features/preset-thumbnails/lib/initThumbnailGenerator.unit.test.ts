@@ -1,6 +1,5 @@
 import { usePresetStore, DEFAULT_FILM_PAYLOAD, DEFAULT_BODY_PAYLOAD } from '@entities/preset';
 
-import { Image } from 'expo-image';
 import { generatePresetPreview } from '@grovkornet/engine';
 import { 
   initThumbnailGenerator, 

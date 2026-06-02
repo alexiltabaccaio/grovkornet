@@ -42,7 +42,7 @@ export const ChromaShiftSubPanel = ({ animatedStyle: _animatedStyle }: ChromaShi
   const isInverted = useDerivedValue(() => chromaShiftInvert.value);
 
   return (
-    <SubPanelContainer style={[styles.container, _animatedStyle]} showBorder={true}>
+    <SubPanelContainer style={[styles.container, _animatedStyle]} showBorder={true} isDebugEnabled={isDebugEnabled}>
       <ResettableLabel
         label={t('parameters.direction').toUpperCase()}
         style={styles.label}

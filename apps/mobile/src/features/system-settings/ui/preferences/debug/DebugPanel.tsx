@@ -2,16 +2,16 @@ import React from 'react';
 import { StyleSheet, StyleProp, ViewStyle } from 'react-native';
 import { useShallow } from 'zustand/react/shallow';
 import { useSystemStore } from '@entities/system';
-import { ParameterDetailPanelWrapper } from '@entities/system';
+import { ParameterPanelWrapper } from '@entities/system';
 
 import { useTranslation } from 'react-i18next';
 import { PillButton } from '@shared/ui';
 
 interface DebugPanelProps {
-  parameterDetailPanelAnimatedStyle?: StyleProp<ViewStyle>;
+  animatedStyle?: StyleProp<ViewStyle>;
 }
 
-export const DebugPanel = __DEV__ ? ({ parameterDetailPanelAnimatedStyle }: DebugPanelProps) => {
+export const DebugPanel = __DEV__ ? ({ animatedStyle }: DebugPanelProps) => {
   const { t } = useTranslation();
   const { isDebugEnabled, setIsDebugEnabled, isLogsEnabled, setIsLogsEnabled, isCameraSecure, setIsCameraSecure } = useSystemStore(useShallow(state => ({
     isDebugEnabled: state.isDebugEnabled,
@@ -27,7 +27,7 @@ export const DebugPanel = __DEV__ ? ({ parameterDetailPanelAnimatedStyle }: Debu
   const labelSecure = 'SECURE';
 
   return (
-    <ParameterDetailPanelWrapper animatedStyle={parameterDetailPanelAnimatedStyle} gap={16} paddingHorizontal={32}>
+    <ParameterPanelWrapper animatedStyle={animatedStyle} gap={16} paddingHorizontal={32}>
       <PillButton
         label={labelUI}
         isActive={isDebugEnabled}
@@ -49,7 +49,7 @@ export const DebugPanel = __DEV__ ? ({ parameterDetailPanelAnimatedStyle }: Debu
         isDebugEnabled={isDebugEnabled}
         style={styles.pressable}
       />
-    </ParameterDetailPanelWrapper>
+    </ParameterPanelWrapper>
   );
 } : () => null;
 

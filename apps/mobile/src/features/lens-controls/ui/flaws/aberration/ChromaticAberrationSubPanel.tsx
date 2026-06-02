@@ -31,7 +31,7 @@ export const ChromaticAberrationSubPanel = ({ animatedStyle }: ChromaticAberrati
   const isInverted = useDerivedValue(() => aberrationInvert.value);
 
   return (
-    <SubPanelContainer style={[styles.container, animatedStyle]} showBorder={true}>
+    <SubPanelContainer style={[styles.container, animatedStyle]} showBorder={true} isDebugEnabled={isDebugEnabled}>
       <Text allowFontScaling={false} style={styles.label}>
         {t('parameters.direction').toUpperCase()}
       </Text>

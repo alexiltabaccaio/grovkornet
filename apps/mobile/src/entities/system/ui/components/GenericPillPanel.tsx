@@ -1,18 +1,18 @@
 import React from 'react';
 import { StyleSheet, StyleProp, ViewStyle } from 'react-native';
 import { useDerivedValue, SharedValue } from 'react-native-reanimated';
-import { ParameterDetailPanelWrapper } from './ParameterDetailPanelWrapper';
+import { ParameterPanelWrapper } from './ParameterPanelWrapper';
 import { useSystemStore } from '../../model/useSystemStore';
 import { PillButton } from '@shared/ui';
 
-interface GenericPillDetailPanelProps<T> {
+interface GenericPillPanelProps<T> {
   options: T[];
   onChange: (option: T, index: number) => void;
   value?: SharedValue<number> | null;
   isActiveShared?: (currValue: number, option: T, index: number) => boolean;
   isActiveStatic?: (option: T, index: number) => boolean;
   getLabel: (option: T, index: number) => string;
-  parameterDetailPanelAnimatedStyle?: StyleProp<ViewStyle>;
+  animatedStyle?: StyleProp<ViewStyle>;
   pillMaxWidth?: number;
   gap?: number;
   paddingHorizontal?: number;
@@ -103,14 +103,14 @@ function GenericPillItemStatic<T>({
   );
 }
 
-export function GenericPillDetailPanel<T>({
+export function GenericPillPanel<T>({
   options,
   onChange,
   value,
   isActiveShared,
   isActiveStatic,
   getLabel,
-  parameterDetailPanelAnimatedStyle,
+  animatedStyle,
   pillMaxWidth = 80,
   gap = 8,
   paddingHorizontal = 16,
@@ -119,12 +119,12 @@ export function GenericPillDetailPanel<T>({
   scrollable = false,
   leftAccessory,
   rightAccessory,
-}: GenericPillDetailPanelProps<T>) {
+}: GenericPillPanelProps<T>) {
   const isDebugEnabled = useSystemStore((s) => s.isDebugEnabled);
 
   return (
-    <ParameterDetailPanelWrapper
-      animatedStyle={parameterDetailPanelAnimatedStyle}
+    <ParameterPanelWrapper
+      animatedStyle={animatedStyle}
       gap={gap}
       paddingHorizontal={paddingHorizontal}
       scrollable={scrollable}
@@ -165,7 +165,7 @@ export function GenericPillDetailPanel<T>({
           />
         );
       })}
-    </ParameterDetailPanelWrapper>
+    </ParameterPanelWrapper>
   );
 }
 

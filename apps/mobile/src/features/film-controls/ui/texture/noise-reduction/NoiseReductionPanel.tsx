@@ -2,16 +2,16 @@ import React from 'react';
 import { StyleProp, ViewStyle } from 'react-native';
 import { useShallow } from 'zustand/react/shallow';
 import { useFilmStore } from '@entities/film';
-import { useSystemStore, GenericPillDetailPanel } from '@entities/system';
+import { useSystemStore, GenericPillPanel } from '@entities/system';
 import { AutoButton } from '@shared/ui';
 
 interface NoiseReductionPanelProps {
-  parameterDetailPanelAnimatedStyle?: StyleProp<ViewStyle>;
+  animatedStyle?: StyleProp<ViewStyle>;
 }
 
 const MODES = [0, 1, 2];
 
-export const NoiseReductionPanel = ({ parameterDetailPanelAnimatedStyle }: NoiseReductionPanelProps) => {
+export const NoiseReductionPanel = ({ animatedStyle }: NoiseReductionPanelProps) => {
   const { noiseReductionMode, setNoiseReductionMode, noiseReductionAuto, setNoiseReductionAuto } = useFilmStore(useShallow(state => ({
     noiseReductionMode: state.noiseReductionMode,
     setNoiseReductionMode: state.setNoiseReductionMode,
@@ -27,7 +27,7 @@ export const NoiseReductionPanel = ({ parameterDetailPanelAnimatedStyle }: Noise
   };
 
   return (
-    <GenericPillDetailPanel
+    <GenericPillPanel
       options={MODES}
       onChange={(mode) => {
         setNoiseReductionAuto(false);
@@ -39,7 +39,7 @@ export const NoiseReductionPanel = ({ parameterDetailPanelAnimatedStyle }: Noise
         return currVal === index;
       }}
       getLabel={getLabel}
-      parameterDetailPanelAnimatedStyle={parameterDetailPanelAnimatedStyle}
+      animatedStyle={animatedStyle}
       pillMaxWidth={75}
       gap={12}
       paddingHorizontal={24}

@@ -3,15 +3,15 @@ import { StyleSheet, View, StyleProp, ViewStyle } from 'react-native';
 import { useShallow } from 'zustand/react/shallow';
 import { useBodyStore } from '@entities/body';
 import { usePreferencesStore } from '@entities/preferences';
-import { GenericPillDetailPanel } from '@entities/system';
+import { GenericPillPanel } from '@entities/system';
 
 interface ResolutionPanelProps {
-  parameterDetailPanelAnimatedStyle?: StyleProp<ViewStyle>;
+  animatedStyle?: StyleProp<ViewStyle>;
 }
 
 const RESOLUTIONS = ['4K', '1080p', '720p', '480p', '360p', '240p', '144p'];
 
-export const ResolutionPanel = ({ parameterDetailPanelAnimatedStyle }: ResolutionPanelProps) => {
+export const ResolutionPanel = ({ animatedStyle }: ResolutionPanelProps) => {
   const {
     resolutionSetting,
     setResolutionSetting,
@@ -22,7 +22,7 @@ export const ResolutionPanel = ({ parameterDetailPanelAnimatedStyle }: Resolutio
 
   return (
     <View style={styles.container}>
-      <GenericPillDetailPanel
+      <GenericPillPanel
         options={RESOLUTIONS}
         onChange={(_, index) => {
           setResolutionSetting(index);
@@ -34,7 +34,7 @@ export const ResolutionPanel = ({ parameterDetailPanelAnimatedStyle }: Resolutio
           return currVal === index;
         }}
         getLabel={(label) => label}
-        parameterDetailPanelAnimatedStyle={parameterDetailPanelAnimatedStyle}
+        animatedStyle={animatedStyle}
         pillMaxWidth={80}
         scrollable={true}
       />

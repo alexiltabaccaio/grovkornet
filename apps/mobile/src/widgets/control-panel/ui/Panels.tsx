@@ -42,7 +42,7 @@ export const Panels = React.memo(({ translateY }: PanelsProps) => {
     activeParameter: state.activeParameter,
   })));
 
-  const parameterDetailPanelAnimatedStyle = useAnimatedStyle(() => {
+  const panelAnimatedStyle = useAnimatedStyle(() => {
     if (!translateY) return { opacity: 0 };
     const opacity = interpolate(
       translateY.value,
@@ -62,36 +62,36 @@ export const Panels = React.memo(({ translateY }: PanelsProps) => {
   const renderContent = () => {
     switch (activeParameter) {
       case 'torch':
-        return <TorchPanel parameterDetailPanelAnimatedStyle={parameterDetailPanelAnimatedStyle} />;
+        return <TorchPanel animatedStyle={panelAnimatedStyle} />;
       case 'presets':
-        return <PresetsPanel animatedStyle={parameterDetailPanelAnimatedStyle} />;
+        return <PresetsPanel animatedStyle={panelAnimatedStyle} />;
       case 'language':
-        return <LanguagePanel animatedStyle={parameterDetailPanelAnimatedStyle} />;
+        return <LanguagePanel animatedStyle={panelAnimatedStyle} />;
       case 'vibration':
-        return <VibrationPanel parameterDetailPanelAnimatedStyle={parameterDetailPanelAnimatedStyle} />;
+        return <VibrationPanel animatedStyle={panelAnimatedStyle} />;
       case 'debug':
-        return <DebugPanel parameterDetailPanelAnimatedStyle={parameterDetailPanelAnimatedStyle} />;
+        return <DebugPanel animatedStyle={panelAnimatedStyle} />;
       case 'camera_selection':
-        return <LensSelectionPanel parameterDetailPanelAnimatedStyle={parameterDetailPanelAnimatedStyle} />;
+        return <LensSelectionPanel animatedStyle={panelAnimatedStyle} />;
       case 'noise_reduction':
-        return <NoiseReductionPanel parameterDetailPanelAnimatedStyle={parameterDetailPanelAnimatedStyle} />;
+        return <NoiseReductionPanel animatedStyle={panelAnimatedStyle} />;
       case 'fps_setting':
-        return <FpsPanel parameterDetailPanelAnimatedStyle={parameterDetailPanelAnimatedStyle} />;
+        return <FpsPanel animatedStyle={panelAnimatedStyle} />;
       case 'resolution_setting':
-        return <ResolutionPanel parameterDetailPanelAnimatedStyle={parameterDetailPanelAnimatedStyle} />;
+        return <ResolutionPanel animatedStyle={panelAnimatedStyle} />;
       case 'aspect_ratio':
-        return <AspectRatioPanel parameterDetailPanelAnimatedStyle={parameterDetailPanelAnimatedStyle} />;
+        return <AspectRatioPanel animatedStyle={panelAnimatedStyle} />;
       default:
         return null;
     }
   };
 
   return (
-    <Animated.View style={[styles.contentContainer, parameterDetailPanelAnimatedStyle]}>
+    <Animated.View style={[styles.contentContainer, panelAnimatedStyle]}>
       <SliderPanel
         parameter={sliderParameter}
-        parameterDetailPanelAnimatedStyle={[
-          parameterDetailPanelAnimatedStyle,
+        animatedStyle={[
+          panelAnimatedStyle,
           !isSlider && styles.hidden,
         ]}
       />

@@ -3,13 +3,13 @@ import { StyleProp, ViewStyle } from 'react-native';
 import { useShallow } from 'zustand/react/shallow';
 import { useBodyStore } from '@entities/body';
 import { usePreferencesStore } from '@entities/preferences';
-import { GenericPillDetailPanel } from '@entities/system';
+import { GenericPillPanel } from '@entities/system';
 
 interface FpsPanelProps {
-  parameterDetailPanelAnimatedStyle?: StyleProp<ViewStyle>;
+  animatedStyle?: StyleProp<ViewStyle>;
 }
 
-export const FpsPanel = ({ parameterDetailPanelAnimatedStyle }: FpsPanelProps) => {
+export const FpsPanel = ({ animatedStyle }: FpsPanelProps) => {
   const { fpsSetting, setFpsSetting, capabilities } = useBodyStore(useShallow(state => ({
     fpsSetting: state.fpsSetting,
     setFpsSetting: state.setFpsSetting,
@@ -20,7 +20,7 @@ export const FpsPanel = ({ parameterDetailPanelAnimatedStyle }: FpsPanelProps) =
   const fpsOptions = [60, 30, 24].filter(f => f <= maxFps);
 
   return (
-    <GenericPillDetailPanel
+    <GenericPillPanel
       options={fpsOptions}
       onChange={(val) => {
         setFpsSetting(val);
@@ -32,7 +32,7 @@ export const FpsPanel = ({ parameterDetailPanelAnimatedStyle }: FpsPanelProps) =
         return Math.round(currVal) === val;
       }}
       getLabel={(val) => val.toString()}
-      parameterDetailPanelAnimatedStyle={parameterDetailPanelAnimatedStyle}
+      animatedStyle={animatedStyle}
       pillMaxWidth={80}
     />
   );

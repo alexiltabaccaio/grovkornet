@@ -14,7 +14,6 @@ import {
   DEFAULT_PIVOT,
   DEFAULT_GRAIN_CHROMA,
   DEFAULT_GRAIN_SIZE,
-  DEFAULT_TEMPERATURE_AUTO,
 } from '@grovkornet/shared';
 
 describe('useFilmStore', () => {

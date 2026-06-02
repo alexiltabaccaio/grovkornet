@@ -3,7 +3,8 @@ import { StyleSheet, View, Text, StyleProp, ViewStyle } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { useShallow } from 'zustand/react/shallow';
 import { useBodyStore } from '@entities/body';
-import Animated, { useAnimatedReaction, runOnJS } from 'react-native-reanimated';
+import { useSystemStore } from '@entities/system';
+import { useAnimatedReaction, runOnJS } from 'react-native-reanimated';
 import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import { logger } from '@shared/lib/logger';
@@ -15,6 +16,7 @@ interface ResolutionSubPanelProps {
 
 export const ResolutionSubPanel = ({ animatedStyle }: ResolutionSubPanelProps) => {
   const { t } = useTranslation();
+  const isDebugEnabled = useSystemStore(state => state.isDebugEnabled);
   const {
     resolutionSetting,
     previewIn4k,
@@ -53,7 +55,7 @@ export const ResolutionSubPanel = ({ animatedStyle }: ResolutionSubPanelProps) =
   }
 
   return (
-    <SubPanelContainer style={[styles.previewIn4kContainer, animatedStyle]}>
+    <SubPanelContainer style={[styles.previewIn4kContainer, animatedStyle]} isDebugEnabled={isDebugEnabled}>
       <View style={styles.toggleRowContainer}>
         <Text style={styles.toggleLabel} allowFontScaling={false}>
           {t('parameters.preview_in_4k').toUpperCase()}

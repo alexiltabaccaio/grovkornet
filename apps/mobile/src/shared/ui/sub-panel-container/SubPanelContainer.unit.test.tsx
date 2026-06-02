@@ -2,16 +2,8 @@ import React from 'react';
 import { render } from '@testing-library/react-native';
 import { Text } from 'react-native';
 import { SubPanelContainer } from './SubPanelContainer';
-import { useSystemStore } from '@entities/system';
-import { act } from 'react-test-renderer';
 
 describe('SubPanelContainer', () => {
-  beforeEach(() => {
-    act(() => {
-      useSystemStore.getState().setIsDebugEnabled(false);
-    });
-  });
-
   it('renders children correctly', () => {
     const { getByText } = render(
       <SubPanelContainer>
@@ -22,12 +14,8 @@ describe('SubPanelContainer', () => {
   });
 
   it('applies debug padding when isDebugEnabled is true', () => {
-    act(() => {
-      useSystemStore.getState().setIsDebugEnabled(true);
-    });
-    
     const { toJSON } = render(
-      <SubPanelContainer>
+      <SubPanelContainer isDebugEnabled={true}>
         <Text>Test Child</Text>
       </SubPanelContainer>
     );
@@ -35,12 +23,8 @@ describe('SubPanelContainer', () => {
   });
 
   it('applies debug border when isDebugEnabled and showBorder are true', () => {
-    act(() => {
-      useSystemStore.getState().setIsDebugEnabled(true);
-    });
-    
     const { toJSON } = render(
-      <SubPanelContainer showBorder={true}>
+      <SubPanelContainer showBorder={true} isDebugEnabled={true}>
         <Text>Test Child</Text>
       </SubPanelContainer>
     );

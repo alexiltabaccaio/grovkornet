@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, StyleSheet, StyleProp, ViewStyle } from 'react-native';
-import Animated, { useDerivedValue, SharedValue } from 'react-native-reanimated';
+import { useDerivedValue, SharedValue } from 'react-native-reanimated';
 import { useShallow } from 'zustand/react/shallow';
 import { useBodyStore, useBodyWorklets } from '@entities/body';
 import { useSystemStore } from '@entities/system';
@@ -53,7 +53,7 @@ export const ZoomSubPanel = ({ animatedStyle }: ZoomSubPanelProps) => {
   }
 
   return (
-    <SubPanelContainer style={[styles.container, animatedStyle]}>
+    <SubPanelContainer style={[styles.container, animatedStyle]} isDebugEnabled={isDebugEnabled}>
       <View style={styles.buttonRow}>
 
         {options.map((opt) => {

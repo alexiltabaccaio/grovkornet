@@ -1,15 +1,14 @@
 import React from 'react';
-import { StyleSheet, StyleProp, ViewStyle } from 'react-native';
-import Animated from 'react-native-reanimated';
+import { StyleProp, ViewStyle } from 'react-native';
 import { useShallow } from 'zustand/react/shallow';
-import { useSystemStore, ParameterType, ParameterControl } from '@entities/system';
+import { useSystemStore, ParameterType, ParameterControl, ParameterPanelWrapper } from '@entities/system';
 import { useFilmParameterControlData, FilmParameterType } from '@entities/film';
 import { useBodyParameterControlData, BodyParameterType } from '@entities/body';
 import { useLensParameterControlData, LensParameterType } from '@entities/lens';
 
 interface SliderPanelProps {
   parameter: ParameterType;
-  parameterDetailPanelAnimatedStyle?: StyleProp<ViewStyle>;
+  animatedStyle?: StyleProp<ViewStyle>;
   isActiveOverride?: boolean;
 }
 
@@ -46,7 +45,7 @@ const NOOP = () => {};
 
 export const SliderPanel = React.memo(({
   parameter,
-  parameterDetailPanelAnimatedStyle,
+  animatedStyle,
   isActiveOverride,
 }: SliderPanelProps) => {
   const { activeDetailPanel } = useSystemStore(
@@ -81,7 +80,7 @@ export const SliderPanel = React.memo(({
         : true;
 
   return (
-    <Animated.View style={[styles.parameterDetailPanelContainer, parameterDetailPanelAnimatedStyle]}>
+    <ParameterPanelWrapper animatedStyle={animatedStyle}>
       <ParameterControl
         label=""
         isActive={finalIsActive}
@@ -101,18 +100,8 @@ export const SliderPanel = React.memo(({
         onToggleAuto={controlData.onToggleAuto}
         disabled={controlData.disabled}
       />
-    </Animated.View>
+    </ParameterPanelWrapper>
   );
 });
 
 SliderPanel.displayName = 'SliderPanel';
-
-const styles = StyleSheet.create({
-  parameterDetailPanelContainer: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    width: '100%',
-    paddingTop: 5,
-    paddingBottom: 0,
-  },
-});

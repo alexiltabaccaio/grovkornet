@@ -5,7 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { useShallow } from 'zustand/react/shallow';
 import { usePresetStore, Preset, PresetStore } from '@entities/preset';
-import { ParameterDetailPanelWrapper } from '@entities/system';
+import { ParameterPanelWrapper } from '@entities/system';
 import * as Haptics from '@shared/lib/haptics';
 
 interface PresetsPanelProps {
@@ -70,7 +70,7 @@ export const PresetsPanel = ({ animatedStyle }: PresetsPanelProps) => {
 
   return (
     <View style={styles.wrapper}>
-      <ParameterDetailPanelWrapper
+      <ParameterPanelWrapper
         animatedStyle={animatedStyle}
         scrollable={true}
         gap={16}
@@ -108,7 +108,7 @@ export const PresetsPanel = ({ animatedStyle }: PresetsPanelProps) => {
             </TouchableOpacity>
           )}
         </View>
-      </ParameterDetailPanelWrapper>
+      </ParameterPanelWrapper>
     </View>
   );
 };

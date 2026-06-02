@@ -1,17 +1,15 @@
 import React from 'react';
 import { StyleSheet, StyleProp, ViewStyle } from 'react-native';
 import Animated from 'react-native-reanimated';
-import { useSystemStore } from '@entities/system';
 
 interface SubPanelContainerProps {
   children: React.ReactNode;
   style?: StyleProp<ViewStyle>;
   showBorder?: boolean;
+  isDebugEnabled?: boolean;
 }
 
-export const SubPanelContainer = ({ children, style, showBorder = false }: SubPanelContainerProps) => {
-  const isDebugEnabled = useSystemStore(state => state.isDebugEnabled);
-
+export const SubPanelContainer = ({ children, style, showBorder = false, isDebugEnabled = false }: SubPanelContainerProps) => {
   return (
     <Animated.View
       style={[

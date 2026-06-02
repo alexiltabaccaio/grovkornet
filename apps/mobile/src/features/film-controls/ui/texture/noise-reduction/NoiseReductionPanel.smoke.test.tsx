@@ -19,8 +19,8 @@ jest.mock('@entities/system', () => ({
     const state = { isDebugEnabled: false };
     return fn ? fn(state) : state;
   }),
-  ParameterDetailPanelWrapper: 'ParameterDetailPanelWrapper',
-  GenericPillDetailPanel: 'GenericPillDetailPanel',
+  ParameterPanelWrapper: 'ParameterPanelWrapper',
+  GenericPillPanel: 'GenericPillPanel',
 }));
 
 describe('NoiseReductionPanel', () => {

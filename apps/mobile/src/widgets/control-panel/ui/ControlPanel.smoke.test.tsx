@@ -29,6 +29,7 @@ jest.mock('./Parameters', () => ({
 jest.mock('@entities/system', () => ({
   useSystemStore: jest.fn(),
   ParameterControl: 'ParameterControl',
+  ParameterPanelWrapper: 'ParameterPanelWrapper',
 }));
 
 jest.mock('@entities/body', () => ({

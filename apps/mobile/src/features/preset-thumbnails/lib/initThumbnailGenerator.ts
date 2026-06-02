@@ -1,5 +1,4 @@
 import { usePresetStore } from '@entities/preset';
-import { Image } from 'expo-image';
 
 let customizedThumbTimeout: NodeJS.Timeout | null = null;
 let lastGenerationUri: string | null = null;

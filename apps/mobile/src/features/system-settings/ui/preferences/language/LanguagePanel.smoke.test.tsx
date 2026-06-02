@@ -31,7 +31,7 @@ jest.mock('@entities/system', () => ({
     return fn ? fn(state) : state;
   }),
   ParameterControl: 'ParameterControl',
-  ParameterDetailPanelWrapper: 'ParameterDetailPanelWrapper',
+  ParameterPanelWrapper: 'ParameterPanelWrapper',
 }));
 
 jest.mock('@shared/lib/logger', () => ({

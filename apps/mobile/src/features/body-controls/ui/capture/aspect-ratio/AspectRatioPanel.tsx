@@ -3,15 +3,15 @@ import { StyleSheet, View, StyleProp, ViewStyle } from 'react-native';
 import { useShallow } from 'zustand/react/shallow';
 import { useBodyStore } from '@entities/body';
 import { usePreferencesStore } from '@entities/preferences';
-import { GenericPillDetailPanel } from '@entities/system';
+import { GenericPillPanel } from '@entities/system';
 
 interface AspectRatioPanelProps {
-  parameterDetailPanelAnimatedStyle?: StyleProp<ViewStyle>;
+  animatedStyle?: StyleProp<ViewStyle>;
 }
 
 const ASPECT_RATIOS = ['4:3', '16:9', '1:1', '3:2', '65:24'];
 
-export const AspectRatioPanel = ({ parameterDetailPanelAnimatedStyle }: AspectRatioPanelProps) => {
+export const AspectRatioPanel = ({ animatedStyle }: AspectRatioPanelProps) => {
   const { 
     aspectRatio, 
     setAspectRatio,
@@ -22,7 +22,7 @@ export const AspectRatioPanel = ({ parameterDetailPanelAnimatedStyle }: AspectRa
 
   return (
     <View style={styles.container}>
-      <GenericPillDetailPanel
+      <GenericPillPanel
         options={ASPECT_RATIOS}
         onChange={(_, index) => {
           setAspectRatio(index);
@@ -34,7 +34,7 @@ export const AspectRatioPanel = ({ parameterDetailPanelAnimatedStyle }: AspectRa
           return currVal === index;
         }}
         getLabel={(label) => label}
-        parameterDetailPanelAnimatedStyle={parameterDetailPanelAnimatedStyle}
+        animatedStyle={animatedStyle}
         pillMaxWidth={65}
       />
     </View>

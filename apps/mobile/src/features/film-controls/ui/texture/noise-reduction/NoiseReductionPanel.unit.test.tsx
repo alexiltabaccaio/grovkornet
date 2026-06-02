@@ -22,8 +22,8 @@ jest.mock('@entities/system', () => ({
     const state = { isDebugEnabled: true };
     return fn ? fn(state) : state;
   }),
-  ParameterDetailPanelWrapper: 'ParameterDetailPanelWrapper',
-  GenericPillDetailPanel: 'GenericPillDetailPanel',
+  ParameterPanelWrapper: 'ParameterPanelWrapper',
+  GenericPillPanel: 'GenericPillPanel',
 }));
 
 describe('NoiseReductionPanel', () => {
@@ -33,7 +33,7 @@ describe('NoiseReductionPanel', () => {
 
   it('renders and invokes onChange and auto-toggle callbacks correctly', () => {
     const { UNSAFE_getByType } = render(<NoiseReductionPanel />);
-    const genericPill = UNSAFE_getByType('GenericPillDetailPanel' as any);
+    const genericPill = UNSAFE_getByType('GenericPillPanel' as any);
 
     expect(genericPill).toBeDefined();
 

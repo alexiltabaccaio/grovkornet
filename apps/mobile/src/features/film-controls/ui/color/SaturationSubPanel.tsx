@@ -1,7 +1,6 @@
 import React from 'react';
 import { View, StyleSheet, StyleProp, ViewStyle } from 'react-native';
-import Animated from 'react-native-reanimated';
-import { ParameterControl } from '@entities/system';
+import { ParameterControl, useSystemStore } from '@entities/system';
 import { ColorRangeSlider } from './ColorRangeSlider';
 import { ColorCircle } from './components/ColorCircle';
 import { useSelectiveSaturation } from '../../lib/useSelectiveSaturation';
@@ -32,6 +31,7 @@ interface SaturationSubPanelProps {
 export const SaturationSubPanel = ({
   animatedStyle
 }: SaturationSubPanelProps) => {
+  const isDebugEnabled = useSystemStore(state => state.isDebugEnabled);
   const {
     activeColorIndex,
     activeValue,
@@ -42,7 +42,7 @@ export const SaturationSubPanel = ({
   } = useSelectiveSaturation();
 
   return (
-    <SubPanelContainer style={[styles.container, animatedStyle]}>
+    <SubPanelContainer style={[styles.container, animatedStyle]} isDebugEnabled={isDebugEnabled}>
       <View style={styles.colorCirclesRow}>
         {COLOR_MAPPING.map((item, index) => (
           <ColorCircle

@@ -4,8 +4,9 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
 import { useShallow } from 'zustand/react/shallow';
 import { useBodyStore } from '@entities/body';
 import { usePreferencesStore } from '@entities/preferences';
+import { useSystemStore } from '@entities/system';
 import { useTranslation } from 'react-i18next';
-import Animated, { useAnimatedReaction, runOnJS } from 'react-native-reanimated';
+import { useAnimatedReaction, runOnJS } from 'react-native-reanimated';
 import { Ionicons } from '@expo/vector-icons';
 import { logger } from '@shared/lib/logger';
 import { SubPanelContainer } from '@shared/ui';
@@ -16,6 +17,7 @@ interface AspectRatioSubPanelProps {
 
 export const AspectRatioSubPanel = ({ animatedStyle }: AspectRatioSubPanelProps) => {
   const { t } = useTranslation();
+  const isDebugEnabled = useSystemStore(state => state.isDebugEnabled);
   const { 
     aspectRatio, 
     resolutionSetting,
@@ -67,7 +69,7 @@ export const AspectRatioSubPanel = ({ animatedStyle }: AspectRatioSubPanelProps)
   }
 
   return (
-    <SubPanelContainer style={[styles.cropContainer, animatedStyle]}>
+    <SubPanelContainer style={[styles.cropContainer, animatedStyle]} isDebugEnabled={isDebugEnabled}>
       <View style={styles.toggleRowContainer}>
         <Text style={styles.toggleLabel} allowFontScaling={false}>
           {t('parameters.apply_crop')}

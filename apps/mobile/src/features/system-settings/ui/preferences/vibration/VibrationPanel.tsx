@@ -1,22 +1,22 @@
 import React from 'react';
 import { StyleSheet, StyleProp, ViewStyle } from 'react-native';
 import { useShallow } from 'zustand/react/shallow';
-import { ParameterDetailPanelWrapper } from '@entities/system';
+import { ParameterPanelWrapper } from '@entities/system';
 import { usePreferencesStore } from '@entities/preferences';
 import { PillButton } from '@shared/ui';
 
 interface VibrationPanelProps {
-  parameterDetailPanelAnimatedStyle?: StyleProp<ViewStyle>;
+  animatedStyle?: StyleProp<ViewStyle>;
 }
 
-export const VibrationPanel = ({ parameterDetailPanelAnimatedStyle }: VibrationPanelProps) => {
+export const VibrationPanel = ({ animatedStyle }: VibrationPanelProps) => {
   const { hapticsEnabled, setHapticsEnabledPref } = usePreferencesStore(useShallow(state => ({
     hapticsEnabled: state.hapticsEnabled !== false, // default is true
     setHapticsEnabledPref: state.setHapticsEnabledPref,
   })));
 
   return (
-    <ParameterDetailPanelWrapper animatedStyle={parameterDetailPanelAnimatedStyle} gap={16} paddingHorizontal={32}>
+    <ParameterPanelWrapper animatedStyle={animatedStyle} gap={16} paddingHorizontal={32}>
       <PillButton
         label="ON"
         isActive={hapticsEnabled}
@@ -29,7 +29,7 @@ export const VibrationPanel = ({ parameterDetailPanelAnimatedStyle }: VibrationP
         onPress={() => setHapticsEnabledPref(false)}
         style={styles.pressable}
       />
-    </ParameterDetailPanelWrapper>
+    </ParameterPanelWrapper>
   );
 };
 

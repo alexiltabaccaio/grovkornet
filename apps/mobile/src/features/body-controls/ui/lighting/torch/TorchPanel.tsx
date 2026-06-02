@@ -1,18 +1,18 @@
 import React from 'react';
 import { StyleSheet, StyleProp, ViewStyle } from 'react-native';
 import { useShallow } from 'zustand/react/shallow';
-import { useSystemStore } from '@entities/system';
+import { useSystemStore, ParameterPanelWrapper } from '@entities/system';
 import { useBodyStore } from '@entities/body';
 import { PillButton } from '@shared/ui';
-import Animated, { useAnimatedReaction, runOnJS, useDerivedValue } from 'react-native-reanimated';
+import { useAnimatedReaction, runOnJS, useDerivedValue } from 'react-native-reanimated';
 import { logger } from '@shared/lib/logger';
 import * as Haptics from '@shared/lib/haptics';
 
 interface TorchPanelProps {
-  parameterDetailPanelAnimatedStyle?: StyleProp<ViewStyle>;
+  animatedStyle?: StyleProp<ViewStyle>;
 }
 
-export const TorchPanel = ({ parameterDetailPanelAnimatedStyle }: TorchPanelProps) => {
+export const TorchPanel = ({ animatedStyle }: TorchPanelProps) => {
   const isDebugEnabled = useSystemStore(state => state.isDebugEnabled);
 
   const {
@@ -47,7 +47,7 @@ export const TorchPanel = ({ parameterDetailPanelAnimatedStyle }: TorchPanelProp
   const buttonLabel = localTorchState === 0 ? 'OFF' : 'ON';
 
   return (
-    <Animated.View style={[styles.parameterDetailPanelContainer, parameterDetailPanelAnimatedStyle]}>
+    <ParameterPanelWrapper animatedStyle={animatedStyle}>
       <PillButton
         label={buttonLabel}
         isActive={isTorchActive}
@@ -55,18 +55,11 @@ export const TorchPanel = ({ parameterDetailPanelAnimatedStyle }: TorchPanelProp
         isDebugEnabled={isDebugEnabled}
         style={styles.toggleButton}
       />
-    </Animated.View>
+    </ParameterPanelWrapper>
   );
 };
 
 const styles = StyleSheet.create({
-  parameterDetailPanelContainer: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    width: '100%',
-    paddingTop: 5,
-    paddingBottom: 0,
-  },
   toggleButton: {
     width: 60,
   },

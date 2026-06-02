@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, StyleSheet, StyleProp, ViewStyle } from 'react-native';
-import Animated, { useDerivedValue } from 'react-native-reanimated';
+import { useDerivedValue } from 'react-native-reanimated';
 import { useShallow } from 'zustand/react/shallow';
 import { useFilmStore, useFilmWorklets } from '@entities/film';
 import { ParameterControl } from '@entities/system';
@@ -58,7 +58,7 @@ export const GrainSubPanel = ({ parameterDetailPanelAnimatedStyle: _parameterDet
   const isRgbActive = useDerivedValue(() => grainChroma.value === 1);
 
   return (
-    <SubPanelContainer style={[styles.container, _animatedStyle]}>
+    <SubPanelContainer style={[styles.container, _animatedStyle]} isDebugEnabled={isDebugEnabled}>
       <View style={styles.row}>
           <View style={[
             styles.chromaContainer,
