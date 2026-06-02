@@ -1,6 +1,7 @@
 import React, { useEffect, useState, Profiler } from 'react';
 import { StyleSheet, View, AppState, AppStateStatus, PermissionsAndroid, Platform, StatusBar } from 'react-native';
 import Animated, { useSharedValue, useAnimatedStyle, interpolate, withTiming, runOnJS } from 'react-native-reanimated';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 
 import { useShallow } from 'zustand/react/shallow';
@@ -26,6 +27,7 @@ export const CameraScreen = () => {
 // CameraScreen.whyDidYouRender = true;
 
 const CameraScreenContent = () => {
+  const insets = useSafeAreaInsets();
   const { isDebugEnabled, triggerCapture, latestCapturedUri, latestPreviewUri } = useSystemStore(useShallow(state => ({
     isDebugEnabled: state.isDebugEnabled,
     triggerCapture: state.triggerCapture,
@@ -123,7 +125,7 @@ const CameraScreenContent = () => {
   return (
     <View style={styles.container}>
       <GestureController>
-        <View style={{ flex: 1, width: '100%', marginTop: statusBarHeight, marginBottom: 80 }}>
+        <View style={{ flex: 1, width: '100%', marginTop: statusBarHeight, marginBottom: 80 + insets.bottom }}>
           {/* 60ms threshold is set to monitor realistic frame drops, avoiding dev mode / bundler overhead noise */}
           <Profiler id="Viewfinder" onRender={(id, phase, duration) => { if (__DEV__ && duration > 60) logger.warn('UI', `Viewfinder render took ${duration.toFixed(2)}ms`); }}>
             <Viewfinder cameraKey={cameraKey} translateY={footerTranslateY} drawerAnimation={drawerAnimation} />
@@ -134,7 +136,14 @@ const CameraScreenContent = () => {
 
       {isDebugEnabled && <DebugOverlay />}
       
-      <Animated.View style={[styles.bottomControlsContainer, animatedBottomControlsStyle]} pointerEvents="box-none">
+      <Animated.View 
+        style={[
+          styles.bottomControlsContainer, 
+          { bottom: 96 + insets.bottom },
+          animatedBottomControlsStyle
+        ]} 
+        pointerEvents="box-none"
+      >
         <View style={styles.controlsRow} pointerEvents="box-none">
           <View style={styles.sideControl} pointerEvents="box-none">
             <CaptureThumbnail onPress={openGallery} />

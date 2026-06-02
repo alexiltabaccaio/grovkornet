@@ -12,6 +12,7 @@ import { useControlPanelGestures } from '../lib/useControlPanelGestures';
 
 import { GestureDetector } from 'react-native-gesture-handler';
 import Animated, { useAnimatedStyle, useAnimatedProps } from 'react-native-reanimated';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const AnimatedTextInput = Animated.createAnimatedComponent(TextInput);
 
@@ -22,6 +23,7 @@ interface ControlPanelProps {
 }
 
 export const ControlPanel = React.memo(({ translateY: externalTranslateY, drawerAnimation: externalDrawerAnimation, galleryTransition }: ControlPanelProps) => {
+  const insets = useSafeAreaInsets();
   const { isDebugEnabled } = useSystemStore(useShallow(state => ({
     isDebugEnabled: state.isDebugEnabled,
   })));
@@ -53,7 +55,14 @@ export const ControlPanel = React.memo(({ translateY: externalTranslateY, drawer
 
   return (
     <View style={styles.container} pointerEvents="box-none">
-      <Animated.View style={[styles.topFooterContainer, animatedTopFooterStyle]} pointerEvents={isSheetVisible ? "box-none" : "none"}>
+      <Animated.View 
+        style={[
+          styles.topFooterContainer, 
+          { bottom: -323 + insets.bottom },
+          animatedTopFooterStyle
+        ]} 
+        pointerEvents={isSheetVisible ? "box-none" : "none"}
+      >
         <GestureDetector gesture={panGesture}>
           <View>
             <View style={styles.topFooter}>

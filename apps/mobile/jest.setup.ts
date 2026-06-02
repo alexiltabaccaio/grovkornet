@@ -305,4 +305,18 @@ jest.mock('react-native-mmkv', () => {
   };
 });
 
+// Mock react-native-safe-area-context
+jest.mock('react-native-safe-area-context', () => {
+  const insetValues = { top: 0, right: 0, bottom: 0, left: 0 };
+  return {
+    SafeAreaProvider: ({ children }: any) => children,
+    SafeAreaView: ({ children }: any) => children,
+    useSafeAreaInsets: () => insetValues,
+    initialWindowMetrics: {
+      frame: { x: 0, y: 0, width: 0, height: 0 },
+      insets: insetValues,
+    },
+  };
+});
+
 

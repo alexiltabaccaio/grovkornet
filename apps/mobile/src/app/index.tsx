@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, View, LogBox } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { CameraScreen } from '@screens/camera';
 import { usePresetStore } from '@entities/preset';
 import { Image } from 'expo-image';
@@ -112,10 +113,12 @@ export function App() {
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <View style={styles.container}>
-        <StatusBar style="light" />
-        <CameraScreen />
-      </View>
+      <SafeAreaProvider>
+        <View style={styles.container}>
+          <StatusBar style="light" />
+          <CameraScreen />
+        </View>
+      </SafeAreaProvider>
     </GestureHandlerRootView>
   );
 }

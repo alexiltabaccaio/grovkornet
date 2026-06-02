@@ -1,5 +1,6 @@
 import React from 'react';
 import { StyleSheet, View, ViewStyle, StyleProp } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 interface BottomFooterProps {
   children: React.ReactNode;
@@ -7,8 +8,17 @@ interface BottomFooterProps {
 }
 
 export const BottomFooter = ({ children, style }: BottomFooterProps) => {
+  const insets = useSafeAreaInsets();
+
   return (
-    <View style={[styles.bottomFooterWrapper, style]}>
+    <View style={[
+      styles.bottomFooterWrapper, 
+      { 
+        height: 80 + insets.bottom, 
+        paddingBottom: insets.bottom 
+      }, 
+      style
+    ]}>
       {children}
     </View>
   );

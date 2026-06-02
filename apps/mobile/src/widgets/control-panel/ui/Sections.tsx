@@ -49,7 +49,7 @@ export const Sections = React.memo(({ galleryTransition }: SectionsProps) => {
 
   return (
     <BottomFooter style={styles.bottomFooterPosition}>
-      <Animated.View style={[StyleSheet.absoluteFill, animatedStyle]}>
+      <Animated.View style={[styles.tabContainer, animatedStyle]}>
         {/* <BlurView intensity={80} tint="dark" style={StyleSheet.absoluteFill} /> */}
         <ScrollView
         horizontal
@@ -97,6 +97,10 @@ const styles = StyleSheet.create({
     right: 0,
     zIndex: 10,
     elevation: 10,
+  },
+  tabContainer: {
+    flex: 1,
+    width: '100%',
   },
 
 

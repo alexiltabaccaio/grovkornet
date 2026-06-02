@@ -2,7 +2,7 @@
   "expo": {
     "name": "Grovkornet",
     "slug": "Grovkornet",
-    "version": "0.10.0",
+    "version": "0.10.1",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -34,7 +34,7 @@
         "android.permission.WRITE_EXTERNAL_STORAGE"
       ],
       "package": "com.grovkornet.app",
-      "versionCode": 3
+      "versionCode": 4
     },
     "androidNavigationBar": {
       "backgroundColor": "#0e0e0e"
