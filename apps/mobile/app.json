@@ -32,7 +32,7 @@
         "android.permission.RECORD_AUDIO"
       ],
       "package": "com.grovkornet.app",
-      "versionCode": 2
+      "versionCode": 3
     },
     "androidNavigationBar": {
       "backgroundColor": "#0e0e0e"
@@ -54,7 +54,8 @@
         "expo-build-properties",
         {
           "android": {
-            "minSdkVersion": 26
+            "minSdkVersion": 26,
+            "targetSdkVersion": 35
           }
         }
       ]
