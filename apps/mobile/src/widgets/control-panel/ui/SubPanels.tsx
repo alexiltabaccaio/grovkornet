@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import Animated, { useAnimatedStyle, interpolate, Extrapolation } from 'react-native-reanimated';
 import { useShallow } from 'zustand/react/shallow';
 import { useSystemStore } from '@entities/system';
@@ -14,8 +14,9 @@ interface SubPanelsProps {
 }
 
 export const SubPanels = React.memo(({ translateY }: SubPanelsProps) => {
-  const { activeParameter } = useSystemStore(useShallow(state => ({
+  const { activeParameter, isDebugEnabled } = useSystemStore(useShallow(state => ({
     activeParameter: state.activeParameter,
+    isDebugEnabled: state.isDebugEnabled,
   })));
 
   const parentAnimatedStyle = useAnimatedStyle(() => {
@@ -53,7 +54,14 @@ export const SubPanels = React.memo(({ translateY }: SubPanelsProps) => {
 
   return (
     <Animated.View style={[styles.childSubContainer, parentAnimatedStyle]}>
-      {renderContent()}
+      <View
+        style={[
+          styles.wrapper,
+          isDebugEnabled && styles.debugWrapper,
+        ]}
+      >
+        {renderContent()}
+      </View>
     </Animated.View>
   );
 });
@@ -67,5 +75,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingTop: 12,
     width: '100%',
+  },
+  wrapper: {
+    width: '100%',
+    alignItems: 'center',
+    borderWidth: 1.5,
+    borderColor: 'transparent',
+  },
+  debugWrapper: {
+    borderColor: 'red',
+    backgroundColor: 'rgba(255, 0, 0, 0.15)',
+    marginTop: -6,
   },
 });

@@ -19,6 +19,7 @@ interface TorchSubPanelProps {
 export const TorchSubPanel = ({ animatedStyle: _animatedStyle }: TorchSubPanelProps) => {
   const { t } = useTranslation();
   const bodyWorklets = useBodyWorklets();
+  const isDebugEnabled = useSystemStore(state => state.isDebugEnabled);
 
   const { activeDetailPanel, setActiveDetailPanel } = useSystemStore(useShallow(state => ({
     activeDetailPanel: state.activeDetailPanel,
@@ -34,7 +35,7 @@ export const TorchSubPanel = ({ animatedStyle: _animatedStyle }: TorchSubPanelPr
   })));
 
   return (
-    <Animated.View style={[styles.childSubContainer, _animatedStyle]}>
+    <Animated.View style={[styles.childSubContainer, _animatedStyle, isDebugEnabled && { paddingTop: 6 }]}>
       <ParameterControl
         label={t('parameters.torch_dimmer')}
         isActive={activeDetailPanel === 'torch_strength'}
@@ -61,7 +62,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    paddingTop: 6,
+    paddingTop: 0,
     width: '100%',
     gap: 40,
   },

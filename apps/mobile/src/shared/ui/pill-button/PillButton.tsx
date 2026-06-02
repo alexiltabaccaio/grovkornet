@@ -112,7 +112,13 @@ const PillButtonComponent = ({
 
   return (
     <View style={style}>
-      <TouchableOpacity onPress={handlePress} style={[styles.pressable, { width: '100%' }]} activeOpacity={1}>
+      <TouchableOpacity 
+        onPress={handlePress} 
+        style={[styles.pressable, { width: '100%' }]} 
+        activeOpacity={1}
+        accessibilityRole="button"
+        accessibilityLabel={label}
+      >
         <Animated.View
           style={[
             styles.pillButton,

@@ -31,6 +31,12 @@ jest.mock('@entities/system', () => {
   const React = require('react');
   const { View } = require('react-native');
   return {
+    useSystemStore: jest.fn((fn?: (state: any) => unknown) => {
+      const state = {
+        isDebugEnabled: false,
+      };
+      return fn ? fn(state) : state;
+    }),
     ParameterControl: (props: any) => {
       React.useEffect(() => {
         if (props.valueFormatter) {

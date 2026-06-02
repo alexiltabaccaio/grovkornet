@@ -4,7 +4,7 @@ import Animated from 'react-native-reanimated';
 import { useShallow } from 'zustand/react/shallow';
 import { useFilmStore } from '@entities/film';
 import { useFilmWorklets } from '@entities/film';
-import { ParameterControl } from '@entities/system';
+import { useSystemStore, ParameterControl } from '@entities/system';
 import { useTranslation } from 'react-i18next';
 
 interface ContrastSubPanelProps {
@@ -25,9 +25,10 @@ export const ContrastSubPanel = ({ animatedStyle }: ContrastSubPanelProps) => {
   );
 
   const worklets = useFilmWorklets();
+  const isDebugEnabled = useSystemStore(state => state.isDebugEnabled);
 
   return (
-    <Animated.View style={[styles.container, animatedStyle]}>
+    <Animated.View style={[styles.container, animatedStyle, isDebugEnabled && { paddingTop: 6 }]}>
       <View style={styles.pivotContainer}>
         <ParameterControl
           label={t('parameters.pivot')}

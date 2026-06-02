@@ -44,7 +44,7 @@ export const ChromaShiftSubPanel = ({ animatedStyle: _animatedStyle }: ChromaShi
   return (
     <View style={[
       styles.container,
-      isDebugEnabled && { backgroundColor: 'rgba(0, 255, 0, 0.2)', borderColor: 'green' }
+      isDebugEnabled && { backgroundColor: 'rgba(0, 255, 0, 0.2)', borderColor: 'green', paddingTop: 6, margin: -1.5 }
     ]}>
       <ResettableLabel
         label={t('parameters.direction').toUpperCase()}

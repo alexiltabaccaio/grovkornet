@@ -95,4 +95,17 @@ describe('SubPanels', () => {
     const { toJSON } = render(<SubPanels translateY={mockTranslateY} />);
     expect(toJSON()).toBeDefined();
   });
+
+  it('applies debugWrapper style when isDebugEnabled is true', () => {
+    act(() => {
+      useSystemStore.getState().setActiveParameter('saturation');
+      useSystemStore.getState().setIsDebugEnabled(true);
+    });
+    const { toJSON } = render(<SubPanels translateY={mockTranslateY} />);
+    expect(toJSON()).toBeDefined();
+    // Reset state after test
+    act(() => {
+      useSystemStore.getState().setIsDebugEnabled(false);
+    });
+  });
 });

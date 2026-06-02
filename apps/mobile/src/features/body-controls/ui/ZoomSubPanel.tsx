@@ -53,7 +53,7 @@ export const ZoomSubPanel = ({ animatedStyle }: ZoomSubPanelProps) => {
   }
 
   return (
-    <Animated.View style={[styles.container, animatedStyle]}>
+    <Animated.View style={[styles.container, animatedStyle, isDebugEnabled && { paddingTop: 6 }]}>
       <View style={styles.buttonRow}>
         {options.map((opt) => {
           const isActive = activeMap[opt] ?? is1Active;

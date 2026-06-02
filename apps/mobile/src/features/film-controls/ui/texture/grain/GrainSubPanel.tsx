@@ -58,7 +58,7 @@ export const GrainSubPanel = ({ parameterDetailPanelAnimatedStyle: _parameterDet
   const isRgbActive = useDerivedValue(() => grainChroma.value === 1);
 
   return (
-    <Animated.View style={[styles.container, _animatedStyle]}>
+    <Animated.View style={[styles.container, _animatedStyle, isDebugEnabled && { paddingTop: 6 }]}>
       <View style={styles.row}>
           <View style={[
             styles.chromaContainer,

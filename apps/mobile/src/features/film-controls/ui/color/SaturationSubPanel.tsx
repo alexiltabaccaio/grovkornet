@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, StyleSheet, StyleProp, ViewStyle } from 'react-native';
 import Animated from 'react-native-reanimated';
-import { ParameterControl } from '@entities/system';
+import { useSystemStore, ParameterControl } from '@entities/system';
 import { ColorRangeSlider } from './ColorRangeSlider';
 import { ColorCircle } from './components/ColorCircle';
 import { useSelectiveSaturation } from '../../lib/useSelectiveSaturation';
@@ -40,8 +40,10 @@ export const SaturationSubPanel = ({
     handleColorPress,
   } = useSelectiveSaturation();
 
+  const isDebugEnabled = useSystemStore(state => state.isDebugEnabled);
+
   return (
-    <Animated.View style={[styles.container, animatedStyle]}>
+    <Animated.View style={[styles.container, animatedStyle, isDebugEnabled && { paddingTop: 6 }]}>
       <View style={styles.colorCirclesRow}>
         {COLOR_MAPPING.map((item, index) => (
           <ColorCircle
@@ -71,6 +73,7 @@ export const SaturationSubPanel = ({
             onReset={activeReset}
             valueFormatter={formatSaturationColor}
             sliderColor={COLOR_MAPPING[activeColorIndex].color}
+            hideDebugRectangles={true}
           />
         </View>
       </View>
@@ -86,7 +89,7 @@ const styles = StyleSheet.create({
     width: '100%',
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: -4, // Raised further to -4
+    marginTop: 0,
   },
   sliderRow: {
     position: 'relative',

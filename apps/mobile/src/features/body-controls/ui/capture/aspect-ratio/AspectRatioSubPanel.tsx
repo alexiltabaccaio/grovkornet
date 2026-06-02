@@ -3,6 +3,7 @@ import { StyleSheet, View, Text, StyleProp, ViewStyle } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { useShallow } from 'zustand/react/shallow';
 import { useBodyStore } from '@entities/body';
+import { useSystemStore } from '@entities/system';
 import { usePreferencesStore } from '@entities/preferences';
 import { useTranslation } from 'react-i18next';
 import Animated, { useAnimatedReaction, runOnJS } from 'react-native-reanimated';
@@ -14,6 +15,7 @@ interface AspectRatioSubPanelProps {
 }
 
 export const AspectRatioSubPanel = ({ animatedStyle }: AspectRatioSubPanelProps) => {
+  const isDebugEnabled = useSystemStore(state => state.isDebugEnabled);
   const { t } = useTranslation();
   const { 
     aspectRatio, 
@@ -66,7 +68,7 @@ export const AspectRatioSubPanel = ({ animatedStyle }: AspectRatioSubPanelProps)
   }
 
   return (
-    <Animated.View style={[styles.cropContainer, animatedStyle]}>
+    <Animated.View style={[styles.cropContainer, animatedStyle, isDebugEnabled && { paddingTop: 6 }]}>
       <View style={styles.toggleRowContainer}>
         <Text style={styles.toggleLabel} allowFontScaling={false}>
           {t('parameters.apply_crop')}
@@ -111,7 +113,7 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingTop: 6,
+    paddingTop: 0,
     width: '100%',
     gap: 8,
   },

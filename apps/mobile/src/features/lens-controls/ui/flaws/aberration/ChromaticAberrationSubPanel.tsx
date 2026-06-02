@@ -33,10 +33,10 @@ export const ChromaticAberrationSubPanel = ({ animatedStyle }: ChromaticAberrati
   return (
     <View style={[
       styles.container,
-      isDebugEnabled && { backgroundColor: 'rgba(0, 255, 0, 0.2)', borderColor: 'green' }
+      isDebugEnabled && { backgroundColor: 'rgba(0, 255, 0, 0.2)', borderColor: 'green', paddingTop: 6, margin: -1.5 }
     ]}>
       <Text allowFontScaling={false} style={styles.label}>
-        {t('parameters.options').toUpperCase()}
+        {t('parameters.direction').toUpperCase()}
       </Text>
       <View style={styles.buttonRow}>
         <PillButton
