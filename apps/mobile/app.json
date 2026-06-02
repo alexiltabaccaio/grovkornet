@@ -29,7 +29,9 @@
       "predictiveBackGestureEnabled": false,
       "permissions": [
         "android.permission.CAMERA",
-        "android.permission.RECORD_AUDIO"
+        "android.permission.RECORD_AUDIO",
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE"
       ],
       "package": "com.grovkornet.app",
       "versionCode": 3
@@ -59,6 +61,12 @@
           }
         }
       ]
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "0ceec06e-0882-4742-8b49-596a81072198"
+      }
+    },
+    "owner": "alexgiustizieri"
   }
 }

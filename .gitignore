@@ -21,6 +21,8 @@ yarn-error.*
 *.key
 *.mobileprovision
 !debug.keystore
+*api-key.json
+*play-*.json
 
 # Firebase
 *-firebase-adminsdk-*.json
