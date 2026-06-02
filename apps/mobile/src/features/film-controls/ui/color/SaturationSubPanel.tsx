@@ -1,10 +1,11 @@
 import React from 'react';
 import { View, StyleSheet, StyleProp, ViewStyle } from 'react-native';
 import Animated from 'react-native-reanimated';
-import { useSystemStore, ParameterControl } from '@entities/system';
+import { ParameterControl } from '@entities/system';
 import { ColorRangeSlider } from './ColorRangeSlider';
 import { ColorCircle } from './components/ColorCircle';
 import { useSelectiveSaturation } from '../../lib/useSelectiveSaturation';
+import { SubPanelContainer } from '@shared/ui';
 
 const noop = () => {};
 
@@ -40,10 +41,8 @@ export const SaturationSubPanel = ({
     handleColorPress,
   } = useSelectiveSaturation();
 
-  const isDebugEnabled = useSystemStore(state => state.isDebugEnabled);
-
   return (
-    <Animated.View style={[styles.container, animatedStyle, isDebugEnabled && { paddingTop: 6 }]}>
+    <SubPanelContainer style={[styles.container, animatedStyle]}>
       <View style={styles.colorCirclesRow}>
         {COLOR_MAPPING.map((item, index) => (
           <ColorCircle
@@ -79,7 +78,7 @@ export const SaturationSubPanel = ({
       </View>
 
       <ColorRangeSlider activeColorIndex={activeColorIndex} />
-    </Animated.View>
+    </SubPanelContainer>
   );
 };
 

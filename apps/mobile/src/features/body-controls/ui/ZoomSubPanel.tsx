@@ -4,7 +4,7 @@ import Animated, { useDerivedValue, SharedValue } from 'react-native-reanimated'
 import { useShallow } from 'zustand/react/shallow';
 import { useBodyStore, useBodyWorklets } from '@entities/body';
 import { useSystemStore } from '@entities/system';
-import { PillButton } from '@shared/ui';
+import { PillButton, SubPanelContainer } from '@shared/ui';
 import * as Haptics from '@shared/lib/haptics';
 
 interface ZoomSubPanelProps {
@@ -53,8 +53,9 @@ export const ZoomSubPanel = ({ animatedStyle }: ZoomSubPanelProps) => {
   }
 
   return (
-    <Animated.View style={[styles.container, animatedStyle, isDebugEnabled && { paddingTop: 6 }]}>
+    <SubPanelContainer style={[styles.container, animatedStyle]}>
       <View style={styles.buttonRow}>
+
         {options.map((opt) => {
           const isActive = activeMap[opt] ?? is1Active;
           return (
@@ -73,7 +74,7 @@ export const ZoomSubPanel = ({ animatedStyle }: ZoomSubPanelProps) => {
           );
         })}
       </View>
-    </Animated.View>
+    </SubPanelContainer>
   );
 };
 

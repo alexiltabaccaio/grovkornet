@@ -6,7 +6,7 @@ import { useFilmStore, useFilmWorklets } from '@entities/film';
 import { ParameterControl } from '@entities/system';
 import { useTranslation } from 'react-i18next';
 import { useSystemStore } from '@entities/system';
-import { PillButton, ResettableLabel } from '@shared/ui';
+import { PillButton, ResettableLabel, SubPanelContainer } from '@shared/ui';
 import { 
   DEFAULT_GRAIN_SIZE, 
   DEFAULT_GRAIN_SPEED, 
@@ -58,7 +58,7 @@ export const GrainSubPanel = ({ parameterDetailPanelAnimatedStyle: _parameterDet
   const isRgbActive = useDerivedValue(() => grainChroma.value === 1);
 
   return (
-    <Animated.View style={[styles.container, _animatedStyle, isDebugEnabled && { paddingTop: 6 }]}>
+    <SubPanelContainer style={[styles.container, _animatedStyle]}>
       <View style={styles.row}>
           <View style={[
             styles.chromaContainer,
@@ -155,7 +155,7 @@ export const GrainSubPanel = ({ parameterDetailPanelAnimatedStyle: _parameterDet
           />
         </View>
       </View>
-    </Animated.View>
+    </SubPanelContainer>
   );
 };
 

@@ -5,7 +5,7 @@ import { useShallow } from 'zustand/react/shallow';
 import { useFilmStore, useFilmWorklets } from '@entities/film';
 import { useTranslation } from 'react-i18next';
 import { useSystemStore } from '@entities/system';
-import { PillButton, ResettableLabel } from '@shared/ui';
+import { PillButton, ResettableLabel, SubPanelContainer } from '@shared/ui';
 import { DEFAULT_CHROMA_SHIFT_DIRECTION } from '@grovkornet/shared';
 
 interface ChromaShiftSubPanelProps {
@@ -42,10 +42,7 @@ export const ChromaShiftSubPanel = ({ animatedStyle: _animatedStyle }: ChromaShi
   const isInverted = useDerivedValue(() => chromaShiftInvert.value);
 
   return (
-    <View style={[
-      styles.container,
-      isDebugEnabled && { backgroundColor: 'rgba(0, 255, 0, 0.2)', borderColor: 'green', paddingTop: 6, margin: -1.5 }
-    ]}>
+    <SubPanelContainer style={[styles.container, _animatedStyle]} showBorder={true}>
       <ResettableLabel
         label={t('parameters.direction').toUpperCase()}
         style={styles.label}
@@ -78,7 +75,7 @@ export const ChromaShiftSubPanel = ({ animatedStyle: _animatedStyle }: ChromaShi
           style={styles.pressableInvert}
         />
       </View>
-    </View>
+    </SubPanelContainer>
   );
 };
 
@@ -86,8 +83,6 @@ const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
     width: '100%',
-    borderWidth: 1,
-    borderColor: 'transparent',
   },
   label: {
     color: '#CCC',

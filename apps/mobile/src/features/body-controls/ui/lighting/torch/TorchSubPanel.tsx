@@ -6,6 +6,7 @@ import { useBodyStore, useBodyWorklets } from '@entities/body';
 import Animated from 'react-native-reanimated';
 import { useTranslation } from 'react-i18next';
 import { DEFAULT_TORCH_STRENGTH } from '@grovkornet/shared';
+import { SubPanelContainer } from '@shared/ui';
 
 const formatTorchStrength = (v: number) => {
   'worklet';
@@ -19,7 +20,6 @@ interface TorchSubPanelProps {
 export const TorchSubPanel = ({ animatedStyle: _animatedStyle }: TorchSubPanelProps) => {
   const { t } = useTranslation();
   const bodyWorklets = useBodyWorklets();
-  const isDebugEnabled = useSystemStore(state => state.isDebugEnabled);
 
   const { activeDetailPanel, setActiveDetailPanel } = useSystemStore(useShallow(state => ({
     activeDetailPanel: state.activeDetailPanel,
@@ -35,7 +35,7 @@ export const TorchSubPanel = ({ animatedStyle: _animatedStyle }: TorchSubPanelPr
   })));
 
   return (
-    <Animated.View style={[styles.childSubContainer, _animatedStyle, isDebugEnabled && { paddingTop: 6 }]}>
+    <SubPanelContainer style={[styles.childSubContainer, _animatedStyle]}>
       <ParameterControl
         label={t('parameters.torch_dimmer')}
         isActive={activeDetailPanel === 'torch_strength'}
@@ -53,7 +53,7 @@ export const TorchSubPanel = ({ animatedStyle: _animatedStyle }: TorchSubPanelPr
           bodyWorklets.updateTorchStrength(DEFAULT_TORCH_STRENGTH);
         }}
       />
-    </Animated.View>
+    </SubPanelContainer>
   );
 };
 

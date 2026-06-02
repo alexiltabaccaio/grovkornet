@@ -52,6 +52,9 @@ export const SubPanels = React.memo(({ translateY }: SubPanelsProps) => {
     }
   };
 
+  const content = renderContent();
+  if (!content) return null;
+
   return (
     <Animated.View style={[styles.childSubContainer, parentAnimatedStyle]}>
       <View
@@ -60,7 +63,7 @@ export const SubPanels = React.memo(({ translateY }: SubPanelsProps) => {
           isDebugEnabled && styles.debugWrapper,
         ]}
       >
-        {renderContent()}
+        {content}
       </View>
     </Animated.View>
   );
