@@ -134,16 +134,20 @@ export const GalleryStrip = ({ photos, selectedPhoto, onSelectPhoto, onClose, ga
     <BottomFooter style={styles.footerContainer}>
       <Animated.View style={[styles.innerAnimatedContainer, animatedStyle]}>
         <Pressable 
-        onPress={() => {
-          void Haptics.selectionAsync();
-          onClose();
-        }} 
-        style={styles.backButton} 
-        accessibilityLabel="Go back" 
-        accessibilityRole="button"
-      >
-        <Ionicons name="chevron-back" size={24} color="#FFF" />
-      </Pressable>
+          onPress={() => {
+            void Haptics.selectionAsync();
+            onClose();
+          }} 
+          style={({ pressed }) => [
+            styles.backButton,
+            pressed && { opacity: 0.6 }
+          ]} 
+          hitSlop={{ top: 20, bottom: 20, left: 24, right: 30 }}
+          accessibilityLabel="Go back" 
+          accessibilityRole="button"
+        >
+          <Ionicons name="chevron-back" size={24} color="#FFF" />
+        </Pressable>
       
       <View style={styles.listContainer}>
         <FlatList

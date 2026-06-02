@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, ActivityIndicator, Platform, useWindowDimensions } from 'react-native';
+import { StyleSheet, Text, View, ActivityIndicator, Platform, useWindowDimensions, BackHandler } from 'react-native';
 import { Image } from 'expo-image';
 import Animated, { useAnimatedStyle, SharedValue, interpolate } from 'react-native-reanimated';
 import { useTranslation } from 'react-i18next';
@@ -36,6 +36,25 @@ export const GalleryViewer = ({ onClose, initialUri, galleryTransition, header }
       setShowPlaceholder(true);
     }
   }, [loading]);
+
+  const onCloseRef = React.useRef(onClose);
+  useEffect(() => {
+    onCloseRef.current = onClose;
+  }, [onClose]);
+
+  useEffect(() => {
+    if (Platform.OS !== 'android') return;
+
+    const handleBackPress = () => {
+      onCloseRef.current();
+      return true;
+    };
+
+    BackHandler.addEventListener('hardwareBackPress', handleBackPress);
+    return () => {
+      BackHandler.removeEventListener('hardwareBackPress', handleBackPress);
+    };
+  }, []);
 
   const animatedContainerStyle = useAnimatedStyle(() => {
     if (!galleryTransition) return {};

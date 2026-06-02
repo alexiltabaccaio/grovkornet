@@ -1,4 +1,4 @@
-import React, { useEffect, useState, Profiler } from 'react';
+import React, { useEffect, useState, Profiler, useCallback } from 'react';
 import { StyleSheet, View, AppState, AppStateStatus, PermissionsAndroid, Platform, StatusBar } from 'react-native';
 import Animated, { useSharedValue, useAnimatedStyle, interpolate, withTiming, runOnJS } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -45,18 +45,22 @@ const CameraScreenContent = () => {
   // Start background verification and caching of recently captured photos
   useGalleryPrefetch();
 
-  const openGallery = () => {
+  const openGallery = useCallback(() => {
     setShouldRenderGallery(true);
     galleryTransition.value = withTiming(1, { duration: 300 });
-  };
+  }, [galleryTransition]);
 
-  const closeGallery = () => {
+  const closeGallery = useCallback(() => {
+    if (galleryTransition.value === 0) {
+      setShouldRenderGallery(false);
+      return;
+    }
     galleryTransition.value = withTiming(0, { duration: 300 }, (finished) => {
-      if (finished) {
+      if (finished || galleryTransition.value === 0) {
         runOnJS(setShouldRenderGallery)(false);
       }
     });
-  };
+  }, [galleryTransition]);
 
   useEffect(() => {
     const subscription = AppState.addEventListener('change', (nextAppState: AppStateStatus) => {
