@@ -5,10 +5,11 @@
 #include <mutex>
 #include <condition_variable>
 #include <vector>
+#include "../core/HardwareConfig.h"
 
 class LutGenerator {
 public:
-    static constexpr int LUT_SIZE = 33;
+    static constexpr int LUT_SIZE = HardwareConfig::LUT_SIZE;
 
     LutGenerator();
     ~LutGenerator();

@@ -1,13 +1,14 @@
 #pragma once
 #include <vector>
 #include <cstddef>
+#include "../core/HardwareConfig.h"
 
 class DrsManager {
 public:
-    static constexpr float MIN_DRS_SCALE = 0.5f;
-    static constexpr float MAX_DRS_SCALE = 1.0f;
-    static constexpr size_t FRAME_TIME_WINDOW_SIZE = 10;
-    static constexpr int DRS_COOLDOWN_FRAMES = 30;
+    static constexpr float MIN_DRS_SCALE = HardwareConfig::MIN_DRS_SCALE;
+    static constexpr float MAX_DRS_SCALE = HardwareConfig::MAX_DRS_SCALE;
+    static constexpr size_t FRAME_TIME_WINDOW_SIZE = HardwareConfig::FRAME_TIME_WINDOW_SIZE;
+    static constexpr int DRS_COOLDOWN_FRAMES = HardwareConfig::DRS_COOLDOWN_FRAMES;
 
     void recordFrameTimeAndEvaluate(float frameTimeMs);
     void forceCooldownTrigger();

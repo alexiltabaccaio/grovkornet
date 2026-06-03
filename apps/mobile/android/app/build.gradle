@@ -144,6 +144,9 @@ android {
     buildTypes {
         debug {
             signingConfig signingConfigs.debug
+            // Ripristinato dinamicamente per evitare che EAS CLI si blocchi
+            def suffixKey = "applicationIdSuffix"
+            setProperty(suffixKey, ".dev")
         }
         release {
             // Caution! In production, you need to generate your own keystore file.

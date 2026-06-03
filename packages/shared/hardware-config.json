@@ -1,0 +1,11 @@
+{
+  "lut": {
+    "size": 33
+  },
+  "drs": {
+    "min_scale": 0.5,
+    "max_scale": 1.0,
+    "frame_time_window_size": 10,
+    "cooldown_frames": 30
+  }
+}
