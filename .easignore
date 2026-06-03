@@ -1,0 +1,98 @@
+# .easignore - Configured to minimize project archive size for EAS Build
+# Based on root .gitignore and monorepo configurations
+
+node_modules/
+**/node_modules/
+.expo/
+**/.expo/
+dist/
+npm-debug.*
+yarn-debug.*
+yarn-error.*
+*.log
+.eslintcache
+*.tsbuildinfo
+
+# Turbo
+.turbo/
+**/.turbo/
+
+# Security / Secrets
+*.pem
+*.cer
+*.p12
+*.p8
+*.jks
+*.keystore
+*.key
+*.mobileprovision
+!debug.keystore
+*api-key.json
+*play-*.json
+
+# Firebase
+*-firebase-adminsdk-*.json
+*serviceAccount*.json
+firebase-export-*
+
+# Android Build Outputs & Caches
+**/android/.gradle/
+**/android/build/
+**/android/app/build/
+**/android/app/.cxx/
+**/android/.cxx/
+**/android/local.properties
+*.iml
+.idea/
+*.apk
+*.aab
+*.ipa
+*.hprof
+
+# Filament libraries & temp files
+**/android/filament/
+**/android/filament-host/
+**/packages/engine/android/src/main/assets/
+**/*.tgz
+
+# iOS Build Outputs & Caches
+**/ios/Pods/
+**/ios/build/
+*.xcworkspace/xcuserdata/
+*.xcodeproj/xcuserdata/
+**/ios/*.xcworkspace/xcuserdata/
+*.xcuserstate
+
+# OS / Misc
+.vscode/
+*.code-workspace
+.env*.local
+.env
+.env.*
+!.env.example
+.DS_Store
+Thumbs.db
+[Dd]esktop.ini
+*.swp
+*.swo
+compile_commands.json
+
+# Testing / Build
+coverage/
+**/coverage/
+web-build/
+.next/
+**/.next/
+out/
+*.jsbundle
+*.bundle
+*.bundle.map
+
+# EAS / Expo
+.eas/
+eas-cli-local.json
+.metro/
+.metro-cache/
+grovkornet_source_bundle.txt
+.gemini_workflows/analyze.js
+**/output.graph.json
