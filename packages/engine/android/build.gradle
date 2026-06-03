@@ -122,6 +122,10 @@ task downloadMatc {
         copy {
           from tarTree(resources.gzip(destFile))
           into destDir
+          eachFile { fcd ->
+            fcd.path = fcd.path.replaceFirst('^filament/', '')
+          }
+          includeEmptyDirs = false
         }
         destFile.delete()
         if (!osName.isWindows()) {
