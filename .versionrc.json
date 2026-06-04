@@ -36,5 +36,9 @@
   ],
   "packageFiles": [
     "package.json"
-  ]
+  ],
+  "skip": {
+    "commit": true,
+    "tag": true
+  }
 }
