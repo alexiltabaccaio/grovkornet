@@ -275,10 +275,16 @@ jest.mock('react-native-nitro-modules', () => ({
 }));
 
 // Mock react-native-mmkv
+const mockMMKVGlobalStores = new Map<string, Map<string, string>>();
+
 jest.mock('react-native-mmkv', () => {
   return {
-    createMMKV: jest.fn(() => {
-      const store = new Map<string, string>();
+    createMMKV: jest.fn((config?: { id?: string }) => {
+      const id = config?.id ?? 'default';
+      if (!mockMMKVGlobalStores.has(id)) {
+        mockMMKVGlobalStores.set(id, new Map<string, string>());
+      }
+      const store = mockMMKVGlobalStores.get(id)!;
       return {
         set: jest.fn((key: string, value: any) => {
           store.set(key, String(value));
@@ -302,6 +308,8 @@ jest.mock('react-native-mmkv', () => {
         }),
       };
     }),
+    // Expose registry for tests to inspect or clear if needed
+    _globalStores: mockMMKVGlobalStores,
   };
 });
 
