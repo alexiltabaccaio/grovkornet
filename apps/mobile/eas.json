@@ -31,22 +31,26 @@
   "submit": {
     "production": {
       "android": {
-        "track": "production"
+        "track": "production",
+        "applicationId": "com.grovkornet.app"
       }
     },
     "internal": {
       "android": {
-        "track": "internal"
+        "track": "internal",
+        "applicationId": "com.grovkornet.app"
       }
     },
     "alpha": {
       "android": {
-        "track": "alpha"
+        "track": "alpha",
+        "applicationId": "com.grovkornet.app"
       }
     },
     "beta": {
       "android": {
-        "track": "beta"
+        "track": "beta",
+        "applicationId": "com.grovkornet.app"
       }
     }
   }

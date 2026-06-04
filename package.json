@@ -1,6 +1,6 @@
 {
   "name": "grovkornet-monorepo",
-  "version": "0.10.2",
+  "version": "0.10.3",
   "private": true,
   "packageManager": "npm@10.8.1",
   "workspaces": [

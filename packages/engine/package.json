@@ -1,6 +1,6 @@
 {
   "name": "@grovkornet/engine",
-  "version": "0.10.2",
+  "version": "0.10.3",
   "description": "Local expo module for custom film camera with Uber Shader",
   "main": "src/index.ts",
   "types": "src/index.ts",
