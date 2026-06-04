@@ -50,9 +50,9 @@ export const GalleryViewer = ({ onClose, initialUri, galleryTransition, header }
       return true;
     };
 
-    BackHandler.addEventListener('hardwareBackPress', handleBackPress);
+    const subscription = BackHandler.addEventListener('hardwareBackPress', handleBackPress);
     return () => {
-      BackHandler.removeEventListener('hardwareBackPress', handleBackPress);
+      subscription.remove();
     };
   }, []);
 
@@ -121,12 +121,12 @@ export const GalleryViewer = ({ onClose, initialUri, galleryTransition, header }
 
             {/* Placeholder Overlay (sits EXACTLY over PhotoPreview) */}
             {showPlaceholder && (
-              <View style={[StyleSheet.absoluteFillObject, styles.center]} pointerEvents="none">
+              <View style={[StyleSheet.absoluteFill, styles.center]} pointerEvents="none">
                 {initialUri ? (
-                  <Animated.View style={[StyleSheet.absoluteFillObject, animatedPlaceholderStyle]}>
+                  <Animated.View style={[StyleSheet.absoluteFill, animatedPlaceholderStyle]}>
                     <Image
                       source={{ uri: initialUri }}
-                      style={StyleSheet.absoluteFillObject}
+                      style={StyleSheet.absoluteFill}
                       contentFit="contain"
                       transition={0}
                       cachePolicy="memory-disk"

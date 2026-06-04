@@ -1,6 +1,6 @@
 import { renderHook, act } from '@testing-library/react-native';
 import { useGalleryPrefetch } from './useGalleryPrefetch';
-import * as MediaLibrary from 'expo-media-library';
+import * as MediaLibrary from 'expo-media-library/legacy';
 
 const mockVerifyPhotosBatch = jest.fn();
 jest.mock('./useImageVerification', () => ({

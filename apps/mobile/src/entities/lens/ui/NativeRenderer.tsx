@@ -1,5 +1,5 @@
 import React, { forwardRef, useImperativeHandle, useRef } from 'react';
-import Animated, { AnimateProps } from 'react-native-reanimated';
+import Animated, { AnimatedProps } from 'react-native-reanimated';
 import { NativeFilmCameraView, NativeFilmCameraViewProps } from '@grovkornet/engine';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-assignment
@@ -14,7 +14,7 @@ interface InternalNativeRef {
   getNativeElement?: () => { takePhoto: () => void };
 }
 
-export const NativeRenderer = forwardRef<NativeRendererRef, AnimateProps<NativeFilmCameraViewProps>>((props, ref) => {
+export const NativeRenderer = forwardRef<NativeRendererRef, AnimatedProps<NativeFilmCameraViewProps>>((props, ref) => {
   const nativeRef = useRef<InternalNativeRef>(null);
 
   useImperativeHandle(ref, () => ({

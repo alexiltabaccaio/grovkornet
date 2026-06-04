@@ -1,0 +1,254 @@
+diff --git a/node_modules/react-native/Libraries/NativeComponent/ViewConfigIgnore.js b/node_modules/react-native/Libraries/NativeComponent/ViewConfigIgnore.js
+index 21ccc9f..c30c288 100644
+--- a/node_modules/react-native/Libraries/NativeComponent/ViewConfigIgnore.js
++++ b/node_modules/react-native/Libraries/NativeComponent/ViewConfigIgnore.js
+@@ -35,7 +35,7 @@ export function DynamicallyInjectedByGestureHandler<T: {...}>(object: T): T {
+  * TODO(T110872225): Remove this logic, after achieving platform-consistency
+  */
+ export function ConditionallyIgnoredEventHandlers<
+-  const T: {+[name: string]: true},
++  T: {+[name: string]: true},
+ >(value: T): T | void {
+   if (Platform.OS === 'ios') {
+     return value;
+diff --git a/node_modules/react-native/ReactCommon/react/renderer/core/graphicsConversions.h b/node_modules/react-native/ReactCommon/react/renderer/core/graphicsConversions.h
+index ccc6510..d607ce9 100644
+--- a/node_modules/react-native/ReactCommon/react/renderer/core/graphicsConversions.h
++++ b/node_modules/react-native/ReactCommon/react/renderer/core/graphicsConversions.h
+@@ -8,6 +8,7 @@
+ #pragma once
+ 
+ #include <array>
++#include <format>
+ #include <unordered_map>
+ 
+ #include <glog/logging.h>
+@@ -67,8 +68,11 @@ inline folly::dynamic toDynamic(const YGValue &dimension)
+       return "stretch";
+     case YGUnitPoint:
+       return dimension.value;
+-    case YGUnitPercent:
+-      return std::format("{}%", dimension.value);
++    case YGUnitPercent: {
++      char buffer[32];
++      snprintf(buffer, sizeof(buffer), "%g%%", dimension.value);
++      return std::string(buffer);
++    }
+   }
+ 
+   return nullptr;
+diff --git a/node_modules/react-native/src/private/components/virtualview/VirtualViewExperimentalNativeComponent.js b/node_modules/react-native/src/private/components/virtualview/VirtualViewExperimentalNativeComponent.js
+index c640b5a..e5791f2 100644
+--- a/node_modules/react-native/src/private/components/virtualview/VirtualViewExperimentalNativeComponent.js
++++ b/node_modules/react-native/src/private/components/virtualview/VirtualViewExperimentalNativeComponent.js
+@@ -18,45 +18,16 @@ import type {HostComponent} from '../../types/HostComponent';
+ 
+ import codegenNativeComponent from '../../../../Libraries/Utilities/codegenNativeComponent';
+ 
+-export type NativeModeChangeEvent = Readonly<{
+-  /**
+-   * Virtualization mode of the target view.
+-   *
+-   * - `0`: Target view is visible.
+-   * - `1`: Target view is hidden, but can be prerendered.
+-   * - `2`: Target view is hidden.
+-   *
+-   * WORKAROUND: As of this writing, codegen doesn't support enums, so we need
+-   * to convert `number` into an enum in `VirtualView`.
+-   */
++export type NativeModeChangeEvent = $ReadOnly<{
+   mode: Int32,
+-
+-  /**
+-   * Rect of the target view, relative to the nearest ancestor scroll container.
+-   */
+-  targetRect: Readonly<{
+-    x: Double,
+-    y: Double,
+-    width: Double,
+-    height: Double,
+-  }>,
+-
+-  /**
+-   * Rect of the threshold that determines the mode of the target view, relative
+-   * to the nearest ancestor scroll container.
+-   *
+-   * - `Visible`: Rect in which the target view is visible.
+-   * - `Prerender`: Rect in which the target view is prerendered.
+-   * - `Hidden`: Unused, without any guarantees.
+-   *
+-   * This can be used to determine whether and how much new content to render.
+-   */
+-  thresholdRect: Readonly<{
+-    x: Double,
+-    y: Double,
+-    width: Double,
+-    height: Double,
+-  }>,
++  targetRectX: Double,
++  targetRectY: Double,
++  targetRectWidth: Double,
++  targetRectHeight: Double,
++  thresholdRectX: Double,
++  thresholdRectY: Double,
++  thresholdRectWidth: Double,
++  thresholdRectHeight: Double,
+ }>;
+ 
+ type VirtualViewExperimentalNativeProps = Readonly<{
+diff --git a/node_modules/react-native/src/private/components/virtualview/VirtualViewNativeComponent.js b/node_modules/react-native/src/private/components/virtualview/VirtualViewNativeComponent.js
+index 4ba5b68..855964c 100644
+--- a/node_modules/react-native/src/private/components/virtualview/VirtualViewNativeComponent.js
++++ b/node_modules/react-native/src/private/components/virtualview/VirtualViewNativeComponent.js
+@@ -18,45 +18,16 @@ import type {HostComponent} from '../../types/HostComponent';
+ 
+ import codegenNativeComponent from '../../../../Libraries/Utilities/codegenNativeComponent';
+ 
+-export type NativeModeChangeEvent = Readonly<{
+-  /**
+-   * Virtualization mode of the target view.
+-   *
+-   * - `0`: Target view is visible.
+-   * - `1`: Target view is hidden, but can be prerendered.
+-   * - `2`: Target view is hidden.
+-   *
+-   * WORKAROUND: As of this writing, codegen doesn't support enums, so we need
+-   * to convert `number` into an enum in `VirtualView`.
+-   */
++export type NativeModeChangeEvent = $ReadOnly<{
+   mode: Int32,
+-
+-  /**
+-   * Rect of the target view, relative to the nearest ancestor scroll container.
+-   */
+-  targetRect: Readonly<{
+-    x: Double,
+-    y: Double,
+-    width: Double,
+-    height: Double,
+-  }>,
+-
+-  /**
+-   * Rect of the threshold that determines the mode of the target view, relative
+-   * to the nearest ancestor scroll container.
+-   *
+-   * - `Visible`: Rect in which the target view is visible.
+-   * - `Prerender`: Rect in which the target view is prerendered.
+-   * - `Hidden`: Unused, without any guarantees.
+-   *
+-   * This can be used to determine whether and how much new content to render.
+-   */
+-  thresholdRect: Readonly<{
+-    x: Double,
+-    y: Double,
+-    width: Double,
+-    height: Double,
+-  }>,
++  targetRectX: Double,
++  targetRectY: Double,
++  targetRectWidth: Double,
++  targetRectHeight: Double,
++  thresholdRectX: Double,
++  thresholdRectY: Double,
++  thresholdRectWidth: Double,
++  thresholdRectHeight: Double,
+ }>;
+ 
+ type VirtualViewNativeProps = Readonly<{
+diff --git a/node_modules/react-native/src/private/specs_DEPRECATED/components/AndroidDrawerLayoutNativeComponent.js b/node_modules/react-native/src/private/specs_DEPRECATED/components/AndroidDrawerLayoutNativeComponent.js
+index 22ce1ab..e01ec9b 100644
+--- a/node_modules/react-native/src/private/specs_DEPRECATED/components/AndroidDrawerLayoutNativeComponent.js
++++ b/node_modules/react-native/src/private/specs_DEPRECATED/components/AndroidDrawerLayoutNativeComponent.js
+@@ -22,11 +22,11 @@ import codegenNativeCommands from '../../../../Libraries/Utilities/codegenNative
+ import codegenNativeComponent from '../../../../Libraries/Utilities/codegenNativeComponent';
+ import * as React from 'react';
+ 
+-type DrawerStateEvent = Readonly<{
++type DrawerStateEvent = $ReadOnly<{
+   drawerState: Int32,
+ }>;
+ 
+-type DrawerSlideEvent = Readonly<{
++type DrawerSlideEvent = $ReadOnly<{
+   offset: Float,
+ }>;
+ 
+diff --git a/node_modules/react-native/src/private/specs_DEPRECATED/components/AndroidSwipeRefreshLayoutNativeComponent.js b/node_modules/react-native/src/private/specs_DEPRECATED/components/AndroidSwipeRefreshLayoutNativeComponent.js
+index 35acd83..104bec1 100644
+--- a/node_modules/react-native/src/private/specs_DEPRECATED/components/AndroidSwipeRefreshLayoutNativeComponent.js
++++ b/node_modules/react-native/src/private/specs_DEPRECATED/components/AndroidSwipeRefreshLayoutNativeComponent.js
+@@ -31,7 +31,7 @@ type AndroidSwipeRefreshLayoutNativeProps = Readonly<{
+   /**
+    * The colors (at least one) that will be used to draw the refresh indicator.
+    */
+-  colors?: ?ReadonlyArray<ColorValue>,
++  colors?: ?$ReadOnlyArray<ColorValue>,
+   /**
+    * The background color of the refresh indicator.
+    */
+diff --git a/node_modules/react-native/src/private/specs_DEPRECATED/components/AndroidSwitchNativeComponent.js b/node_modules/react-native/src/private/specs_DEPRECATED/components/AndroidSwitchNativeComponent.js
+index c91e734..3e154f4 100644
+--- a/node_modules/react-native/src/private/specs_DEPRECATED/components/AndroidSwitchNativeComponent.js
++++ b/node_modules/react-native/src/private/specs_DEPRECATED/components/AndroidSwitchNativeComponent.js
+@@ -21,7 +21,7 @@ import codegenNativeCommands from '../../../../Libraries/Utilities/codegenNative
+ import codegenNativeComponent from '../../../../Libraries/Utilities/codegenNativeComponent';
+ import * as React from 'react';
+ 
+-type AndroidSwitchChangeEvent = Readonly<{
++type AndroidSwitchChangeEvent = $ReadOnly<{
+   value: boolean,
+   target: Int32,
+ }>;
+diff --git a/node_modules/react-native/src/private/specs_DEPRECATED/components/DebuggingOverlayNativeComponent.js b/node_modules/react-native/src/private/specs_DEPRECATED/components/DebuggingOverlayNativeComponent.js
+index 178951b..a7dff66 100644
+--- a/node_modules/react-native/src/private/specs_DEPRECATED/components/DebuggingOverlayNativeComponent.js
++++ b/node_modules/react-native/src/private/specs_DEPRECATED/components/DebuggingOverlayNativeComponent.js
+@@ -38,11 +38,11 @@ export type ElementRectangle = {
+ interface NativeCommands {
+   +highlightTraceUpdates: (
+     viewRef: React.ElementRef<DebuggingOverlayNativeComponentType>,
+-    updates: ReadonlyArray<TraceUpdate>,
++    updates: $ReadOnlyArray<TraceUpdate>,
+   ) => void;
+   +highlightElements: (
+     viewRef: React.ElementRef<DebuggingOverlayNativeComponentType>,
+-    elements: ReadonlyArray<ElementRectangle>,
++    elements: $ReadOnlyArray<ElementRectangle>,
+   ) => void;
+   +clearElementsHighlights: (
+     viewRef: React.ElementRef<DebuggingOverlayNativeComponentType>,
+diff --git a/node_modules/react-native/src/private/specs_DEPRECATED/components/RCTModalHostViewNativeComponent.js b/node_modules/react-native/src/private/specs_DEPRECATED/components/RCTModalHostViewNativeComponent.js
+index a27f5b3..4ceef94 100644
+--- a/node_modules/react-native/src/private/specs_DEPRECATED/components/RCTModalHostViewNativeComponent.js
++++ b/node_modules/react-native/src/private/specs_DEPRECATED/components/RCTModalHostViewNativeComponent.js
+@@ -18,7 +18,7 @@ import type {HostComponent} from '../../types/HostComponent';
+ 
+ import codegenNativeComponent from '../../../../Libraries/Utilities/codegenNativeComponent';
+ 
+-type OrientationChangeEvent = Readonly<{
++type OrientationChangeEvent = $ReadOnly<{
+   orientation: 'portrait' | 'landscape',
+ }>;
+ 
+@@ -124,7 +124,7 @@ type RCTModalHostViewNativeProps = Readonly<{
+    * See https://reactnative.dev/docs/modal#supportedorientations
+    */
+   supportedOrientations?: WithDefault<
+-    ReadonlyArray<
++    $ReadOnlyArray<
+       | 'portrait'
+       | 'portrait-upside-down'
+       | 'landscape'
+diff --git a/node_modules/react-native/src/private/specs_DEPRECATED/components/SwitchNativeComponent.js b/node_modules/react-native/src/private/specs_DEPRECATED/components/SwitchNativeComponent.js
+index 3d6feb9..4ec904a 100644
+--- a/node_modules/react-native/src/private/specs_DEPRECATED/components/SwitchNativeComponent.js
++++ b/node_modules/react-native/src/private/specs_DEPRECATED/components/SwitchNativeComponent.js
+@@ -21,7 +21,7 @@ import codegenNativeCommands from '../../../../Libraries/Utilities/codegenNative
+ import codegenNativeComponent from '../../../../Libraries/Utilities/codegenNativeComponent';
+ import * as React from 'react';
+ 
+-type NativeSwitchChangeEvent = Readonly<{
++type NativeSwitchChangeEvent = $ReadOnly<{
+   value: boolean,
+   target: Int32,
+ }>;

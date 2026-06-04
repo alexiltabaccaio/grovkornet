@@ -144,14 +144,14 @@ describe('Panels', () => {
       useSystemStore.getState().setActiveParameter('contrast');
     });
     const { toJSON, rerender } = render(<Panels translateY={mockTranslateY} />);
-    const firstRender = toJSON();
+    const firstRender = toJSON() as any;
     expect(firstRender?.type).toBe('View');
 
     act(() => {
       useSystemStore.getState().setActiveParameter('iso');
     });
     rerender(<Panels translateY={mockTranslateY} />);
-    const secondRender = toJSON();
+    const secondRender = toJSON() as any;
     expect(secondRender?.type).toBe('View');
     
     // Both must use the same container layout style

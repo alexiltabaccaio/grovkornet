@@ -10,7 +10,7 @@ apply from: expoModulesCorePlugin.absolutePath
 
 android {
   namespace "com.grovkornet.nativefilmcamera"
-  compileSdkVersion 35
+  compileSdkVersion 36
 
   defaultConfig {
     minSdkVersion 26

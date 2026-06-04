@@ -11,7 +11,6 @@ describe('useCameraCapture', () => {
     const { result, rerender } = renderHook(() => useCameraCapture());
 
     const mockTakePhoto = jest.fn();
-    // @ts-expect-error - assigning to readonly current for testing
     result.current.current = { takePhoto: mockTakePhoto };
 
     // Trigger capture

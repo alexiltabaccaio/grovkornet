@@ -1,6 +1,28 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
  
 
+// Polyfill Node fetch globals for Jest
+global.Response = globalThis.Response || global.Response;
+global.Request = globalThis.Request || global.Request;
+global.Headers = globalThis.Headers || global.Headers;
+global.fetch = globalThis.fetch || global.fetch;
+
+// Mock Expo's winter fetch native module
+jest.mock('../../node_modules/expo/src/winter/fetch/ExpoFetchModule', () => {
+  class StubNativeResponse {
+    addListener = jest.fn();
+    removeListener = jest.fn();
+    removeAllListeners = jest.fn();
+  }
+  class StubNativeRequest {}
+  return {
+    ExpoFetchModule: {
+      NativeRequest: StubNativeRequest,
+      NativeResponse: StubNativeResponse,
+    },
+  };
+});
+
 // Mock Reanimated BEFORE everything else
 jest.mock('react-native-reanimated', () => {
   const { View, Text, TextInput } = require('react-native');

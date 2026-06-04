@@ -11,15 +11,15 @@ import { SubPanels } from './SubPanels';
 import { useControlPanelGestures } from '../lib/useControlPanelGestures';
 
 import { GestureDetector } from 'react-native-gesture-handler';
-import Animated, { useAnimatedStyle, useAnimatedProps } from 'react-native-reanimated';
+import Animated, { useAnimatedStyle, useAnimatedProps, SharedValue } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const AnimatedTextInput = Animated.createAnimatedComponent(TextInput);
 
 interface ControlPanelProps {
-  translateY?: Animated.SharedValue<number>;
-  drawerAnimation?: Animated.SharedValue<number>;
-  galleryTransition?: Animated.SharedValue<number>;
+  translateY?: SharedValue<number>;
+  drawerAnimation?: SharedValue<number>;
+  galleryTransition?: SharedValue<number>;
 }
 
 export const ControlPanel = React.memo(({ translateY: externalTranslateY, drawerAnimation: externalDrawerAnimation, galleryTransition }: ControlPanelProps) => {

@@ -52,13 +52,13 @@ describe('LanguagePanel', () => {
     const { toJSON, UNSAFE_root } = render(<LanguagePanel animatedStyle={{ opacity: 1 }} />);
     expect(toJSON()).toBeDefined();
     
-    const controls = UNSAFE_root.findAllByType('ParameterControl');
+    const controls = UNSAFE_root.findAllByType('ParameterControl' as any);
     expect(controls).toHaveLength(2);
   });
 
   it('handles English flag selection correctly', () => {
     const { UNSAFE_root } = render(<LanguagePanel animatedStyle={{ opacity: 1 }} />);
-    const controls = UNSAFE_root.findAllByType('ParameterControl');
+    const controls = UNSAFE_root.findAllByType('ParameterControl' as any);
     
     // Press English control
     fireEvent.press(controls[0]);
@@ -69,7 +69,7 @@ describe('LanguagePanel', () => {
 
   it('handles Italian flag selection correctly', () => {
     const { UNSAFE_root } = render(<LanguagePanel animatedStyle={{ opacity: 1 }} />);
-    const controls = UNSAFE_root.findAllByType('ParameterControl');
+    const controls = UNSAFE_root.findAllByType('ParameterControl' as any);
     
     // Press Italian control
     fireEvent.press(controls[1]);
@@ -83,7 +83,7 @@ describe('LanguagePanel', () => {
     mockChangeLanguage.mockRejectedValueOnce(testError);
 
     const { UNSAFE_root } = render(<LanguagePanel animatedStyle={{ opacity: 1 }} />);
-    const controls = UNSAFE_root.findAllByType('ParameterControl');
+    const controls = UNSAFE_root.findAllByType('ParameterControl' as any);
     
     fireEvent.press(controls[0]);
     
@@ -101,7 +101,7 @@ describe('LanguagePanel', () => {
     mockChangeLanguage.mockRejectedValueOnce(testError);
 
     const { UNSAFE_root } = render(<LanguagePanel animatedStyle={{ opacity: 1 }} />);
-    const controls = UNSAFE_root.findAllByType('ParameterControl');
+    const controls = UNSAFE_root.findAllByType('ParameterControl' as any);
     
     fireEvent.press(controls[1]);
     
@@ -119,7 +119,7 @@ describe('LanguagePanel', () => {
     mockLanguage = 'en';
     mockActiveDetailPanel = 'lang_en';
     let { UNSAFE_root, rerender } = render(<LanguagePanel animatedStyle={{ opacity: 1 }} />);
-    let controls = UNSAFE_root.findAllByType('ParameterControl');
+    let controls = UNSAFE_root.findAllByType('ParameterControl' as any);
     expect(controls[0].props.isActive).toBe(true);
     expect(controls[1].props.isActive).toBe(false);
 
@@ -127,7 +127,7 @@ describe('LanguagePanel', () => {
     mockLanguage = 'en';
     mockActiveDetailPanel = 'lang_it';
     rerender(<LanguagePanel animatedStyle={{ opacity: 1 }} />);
-    controls = UNSAFE_root.findAllByType('ParameterControl');
+    controls = UNSAFE_root.findAllByType('ParameterControl' as any);
     expect(controls[0].props.isActive).toBe(true); // true because language is en
     expect(controls[1].props.isActive).toBe(true); // true because activeDetailPanel is lang_it
 
@@ -135,7 +135,7 @@ describe('LanguagePanel', () => {
     mockLanguage = 'it';
     mockActiveDetailPanel = 'lang_en';
     rerender(<LanguagePanel animatedStyle={{ opacity: 1 }} />);
-    controls = UNSAFE_root.findAllByType('ParameterControl');
+    controls = UNSAFE_root.findAllByType('ParameterControl' as any);
     expect(controls[0].props.isActive).toBe(true); // true because activeDetailPanel is lang_en
     expect(controls[1].props.isActive).toBe(true); // true because language is it
 
@@ -143,7 +143,7 @@ describe('LanguagePanel', () => {
     mockLanguage = 'it';
     mockActiveDetailPanel = 'lang_it';
     rerender(<LanguagePanel animatedStyle={{ opacity: 1 }} />);
-    controls = UNSAFE_root.findAllByType('ParameterControl');
+    controls = UNSAFE_root.findAllByType('ParameterControl' as any);
     expect(controls[0].props.isActive).toBe(false);
     expect(controls[1].props.isActive).toBe(true);
   });

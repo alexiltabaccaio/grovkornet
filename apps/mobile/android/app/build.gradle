@@ -15,7 +15,7 @@ react {
         entryFile = file("../../index.ts")
     }
     reactNativeDir = new File(["node", "--print", "require.resolve('react-native/package.json')"].execute(null, rootDir).text.trim()).getParentFile().getAbsoluteFile()
-    hermesCommand = new File(["node", "--print", "require.resolve('react-native/package.json')"].execute(null, rootDir).text.trim()).getParentFile().getAbsolutePath() + "/sdks/hermesc/%OS-BIN%/hermesc"
+    hermesCommand = new File(["node", "--print", "require.resolve('hermes-compiler/package.json')"].execute(null, rootDir).text.trim()).getParentFile().getAbsolutePath() + "/hermesc/%OS-BIN%/hermesc"
     codegenDir = new File(["node", "--print", "require.resolve('@react-native/codegen/package.json', { paths: [require.resolve('react-native/package.json')] })"].execute(null, rootDir).text.trim()).getParentFile().getAbsoluteFile()
 
     // Use Expo CLI to bundle the app, this ensures the Metro config
@@ -230,4 +230,50 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
     androidTestImplementation "io.mockk:mockk-android:1.13.5"
+}
+
+task patchGraphicsConversions {
+    doFirst {
+        println "Executing patchGraphicsConversions task..."
+        def cachesDir = new File(System.getProperty("user.home"), ".gradle/caches")
+        if (cachesDir.exists()) {
+            cachesDir.eachDir { gradleVersionDir ->
+                def transformsDir = new File(gradleVersionDir, "transforms")
+                if (transformsDir.exists()) {
+                    transformsDir.eachDir { transformHashDir ->
+                        def transformedDir = new File(transformHashDir, "transformed")
+                        if (transformedDir.exists()) {
+                            transformedDir.eachDir { candidateDir ->
+                                if (candidateDir.name.startsWith("react-android")) {
+                                    def file = new File(candidateDir, "prefab/modules/reactnative/include/react/renderer/core/graphicsConversions.h")
+                                    if (file.exists()) {
+                                        def content = file.text
+                                        if (content.contains("return std::format(\"{}%\", dimension.value);")) {
+                                            println "Patching: ${file.absolutePath}"
+                                            content = content.replace(
+                                                "return std::format(\"{}%\", dimension.value);",
+                                                """char buffer[32];
+      snprintf(buffer, sizeof(buffer), "%g%%", dimension.value);
+      return std::string(buffer);"""
+                                            )
+                                            file.text = content
+                                            println "Successfully patched: ${file.absolutePath}"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+preBuild.dependsOn patchGraphicsConversions
+
+tasks.configureEach { task ->
+    if (task.name.contains("CMake") || task.name.contains("ExternalNativeBuild") || task.name.contains("generateJsonModel") || task.name.contains("prefab")) {
+        task.dependsOn patchGraphicsConversions
+    }
 }

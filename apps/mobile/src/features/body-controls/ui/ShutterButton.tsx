@@ -4,13 +4,14 @@ import Animated, {
   useSharedValue, 
   useAnimatedStyle, 
   withSpring, 
+  SharedValue,
 } from 'react-native-reanimated';
 import * as Haptics from '@shared/lib/haptics';
 
 interface ShutterButtonProps {
   onPress: () => void;
   disabled?: boolean;
-  translateY?: Animated.SharedValue<number>;
+  translateY?: SharedValue<number>;
 }
 
 export const ShutterButton = ({ onPress, disabled, translateY }: ShutterButtonProps) => {

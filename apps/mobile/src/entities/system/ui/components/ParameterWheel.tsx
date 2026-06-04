@@ -9,6 +9,7 @@ import Animated, {
   withTiming,
   runOnJS,
   useAnimatedReaction,
+  SharedValue,
 } from 'react-native-reanimated';
 import { ParameterType } from '../../model/types';
 const ITEM_WIDTH = 120;
@@ -146,7 +147,7 @@ export const ParameterWheel = ({
 interface WheelItemComponentProps {
   item: WheelItem;
   index: number;
-  dragX: Animated.SharedValue<number>;
+  dragX: SharedValue<number>;
   virtualItemsLength: number;
   handlePressWithDouble: (param: ParameterType, action: () => void) => void;
   setActiveParameter: (param: ParameterType | 'none') => void;

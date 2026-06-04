@@ -553,7 +553,8 @@ function generateViewfinderProps(parameters) {
     autoFocus: 'focusAuto as unknown as SharedValue<boolean | undefined>',
     torchState: 'torchState as unknown as SharedValue<number | undefined>',
     force4k60fpsCrop: 'resolvedForce4k60fpsCrop as unknown as SharedValue<boolean | undefined>',
-    secureViewEnabled: 'isCameraSecure'
+    secureViewEnabled: 'isCameraSecure',
+    panelY: 'panelY as unknown as SharedValue<number | undefined>'
   };
 
   // 1. Selector destructuring (FILM store parameters ONLY)
@@ -566,35 +567,40 @@ function generateViewfinderProps(parameters) {
     .join('\n');
   replaceBetweenMarkers(FILE_PATHS.zustandViewfinder, '    // @@GEN_SELECTOR_START@@', '    // @@GEN_SELECTOR_END@@', selectorContent, '    ');
 
-  // 2. JSX Prop mapping
-  const OTHER_DESTRUCTURED_PROPS = new Set(['isoAuto', 'shutterSpeedAuto', 'focusDistance', 'iso', 'ev', 'resolutionSetting']);
+  // 2. Filter prop params
+  const OTHER_DESTRUCTURED_PROPS = new Set(['isoAuto', 'shutterSpeedAuto', 'focusDistance', 'iso', 'ev', 'resolutionSetting', 'panelY']);
   const propParams = parameters.filter(p => {
     if (!p.ts || !p.ts.type) return false;
     const propName = p.ts.name || p.name;
     return VIEWFINDER_PROP_EXPRESSIONS[propName] || p.zustand || OTHER_DESTRUCTURED_PROPS.has(propName);
   });
 
-  const propsContent = propParams
+  // 3. Generate animated props content for useAnimatedProps
+  const animatedPropsContent = propParams
+    .filter(p => {
+      const propName = p.ts.name || p.name;
+      return propName !== 'cameraId' && propName !== 'secureViewEnabled';
+    })
     .map(p => {
       const propName = p.ts.name || p.name;
       const stateName = p.zustand?.name || p.name;
       
-      let expr = '';
+      let baseVar = stateName;
       if (VIEWFINDER_PROP_EXPRESSIONS[propName]) {
-        expr = VIEWFINDER_PROP_EXPRESSIONS[propName];
-      } else {
-        const type = p.ts.type;
-        if (type === 'boolean') {
-          expr = `${stateName} as unknown as SharedValue<boolean | undefined>`;
-        } else if (type === 'string') {
-          expr = stateName;
-        } else {
-          expr = `${stateName} as unknown as SharedValue<number | undefined>`;
+        const expr = VIEWFINDER_PROP_EXPRESSIONS[propName];
+        if (expr.includes(' as ')) {
+          baseVar = expr.split(' as ')[0];
         }
       }
-      return `${propName}={${expr}}`;
+      return `${propName}: ${baseVar}.value,`;
     })
     .join('\n');
+  replaceBetweenMarkers(FILE_PATHS.zustandViewfinder, '      // @@GEN_ANIMATED_PROPS_START@@', '      // @@GEN_ANIMATED_PROPS_END@@', animatedPropsContent, '      ');
+
+  // 4. Generate JSX Props
+  const propsContent = `animatedProps={animatedProps}
+cameraId={cameraAuto ? undefined : cameraId}
+secureViewEnabled={isCameraSecure}`;
   replaceBetweenMarkers(FILE_PATHS.zustandViewfinder, '        // @@GEN_PROPS_START@@', '        // @@GEN_PROPS_END@@', propsContent, '        ');
 }
 

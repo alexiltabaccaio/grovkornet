@@ -38,7 +38,7 @@ export const FlashOverlay = () => {
 
 const styles = StyleSheet.create({
   overlay: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     backgroundColor: 'white',
     zIndex: 999,
   },

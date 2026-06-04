@@ -8,22 +8,11 @@ import { useFilmStore } from '@entities/film';
 
 // Mock NativeRenderer
 jest.mock('@entities/lens/ui/NativeRenderer', () => {
-  const { View } = require('react-native') as typeof import('react-native');
+  const { View } = require('react-native');
   return {
-    NativeRenderer: (props: unknown) => <View testID="native-camera" {...(props as Record<string, unknown>)} />,
+    NativeRenderer: (props: any) => <View testID="native-camera" {...props} />,
   };
 });
-
-interface MockCameraInstance {
-  props: {
-    saturation: { value: number };
-    iso: { value: number };
-    cameraAspectRatio: { value: number };
-    onDebugUpdate: (event: { nativeEvent: { fps: number; hwFps: number; resolution: string } }) => void;
-    onExposureUpdate: (event: { nativeEvent: { iso: number; shutterSpeed: number } }) => void;
-  };
-}
-
 describe('Viewfinder', () => {
   it('correctly maps store values to NativeFilmCamera props', () => {
     const bodyStore = useBodyStore.getState();
@@ -37,21 +26,21 @@ describe('Viewfinder', () => {
     bodyStore.aspectRatio.value = 1; // 16:9
 
     const { getByTestId } = render(<Viewfinder />);
-    const nativeCamera = getByTestId('native-camera') as unknown as MockCameraInstance;
+    const nativeCamera = getByTestId('native-camera');
 
     // Check if props match store values
-    expect(nativeCamera.props.saturation.value).toBe(1.5);
-    expect((nativeCamera.props as any).satRed.value).toBe(75.0);
-    expect((nativeCamera.props as any).satBlue.value).toBe(25.0);
-    expect(nativeCamera.props.iso.value).toBe(400);
-    expect(nativeCamera.props.cameraAspectRatio.value).toBe(1);
+    expect(nativeCamera.props.animatedProps.saturation).toBe(1.5);
+    expect(nativeCamera.props.animatedProps.satRed).toBe(75.0);
+    expect(nativeCamera.props.animatedProps.satBlue).toBe(25.0);
+    expect(nativeCamera.props.animatedProps.iso).toBe(400);
+    expect(nativeCamera.props.animatedProps.cameraAspectRatio).toBe(1);
   });
 
   it('handles debug update events', () => {
     const bodyStore = useBodyStore.getState();
 
     const { getByTestId } = render(<Viewfinder />);
-    const nativeCamera = getByTestId('native-camera') as unknown as MockCameraInstance;
+    const nativeCamera = getByTestId('native-camera');
 
     // Simulate native event
     nativeCamera.props.onDebugUpdate({
@@ -72,7 +61,7 @@ describe('Viewfinder', () => {
     bodyStore.isoAuto.value = true;
     
     const { getByTestId } = render(<Viewfinder />);
-    const nativeCamera = getByTestId('native-camera') as unknown as MockCameraInstance;
+    const nativeCamera = getByTestId('native-camera');
 
     // Simulate exposure update from native side
     nativeCamera.props.onExposureUpdate({

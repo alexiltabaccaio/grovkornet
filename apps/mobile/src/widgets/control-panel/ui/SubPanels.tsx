@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
-import Animated, { useAnimatedStyle } from 'react-native-reanimated';
+import Animated, { useAnimatedStyle, SharedValue } from 'react-native-reanimated';
 import { useShallow } from 'zustand/react/shallow';
 import { useSystemStore } from '@entities/system';
 
@@ -10,7 +10,7 @@ import { ChromaticAberrationSubPanel } from '@features/lens-controls';
 import { ZoomSubPanel, TorchSubPanel, ResolutionSubPanel, AspectRatioSubPanel } from '@features/body-controls';
 
 interface SubPanelsProps {
-  translateY: Animated.SharedValue<number>;
+  translateY: SharedValue<number>;
 }
 
 export const SubPanels = React.memo(({ translateY }: SubPanelsProps) => {

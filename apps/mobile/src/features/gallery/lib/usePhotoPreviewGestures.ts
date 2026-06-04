@@ -161,8 +161,6 @@ export const usePhotoPreviewGestures = ({
             {
               velocity: velocity,
               overshootClamping: true,
-              restDisplacementThreshold: 0.01,
-              restSpeedThreshold: 0.01,
             },
             (finished) => {
               if (finished) runOnJS(finalizeTransition)(targetIndex, true);
@@ -172,8 +170,6 @@ export const usePhotoPreviewGestures = ({
           translateX.value = withSpring(targetTranslateX, {
             velocity: velocity,
             overshootClamping: true,
-            restDisplacementThreshold: 0.01,
-            restSpeedThreshold: 0.01,
           });
         }
       }

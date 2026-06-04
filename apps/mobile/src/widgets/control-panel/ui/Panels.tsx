@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet } from 'react-native';
-import Animated, { useAnimatedStyle, interpolate, Extrapolation } from 'react-native-reanimated';
+import Animated, { useAnimatedStyle, interpolate, Extrapolation, SharedValue } from 'react-native-reanimated';
 import { useShallow } from 'zustand/react/shallow';
 import { useSystemStore } from '@entities/system';
 
@@ -34,7 +34,7 @@ const SLIDER_PARAMETERS = [
 ];
 
 interface PanelsProps {
-  translateY: Animated.SharedValue<number>;
+  translateY: SharedValue<number>;
 }
 
 export const Panels = React.memo(({ translateY }: PanelsProps) => {
@@ -54,7 +54,7 @@ export const Panels = React.memo(({ translateY }: PanelsProps) => {
       opacity,
       pointerEvents: translateY.value <= -15 ? 'auto' : 'none'
     };
-  });
+  }) as any;
 
   const isSlider = SLIDER_PARAMETERS.includes(activeParameter);
   const sliderParameter = isSlider ? activeParameter : 'grain';

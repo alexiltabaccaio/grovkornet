@@ -6,13 +6,7 @@
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
-    "newArchEnabled": true,
     "backgroundColor": "#0e0e0e",
-    "splash": {
-      "image": "./assets/splash-icon.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#0e0e0e"
-    },
     "ios": {
       "supportsTablet": true,
       "infoPlist": {
@@ -34,15 +28,23 @@
       "package": "com.grovkornet.app",
       "versionCode": 6
     },
-    "androidNavigationBar": {
-      "backgroundColor": "#0e0e0e"
-    },
     "web": {
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
       "expo-asset",
       "expo-font",
+      "expo-image",
+      "expo-localization",
+      "expo-status-bar",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/splash-icon.png",
+          "resizeMode": "contain",
+          "backgroundColor": "#0e0e0e"
+        }
+      ],
       [
         "expo-media-library",
         {

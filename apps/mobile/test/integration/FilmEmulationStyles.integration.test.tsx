@@ -31,7 +31,7 @@ describe('FilmEmulationStyles Integration', () => {
     await waitFor(() => expect(queryByText('camera.requesting_permissions')).toBeNull());
 
     // Click on Film section in Footer
-    const filmSection = getByLabelText(/sections\.film/i) as unknown as { props: unknown };
+    const filmSection = getByLabelText(/sections\.film/i) as any;
     expect(filmSection).toBeDefined();
 
     act(() => {

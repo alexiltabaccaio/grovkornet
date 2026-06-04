@@ -5,7 +5,7 @@ import Animated, { useSharedValue, useAnimatedStyle, withTiming, Easing, withSpr
 import { useState } from 'react';
 import { useSystemStore } from '@entities/system';
 import { useShallow } from 'zustand/react/shallow';
-import * as MediaLibrary from 'expo-media-library';
+import * as MediaLibrary from 'expo-media-library/legacy';
 import { logger } from '@shared/lib/logger';
 import * as Haptics from '@shared/lib/haptics';
 

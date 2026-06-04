@@ -2,11 +2,11 @@ import { useEffect, useMemo, useRef } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 import { useSystemStore } from '@entities/system';
 import { Gesture } from 'react-native-gesture-handler';
-import Animated, { useSharedValue, withTiming, withSpring } from 'react-native-reanimated';
+import Animated, { useSharedValue, withTiming, withSpring, SharedValue } from 'react-native-reanimated';
 
 interface UseControlPanelGesturesProps {
-  externalTranslateY?: Animated.SharedValue<number>;
-  externalDrawerAnimation?: Animated.SharedValue<number>;
+  externalTranslateY?: SharedValue<number>;
+  externalDrawerAnimation?: SharedValue<number>;
 }
 
 const MAX_UP = -250; // Maximum height (open)

@@ -6,7 +6,7 @@ import { useLensStore } from '@entities/lens';
 import { useFilmStore } from '@entities/film';
 import { useSystemStore } from '@entities/system';
 import { NativeRenderer } from '@entities/lens';
-import Animated, { useDerivedValue, SharedValue, useSharedValue, withSpring } from 'react-native-reanimated';
+import Animated, { useDerivedValue, SharedValue, useSharedValue, withSpring, useAnimatedProps } from 'react-native-reanimated';
 import { GestureDetector, Gesture } from 'react-native-gesture-handler';
 import { useVerificationStore } from '@entities/verification';
 import { FlashOverlay } from '@features/body-controls';
@@ -210,6 +210,78 @@ export const Viewfinder = React.memo(({ cameraKey, translateY, drawerAnimation }
     return Gesture.Simultaneous(pinch, doubleTap);
   }, [zoom, bodyWorklets, startZoom]);
 
+  const animatedProps = useAnimatedProps(() => {
+    return {
+      // @@GEN_ANIMATED_PROPS_START@@
+      saturation: saturation.value,
+      contrast: contrast.value,
+      grainIntensity: grainIntensity.value,
+      grainChroma: grainChroma.value,
+      grainSize: grainSize.value,
+      grainSpeed: grainSpeed.value,
+      vignetteIntensity: vignetteIntensity.value,
+      chromaShift: chromaShift.value,
+      ev: ev.value,
+      whiteBalance: temperature.value,
+      tint: tint.value,
+      bloomIntensity: bloomIntensity.value,
+      chromaticAberration: chromaticAberration.value,
+      chromaShiftDirection: chromaShiftDirection.value,
+      sharpening: sharpening.value,
+      satRed: satRed.value,
+      satOrange: satOrange.value,
+      satYellow: satYellow.value,
+      satGreen: satGreen.value,
+      satCyan: satCyan.value,
+      satBlue: satBlue.value,
+      satPurple: satPurple.value,
+      satMagenta: satMagenta.value,
+      targetFps: fpsSetting.value,
+      cameraAspectRatio: aspectRatio.value,
+      aberrationInvert: aberrationInvert.value,
+      boundMagentaRed: boundMagentaRed.value,
+      boundRedOrange: boundRedOrange.value,
+      boundOrangeYellow: boundOrangeYellow.value,
+      boundYellowGreen: boundYellowGreen.value,
+      boundGreenCyan: boundGreenCyan.value,
+      boundCyanBlue: boundCyanBlue.value,
+      boundBluePurple: boundBluePurple.value,
+      boundPurpleMagenta: boundPurpleMagenta.value,
+      grainRoughness: grainRoughness.value,
+      panelY: panelY.value,
+      grainEnabled: grainEnabled.value,
+      bloomEnabled: bloomEnabled.value,
+      noiseReduction: resolvedNoiseReduction.value,
+      noiseReductionAuto: noiseReductionAuto.value,
+      isoAuto: isoAuto.value,
+      shutterSpeedAuto: shutterSpeedAuto.value,
+      whiteBalanceAuto: temperatureAuto.value,
+      autoFocus: focusAuto.value,
+      iso: iso.value,
+      exposureTime: shutterSpeed.value,
+      focusDistance: focusDistance.value,
+      torchState: torchState.value,
+      torchStrength: resolvedTorchStrength.value,
+      resolutionSetting: resolutionSetting.value,
+      previewIn4k: resolvedPreviewIn4k.value,
+      force4k60fpsCrop: resolvedForce4k60fpsCrop.value,
+      isSelfieCamera: isSelfieCamera.value,
+      blackLevel: blackLevel.value,
+      highlights: highlights.value,
+      pivot: pivot.value,
+      contrastAuto: contrastAuto.value,
+      blackLevelAuto: blackLevelAuto.value,
+      highlightsAuto: highlightsAuto.value,
+      pivotAuto: pivotAuto.value,
+      zoom: zoom.value,
+      pixelationFactor: pixelationFactor.value,
+      tapeJitter: tapeJitter.value,
+      scanlines: scanlines.value,
+      chromaShiftInvert: chromaShiftInvert.value,
+      // @@GEN_ANIMATED_PROPS_END@@
+    };
+  });
+
   return (
     <View style={styles.container} onLayout={handleLayout}>
       <GestureDetector gesture={gestures}>
@@ -219,74 +291,10 @@ export const Viewfinder = React.memo(({ cameraKey, translateY, drawerAnimation }
             key={`camera-${cameraKey}-${isCameraSecure}`}
             style={StyleSheet.absoluteFill}
             // @@GEN_PROPS_START@@
-        saturation={saturation as unknown as SharedValue<number | undefined>}
-        contrast={contrast as unknown as SharedValue<number | undefined>}
-        grainIntensity={grainIntensity as unknown as SharedValue<number | undefined>}
-        grainChroma={grainChroma as unknown as SharedValue<number | undefined>}
-        grainSize={grainSize as unknown as SharedValue<number | undefined>}
-        grainSpeed={grainSpeed as unknown as SharedValue<number | undefined>}
-        vignetteIntensity={vignetteIntensity as unknown as SharedValue<number | undefined>}
-        chromaShift={chromaShift as unknown as SharedValue<number | undefined>}
-        ev={ev as unknown as SharedValue<number | undefined>}
-        whiteBalance={temperature as unknown as SharedValue<number | undefined>}
-        tint={tint as unknown as SharedValue<number | undefined>}
-        bloomIntensity={bloomIntensity as unknown as SharedValue<number | undefined>}
-        chromaticAberration={chromaticAberration as unknown as SharedValue<number | undefined>}
-        chromaShiftDirection={chromaShiftDirection as unknown as SharedValue<number | undefined>}
-        sharpening={sharpening as unknown as SharedValue<number | undefined>}
-        satRed={satRed as unknown as SharedValue<number | undefined>}
-        satOrange={satOrange as unknown as SharedValue<number | undefined>}
-        satYellow={satYellow as unknown as SharedValue<number | undefined>}
-        satGreen={satGreen as unknown as SharedValue<number | undefined>}
-        satCyan={satCyan as unknown as SharedValue<number | undefined>}
-        satBlue={satBlue as unknown as SharedValue<number | undefined>}
-        satPurple={satPurple as unknown as SharedValue<number | undefined>}
-        satMagenta={satMagenta as unknown as SharedValue<number | undefined>}
-        targetFps={fpsSetting as unknown as SharedValue<number | undefined>}
-        cameraAspectRatio={aspectRatio as unknown as SharedValue<number | undefined>}
-        aberrationInvert={aberrationInvert as unknown as SharedValue<boolean | undefined>}
-        boundMagentaRed={boundMagentaRed as unknown as SharedValue<number | undefined>}
-        boundRedOrange={boundRedOrange as unknown as SharedValue<number | undefined>}
-        boundOrangeYellow={boundOrangeYellow as unknown as SharedValue<number | undefined>}
-        boundYellowGreen={boundYellowGreen as unknown as SharedValue<number | undefined>}
-        boundGreenCyan={boundGreenCyan as unknown as SharedValue<number | undefined>}
-        boundCyanBlue={boundCyanBlue as unknown as SharedValue<number | undefined>}
-        boundBluePurple={boundBluePurple as unknown as SharedValue<number | undefined>}
-        boundPurpleMagenta={boundPurpleMagenta as unknown as SharedValue<number | undefined>}
-        grainRoughness={grainRoughness as unknown as SharedValue<number | undefined>}
-        grainEnabled={grainEnabled as unknown as SharedValue<boolean | undefined>}
-        bloomEnabled={bloomEnabled as unknown as SharedValue<boolean | undefined>}
-        noiseReduction={resolvedNoiseReduction as unknown as SharedValue<number | undefined>}
-        noiseReductionAuto={noiseReductionAuto as unknown as SharedValue<boolean | undefined>}
-        isoAuto={isoAuto as unknown as SharedValue<boolean | undefined>}
-        shutterSpeedAuto={shutterSpeedAuto as unknown as SharedValue<boolean | undefined>}
-        whiteBalanceAuto={temperatureAuto as unknown as SharedValue<boolean | undefined>}
-        autoFocus={focusAuto as unknown as SharedValue<boolean | undefined>}
-        iso={iso as unknown as SharedValue<number | undefined>}
-        exposureTime={shutterSpeed as unknown as SharedValue<number | undefined>}
-        focusDistance={focusDistance as unknown as SharedValue<number | undefined>}
-        torchState={torchState as unknown as SharedValue<number | undefined>}
-        torchStrength={resolvedTorchStrength as unknown as SharedValue<number | undefined>}
+        animatedProps={animatedProps}
         cameraId={cameraAuto ? undefined : cameraId}
-        resolutionSetting={resolutionSetting as unknown as SharedValue<number | undefined>}
-        previewIn4k={resolvedPreviewIn4k as unknown as SharedValue<boolean | undefined>}
-        force4k60fpsCrop={resolvedForce4k60fpsCrop as unknown as SharedValue<boolean | undefined>}
         secureViewEnabled={isCameraSecure}
-        isSelfieCamera={isSelfieCamera as unknown as SharedValue<boolean | undefined>}
-        blackLevel={blackLevel as unknown as SharedValue<number | undefined>}
-        highlights={highlights as unknown as SharedValue<number | undefined>}
-        pivot={pivot as unknown as SharedValue<number | undefined>}
-        contrastAuto={contrastAuto as unknown as SharedValue<boolean | undefined>}
-        blackLevelAuto={blackLevelAuto as unknown as SharedValue<boolean | undefined>}
-        highlightsAuto={highlightsAuto as unknown as SharedValue<boolean | undefined>}
-        pivotAuto={pivotAuto as unknown as SharedValue<boolean | undefined>}
-        zoom={zoom as unknown as SharedValue<number | undefined>}
-        pixelationFactor={pixelationFactor as unknown as SharedValue<number | undefined>}
-        tapeJitter={tapeJitter as unknown as SharedValue<number | undefined>}
-        scanlines={scanlines as unknown as SharedValue<number | undefined>}
-        chromaShiftInvert={chromaShiftInvert as unknown as SharedValue<boolean | undefined>}
         // @@GEN_PROPS_END@@
-            panelY={panelY as unknown as SharedValue<number | undefined>}
             onCapabilitiesUpdate={capabilitiesHandler}
             onDebugUpdate={debugHandler}
             onExposureUpdate={exposureHandler}

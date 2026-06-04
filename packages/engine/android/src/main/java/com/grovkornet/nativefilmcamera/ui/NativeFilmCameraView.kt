@@ -113,7 +113,7 @@ class NativeFilmCameraView(context: Context) : SurfaceView(context), SurfaceHold
         val cameraListener = object : CameraEngine.Listener {
             override fun onExposureUpdate(iso: Int, shutterSpeed: Double, focusDistance: Float, noiseReduction: Int) {
                 if (isReleased) return
-                onExposureUpdate(mapOf(
+                this@NativeFilmCameraView.onExposureUpdate(mapOf(
                     "iso" to iso,
                     "shutterSpeed" to shutterSpeed,
                     "focusDistance" to focusDistance.toDouble(),
@@ -123,7 +123,8 @@ class NativeFilmCameraView(context: Context) : SurfaceView(context), SurfaceHold
 
             override fun onCapabilitiesUpdate(capabilities: WritableMap) {
                 if (isReleased) return
-                onCapabilitiesUpdate(capabilities.toHashMap())
+                @Suppress("UNCHECKED_CAST")
+                this@NativeFilmCameraView.onCapabilitiesUpdate(capabilities.toHashMap().filterValues { it != null } as Map<String, Any>)
             }
 
             override fun onCameraResolutionDetected(width: Int, height: Int) {
@@ -132,14 +133,14 @@ class NativeFilmCameraView(context: Context) : SurfaceView(context), SurfaceHold
                 cameraHeight = height
                 renderThread?.updateCameraResolution(width, height)
                 
-                onDebugUpdate(mapOf(
+                this@NativeFilmCameraView.onDebugUpdate(mapOf(
                     "resolution" to "${width}x${height}"
                 ))
             }
 
             override fun onPhotoCaptured(uri: String) {
                 if (isReleased) return
-                onPhotoCaptured(mapOf("uri" to uri))
+                this@NativeFilmCameraView.onPhotoCaptured(mapOf("uri" to uri))
             }
         }
 

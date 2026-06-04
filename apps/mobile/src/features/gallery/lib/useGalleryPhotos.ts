@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { AppState } from 'react-native';
-import * as MediaLibrary from 'expo-media-library';
+import * as MediaLibrary from 'expo-media-library/legacy';
 import { logger } from '@shared/lib/logger';
 import { GalleryItem } from './types';
 

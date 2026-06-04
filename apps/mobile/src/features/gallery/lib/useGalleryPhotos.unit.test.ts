@@ -1,6 +1,6 @@
 import { renderHook, waitFor } from '@testing-library/react-native';
 import { useGalleryPhotos } from './useGalleryPhotos';
-import * as MediaLibrary from 'expo-media-library';
+import * as MediaLibrary from 'expo-media-library/legacy';
 
 describe('useGalleryPhotos', () => {
   beforeEach(() => {

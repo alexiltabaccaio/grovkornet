@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import { CONFIG } from '@shared/config';
 import { logger } from '@shared/lib/logger';
-import * as FileSystem from 'expo-file-system';
+import * as FileSystem from 'expo-file-system/legacy';
 
 const getCachePath = (prefix: string) => {
   return `${FileSystem.cacheDirectory}${prefix}_${Date.now()}.jpg`;

@@ -1,20 +1,20 @@
 import React from 'react';
 import { StyleSheet, useWindowDimensions } from 'react-native';
-import Animated, { useAnimatedStyle } from 'react-native-reanimated';
+import Animated, { useAnimatedStyle, SharedValue } from 'react-native-reanimated';
 import { Image } from 'expo-image';
 import { GalleryItem } from '../../lib/types';
 
 interface AnimatedSlotProps {
   photo: GalleryItem;
   index: number;
-  translateX: Animated.SharedValue<number>;
+  translateX: SharedValue<number>;
   slotWidth: number;
   gap: number;
-  rotationY?: Animated.SharedValue<number>;
-  zoomScale?: Animated.SharedValue<number>;
-  zoomTranslateX?: Animated.SharedValue<number>;
-  zoomTranslateY?: Animated.SharedValue<number>;
-  currentIndex?: Animated.SharedValue<number>;
+  rotationY?: SharedValue<number>;
+  zoomScale?: SharedValue<number>;
+  zoomTranslateX?: SharedValue<number>;
+  zoomTranslateY?: SharedValue<number>;
+  currentIndex?: SharedValue<number>;
 }
 
 export const AnimatedSlot = ({

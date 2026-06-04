@@ -1,0 +1,13 @@
+diff --git a/node_modules/expo/tsconfig.base.json b/node_modules/expo/tsconfig.base.json
+index fe79f80..836b27a 100644
+--- a/node_modules/expo/tsconfig.base.json
++++ b/node_modules/expo/tsconfig.base.json
+@@ -7,7 +7,7 @@
+     "esModuleInterop": true,
+     "jsx": "react-jsx",
+     "lib": ["DOM", "ESNext"],
+-    "module": "preserve",
++    "module": "ESNext",
+     "moduleDetection": "force",
+     "moduleResolution": "bundler",
+     "customConditions": ["react-native"],
