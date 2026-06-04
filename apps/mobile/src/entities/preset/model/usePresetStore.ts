@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import { createZustandMMKVStorage } from '@shared/lib/storage/mmkv';
+import i18n from 'i18next';
 import {
   // @@GEN_IMPORTS_START@@
   DEFAULT_ABERRATION_INVERT,
@@ -231,10 +232,12 @@ export const usePresetStore = create<PresetStore>()(
 
       getQuickSelectList: () => {
         const { userPresets, customizedPayload, activePresetId } = get();
-        const list = [{ id: 'default', name: 'Default' }];
+        const tDefault = i18n.t ? i18n.t('presets.default', 'Default') : 'Default';
+        const list = [{ id: 'default', name: tDefault || 'Default' }];
         
         if (customizedPayload) {
-          list.push({ id: 'customized', name: 'Personalizzato' });
+          const tCustomized = i18n.t ? i18n.t('presets.customized', 'Custom') : 'Custom';
+          list.push({ id: 'customized', name: tCustomized || 'Custom' });
         }
 
         const sortedPresets = [...userPresets].sort((a, b) => {

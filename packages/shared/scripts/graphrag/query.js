@@ -7,19 +7,19 @@ const __dirname = path.dirname(__filename);
 
 const graphPath = path.resolve(__dirname, './output.graph.json');
 if (!fs.existsSync(graphPath)) {
-  console.error("❌ Grafo non trovato! Esegui prima 'node builder.js'.");
+  console.error("❌ Graph not found! Please run 'node builder.js' first.");
   process.exit(1);
 }
 
-// Carichiamo il grafo serializzato
+// Load the serialized graph
 const graphData = JSON.parse(fs.readFileSync(graphPath, 'utf8'));
 
-// Parsiamo gli argomenti della CLI (semplice parser senza librerie esterne)
+// Parse the CLI arguments (simple parser without external libraries)
 const args = process.argv.slice(2);
 const params = {
   node: '',
   depth: 2,
-  direction: 'in' // 'in' (dipendenti / chi mi usa), 'out' (dipendenze / cosa uso), 'both' (entrambi)
+  direction: 'in' // 'in' (dependents / who uses me), 'out' (dependencies / what I use), 'both' (both)
 };
 
 for (let i = 0; i < args.length; i++) {
@@ -34,20 +34,20 @@ for (let i = 0; i < args.length; i++) {
 
 if (!params.node) {
   console.log(`
-Uso: node query.js --node=<stringa_di_ricerca> [--depth=<numero>] [--direction=in|out|both]
+Usage: node query.js --node=<search_string> [--depth=<number>] [--direction=in|out|both]
 
-Parametri:
-  --node       Nome del file o del simbolo da cercare (ricerca parziale)
-  --depth      Profondità dell'esplorazione delle dipendenze (default: 2)
-  --direction  Direzione delle relazioni da seguire:
-                 - 'in'   : Chi usa questo nodo (dipendenti)
-                 - 'out'  : Cosa usa questo nodo (dipendenze)
-                 - 'both' : Entrambi i versi
+Parameters:
+  --node       Name of the file or symbol to search for (partial search)
+  --depth      Exploration depth of the dependencies (default: 2)
+  --direction  Direction of the relations to follow:
+                 - 'in'   : Who uses this node (dependents)
+                 - 'out'  : What this node uses (dependencies)
+                 - 'both' : Both directions
 `);
   process.exit(0);
 }
 
-// Costruiamo una rappresentazione del grafo per query veloci
+// Build a representation of the graph for fast queries
 const nodes = new Map(); // id -> nodeAttributes
 const adjListIn = new Map(); // target -> list of { source, relation }
 const adjListOut = new Map(); // source -> list of { target, relation }
@@ -69,7 +69,7 @@ for (const edge of graphData.edges) {
   }
 }
 
-// 1. Trova i nodi di partenza (matching parziale dell'ID)
+// 1. Find start nodes (partial ID matching)
 const startNodes = [];
 const searchLower = params.node.toLowerCase();
 
@@ -80,15 +80,15 @@ for (const nodeId of nodes.keys()) {
 }
 
 if (startNodes.length === 0) {
-  console.log(`❌ Nessun nodo trovato corrispondente a "${params.node}".`);
+  console.log(`❌ No matching node found for "${params.node}".`);
   process.exit(0);
 }
 
-console.log(`🔍 Nodi di partenza trovati (${startNodes.length}):`);
-startNodes.forEach(n => console.log(`  - ${n} [tipo: ${nodes.get(n).type}]`));
+console.log(`🔍 Start nodes found (${startNodes.length}):`);
+startNodes.forEach(n => console.log(`  - ${n} [type: ${nodes.get(n).type}]`));
 console.log("");
 
-// 2. BFS per estrarre il sottografo
+// 2. BFS to extract the subgraph
 const visited = new Set();
 const subgraphNodes = new Map(); // id -> attributes
 const subgraphEdges = []; // array di { source, target, relation }
@@ -108,7 +108,7 @@ while (queue.length > 0) {
 
   const nextEdges = [];
   
-  // Raccogli archi in entrata (chi dipende da me / chi mi usa)
+  // Collect incoming edges (who depends on me / who uses me)
   if (params.direction === 'in' || params.direction === 'both') {
     const incoming = adjListIn.get(nodeId) || [];
     for (const edge of incoming) {
@@ -116,7 +116,7 @@ while (queue.length > 0) {
     }
   }
 
-  // Raccogli archi in uscita (cosa uso / da chi dipendo)
+  // Collect outgoing edges (what I use / on whom I depend)
   if (params.direction === 'out' || params.direction === 'both') {
     const outgoing = adjListOut.get(nodeId) || [];
     for (const edge of outgoing) {
@@ -135,22 +135,22 @@ while (queue.length > 0) {
   }
 }
 
-// 3. Stampa dei risultati in formato leggibile per l'LLM
-console.log(`==== SOTTOGRAFO ESTRATTO (Profondità max: ${params.depth}, Direzione: ${params.direction}) ====`);
-console.log(`Nodi estratti: ${subgraphNodes.size}, Collegamenti: ${subgraphEdges.length}`);
+// 3. Print the results in a readable format for the LLM
+console.log(`==== EXTRACTED SUBGRAPH (Max depth: ${params.depth}, Direction: ${params.direction}) ====`);
+console.log(`Extracted nodes: ${subgraphNodes.size}, Connections: ${subgraphEdges.length}`);
 console.log("");
 
-console.log("### 📌 NODI ARCHITETTURALI COINVOLTI");
+console.log("### 📌 INVOLVED ARCHITECTURAL NODES");
 subgraphNodes.forEach((attr, id) => {
-  const label = attr.type === 'export' ? `[Simbolo Esportato]` : `[File]`;
+  const label = attr.type === 'export' ? `[Exported Symbol]` : `[File]`;
   console.log(`- **${id}** ${label}`);
 });
 
-console.log("\n### 🔗 RELAZIONI E COLLEGAMENTI");
+console.log("\n### 🔗 RELATIONS AND CONNECTIONS");
 if (subgraphEdges.length === 0) {
-  console.log("Nessun collegamento trovato entro la profondità specificata.");
+  console.log("No connections found within the specified depth.");
 } else {
-  // Raggruppiamo per sorgente per una visualizzazione ad albero pulita
+  // Group by source for a clean tree visualization
   const groupedEdges = new Map();
   for (const edge of subgraphEdges) {
     if (!groupedEdges.has(edge.source)) {
@@ -160,10 +160,10 @@ if (subgraphEdges.length === 0) {
   }
 
   groupedEdges.forEach((edgesList, source) => {
-    console.log(`\n**${source}** usa/dipende da:`);
+    console.log(`\n**${source}** uses/depends on:`);
     for (const edge of edgesList) {
-      const relName = edge.relation === 'exports' ? 'esporta' : 
-                      edge.relation === 'imports_file' ? 'importa file' : 'usa simbolo';
+      const relName = edge.relation === 'exports' ? 'exports' : 
+                      edge.relation === 'imports_file' ? 'imports file' : 'uses symbol';
       console.log(`  └─ (${relName}) ──> **${edge.target}**`);
     }
   });

@@ -4,6 +4,7 @@ import { ScrollView, TouchableOpacity } from 'react-native-gesture-handler';
 import { useShallow } from 'zustand/react/shallow';
 import { usePresetStore, Preset, PresetStore } from '@entities/preset';
 import { useSystemStore } from '@entities/system';
+import { useTranslation } from 'react-i18next';
 import { ParameterThumbView } from '@shared/ui/parameter-thumb';
 
 // eslint-disable-next-line @typescript-eslint/no-require-imports
@@ -41,6 +42,7 @@ PresetButton.displayName = 'PresetButton';
 import { applyPreset } from '../../lib/presetActions';
 
 export const PresetsModule = () => {
+  const { t } = useTranslation();
   const {
     userPresets,
     activePresetId,
@@ -90,7 +92,7 @@ export const PresetsModule = () => {
       >
         <PresetButton
           id="default"
-          label="Default"
+          label={t('presets.default', 'Default')}
           isActive={activePresetId === 'default'}
           onPress={handlePresetPress}
         />
@@ -98,7 +100,7 @@ export const PresetsModule = () => {
         {customizedPayload && (
           <PresetButton
             id="customized"
-            label="Personalizzato"
+            label={t('presets.customized', 'Custom')}
             thumbnailUri={customizedThumbnailUri}
             isActive={activePresetId === 'customized'}
             onPress={handlePresetPress}

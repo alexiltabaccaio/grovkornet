@@ -22,7 +22,7 @@ export const DeletePresetModal = () => {
 
   const activePreset = userPresets.find((p: Preset) => p.id === activePresetId);
   const isCustomized = activePresetId === 'customized';
-  const presetName = isCustomized ? t('presets.customized', 'Personalizzato') : activePreset?.name;
+  const presetName = isCustomized ? t('presets.customized', 'Custom') : activePreset?.name;
 
   return (
     <Animated.View 

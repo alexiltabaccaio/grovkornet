@@ -45,8 +45,8 @@ describe('PresetsModule', () => {
 
     const { getByText, queryByText } = render(<PresetsModule />);
 
-    expect(getByText('DEFAULT')).toBeTruthy();
-    expect(queryByText('PERSONALIZZATO')).toBeNull();
+    expect(getByText('PRESETS.DEFAULT')).toBeTruthy();
+    expect(queryByText('PRESETS.CUSTOMIZED')).toBeNull();
     
     const userBtn = getByText('MYPRESET');
     expect(userBtn).toBeTruthy();
@@ -64,7 +64,7 @@ describe('PresetsModule', () => {
 
     const { getByText } = render(<PresetsModule />);
     
-    const customizedBtn = getByText('PERSONALIZZATO');
+    const customizedBtn = getByText('PRESETS.CUSTOMIZED');
     expect(customizedBtn).toBeTruthy();
 
     fireEvent.press(customizedBtn);

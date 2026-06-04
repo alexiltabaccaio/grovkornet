@@ -4,6 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useShallow } from 'zustand/react/shallow';
 import { usePresetStore, PresetStore } from '@entities/preset';
 import * as Haptics from '@shared/lib/haptics';
+import { useTranslation } from 'react-i18next';
 
 import { nextQuickPreset, prevQuickPreset } from '../../lib/presetActions';
 
@@ -20,21 +21,22 @@ export const QuickPresetSelector = () => {
     }))
   );
 
+  const { t } = useTranslation();
   const quickSelectList = getQuickSelectList();
   const areArrowsEnabled = quickSelectList.length > 1;
 
-  let activeName = 'Default';
+  let activeName = t('presets.default', 'Default');
   if (activePresetId === 'customized') {
-    activeName = 'Personalizzato';
+    activeName = t('presets.customized', 'Custom');
   } else if (activePresetId === 'default') {
-    activeName = 'Default';
+    activeName = t('presets.default', 'Default');
   } else {
     const quickPreset = quickSelectList.find((p) => p.id === activePresetId);
     if (quickPreset) {
       activeName = quickPreset.name;
     } else {
       const activePreset = userPresets.find((p) => p.id === activePresetId);
-      activeName = activePreset ? activePreset.name : 'Default';
+      activeName = activePreset ? activePreset.name : t('presets.default', 'Default');
     }
   }
 

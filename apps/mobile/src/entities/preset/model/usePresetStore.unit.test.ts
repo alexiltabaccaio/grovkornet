@@ -97,7 +97,7 @@ describe('usePresetStore', () => {
       const list = usePresetStore.getState().getQuickSelectList();
       expect(list).toEqual([
         { id: 'default', name: 'Default' },
-        { id: 'customized', name: 'Personalizzato' },
+        { id: 'customized', name: 'Custom' },
         { id: '1', name: 'P1' },
       ]);
     });

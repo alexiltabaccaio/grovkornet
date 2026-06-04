@@ -36,7 +36,7 @@ export function App() {
     });
 
     /* eslint-disable @typescript-eslint/no-require-imports */
-    // Prefetch static assets for settings/informazioni panel
+    // Prefetch static assets for settings/information panel
     const staticAssets = [
       require('../../assets/flags/en.png'),
       require('../../assets/flags/it.png'),

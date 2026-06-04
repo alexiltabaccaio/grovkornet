@@ -42,7 +42,7 @@ const styles = StyleSheet.create({
   },
   dragHandleContainer: {
     position: 'absolute',
-    top: 4, // Rasente the top edge
+    top: 4, // Flush with the top edge
     width: '100%',
     alignItems: 'center',
     justifyContent: 'center',

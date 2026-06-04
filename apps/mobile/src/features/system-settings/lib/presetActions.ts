@@ -129,7 +129,7 @@ export const applyPreset = (id: string): void => {
   store.setActivePresetId(id);
 
   // Do not clear customized payload/thumbnail when switching presets,
-  // so the user can easily switch back to their "Personalizzato" preset
+  // so the user can easily switch back to their "Custom" preset
   // without losing their unsaved changes.
 
   // Safe Merge & direct update of Film shared values

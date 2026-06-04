@@ -250,7 +250,7 @@ export const useFilmParameterControlData = (
           onUpdateWorklet: filmWorklets.updateBlackLevel,
           valueFormatter: (v: number) => {
             'worklet';
-            // Moltiplico per 200 in modo che il range interno [-0.5, 0.5] sia mostrato come [-100, +100]
+            // Multiply by 200 so that the internal range [-0.5, 0.5] is shown as [-100, +100]
             const rounded = Math.round(v * 200);
             return rounded > 0 ? `+${rounded}` : `${rounded}`;
           },

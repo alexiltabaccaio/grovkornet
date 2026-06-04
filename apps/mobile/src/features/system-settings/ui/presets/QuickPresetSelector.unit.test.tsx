@@ -33,7 +33,7 @@ describe('QuickPresetSelector', () => {
 
     const { getByText, getByLabelText } = render(<QuickPresetSelector />);
 
-    expect(getByText('Default')).toBeTruthy();
+    expect(getByText('presets.default')).toBeTruthy();
     expect(getByLabelText('Previous preset').props.accessibilityState?.disabled).toBe(true);
     expect(getByLabelText('Next preset').props.accessibilityState?.disabled).toBe(true);
   });
@@ -41,12 +41,12 @@ describe('QuickPresetSelector', () => {
   it('renders enabled chevron arrows and navigates when quick list has multiple items', () => {
     mockGetQuickSelectList.mockReturnValue([
       { id: 'default', name: 'Default' },
-      { id: 'customized', name: 'Personalizzato' },
+      { id: 'customized', name: 'Custom' },
     ]);
 
     const { getByText, getByLabelText } = render(<QuickPresetSelector />);
 
-    expect(getByText('Default')).toBeTruthy();
+    expect(getByText('presets.default')).toBeTruthy();
     const prevBtn = getByLabelText('Previous preset');
     const nextBtn = getByLabelText('Next preset');
 
@@ -66,10 +66,10 @@ describe('QuickPresetSelector', () => {
     // 1. Customized color
     usePresetStore.setState({ activePresetId: 'customized' });
     mockGetQuickSelectList.mockReturnValue([
-      { id: 'customized', name: 'Personalizzato' },
+      { id: 'customized', name: 'Custom' },
     ]);
     const { getByText, rerender } = render(<QuickPresetSelector />);
-    expect(getByText('Personalizzato').props.style).toEqual(
+    expect(getByText('presets.customized').props.style).toEqual(
       expect.arrayContaining([expect.objectContaining({ color: '#FFF' })])
     );
 
