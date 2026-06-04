@@ -113,12 +113,22 @@ android {
 
     namespace 'com.grovkornet.app'
     defaultConfig {
-        applicationId 'com.grovkornet.app'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode appVersionCode
         versionName appVersionName
         testInstrumentationRunner "com.grovkornet.app.CustomTestRunner"
+    }
+    flavorDimensions "default"
+    productFlavors {
+        development {
+            dimension "default"
+            applicationId "com.grovkornet.app.dev"
+        }
+        production {
+            dimension "default"
+            applicationId "com.grovkornet.app"
+        }
     }
     signingConfigs {
         debug {
@@ -128,8 +138,9 @@ android {
             keyPassword 'android'
         }
         release {
-            if (localProperties.getProperty('grovkornet.release.storeFile') != null) {
-                storeFile file(localProperties.getProperty('grovkornet.release.storeFile'))
+            def storeFilePath = localProperties.getProperty('grovkornet.release.storeFile')
+            if (storeFilePath != null && file(storeFilePath).exists()) {
+                storeFile file(storeFilePath)
                 storePassword localProperties.getProperty('grovkornet.release.storePassword')
                 keyAlias localProperties.getProperty('grovkornet.release.keyAlias')
                 keyPassword localProperties.getProperty('grovkornet.release.keyPassword')
@@ -144,9 +155,6 @@ android {
     buildTypes {
         debug {
             signingConfig signingConfigs.debug
-            // Ripristinato dinamicamente per evitare che EAS CLI si blocchi
-            def suffixKey = "applicationIdSuffix"
-            setProperty(suffixKey, ".dev")
         }
         release {
             // Caution! In production, you need to generate your own keystore file.

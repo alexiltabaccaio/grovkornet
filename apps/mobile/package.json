@@ -5,10 +5,10 @@
   "main": "index.ts",
   "scripts": {
     "start": "expo start",
-    "dev": "expo run:android",
-    "android": "expo run:android",
+    "dev": "expo run:android --variant developmentDebug",
+    "android": "expo run:android --variant developmentDebug",
     "ios": "expo run:ios",
-    "build": "expo run:android --variant release",
+    "build": "expo run:android --variant productionRelease",
     "web": "expo start --web",
     "test": "jest",
     "lint": "npx tsc --noEmit && eslint .",

@@ -8,20 +8,23 @@
       "distribution": "internal",
       "android": {
         "buildType": "apk",
-        "image": "ubuntu-24.04-jdk-17-ndk-r27b-sdk-55"
+        "image": "ubuntu-24.04-jdk-17-ndk-r27b-sdk-55",
+        "gradleCommand": ":app:assembleDevelopmentDebug"
       }
     },
     "preview": {
       "distribution": "internal",
       "android": {
         "buildType": "app-bundle",
-        "image": "ubuntu-24.04-jdk-17-ndk-r27b-sdk-55"
+        "image": "ubuntu-24.04-jdk-17-ndk-r27b-sdk-55",
+        "gradleCommand": ":app:bundleProductionRelease"
       }
     },
     "production": {
       "android": {
         "buildType": "app-bundle",
-        "image": "ubuntu-24.04-jdk-17-ndk-r27b-sdk-55"
+        "image": "ubuntu-24.04-jdk-17-ndk-r27b-sdk-55",
+        "gradleCommand": ":app:bundleProductionRelease"
       }
     }
   },

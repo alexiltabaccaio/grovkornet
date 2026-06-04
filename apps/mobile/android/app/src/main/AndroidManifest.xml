@@ -34,7 +34,8 @@
         <action android:name="android.intent.action.VIEW"/>
         <category android:name="android.intent.category.DEFAULT"/>
         <category android:name="android.intent.category.BROWSABLE"/>
-        <data android:scheme="com.grovkornet.app"/>
+        <data android:scheme="grovkornet"/>
+        <data android:scheme="grovkornet-dev"/>
       </intent-filter>
     </activity>
   </application>

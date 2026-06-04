@@ -45,3 +45,56 @@ allprojects {
         maven { url 'https://www.jitpack.io' }
     }
 }
+
+// Ensure all library projects are evaluated before :app.
+// This is crucial because under configure-on-demand Gradle might configure :app
+// first and execute its native tasks (like clean or configureCMake) before
+// library codegen tasks have a chance to register/run, which causes CMake to fail.
+subprojects { subproj ->
+    if (subproj.name == "app") {
+        rootProject.subprojects { other ->
+            if (other.name != "app") {
+                subproj.evaluationDependsOn(other.path)
+            }
+        }
+    }
+}
+
+// Disable native clean tasks (they are redundant and prone to failing due to missing autolinked JNI dirs).
+// Instead, we will clean the CMake staging directory manually during app:clean.
+subprojects { subproj ->
+    subproj.tasks.configureEach { task ->
+        if (task.name.contains("externalNativeBuildClean")) {
+            task.enabled = false
+        }
+    }
+}
+
+// In the app project, delete the CMake build staging directory when cleaning.
+// Also set up compilation dependencies so library codegen runs before app native tasks.
+println "ROOT: Registering dependency hooks..."
+project(":app") {
+    tasks.configureEach { appTask ->
+        if (appTask.name == "clean") {
+            appTask.doFirst {
+                def stagingDir = file("C:/tmp/gk_cxx")
+                if (stagingDir.exists()) {
+                    println "ROOT: Wiping CMake staging directory: ${stagingDir}"
+                    stagingDir.deleteDir()
+                }
+            }
+        } else if (appTask.name == "preBuild" ||
+                   appTask.name.contains("CMake") || 
+                   appTask.name.contains("NativeBuild") || 
+                   appTask.name.contains("JsonModel")) {
+            
+            rootProject.subprojects { subproj ->
+                if (subproj.name != "app") {
+                    appTask.dependsOn {
+                        subproj.tasks.matching { it.name == "generateCodegenArtifactsFromSchema" }
+                    }
+                }
+            }
+        }
+    }
+}
