@@ -128,7 +128,7 @@ android {
         }
         production {
             dimension "default"
-            applicationId 'com.grovkornet.app.dev'
+            applicationId 'com.grovkornet.app'
         }
     }
     signingConfigs {
