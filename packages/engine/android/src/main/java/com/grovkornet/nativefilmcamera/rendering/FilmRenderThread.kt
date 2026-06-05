@@ -10,12 +10,14 @@ import android.view.Surface
 import com.grovkornet.nativefilmcamera.state.CameraConfiguration
 import com.grovkornet.nativefilmcamera.BuildConfig
 import java.util.concurrent.atomic.AtomicBoolean
+import java.util.concurrent.atomic.AtomicLong
 
 class FilmRenderThread(
     private val assetManager: AssetManager,
     private val surfaceProvider: () -> Surface?,
     private val onSurfaceTextureReady: (SurfaceTexture) -> Unit,
-    private val onDebugUpdate: (Map<String, Any>) -> Unit
+    private val onDebugUpdate: (Map<String, Any>) -> Unit,
+    private val onCameraFreezeDetected: () -> Unit
 ) : HandlerThread("FilmRenderThread") {
 
     private val TAG = "FilmRenderThread"
@@ -35,10 +37,29 @@ class FilmRenderThread(
     @Volatile private var hardwareChangeTime = 0L
     @Volatile private var isTransitioningCamera = false
     @Volatile private var lastFrameTimestamp = 0L
+    private val lastFrameReceivedTimeMs = AtomicLong(System.currentTimeMillis())
 
     fun notifyHardwareChange() {
         hardwareChangeTime = System.currentTimeMillis()
         isTransitioningCamera = true
+        lastFrameReceivedTimeMs.set(System.currentTimeMillis())
+    }
+
+    private val watchdogRunnable = object : Runnable {
+        override fun run() {
+            if (isReleased.get()) return
+            val now = System.currentTimeMillis()
+            val lastFrame = lastFrameReceivedTimeMs.get()
+            if (!isTransitioningCamera && (now - lastFrame > 3000)) {
+                Log.w(TAG, "Camera freeze detected! No frame for ${now - lastFrame}ms")
+                // Reset lastFrameReceivedTimeMs so we don't trigger repeatedly while recovering
+                lastFrameReceivedTimeMs.set(now)
+                android.os.Handler(android.os.Looper.getMainLooper()).post {
+                    onCameraFreezeDetected()
+                }
+            }
+            handler.postDelayed(this, 1000)
+        }
     }
 
     private val isFrameAvailable = AtomicBoolean(false)
@@ -63,6 +84,7 @@ class FilmRenderThread(
     override fun onLooperPrepared() {
         choreographer = Choreographer.getInstance()
         choreographer?.postFrameCallback(frameCallback)
+        handler.post(watchdogRunnable)
     }
 
     fun updateConfig(config: CameraConfiguration) {
@@ -96,6 +118,7 @@ class FilmRenderThread(
                 setDefaultBufferSize(w, h)
                 setOnFrameAvailableListener({
                     isFrameAvailable.set(true)
+                    lastFrameReceivedTimeMs.set(System.currentTimeMillis())
                 }, handler)
             }
             onSurfaceTextureReady(surfaceTexture!!)
@@ -187,6 +210,7 @@ class FilmRenderThread(
         }
 
         handler.post {
+            handler.removeCallbacks(watchdogRunnable)
             choreographer?.removeFrameCallback(frameCallback)
             liveProcessor?.release()
             liveProcessor = null

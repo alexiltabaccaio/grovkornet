@@ -204,4 +204,39 @@ describe('useSystemStore', () => {
       spy.mockRestore();
     });
   });
+
+  describe('Device Health States', () => {
+    it('initializes with default thermalState and isLowRam', () => {
+      const state = useSystemStore.getState();
+      expect(state.thermalState).toBe('normal');
+      expect(state.isLowRam).toBe(false);
+    });
+
+    it('updates thermalState and isLowRam correctly via setters', () => {
+      const { setThermalState, setIsLowRam } = useSystemStore.getState();
+      
+      setThermalState('warning');
+      expect(useSystemStore.getState().thermalState).toBe('warning');
+
+      setIsLowRam(true);
+      expect(useSystemStore.getState().isLowRam).toBe(true);
+    });
+
+    it('subscribes to onDeviceHealthUpdate native events', () => {
+      const { NativeCameraEventEmitter } = require('@grovkornet/engine');
+      
+      // Reset state
+      useSystemStore.setState({ thermalState: 'normal', isLowRam: false });
+      
+      // Emit event
+      NativeCameraEventEmitter.emit('onDeviceHealthUpdate', {
+        thermalState: 'critical',
+        isLowRam: true,
+      });
+
+      const state = useSystemStore.getState();
+      expect(state.thermalState).toBe('critical');
+      expect(state.isLowRam).toBe(true);
+    });
+  });
 });

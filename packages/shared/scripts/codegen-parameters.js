@@ -200,33 +200,33 @@ function generateNativeBridge(parameters, renderParams) {
       const propName = p.ts.name || p.name;
       const kotlinName = p.kotlin.name || p.name;
       
-      let kotlinPropType = 'Float';
+      let kotlinPropType = 'Float?';
       if (p.ts.type === 'boolean') {
-        kotlinPropType = 'Boolean';
+        kotlinPropType = 'Boolean?';
       } else if (p.ts.type === 'string') {
         kotlinPropType = 'String?';
       } else if (p.ts.type === 'number') {
         if (p.kotlin.type === 'Long') {
-          kotlinPropType = 'Double';
+          kotlinPropType = 'Double?';
         } else if (propName === 'cameraAspectRatio' || propName === 'torchState') {
-          kotlinPropType = 'Float';
+          kotlinPropType = 'Float?';
         } else if (p.kotlin.type === 'Int') {
-          kotlinPropType = 'Int';
+          kotlinPropType = 'Int?';
         } else {
-          kotlinPropType = 'Float';
+          kotlinPropType = 'Float?';
         }
       }
       
       let body = '';
       if (p.kotlin.propHandler) {
-        body = p.kotlin.propHandler;
+        body = `value?.let { value ->\n  ${p.kotlin.propHandler.split('\n').join('\n  ')}\n}`;
       } else {
         if (p.category === 'render') {
-          body = `view.updateEffect { ${kotlinName} = value }`;
+          body = `value?.let { view.updateEffect { ${kotlinName} = it } }`;
         } else if (p.category === 'hardware') {
-          body = `if (view.config.${kotlinName} != value) view.updateHardware { ${kotlinName} = value }`;
+          body = `value?.let { if (view.config.${kotlinName} != it) view.updateHardware { ${kotlinName} = it } }`;
         } else {
-          body = `if (view.config.${kotlinName} != value) view.updateBoth { ${kotlinName} = value }`;
+          body = `value?.let { if (view.config.${kotlinName} != it) view.updateBoth { ${kotlinName} = it } }`;
         }
       }
       

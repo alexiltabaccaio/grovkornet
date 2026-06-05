@@ -2,6 +2,7 @@ package com.grovkornet.nativefilmcamera.camera
 
 import android.content.Context
 import android.graphics.SurfaceTexture
+import android.util.Log
 import androidx.camera.core.Camera
 import androidx.camera.core.ImageCapture
 import androidx.lifecycle.LifecycleOwner
@@ -76,6 +77,25 @@ class CameraEngine(
             return
         }
         activeCamera?.let { controlManager.updateControls(it, sessionManager.currentBaseZoom) }
+    }
+
+    fun recoverFromFreeze() {
+        if (capturePipeline.hasActiveCaptures()) {
+            Log.w(TAG, "Freeze recovery requested, but active captures exist. Delaying recovery.")
+            android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({
+                recoverFromFreeze()
+            }, 1000)
+            return
+        }
+
+        Log.w(TAG, "Recovering from camera freeze...")
+        try {
+            currentSurfaceTexture?.let { st ->
+                sessionManager.bindCameraUseCases(st, controlManager.createCaptureCallback())
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to recover from camera freeze", e)
+        }
     }
 
     fun takePicture() {

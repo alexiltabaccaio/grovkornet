@@ -205,6 +205,9 @@ class NativeFilmCameraView(context: Context) : SurfaceView(context), SurfaceHold
             },
             onDebugUpdate = { debugData ->
                 onDebugUpdate(debugData)
+            },
+            onCameraFreezeDetected = {
+                cameraEngine?.recoverFromFreeze()
             }
         )
         

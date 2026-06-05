@@ -12,6 +12,7 @@ import { useVerificationStore } from '@entities/verification';
 import { FlashOverlay } from '@features/body-controls';
 import { useCameraCapture } from '../lib/useCameraCapture';
 import { useCameraEvents } from '../lib/useCameraEvents';
+import { DeviceHealthWarningBanner } from './DeviceHealthWarningBanner';
 
 interface ViewfinderProps {
   cameraKey?: number;
@@ -102,6 +103,7 @@ export const Viewfinder = React.memo(({ cameraKey, translateY, drawerAnimation }
 
   // 3. Reactive primitives (subscribed to cause re-renders only when necessary)
   const isCameraSecure = useSystemStore(state => state.isCameraSecure);
+  const thermalState = useSystemStore(state => state.thermalState);
   const capabilities = useBodyStore(state => state.capabilities);
   const { cameraAuto, cameraId } = useLensStore(useShallow(state => ({
     cameraAuto: state.cameraAuto,
@@ -211,6 +213,13 @@ export const Viewfinder = React.memo(({ cameraKey, translateY, drawerAnimation }
   }, [zoom, bodyWorklets, startZoom]);
 
   const animatedProps = useAnimatedProps(() => {
+    let effectiveFps = fpsSetting.value;
+    if (thermalState === 'warning') {
+      effectiveFps = Math.min(effectiveFps, 30);
+    } else if (thermalState === 'critical') {
+      effectiveFps = Math.min(effectiveFps, 15);
+    }
+
     return {
       // @@GEN_ANIMATED_PROPS_START@@
       saturation: saturation.value,
@@ -280,7 +289,7 @@ export const Viewfinder = React.memo(({ cameraKey, translateY, drawerAnimation }
       chromaShiftInvert: chromaShiftInvert.value,
       // @@GEN_ANIMATED_PROPS_END@@
     };
-  });
+  }, [thermalState]);
 
   return (
     <View style={styles.container} onLayout={handleLayout}>
@@ -304,6 +313,7 @@ export const Viewfinder = React.memo(({ cameraKey, translateY, drawerAnimation }
         </Animated.View>
       </GestureDetector>
       <FlashOverlay />
+      <DeviceHealthWarningBanner />
     </View>
   );
 });

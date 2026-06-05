@@ -1,4 +1,4 @@
-import { requireNativeViewManager, requireNativeModule } from 'expo-modules-core';
+import { requireNativeViewManager, requireNativeModule, EventEmitter } from 'expo-modules-core';
 import * as React from 'react';
 import { ViewProps } from 'react-native';
 
@@ -113,6 +113,8 @@ export async function deleteFile(uri: string): Promise<boolean> {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access
   return await NativeFilmCameraModule.deleteFile(uri);
 }
+
+export const NativeCameraEventEmitter = new EventEmitter<any>(NativeFilmCameraModule);
 
 export * from './errors';
 export { NativeFilmCameraView };

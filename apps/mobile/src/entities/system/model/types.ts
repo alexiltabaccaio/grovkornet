@@ -20,6 +20,8 @@ interface SystemState {
   lastActiveParameters: Record<ModuleType, ParameterType>;
   lastNonNoneSection: SectionType;
   lastNonNoneModule: ModuleType;
+  thermalState: 'normal' | 'warning' | 'critical';
+  isLowRam: boolean;
 }
 
 interface SystemActions {
@@ -35,6 +37,8 @@ interface SystemActions {
   triggerCapture: () => void;
   setLatestPreviewUri: (uri: string | null) => void;
   setLatestCapturedUri: (uri: string | null) => void;
+  setThermalState: (state: 'normal' | 'warning' | 'critical') => void;
+  setIsLowRam: (isLowRam: boolean) => void;
 }
 
 export interface SystemStore extends SystemState, SystemActions {}

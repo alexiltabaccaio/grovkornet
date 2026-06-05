@@ -101,6 +101,10 @@
       "default": "Predefinito",
       "quick_select": "Rapida",
       "customized": "Personalizzato"
+    },
+    "device_health": {
+      "warning": "Surriscaldamento: Max 30 FPS",
+      "critical": "Temp. Critica: Max 15 FPS"
     }
   }
 }

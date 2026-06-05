@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import { createZustandMMKVStorage } from '@shared/lib/storage/mmkv';
 import { logger } from '@shared/lib/logger';
+import { NativeCameraEventEmitter } from '@grovkornet/engine';
 import { SystemStore, ModuleType, ParameterType, SectionType, ParameterDetailPanelType } from './types';
 import { SECTION_MODULES } from './constants';
 
@@ -25,6 +26,8 @@ export const useSystemStore = create<SystemStore>()(
   latestCapturedUri: null,
   lastNonNoneSection: 'none',
   lastNonNoneModule: 'none',
+  thermalState: 'normal',
+  isLowRam: false,
 
   lastActiveModules: {
     none: 'none',
@@ -130,6 +133,14 @@ export const useSystemStore = create<SystemStore>()(
   setLatestCapturedUri: (uri) => {
     set({ latestCapturedUri: uri, latestPreviewUri: null });
   },
+
+  setThermalState: (state) => {
+    set({ thermalState: state });
+  },
+
+  setIsLowRam: (isLowRam) => {
+    set({ isLowRam });
+  },
     }),
     {
       name: 'grovkornet-system-storage',
@@ -149,3 +160,12 @@ export const useSystemStore = create<SystemStore>()(
     }
   )
 );
+
+try {
+  NativeCameraEventEmitter.addListener('onDeviceHealthUpdate', (event: { thermalState: 'normal' | 'warning' | 'critical'; isLowRam: boolean }) => {
+    useSystemStore.getState().setThermalState(event.thermalState);
+    useSystemStore.getState().setIsLowRam(event.isLowRam);
+  });
+} catch (error) {
+  logger.error('SystemStore', 'Failed to subscribe to onDeviceHealthUpdate event', error);
+}
