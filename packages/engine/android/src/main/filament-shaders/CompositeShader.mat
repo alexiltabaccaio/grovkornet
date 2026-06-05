@@ -43,35 +43,31 @@ fragment {
         return fract(sin(dots) * 43758.5453);
     }
 
-    void material(inout MaterialInputs material) {
-        prepareMaterial(material);
-        vec2 uv = getUV0();
-        vec2 res = 1.0 / materialParams.u_TexelSize;
-        float minDim = min(res.x, res.y);
-        
+    // 1. Pixelation and DRS logic
+    vec2 applyPixelation(vec2 uv, vec2 res, float minDim) {
+        vec2 targetUv = uv;
         if (materialParams.u_TargetResolution > 0.0) {
             if (materialParams.u_TargetResolution < minDim) {
                 float scale = materialParams.u_TargetResolution / minDim;
                 vec2 gridSize = res * scale;
-                uv = (floor(uv * gridSize) + 0.5) / gridSize;
+                targetUv = (floor(targetUv * gridSize) + 0.5) / gridSize;
             }
         }
 
         if (materialParams.u_PixelationFactor > 1.0) {
             float scaledFactor = max(1.0, materialParams.u_PixelationFactor * (minDim / 1080.0));
             vec2 gridSize = res / scaledFactor;
-            uv = (floor(uv * gridSize) + 0.5) / gridSize;
+            targetUv = (floor(targetUv * gridSize) + 0.5) / gridSize;
         }
+        return targetUv;
+    }
 
-        vec2 baseUv = uv * materialParams.u_DrsScale;
-        vec2 compositeUv = baseUv;
-        vec4 baseColor;
-        
-        vec2 rUv = compositeUv;
-        vec2 gUv = compositeUv;
-        vec2 bUv = compositeUv;
-
-        bool hasChromaEffects = materialParams.u_ChromaShift > 0.0 || materialParams.u_ChromaticAberration > 0.0 || materialParams.u_TapeJitter > 0.0;
+    // 2. Chromatic aberration, shift and tape jitter logic
+    void computeChromaUvs(vec2 uv, vec2 res, out vec2 rUv, out vec2 gUv, out vec2 bUv, out vec2 compositeUv) {
+        compositeUv = uv * materialParams.u_DrsScale;
+        rUv = compositeUv;
+        gUv = compositeUv;
+        bUv = compositeUv;
 
         if (materialParams.u_TapeJitter > 0.0) {
             float jitter = sin(uv.y * 50.0 + materialParams.u_Time * 10.0) * 0.002 * materialParams.u_TapeJitter;
@@ -119,16 +115,10 @@ fragment {
             rUv -= caShift;
             bUv -= caShift;
         }
+    }
 
-        if (hasChromaEffects) {
-            vec4 colR = texture(materialParams_u_Texture, rUv);
-            vec4 colG = texture(materialParams_u_Texture, gUv);
-            vec4 colB = texture(materialParams_u_Texture, bUv);
-            baseColor = vec4(colR.r, colG.g, colB.b, colG.a);
-        } else {
-            baseColor = texture(materialParams_u_Texture, compositeUv);
-        }
-
+    // 3. Sharpening filter
+    vec3 applySharpening(vec3 centerColor, vec2 compositeUv) {
         if (materialParams.u_Sharpening > 0.0) {
             vec2 texel = materialParams.u_TexelSize;
             vec3 colN = textureLod(materialParams_u_Texture, compositeUv + vec2(0.0, texel.y), 0.0).rgb;
@@ -136,33 +126,33 @@ fragment {
             vec3 colE = textureLod(materialParams_u_Texture, compositeUv + vec2(texel.x, 0.0), 0.0).rgb;
             vec3 colW = textureLod(materialParams_u_Texture, compositeUv - vec2(texel.x, 0.0), 0.0).rgb;
             
-            vec3 laplacian = 4.0 * baseColor.rgb - (colN + colS + colE + colW);
-            baseColor.rgb += laplacian * materialParams.u_Sharpening * 10.0;
+            vec3 laplacian = 4.0 * centerColor - (colN + colS + colE + colW);
+            return centerColor + laplacian * materialParams.u_Sharpening * 10.0;
         }
+        return centerColor;
+    }
 
+    // 4. Scanlines
+    vec3 applyScanlines(vec3 color, vec2 uv) {
         if (materialParams.u_Scanlines > 0.0) {
-            // Scanlines
             float scanline = sin(uv.y * 800.0) * 0.04 * materialParams.u_Scanlines;
-            baseColor.rgb -= vec3(scanline);
+            return color - vec3(scanline);
         }
-        
-        vec2 flippedBloomUv = vec2(compositeUv.x, materialParams.u_DrsScale - compositeUv.y);
-        vec3 finalColor = baseColor.rgb;
+        return color;
+    }
 
-        if (materialParams.u_BloomIntensity > 0.0) {
-            vec3 bloomColor = texture(materialParams_u_BloomTexture, flippedBloomUv).rgb;
-            // Soft additive blend in linear space
-            finalColor += bloomColor * materialParams.u_BloomIntensity;
-        }
-        
-        // Vignette
+    // 5. Vignette
+    vec3 applyVignette(vec3 color, vec2 uv) {
         if (materialParams.u_VignetteIntensity > 0.0) {
             float d2 = dot(uv - 0.5, uv - 0.5);
             float vignette = 1.0 - (2.0 * d2) * materialParams.u_VignetteIntensity;
-            finalColor *= clamp(vignette, 0.0, 1.0);
+            return color * clamp(vignette, 0.0, 1.0);
         }
-        
-        // Grain (procedural)
+        return color;
+    }
+
+    // 6. Procedural Film Grain
+    vec3 applyFilmGrain(vec3 color, vec2 uv) {
         if (materialParams.u_GrainIntensity > 0.0) {
             highp float size = materialParams.u_GrainSize;
             highp vec2 grainUv = floor(uv * (1080.0 / clamp(size, 0.1, 10.0))) * clamp(size, 0.1, 10.0) / 1080.0;
@@ -186,22 +176,16 @@ fragment {
             // Blend MONO and RGB based on u_GrainChroma
             highp vec3 finalNoise = mix(vec3(finalMono), finalRgb, materialParams.u_GrainChroma);
             
-            finalColor += finalNoise * materialParams.u_GrainIntensity;
+            return color + finalNoise * materialParams.u_GrainIntensity;
         }
-        
-        // Overlay Texture (Dust & Scratch)
-        if (materialParams.u_OverlayEnabled > 0.0) {
-            vec4 overlay = textureLod(materialParams_u_OverlayTexture, uv, 0.0);
-            finalColor = mix(finalColor, overlay.rgb, overlay.a);
-        }
-        
-        // Glassmorphism blur overlay
+        return color;
+    }
+
+    // 7. Glassmorphism panel blend
+    vec3 applyGlassmorphism(vec3 color, vec2 uv, vec2 flippedBloomUv) {
         if (materialParams.u_PanelY < 1.0) {
             // Sample the pre-blurred glass texture
             vec3 glassColor = texture(materialParams_u_GlassTexture, flippedBloomUv).rgb;
-            
-            // Tinting is now delegated to the React Native UI layer across the full screen width
-            vec3 tintedGlass = glassColor;
             
             // Panel top Y coordinate (0.0 is top, 1.0 is bottom in Android Surface UV space)
             float panelTopY = materialParams.u_PanelY;
@@ -210,8 +194,66 @@ fragment {
             float edgeSoftness = 0.002;
             float insidePanel = smoothstep(panelTopY - edgeSoftness, panelTopY + edgeSoftness, uv.y);
             
-            finalColor = mix(finalColor, tintedGlass, insidePanel);
+            return mix(color, glassColor, insidePanel);
         }
+        return color;
+    }
+
+    void material(inout MaterialInputs material) {
+        prepareMaterial(material);
+        vec2 uv = getUV0();
+        vec2 res = 1.0 / materialParams.u_TexelSize;
+        float minDim = min(res.x, res.y);
+        
+        // 1. Pixelation & DRS scale
+        uv = applyPixelation(uv, res, minDim);
+
+        // 2. Chromatic aberration, shift and tape jitter UVs
+        vec2 rUv, gUv, bUv, compositeUv;
+        computeChromaUvs(uv, res, rUv, gUv, bUv, compositeUv);
+
+        // 3. Texture base color sampling
+        vec4 baseColor;
+        bool hasChromaEffects = materialParams.u_ChromaShift > 0.0 || materialParams.u_ChromaticAberration > 0.0 || materialParams.u_TapeJitter > 0.0;
+        if (hasChromaEffects) {
+            vec4 colR = texture(materialParams_u_Texture, rUv);
+            vec4 colG = texture(materialParams_u_Texture, gUv);
+            vec4 colB = texture(materialParams_u_Texture, bUv);
+            baseColor = vec4(colR.r, colG.g, colB.b, colG.a);
+        } else {
+            baseColor = texture(materialParams_u_Texture, compositeUv);
+        }
+
+        // 4. Sharpening filter
+        baseColor.rgb = applySharpening(baseColor.rgb, compositeUv);
+
+        // 5. Scanlines
+        baseColor.rgb = applyScanlines(baseColor.rgb, uv);
+        
+        vec2 flippedBloomUv = vec2(compositeUv.x, materialParams.u_DrsScale - compositeUv.y);
+        vec3 finalColor = baseColor.rgb;
+
+        // 6. Bloom composite
+        if (materialParams.u_BloomIntensity > 0.0) {
+            vec3 bloomColor = texture(materialParams_u_BloomTexture, flippedBloomUv).rgb;
+            // Soft additive blend in linear space
+            finalColor += bloomColor * materialParams.u_BloomIntensity;
+        }
+        
+        // 7. Vignette
+        finalColor = applyVignette(finalColor, uv);
+        
+        // 8. Film Grain
+        finalColor = applyFilmGrain(finalColor, uv);
+        
+        // 9. Overlay Texture (Dust & Scratch)
+        if (materialParams.u_OverlayEnabled > 0.0) {
+            vec4 overlay = textureLod(materialParams_u_OverlayTexture, uv, 0.0);
+            finalColor = mix(finalColor, overlay.rgb, overlay.a);
+        }
+        
+        // 10. Glassmorphism blur overlay
+        finalColor = applyGlassmorphism(finalColor, uv, flippedBloomUv);
         
         material.baseColor = vec4(finalColor, baseColor.a);
     }
