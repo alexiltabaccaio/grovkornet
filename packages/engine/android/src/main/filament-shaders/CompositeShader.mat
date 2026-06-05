@@ -157,8 +157,8 @@ fragment {
         
         // Vignette
         if (materialParams.u_VignetteIntensity > 0.0) {
-            vec2 d = abs(uv - 0.5) * materialParams.u_VignetteIntensity;
-            float vignette = 1.0 - dot(d, d);
+            float d2 = dot(uv - 0.5, uv - 0.5);
+            float vignette = 1.0 - (2.0 * d2) * materialParams.u_VignetteIntensity;
             finalColor *= clamp(vignette, 0.0, 1.0);
         }
         
