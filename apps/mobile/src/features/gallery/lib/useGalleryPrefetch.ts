@@ -1,5 +1,4 @@
 import { useEffect } from 'react';
-import { InteractionManager } from 'react-native';
 import * as MediaLibrary from 'expo-media-library/legacy';
 import { logger } from '@shared/lib/logger';
 import { useImageVerification } from './useImageVerification';
@@ -10,8 +9,9 @@ export const useGalleryPrefetch = () => {
   useEffect(() => {
     let active = true;
     let timer: NodeJS.Timeout;
+    let idleHandle: number;
 
-    InteractionManager.runAfterInteractions(() => {
+    const runPrefetch = () => {
       timer = setTimeout(() => {
         void (async () => {
           try {
@@ -66,12 +66,24 @@ export const useGalleryPrefetch = () => {
           }
         })();
       }, 3000);
-    });
+    };
+
+    const reqIdle = (globalThis as unknown as { requestIdleCallback?: (cb: () => void) => number }).requestIdleCallback;
+    const cancelIdle = (globalThis as unknown as { cancelIdleCallback?: (id: number) => void }).cancelIdleCallback;
+
+    if (reqIdle) {
+      idleHandle = reqIdle(runPrefetch);
+    } else {
+      runPrefetch();
+    }
 
     return () => {
       active = false;
       if (timer) {
         clearTimeout(timer);
+      }
+      if (idleHandle && cancelIdle) {
+        cancelIdle(idleHandle);
       }
     };
   }, [verifyPhotosBatch]);

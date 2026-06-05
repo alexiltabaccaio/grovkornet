@@ -7,6 +7,10 @@
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "backgroundColor": "#0e0e0e",
+    "androidNavigationBar": {
+      "backgroundColor": "#0e0e0e",
+      "barStyle": "light-content"
+    },
     "ios": {
       "supportsTablet": true,
       "infoPlist": {

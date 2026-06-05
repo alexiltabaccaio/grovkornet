@@ -95,11 +95,14 @@ async function start() {
 
   console.log('\n📱 Spawning Metro Bundler...');
   const metroArgs = ['run', 'dev', '-w', '@grovkornet/mobile'];
+  const extraArgs = ['--app-id', 'com.grovkornet.app.dev'];
   if (targetArgs.length > 0) {
-    metroArgs.push('--', ...targetArgs);
+    extraArgs.push(...targetArgs);
   }
+  metroArgs.push('--', ...extraArgs);
 
-  const metro = spawn('npm', metroArgs, {
+  const fullCommand = `npm ${metroArgs.join(' ')}`;
+  const metro = spawn(fullCommand, {
     stdio: 'inherit',
     shell: true,
     cwd: PROJECT_ROOT
