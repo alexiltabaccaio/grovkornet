@@ -422,7 +422,7 @@ export const setFilmParameterChangeListener = (listener: () => void) => {
 };
 
 const filmStoreState = useFilmStore.getState();
-const excludedFilmSetters = ['setCapabilities', 'resetEffect'];
+const excludedFilmSetters = ['setCapabilities', 'resetEffect', 'setIsSelfieCamera'];
 
 const storeRecord = filmStoreState as unknown as Record<string, unknown>;
 

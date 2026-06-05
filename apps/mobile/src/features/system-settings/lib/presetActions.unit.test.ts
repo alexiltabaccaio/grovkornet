@@ -1,6 +1,6 @@
 import { usePresetStore, DEFAULT_FILM_PAYLOAD, DEFAULT_BODY_PAYLOAD } from '@entities/preset';
-import { useFilmStore } from '@entities/film';
-import { useBodyStore } from '@entities/body';
+import { useFilmStore, setFilmParameterChangeListener } from '@entities/film';
+import { useBodyStore, setBodyParameterChangeListener } from '@entities/body';
 import { addPreset, applyPreset, markAsCustomized, removePreset, nextQuickPreset, prevQuickPreset } from './presetActions';
 
 jest.mock('@grovkornet/engine', () => ({
@@ -285,6 +285,45 @@ describe('presetActions', () => {
 
       prevQuickPreset();
       expect(usePresetStore.getState().activePresetId).toBe('1');
+    });
+  });
+
+  describe('Non-preset parameters changes', () => {
+    it('should not mark preset as customized or clear customized payload on changing non-preset parameters', () => {
+      setFilmParameterChangeListener(() => {
+        markAsCustomized();
+      });
+      setBodyParameterChangeListener(() => {
+        markAsCustomized();
+      });
+
+      const customizedPayload = {
+        film: { ...DEFAULT_FILM_PAYLOAD, saturation: 1.8 },
+        body: { ...DEFAULT_BODY_PAYLOAD, iso: 1200 },
+      };
+      usePresetStore.setState({
+        activePresetId: 'default',
+        customizedPayload: customizedPayload,
+        customizedThumbnailUri: 'file:///custom.jpg',
+      });
+
+      // Change a non-preset film parameter: isSelfieCamera
+      useFilmStore.getState().setIsSelfieCamera(true);
+
+      jest.runAllTimers();
+
+      expect(usePresetStore.getState().activePresetId).toBe('default');
+      expect(usePresetStore.getState().customizedPayload).toEqual(customizedPayload);
+      expect(usePresetStore.getState().customizedThumbnailUri).toBe('file:///custom.jpg');
+
+      // Change a non-preset body parameter: zoom
+      useBodyStore.getState().setZoom(2.5);
+
+      jest.runAllTimers();
+
+      expect(usePresetStore.getState().activePresetId).toBe('default');
+      expect(usePresetStore.getState().customizedPayload).toEqual(customizedPayload);
+      expect(usePresetStore.getState().customizedThumbnailUri).toBe('file:///custom.jpg');
     });
   });
 });

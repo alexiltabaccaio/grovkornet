@@ -161,11 +161,19 @@ export const setBodyParameterChangeListener = (listener: () => void) => {
 const bodyStoreState = useBodyStore.getState();
 const storeRecord = bodyStoreState as unknown as Record<string, unknown>;
 
+const bodyPresetSetters = new Set([
+  'setIso',
+  'setEv',
+  'setShutterSpeed',
+  'setIsoAuto',
+  'setShutterSpeedAuto',
+  'setEvAuto',
+]);
+
 Object.keys(storeRecord).forEach((key) => {
   if (
     key.startsWith('set') &&
-    key !== 'setCapabilities' &&
-    key !== 'setDebugInfo' &&
+    bodyPresetSetters.has(key) &&
     typeof storeRecord[key] === 'function'
   ) {
     const originalFn = storeRecord[key] as (...args: unknown[]) => void;
