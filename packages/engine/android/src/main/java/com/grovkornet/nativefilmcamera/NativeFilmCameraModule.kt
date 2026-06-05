@@ -9,6 +9,7 @@ import expo.modules.kotlin.viewevent.EventDispatcher
 import com.grovkornet.nativefilmcamera.camera.CameraEngine
 import com.grovkornet.nativefilmcamera.errors.CameraCodedException
 import com.grovkornet.nativefilmcamera.errors.CameraErrorCode
+import com.grovkornet.nativefilmcamera.errors.CameraErrorFactory
 import com.grovkornet.nativefilmcamera.ui.NativeFilmCameraView
 import com.grovkornet.nativefilmcamera.rendering.OffscreenFilmProcessor
 import com.grovkornet.nativefilmcamera.state.CameraConfiguration
@@ -47,12 +48,12 @@ class NativeFilmCameraModule : Module() {
 
     AsyncFunction("verifyGrovkornetAuthenticity") { uriString: String ->
       val uri = android.net.Uri.parse(uriString)
-      com.grovkornet.nativefilmcamera.logic.WatermarkEngine.verifyGrovkornetAuthenticity(appContext.reactContext ?: throw CameraCodedException(CameraErrorCode.E_CAMERA_BIND_FAILED, "React context is null"), uri)
+      com.grovkornet.nativefilmcamera.logic.WatermarkEngine.verifyGrovkornetAuthenticity(appContext.reactContext ?: throw CameraErrorFactory.createCameraBindFailed("React context is null"), uri)
     }
 
     AsyncFunction("generatePresetPreview") { inputUriString: String, payload: Map<String, Any> ->
       kotlinx.coroutines.runBlocking {
-        val context = appContext.reactContext ?: throw CameraCodedException(CameraErrorCode.E_CAMERA_BIND_FAILED, "React context is null")
+        val context = appContext.reactContext ?: throw CameraErrorFactory.createCameraBindFailed("React context is null")
         com.grovkornet.nativefilmcamera.services.PresetPreviewService.generatePresetPreview(context, inputUriString, payload)
       }
     }

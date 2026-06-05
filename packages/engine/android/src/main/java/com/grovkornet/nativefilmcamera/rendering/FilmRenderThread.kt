@@ -123,7 +123,11 @@ class FilmRenderThread(
             }
             onSurfaceTextureReady(surfaceTexture!!)
         }
-        liveProcessor?.prepare(surfaceTexture!!, w, h, assetManager)
+        try {
+            liveProcessor?.prepare(surfaceTexture!!, w, h, assetManager)
+        } catch (e: Exception) {
+            Log.e(TAG, "Fatal: Failed to prepare LiveFilmProcessor inside setupProcessorIfNeeded", e)
+        }
     }
 
     private var lastDebugUpdateTime = 0L

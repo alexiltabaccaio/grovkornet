@@ -5,6 +5,7 @@ import android.util.Log
 import com.grovkornet.nativefilmcamera.BuildConfig
 import com.grovkornet.nativefilmcamera.errors.CameraCodedException
 import com.grovkornet.nativefilmcamera.errors.CameraErrorCode
+import com.grovkornet.nativefilmcamera.errors.CameraErrorFactory
 import com.grovkornet.nativefilmcamera.state.CameraConfiguration
 import com.grovkornet.nativefilmcamera.state.getTargetResolutionValue
 import com.grovkornet.nativefilmcamera.state.toRenderParamsArray
@@ -79,7 +80,7 @@ class OffscreenFilmProcessor {
 
             nativeEnginePtr = nativePrepare(width, height, assetManager)
             if (nativeEnginePtr == 0L) {
-                throw CameraCodedException(CameraErrorCode.E_FILAMENT_INIT_FAILED, "nativePrepare returned 0 pointer")
+                throw CameraErrorFactory.createFilamentInitFailed("nativePrepare returned 0 pointer")
             }
 
             currentWidth = width
@@ -93,6 +94,8 @@ class OffscreenFilmProcessor {
         } catch (e: Exception) {
             Log.e(TAG, "Failed to prepare OffscreenProcessor with Filament", e)
             isPrepared = false
+            if (e is CameraCodedException) throw e
+            throw CameraErrorFactory.createFilamentInitFailed("Failed to prepare OffscreenProcessor with Filament: ${e.message}", e)
         }
     }
 
@@ -146,7 +149,8 @@ class OffscreenFilmProcessor {
                 return@withContext flippedBitmap
             } catch (e: Exception) {
                 Log.e(TAG, "Offscreen native processing failed", e)
-                return@withContext input
+                if (e is CameraCodedException) throw e
+                throw CameraErrorFactory.createPipelineInitFailed("Offscreen native processing failed: ${e.message}", e)
             }
         }
     }
@@ -192,6 +196,8 @@ class OffscreenFilmProcessor {
                 Unit
             } catch (e: Exception) {
                 Log.e(TAG, "Offscreen native HardwareBuffer processing failed", e)
+                if (e is CameraCodedException) throw e
+                throw CameraErrorFactory.createPipelineInitFailed("Offscreen native HardwareBuffer processing failed: ${e.message}", e)
             }
         }
     }

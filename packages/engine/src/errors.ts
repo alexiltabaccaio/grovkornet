@@ -23,11 +23,17 @@ export enum CameraErrorCode {
   E_TORCH_SET_FAILED = 'E_TORCH_SET_FAILED',
   E_FILAMENT_INIT_FAILED = 'E_FILAMENT_INIT_FAILED',
   E_PIPELINE_INIT_FAILED = 'E_PIPELINE_INIT_FAILED',
+  E_LOW_MEMORY = 'E_LOW_MEMORY',
+  E_THERMAL_THROTTLING = 'E_THERMAL_THROTTLING',
+  E_ZOOM_OUT_OF_BOUNDS = 'E_ZOOM_OUT_OF_BOUNDS',
+  E_RESOLUTION_NOT_SUPPORTED = 'E_RESOLUTION_NOT_SUPPORTED',
 }
 
 export interface CameraErrorDetail {
   code: number;
   severity: 'fatal' | 'warning';
+  category: string;
+  requiredParams: string[];
   description: string;
 }
 
@@ -35,61 +41,113 @@ export const CAMERA_ERROR_DETAILS: Record<CameraErrorCode, CameraErrorDetail> = 
   [CameraErrorCode.E_CAMERA_UNAUTHORIZED]: {
     code: 1001,
     severity: 'fatal',
-    description: "L'utente non ha fornito i permessi per la fotocamera."
+    category: 'permissions',
+    requiredParams: [],
+    description: "The user has not granted camera permissions."
   },
   [CameraErrorCode.E_SHADER_COMPILE_FAILED]: {
     code: 1002,
     severity: 'fatal',
-    description: "Impossibile compilare lo shader per il rendering."
+    category: 'rendering',
+    requiredParams: ["shaderName","compileLog"],
+    description: "Failed to compile rendering shader."
   },
   [CameraErrorCode.E_PRESET_PREVIEW_FAILED]: {
     code: 1003,
     severity: 'warning',
-    description: "Generazione dell'anteprima del preset fallita."
+    category: 'preset',
+    requiredParams: ["reason"],
+    description: "Failed to generate preset preview."
   },
   [CameraErrorCode.E_FILE_DELETE_FAILED]: {
     code: 1004,
     severity: 'warning',
-    description: "Cancellazione del file fallita."
+    category: 'io',
+    requiredParams: ["uri","reason"],
+    description: "Failed to delete file."
   },
   [CameraErrorCode.E_ENGINE_LIBRARY_LOAD_FAILED]: {
     code: 1005,
     severity: 'fatal',
-    description: "Impossibile caricare la libreria nativa grovkornet-engine."
+    category: 'system',
+    requiredParams: ["reason"],
+    description: "Failed to load native library grovkornet-engine."
   },
   [CameraErrorCode.E_CAMERA_BIND_FAILED]: {
     code: 1006,
     severity: 'fatal',
-    description: "Associazione dei moduli di cattura e anteprima della fotocamera fallita."
+    category: 'system',
+    requiredParams: ["reason"],
+    description: "Failed to bind camera capture and preview use cases."
   },
   [CameraErrorCode.E_GALLERY_WRITE_FAILED]: {
     code: 1007,
     severity: 'warning',
-    description: "Impossibile salvare l'immagine nella galleria di sistema."
+    category: 'io',
+    requiredParams: ["reason"],
+    description: "Failed to save image to system gallery."
   },
   [CameraErrorCode.E_WATERMARK_EMBED_FAILED]: {
     code: 1008,
     severity: 'warning',
-    description: "Impossibile imprimere la firma filigrana nativa sull'immagine."
+    category: 'authenticity',
+    requiredParams: ["reason"],
+    description: "Failed to embed native watermark signature on the image."
   },
   [CameraErrorCode.E_AUTHENTICITY_VERIFICATION_FAILED]: {
     code: 1009,
     severity: 'warning',
-    description: "Verifica di autenticità della foto fallita."
+    category: 'authenticity',
+    requiredParams: ["reason"],
+    description: "Photo authenticity verification failed."
   },
   [CameraErrorCode.E_TORCH_SET_FAILED]: {
     code: 1010,
     severity: 'warning',
-    description: "Impossibile impostare la modalità flash/torcia."
+    category: 'hardware',
+    requiredParams: ["reason"],
+    description: "Failed to set flash/torch mode."
   },
   [CameraErrorCode.E_FILAMENT_INIT_FAILED]: {
     code: 1011,
     severity: 'fatal',
-    description: "Inizializzazione nativa di Filament fallita (puntatore nullo)."
+    category: 'rendering',
+    requiredParams: ["reason"],
+    description: "Filament native initialization failed (null pointer)."
   },
   [CameraErrorCode.E_PIPELINE_INIT_FAILED]: {
     code: 1012,
     severity: 'fatal',
-    description: "Creazione della pipeline di rendering (textures/render targets) fallita."
+    category: 'rendering',
+    requiredParams: ["reason"],
+    description: "Failed to create rendering pipeline (textures/render targets)."
+  },
+  [CameraErrorCode.E_LOW_MEMORY]: {
+    code: 1013,
+    severity: 'warning',
+    category: 'system',
+    requiredParams: ["availableMemory","requiredMemory"],
+    description: "Device is running extremely low on memory, aborting intensive rendering operations."
+  },
+  [CameraErrorCode.E_THERMAL_THROTTLING]: {
+    code: 1014,
+    severity: 'warning',
+    category: 'system',
+    requiredParams: ["thermalStatus"],
+    description: "Device temperature is too high, performance may be throttled."
+  },
+  [CameraErrorCode.E_ZOOM_OUT_OF_BOUNDS]: {
+    code: 1015,
+    severity: 'warning',
+    category: 'hardware',
+    requiredParams: ["requestedZoom","maxZoom"],
+    description: "Requested zoom level is not supported by the camera hardware."
+  },
+  [CameraErrorCode.E_RESOLUTION_NOT_SUPPORTED]: {
+    code: 1016,
+    severity: 'warning',
+    category: 'hardware',
+    requiredParams: ["width","height"],
+    description: "The requested camera resolution is not supported by this device."
   },
 };

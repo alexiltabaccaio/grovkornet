@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory
 import android.net.Uri
 import com.grovkornet.nativefilmcamera.errors.CameraCodedException
 import com.grovkornet.nativefilmcamera.errors.CameraErrorCode
+import com.grovkornet.nativefilmcamera.errors.CameraErrorFactory
 import java.io.File
 import java.io.FileOutputStream
 import java.util.UUID
@@ -15,15 +16,15 @@ object ImageIOService {
         val inputStream = if (uriString.startsWith("http") || uriString.startsWith("file") || uriString.startsWith("content")) {
             val inputUri = Uri.parse(uriString)
             context.contentResolver.openInputStream(inputUri) 
-                ?: throw CameraCodedException(CameraErrorCode.E_PRESET_PREVIEW_FAILED, "Failed to open URI stream: $uriString")
+                ?: throw CameraErrorFactory.createPresetPreviewFailed("Failed to open URI stream: $uriString")
         } else {
             val resId = context.resources.getIdentifier(uriString, "drawable", context.packageName)
-            if (resId == 0) throw CameraCodedException(CameraErrorCode.E_PRESET_PREVIEW_FAILED, "Drawable resource not found: $uriString")
+            if (resId == 0) throw CameraErrorFactory.createPresetPreviewFailed("Drawable resource not found: $uriString")
             context.resources.openRawResource(resId)
         }
         
         val bitmap = BitmapFactory.decodeStream(inputStream) 
-            ?: throw CameraCodedException(CameraErrorCode.E_PRESET_PREVIEW_FAILED, "Failed to decode bitmap")
+            ?: throw CameraErrorFactory.createPresetPreviewFailed("Failed to decode bitmap")
         inputStream.close()
         return bitmap
     }

@@ -11,17 +11,151 @@ package com.grovkornet.nativefilmcamera.errors
  *   npm run codegen
  * (or build/run the mobile app via npm run android / npm run ios)
  */
-enum class CameraErrorCode(val code: Int, val severity: String) {
-    E_CAMERA_UNAUTHORIZED(1001, "fatal"),
-    E_SHADER_COMPILE_FAILED(1002, "fatal"),
-    E_PRESET_PREVIEW_FAILED(1003, "warning"),
-    E_FILE_DELETE_FAILED(1004, "warning"),
-    E_ENGINE_LIBRARY_LOAD_FAILED(1005, "fatal"),
-    E_CAMERA_BIND_FAILED(1006, "fatal"),
-    E_GALLERY_WRITE_FAILED(1007, "warning"),
-    E_WATERMARK_EMBED_FAILED(1008, "warning"),
-    E_AUTHENTICITY_VERIFICATION_FAILED(1009, "warning"),
-    E_TORCH_SET_FAILED(1010, "warning"),
-    E_FILAMENT_INIT_FAILED(1011, "fatal"),
-    E_PIPELINE_INIT_FAILED(1012, "fatal");
+enum class CameraErrorCode(val code: Int, val severity: String, val category: String) {
+    E_CAMERA_UNAUTHORIZED(1001, "fatal", "permissions"),
+    E_SHADER_COMPILE_FAILED(1002, "fatal", "rendering"),
+    E_PRESET_PREVIEW_FAILED(1003, "warning", "preset"),
+    E_FILE_DELETE_FAILED(1004, "warning", "io"),
+    E_ENGINE_LIBRARY_LOAD_FAILED(1005, "fatal", "system"),
+    E_CAMERA_BIND_FAILED(1006, "fatal", "system"),
+    E_GALLERY_WRITE_FAILED(1007, "warning", "io"),
+    E_WATERMARK_EMBED_FAILED(1008, "warning", "authenticity"),
+    E_AUTHENTICITY_VERIFICATION_FAILED(1009, "warning", "authenticity"),
+    E_TORCH_SET_FAILED(1010, "warning", "hardware"),
+    E_FILAMENT_INIT_FAILED(1011, "fatal", "rendering"),
+    E_PIPELINE_INIT_FAILED(1012, "fatal", "rendering"),
+    E_LOW_MEMORY(1013, "warning", "system"),
+    E_THERMAL_THROTTLING(1014, "warning", "system"),
+    E_ZOOM_OUT_OF_BOUNDS(1015, "warning", "hardware"),
+    E_RESOLUTION_NOT_SUPPORTED(1016, "warning", "hardware");
+}
+
+object CameraErrorFactory {
+    fun createCameraUnauthorized(cause: Throwable? = null): CameraCodedException {
+        return CameraCodedException(
+            CameraErrorCode.E_CAMERA_UNAUTHORIZED,
+            "The user has not granted camera permissions.",
+            cause
+        )
+    }
+
+    fun createShaderCompileFailed(shaderName: String, compileLog: String, cause: Throwable? = null): CameraCodedException {
+        return CameraCodedException(
+            CameraErrorCode.E_SHADER_COMPILE_FAILED,
+            "Failed to compile rendering shader. Params: [shaderName=$shaderName, compileLog=$compileLog]",
+            cause
+        )
+    }
+
+    fun createPresetPreviewFailed(reason: String, cause: Throwable? = null): CameraCodedException {
+        return CameraCodedException(
+            CameraErrorCode.E_PRESET_PREVIEW_FAILED,
+            "Failed to generate preset preview. Params: [reason=$reason]",
+            cause
+        )
+    }
+
+    fun createFileDeleteFailed(uri: String, reason: String, cause: Throwable? = null): CameraCodedException {
+        return CameraCodedException(
+            CameraErrorCode.E_FILE_DELETE_FAILED,
+            "Failed to delete file. Params: [uri=$uri, reason=$reason]",
+            cause
+        )
+    }
+
+    fun createEngineLibraryLoadFailed(reason: String, cause: Throwable? = null): CameraCodedException {
+        return CameraCodedException(
+            CameraErrorCode.E_ENGINE_LIBRARY_LOAD_FAILED,
+            "Failed to load native library grovkornet-engine. Params: [reason=$reason]",
+            cause
+        )
+    }
+
+    fun createCameraBindFailed(reason: String, cause: Throwable? = null): CameraCodedException {
+        return CameraCodedException(
+            CameraErrorCode.E_CAMERA_BIND_FAILED,
+            "Failed to bind camera capture and preview use cases. Params: [reason=$reason]",
+            cause
+        )
+    }
+
+    fun createGalleryWriteFailed(reason: String, cause: Throwable? = null): CameraCodedException {
+        return CameraCodedException(
+            CameraErrorCode.E_GALLERY_WRITE_FAILED,
+            "Failed to save image to system gallery. Params: [reason=$reason]",
+            cause
+        )
+    }
+
+    fun createWatermarkEmbedFailed(reason: String, cause: Throwable? = null): CameraCodedException {
+        return CameraCodedException(
+            CameraErrorCode.E_WATERMARK_EMBED_FAILED,
+            "Failed to embed native watermark signature on the image. Params: [reason=$reason]",
+            cause
+        )
+    }
+
+    fun createAuthenticityVerificationFailed(reason: String, cause: Throwable? = null): CameraCodedException {
+        return CameraCodedException(
+            CameraErrorCode.E_AUTHENTICITY_VERIFICATION_FAILED,
+            "Photo authenticity verification failed. Params: [reason=$reason]",
+            cause
+        )
+    }
+
+    fun createTorchSetFailed(reason: String, cause: Throwable? = null): CameraCodedException {
+        return CameraCodedException(
+            CameraErrorCode.E_TORCH_SET_FAILED,
+            "Failed to set flash/torch mode. Params: [reason=$reason]",
+            cause
+        )
+    }
+
+    fun createFilamentInitFailed(reason: String, cause: Throwable? = null): CameraCodedException {
+        return CameraCodedException(
+            CameraErrorCode.E_FILAMENT_INIT_FAILED,
+            "Filament native initialization failed (null pointer). Params: [reason=$reason]",
+            cause
+        )
+    }
+
+    fun createPipelineInitFailed(reason: String, cause: Throwable? = null): CameraCodedException {
+        return CameraCodedException(
+            CameraErrorCode.E_PIPELINE_INIT_FAILED,
+            "Failed to create rendering pipeline (textures/render targets). Params: [reason=$reason]",
+            cause
+        )
+    }
+
+    fun createLowMemory(availableMemory: String, requiredMemory: String, cause: Throwable? = null): CameraCodedException {
+        return CameraCodedException(
+            CameraErrorCode.E_LOW_MEMORY,
+            "Device is running extremely low on memory, aborting intensive rendering operations. Params: [availableMemory=$availableMemory, requiredMemory=$requiredMemory]",
+            cause
+        )
+    }
+
+    fun createThermalThrottling(thermalStatus: String, cause: Throwable? = null): CameraCodedException {
+        return CameraCodedException(
+            CameraErrorCode.E_THERMAL_THROTTLING,
+            "Device temperature is too high, performance may be throttled. Params: [thermalStatus=$thermalStatus]",
+            cause
+        )
+    }
+
+    fun createZoomOutOfBounds(requestedZoom: String, maxZoom: String, cause: Throwable? = null): CameraCodedException {
+        return CameraCodedException(
+            CameraErrorCode.E_ZOOM_OUT_OF_BOUNDS,
+            "Requested zoom level is not supported by the camera hardware. Params: [requestedZoom=$requestedZoom, maxZoom=$maxZoom]",
+            cause
+        )
+    }
+
+    fun createResolutionNotSupported(width: String, height: String, cause: Throwable? = null): CameraCodedException {
+        return CameraCodedException(
+            CameraErrorCode.E_RESOLUTION_NOT_SUPPORTED,
+            "The requested camera resolution is not supported by this device. Params: [width=$width, height=$height]",
+            cause
+        )
+    }
 }

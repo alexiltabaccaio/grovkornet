@@ -9,6 +9,18 @@ const FILE_PATHS = {
   kotlinErrors: 'packages/engine/android/src/main/java/com/grovkornet/nativefilmcamera/errors/CameraErrors.kt'
 };
 
+function toCamelCase(str) {
+  let cleaned = str;
+  if (cleaned.startsWith('E_')) {
+    cleaned = cleaned.substring(2);
+  }
+  return cleaned.toLowerCase().replace(/_([a-z])/g, (g) => g[1].toUpperCase());
+}
+
+function capitalize(str) {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
 function main() {
   console.log(`Loading errors from: ${ERRORS_JSON_PATH}`);
   if (!fs.existsSync(ERRORS_JSON_PATH)) {
@@ -33,9 +45,12 @@ function main() {
   // 1. Generate TS Errors File
   const tsEnumEntries = errors.map(e => `  ${e.name} = '${e.name}',`).join('\n');
   const tsDetailsEntries = errors.map(e => {
+    const req = e.required_params ? JSON.stringify(e.required_params) : '[]';
     return `  [CameraErrorCode.${e.name}]: {
     code: ${e.code},
     severity: '${e.severity}',
+    category: '${e.category}',
+    requiredParams: ${req},
     description: "${e.description.replace(/"/g, '\\"')}"
   },`;
   }).join('\n');
@@ -59,6 +74,8 @@ ${tsEnumEntries}
 export interface CameraErrorDetail {
   code: number;
   severity: 'fatal' | 'warning';
+  category: string;
+  requiredParams: string[];
   description: string;
 }
 
@@ -70,8 +87,33 @@ ${tsDetailsEntries}
   // 2. Generate Kotlin Errors File
   const kotlinEnumEntries = errors.map((e, idx, arr) => {
     const comma = idx === arr.length - 1 ? ';' : ',';
-    return `    ${e.name}(${e.code}, "${e.severity}")${comma}`;
+    return `    ${e.name}(${e.code}, "${e.severity}", "${e.category}")${comma}`;
   }).join('\n');
+
+  const kotlinFactoryMethods = errors.map(e => {
+    const camelName = toCamelCase(e.name);
+    const capName = capitalize(camelName);
+    const params = e.required_params || [];
+    
+    const methodArgs = params.map(p => `${p}: String`).join(', ');
+    const separator = methodArgs ? ', ' : '';
+    
+    let messageExpr;
+    if (params.length > 0) {
+      const paramBindings = params.map(p => `${p}=\$${p}`).join(', ');
+      messageExpr = `"${e.description.replace(/"/g, '\\"')} Params: [${paramBindings}]"`;
+    } else {
+      messageExpr = `"${e.description.replace(/"/g, '\\"')}"`;
+    }
+    
+    return `    fun create${capName}(${methodArgs}${separator}cause: Throwable? = null): CameraCodedException {
+        return CameraCodedException(
+            CameraErrorCode.${e.name},
+            ${messageExpr},
+            cause
+        )
+    }`;
+  }).join('\n\n');
 
   const kotlinContent = `package com.grovkornet.nativefilmcamera.errors
 
@@ -86,8 +128,12 @@ ${tsDetailsEntries}
  *   npm run codegen
  * (or build/run the mobile app via npm run android / npm run ios)
  */
-enum class CameraErrorCode(val code: Int, val severity: String) {
+enum class CameraErrorCode(val code: Int, val severity: String, val category: String) {
 ${kotlinEnumEntries}
+}
+
+object CameraErrorFactory {
+${kotlinFactoryMethods}
 }
 `;
 

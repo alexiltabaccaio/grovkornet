@@ -7,10 +7,10 @@ import com.grovkornet.nativefilmcamera.BuildConfig
 import android.view.Surface
 import com.grovkornet.nativefilmcamera.errors.CameraCodedException
 import com.grovkornet.nativefilmcamera.errors.CameraErrorCode
+import com.grovkornet.nativefilmcamera.errors.CameraErrorFactory
 import com.grovkornet.nativefilmcamera.state.CameraConfiguration
 import com.grovkornet.nativefilmcamera.state.getTargetResolutionValue
 import com.grovkornet.nativefilmcamera.state.toRenderParamsArray
-
 import android.content.res.AssetManager
 
 class LiveFilmProcessor {
@@ -74,7 +74,7 @@ class LiveFilmProcessor {
 
             nativeEnginePtr = nativePrepare(width, height, assetManager)
             if (nativeEnginePtr == 0L) {
-                throw CameraCodedException(CameraErrorCode.E_FILAMENT_INIT_FAILED, "nativePrepare returned 0 pointer")
+                throw CameraErrorFactory.createFilamentInitFailed("nativePrepare returned 0 pointer")
             }
 
             // Bind the Stream to the Engine's inputTextureExternal
@@ -90,6 +90,8 @@ class LiveFilmProcessor {
         } catch (e: Exception) {
             Log.e(TAG, "Failed to prepare LiveFilmProcessor", e)
             isPrepared = false
+            if (e is CameraCodedException) throw e
+            throw CameraErrorFactory.createFilamentInitFailed("Failed to prepare LiveFilmProcessor: ${e.message}", e)
         }
     }
 
@@ -150,6 +152,8 @@ class LiveFilmProcessor {
             }
         } catch (e: Exception) {
             Log.e(TAG, "Failed to render frame", e)
+            if (e is CameraCodedException) throw e
+            throw CameraErrorFactory.createPipelineInitFailed("Failed to render frame: ${e.message}", e)
         }
     }
 
