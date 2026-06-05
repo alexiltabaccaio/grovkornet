@@ -73,6 +73,7 @@ export const ConnectedParameter = memo(({
       isActive={finalIsActive}
       onPress={finalOnPress}
       disableGestures={rest.disableGestures}
+      parameterId={id}
       {...rest}
     />
   );

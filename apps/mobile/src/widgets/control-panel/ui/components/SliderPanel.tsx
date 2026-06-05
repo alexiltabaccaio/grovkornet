@@ -82,6 +82,8 @@ export const SliderPanel = React.memo(({
   return (
     <ParameterPanelWrapper animatedStyle={animatedStyle}>
       <ParameterControl
+        key={parameter}
+        parameterId={parameter}
         label=""
         isActive={finalIsActive}
         onPress={NOOP}
@@ -99,6 +101,7 @@ export const SliderPanel = React.memo(({
         onReset={controlData.onReset}
         onToggleAuto={controlData.onToggleAuto}
         disabled={controlData.disabled}
+        isMainSlider={true}
       />
     </ParameterPanelWrapper>
   );

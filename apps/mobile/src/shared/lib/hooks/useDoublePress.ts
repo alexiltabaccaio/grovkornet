@@ -1,4 +1,4 @@
-import { useRef, useCallback } from 'react';
+import { useRef, useCallback, useMemo } from 'react';
 import * as Haptics from '@shared/lib/haptics';
 
 export const useDoublePress = <T extends string>(onReset: (tool: T) => void) => {
@@ -20,5 +20,5 @@ export const useDoublePress = <T extends string>(onReset: (tool: T) => void) => 
     }
   }, [onReset]);
 
-  return { handlePressWithDouble };
+  return useMemo(() => ({ handlePressWithDouble }), [handlePressWithDouble]);
 };

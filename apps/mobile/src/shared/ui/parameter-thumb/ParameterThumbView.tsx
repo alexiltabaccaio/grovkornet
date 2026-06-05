@@ -26,6 +26,7 @@ const ParameterThumbViewBase = forwardRef<View, ParameterThumbViewProps>((props,
     onPress,
     renderValue,
     isToggle,
+    parameterId,
   } = props;
 
   const hasValue = !!value || !!staticText || !!imageSource || !!icon;
@@ -126,7 +127,7 @@ const ParameterThumbViewBase = forwardRef<View, ParameterThumbViewProps>((props,
         isDebugEnabled && variant === 'text' && { backgroundColor: 'rgba(255,0,0,0.2)', borderColor: 'red' }
       ]}>
         {variant === 'text' && !imageSource && <TextThumb {...props} />}
-        {variant === 'slider' && <SliderThumb {...props} />}
+        {variant === 'slider' && <SliderThumb key={parameterId ?? label} {...props} />}
         {!!imageSource && <ImageThumb {...props} />}
       </View>
     </Animated.View>
@@ -179,6 +180,7 @@ const arePropsEqual = (prev: ParameterThumbViewProps, next: ParameterThumbViewPr
     prev.valueFormatter === next.valueFormatter &&
     prev.icon === next.icon &&
     prev.hideAutoPlaceholder === next.hideAutoPlaceholder &&
+    prev.isMainSlider === next.isMainSlider &&
     isImageEqual &&
     areCallbacksEqual
   );

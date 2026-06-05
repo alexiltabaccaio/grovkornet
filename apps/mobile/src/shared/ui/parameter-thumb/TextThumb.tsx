@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { View, Text, TextInput } from 'react-native';
 import Animated, { useAnimatedStyle, useAnimatedProps } from 'react-native-reanimated';
 import { ParameterThumbViewProps } from './ParameterThumbView.types';
@@ -6,7 +6,59 @@ import { styles } from './ParameterThumbView.styles';
 
 const AnimatedTextInput = Animated.createAnimatedComponent(TextInput);
 
-export const TextThumb = ({
+const StaticTextThumb = memo(({
+  value,
+  valueFormatter,
+  isAuto,
+  staticText,
+  hideValueInAuto = false,
+  autoValueText = 'AUTO',
+  disabled,
+}: ParameterThumbViewProps) => {
+  const isDisabled = disabled && disabled.value;
+
+  const getStaticText = () => {
+    if (staticText) return staticText;
+    if (!value) return '';
+    const autoActive = isAuto && isAuto.value;
+    if (autoActive && hideValueInAuto) {
+      return autoValueText;
+    }
+    const val = value.value;
+    return valueFormatter ? valueFormatter(val) : Math.round(val).toString();
+  };
+
+  const text = getStaticText();
+
+  return (
+    <View
+      style={[
+        styles.pillButton,
+        isDisabled ? {
+          borderColor: '#222',
+          backgroundColor: 'rgba(255,255,255,0.01)',
+        } : {
+          borderColor: '#333',
+          backgroundColor: 'rgba(255,255,255,0.04)',
+        }
+      ]}
+    >
+      <Text
+        allowFontScaling={false}
+        style={[
+          styles.pillValueText,
+          { color: isDisabled ? '#666' : '#888' }
+        ]}
+      >
+        {text}
+      </Text>
+    </View>
+  );
+});
+
+StaticTextThumb.displayName = 'StaticTextThumb';
+
+const AnimatedTextThumb = memo(({
   isActive,
   value,
   valueFormatter,
@@ -29,11 +81,12 @@ export const TextThumb = ({
       /* eslint-enable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unnecessary-type-assertion */
     }
 
-    const val = valueFormatter ? valueFormatter(value.value) : Math.round(value.value).toString();
+    const val = value.value;
+    const textVal = valueFormatter ? valueFormatter(val) : Math.round(val).toString();
     /* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unnecessary-type-assertion */
     return {
-      text: val,
-      defaultValue: val,
+      text: textVal,
+      defaultValue: textVal,
     } as any;
     /* eslint-enable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unnecessary-type-assertion */
   });
@@ -86,7 +139,8 @@ export const TextThumb = ({
           style={[
             styles.pillValueText,
             { color: isActive ? "#FFF" : "#888" }
-          ]}>
+          ]}
+        >
           {staticText}
         </Text>
       </View>
@@ -94,4 +148,19 @@ export const TextThumb = ({
   }
 
   return null;
-};
+});
+
+AnimatedTextThumb.displayName = 'AnimatedTextThumb';
+
+export const TextThumb = memo((props: ParameterThumbViewProps) => {
+  const { isActive, isToggle, value } = props;
+  const isHighlighted = isToggle && value ? (value.value === 1) : isActive;
+
+  if (!isHighlighted) {
+    return <StaticTextThumb {...props} />;
+  }
+
+  return <AnimatedTextThumb {...props} />;
+});
+
+TextThumb.displayName = 'TextThumb';

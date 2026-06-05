@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 import { useSystemStore } from '@entities/system';
 import { Gesture } from 'react-native-gesture-handler';
-import Animated, { useSharedValue, withTiming, withSpring, SharedValue } from 'react-native-reanimated';
+import { useSharedValue, withTiming, withSpring, SharedValue } from 'react-native-reanimated';
 
 interface UseControlPanelGesturesProps {
   externalTranslateY?: SharedValue<number>;

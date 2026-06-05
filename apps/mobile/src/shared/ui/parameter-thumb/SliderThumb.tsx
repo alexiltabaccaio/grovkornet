@@ -10,11 +10,17 @@ import Animated, {
 import { ParameterThumbViewProps } from './ParameterThumbView.types';
 import { logger } from '@shared/lib/logger';
 import { AutoButton } from '../auto-button/AutoButton';
-import { globalMeasuredTrackWidth, setGlobalMeasuredTrackWidth } from './globalTrackWidth';
+import { 
+  globalMainTrackWidth, 
+  globalSubTrackWidth, 
+  setGlobalMainTrackWidth, 
+  setGlobalSubTrackWidth 
+} from './globalTrackWidth';
 
 const AnimatedTextInput = Animated.createAnimatedComponent(TextInput);
 
 export const SliderThumb = React.memo(({
+  label,
   value,
   minValue = 0,
   maxValue = 1,
@@ -29,14 +35,16 @@ export const SliderThumb = React.memo(({
   hideAutoPlaceholder,
   sliderTrackWidth,
   sliderColor,
+  parameterId,
+  isMainSlider,
 }: ParameterThumbViewProps) => {
-  const internalTrackWidth = useSharedValue(globalMeasuredTrackWidth);
-  const trackWidth = sliderTrackWidth || internalTrackWidth;
-  
   React.useEffect(() => {
     logger.debug('SliderThumb', `Mounted for param with minValue=${minValue}, maxValue=${maxValue}`);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const internalTrackWidth = useSharedValue(isMainSlider ? globalMainTrackWidth : globalSubTrackWidth);
+  const trackWidth = sliderTrackWidth || internalTrackWidth;
 
   const animatedTextProps = useAnimatedProps((): Record<string, unknown> => {
     if (!value) return { text: '' };
@@ -171,13 +179,23 @@ export const SliderThumb = React.memo(({
         onLayout={(e) => {
           if (e.nativeEvent.layout.width > 0) {
             trackWidth.value = e.nativeEvent.layout.width;
-            setGlobalMeasuredTrackWidth(e.nativeEvent.layout.width);
+            if (isMainSlider) {
+              setGlobalMainTrackWidth(e.nativeEvent.layout.width);
+            } else {
+              setGlobalSubTrackWidth(e.nativeEvent.layout.width);
+            }
           }
         }}
       >
         <Animated.View style={[styles.trackBackground, animatedTrackStyle]} />
-        <Animated.View style={[styles.trackFill, animatedFillStyle, animatedFillBgStyle]} />
-        <Animated.View style={[styles.thumb, animatedThumbStyle]} />
+        <Animated.View 
+          key={`fill-${parameterId ?? label}`}
+          style={[styles.trackFill, animatedFillStyle, animatedFillBgStyle]} 
+        />
+        <Animated.View 
+          key={`thumb-${parameterId ?? label}`}
+          style={[styles.thumb, animatedThumbStyle]} 
+        />
       </View>
 
       <Animated.View style={styles.valueTextContainer}>

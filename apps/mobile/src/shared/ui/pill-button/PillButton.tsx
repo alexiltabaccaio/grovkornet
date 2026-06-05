@@ -1,6 +1,6 @@
 import React, { memo, useRef, useEffect } from 'react';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import { StyleSheet, StyleProp, ViewStyle, TextStyle, View } from 'react-native';
+import { StyleSheet, StyleProp, ViewStyle, TextStyle, View, Text } from 'react-native';
 import Animated, { useAnimatedStyle, SharedValue } from 'react-native-reanimated';
 import * as Haptics from '@shared/lib/haptics';
 
@@ -69,7 +69,68 @@ const getColors = (variant: 'default' | 'auto' | 'module', active: boolean, isDe
   };
 };
 
-const PillButtonComponent = ({
+const StaticPillButton = memo(({
+  label,
+  isActive,
+  onPress,
+  variant = 'default',
+  isDebugEnabled = false,
+  opacity = 1,
+  style,
+  textStyle,
+}: PillButtonProps) => {
+  const onPressRef = useRef(onPress);
+  useEffect(() => {
+    onPressRef.current = onPress;
+  }, [onPress]);
+
+  const handlePress = React.useCallback(() => {
+    void Haptics.selectionAsync();
+    onPressRef.current();
+  }, []);
+
+  const active = typeof isActive === 'boolean' ? isActive : false;
+  const op = typeof opacity === 'number' ? opacity : 1;
+  const colors = getColors(variant, active, isDebugEnabled);
+
+  return (
+    <View style={style}>
+      <TouchableOpacity 
+        onPress={handlePress} 
+        style={[styles.pressable, { width: '100%' }]} 
+        activeOpacity={1}
+        accessibilityRole="button"
+        accessibilityLabel={label}
+      >
+        <View
+          style={[
+            styles.pillButton,
+            variant === 'auto' && styles.autoButton,
+            {
+              borderColor: colors.borderColor,
+              backgroundColor: colors.backgroundColor,
+              opacity: op,
+            }
+          ]}
+        >
+          <Text
+            allowFontScaling={false}
+            style={[styles.pillText, { color: colors.textColor }, textStyle]}
+            numberOfLines={1}
+            adjustsFontSizeToFit
+            minimumFontScale={0.7}
+          >
+            {label}
+          </Text>
+        </View>
+      </TouchableOpacity>
+    </View>
+  );
+});
+
+StaticPillButton.displayName = 'StaticPillButton';
+
+const AnimatedPillButton = memo(({
   label,
   isActive,
   onPress,
@@ -138,7 +199,9 @@ const PillButtonComponent = ({
       </TouchableOpacity>
     </View>
   );
-};
+});
+
+AnimatedPillButton.displayName = 'AnimatedPillButton';
 
 const arePropsEqual = (prevProps: PillButtonProps, nextProps: PillButtonProps) => {
   if (prevProps.label !== nextProps.label) return false;
@@ -151,14 +214,24 @@ const arePropsEqual = (prevProps: PillButtonProps, nextProps: PillButtonProps) =
   if (getVal(prevProps.isActive) !== getVal(nextProps.isActive)) return false;
   if (getVal(prevProps.opacity) !== getVal(nextProps.opacity)) return false;
 
-  // Shallow style comparison (handles arrays, StyleSheet objects, and inline styles)
   if (JSON.stringify(prevProps.style) !== JSON.stringify(nextProps.style)) return false;
   if (JSON.stringify(prevProps.textStyle) !== JSON.stringify(nextProps.textStyle)) return false;
 
   return true;
 };
 
-export const PillButton = memo(PillButtonComponent, arePropsEqual);
+export const PillButton = memo((props: PillButtonProps) => {
+  const { isActive, opacity } = props;
+  const isShared = (val: unknown) => typeof val === 'object' && val !== null && 'value' in (val as Record<string, unknown>);
+  const needsAnimation = isShared(isActive) || isShared(opacity);
+
+  if (needsAnimation) {
+    return <AnimatedPillButton {...props} />;
+  }
+  return <StaticPillButton {...props} />;
+}, arePropsEqual);
+
+PillButton.displayName = 'PillButton';
 
 const styles = StyleSheet.create({
   pressable: {

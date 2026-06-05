@@ -19,7 +19,7 @@ interface GenericParameterModuleProps {
   handlePressWithDouble?: (param: ParameterType, action: () => void) => void;
 }
 
-export const GenericParameterModule = ({
+export const GenericParameterModule = React.memo(({
   parameters,
   handlePressWithDouble,
 }: GenericParameterModuleProps) => {
@@ -82,7 +82,9 @@ export const GenericParameterModule = ({
       />
     </Animated.View>
   );
-};
+});
+
+GenericParameterModule.displayName = 'GenericParameterModule';
 
 const styles = StyleSheet.create({
   tabContent: {

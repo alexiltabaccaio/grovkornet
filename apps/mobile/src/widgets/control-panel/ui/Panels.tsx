@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, StyleProp, ViewStyle } from 'react-native';
 import Animated, { useAnimatedStyle, interpolate, Extrapolation, SharedValue } from 'react-native-reanimated';
 import { useShallow } from 'zustand/react/shallow';
 import { useSystemStore } from '@entities/system';
@@ -54,10 +54,9 @@ export const Panels = React.memo(({ translateY }: PanelsProps) => {
       opacity,
       pointerEvents: translateY.value <= -15 ? 'auto' : 'none'
     };
-  }) as any;
+  }) as unknown as StyleProp<ViewStyle>;
 
   const isSlider = SLIDER_PARAMETERS.includes(activeParameter);
-  const sliderParameter = isSlider ? activeParameter : 'grain';
 
   const renderContent = () => {
     switch (activeParameter) {
@@ -88,20 +87,14 @@ export const Panels = React.memo(({ translateY }: PanelsProps) => {
 
   return (
     <Animated.View style={[styles.contentContainer, panelAnimatedStyle]}>
-      {SLIDER_PARAMETERS.map((param) => {
-        const isCurrentActive = isSlider && param === activeParameter;
-        return (
-          <SliderPanel
-            key={param}
-            parameter={param as any}
-            isActiveOverride={isCurrentActive}
-            animatedStyle={[
-              panelAnimatedStyle,
-              !isCurrentActive && styles.hidden,
-            ]}
-          />
-        );
-      })}
+      {isSlider && (
+        <SliderPanel
+          key={activeParameter}
+          parameter={activeParameter}
+          isActiveOverride={true}
+          animatedStyle={panelAnimatedStyle}
+        />
+      )}
       {renderContent()}
     </Animated.View>
   );
@@ -114,8 +107,5 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     alignItems: 'center',
     width: '100%',
-  },
-  hidden: {
-    display: 'none',
   },
 });

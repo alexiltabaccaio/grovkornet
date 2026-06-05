@@ -62,7 +62,7 @@ describe('NativeRenderer', () => {
   it('calls getNativeElement().takePhoto when nativeView.takePhoto is not present', () => {
     mockHasDirectTakePhoto = false;
     const ref = createRef<NativeRendererRef>();
-    render(<NativeRenderer contrast={1} ref={ref} />);
+    render(<NativeRenderer ref={ref} />);
 
     expect(ref.current).toBeDefined();
     ref.current?.takePhoto();

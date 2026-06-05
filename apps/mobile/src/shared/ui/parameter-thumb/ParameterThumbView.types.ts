@@ -29,5 +29,7 @@ export interface ParameterThumbViewProps {
   hideAutoPlaceholder?: boolean;
   sliderTrackWidth?: SharedValue<number>;
   sliderColor?: string;
+  parameterId?: string;
+  isMainSlider?: boolean;
 }
 

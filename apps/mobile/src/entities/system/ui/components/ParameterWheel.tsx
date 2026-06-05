@@ -27,7 +27,7 @@ interface ParameterWheelProps {
   handlePressWithDouble: (param: ParameterType, action: () => void) => void;
 }
 
-export const ParameterWheel = ({
+export const ParameterWheel = memo(({
   items,
   activeParameter,
   setActiveParameter,
@@ -54,9 +54,7 @@ export const ParameterWheel = ({
   const lastActiveRef = useRef(activeParameter);
   
   // Synchronize external state changes (e.g., click on reset buttons)
-  // eslint-disable-next-line react-hooks/refs
   if (activeParameter !== lastActiveRef.current) {
-    // eslint-disable-next-line react-hooks/refs
     lastActiveRef.current = activeParameter;
     const newIdx = items.findIndex(item => item.id === activeParameter);
     if (newIdx !== -1 && itemsLength > 0) {
@@ -142,7 +140,9 @@ export const ParameterWheel = ({
       </View>
     </GestureDetector>
   );
-};
+});
+
+ParameterWheel.displayName = 'ParameterWheel';
 
 interface WheelItemComponentProps {
   item: WheelItem;
