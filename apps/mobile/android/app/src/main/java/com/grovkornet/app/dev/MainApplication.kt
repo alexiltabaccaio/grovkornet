@@ -1,4 +1,4 @@
-package com.grovkornet.app
+package com.grovkornet.app.dev
 
 import android.app.Application
 import android.content.res.Configuration

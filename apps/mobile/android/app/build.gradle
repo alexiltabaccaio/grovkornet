@@ -115,7 +115,7 @@ android {
     buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdk rootProject.ext.compileSdkVersion
 
-    namespace 'com.grovkornet.app'
+    namespace 'com.grovkornet.app.dev'
     defaultConfig {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
@@ -127,11 +127,11 @@ android {
     productFlavors {
         development {
             dimension "default"
-            applicationId "com.grovkornet.app.dev"
+            applicationId 'com.grovkornet.app.dev'
         }
         production {
             dimension "default"
-            applicationId "com.grovkornet.app"
+            applicationId 'com.grovkornet.app.dev'
         }
     }
     signingConfigs {

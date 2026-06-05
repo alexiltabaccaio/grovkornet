@@ -21,14 +21,7 @@ jest.mock('@shared/lib/logger', () => ({
 const mockSetForce4k60fpsCrop = jest.fn();
 const mockSetForce4k60fpsCropPref = jest.fn();
 
-// Mock useAnimatedReaction since we don't need real animated reaction in smoke test
-jest.mock('react-native-reanimated', () => {
-  const reanimated = jest.requireActual('react-native-reanimated/mock');
-  return {
-    ...reanimated,
-    useAnimatedReaction: jest.fn(),
-  };
-});
+
 
 jest.mock('@entities/preferences', () => ({
   usePreferencesStore: {

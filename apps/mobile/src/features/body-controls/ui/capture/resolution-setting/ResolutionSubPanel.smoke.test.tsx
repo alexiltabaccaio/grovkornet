@@ -20,14 +20,6 @@ jest.mock('@shared/lib/logger', () => ({
 
 const mockSetPreviewIn4k = jest.fn();
 
-// Mock useAnimatedReaction since we don't need real animated reaction in smoke test
-jest.mock('react-native-reanimated', () => {
-  const reanimated = jest.requireActual('react-native-reanimated/mock');
-  return {
-    ...reanimated,
-    useAnimatedReaction: jest.fn(),
-  };
-});
 
 let mockResolutionSettingValue = 0;
 let mockPreviewIn4kValue = 0;

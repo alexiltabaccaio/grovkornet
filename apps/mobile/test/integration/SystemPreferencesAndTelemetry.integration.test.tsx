@@ -76,7 +76,7 @@ describe('SystemPreferencesAndTelemetry Integration', () => {
     // 4K preview toggle and warning should not render when resolution is 1080p
     expect(queryByText('PARAMETERS.PREVIEW_IN_4K')).toBeNull();
     expect(queryByText('parameters.preview_in_4k_warning')).toBeNull();
-    expect(nativeCamera.props.previewIn4k.value).toBe(false);
+    expect(nativeCamera.props.animatedProps.previewIn4k).toBe(false);
   });
 
   it('handles 4K preview decoupling integration correctly (toggle on)', () => {
@@ -92,6 +92,6 @@ describe('SystemPreferencesAndTelemetry Integration', () => {
     // 4K preview toggle and warning should render and native prop should be true
     expect(queryByText('PARAMETERS.PREVIEW_IN_4K')).toBeDefined();
     expect(queryByText('parameters.preview_in_4k_warning')).toBeDefined();
-    expect(nativeCamera.props.previewIn4k.value).toBe(true);
+    expect(nativeCamera.props.animatedProps.previewIn4k).toBe(true);
   });
 });

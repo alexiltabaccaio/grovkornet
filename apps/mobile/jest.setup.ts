@@ -151,6 +151,8 @@ jest.mock('react-native-gesture-handler', () => {
 
   return {
     ...actual,
+    TouchableOpacity: require('react-native').TouchableOpacity,
+    ScrollView: require('react-native').ScrollView,
     GestureDetector: ({ children, gesture }: any) => {
       const findHandler = (g: any): (() => void) | undefined => {
         if (!g) return undefined;
@@ -235,8 +237,8 @@ jest.mock('react-native-share', () => ({
   },
 }));
 
-// Mock expo-media-library
-jest.mock('expo-media-library', () => ({
+// Mock expo-media-library and expo-media-library/legacy
+const mockMediaLibrary = {
   getPermissionsAsync: jest.fn(() => Promise.resolve({ status: 'granted', granted: true, canAskAgain: true })),
   requestPermissionsAsync: jest.fn(() => Promise.resolve({ status: 'granted', granted: true })),
   getAlbumAsync: jest.fn(() => Promise.resolve({ id: 'album-id', title: 'Grovkornet' })),
@@ -253,7 +255,9 @@ jest.mock('expo-media-library', () => ({
   SortBy: {
     creationTime: 'creationTime',
   },
-}));
+};
+jest.mock('expo-media-library', () => mockMediaLibrary);
+jest.mock('expo-media-library/legacy', () => mockMediaLibrary);
 
 // Mock expo-localization
 jest.mock('expo-localization', () => ({
