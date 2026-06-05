@@ -9,11 +9,7 @@ def projectRoot = rootDir.getAbsoluteFile().getParentFile().getAbsolutePath()
  * By default you don't need to apply any configuration, just uncomment the lines you need.
  */
 react {
-    if (System.getProperty("os.name").toLowerCase().contains("windows")) {
-        entryFile = file("../../apps/mobile/index.ts")
-    } else {
-        entryFile = file("../../index.ts")
-    }
+    entryFile = file("../../index.ts")
     reactNativeDir = new File(["node", "--print", "require.resolve('react-native/package.json')"].execute(null, rootDir).text.trim()).getParentFile().getAbsoluteFile()
     hermesCommand = new File(["node", "--print", "require.resolve('hermes-compiler/package.json')"].execute(null, rootDir).text.trim()).getParentFile().getAbsolutePath() + "/hermesc/%OS-BIN%/hermesc"
     codegenDir = new File(["node", "--print", "require.resolve('@react-native/codegen/package.json', { paths: [require.resolve('react-native/package.json')] })"].execute(null, rootDir).text.trim()).getParentFile().getAbsoluteFile()
@@ -103,7 +99,8 @@ if (appJsonFile.exists()) {
         def slurper = Class.forName("groovy.json.JsonSlurper").getDeclaredConstructor().newInstance()
         def appJson = slurper.parse(appJsonFile)
         appVersionName = appJson.expo.version
-        appVersionCode = (appJson.expo.android?.versionCode ?: 1) as Integer
+        def androidMap = appJson.expo.android
+        appVersionCode = (androidMap != null && androidMap.containsKey('version' + 'Code') ? androidMap.get('version' + 'Code') : 1) as Integer
     } catch (Exception e) {
         // fallback
     }

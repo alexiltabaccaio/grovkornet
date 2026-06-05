@@ -44,7 +44,10 @@ export function App() {
     ] as unknown as string[];
     /* eslint-enable @typescript-eslint/no-require-imports */
 
-    void Image.prefetch(staticAssets);
+    const urlsToPrefetch = staticAssets.filter((asset): asset is string => typeof asset === 'string');
+    if (urlsToPrefetch.length > 0) {
+      void Image.prefetch(urlsToPrefetch);
+    }
 
     // Restore global preferences
     const prefs = usePreferencesStore.getState();
