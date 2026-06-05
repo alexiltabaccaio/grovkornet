@@ -127,7 +127,14 @@ fragment {
             vec3 colW = textureLod(materialParams_u_Texture, compositeUv - vec2(texel.x, 0.0), 0.0).rgb;
             
             vec3 laplacian = 4.0 * centerColor - (colN + colS + colE + colW);
-            return centerColor + laplacian * materialParams.u_Sharpening * 10.0;
+            
+            // Soft-coring to avoid sharpening sensor noise (especially when noise reduction is OFF)
+            // Using a quadratic rational function keeps the transition completely smooth and prevents flickering/popping.
+            float laplacianLuma = abs(dot(laplacian, vec3(0.299, 0.587, 0.114)));
+            const float epsilon = 0.045; // Tuned threshold for raw sensor noise
+            float noiseFactor = (laplacianLuma * laplacianLuma) / (laplacianLuma * laplacianLuma + epsilon * epsilon);
+            
+            return centerColor + (laplacian * noiseFactor) * materialParams.u_Sharpening * 10.0;
         }
         return centerColor;
     }
