@@ -88,13 +88,20 @@ export const Panels = React.memo(({ translateY }: PanelsProps) => {
 
   return (
     <Animated.View style={[styles.contentContainer, panelAnimatedStyle]}>
-      <SliderPanel
-        parameter={sliderParameter}
-        animatedStyle={[
-          panelAnimatedStyle,
-          !isSlider && styles.hidden,
-        ]}
-      />
+      {SLIDER_PARAMETERS.map((param) => {
+        const isCurrentActive = isSlider && param === activeParameter;
+        return (
+          <SliderPanel
+            key={param}
+            parameter={param as any}
+            isActiveOverride={isCurrentActive}
+            animatedStyle={[
+              panelAnimatedStyle,
+              !isCurrentActive && styles.hidden,
+            ]}
+          />
+        );
+      })}
       {renderContent()}
     </Animated.View>
   );
