@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View, Pressable, ScrollView, Dimensions } from 'react-native';
+import { StyleSheet, View, TouchableOpacity, ScrollView, Dimensions } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { SectionType, useSystemStore } from '@entities/system';
 import { Ionicons } from '@expo/vector-icons';
@@ -60,24 +60,30 @@ export const Sections = React.memo(({ galleryTransition }: SectionsProps) => {
         {sections.map((section) => {
           const isActive = activeSection === section.id;
           return (
-            <Pressable
+            <View
               key={section.id}
               style={[styles.tabButton, isDebugEnabled && styles.debugTabButton]}
-              onPress={() => handleSectionChange(section.id)}
-              accessibilityLabel={t(`sections.${section.id}`)}
-              accessibilityRole="tab"
             >
               {isDebugEnabled && (
                 <View style={styles.debugHitbox} pointerEvents="none" />
               )}
-              <View style={[styles.iconWrapper, isActive && styles.iconWrapperActive]}>
+              <TouchableOpacity
+                onPress={() => handleSectionChange(section.id)}
+                accessibilityLabel={t(`sections.${section.id}`)}
+                accessibilityRole="tab"
+                activeOpacity={0.7}
+                style={[
+                  styles.iconWrapper,
+                  isActive && styles.iconWrapperActive,
+                ]}
+              >
                 <Ionicons 
                   name={section.icon} 
                   size={24} 
                   color={isActive ? '#FF5722' : '#888'} 
                 />
-              </View>
-            </Pressable>
+              </TouchableOpacity>
+            </View>
           );
         })}
         </ScrollView>
@@ -118,13 +124,16 @@ const styles = StyleSheet.create({
   },
   iconWrapper: {
     paddingHorizontal: 24,
-    paddingVertical: 8,
+    paddingVertical: 12,
     borderRadius: 24,
     justifyContent: 'center',
     alignItems: 'center',
   },
   iconWrapperActive: {
-    backgroundColor: 'rgba(255, 149, 0, 0.15)',
+    backgroundColor: 'rgba(255, 87, 34, 0.15)',
+  },
+  iconWrapperPressed: {
+    backgroundColor: 'rgba(255, 87, 34, 0.25)',
   },
   debugTabButton: {
     borderColor: 'orange',

@@ -1,0 +1,49 @@
+appId: com.grovkornet.app
+---
+# Clean app initialization
+- launchApp:
+    clearState: true
+    permissions:
+      camera: grant
+      microphone: grant
+
+# Handle 16kB memory page compatibility popup (Android 15+)
+- tapOn:
+    text: "[Oo][Kk]"
+    optional: true
+
+# Handle runtime permissions popup if present
+- tapOn:
+    text: "(Mentre usi l'app|While using the app|Consenti|Allow).*"
+    optional: true
+
+# Wait for initial interface loading
+- extendedWaitUntil:
+    visible: "SISTEMA"
+    timeout: 30000
+
+# 1. Take a picture by tapping the shutter button
+- tapOn:
+    id: "shutter-button"
+
+# 2. Wait for the photo to be processed and saved
+- delay: 2000
+
+# 3. Tap on the capture thumbnail to open the gallery viewer
+- tapOn:
+    id: "capture-thumbnail"
+
+# 4. Verify that the Gallery Viewer is active
+# We check if the back button ("Go back") and the share buttons are visible
+- assertVisible:
+    id: "Go back"
+- assertVisible:
+    id: "gallery.share_generic"
+
+# 5. Tap on the back button to close the gallery
+- tapOn:
+    id: "Go back"
+
+# 6. Verify that we are back to the main camera interface with control tabs visible
+- assertVisible: "SISTEMA"
+- assertVisible: "CORPO"
