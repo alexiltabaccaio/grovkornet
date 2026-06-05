@@ -1,5 +1,52 @@
 import { type HybridObject } from 'react-native-nitro-modules';
 
 export interface NitroCameraConfiguration extends HybridObject<{ ios: 'c++'; android: 'kotlin' }> {
+  // @@GEN_PROPERTIES_START@@
   saturation: number;
+  contrast: number;
+  grainIntensity: number;
+  grainChroma: number;
+  grainSize: number;
+  grainSpeed: number;
+  vignetteIntensity: number;
+  chromaShift: number;
+  whiteBalance: number;
+  tint: number;
+  bloomIntensity: number;
+  chromaticAberration: number;
+  chromaShiftDirection: number;
+  sharpening: number;
+  satRed: number;
+  satOrange: number;
+  satYellow: number;
+  satGreen: number;
+  satCyan: number;
+  satBlue: number;
+  satPurple: number;
+  satMagenta: number;
+  aberrationInvert: boolean;
+  boundMagentaRed: number;
+  boundRedOrange: number;
+  boundOrangeYellow: number;
+  boundYellowGreen: number;
+  boundGreenCyan: number;
+  boundCyanBlue: number;
+  boundBluePurple: number;
+  boundPurpleMagenta: number;
+  grainRoughness: number;
+  panelY: number;
+  grainEnabled: boolean;
+  bloomEnabled: boolean;
+  blackLevel: number;
+  highlights: number;
+  pivot: number;
+  contrastAuto: boolean;
+  blackLevelAuto: boolean;
+  highlightsAuto: boolean;
+  pivotAuto: boolean;
+  pixelationFactor: number;
+  tapeJitter: number;
+  scanlines: number;
+  chromaShiftInvert: boolean;
+  // @@GEN_PROPERTIES_END@@
 }

@@ -28,8 +28,8 @@ describe('Viewfinder', () => {
     const nativeCamera = getByTestId('native-camera');
 
     // Check if props match store values
-    expect(nativeCamera.props.animatedProps.satRed).toBe(75.0);
-    expect(nativeCamera.props.animatedProps.satBlue).toBe(25.0);
+    expect(nativeCamera.props.animatedProps.satRed).toBeUndefined();
+    expect(nativeCamera.props.animatedProps.satBlue).toBeUndefined();
     expect(nativeCamera.props.animatedProps.iso).toBe(400);
     expect(nativeCamera.props.animatedProps.cameraAspectRatio).toBe(1);
   });

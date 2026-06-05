@@ -41,7 +41,8 @@
           }
         ],
         "store": "film"
-      }
+      },
+      "nitro": true
     },
     {
       "name": "grainIntensity",
@@ -66,7 +67,8 @@
           }
         ],
         "store": "film"
-      }
+      },
+      "nitro": true
     },
     {
       "name": "grainChroma",
@@ -84,7 +86,8 @@
         "type": "number",
         "resetGroup": "grain",
         "store": "film"
-      }
+      },
+      "nitro": true
     },
     {
       "name": "grainSize",
@@ -102,7 +105,8 @@
         "type": "number",
         "resetGroup": "grain",
         "store": "film"
-      }
+      },
+      "nitro": true
     },
     {
       "name": "grainSpeed",
@@ -110,7 +114,7 @@
       "arrayIndex": 5,
       "kotlin": {
         "type": "Float",
-        "default": "1.0f"
+        "default": "20.0f"
       },
       "ts": {
         "type": "number"
@@ -120,7 +124,8 @@
         "type": "number",
         "resetGroup": "grain",
         "store": "film"
-      }
+      },
+      "nitro": true
     },
     {
       "name": "vignetteIntensity",
@@ -138,7 +143,8 @@
         "type": "number",
         "resetGroup": "vignette",
         "store": "film"
-      }
+      },
+      "nitro": true
     },
     {
       "name": "chromaShift",
@@ -156,7 +162,8 @@
         "type": "number",
         "resetGroup": "chroma_shift",
         "store": "film"
-      }
+      },
+      "nitro": true
     },
     {
       "name": "time",
@@ -223,7 +230,8 @@
           }
         ],
         "store": "film"
-      }
+      },
+      "nitro": true
     },
     {
       "name": "tint",
@@ -247,7 +255,8 @@
           }
         ],
         "store": "film"
-      }
+      },
+      "nitro": true
     },
     {
       "name": "bloomIntensity",
@@ -255,7 +264,7 @@
       "arrayIndex": 12,
       "kotlin": {
         "type": "Float",
-        "default": "0.35f",
+        "default": "0.0f",
         "arrayMapping": "if (bloomEnabled) bloomIntensity else 0f"
       },
       "ts": {
@@ -272,7 +281,8 @@
           }
         ],
         "store": "film"
-      }
+      },
+      "nitro": true
     },
     {
       "name": "chromaticAberration",
@@ -291,7 +301,8 @@
         "type": "number",
         "resetGroup": "chromatic_aberration",
         "store": "film"
-      }
+      },
+      "nitro": true
     },
     {
       "name": "chromaShiftDirection",
@@ -310,7 +321,8 @@
         "type": "number",
         "resetGroup": "chroma_shift",
         "store": "film"
-      }
+      },
+      "nitro": true
     },
     {
       "name": "sharpening",
@@ -328,7 +340,8 @@
         "type": "number",
         "resetGroup": "sharpening",
         "store": "film"
-      }
+      },
+      "nitro": true
     },
     {
       "name": "satRed",
@@ -346,7 +359,8 @@
         "type": "number",
         "resetGroup": "saturation",
         "store": "film"
-      }
+      },
+      "nitro": true
     },
     {
       "name": "satOrange",
@@ -364,7 +378,8 @@
         "type": "number",
         "resetGroup": "saturation",
         "store": "film"
-      }
+      },
+      "nitro": true
     },
     {
       "name": "satYellow",
@@ -382,7 +397,8 @@
         "type": "number",
         "resetGroup": "saturation",
         "store": "film"
-      }
+      },
+      "nitro": true
     },
     {
       "name": "satGreen",
@@ -400,7 +416,8 @@
         "type": "number",
         "resetGroup": "saturation",
         "store": "film"
-      }
+      },
+      "nitro": true
     },
     {
       "name": "satCyan",
@@ -418,7 +435,8 @@
         "type": "number",
         "resetGroup": "saturation",
         "store": "film"
-      }
+      },
+      "nitro": true
     },
     {
       "name": "satBlue",
@@ -436,7 +454,8 @@
         "type": "number",
         "resetGroup": "saturation",
         "store": "film"
-      }
+      },
+      "nitro": true
     },
     {
       "name": "satPurple",
@@ -454,7 +473,8 @@
         "type": "number",
         "resetGroup": "saturation",
         "store": "film"
-      }
+      },
+      "nitro": true
     },
     {
       "name": "satMagenta",
@@ -472,7 +492,8 @@
         "type": "number",
         "resetGroup": "saturation",
         "store": "film"
-      }
+      },
+      "nitro": true
     },
     {
       "name": "targetFps",
@@ -556,7 +577,8 @@
         "type": "boolean",
         "resetGroup": "chromatic_aberration",
         "store": "film"
-      }
+      },
+      "nitro": true
     },
     {
       "name": "boundMagentaRed",
@@ -574,7 +596,8 @@
         "type": "number",
         "resetGroup": "saturation",
         "store": "film"
-      }
+      },
+      "nitro": true
     },
     {
       "name": "boundRedOrange",
@@ -592,7 +615,8 @@
         "type": "number",
         "resetGroup": "saturation",
         "store": "film"
-      }
+      },
+      "nitro": true
     },
     {
       "name": "boundOrangeYellow",
@@ -610,7 +634,8 @@
         "type": "number",
         "resetGroup": "saturation",
         "store": "film"
-      }
+      },
+      "nitro": true
     },
     {
       "name": "boundYellowGreen",
@@ -628,7 +653,8 @@
         "type": "number",
         "resetGroup": "saturation",
         "store": "film"
-      }
+      },
+      "nitro": true
     },
     {
       "name": "boundGreenCyan",
@@ -646,7 +672,8 @@
         "type": "number",
         "resetGroup": "saturation",
         "store": "film"
-      }
+      },
+      "nitro": true
     },
     {
       "name": "boundCyanBlue",
@@ -664,7 +691,8 @@
         "type": "number",
         "resetGroup": "saturation",
         "store": "film"
-      }
+      },
+      "nitro": true
     },
     {
       "name": "boundBluePurple",
@@ -682,7 +710,8 @@
         "type": "number",
         "resetGroup": "saturation",
         "store": "film"
-      }
+      },
+      "nitro": true
     },
     {
       "name": "boundPurpleMagenta",
@@ -700,7 +729,8 @@
         "type": "number",
         "resetGroup": "saturation",
         "store": "film"
-      }
+      },
+      "nitro": true
     },
     {
       "name": "grainRoughness",
@@ -718,7 +748,8 @@
         "type": "number",
         "resetGroup": "grain",
         "store": "film"
-      }
+      },
+      "nitro": true
     },
     {
       "name": "panelY",
@@ -730,14 +761,15 @@
       },
       "ts": {
         "type": "number"
-      }
+      },
+      "nitro": true
     },
     {
       "name": "grainEnabled",
       "category": "render",
       "kotlin": {
         "type": "Boolean",
-        "default": "true"
+        "default": "false"
       },
       "ts": {
         "type": "boolean"
@@ -747,7 +779,8 @@
         "type": "boolean",
         "resetGroup": "grain",
         "store": "film"
-      }
+      },
+      "nitro": true
     },
     {
       "name": "bloomEnabled",
@@ -764,7 +797,8 @@
         "type": "boolean",
         "resetGroup": "bloom",
         "store": "film"
-      }
+      },
+      "nitro": true
     },
     {
       "name": "noiseReduction",
@@ -1205,7 +1239,8 @@
           }
         ],
         "store": "film"
-      }
+      },
+      "nitro": true
     },
     {
       "name": "highlights",
@@ -1229,7 +1264,8 @@
           }
         ],
         "store": "film"
-      }
+      },
+      "nitro": true
     },
     {
       "name": "pivot",
@@ -1253,7 +1289,8 @@
           }
         ],
         "store": "film"
-      }
+      },
+      "nitro": true
     },
     {
       "name": "contrastAuto",
@@ -1278,7 +1315,8 @@
           }
         ],
         "store": "film"
-      }
+      },
+      "nitro": true
     },
     {
       "name": "blackLevelAuto",
@@ -1303,7 +1341,8 @@
           }
         ],
         "store": "film"
-      }
+      },
+      "nitro": true
     },
     {
       "name": "highlightsAuto",
@@ -1328,7 +1367,8 @@
           }
         ],
         "store": "film"
-      }
+      },
+      "nitro": true
     },
     {
       "name": "pivotAuto",
@@ -1353,7 +1393,8 @@
           }
         ],
         "store": "film"
-      }
+      },
+      "nitro": true
     },
     {
       "name": "zoom",
@@ -1388,7 +1429,8 @@
         "type": "number",
         "resetGroup": "pixelation",
         "store": "film"
-      }
+      },
+      "nitro": true
     },
     {
       "name": "tapeJitter",
@@ -1406,7 +1448,8 @@
         "type": "number",
         "resetGroup": "tape_jitter",
         "store": "film"
-      }
+      },
+      "nitro": true
     },
     {
       "name": "scanlines",
@@ -1424,7 +1467,8 @@
         "type": "number",
         "resetGroup": "scanlines",
         "store": "film"
-      }
+      },
+      "nitro": true
     },
     {
       "name": "chromaShiftInvert",
@@ -1443,7 +1487,8 @@
         "type": "boolean",
         "resetGroup": "chroma_shift",
         "store": "film"
-      }
+      },
+      "nitro": true
     }
   ]
 }

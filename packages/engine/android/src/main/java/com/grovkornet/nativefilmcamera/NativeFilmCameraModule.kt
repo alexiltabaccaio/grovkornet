@@ -71,94 +71,10 @@ class NativeFilmCameraModule : Module() {
       )
 
       // @@GEN_PROPS_START@@
-      Prop("contrast") { view: NativeFilmCameraView, value: Float? ->
-        value?.let { view.updateEffect { contrast = it } }
-      }
-
-      Prop("grainIntensity") { view: NativeFilmCameraView, value: Float? ->
-        value?.let { view.updateEffect { grainIntensity = it } }
-      }
-
-      Prop("grainChroma") { view: NativeFilmCameraView, value: Float? ->
-        value?.let { view.updateEffect { grainChroma = it } }
-      }
-
-      Prop("grainSize") { view: NativeFilmCameraView, value: Float? ->
-        value?.let { view.updateEffect { grainSize = it } }
-      }
-
-      Prop("grainSpeed") { view: NativeFilmCameraView, value: Float? ->
-        value?.let { view.updateEffect { grainSpeed = it } }
-      }
-
-      Prop("vignetteIntensity") { view: NativeFilmCameraView, value: Float? ->
-        value?.let { view.updateEffect { vignetteIntensity = it } }
-      }
-
-      Prop("chromaShift") { view: NativeFilmCameraView, value: Float? ->
-        value?.let { view.updateEffect { chromaShift = it } }
-      }
-
       Prop("ev") { view: NativeFilmCameraView, value: Float? ->
         value?.let { value ->
                 if (view.config.ev != value) view.updateBoth { ev = value }
               }
-      }
-
-      Prop("whiteBalance") { view: NativeFilmCameraView, value: Float? ->
-        value?.let { view.updateEffect { whiteBalance = it } }
-      }
-
-      Prop("tint") { view: NativeFilmCameraView, value: Float? ->
-        value?.let { view.updateEffect { tint = it } }
-      }
-
-      Prop("bloomIntensity") { view: NativeFilmCameraView, value: Float? ->
-        value?.let { view.updateEffect { bloomIntensity = it } }
-      }
-
-      Prop("chromaticAberration") { view: NativeFilmCameraView, value: Float? ->
-        value?.let { view.updateEffect { aberration = it } }
-      }
-
-      Prop("chromaShiftDirection") { view: NativeFilmCameraView, value: Int? ->
-        value?.let { view.updateEffect { chromaShiftDirection = it } }
-      }
-
-      Prop("sharpening") { view: NativeFilmCameraView, value: Float? ->
-        value?.let { view.updateEffect { sharpening = it } }
-      }
-
-      Prop("satRed") { view: NativeFilmCameraView, value: Float? ->
-        value?.let { view.updateEffect { satRed = it } }
-      }
-
-      Prop("satOrange") { view: NativeFilmCameraView, value: Float? ->
-        value?.let { view.updateEffect { satOrange = it } }
-      }
-
-      Prop("satYellow") { view: NativeFilmCameraView, value: Float? ->
-        value?.let { view.updateEffect { satYellow = it } }
-      }
-
-      Prop("satGreen") { view: NativeFilmCameraView, value: Float? ->
-        value?.let { view.updateEffect { satGreen = it } }
-      }
-
-      Prop("satCyan") { view: NativeFilmCameraView, value: Float? ->
-        value?.let { view.updateEffect { satCyan = it } }
-      }
-
-      Prop("satBlue") { view: NativeFilmCameraView, value: Float? ->
-        value?.let { view.updateEffect { satBlue = it } }
-      }
-
-      Prop("satPurple") { view: NativeFilmCameraView, value: Float? ->
-        value?.let { view.updateEffect { satPurple = it } }
-      }
-
-      Prop("satMagenta") { view: NativeFilmCameraView, value: Float? ->
-        value?.let { view.updateEffect { satMagenta = it } }
       }
 
       Prop("targetFps") { view: NativeFilmCameraView, value: Int? ->
@@ -174,58 +90,6 @@ class NativeFilmCameraModule : Module() {
                           view.updateBoth { aspectRatio = aspectInt }
                         }
               }
-      }
-
-      Prop("aberrationInvert") { view: NativeFilmCameraView, value: Boolean? ->
-        value?.let { view.updateEffect { aberrationInvert = it } }
-      }
-
-      Prop("boundMagentaRed") { view: NativeFilmCameraView, value: Float? ->
-        value?.let { view.updateEffect { boundMagentaRed = it } }
-      }
-
-      Prop("boundRedOrange") { view: NativeFilmCameraView, value: Float? ->
-        value?.let { view.updateEffect { boundRedOrange = it } }
-      }
-
-      Prop("boundOrangeYellow") { view: NativeFilmCameraView, value: Float? ->
-        value?.let { view.updateEffect { boundOrangeYellow = it } }
-      }
-
-      Prop("boundYellowGreen") { view: NativeFilmCameraView, value: Float? ->
-        value?.let { view.updateEffect { boundYellowGreen = it } }
-      }
-
-      Prop("boundGreenCyan") { view: NativeFilmCameraView, value: Float? ->
-        value?.let { view.updateEffect { boundGreenCyan = it } }
-      }
-
-      Prop("boundCyanBlue") { view: NativeFilmCameraView, value: Float? ->
-        value?.let { view.updateEffect { boundCyanBlue = it } }
-      }
-
-      Prop("boundBluePurple") { view: NativeFilmCameraView, value: Float? ->
-        value?.let { view.updateEffect { boundBluePurple = it } }
-      }
-
-      Prop("boundPurpleMagenta") { view: NativeFilmCameraView, value: Float? ->
-        value?.let { view.updateEffect { boundPurpleMagenta = it } }
-      }
-
-      Prop("grainRoughness") { view: NativeFilmCameraView, value: Float? ->
-        value?.let { view.updateEffect { grainRoughness = it } }
-      }
-
-      Prop("panelY") { view: NativeFilmCameraView, value: Float? ->
-        value?.let { view.updateEffect { panelY = it } }
-      }
-
-      Prop("grainEnabled") { view: NativeFilmCameraView, value: Boolean? ->
-        value?.let { view.updateEffect { grainEnabled = it } }
-      }
-
-      Prop("bloomEnabled") { view: NativeFilmCameraView, value: Boolean? ->
-        value?.let { view.updateEffect { bloomEnabled = it } }
       }
 
       Prop("noiseReduction") { view: NativeFilmCameraView, value: Int? ->
@@ -335,54 +199,10 @@ class NativeFilmCameraModule : Module() {
               }
       }
 
-      Prop("blackLevel") { view: NativeFilmCameraView, value: Float? ->
-        value?.let { view.updateEffect { blackLevel = it } }
-      }
-
-      Prop("highlights") { view: NativeFilmCameraView, value: Float? ->
-        value?.let { view.updateEffect { highlights = it } }
-      }
-
-      Prop("pivot") { view: NativeFilmCameraView, value: Float? ->
-        value?.let { view.updateEffect { pivot = it } }
-      }
-
-      Prop("contrastAuto") { view: NativeFilmCameraView, value: Boolean? ->
-        value?.let { view.updateEffect { contrastAuto = it } }
-      }
-
-      Prop("blackLevelAuto") { view: NativeFilmCameraView, value: Boolean? ->
-        value?.let { view.updateEffect { blackLevelAuto = it } }
-      }
-
-      Prop("highlightsAuto") { view: NativeFilmCameraView, value: Boolean? ->
-        value?.let { view.updateEffect { highlightsAuto = it } }
-      }
-
-      Prop("pivotAuto") { view: NativeFilmCameraView, value: Boolean? ->
-        value?.let { view.updateEffect { pivotAuto = it } }
-      }
-
       Prop("zoom") { view: NativeFilmCameraView, value: Float? ->
         value?.let { value ->
                 if (view.config.zoom != value) view.updateHardware { zoom = value }
               }
-      }
-
-      Prop("pixelationFactor") { view: NativeFilmCameraView, value: Float? ->
-        value?.let { view.updateEffect { pixelationFactor = it } }
-      }
-
-      Prop("tapeJitter") { view: NativeFilmCameraView, value: Float? ->
-        value?.let { view.updateEffect { tapeJitter = it } }
-      }
-
-      Prop("scanlines") { view: NativeFilmCameraView, value: Float? ->
-        value?.let { view.updateEffect { scanlines = it } }
-      }
-
-      Prop("chromaShiftInvert") { view: NativeFilmCameraView, value: Boolean? ->
-        value?.let { view.updateEffect { chromaShiftInvert = it } }
       }
       // @@GEN_PROPS_END@@
 

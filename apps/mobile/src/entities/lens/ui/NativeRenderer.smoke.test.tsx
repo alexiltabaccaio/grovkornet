@@ -41,12 +41,7 @@ describe('NativeRenderer', () => {
 
   it('renders without crashing', () => {
     const mockProps = {
-      contrast: 1,
-      grainIntensity: 0.5,
-      grainChroma: 0.5,
-      grainSize: 0.5,
-      grainEnabled: true,
-      chromaticAberration: 0.2,
+      secureViewEnabled: true,
     };
 
     const { toJSON } = render(<NativeRenderer {...mockProps} />);
@@ -55,7 +50,7 @@ describe('NativeRenderer', () => {
 
   it('calls takePhoto directly when nativeView.takePhoto is present', () => {
     const ref = createRef<NativeRendererRef>();
-    render(<NativeRenderer contrast={1} ref={ref} />);
+    render(<NativeRenderer ref={ref} />);
 
     expect(ref.current).toBeDefined();
     ref.current?.takePhoto();

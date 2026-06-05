@@ -20,7 +20,9 @@ const FILE_PATHS = {
   lensStore: 'apps/mobile/src/entities/lens/model/useLensStore.ts',
   zustandViewfinder: 'apps/mobile/src/widgets/viewfinder/ui/Viewfinder.tsx',
   presetTypes: 'apps/mobile/src/entities/preset/model/types.ts',
-  presetStore: 'apps/mobile/src/entities/preset/model/usePresetStore.ts'
+  presetStore: 'apps/mobile/src/entities/preset/model/usePresetStore.ts',
+  nitroSpec: 'packages/engine/src/NitroCameraConfiguration.nitro.ts',
+  nitroImpl: 'packages/engine/android/src/main/java/com/grovkornet/nativefilmcamera/HybridNitroCameraConfiguration.kt'
 };
 
 function replaceBetweenMarkers(filePath, startMarker, endMarker, newContent, indent = '') {
@@ -427,7 +429,7 @@ function generateZustandStoreForStore(parameters, storeName, filePath, initMarke
           body += `set({ ${name}: ${argName} });\n`;
         }
         if (p.nitro) {
-          body += `getNitroConfig().${name} = ${argName};\n`;
+          body += `getNitroConfig().${p.name} = ${argName};\n`;
         }
         
         const conditionalEffects = p.zustand.setSideEffects.filter(se => se.condition);
@@ -442,6 +444,10 @@ function generateZustandStoreForStore(parameters, storeName, filePath, initMarke
             } else {
               body += `set({ ${se.target}: ${se.value} });\n`;
             }
+            const targetParam = parameters.find(pr => pr.name === se.target || (pr.zustand && pr.zustand.name === se.target));
+            if (targetParam && targetParam.nitro) {
+              body += `getNitroConfig().${targetParam.name} = ${se.value};\n`;
+            }
           }
         }
         
@@ -453,11 +459,17 @@ function generateZustandStoreForStore(parameters, storeName, filePath, initMarke
               if (se.store === 'preferences') {
                 return `usePreferencesStore.getState().${se.target}(${se.value});`;
               } else {
+                let effectStr = '';
                 if (isSharedValue(parameters, se.target)) {
-                  return `${se.target}.value = ${se.value};`;
+                  effectStr = `${se.target}.value = ${se.value};`;
                 } else {
-                  return `set({ ${se.target}: ${se.value} });`;
+                  effectStr = `set({ ${se.target}: ${se.value} });`;
                 }
+                const targetParam = parameters.find(pr => pr.name === se.target || (pr.zustand && pr.zustand.name === se.target));
+                if (targetParam && targetParam.nitro) {
+                  effectStr += `\n  getNitroConfig().${targetParam.name} = ${se.value};`;
+                }
+                return effectStr;
               }
             }).join('\n  ') + '\n}\n';
           }
@@ -472,7 +484,7 @@ function generateZustandStoreForStore(parameters, storeName, filePath, initMarke
           body += `set({ ${name}: ${argName} });`;
         }
         if (p.nitro) {
-          body += `\ngetNitroConfig().${name} = ${argName};`;
+          body += `\ngetNitroConfig().${p.name} = ${argName};`;
         }
       }
       
@@ -530,7 +542,7 @@ function generateZustandStore(parameters) {
       const name = p.zustand.name || p.name;
       assignments.push(`state.${name}.value = ${p.zustand.default};`);
       if (p.nitro) {
-        assignments.push(`getNitroConfig().${name} = ${p.zustand.default};`);
+        assignments.push(`getNitroConfig().${p.name} = ${p.zustand.default};`);
       }
     }
     
@@ -653,6 +665,66 @@ function generatePresetSettings(parameters) {
   replaceBetweenMarkers(FILE_PATHS.presetStore, '  // @@GEN_DEFAULTS_START@@', '  // @@GEN_DEFAULTS_END@@', defaultsContent, '  ');
 }
 
+function generateNitroConfig(parameters) {
+  console.log('\n--- Generating Nitro Configuration (Step 7) ---');
+  const nitroParams = parameters.filter(p => p.nitro);
+
+  // 1. Generate NitroCameraConfiguration.nitro.ts properties
+  const specProperties = nitroParams
+    .map(p => {
+      const name = p.name;
+      const type = p.ts?.type === 'boolean' ? 'boolean' : 'number';
+      return `${name}: ${type};`;
+    })
+    .join('\n');
+  replaceBetweenMarkers(FILE_PATHS.nitroSpec, '  // @@GEN_PROPERTIES_START@@', '  // @@GEN_PROPERTIES_END@@', specProperties, '  ');
+
+  // 2. Generate HybridNitroCameraConfiguration.kt overrides
+  const overrides = nitroParams
+    .map(p => {
+      const name = p.name;
+      const kotlinName = p.kotlin?.name || p.name;
+      const kotlinType = p.kotlin?.type || 'Float';
+      
+      let tsToKotlinType = 'Double';
+      let castExpr = 'value.toFloat()';
+      let returnCastExpr = '?.toDouble()';
+      let defaultValue = '1.0';
+
+      if (p.ts?.type === 'boolean') {
+        tsToKotlinType = 'Boolean';
+        castExpr = 'value';
+        returnCastExpr = '';
+        defaultValue = 'false';
+      } else if (kotlinType === 'Int') {
+        tsToKotlinType = 'Double';
+        castExpr = 'value.toInt()';
+        returnCastExpr = '?.toDouble()';
+        defaultValue = '0.0';
+      } else if (kotlinType === 'Long') {
+        tsToKotlinType = 'Double';
+        castExpr = 'value.toLong()';
+        returnCastExpr = '?.toDouble()';
+        defaultValue = '0.0';
+      } else {
+        tsToKotlinType = 'Double';
+        castExpr = 'value.toFloat()';
+        returnCastExpr = '?.toDouble()';
+        defaultValue = p.kotlin?.default ? p.kotlin.default.replace('f', '') : '1.0';
+      }
+
+      return `override var ${name}: ${tsToKotlinType}
+    get() = NativeFilmCameraView.activeInstance?.config?.${kotlinName}${returnCastExpr} ?: ${defaultValue}
+    set(value) {
+        NativeFilmCameraView.activeInstance?.updateEffect {
+            ${kotlinName} = ${castExpr}
+        }
+    }`;
+    })
+    .join('\n\n');
+  replaceBetweenMarkers(FILE_PATHS.nitroImpl, '    // @@GEN_OVERRIDES_START@@', '    // @@GEN_OVERRIDES_END@@', overrides, '    ');
+}
+
 function main() {
   const isDryRun = process.argv.includes('--dry-run');
   
@@ -669,6 +741,7 @@ function main() {
       generateZustandStore(parameters);
       generateViewfinderProps(parameters);
       generatePresetSettings(parameters);
+      generateNitroConfig(parameters);
       console.log("\nCodegen execution completed successfully!");
     }
   } catch (err) {

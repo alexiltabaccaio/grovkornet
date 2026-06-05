@@ -144,7 +144,19 @@ export const applyPreset = (id: string): void => {
   });
 
   // Sync Nitro-based parameters
-  getNitroConfig().saturation = targetFilm.saturation;
+  const nitroConfig = getNitroConfig();
+  Object.keys(targetFilm).forEach((key) => {
+    const k = key as keyof FilmPresetPayload;
+    if (k === 'temperature') {
+      nitroConfig.whiteBalance = targetFilm[k];
+    } else if (k in nitroConfig) {
+      try {
+        (nitroConfig as Record<string, unknown>)[k] = targetFilm[k];
+      } catch (e) {
+        // Ignored
+      }
+    }
+  });
 
   // Safe Merge & direct update of Body shared values
   const bodyStore = useBodyStore.getState();

@@ -128,35 +128,45 @@ export const useFilmStore = create<FilmStore>((set, get) => ({
     const { contrast, contrastAuto } = get();
     logger.debug('FilmStore', `Setting Contrast: ${value}`);
     contrast.value = value;
+    getNitroConfig().contrast = value;
     contrastAuto.value = false;
+    getNitroConfig().contrastAuto = false;
 
   },
   setGrainIntensity: (value) => {
     const { grainIntensity, grainEnabled } = get();
     logger.debug('FilmStore', `Setting Grain Intensity: ${value}`);
     grainIntensity.value = value;
+    getNitroConfig().grainIntensity = value;
     grainEnabled.value = value > 0;
+    getNitroConfig().grainEnabled = value > 0;
 
   },
   setGrainChroma: (value) => {
     get().grainChroma.value = value;
+    getNitroConfig().grainChroma = value;
   },
   setGrainSize: (value) => {
     get().grainSize.value = value;
+    getNitroConfig().grainSize = value;
   },
   setGrainSpeed: (value) => {
     get().grainSpeed.value = value;
+    getNitroConfig().grainSpeed = value;
   },
   setVignetteIntensity: (value) => {
     get().vignetteIntensity.value = value;
+    getNitroConfig().vignetteIntensity = value;
   },
   setChromaShift: (value) => {
     get().chromaShift.value = value;
+    getNitroConfig().chromaShift = value;
   },
   setTemperature: (value) => {
     const { temperature, temperatureAuto } = get();
     logger.debug('FilmStore', `Setting Temperature: ${value}`);
     temperature.value = value;
+    getNitroConfig().whiteBalance = value;
     temperatureAuto.value = false;
 
   },
@@ -164,6 +174,7 @@ export const useFilmStore = create<FilmStore>((set, get) => ({
     const { tint, temperatureAuto } = get();
     logger.debug('FilmStore', `Setting Tint: ${value}`);
     tint.value = value;
+    getNitroConfig().tint = value;
     temperatureAuto.value = false;
 
   },
@@ -171,79 +182,104 @@ export const useFilmStore = create<FilmStore>((set, get) => ({
     const { bloomIntensity, bloomEnabled } = get();
     logger.debug('FilmStore', `Setting Bloom Intensity: ${value}`);
     bloomIntensity.value = value;
+    getNitroConfig().bloomIntensity = value;
     bloomEnabled.value = value > 0;
+    getNitroConfig().bloomEnabled = value > 0;
 
   },
   setChromaticAberration: (value) => {
     logger.debug('FilmStore', `Setting Chromatic Aberration: ${value}`);
     get().chromaticAberration.value = value;
+    getNitroConfig().chromaticAberration = value;
   },
   setChromaShiftDirection: (value) => {
     get().chromaShiftDirection.value = value;
+    getNitroConfig().chromaShiftDirection = value;
   },
   setSharpening: (value) => {
     logger.debug('FilmStore', `Setting Sharpening: ${value}`);
     get().sharpening.value = value;
+    getNitroConfig().sharpening = value;
   },
   setSatRed: (value) => {
     get().satRed.value = value;
+    getNitroConfig().satRed = value;
   },
   setSatOrange: (value) => {
     get().satOrange.value = value;
+    getNitroConfig().satOrange = value;
   },
   setSatYellow: (value) => {
     get().satYellow.value = value;
+    getNitroConfig().satYellow = value;
   },
   setSatGreen: (value) => {
     get().satGreen.value = value;
+    getNitroConfig().satGreen = value;
   },
   setSatCyan: (value) => {
     get().satCyan.value = value;
+    getNitroConfig().satCyan = value;
   },
   setSatBlue: (value) => {
     get().satBlue.value = value;
+    getNitroConfig().satBlue = value;
   },
   setSatPurple: (value) => {
     get().satPurple.value = value;
+    getNitroConfig().satPurple = value;
   },
   setSatMagenta: (value) => {
     get().satMagenta.value = value;
+    getNitroConfig().satMagenta = value;
   },
   setAberrationInvert: (value) => {
     get().aberrationInvert.value = value;
+    getNitroConfig().aberrationInvert = value;
   },
   setBoundMagentaRed: (value) => {
     get().boundMagentaRed.value = value;
+    getNitroConfig().boundMagentaRed = value;
   },
   setBoundRedOrange: (value) => {
     get().boundRedOrange.value = value;
+    getNitroConfig().boundRedOrange = value;
   },
   setBoundOrangeYellow: (value) => {
     get().boundOrangeYellow.value = value;
+    getNitroConfig().boundOrangeYellow = value;
   },
   setBoundYellowGreen: (value) => {
     get().boundYellowGreen.value = value;
+    getNitroConfig().boundYellowGreen = value;
   },
   setBoundGreenCyan: (value) => {
     get().boundGreenCyan.value = value;
+    getNitroConfig().boundGreenCyan = value;
   },
   setBoundCyanBlue: (value) => {
     get().boundCyanBlue.value = value;
+    getNitroConfig().boundCyanBlue = value;
   },
   setBoundBluePurple: (value) => {
     get().boundBluePurple.value = value;
+    getNitroConfig().boundBluePurple = value;
   },
   setBoundPurpleMagenta: (value) => {
     get().boundPurpleMagenta.value = value;
+    getNitroConfig().boundPurpleMagenta = value;
   },
   setGrainRoughness: (value) => {
     get().grainRoughness.value = value;
+    getNitroConfig().grainRoughness = value;
   },
   setGrainEnabled: (value) => {
     get().grainEnabled.value = value;
+    getNitroConfig().grainEnabled = value;
   },
   setBloomEnabled: (value) => {
     get().bloomEnabled.value = value;
+    getNitroConfig().bloomEnabled = value;
   },
   setNoiseReductionMode: (mode) => {
     get().noiseReductionMode.value = mode;
@@ -256,7 +292,9 @@ export const useFilmStore = create<FilmStore>((set, get) => ({
     temperatureAuto.value = value;
     if (value) {
       temperature.value = DEFAULT_TEMPERATURE;
+      getNitroConfig().whiteBalance = DEFAULT_TEMPERATURE;
       tint.value = DEFAULT_TINT;
+      getNitroConfig().tint = DEFAULT_TINT;
     }
 
   },
@@ -266,64 +304,82 @@ export const useFilmStore = create<FilmStore>((set, get) => ({
   setBlackLevel: (value) => {
     const { blackLevel, blackLevelAuto } = get();
     blackLevel.value = value;
+    getNitroConfig().blackLevel = value;
     blackLevelAuto.value = false;
+    getNitroConfig().blackLevelAuto = false;
 
   },
   setHighlights: (value) => {
     const { highlights, highlightsAuto } = get();
     highlights.value = value;
+    getNitroConfig().highlights = value;
     highlightsAuto.value = false;
+    getNitroConfig().highlightsAuto = false;
 
   },
   setPivot: (value) => {
     const { pivot, pivotAuto } = get();
     pivot.value = value;
+    getNitroConfig().pivot = value;
     pivotAuto.value = false;
+    getNitroConfig().pivotAuto = false;
 
   },
   setContrastAuto: (value) => {
     const { contrastAuto, contrast } = get();
     contrastAuto.value = value;
+    getNitroConfig().contrastAuto = value;
     if (value) {
       contrast.value = DEFAULT_CONTRAST;
+      getNitroConfig().contrast = DEFAULT_CONTRAST;
     }
 
   },
   setBlackLevelAuto: (value) => {
     const { blackLevelAuto, blackLevel } = get();
     blackLevelAuto.value = value;
+    getNitroConfig().blackLevelAuto = value;
     if (value) {
       blackLevel.value = DEFAULT_BLACK_LEVEL;
+      getNitroConfig().blackLevel = DEFAULT_BLACK_LEVEL;
     }
 
   },
   setHighlightsAuto: (value) => {
     const { highlightsAuto, highlights } = get();
     highlightsAuto.value = value;
+    getNitroConfig().highlightsAuto = value;
     if (value) {
       highlights.value = DEFAULT_HIGHLIGHTS;
+      getNitroConfig().highlights = DEFAULT_HIGHLIGHTS;
     }
 
   },
   setPivotAuto: (value) => {
     const { pivotAuto, pivot } = get();
     pivotAuto.value = value;
+    getNitroConfig().pivotAuto = value;
     if (value) {
       pivot.value = DEFAULT_PIVOT;
+      getNitroConfig().pivot = DEFAULT_PIVOT;
     }
 
   },
   setPixelationFactor: (value) => {
     get().pixelationFactor.value = value;
+    getNitroConfig().pixelationFactor = value;
   },
   setTapeJitter: (value) => {
     get().tapeJitter.value = value;
+    getNitroConfig().tapeJitter = value;
   },
   setScanlines: (value) => {
     get().scanlines.value = value;
+    getNitroConfig().scanlines = value;
   },
   setChromaShiftInvert: (value) => {
     get().chromaShiftInvert.value = value;
+    getNitroConfig().chromaShiftInvert = value;
   },
   // @@GEN_SETTERS_END@@
   setCapabilities: (caps) => {
@@ -343,57 +399,91 @@ export const useFilmStore = create<FilmStore>((set, get) => ({
         state.saturation.value = DEFAULT_SATURATION;
         getNitroConfig().saturation = DEFAULT_SATURATION;
         state.satRed.value = DEFAULT_SELECTIVE_SATURATION;
+        getNitroConfig().satRed = DEFAULT_SELECTIVE_SATURATION;
         state.satOrange.value = DEFAULT_SELECTIVE_SATURATION;
+        getNitroConfig().satOrange = DEFAULT_SELECTIVE_SATURATION;
         state.satYellow.value = DEFAULT_SELECTIVE_SATURATION;
+        getNitroConfig().satYellow = DEFAULT_SELECTIVE_SATURATION;
         state.satGreen.value = DEFAULT_SELECTIVE_SATURATION;
+        getNitroConfig().satGreen = DEFAULT_SELECTIVE_SATURATION;
         state.satCyan.value = DEFAULT_SELECTIVE_SATURATION;
+        getNitroConfig().satCyan = DEFAULT_SELECTIVE_SATURATION;
         state.satBlue.value = DEFAULT_SELECTIVE_SATURATION;
+        getNitroConfig().satBlue = DEFAULT_SELECTIVE_SATURATION;
         state.satPurple.value = DEFAULT_SELECTIVE_SATURATION;
+        getNitroConfig().satPurple = DEFAULT_SELECTIVE_SATURATION;
         state.satMagenta.value = DEFAULT_SELECTIVE_SATURATION;
+        getNitroConfig().satMagenta = DEFAULT_SELECTIVE_SATURATION;
         state.boundMagentaRed.value = DEFAULT_BOUND_MAGENTA_RED;
+        getNitroConfig().boundMagentaRed = DEFAULT_BOUND_MAGENTA_RED;
         state.boundRedOrange.value = DEFAULT_BOUND_RED_ORANGE;
+        getNitroConfig().boundRedOrange = DEFAULT_BOUND_RED_ORANGE;
         state.boundOrangeYellow.value = DEFAULT_BOUND_ORANGE_YELLOW;
+        getNitroConfig().boundOrangeYellow = DEFAULT_BOUND_ORANGE_YELLOW;
         state.boundYellowGreen.value = DEFAULT_BOUND_YELLOW_GREEN;
+        getNitroConfig().boundYellowGreen = DEFAULT_BOUND_YELLOW_GREEN;
         state.boundGreenCyan.value = DEFAULT_BOUND_GREEN_CYAN;
+        getNitroConfig().boundGreenCyan = DEFAULT_BOUND_GREEN_CYAN;
         state.boundCyanBlue.value = DEFAULT_BOUND_CYAN_BLUE;
+        getNitroConfig().boundCyanBlue = DEFAULT_BOUND_CYAN_BLUE;
         state.boundBluePurple.value = DEFAULT_BOUND_BLUE_PURPLE;
+        getNitroConfig().boundBluePurple = DEFAULT_BOUND_BLUE_PURPLE;
         state.boundPurpleMagenta.value = DEFAULT_BOUND_PURPLE_MAGENTA;
+        getNitroConfig().boundPurpleMagenta = DEFAULT_BOUND_PURPLE_MAGENTA;
         break;
       case 'contrast':
         state.contrast.value = DEFAULT_CONTRAST;
+        getNitroConfig().contrast = DEFAULT_CONTRAST;
         break;
       case 'grain':
         state.grainIntensity.value = DEFAULT_GRAIN_INTENSITY;
+        getNitroConfig().grainIntensity = DEFAULT_GRAIN_INTENSITY;
         state.grainChroma.value = DEFAULT_GRAIN_CHROMA;
+        getNitroConfig().grainChroma = DEFAULT_GRAIN_CHROMA;
         state.grainSize.value = DEFAULT_GRAIN_SIZE;
+        getNitroConfig().grainSize = DEFAULT_GRAIN_SIZE;
         state.grainSpeed.value = DEFAULT_GRAIN_SPEED;
+        getNitroConfig().grainSpeed = DEFAULT_GRAIN_SPEED;
         state.grainRoughness.value = DEFAULT_GRAIN_ROUGHNESS;
+        getNitroConfig().grainRoughness = DEFAULT_GRAIN_ROUGHNESS;
         state.grainEnabled.value = DEFAULT_GRAIN_ENABLED;
+        getNitroConfig().grainEnabled = DEFAULT_GRAIN_ENABLED;
         break;
       case 'vignette':
         state.vignetteIntensity.value = DEFAULT_VIGNETTE_INTENSITY;
+        getNitroConfig().vignetteIntensity = DEFAULT_VIGNETTE_INTENSITY;
         break;
       case 'chroma_shift':
         state.chromaShift.value = DEFAULT_CHROMA_SHIFT;
+        getNitroConfig().chromaShift = DEFAULT_CHROMA_SHIFT;
         state.chromaShiftDirection.value = DEFAULT_CHROMA_SHIFT_DIRECTION;
+        getNitroConfig().chromaShiftDirection = DEFAULT_CHROMA_SHIFT_DIRECTION;
         state.chromaShiftInvert.value = DEFAULT_CHROMA_SHIFT_INVERT;
+        getNitroConfig().chromaShiftInvert = DEFAULT_CHROMA_SHIFT_INVERT;
         break;
       case 'temperature':
       case 'tint':
         state.temperature.value = DEFAULT_TEMPERATURE;
+        getNitroConfig().whiteBalance = DEFAULT_TEMPERATURE;
         state.temperatureAuto.value = DEFAULT_TEMPERATURE_AUTO;
         state.tint.value = DEFAULT_TINT;
+        getNitroConfig().tint = DEFAULT_TINT;
         break;
       case 'bloom':
         state.bloomIntensity.value = DEFAULT_BLOOM_INTENSITY;
+        getNitroConfig().bloomIntensity = DEFAULT_BLOOM_INTENSITY;
         state.bloomEnabled.value = DEFAULT_BLOOM_ENABLED;
+        getNitroConfig().bloomEnabled = DEFAULT_BLOOM_ENABLED;
         break;
       case 'chromatic_aberration':
         state.chromaticAberration.value = DEFAULT_CHROMATIC_ABERRATION;
+        getNitroConfig().chromaticAberration = DEFAULT_CHROMATIC_ABERRATION;
         state.aberrationInvert.value = DEFAULT_ABERRATION_INVERT;
+        getNitroConfig().aberrationInvert = DEFAULT_ABERRATION_INVERT;
         break;
       case 'sharpening':
         state.sharpening.value = DEFAULT_SHARPENING;
+        getNitroConfig().sharpening = DEFAULT_SHARPENING;
         break;
       case 'noise_reduction':
         state.noiseReductionMode.value = DEFAULT_NOISE_REDUCTION_MODE;
@@ -404,21 +494,31 @@ export const useFilmStore = create<FilmStore>((set, get) => ({
         break;
       case 'tone':
         state.blackLevel.value = DEFAULT_BLACK_LEVEL;
+        getNitroConfig().blackLevel = DEFAULT_BLACK_LEVEL;
         state.highlights.value = DEFAULT_HIGHLIGHTS;
+        getNitroConfig().highlights = DEFAULT_HIGHLIGHTS;
         state.pivot.value = DEFAULT_PIVOT;
+        getNitroConfig().pivot = DEFAULT_PIVOT;
         state.contrastAuto.value = DEFAULT_CONTRAST_AUTO;
+        getNitroConfig().contrastAuto = DEFAULT_CONTRAST_AUTO;
         state.blackLevelAuto.value = DEFAULT_BLACK_LEVEL_AUTO;
+        getNitroConfig().blackLevelAuto = DEFAULT_BLACK_LEVEL_AUTO;
         state.highlightsAuto.value = DEFAULT_HIGHLIGHTS_AUTO;
+        getNitroConfig().highlightsAuto = DEFAULT_HIGHLIGHTS_AUTO;
         state.pivotAuto.value = DEFAULT_PIVOT_AUTO;
+        getNitroConfig().pivotAuto = DEFAULT_PIVOT_AUTO;
         break;
       case 'pixelation':
         state.pixelationFactor.value = DEFAULT_PIXELATION_FACTOR;
+        getNitroConfig().pixelationFactor = DEFAULT_PIXELATION_FACTOR;
         break;
       case 'tape_jitter':
         state.tapeJitter.value = DEFAULT_TAPE_JITTER;
+        getNitroConfig().tapeJitter = DEFAULT_TAPE_JITTER;
         break;
       case 'scanlines':
         state.scanlines.value = DEFAULT_SCANLINES;
+        getNitroConfig().scanlines = DEFAULT_SCANLINES;
         break;
       // @@GEN_RESET_END@@
     }

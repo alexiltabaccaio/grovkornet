@@ -50,6 +50,411 @@ namespace margelo::nitro::grovkornet {
     static const auto method = _javaPart->javaClassStatic()->getMethod<void(double /* saturation */)>("setSaturation");
     method(_javaPart, saturation);
   }
+  double JHybridNitroCameraConfigurationSpec::getContrast() {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<double()>("getContrast");
+    auto __result = method(_javaPart);
+    return __result;
+  }
+  void JHybridNitroCameraConfigurationSpec::setContrast(double contrast) {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<void(double /* contrast */)>("setContrast");
+    method(_javaPart, contrast);
+  }
+  double JHybridNitroCameraConfigurationSpec::getGrainIntensity() {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<double()>("getGrainIntensity");
+    auto __result = method(_javaPart);
+    return __result;
+  }
+  void JHybridNitroCameraConfigurationSpec::setGrainIntensity(double grainIntensity) {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<void(double /* grainIntensity */)>("setGrainIntensity");
+    method(_javaPart, grainIntensity);
+  }
+  double JHybridNitroCameraConfigurationSpec::getGrainChroma() {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<double()>("getGrainChroma");
+    auto __result = method(_javaPart);
+    return __result;
+  }
+  void JHybridNitroCameraConfigurationSpec::setGrainChroma(double grainChroma) {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<void(double /* grainChroma */)>("setGrainChroma");
+    method(_javaPart, grainChroma);
+  }
+  double JHybridNitroCameraConfigurationSpec::getGrainSize() {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<double()>("getGrainSize");
+    auto __result = method(_javaPart);
+    return __result;
+  }
+  void JHybridNitroCameraConfigurationSpec::setGrainSize(double grainSize) {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<void(double /* grainSize */)>("setGrainSize");
+    method(_javaPart, grainSize);
+  }
+  double JHybridNitroCameraConfigurationSpec::getGrainSpeed() {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<double()>("getGrainSpeed");
+    auto __result = method(_javaPart);
+    return __result;
+  }
+  void JHybridNitroCameraConfigurationSpec::setGrainSpeed(double grainSpeed) {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<void(double /* grainSpeed */)>("setGrainSpeed");
+    method(_javaPart, grainSpeed);
+  }
+  double JHybridNitroCameraConfigurationSpec::getVignetteIntensity() {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<double()>("getVignetteIntensity");
+    auto __result = method(_javaPart);
+    return __result;
+  }
+  void JHybridNitroCameraConfigurationSpec::setVignetteIntensity(double vignetteIntensity) {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<void(double /* vignetteIntensity */)>("setVignetteIntensity");
+    method(_javaPart, vignetteIntensity);
+  }
+  double JHybridNitroCameraConfigurationSpec::getChromaShift() {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<double()>("getChromaShift");
+    auto __result = method(_javaPart);
+    return __result;
+  }
+  void JHybridNitroCameraConfigurationSpec::setChromaShift(double chromaShift) {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<void(double /* chromaShift */)>("setChromaShift");
+    method(_javaPart, chromaShift);
+  }
+  double JHybridNitroCameraConfigurationSpec::getWhiteBalance() {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<double()>("getWhiteBalance");
+    auto __result = method(_javaPart);
+    return __result;
+  }
+  void JHybridNitroCameraConfigurationSpec::setWhiteBalance(double whiteBalance) {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<void(double /* whiteBalance */)>("setWhiteBalance");
+    method(_javaPart, whiteBalance);
+  }
+  double JHybridNitroCameraConfigurationSpec::getTint() {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<double()>("getTint");
+    auto __result = method(_javaPart);
+    return __result;
+  }
+  void JHybridNitroCameraConfigurationSpec::setTint(double tint) {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<void(double /* tint */)>("setTint");
+    method(_javaPart, tint);
+  }
+  double JHybridNitroCameraConfigurationSpec::getBloomIntensity() {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<double()>("getBloomIntensity");
+    auto __result = method(_javaPart);
+    return __result;
+  }
+  void JHybridNitroCameraConfigurationSpec::setBloomIntensity(double bloomIntensity) {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<void(double /* bloomIntensity */)>("setBloomIntensity");
+    method(_javaPart, bloomIntensity);
+  }
+  double JHybridNitroCameraConfigurationSpec::getChromaticAberration() {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<double()>("getChromaticAberration");
+    auto __result = method(_javaPart);
+    return __result;
+  }
+  void JHybridNitroCameraConfigurationSpec::setChromaticAberration(double chromaticAberration) {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<void(double /* chromaticAberration */)>("setChromaticAberration");
+    method(_javaPart, chromaticAberration);
+  }
+  double JHybridNitroCameraConfigurationSpec::getChromaShiftDirection() {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<double()>("getChromaShiftDirection");
+    auto __result = method(_javaPart);
+    return __result;
+  }
+  void JHybridNitroCameraConfigurationSpec::setChromaShiftDirection(double chromaShiftDirection) {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<void(double /* chromaShiftDirection */)>("setChromaShiftDirection");
+    method(_javaPart, chromaShiftDirection);
+  }
+  double JHybridNitroCameraConfigurationSpec::getSharpening() {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<double()>("getSharpening");
+    auto __result = method(_javaPart);
+    return __result;
+  }
+  void JHybridNitroCameraConfigurationSpec::setSharpening(double sharpening) {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<void(double /* sharpening */)>("setSharpening");
+    method(_javaPart, sharpening);
+  }
+  double JHybridNitroCameraConfigurationSpec::getSatRed() {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<double()>("getSatRed");
+    auto __result = method(_javaPart);
+    return __result;
+  }
+  void JHybridNitroCameraConfigurationSpec::setSatRed(double satRed) {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<void(double /* satRed */)>("setSatRed");
+    method(_javaPart, satRed);
+  }
+  double JHybridNitroCameraConfigurationSpec::getSatOrange() {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<double()>("getSatOrange");
+    auto __result = method(_javaPart);
+    return __result;
+  }
+  void JHybridNitroCameraConfigurationSpec::setSatOrange(double satOrange) {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<void(double /* satOrange */)>("setSatOrange");
+    method(_javaPart, satOrange);
+  }
+  double JHybridNitroCameraConfigurationSpec::getSatYellow() {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<double()>("getSatYellow");
+    auto __result = method(_javaPart);
+    return __result;
+  }
+  void JHybridNitroCameraConfigurationSpec::setSatYellow(double satYellow) {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<void(double /* satYellow */)>("setSatYellow");
+    method(_javaPart, satYellow);
+  }
+  double JHybridNitroCameraConfigurationSpec::getSatGreen() {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<double()>("getSatGreen");
+    auto __result = method(_javaPart);
+    return __result;
+  }
+  void JHybridNitroCameraConfigurationSpec::setSatGreen(double satGreen) {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<void(double /* satGreen */)>("setSatGreen");
+    method(_javaPart, satGreen);
+  }
+  double JHybridNitroCameraConfigurationSpec::getSatCyan() {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<double()>("getSatCyan");
+    auto __result = method(_javaPart);
+    return __result;
+  }
+  void JHybridNitroCameraConfigurationSpec::setSatCyan(double satCyan) {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<void(double /* satCyan */)>("setSatCyan");
+    method(_javaPart, satCyan);
+  }
+  double JHybridNitroCameraConfigurationSpec::getSatBlue() {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<double()>("getSatBlue");
+    auto __result = method(_javaPart);
+    return __result;
+  }
+  void JHybridNitroCameraConfigurationSpec::setSatBlue(double satBlue) {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<void(double /* satBlue */)>("setSatBlue");
+    method(_javaPart, satBlue);
+  }
+  double JHybridNitroCameraConfigurationSpec::getSatPurple() {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<double()>("getSatPurple");
+    auto __result = method(_javaPart);
+    return __result;
+  }
+  void JHybridNitroCameraConfigurationSpec::setSatPurple(double satPurple) {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<void(double /* satPurple */)>("setSatPurple");
+    method(_javaPart, satPurple);
+  }
+  double JHybridNitroCameraConfigurationSpec::getSatMagenta() {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<double()>("getSatMagenta");
+    auto __result = method(_javaPart);
+    return __result;
+  }
+  void JHybridNitroCameraConfigurationSpec::setSatMagenta(double satMagenta) {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<void(double /* satMagenta */)>("setSatMagenta");
+    method(_javaPart, satMagenta);
+  }
+  bool JHybridNitroCameraConfigurationSpec::getAberrationInvert() {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<jboolean()>("getAberrationInvert");
+    auto __result = method(_javaPart);
+    return static_cast<bool>(__result);
+  }
+  void JHybridNitroCameraConfigurationSpec::setAberrationInvert(bool aberrationInvert) {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<void(jboolean /* aberrationInvert */)>("setAberrationInvert");
+    method(_javaPart, aberrationInvert);
+  }
+  double JHybridNitroCameraConfigurationSpec::getBoundMagentaRed() {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<double()>("getBoundMagentaRed");
+    auto __result = method(_javaPart);
+    return __result;
+  }
+  void JHybridNitroCameraConfigurationSpec::setBoundMagentaRed(double boundMagentaRed) {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<void(double /* boundMagentaRed */)>("setBoundMagentaRed");
+    method(_javaPart, boundMagentaRed);
+  }
+  double JHybridNitroCameraConfigurationSpec::getBoundRedOrange() {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<double()>("getBoundRedOrange");
+    auto __result = method(_javaPart);
+    return __result;
+  }
+  void JHybridNitroCameraConfigurationSpec::setBoundRedOrange(double boundRedOrange) {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<void(double /* boundRedOrange */)>("setBoundRedOrange");
+    method(_javaPart, boundRedOrange);
+  }
+  double JHybridNitroCameraConfigurationSpec::getBoundOrangeYellow() {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<double()>("getBoundOrangeYellow");
+    auto __result = method(_javaPart);
+    return __result;
+  }
+  void JHybridNitroCameraConfigurationSpec::setBoundOrangeYellow(double boundOrangeYellow) {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<void(double /* boundOrangeYellow */)>("setBoundOrangeYellow");
+    method(_javaPart, boundOrangeYellow);
+  }
+  double JHybridNitroCameraConfigurationSpec::getBoundYellowGreen() {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<double()>("getBoundYellowGreen");
+    auto __result = method(_javaPart);
+    return __result;
+  }
+  void JHybridNitroCameraConfigurationSpec::setBoundYellowGreen(double boundYellowGreen) {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<void(double /* boundYellowGreen */)>("setBoundYellowGreen");
+    method(_javaPart, boundYellowGreen);
+  }
+  double JHybridNitroCameraConfigurationSpec::getBoundGreenCyan() {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<double()>("getBoundGreenCyan");
+    auto __result = method(_javaPart);
+    return __result;
+  }
+  void JHybridNitroCameraConfigurationSpec::setBoundGreenCyan(double boundGreenCyan) {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<void(double /* boundGreenCyan */)>("setBoundGreenCyan");
+    method(_javaPart, boundGreenCyan);
+  }
+  double JHybridNitroCameraConfigurationSpec::getBoundCyanBlue() {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<double()>("getBoundCyanBlue");
+    auto __result = method(_javaPart);
+    return __result;
+  }
+  void JHybridNitroCameraConfigurationSpec::setBoundCyanBlue(double boundCyanBlue) {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<void(double /* boundCyanBlue */)>("setBoundCyanBlue");
+    method(_javaPart, boundCyanBlue);
+  }
+  double JHybridNitroCameraConfigurationSpec::getBoundBluePurple() {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<double()>("getBoundBluePurple");
+    auto __result = method(_javaPart);
+    return __result;
+  }
+  void JHybridNitroCameraConfigurationSpec::setBoundBluePurple(double boundBluePurple) {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<void(double /* boundBluePurple */)>("setBoundBluePurple");
+    method(_javaPart, boundBluePurple);
+  }
+  double JHybridNitroCameraConfigurationSpec::getBoundPurpleMagenta() {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<double()>("getBoundPurpleMagenta");
+    auto __result = method(_javaPart);
+    return __result;
+  }
+  void JHybridNitroCameraConfigurationSpec::setBoundPurpleMagenta(double boundPurpleMagenta) {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<void(double /* boundPurpleMagenta */)>("setBoundPurpleMagenta");
+    method(_javaPart, boundPurpleMagenta);
+  }
+  double JHybridNitroCameraConfigurationSpec::getGrainRoughness() {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<double()>("getGrainRoughness");
+    auto __result = method(_javaPart);
+    return __result;
+  }
+  void JHybridNitroCameraConfigurationSpec::setGrainRoughness(double grainRoughness) {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<void(double /* grainRoughness */)>("setGrainRoughness");
+    method(_javaPart, grainRoughness);
+  }
+  double JHybridNitroCameraConfigurationSpec::getPanelY() {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<double()>("getPanelY");
+    auto __result = method(_javaPart);
+    return __result;
+  }
+  void JHybridNitroCameraConfigurationSpec::setPanelY(double panelY) {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<void(double /* panelY */)>("setPanelY");
+    method(_javaPart, panelY);
+  }
+  bool JHybridNitroCameraConfigurationSpec::getGrainEnabled() {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<jboolean()>("getGrainEnabled");
+    auto __result = method(_javaPart);
+    return static_cast<bool>(__result);
+  }
+  void JHybridNitroCameraConfigurationSpec::setGrainEnabled(bool grainEnabled) {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<void(jboolean /* grainEnabled */)>("setGrainEnabled");
+    method(_javaPart, grainEnabled);
+  }
+  bool JHybridNitroCameraConfigurationSpec::getBloomEnabled() {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<jboolean()>("getBloomEnabled");
+    auto __result = method(_javaPart);
+    return static_cast<bool>(__result);
+  }
+  void JHybridNitroCameraConfigurationSpec::setBloomEnabled(bool bloomEnabled) {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<void(jboolean /* bloomEnabled */)>("setBloomEnabled");
+    method(_javaPart, bloomEnabled);
+  }
+  double JHybridNitroCameraConfigurationSpec::getBlackLevel() {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<double()>("getBlackLevel");
+    auto __result = method(_javaPart);
+    return __result;
+  }
+  void JHybridNitroCameraConfigurationSpec::setBlackLevel(double blackLevel) {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<void(double /* blackLevel */)>("setBlackLevel");
+    method(_javaPart, blackLevel);
+  }
+  double JHybridNitroCameraConfigurationSpec::getHighlights() {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<double()>("getHighlights");
+    auto __result = method(_javaPart);
+    return __result;
+  }
+  void JHybridNitroCameraConfigurationSpec::setHighlights(double highlights) {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<void(double /* highlights */)>("setHighlights");
+    method(_javaPart, highlights);
+  }
+  double JHybridNitroCameraConfigurationSpec::getPivot() {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<double()>("getPivot");
+    auto __result = method(_javaPart);
+    return __result;
+  }
+  void JHybridNitroCameraConfigurationSpec::setPivot(double pivot) {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<void(double /* pivot */)>("setPivot");
+    method(_javaPart, pivot);
+  }
+  bool JHybridNitroCameraConfigurationSpec::getContrastAuto() {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<jboolean()>("getContrastAuto");
+    auto __result = method(_javaPart);
+    return static_cast<bool>(__result);
+  }
+  void JHybridNitroCameraConfigurationSpec::setContrastAuto(bool contrastAuto) {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<void(jboolean /* contrastAuto */)>("setContrastAuto");
+    method(_javaPart, contrastAuto);
+  }
+  bool JHybridNitroCameraConfigurationSpec::getBlackLevelAuto() {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<jboolean()>("getBlackLevelAuto");
+    auto __result = method(_javaPart);
+    return static_cast<bool>(__result);
+  }
+  void JHybridNitroCameraConfigurationSpec::setBlackLevelAuto(bool blackLevelAuto) {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<void(jboolean /* blackLevelAuto */)>("setBlackLevelAuto");
+    method(_javaPart, blackLevelAuto);
+  }
+  bool JHybridNitroCameraConfigurationSpec::getHighlightsAuto() {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<jboolean()>("getHighlightsAuto");
+    auto __result = method(_javaPart);
+    return static_cast<bool>(__result);
+  }
+  void JHybridNitroCameraConfigurationSpec::setHighlightsAuto(bool highlightsAuto) {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<void(jboolean /* highlightsAuto */)>("setHighlightsAuto");
+    method(_javaPart, highlightsAuto);
+  }
+  bool JHybridNitroCameraConfigurationSpec::getPivotAuto() {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<jboolean()>("getPivotAuto");
+    auto __result = method(_javaPart);
+    return static_cast<bool>(__result);
+  }
+  void JHybridNitroCameraConfigurationSpec::setPivotAuto(bool pivotAuto) {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<void(jboolean /* pivotAuto */)>("setPivotAuto");
+    method(_javaPart, pivotAuto);
+  }
+  double JHybridNitroCameraConfigurationSpec::getPixelationFactor() {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<double()>("getPixelationFactor");
+    auto __result = method(_javaPart);
+    return __result;
+  }
+  void JHybridNitroCameraConfigurationSpec::setPixelationFactor(double pixelationFactor) {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<void(double /* pixelationFactor */)>("setPixelationFactor");
+    method(_javaPart, pixelationFactor);
+  }
+  double JHybridNitroCameraConfigurationSpec::getTapeJitter() {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<double()>("getTapeJitter");
+    auto __result = method(_javaPart);
+    return __result;
+  }
+  void JHybridNitroCameraConfigurationSpec::setTapeJitter(double tapeJitter) {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<void(double /* tapeJitter */)>("setTapeJitter");
+    method(_javaPart, tapeJitter);
+  }
+  double JHybridNitroCameraConfigurationSpec::getScanlines() {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<double()>("getScanlines");
+    auto __result = method(_javaPart);
+    return __result;
+  }
+  void JHybridNitroCameraConfigurationSpec::setScanlines(double scanlines) {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<void(double /* scanlines */)>("setScanlines");
+    method(_javaPart, scanlines);
+  }
+  bool JHybridNitroCameraConfigurationSpec::getChromaShiftInvert() {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<jboolean()>("getChromaShiftInvert");
+    auto __result = method(_javaPart);
+    return static_cast<bool>(__result);
+  }
+  void JHybridNitroCameraConfigurationSpec::setChromaShiftInvert(bool chromaShiftInvert) {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<void(jboolean /* chromaShiftInvert */)>("setChromaShiftInvert");
+    method(_javaPart, chromaShiftInvert);
+  }
 
   // Methods
   
