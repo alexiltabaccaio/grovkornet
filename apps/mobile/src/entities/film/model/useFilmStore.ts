@@ -47,6 +47,20 @@ import {
   DEFAULT_CHROMA_SHIFT_INVERT,
 } from '@grovkornet/shared';
 
+let nitroConfig: any = null;
+export const getNitroConfig = () => {
+  if (nitroConfig) return nitroConfig;
+  try {
+    const { NitroModules } = require('react-native-nitro-modules');
+    nitroConfig = NitroModules.createHybridObject('NitroCameraConfiguration');
+    console.log('[Nitro] Successfully created NitroCameraConfiguration hybrid object!');
+  } catch (e) {
+    console.error('[Nitro] Failed to create NitroCameraConfiguration hybrid object:', e);
+    nitroConfig = { saturation: 1.0 };
+  }
+  return nitroConfig;
+};
+
 export const useFilmStore = create<FilmStore>((set, get) => ({
   // @@GEN_INIT_START@@
   saturation: makeMutable(DEFAULT_SATURATION),
@@ -108,6 +122,7 @@ export const useFilmStore = create<FilmStore>((set, get) => ({
   setSaturation: (value) => {
     logger.debug('FilmStore', `Setting Saturation: ${value}`);
     get().saturation.value = value;
+    getNitroConfig().saturation = value;
   },
   setContrast: (value) => {
     const { contrast, contrastAuto } = get();
@@ -326,6 +341,7 @@ export const useFilmStore = create<FilmStore>((set, get) => ({
       // @@GEN_RESET_START@@
       case 'saturation':
         state.saturation.value = DEFAULT_SATURATION;
+        getNitroConfig().saturation = DEFAULT_SATURATION;
         state.satRed.value = DEFAULT_SELECTIVE_SATURATION;
         state.satOrange.value = DEFAULT_SELECTIVE_SATURATION;
         state.satYellow.value = DEFAULT_SELECTIVE_SATURATION;

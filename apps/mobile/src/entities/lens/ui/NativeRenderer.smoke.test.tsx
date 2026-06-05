@@ -41,7 +41,6 @@ describe('NativeRenderer', () => {
 
   it('renders without crashing', () => {
     const mockProps = {
-      saturation: 1,
       contrast: 1,
       grainIntensity: 0.5,
       grainChroma: 0.5,
@@ -56,7 +55,7 @@ describe('NativeRenderer', () => {
 
   it('calls takePhoto directly when nativeView.takePhoto is present', () => {
     const ref = createRef<NativeRendererRef>();
-    render(<NativeRenderer saturation={1} contrast={1} ref={ref} />);
+    render(<NativeRenderer contrast={1} ref={ref} />);
 
     expect(ref.current).toBeDefined();
     ref.current?.takePhoto();
@@ -68,7 +67,7 @@ describe('NativeRenderer', () => {
   it('calls getNativeElement().takePhoto when nativeView.takePhoto is not present', () => {
     mockHasDirectTakePhoto = false;
     const ref = createRef<NativeRendererRef>();
-    render(<NativeRenderer saturation={1} contrast={1} ref={ref} />);
+    render(<NativeRenderer contrast={1} ref={ref} />);
 
     expect(ref.current).toBeDefined();
     ref.current?.takePhoto();

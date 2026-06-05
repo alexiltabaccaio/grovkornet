@@ -30,9 +30,9 @@ class LiveFilmProcessor {
     companion object {
         init {
             try {
-                System.loadLibrary("grovkornet-engine")
+                System.loadLibrary("grovkornet_engine")
                 if (BuildConfig.DEBUG) {
-                    Log.i("LiveFilmProcessor", "Successfully loaded native grovkornet-engine library")
+                    Log.i("LiveFilmProcessor", "Successfully loaded native grovkornet_engine library")
                 }
             } catch (e: Exception) {
                 Log.e("LiveFilmProcessor", "Failed to load engine library", e)

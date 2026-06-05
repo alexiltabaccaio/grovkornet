@@ -4,6 +4,7 @@
       "name": "saturation",
       "category": "render",
       "arrayIndex": 0,
+      "nitro": true,
       "kotlin": {
         "type": "Float",
         "default": "1.0f"

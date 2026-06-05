@@ -8,6 +8,8 @@
 #include <android/asset_manager_jni.h>
 #include <vector>
 #include <mutex>
+#include <fbjni/fbjni.h>
+#include "grovkornet_engineOnLoad.hpp"
 
 static std::mutex g_engineLifecycleMutex;
 
@@ -50,6 +52,10 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm, void* reserved) {
     
     // Initialize Filament's JNI VirtualMachineEnv
     filament::VirtualMachineEnv::JNI_OnLoad(vm);
+    
+    facebook::jni::initialize(vm, [vm]() {
+        margelo::nitro::grovkornet::registerAllNatives();
+    });
     
     return JNI_VERSION_1_6;
 }

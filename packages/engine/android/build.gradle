@@ -2,6 +2,13 @@ apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'jacoco'
 
+apply from: '../nitrogen/generated/android/grovkornet_engine+autolinking.gradle'
+
+def reactNativeArchitectures() {
+  def value = rootProject.getProperties().get("reactNativeArchitectures")
+  return value ? value.split(",") : ["armeabi-v7a", "x86", "x86_64", "arm64-v8a"]
+}
+
 group = 'com.grovkornet.nativefilmcamera'
 version = '1.0.0'
 
@@ -11,6 +18,11 @@ apply from: expoModulesCorePlugin.absolutePath
 android {
   namespace "com.grovkornet.nativefilmcamera"
   compileSdkVersion 36
+  ndkVersion "26.1.10909125"
+
+  buildFeatures {
+    prefab true
+  }
 
   defaultConfig {
     minSdkVersion 26
@@ -19,12 +31,12 @@ android {
 
     externalNativeBuild {
       cmake {
-        cppFlags "-std=c++17"
+        cppFlags "-std=c++20 -frtti -fexceptions"
         arguments "-DANDROID_STL=c++_shared"
       }
     }
     ndk {
-      abiFilters "arm64-v8a", "x86_64"
+      abiFilters (*reactNativeArchitectures())
     }
 
     consumerProguardFiles "proguard-rules.pro"
@@ -181,6 +193,7 @@ afterEvaluate {
 
 dependencies {
   implementation project(':expo-modules-core')
+  implementation project(':react-native-nitro-modules')
   implementation "com.facebook.react:react-android"
   implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlinVersion"
 

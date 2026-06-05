@@ -1,8 +1,10 @@
 import { useMemo } from 'react';
-import { useFilmStore } from '../model/useFilmStore';
+import { useFilmStore, getNitroConfig } from '../model/useFilmStore';
 import { updateSharedValue } from '@shared/lib/reanimated/safeUpdate';
 
 export const useFilmWorklets = () => {
+  const config = getNitroConfig();
+
   return useMemo(() => {
     const film = useFilmStore.getState();
 
@@ -36,6 +38,7 @@ export const useFilmWorklets = () => {
     const updateSaturation = (value: number) => {
       'worklet';
       updateSharedValue(film.saturation, value);
+      config.saturation = value;
     };
 
     const updateSatRed = (value: number) => {

@@ -1,5 +1,5 @@
 import { usePresetStore, Preset, PresetPayload, FilmPresetPayload, BodyPresetPayload, DEFAULT_PRESET_PAYLOAD, DEFAULT_FILM_PAYLOAD, DEFAULT_BODY_PAYLOAD } from '@entities/preset';
-import { useFilmStore } from '@entities/film';
+import { useFilmStore, getNitroConfig } from '@entities/film';
 import { useBodyStore } from '@entities/body';
 
 /**
@@ -142,6 +142,9 @@ export const applyPreset = (id: string): void => {
       (storeItem as Record<string, unknown>).value = targetFilm[k];
     }
   });
+
+  // Sync Nitro-based parameters
+  getNitroConfig().saturation = targetFilm.saturation;
 
   // Safe Merge & direct update of Body shared values
   const bodyStore = useBodyStore.getState();

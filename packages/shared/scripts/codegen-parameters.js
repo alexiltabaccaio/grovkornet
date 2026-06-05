@@ -184,7 +184,7 @@ function generateNativeBridge(parameters, renderParams) {
 
   // 1. Generate index.ts TypeScript Interface Props
   const tsTypesContent = parameters
-    .filter(p => p.ts && p.ts.type)
+    .filter(p => p.ts && p.ts.type && !p.nitro)
     .map(p => {
       const tsName = p.ts.name || p.name;
       const isOptional = p.ts.optional !== false;
@@ -195,7 +195,7 @@ function generateNativeBridge(parameters, renderParams) {
 
   // 2. Generate NativeFilmCameraModule.kt Prop handlers
   const kotlinPropsContent = parameters
-    .filter(p => p.ts && p.kotlin && !p.kotlin.transient)
+    .filter(p => p.ts && p.kotlin && !p.kotlin.transient && !p.nitro)
     .map(p => {
       const propName = p.ts.name || p.name;
       const kotlinName = p.kotlin.name || p.name;
@@ -426,6 +426,9 @@ function generateZustandStoreForStore(parameters, storeName, filePath, initMarke
         } else {
           body += `set({ ${name}: ${argName} });\n`;
         }
+        if (p.nitro) {
+          body += `getNitroConfig().${name} = ${argName};\n`;
+        }
         
         const conditionalEffects = p.zustand.setSideEffects.filter(se => se.condition);
         const directEffects = p.zustand.setSideEffects.filter(se => !se.condition);
@@ -467,6 +470,9 @@ function generateZustandStoreForStore(parameters, storeName, filePath, initMarke
           body += `get().${name}.value = ${argName};`;
         } else {
           body += `set({ ${name}: ${argName} });`;
+        }
+        if (p.nitro) {
+          body += `\ngetNitroConfig().${name} = ${argName};`;
         }
       }
       
@@ -519,10 +525,14 @@ function generateZustandStore(parameters) {
     
     processed.add(rg);
     
-    const assignments = params.map(p => {
+    const assignments = [];
+    for (const p of params) {
       const name = p.zustand.name || p.name;
-      return `state.${name}.value = ${p.zustand.default};`;
-    });
+      assignments.push(`state.${name}.value = ${p.zustand.default};`);
+      if (p.nitro) {
+        assignments.push(`getNitroConfig().${name} = ${p.zustand.default};`);
+      }
+    }
     
     if (params.some(p => p.name === 'whiteBalance' || p.name === 'tint')) {
       if (!assignments.some(a => a.includes('temperatureAuto'))) {
@@ -558,7 +568,7 @@ function generateViewfinderProps(parameters) {
   };
 
   // 1. Selector destructuring (FILM store parameters ONLY)
-  const selectorParams = parameters.filter(p => p.zustand && (p.zustand.store || 'film') === 'film');
+  const selectorParams = parameters.filter(p => p.zustand && (p.zustand.store || 'film') === 'film' && !p.nitro);
   const selectorContent = selectorParams
     .map(p => {
       const name = p.zustand.name || p.name;
@@ -579,7 +589,7 @@ function generateViewfinderProps(parameters) {
   const animatedPropsContent = propParams
     .filter(p => {
       const propName = p.ts.name || p.name;
-      return propName !== 'cameraId' && propName !== 'secureViewEnabled';
+      return propName !== 'cameraId' && propName !== 'secureViewEnabled' && !p.nitro;
     })
     .map(p => {
       const propName = p.ts.name || p.name;

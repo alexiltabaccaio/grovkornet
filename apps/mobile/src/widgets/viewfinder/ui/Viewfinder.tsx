@@ -45,7 +45,6 @@ export const Viewfinder = React.memo(({ cameraKey, translateY, drawerAnimation }
 
   const {
     // @@GEN_SELECTOR_START@@
-    saturation,
     contrast,
     grainIntensity,
     grainChroma,
@@ -222,7 +221,6 @@ export const Viewfinder = React.memo(({ cameraKey, translateY, drawerAnimation }
 
     return {
       // @@GEN_ANIMATED_PROPS_START@@
-      saturation: saturation.value,
       contrast: contrast.value,
       grainIntensity: grainIntensity.value,
       grainChroma: grainChroma.value,

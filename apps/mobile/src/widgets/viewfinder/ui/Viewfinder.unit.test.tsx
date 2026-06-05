@@ -19,7 +19,6 @@ describe('Viewfinder', () => {
     const filmStore = useFilmStore.getState();
     
     // Set some values in store
-    filmStore.saturation.value = 1.5;
     filmStore.satRed.value = 75.0;
     filmStore.satBlue.value = 25.0;
     bodyStore.iso.value = 400;
@@ -29,7 +28,6 @@ describe('Viewfinder', () => {
     const nativeCamera = getByTestId('native-camera');
 
     // Check if props match store values
-    expect(nativeCamera.props.animatedProps.saturation).toBe(1.5);
     expect(nativeCamera.props.animatedProps.satRed).toBe(75.0);
     expect(nativeCamera.props.animatedProps.satBlue).toBe(25.0);
     expect(nativeCamera.props.animatedProps.iso).toBe(400);

@@ -1,0 +1,21 @@
+{
+  "$schema": "https://nitro.margelo.com/nitro.schema.json",
+  "cxxNamespace": ["grovkornet"],
+  "ios": {
+    "iosModuleName": "grovkornet_engine"
+  },
+  "android": {
+    "androidNamespace": ["com", "grovkornet", "nativefilmcamera"],
+    "androidCxxLibName": "grovkornet_engine"
+  },
+  "autolinking": {
+    "NitroCameraConfiguration": {
+      "android": {
+        "language": "kotlin",
+        "implementationClassName": "HybridNitroCameraConfiguration"
+      }
+    }
+  },
+  "ignorePaths": ["**/node_modules"],
+  "gitAttributesGeneratedFlag": true
+}

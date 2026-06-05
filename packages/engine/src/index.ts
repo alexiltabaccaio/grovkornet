@@ -4,7 +4,6 @@ import { ViewProps } from 'react-native';
 
 export interface NativeFilmCameraViewProps extends ViewProps {
   // @@GEN_PROPS_START@@
-  saturation?: number;
   contrast?: number;
   grainIntensity?: number;
   grainChroma?: number;
@@ -118,3 +117,4 @@ export const NativeCameraEventEmitter = new EventEmitter<any>(NativeFilmCameraMo
 
 export * from './errors';
 export { NativeFilmCameraView };
+export * from './NitroCameraConfiguration.nitro';

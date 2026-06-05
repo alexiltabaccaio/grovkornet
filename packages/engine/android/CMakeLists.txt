@@ -6,8 +6,8 @@ set(FILAMENT_DIR "${CMAKE_CURRENT_SOURCE_DIR}/filament")
 set(FILAMENT_INCLUDE_DIR "${FILAMENT_DIR}/include")
 set(FILAMENT_LIB_DIR "${FILAMENT_DIR}/lib/${ANDROID_ABI}")
 
-# Set C++17 standard
-set(CMAKE_CXX_STANDARD 17)
+# Set C++20 standard
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # Include directories
@@ -41,7 +41,7 @@ import_filament_lib(bluevk)
 import_filament_lib(zstd)
 
 # Define our shared library target
-add_library(grovkornet-engine SHARED
+add_library(grovkornet_engine SHARED
     src/main/cpp/core/GrovkornetEngine.cpp
     src/main/cpp/core/FrameRenderer.cpp
     src/main/cpp/pipeline/PipelineRenderer.cpp
@@ -56,6 +56,9 @@ add_library(grovkornet-engine SHARED
     src/main/cpp/jni/GrovkornetJni.cpp
 )
 
+# Include Nitrogen autolinking CMake project
+include(${CMAKE_CURRENT_SOURCE_DIR}/../nitrogen/generated/android/grovkornet_engine+autolinking.cmake)
+
 # Locate standard Android NDK libraries
 find_library(log-lib log)
 find_library(android-lib android)
@@ -63,8 +66,7 @@ find_library(jnigraphics-lib jnigraphics)
 
 # Link everything together
 # We use -Wl,--start-group and -Wl,--end-group to resolve circular dependencies between Filament static libs
-target_link_libraries(grovkornet-engine
-    PRIVATE
+target_link_libraries(grovkornet_engine
     -Wl,--start-group
     filament
     backend

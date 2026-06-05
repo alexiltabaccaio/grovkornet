@@ -23,6 +23,9 @@ class NativeFilmCameraModule : Module() {
     Events("onDeviceHealthUpdate")
 
     OnCreate {
+      // Initialize Nitro Modules native JNI specs
+      com.margelo.nitro.com.grovkornet.nativefilmcamera.grovkornet_engineOnLoad.initializeNative()
+
       val ctx = appContext.reactContext ?: return@OnCreate
       deviceHealthManager = com.grovkornet.nativefilmcamera.managers.DeviceHealthManager(
         ctx,
@@ -68,10 +71,6 @@ class NativeFilmCameraModule : Module() {
       )
 
       // @@GEN_PROPS_START@@
-      Prop("saturation") { view: NativeFilmCameraView, value: Float? ->
-        value?.let { view.updateEffect { saturation = it } }
-      }
-
       Prop("contrast") { view: NativeFilmCameraView, value: Float? ->
         value?.let { view.updateEffect { contrast = it } }
       }

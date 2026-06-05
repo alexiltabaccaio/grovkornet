@@ -20,11 +20,13 @@
   "license": "MIT",
   "devDependencies": {
     "expo-module-scripts": "~4.0.5",
-    "typescript": "^5.3.3"
+    "typescript": "^5.3.3",
+    "react-native-nitro-modules": "^0.35.7"
   },
   "peerDependencies": {
     "expo": "*",
     "react": "*",
-    "react-native": "*"
+    "react-native": "*",
+    "react-native-nitro-modules": "*"
   }
 }

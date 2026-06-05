@@ -55,23 +55,31 @@ class NativeFilmCameraView(context: Context) : SurfaceView(context), SurfaceHold
     private val cameraTorchManager: CameraTorchManager
 
 
+    companion object {
+        @Volatile var activeInstance: NativeFilmCameraView? = null
+    }
+
     fun updateEffect(action: CameraConfiguration.() -> Unit) {
-        config.action()
-        renderThread?.updateConfig(config)
+        synchronized(config) {
+            config.action()
+            renderThread?.updateConfig(config)
+        }
     }
 
     fun updateHardware(action: CameraConfiguration.() -> Unit) {
-        val oldCam = config.cameraId
-        val oldRes = config.resolutionSetting
-        val oldPrev = config.previewIn4k
-        val oldAspect = config.aspectRatio
-        val oldSelfie = config.isSelfieCamera
-        config.action()
-        if (oldCam != config.cameraId || oldRes != config.resolutionSetting || oldPrev != config.previewIn4k || oldAspect != config.aspectRatio || oldSelfie != config.isSelfieCamera) {
-            lastReconfigureTime = System.currentTimeMillis()
-            renderThread?.notifyHardwareChange()
+        synchronized(config) {
+            val oldCam = config.cameraId
+            val oldRes = config.resolutionSetting
+            val oldPrev = config.previewIn4k
+            val oldAspect = config.aspectRatio
+            val oldSelfie = config.isSelfieCamera
+            config.action()
+            if (oldCam != config.cameraId || oldRes != config.resolutionSetting || oldPrev != config.previewIn4k || oldAspect != config.aspectRatio || oldSelfie != config.isSelfieCamera) {
+                lastReconfigureTime = System.currentTimeMillis()
+                renderThread?.notifyHardwareChange()
+            }
+            renderThread?.updateConfig(config)
         }
-        renderThread?.updateConfig(config)
         if (BuildConfig.DEBUG) {
             Log.d("NativeFilmCameraView", "Hardware update scheduled for config change")
         }
@@ -79,17 +87,19 @@ class NativeFilmCameraView(context: Context) : SurfaceView(context), SurfaceHold
     }
 
     fun updateBoth(action: CameraConfiguration.() -> Unit) {
-        val oldCam = config.cameraId
-        val oldRes = config.resolutionSetting
-        val oldPrev = config.previewIn4k
-        val oldAspect = config.aspectRatio
-        val oldSelfie = config.isSelfieCamera
-        config.action()
-        if (oldCam != config.cameraId || oldRes != config.resolutionSetting || oldPrev != config.previewIn4k || oldAspect != config.aspectRatio || oldSelfie != config.isSelfieCamera) {
-            lastReconfigureTime = System.currentTimeMillis()
-            renderThread?.notifyHardwareChange()
+        synchronized(config) {
+            val oldCam = config.cameraId
+            val oldRes = config.resolutionSetting
+            val oldPrev = config.previewIn4k
+            val oldAspect = config.aspectRatio
+            val oldSelfie = config.isSelfieCamera
+            config.action()
+            if (oldCam != config.cameraId || oldRes != config.resolutionSetting || oldPrev != config.previewIn4k || oldAspect != config.aspectRatio || oldSelfie != config.isSelfieCamera) {
+                lastReconfigureTime = System.currentTimeMillis()
+                renderThread?.notifyHardwareChange()
+            }
+            renderThread?.updateConfig(config)
         }
-        renderThread?.updateConfig(config)
         if (BuildConfig.DEBUG) {
             Log.d("NativeFilmCameraView", "Hardware+Effect update scheduled for config change")
         }
@@ -106,6 +116,7 @@ class NativeFilmCameraView(context: Context) : SurfaceView(context), SurfaceHold
     }
 
     init {
+        activeInstance = this
         // Obscures the video feed in screenshots and screen recordings (hardware FLAG_SECURE)
         this.setSecure(true)
         holder.addCallback(this)
@@ -242,6 +253,9 @@ class NativeFilmCameraView(context: Context) : SurfaceView(context), SurfaceHold
     fun release() {
         if (isReleased) return
         isReleased = true
+        if (activeInstance == this) {
+            activeInstance = null
+        }
         if (BuildConfig.DEBUG) {
             Log.i("NativeFilmCameraView", "Releasing NativeFilmCameraView...")
         }
