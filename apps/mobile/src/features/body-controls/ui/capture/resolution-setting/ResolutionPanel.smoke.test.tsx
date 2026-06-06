@@ -3,12 +3,13 @@ import { render } from '@testing-library/react-native';
 import { ResolutionPanel } from './ResolutionPanel';
 
 jest.mock('@entities/body', () => ({
-  useBodyStore: jest.fn((fn?: (state: { resolutionSetting: { value: number }; setResolutionSetting: jest.Mock; previewQuality: { value: number }; setPreviewQuality: jest.Mock }) => unknown) => {
+  useBodyStore: jest.fn((fn?: (state: { resolutionSetting: { value: number }; setResolutionSetting: jest.Mock; previewQuality: { value: number }; setPreviewQuality: jest.Mock; capabilities: { maxResolutionWidth: number } }) => unknown) => {
     const state = {
       resolutionSetting: { value: 0 },
       setResolutionSetting: jest.fn(),
       previewQuality: { value: 1 },
       setPreviewQuality: jest.fn(),
+      capabilities: { maxResolutionWidth: 3840 },
     };
     return fn ? fn(state) : state;
   }),

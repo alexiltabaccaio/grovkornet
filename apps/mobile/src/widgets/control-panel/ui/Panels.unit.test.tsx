@@ -120,7 +120,7 @@ describe('Panels', () => {
   it('renders resolution settings and conditionally renders 4K preview warning and toggle', () => {
     act(() => {
       useSystemStore.getState().setActiveParameter('resolution_setting');
-      useBodyStore.getState().resolutionSetting.value = 1; // 1080p
+      useBodyStore.getState().resolutionSetting.value = 2; // 1080p
     });
 
     const { getByText, queryByText } = render(<Panels translateY={mockTranslateY} />);

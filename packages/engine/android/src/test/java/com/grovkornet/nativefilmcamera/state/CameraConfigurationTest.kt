@@ -177,26 +177,29 @@ class CameraConfigurationTest {
     fun getTargetResolutionValue_mapsCorrectly() {
         val config = CameraConfiguration()
         
-        // Test all valid resolutions from 0 to 6
+        // Test all valid resolutions from 0 to 7
         config.resolutionSetting = 0
         assertEquals(2160f, config.getTargetResolutionValue(), 0.001f)
         
         config.resolutionSetting = 1
-        assertEquals(1080f, config.getTargetResolutionValue(), 0.001f)
+        assertEquals(1440f, config.getTargetResolutionValue(), 0.001f)
         
         config.resolutionSetting = 2
-        assertEquals(720f, config.getTargetResolutionValue(), 0.001f)
+        assertEquals(1080f, config.getTargetResolutionValue(), 0.001f)
         
         config.resolutionSetting = 3
-        assertEquals(480f, config.getTargetResolutionValue(), 0.001f)
+        assertEquals(720f, config.getTargetResolutionValue(), 0.001f)
         
         config.resolutionSetting = 4
-        assertEquals(360f, config.getTargetResolutionValue(), 0.001f)
+        assertEquals(480f, config.getTargetResolutionValue(), 0.001f)
         
         config.resolutionSetting = 5
-        assertEquals(240f, config.getTargetResolutionValue(), 0.001f)
+        assertEquals(360f, config.getTargetResolutionValue(), 0.001f)
         
         config.resolutionSetting = 6
+        assertEquals(240f, config.getTargetResolutionValue(), 0.001f)
+        
+        config.resolutionSetting = 7
         assertEquals(144f, config.getTargetResolutionValue(), 0.001f)
         
         // Test fallback/default cases

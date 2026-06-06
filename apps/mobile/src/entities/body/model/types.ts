@@ -8,6 +8,7 @@ export interface BodyCapabilities {
   maxFps?: number;
   minZoom?: number;
   maxZoom?: number;
+  maxResolutionWidth?: number;
 }
 
 interface BodyState {

@@ -77,7 +77,7 @@ data class CameraConfiguration(
     var torchEnabled: Boolean = false,
     var torchStrength: Int = 1,
     var cameraId: String? = null,
-    var resolutionSetting: Int = 1,
+    var resolutionSetting: Int = 2,
     var previewQuality: Int = 1,
     var force4k60fpsCrop: Boolean = true,
     var secureViewEnabled: Boolean = false,
@@ -93,12 +93,13 @@ data class CameraConfiguration(
 fun CameraConfiguration.getTargetResolutionValue(): Float {
     return when (resolutionSetting) {
         0 -> 2160f
-        1 -> 1080f
-        2 -> 720f
-        3 -> 480f
-        4 -> 360f
-        5 -> 240f
-        6 -> 144f
+        1 -> 1440f
+        2 -> 1080f
+        3 -> 720f
+        4 -> 480f
+        5 -> 360f
+        6 -> 240f
+        7 -> 144f
         else -> 1080f
     }
 }

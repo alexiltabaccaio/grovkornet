@@ -78,12 +78,13 @@ class CameraSessionManager(
         
         val targetSize = when (config.resolutionSetting) {
             0 -> if (is169) Size(3840, 2160) else Size(3264, 2448) // 4K
-            1 -> if (is169) Size(1920, 1080) else Size(1920, 1440) // 1080p
-            2 -> if (is169) Size(1280, 720) else Size(1280, 960)  // 720p
-            3 -> if (is169) Size(720, 480) else Size(720, 540)   // 480p
-            4 -> if (is169) Size(640, 360) else Size(640, 480)   // 360p
-            5 -> if (is169) Size(426, 240) else Size(426, 320)   // 240p
-            6 -> if (is169) Size(256, 144) else Size(256, 192)   // 144p
+            1 -> if (is169) Size(2560, 1440) else Size(2560, 1920) // 1440p
+            2 -> if (is169) Size(1920, 1080) else Size(1920, 1440) // 1080p
+            3 -> if (is169) Size(1280, 720) else Size(1280, 960)  // 720p
+            4 -> if (is169) Size(720, 480) else Size(720, 540)   // 480p
+            5 -> if (is169) Size(640, 360) else Size(640, 480)   // 360p
+            6 -> if (is169) Size(426, 240) else Size(426, 320)   // 240p
+            7 -> if (is169) Size(256, 144) else Size(256, 192)   // 144p
             else -> if (is169) Size(1920, 1080) else Size(1920, 1440)
         }
 

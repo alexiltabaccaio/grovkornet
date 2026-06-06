@@ -1124,7 +1124,7 @@
       "category": "hardware",
       "kotlin": {
         "type": "Int",
-        "default": "1",
+        "default": "2",
         "propHandler": "if (view.config.resolutionSetting != value) {\n          view.updateBoth { resolutionSetting = value }\n        }"
       },
       "ts": {

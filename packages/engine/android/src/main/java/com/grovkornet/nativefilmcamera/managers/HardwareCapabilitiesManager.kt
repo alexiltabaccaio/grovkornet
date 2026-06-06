@@ -120,6 +120,22 @@ class HardwareCapabilitiesManager(private val context: Context) {
                 }
                 event.putInt("maxFps", maxFps)
             }
+
+            // Max Resolution Width
+            info.getCameraCharacteristic(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP)?.let { map ->
+                val sizes = map.getOutputSizes(android.graphics.SurfaceTexture::class.java)
+                if (sizes != null && sizes.isNotEmpty()) {
+                    var maxWidth = 0
+                    for (sz in sizes) {
+                        if (sz.width > maxWidth) {
+                            maxWidth = sz.width
+                        }
+                    }
+                    if (maxWidth > 0) {
+                        event.putInt("maxResolutionWidth", maxWidth)
+                    }
+                }
+            }
         }
     }
 }

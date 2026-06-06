@@ -25,12 +25,13 @@ object ImageProcessorPipeline {
     fun scaleToTargetResolution(bitmap: Bitmap, resolutionSetting: Int): Bitmap {
         val targetRes = when (resolutionSetting) {
             0 -> 2160
-            1 -> 1080
-            2 -> 720
-            3 -> 480
-            4 -> 360
-            5 -> 240
-            6 -> 144
+            1 -> 1440
+            2 -> 1080
+            3 -> 720
+            4 -> 480
+            5 -> 360
+            6 -> 240
+            7 -> 144
             else -> 1080
         }
         
