@@ -170,6 +170,17 @@ export const Viewfinder = React.memo(({ cameraKey, translateY, drawerAnimation }
     return Gesture.Simultaneous(pinch, doubleTap);
   }, [zoom, bodyWorklets, startZoom]);
 
+  React.useEffect(() => {
+    // When the NativeRenderer remounts (e.g. returning from background), the native view gets default parameters.
+    // We push the current JS film state to the new Nitro module instance.
+    const t = setTimeout(() => {
+      import('@features/system-settings')
+        .then(({ syncRuntimeToNative }) => syncRuntimeToNative())
+        .catch(err => console.warn('Failed to sync native runtime', err));
+    }, 150);
+    return () => clearTimeout(t);
+  }, [cameraKey, isCameraSecure]);
+
   const animatedProps = useAnimatedProps(() => {
     let effectiveFps = fpsSetting.value;
     if (thermalState === 'warning') {

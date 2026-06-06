@@ -173,6 +173,32 @@ export const applyPreset = (id: string): void => {
 };
 
 /**
+ * Syncs the current JS runtime state of the FilmStore to the native Nitro configuration.
+ * This is useful to restore parameters when the NativeCameraView remounts (e.g. after background/foreground).
+ */
+export const syncRuntimeToNative = (): void => {
+  const filmStore = useFilmStore.getState();
+  const nitroConfig = getNitroConfig();
+
+  Object.keys(DEFAULT_FILM_PAYLOAD).forEach((key) => {
+    const k = key as keyof FilmPresetPayload;
+    const storeItem = filmStore[k] as unknown;
+    if (storeItem && typeof storeItem === 'object' && 'value' in storeItem) {
+      const val = (storeItem as Record<string, unknown>).value;
+      if (k === 'temperature') {
+        nitroConfig.whiteBalance = val;
+      } else if (k in nitroConfig) {
+        try {
+          (nitroConfig as Record<string, unknown>)[k] = val;
+        } catch (e) {
+          // Ignored
+        }
+      }
+    }
+  });
+};
+
+/**
  * Creates and saves a new user preset
  */
 export const addPreset = (name: string, thumbnailUri?: string): void => {
