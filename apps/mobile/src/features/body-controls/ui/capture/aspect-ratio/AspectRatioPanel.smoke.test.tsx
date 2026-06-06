@@ -7,15 +7,15 @@ jest.mock('@entities/body', () => ({
     aspectRatio: { value: number }; 
     setAspectRatio: jest.Mock;
     resolutionSetting: { value: number };
-    force4k60fpsCrop: { value: number };
-    setForce4k60fpsCrop: jest.Mock;
+    force60fpsCrop: { value: number };
+    setForce60fpsCrop: jest.Mock;
   }) => unknown) => {
     const state = {
       aspectRatio: { value: 0 },
       setAspectRatio: jest.fn(),
       resolutionSetting: { value: 1 },
-      force4k60fpsCrop: { value: 1 },
-      setForce4k60fpsCrop: jest.fn(),
+      force60fpsCrop: { value: 1 },
+      setForce60fpsCrop: jest.fn(),
     };
     return fn ? fn(state) : state;
   }),

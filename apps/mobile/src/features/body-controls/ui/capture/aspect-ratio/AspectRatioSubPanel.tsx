@@ -21,17 +21,17 @@ export const AspectRatioSubPanel = ({ animatedStyle }: AspectRatioSubPanelProps)
   const { 
     aspectRatio, 
     resolutionSetting,
-    force4k60fpsCrop,
-    setForce4k60fpsCrop
+    force60fpsCrop,
+    setForce60fpsCrop
   } = useBodyStore(useShallow(state => ({
     aspectRatio: state.aspectRatio,
     resolutionSetting: state.resolutionSetting,
-    force4k60fpsCrop: state.force4k60fpsCrop,
-    setForce4k60fpsCrop: state.setForce4k60fpsCrop,
+    force60fpsCrop: state.force60fpsCrop,
+    setForce60fpsCrop: state.setForce60fpsCrop,
   })));
 
   const [localResolutionSetting, setLocalResolutionSetting] = React.useState(() => resolutionSetting.value);
-  const [localForce4k60fpsCrop, setLocalForce4k60fpsCrop] = React.useState(() => force4k60fpsCrop.value);
+  const [localForce60fpsCrop, setLocalForce60fpsCrop] = React.useState(() => force60fpsCrop.value);
   const [localAspectRatio, setLocalAspectRatio] = React.useState(() => aspectRatio.value);
 
   useAnimatedReaction(
@@ -55,16 +55,18 @@ export const AspectRatioSubPanel = ({ animatedStyle }: AspectRatioSubPanelProps)
   );
 
   useAnimatedReaction(
-    () => force4k60fpsCrop.value,
+    () => force60fpsCrop.value,
     (currentValue, previousValue) => {
       if (currentValue !== previousValue) {
-        runOnJS(setLocalForce4k60fpsCrop)(currentValue);
+        runOnJS(setLocalForce60fpsCrop)(currentValue);
       }
     },
-    [force4k60fpsCrop]
+    [force60fpsCrop]
   );
 
-  if (!(localResolutionSetting === 0 && localAspectRatio !== 1 && localAspectRatio !== 4)) {
+  const isHighResolution = localResolutionSetting <= 1;
+
+  if (!(isHighResolution && localAspectRatio !== 1 && localAspectRatio !== 4)) {
     return null;
   }
 
@@ -77,10 +79,10 @@ export const AspectRatioSubPanel = ({ animatedStyle }: AspectRatioSubPanelProps)
         <TouchableOpacity
           onPress={() => {
             logger.debug('AspectRatioSubPanel', 'Apply Crop toggle pressed');
-            const next = force4k60fpsCrop.value === 0 ? 1 : 0;
-            setForce4k60fpsCrop(next);
-            setLocalForce4k60fpsCrop(next);
-            usePreferencesStore.getState().setForce4k60fpsCropPref(next);
+            const next = force60fpsCrop.value === 0 ? 1 : 0;
+            setForce60fpsCrop(next);
+            setLocalForce60fpsCrop(next);
+            usePreferencesStore.getState().setForce60fpsCropPref(next);
           }}
           activeOpacity={0.8}
           accessible={true}
@@ -88,11 +90,11 @@ export const AspectRatioSubPanel = ({ animatedStyle }: AspectRatioSubPanelProps)
           accessibilityLabel="Applica Crop"
           style={[
             styles.pillButton,
-            localForce4k60fpsCrop === 1 ? styles.pillButtonActive : styles.pillButtonInactive
+            localForce60fpsCrop === 1 ? styles.pillButtonActive : styles.pillButtonInactive
           ]}
         >
           <Text style={styles.pillValueText} allowFontScaling={false}>
-            {localForce4k60fpsCrop === 1 ? 'ON' : 'OFF'}
+            {localForce60fpsCrop === 1 ? 'ON' : 'OFF'}
           </Text>
         </TouchableOpacity>
       </View>
@@ -100,7 +102,7 @@ export const AspectRatioSubPanel = ({ animatedStyle }: AspectRatioSubPanelProps)
       <View style={styles.warningContainer}>
         <Ionicons name="warning-outline" size={14} color="#FF453A" style={{ marginRight: 4 }} />
         <Text style={styles.warningText} allowFontScaling={false}>
-          {localForce4k60fpsCrop === 1 
+          {localForce60fpsCrop === 1 
             ? t('parameters.crop_active_warning')
             : t('parameters.crop_inactive_warning')}
         </Text>

@@ -28,7 +28,7 @@ interface BodyState {
   torchStrength: SharedValue<number>;
   resolutionSetting: SharedValue<number>;
   previewQuality: SharedValue<number>;
-  force4k60fpsCrop: SharedValue<number>;
+  force60fpsCrop: SharedValue<number>;
   zoom: SharedValue<number>;
   // @@GEN_STATE_END@@
   capabilities: BodyCapabilities;
@@ -49,7 +49,7 @@ interface BodyActions {
   setTorchStrength: (value: number) => void;
   setResolutionSetting: (value: number) => void;
   setPreviewQuality: (value: number) => void;
-  setForce4k60fpsCrop: (value: number) => void;
+  setForce60fpsCrop: (value: number) => void;
   setZoom: (value: number) => void;
   // @@GEN_ACTIONS_END@@
   setCapabilities: (capabilities: BodyCapabilities) => void;

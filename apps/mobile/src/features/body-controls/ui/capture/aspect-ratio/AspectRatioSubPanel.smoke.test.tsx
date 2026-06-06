@@ -18,30 +18,30 @@ jest.mock('@shared/lib/logger', () => ({
   },
 }));
 
-const mockSetForce4k60fpsCrop = jest.fn();
-const mockSetForce4k60fpsCropPref = jest.fn();
+const mockSetForce60fpsCrop = jest.fn();
+const mockSetForce60fpsCropPref = jest.fn();
 
 
 
 jest.mock('@entities/preferences', () => ({
   usePreferencesStore: {
     getState: () => ({
-      setForce4k60fpsCropPref: mockSetForce4k60fpsCropPref,
+      setForce60fpsCropPref: mockSetForce60fpsCropPref,
     }),
   },
 }));
 
 let mockResolutionSettingValue = 0;
 let mockAspectRatioValue = 2; // non 1, non 4
-let mockForce4k60fpsCropValue = 0;
+let mockForce60fpsCropValue = 0;
 
 jest.mock('@entities/body', () => ({
   useBodyStore: (fn: (state: any) => any) => {
     const state = {
       resolutionSetting: { value: mockResolutionSettingValue },
       aspectRatio: { value: mockAspectRatioValue },
-      force4k60fpsCrop: { value: mockForce4k60fpsCropValue },
-      setForce4k60fpsCrop: mockSetForce4k60fpsCrop,
+      force60fpsCrop: { value: mockForce60fpsCropValue },
+      setForce60fpsCrop: mockSetForce60fpsCrop,
     };
     return fn(state);
   },
@@ -52,7 +52,7 @@ describe('AspectRatioSubPanel', () => {
     jest.clearAllMocks();
     mockResolutionSettingValue = 0;
     mockAspectRatioValue = 2;
-    mockForce4k60fpsCropValue = 0;
+    mockForce60fpsCropValue = 0;
   });
 
   it('renders correctly when conditions are met', () => {
@@ -61,8 +61,14 @@ describe('AspectRatioSubPanel', () => {
     expect(getByText('OFF')).toBeDefined();
   });
 
-  it('renders null when resolutionSetting is not 0', () => {
+  it('renders correctly when resolutionSetting is 1 (1440p)', () => {
     mockResolutionSettingValue = 1;
+    const { toJSON } = render(<AspectRatioSubPanel />);
+    expect(toJSON()).not.toBeNull();
+  });
+
+  it('renders null when resolutionSetting is 2 (1080p)', () => {
+    mockResolutionSettingValue = 2;
     const { toJSON } = render(<AspectRatioSubPanel />);
     expect(toJSON()).toBeNull();
   });
@@ -84,7 +90,7 @@ describe('AspectRatioSubPanel', () => {
     const btn = getByRole('button');
     fireEvent.press(btn);
 
-    expect(mockSetForce4k60fpsCrop).toHaveBeenCalledWith(1);
-    expect(mockSetForce4k60fpsCropPref).toHaveBeenCalledWith(1);
+    expect(mockSetForce60fpsCrop).toHaveBeenCalledWith(1);
+    expect(mockSetForce60fpsCropPref).toHaveBeenCalledWith(1);
   });
 });

@@ -21,7 +21,7 @@ export interface NativeFilmCameraViewProps extends ViewProps {
   cameraId?: string;
   resolutionSetting?: number;
   previewQuality?: number;
-  force4k60fpsCrop?: boolean;
+  force60fpsCrop?: boolean;
   secureViewEnabled?: boolean;
   isSelfieCamera?: boolean;
   zoom?: number;

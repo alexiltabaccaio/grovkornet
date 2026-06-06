@@ -6,7 +6,7 @@ interface PreferencesState {
   fpsSetting: number | null;
   resolutionSetting: number | null;
   aspectRatio: number | null;
-  force4k60fpsCrop: number | null;
+  force60fpsCrop: number | null;
   language: string | null;
   cameraId: string | null;
   cameraAuto: boolean | null;
@@ -20,7 +20,7 @@ interface PreferencesActions {
   setFpsSettingPref: (val: number) => void;
   setResolutionSettingPref: (val: number) => void;
   setAspectRatioPref: (val: number) => void;
-  setForce4k60fpsCropPref: (val: number) => void;
+  setForce60fpsCropPref: (val: number) => void;
   setLanguagePref: (val: string) => void;
   setCameraIdPref: (val: string) => void;
   setCameraAutoPref: (val: boolean) => void;
@@ -36,7 +36,7 @@ export const usePreferencesStore = create<PreferencesState & PreferencesActions>
       fpsSetting: null,
       resolutionSetting: null,
       aspectRatio: null,
-      force4k60fpsCrop: null,
+      force60fpsCrop: null,
       language: null,
       cameraId: null,
       cameraAuto: null,
@@ -48,7 +48,7 @@ export const usePreferencesStore = create<PreferencesState & PreferencesActions>
       setFpsSettingPref: (val) => set({ fpsSetting: val }),
       setResolutionSettingPref: (val) => set({ resolutionSetting: val }),
       setAspectRatioPref: (val) => set({ aspectRatio: val }),
-      setForce4k60fpsCropPref: (val) => set({ force4k60fpsCrop: val }),
+      setForce60fpsCropPref: (val) => set({ force60fpsCrop: val }),
       setLanguagePref: (val) => set({ language: val }),
       setCameraIdPref: (val) => set({ cameraId: val }),
       setCameraAutoPref: (val) => set({ cameraAuto: val }),

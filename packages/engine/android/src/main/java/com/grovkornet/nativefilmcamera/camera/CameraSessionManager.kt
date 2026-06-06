@@ -65,8 +65,9 @@ class CameraSessionManager(
     fun bindCameraUseCases(surfaceTexture: SurfaceTexture, captureCallback: android.hardware.camera2.CameraCaptureSession.CaptureCallback? = null) {
         val provider = cameraProvider ?: return
 
-        val targetAspectRatio = if (config.resolutionSetting == 0 && config.force4k60fpsCrop) {
-            AspectRatio.RATIO_16_9 // Force hardware to 16:9 for 4K to bypass 30fps lock on 4:3 sensors
+        val isHighRes = config.resolutionSetting <= 1
+        val targetAspectRatio = if (isHighRes && config.force60fpsCrop) {
+            AspectRatio.RATIO_16_9 // Force hardware to 16:9 for 4K and 1440p to bypass 30fps lock on 4:3 sensors
         } else {
             when (config.aspectRatio) {
                 1, 4 -> AspectRatio.RATIO_16_9 // 16:9 and 65:24 map to 16:9

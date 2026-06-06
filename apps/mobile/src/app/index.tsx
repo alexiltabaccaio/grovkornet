@@ -63,8 +63,8 @@ export function App() {
     if (prefs.aspectRatio !== null) {
       bodyStore.aspectRatio.value = prefs.aspectRatio;
     }
-    if (prefs.force4k60fpsCrop !== null) {
-      bodyStore.force4k60fpsCrop.value = prefs.force4k60fpsCrop;
+    if (prefs.force60fpsCrop !== null) {
+      bodyStore.force60fpsCrop.value = prefs.force60fpsCrop;
     }
     if (prefs.previewQuality !== null) {
       bodyStore.previewQuality.value = prefs.previewQuality;

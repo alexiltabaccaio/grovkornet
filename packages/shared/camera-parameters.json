@@ -1154,19 +1154,19 @@
       }
     },
     {
-      "name": "force4k60fpsCrop",
+      "name": "force60fpsCrop",
       "category": "hardware",
       "kotlin": {
         "type": "Boolean",
         "default": "true",
-        "propHandler": "if (view.config.force4k60fpsCrop != value) {\n          view.updateBoth { force4k60fpsCrop = value }\n        }"
+        "propHandler": "if (view.config.force60fpsCrop != value) {\n          view.updateBoth { force60fpsCrop = value }\n        }"
       },
       "ts": {
         "type": "boolean"
       },
       "zustand": {
         "store": "body",
-        "default": "DEFAULT_FORCE_4K_60FPS_CROP",
+        "default": "DEFAULT_FORCE_60FPS_CROP",
         "type": "number"
       }
     },

@@ -32,7 +32,7 @@ export const Viewfinder = React.memo(({ cameraKey }: ViewfinderProps) => {
     resolutionSetting,
     fpsSetting,
     previewQuality,
-    force4k60fpsCrop,
+    force60fpsCrop,
     zoom,
   } = useBodyStore.getState();
 
@@ -89,8 +89,8 @@ export const Viewfinder = React.memo(({ cameraKey }: ViewfinderProps) => {
 
 
 
-  const resolvedForce4k60fpsCrop = useDerivedValue(() => {
-    return force4k60fpsCrop.value === 1;
+  const resolvedForce60fpsCrop = useDerivedValue(() => {
+    return force60fpsCrop.value === 1;
   });
 
   const startZoom = useSharedValue(1.0);
@@ -130,6 +130,15 @@ export const Viewfinder = React.memo(({ cameraKey }: ViewfinderProps) => {
 
   const effectiveFps = useDerivedValue(() => {
     let fps = fpsSetting.value;
+    
+    // If we are at high resolution (4K or 1440p) and the 60 FPS crop is disabled,
+    // limit the target FPS to 30 (hardware limit) to allow the full uncropped frame.
+    const isHighRes = resolutionSetting.value <= 1;
+    const isCropDisabled = force60fpsCrop.value === 0;
+    if (isHighRes && isCropDisabled) {
+      fps = Math.min(fps, 30);
+    }
+
     if (thermalState === 'warning') {
       fps = Math.min(fps, 30);
     } else if (thermalState === 'critical') {
@@ -157,7 +166,7 @@ export const Viewfinder = React.memo(({ cameraKey }: ViewfinderProps) => {
       torchStrength: resolvedTorchStrength.value,
       resolutionSetting: resolutionSetting.value,
       previewQuality: previewQuality.value,
-      force4k60fpsCrop: resolvedForce4k60fpsCrop.value,
+      force60fpsCrop: resolvedForce60fpsCrop.value,
       isSelfieCamera: isSelfieCamera.value,
       zoom: zoom.value,
       // @@GEN_ANIMATED_PROPS_END@@
@@ -177,11 +186,11 @@ export const Viewfinder = React.memo(({ cameraKey }: ViewfinderProps) => {
         cameraId={cameraAuto ? undefined : cameraId}
         secureViewEnabled={isCameraSecure}
         // @@GEN_PROPS_END@@
-            onCapabilitiesUpdate={capabilitiesHandler}
-            onDebugUpdate={debugHandler}
-            onExposureUpdate={exposureHandler}
-            onPhotoCaptured={photoHandler}
-            onTorchStateChanged={torchStateHandler}
+          onCapabilitiesUpdate={capabilitiesHandler}
+          onDebugUpdate={debugHandler}
+          onExposureUpdate={exposureHandler}
+          onPhotoCaptured={photoHandler}
+          onTorchStateChanged={torchStateHandler}
           />
         </Animated.View>
       </GestureDetector>

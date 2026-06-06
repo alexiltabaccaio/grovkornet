@@ -26,7 +26,7 @@ describe('Preset and Preferences MMKV Persistence Integration', () => {
       fpsSetting: null,
       resolutionSetting: null,
       aspectRatio: null,
-      force4k60fpsCrop: null,
+      force60fpsCrop: null,
       language: null,
       cameraId: null,
       cameraAuto: null,

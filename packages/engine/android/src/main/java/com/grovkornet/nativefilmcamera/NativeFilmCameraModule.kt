@@ -180,10 +180,10 @@ class NativeFilmCameraModule : Module() {
               }
       }
 
-      Prop("force4k60fpsCrop") { view: NativeFilmCameraView, value: Boolean? ->
+      Prop("force60fpsCrop") { view: NativeFilmCameraView, value: Boolean? ->
         value?.let { value ->
-                if (view.config.force4k60fpsCrop != value) {
-                          view.updateBoth { force4k60fpsCrop = value }
+                if (view.config.force60fpsCrop != value) {
+                          view.updateBoth { force60fpsCrop = value }
                         }
               }
       }

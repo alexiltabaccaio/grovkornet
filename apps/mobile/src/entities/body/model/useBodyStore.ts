@@ -14,7 +14,7 @@ import {
   DEFAULT_TORCH_STRENGTH,
   DEFAULT_RESOLUTION_SETTING,
   DEFAULT_PREVIEW_QUALITY,
-  DEFAULT_FORCE_4K_60FPS_CROP,
+  DEFAULT_FORCE_60FPS_CROP,
   DEFAULT_ZOOM,
 } from '@grovkornet/shared';
 
@@ -35,7 +35,7 @@ export const useBodyStore = create<BodyStore>((set, get) => ({
   torchStrength: makeMutable(DEFAULT_TORCH_STRENGTH),
   resolutionSetting: makeMutable(DEFAULT_RESOLUTION_SETTING),
   previewQuality: makeMutable(DEFAULT_PREVIEW_QUALITY),
-  force4k60fpsCrop: makeMutable(DEFAULT_FORCE_4K_60FPS_CROP),
+  force60fpsCrop: makeMutable(DEFAULT_FORCE_60FPS_CROP),
   zoom: makeMutable(DEFAULT_ZOOM),
   // @@GEN_STATE_END@@
   capabilities: {
@@ -124,8 +124,8 @@ export const useBodyStore = create<BodyStore>((set, get) => ({
   setPreviewQuality: (value) => {
     get().previewQuality.value = value;
   },
-  setForce4k60fpsCrop: (value) => {
-    get().force4k60fpsCrop.value = value;
+  setForce60fpsCrop: (value) => {
+    get().force60fpsCrop.value = value;
   },
   setZoom: (value) => {
     get().zoom.value = value;

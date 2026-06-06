@@ -574,7 +574,7 @@ function generateViewfinderProps(parameters) {
     cameraId: 'cameraAuto ? undefined : cameraId',
     autoFocus: 'focusAuto as unknown as SharedValue<boolean | undefined>',
     torchState: 'torchState as unknown as SharedValue<number | undefined>',
-    force4k60fpsCrop: 'resolvedForce4k60fpsCrop as unknown as SharedValue<boolean | undefined>',
+    force60fpsCrop: 'resolvedForce60fpsCrop as unknown as SharedValue<boolean | undefined>',
     secureViewEnabled: 'isCameraSecure',
     panelY: 'panelY as unknown as SharedValue<number | undefined>'
   };

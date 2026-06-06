@@ -7,7 +7,7 @@ describe('usePreferencesStore', () => {
       fpsSetting: null,
       resolutionSetting: null,
       aspectRatio: null,
-      force4k60fpsCrop: null,
+      force60fpsCrop: null,
       language: null,
       cameraId: null,
       cameraAuto: null,
@@ -22,7 +22,7 @@ describe('usePreferencesStore', () => {
     expect(state.fpsSetting).toBeNull();
     expect(state.resolutionSetting).toBeNull();
     expect(state.aspectRatio).toBeNull();
-    expect(state.force4k60fpsCrop).toBeNull();
+    expect(state.force60fpsCrop).toBeNull();
     expect(state.language).toBeNull();
     expect(state.cameraId).toBeNull();
     expect(state.cameraAuto).toBeNull();
@@ -46,9 +46,9 @@ describe('usePreferencesStore', () => {
     expect(usePreferencesStore.getState().aspectRatio).toBe(2);
   });
 
-  it('updates force4k60fpsCrop correctly', () => {
-    usePreferencesStore.getState().setForce4k60fpsCropPref(1);
-    expect(usePreferencesStore.getState().force4k60fpsCrop).toBe(1);
+  it('updates force60fpsCrop correctly', () => {
+    usePreferencesStore.getState().setForce60fpsCropPref(1);
+    expect(usePreferencesStore.getState().force60fpsCrop).toBe(1);
   });
 
   it('updates language correctly', () => {
