@@ -605,7 +605,7 @@
       "arrayIndex": 30,
       "kotlin": {
         "type": "Float",
-        "default": "45.0f"
+        "default": "40.0f"
       },
       "ts": {
         "type": "number"
@@ -624,7 +624,7 @@
       "arrayIndex": 31,
       "kotlin": {
         "type": "Float",
-        "default": "80.0f"
+        "default": "70.0f"
       },
       "ts": {
         "type": "number"
@@ -643,7 +643,7 @@
       "arrayIndex": 32,
       "kotlin": {
         "type": "Float",
-        "default": "125.0f"
+        "default": "110.0f"
       },
       "ts": {
         "type": "number"

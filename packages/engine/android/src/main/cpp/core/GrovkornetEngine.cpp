@@ -223,7 +223,7 @@ bool GrovkornetEngine::init(AAssetManager* assetManager) {
     triggerLutUpdate(1.0f, 1.0f, 0.0f, 5000.0f, 0.0f,
                      50.0f, 50.0f, 50.0f, 50.0f,
                      50.0f, 50.0f, 50.0f, 50.0f,
-                     350.0f, 45.0f, 80.0f, 125.0f,
+                     350.0f, 40.0f, 70.0f, 110.0f,
                      170.0f, 230.0f, 280.0f, 315.0f,
                      0.0f, 1.0f, 0.5f,
                      1.0f, 1.0f, 1.0f, 1.0f,

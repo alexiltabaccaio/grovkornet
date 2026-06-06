@@ -433,9 +433,9 @@ void LutGenerator::lutGenerationLoop() {
     float huePurple = 0.0f;
     float hueMagenta = 0.0f;
     float boundMagentaRed = 350.0f;
-    float boundRedOrange = 45.0f;
-    float boundOrangeYellow = 80.0f;
-    float boundYellowGreen = 125.0f;
+    float boundRedOrange = 40.0f;
+    float boundOrangeYellow = 70.0f;
+    float boundYellowGreen = 110.0f;
     float boundGreenCyan = 170.0f;
     float boundCyanBlue = 230.0f;
     float boundBluePurple = 280.0f;

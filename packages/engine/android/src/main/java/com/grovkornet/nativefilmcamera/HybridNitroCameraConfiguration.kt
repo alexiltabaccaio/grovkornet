@@ -197,7 +197,7 @@ class HybridNitroCameraConfiguration : HybridNitroCameraConfigurationSpec() {
         }
 
     override var boundRedOrange: Double
-        get() = NativeFilmCameraView.activeInstance?.config?.boundRedOrange?.toDouble() ?: 45.0
+        get() = NativeFilmCameraView.activeInstance?.config?.boundRedOrange?.toDouble() ?: 40.0
         set(value) {
             NativeFilmCameraView.activeInstance?.updateEffect {
                 boundRedOrange = value.toFloat()
@@ -205,7 +205,7 @@ class HybridNitroCameraConfiguration : HybridNitroCameraConfigurationSpec() {
         }
 
     override var boundOrangeYellow: Double
-        get() = NativeFilmCameraView.activeInstance?.config?.boundOrangeYellow?.toDouble() ?: 80.0
+        get() = NativeFilmCameraView.activeInstance?.config?.boundOrangeYellow?.toDouble() ?: 70.0
         set(value) {
             NativeFilmCameraView.activeInstance?.updateEffect {
                 boundOrangeYellow = value.toFloat()
@@ -213,7 +213,7 @@ class HybridNitroCameraConfiguration : HybridNitroCameraConfigurationSpec() {
         }
 
     override var boundYellowGreen: Double
-        get() = NativeFilmCameraView.activeInstance?.config?.boundYellowGreen?.toDouble() ?: 125.0
+        get() = NativeFilmCameraView.activeInstance?.config?.boundYellowGreen?.toDouble() ?: 110.0
         set(value) {
             NativeFilmCameraView.activeInstance?.updateEffect {
                 boundYellowGreen = value.toFloat()

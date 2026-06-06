@@ -60,9 +60,9 @@ private:
     float currentSatPurple = 50.0f;
     float currentSatMagenta = 50.0f;
     float currentBoundMagentaRed = 350.0f;
-    float currentBoundRedOrange = 45.0f;
-    float currentBoundOrangeYellow = 80.0f;
-    float currentBoundYellowGreen = 125.0f;
+    float currentBoundRedOrange = 40.0f;
+    float currentBoundOrangeYellow = 70.0f;
+    float currentBoundYellowGreen = 110.0f;
     float currentBoundGreenCyan = 170.0f;
     float currentBoundCyanBlue = 230.0f;
     float currentBoundBluePurple = 280.0f;
