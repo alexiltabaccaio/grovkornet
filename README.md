@@ -30,8 +30,8 @@ The interface is organized into four main physical sections, designed for run-an
 
 1.  **⚙️ SYSTEM**: Technical settings, debug overlays, and presets profiles.
 2.  **👁️ LENS**: Physical glass settings (Camera selection, Focus).
-3.  **📷 BODY**: Camera mechanics, capture setup, and ISP signal processing (ISO, Shutter Speed, Torch, Noise Reduction, Sharpening, Aspect Ratio, Resolution, FPS).
-4.  **🎞️ FILM**: Chemical development, grain texture, and creative print artifacts (Temperature, Tint, Saturation, Contrast, Grain, Chromatic Aberration, Bloom, Vignette, Chroma Shift, Tape Jitter, Scanlines, Pixelation).
+3.  **📷 BODY**: Camera mechanics, capture setup, and ISP signal processing (EV, ISO, Shutter Speed, Torch, Noise Reduction, Sharpening, Aspect Ratio, Resolution, FPS).
+4.  **🎞️ FILM**: Chemical development, grain texture, and creative print artifacts (Temperature, Tint, Saturation, Contrast, Black Level, Highlights, Grain, Scanlines, Pixelation, Chromatic Aberration, Bloom, Vignette, Chroma Shift, Tape Jitter).
 
 ## 🚦 Rendering Pipeline (Uber Shader)
 

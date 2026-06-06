@@ -40,9 +40,9 @@ Per garantire il massimo realismo, l'Uber Shader elabora l'immagine applicando i
 ### 3. 📷 BODY (Corpo Macchina)
 > *La meccanica della fotocamera: cattura elettronica, illuminazione ed hardware integrato.*
 * **Module: Esposizione (Exposure)**
+  * `[Parameter]` **EV** (Compensazione esposizione generale)
   * `[Parameter]` **ISO** (Sensibilità alla luce)
   * `[Parameter]` **Shutter Speed** (Tempi di posa per motion blur)
-  * `[Parameter]` **EV** (Compensazione esposizione generale)
 * **Module: Illuminazione (Lighting)**
   * `[Parameter]` **Torcia** (On / Off)
     * ↳ `[SubParameter]` *Intensità Torcia (Dimmer)*
@@ -57,22 +57,25 @@ Per garantire il massimo realismo, l'Uber Shader elabora l'immagine applicando i
 
 ### 4. 🎞️ FILM (Pellicola)
 > *La chimica e il carattere visivo del supporto (il rullino scelto).*
-* **Module: Sviluppo (Development / Color)**
+* **Module: Colore (Color)**
   * `[Parameter]` **Temperatura** (Bilanciamento colore)
   * `[Parameter]` **Tinta** (Tinta verde/magenta)
   * `[Parameter]` **Saturazione** (Generale Master)
     * ↳ `[SubParameter]` *Saturazione Selettiva (Range per colore specifico)*
+* **Module: Tono (Tone)**
   * `[Parameter]` **Contrasto**
+  * `[Parameter]` **Ombre (Black Level)**
+  * `[Parameter]` **Luci (Highlights)**
 * **Module: Texture (Materiale visibile)**
   * `[Parameter]` **Grana** (Amount / Intensità)
     * ↳ `[SubParameter]` *Dimensione Grana, Crominanza, Rugosità, Velocità*
+  * `[Parameter]` **Scanlines**
+  * `[Parameter]` **Pixelazione** (Pixelation)
 * **Module: Artefatti (Artifacts)**
   * `[Parameter]` **Aberrazione Cromatica**
-    * ↳ `[SubParameter]` *Inversione Direzione (STD, HOR, RAD, INV)*
+    * ↳ `[SubParameter]` *Inversione (INV)*
   * `[Parameter]` **Bloom** (Diffusione luci)
   * `[Parameter]` **Vignettatura** (Vignette)
   * `[Parameter]` **Scostamento** (Chroma Shift)
-    * ↳ `[SubParameter]` *Direzione e Inversione Scostamento*
+    * ↳ `[SubParameter]` *Direzione (HOR, VER) e Inversione (INV)*
   * `[Parameter]` **Jitter** (Tape Jitter)
-  * `[Parameter]` **Scanlines**
-  * `[Parameter]` **Pixelazione** (Pixelation)

@@ -7,7 +7,7 @@ interface ExposureModuleProps {
   handlePressWithDouble: (param: ParameterType, action: () => void) => void;
 }
 
-const EXPOSURE_PARAMETERS: ParameterType[] = ['iso', 'shutter_speed', 'ev'];
+const EXPOSURE_PARAMETERS: ParameterType[] = ['ev', 'iso', 'shutter_speed'];
 
 export const ExposureModule = ({ handlePressWithDouble }: ExposureModuleProps) => {
   return (

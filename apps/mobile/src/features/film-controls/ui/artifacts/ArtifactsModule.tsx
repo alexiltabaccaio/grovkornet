@@ -12,8 +12,6 @@ const ARTIFACTS_PARAMETERS: ParameterType[] = [
   'vignette',
   'chroma_shift',
   'tape_jitter',
-  'scanlines',
-  'pixelation',
 ];
 
 export const ArtifactsModule = React.memo(({ handlePressWithDouble }: ArtifactsModuleProps) => {
