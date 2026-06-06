@@ -27,6 +27,7 @@ const SLIDER_PARAMETERS = [
   'zoom',
   'chromatic_aberration',
   'saturation',
+  'hue',
   'vignette',
   'chroma_shift',
   'tape_jitter',

@@ -258,7 +258,70 @@ export const useFilmWorklets = () => {
       config.bloomEnabled = safeValue > 0;
     };
 
+    const updateHue = (value: number) => {
+      'worklet';
+      updateSharedValue(film.hue, value);
+      config.hue = value;
+    };
+
+    const updateHueRed = (value: number) => {
+      'worklet';
+      updateSharedValue(film.hueRed, value);
+      config.hueRed = value;
+    };
+
+    const updateHueOrange = (value: number) => {
+      'worklet';
+      updateSharedValue(film.hueOrange, value);
+      config.hueOrange = value;
+    };
+
+    const updateHueYellow = (value: number) => {
+      'worklet';
+      updateSharedValue(film.hueYellow, value);
+      config.hueYellow = value;
+    };
+
+    const updateHueGreen = (value: number) => {
+      'worklet';
+      updateSharedValue(film.hueGreen, value);
+      config.hueGreen = value;
+    };
+
+    const updateHueCyan = (value: number) => {
+      'worklet';
+      updateSharedValue(film.hueCyan, value);
+      config.hueCyan = value;
+    };
+
+    const updateHueBlue = (value: number) => {
+      'worklet';
+      updateSharedValue(film.hueBlue, value);
+      config.hueBlue = value;
+    };
+
+    const updateHuePurple = (value: number) => {
+      'worklet';
+      updateSharedValue(film.huePurple, value);
+      config.huePurple = value;
+    };
+
+    const updateHueMagenta = (value: number) => {
+      'worklet';
+      updateSharedValue(film.hueMagenta, value);
+      config.hueMagenta = value;
+    };
+
     return {
+      updateHue,
+      updateHueRed,
+      updateHueOrange,
+      updateHueYellow,
+      updateHueGreen,
+      updateHueCyan,
+      updateHueBlue,
+      updateHuePurple,
+      updateHueMagenta,
       updateGrain,
       updateGrainChroma,
       updateGrainSize,

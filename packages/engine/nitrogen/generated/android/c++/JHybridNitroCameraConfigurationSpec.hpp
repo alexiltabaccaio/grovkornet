@@ -142,6 +142,24 @@ namespace margelo::nitro::grovkornet {
     void setScanlines(double scanlines) override;
     bool getChromaShiftInvert() override;
     void setChromaShiftInvert(bool chromaShiftInvert) override;
+    double getHue() override;
+    void setHue(double hue) override;
+    double getHueRed() override;
+    void setHueRed(double hueRed) override;
+    double getHueOrange() override;
+    void setHueOrange(double hueOrange) override;
+    double getHueYellow() override;
+    void setHueYellow(double hueYellow) override;
+    double getHueGreen() override;
+    void setHueGreen(double hueGreen) override;
+    double getHueCyan() override;
+    void setHueCyan(double hueCyan) override;
+    double getHueBlue() override;
+    void setHueBlue(double hueBlue) override;
+    double getHuePurple() override;
+    void setHuePurple(double huePurple) override;
+    double getHueMagenta() override;
+    void setHueMagenta(double hueMagenta) override;
 
   public:
     // Methods

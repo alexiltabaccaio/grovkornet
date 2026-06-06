@@ -7,7 +7,7 @@ interface ColorModuleProps {
   handlePressWithDouble: (param: ParameterType, action: () => void) => void;
 }
 
-const COLOR_PARAMETERS: ParameterType[] = ['temperature', 'tint', 'saturation'];
+const COLOR_PARAMETERS: ParameterType[] = ['temperature', 'tint', 'saturation', 'hue'];
 
 export const ColorModule = React.memo(({ handlePressWithDouble }: ColorModuleProps) => {
   return (

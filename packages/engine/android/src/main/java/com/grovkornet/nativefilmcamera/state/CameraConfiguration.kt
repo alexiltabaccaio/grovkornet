@@ -52,6 +52,15 @@ data class CameraConfiguration(
     var tapeJitter: Float = 0.0f,
     var scanlines: Float = 0.0f,
     var chromaShiftInvert: Boolean = false,
+    var hue: Float = 0.0f,
+    var hueRed: Float = 0.0f,
+    var hueOrange: Float = 0.0f,
+    var hueYellow: Float = 0.0f,
+    var hueGreen: Float = 0.0f,
+    var hueCyan: Float = 0.0f,
+    var hueBlue: Float = 0.0f,
+    var huePurple: Float = 0.0f,
+    var hueMagenta: Float = 0.0f,
 
     // Hardware Props
     var ev: Float = 0.0f,
@@ -100,7 +109,7 @@ fun CameraConfiguration.toRenderParamsArray(
     targetFpsOverride: Float = targetFps.toFloat(),
     invertYShift: Boolean = false
 ): FloatArray = // @@GEN_ARRAY_START@@
-FloatArray(50).apply {
+FloatArray(59).apply {
     this[0 ] = saturation
     this[1 ] = contrast
     this[2 ] = if (grainEnabled) grainIntensity else 0f
@@ -151,6 +160,15 @@ FloatArray(50).apply {
     this[47] = tapeJitter
     this[48] = scanlines
     this[49] = if (chromaShiftInvert) 1.0f else 0.0f
+    this[50] = hue
+    this[51] = hueRed
+    this[52] = hueOrange
+    this[53] = hueYellow
+    this[54] = hueGreen
+    this[55] = hueCyan
+    this[56] = hueBlue
+    this[57] = huePurple
+    this[58] = hueMagenta
 }
 // @@GEN_ARRAY_END@@
 
@@ -367,6 +385,33 @@ fun CameraConfiguration.loadFromMap(payload: Map<String, Any>) {
     }
     payload["chromaShiftInvert"]?.let { rawValue ->
         (rawValue as? Boolean)?.let { chromaShiftInvert = it }
+    }
+    payload["hue"]?.let { rawValue ->
+        (rawValue as? Number)?.toFloat()?.let { hue = it }
+    }
+    payload["hueRed"]?.let { rawValue ->
+        (rawValue as? Number)?.toFloat()?.let { hueRed = it }
+    }
+    payload["hueOrange"]?.let { rawValue ->
+        (rawValue as? Number)?.toFloat()?.let { hueOrange = it }
+    }
+    payload["hueYellow"]?.let { rawValue ->
+        (rawValue as? Number)?.toFloat()?.let { hueYellow = it }
+    }
+    payload["hueGreen"]?.let { rawValue ->
+        (rawValue as? Number)?.toFloat()?.let { hueGreen = it }
+    }
+    payload["hueCyan"]?.let { rawValue ->
+        (rawValue as? Number)?.toFloat()?.let { hueCyan = it }
+    }
+    payload["hueBlue"]?.let { rawValue ->
+        (rawValue as? Number)?.toFloat()?.let { hueBlue = it }
+    }
+    payload["huePurple"]?.let { rawValue ->
+        (rawValue as? Number)?.toFloat()?.let { huePurple = it }
+    }
+    payload["hueMagenta"]?.let { rawValue ->
+        (rawValue as? Number)?.toFloat()?.let { hueMagenta = it }
     }
     // @@GEN_MAP_LOADER_END@@
 }

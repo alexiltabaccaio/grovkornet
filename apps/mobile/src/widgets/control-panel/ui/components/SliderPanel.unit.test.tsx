@@ -19,6 +19,11 @@ describe('SliderPanel', () => {
     expect(toJSON()).toBeDefined();
   });
 
+  it('renders correctly for hue parameter', () => {
+    const { toJSON } = render(<SliderPanel parameter="hue" />);
+    expect(toJSON()).toBeDefined();
+  });
+
   it('returns null for an invalid parameter', () => {
     // Cast to any to test fallback null path
     const { toJSON } = render(<SliderPanel parameter={"invalid" as any} />);

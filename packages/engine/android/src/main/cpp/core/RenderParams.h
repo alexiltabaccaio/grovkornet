@@ -52,6 +52,15 @@ struct RenderParams {
     float tapeJitter;
     float scanlines;
     float chromaShiftInvert;
+    float hue;
+    float hueRed;
+    float hueOrange;
+    float hueYellow;
+    float hueGreen;
+    float hueCyan;
+    float hueBlue;
+    float huePurple;
+    float hueMagenta;
     // @@GEN_STRUCT_END@@
 };
 

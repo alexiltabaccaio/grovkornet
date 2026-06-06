@@ -56,7 +56,10 @@ void LutGenerator::triggerLutUpdate(float saturation, float contrast, float ev,
                                     float boundMagentaRed, float boundRedOrange, float boundOrangeYellow, float boundYellowGreen,
                                     float boundGreenCyan, float boundCyanBlue, float boundBluePurple, float boundPurpleMagenta,
                                     float blackLevel, float highlights, float pivot,
-                                    float contrastAuto, float blackLevelAuto, float highlightsAuto, float pivotAuto) {
+                                    float contrastAuto, float blackLevelAuto, float highlightsAuto, float pivotAuto,
+                                    float hue,
+                                    float hueRed, float hueOrange, float hueYellow, float hueGreen,
+                                    float hueCyan, float hueBlue, float huePurple, float hueMagenta) {
   std::unique_lock<std::mutex> lock(lutMutex);
 
   // Check if parameters actually changed
@@ -81,7 +84,16 @@ void LutGenerator::triggerLutUpdate(float saturation, float contrast, float ev,
       contrastAuto == currentContrastAuto &&
       blackLevelAuto == currentBlackLevelAuto &&
       highlightsAuto == currentHighlightsAuto &&
-      pivotAuto == currentPivotAuto) {
+      pivotAuto == currentPivotAuto &&
+      hue == currentHue &&
+      hueRed == currentHueRed &&
+      hueOrange == currentHueOrange &&
+      hueYellow == currentHueYellow &&
+      hueGreen == currentHueGreen &&
+      hueCyan == currentHueCyan &&
+      hueBlue == currentHueBlue &&
+      huePurple == currentHuePurple &&
+      hueMagenta == currentHueMagenta) {
     return;
   }
 
@@ -113,6 +125,15 @@ void LutGenerator::triggerLutUpdate(float saturation, float contrast, float ev,
   currentBlackLevelAuto = blackLevelAuto;
   currentHighlightsAuto = highlightsAuto;
   currentPivotAuto = pivotAuto;
+  currentHue = hue;
+  currentHueRed = hueRed;
+  currentHueOrange = hueOrange;
+  currentHueYellow = hueYellow;
+  currentHueGreen = hueGreen;
+  currentHueCyan = hueCyan;
+  currentHueBlue = hueBlue;
+  currentHuePurple = huePurple;
+  currentHueMagenta = hueMagenta;
 
   lutParametersDirty = true;
   lutCv.notify_one();
@@ -156,6 +177,15 @@ void LutGenerator::applyLutTextureUpdate(filament::Engine &engine,
       activeBoundCyanBlue = currentBoundCyanBlue;
       activeBoundBluePurple = currentBoundBluePurple;
       activeBoundPurpleMagenta = currentBoundPurpleMagenta;
+      activeHue = currentHue;
+      activeHueRed = currentHueRed;
+      activeHueOrange = currentHueOrange;
+      activeHueYellow = currentHueYellow;
+      activeHueGreen = currentHueGreen;
+      activeHueCyan = currentHueCyan;
+      activeHueBlue = currentHueBlue;
+      activeHuePurple = currentHuePurple;
+      activeHueMagenta = currentHueMagenta;
     }
   }
 
@@ -190,11 +220,90 @@ struct ColorBand {
   float val;
 };
 
+inline float lmsToOklabL(float l_lms, float m_lms, float s_lms) {
+  return 0.2104542553f * l_lms + 0.7936177850f * m_lms - 0.0040720468f * s_lms;
+}
+
+inline void oklabToLms(float L, float a, float b, float& l, float& m, float& s) {
+  float l_ = L + 0.3963377774f * a + 0.2158037573f * b;
+  float m_ = L - 0.1055613458f * a - 0.0638541728f * b;
+  float s_ = L - 0.0894841775f * a - 1.2914855480f * b;
+
+  l = l_ * l_ * l_;
+  m = m_ * m_ * m_;
+  s = s_ * s_ * s_;
+}
+
+inline void lmsToRgb(float l, float m, float s, float& r, float& g, float& b) {
+  r =  4.0767416621f * l - 3.3077115913f * m + 0.2309699292f * s;
+  g = -1.2684380046f * l + 2.6097574011f * m - 0.3413193965f * s;
+  b = -0.0041960863f * l - 0.7034186147f * m + 1.7076147010f * s;
+}
+
 inline float unwrap_angle(float angle, float ref) {
   float val = angle;
   while (val < ref) val += 360.0f;
   while (val >= ref + 360.0f) val -= 360.0f;
   return val;
+}
+
+inline float calculateSelectiveHueShift(float h, const ColorBand* bands) {
+  int activeBand = -1;
+  for (int i = 0; i < 8; ++i) {
+    bool inside = false;
+    if (bands[i].start > bands[i].end) {
+      if (h >= bands[i].start || h <= bands[i].end) inside = true;
+    } else {
+      if (h >= bands[i].start && h <= bands[i].end) inside = true;
+    }
+    if (inside) {
+      activeBand = i;
+      break;
+    }
+  }
+
+  if (activeBand == -1) return 0.0f;
+
+  int prevBand = (activeBand - 1 + 8) % 8;
+  int nextBand = (activeBand + 1) % 8;
+
+  float L = bands[activeBand].start;
+  float R = bands[activeBand].end;
+
+  float valPrev = bands[prevBand].val;
+  float valCurr = bands[activeBand].val;
+  float valNext = bands[nextBand].val;
+
+  float widthCurr = R - L;
+  if (widthCurr < 0.0f) widthCurr += 360.0f;
+
+  float widthPrev = L - bands[prevBand].start;
+  if (widthPrev < 0.0f) widthPrev += 360.0f;
+
+  float widthNext = bands[nextBand].end - R;
+  if (widthNext < 0.0f) widthNext += 360.0f;
+
+  const float MAX_RADIUS = 5.0f;
+  float radiusL = std::min(MAX_RADIUS, std::min(widthPrev * 0.5f, widthCurr * 0.5f));
+  float radiusR = std::min(MAX_RADIUS, std::min(widthCurr * 0.5f, widthNext * 0.5f));
+
+  float h_unwrapped_L = unwrap_angle(h, L - radiusL);
+  float dist_L = h_unwrapped_L - (L - radiusL);
+
+  float h_unwrapped_R = unwrap_angle(h, R - radiusR);
+  float dist_R = h_unwrapped_R - (R - radiusR);
+
+  if (dist_L >= 0.0f && dist_L < 2.0f * radiusL && radiusL > 0.001f) {
+    float t = dist_L / (2.0f * radiusL);
+    t = t * t * (3.0f - 2.0f * t); // Smoothstep
+    return (1.0f - t) * valPrev + t * valCurr;
+  } else if (dist_R >= 0.0f && dist_R < 2.0f * radiusR && radiusR > 0.001f) {
+    float t = dist_R / (2.0f * radiusR);
+    t = t * t * (3.0f - 2.0f * t); // Smoothstep
+    return (1.0f - t) * valCurr + t * valNext;
+  } else {
+    return valCurr;
+  }
 }
 
 const float INV_2_4 = 1.0f / 2.4f;
@@ -300,7 +409,7 @@ void LutGenerator::lutGenerationLoop() {
   // Linear equivalent of sRGB 0.5 (used as contrast midpoint)
   const float CONTRAST_MIDPOINT = std::pow((0.5f + 0.055f) / 1.055f, 2.4f);
 
-    while (true) {
+  while (true) {
     float saturation = 1.0f;
     float contrast = 1.0f;
     float ev = 0.0f;
@@ -314,6 +423,15 @@ void LutGenerator::lutGenerationLoop() {
     float satBlue = 50.0f;
     float satPurple = 50.0f;
     float satMagenta = 50.0f;
+    float hue = 0.0f;
+    float hueRed = 0.0f;
+    float hueOrange = 0.0f;
+    float hueYellow = 0.0f;
+    float hueGreen = 0.0f;
+    float hueCyan = 0.0f;
+    float hueBlue = 0.0f;
+    float huePurple = 0.0f;
+    float hueMagenta = 0.0f;
     float boundMagentaRed = 350.0f;
     float boundRedOrange = 45.0f;
     float boundOrangeYellow = 80.0f;
@@ -352,6 +470,15 @@ void LutGenerator::lutGenerationLoop() {
       satBlue = currentSatBlue;
       satPurple = currentSatPurple;
       satMagenta = currentSatMagenta;
+      hue = currentHue;
+      hueRed = currentHueRed;
+      hueOrange = currentHueOrange;
+      hueYellow = currentHueYellow;
+      hueGreen = currentHueGreen;
+      hueCyan = currentHueCyan;
+      hueBlue = currentHueBlue;
+      huePurple = currentHuePurple;
+      hueMagenta = currentHueMagenta;
       boundMagentaRed = currentBoundMagentaRed;
       boundRedOrange = currentBoundRedOrange;
       boundOrangeYellow = currentBoundOrangeYellow;
@@ -417,6 +544,17 @@ void LutGenerator::lutGenerationLoop() {
         {boundPurpleMagenta, boundMagentaRed, satMagenta / 50.0f} // 7: Magenta
     };
 
+    const ColorBand hueBands[8] = {
+        {boundMagentaRed, boundRedOrange, hueRed},     // 0: Red
+        {boundRedOrange, boundOrangeYellow, hueOrange},   // 1: Orange
+        {boundOrangeYellow, boundYellowGreen, hueYellow},  // 2: Yellow
+        {boundYellowGreen, boundGreenCyan, hueGreen},  // 3: Green
+        {boundGreenCyan, boundCyanBlue, hueCyan},   // 4: Cyan
+        {boundCyanBlue, boundBluePurple, hueBlue},   // 5: Blue
+        {boundBluePurple, boundPurpleMagenta, huePurple}, // 6: Purple
+        {boundPurpleMagenta, boundMagentaRed, hueMagenta} // 7: Magenta
+    };
+
     // Compute LUT on CPU
     int index = 0;
     for (int b = 0; b < LUT_SIZE; ++b) {
@@ -443,8 +581,11 @@ void LutGenerator::lutGenerationLoop() {
           float r_val = (float)r / (LUT_SIZE - 1);
           float lin_r = linearTable[r];
 
-          // 0. Selective Saturation (computed using OKLAB color space for
-          // perceptual stability)
+          float cur_r = lin_r;
+          float cur_g = lin_g;
+          float cur_b = lin_b;
+
+          // 0. Selective Saturation & Hue Rotation (computed using OKLAB color space)
           float cmax = std::max(r_val, std::max(g_val, b_val));
           float cmin = std::min(r_val, std::min(g_val, b_val));
           float delta = cmax - cmin;
@@ -463,18 +604,36 @@ void LutGenerator::lutGenerationLoop() {
             if (h >= 360.0f) h -= 360.0f;
 
             selectiveMult = calculateSelectiveSaturationMultiplier(h, bands);
+
+            float selHueShift = calculateSelectiveHueShift(h, hueBands);
+            float totalHueShift = hue + selHueShift;
+
+            if (std::abs(totalHueShift) > 0.01f) {
+              float h_new = h + totalHueShift;
+              float rad = std::sqrt(oklab_a * oklab_a + oklab_b * oklab_b);
+              oklab_a = rad * std::cos(h_new * M_PI / 180.0f);
+              oklab_b = rad * std::sin(h_new * M_PI / 180.0f);
+
+              float oklab_L = lmsToOklabL(l_lms, m_lms, s_lms);
+              oklabToLms(oklab_L, oklab_a, oklab_b, l_lms, m_lms, s_lms);
+              lmsToRgb(l_lms, m_lms, s_lms, cur_r, cur_g, cur_b);
+              
+              cur_r = std::max(0.0f, cur_r);
+              cur_g = std::max(0.0f, cur_g);
+              cur_b = std::max(0.0f, cur_b);
+            }
           }
 
-          // 1. Saturation (applied in linear space)
+          // 1. Saturation (applied in linear space on the potentially rotated colors)
           float effectiveSaturation = saturation * selectiveMult;
-          float lin_luminance = lin_r * 0.2126f + lum_bg;
+          float lin_luminance = cur_r * 0.2126f + cur_g * 0.7152f + cur_b * 0.0722f;
 
           float out_r =
-              lin_luminance + (lin_r - lin_luminance) * effectiveSaturation;
+              lin_luminance + (cur_r - lin_luminance) * effectiveSaturation;
           float out_g =
-              lin_luminance + (lin_g - lin_luminance) * effectiveSaturation;
+              lin_luminance + (cur_g - lin_luminance) * effectiveSaturation;
           float out_b =
-              lin_luminance + (lin_b - lin_luminance) * effectiveSaturation;
+              lin_luminance + (cur_b - lin_luminance) * effectiveSaturation;
 
           // 2. Apply EV and White Balance (linear space)
           out_r = out_r * evMultiplier * wb_r;

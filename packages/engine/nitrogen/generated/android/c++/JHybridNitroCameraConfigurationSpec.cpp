@@ -455,6 +455,87 @@ namespace margelo::nitro::grovkornet {
     static const auto method = _javaPart->javaClassStatic()->getMethod<void(jboolean /* chromaShiftInvert */)>("setChromaShiftInvert");
     method(_javaPart, chromaShiftInvert);
   }
+  double JHybridNitroCameraConfigurationSpec::getHue() {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<double()>("getHue");
+    auto __result = method(_javaPart);
+    return __result;
+  }
+  void JHybridNitroCameraConfigurationSpec::setHue(double hue) {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<void(double /* hue */)>("setHue");
+    method(_javaPart, hue);
+  }
+  double JHybridNitroCameraConfigurationSpec::getHueRed() {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<double()>("getHueRed");
+    auto __result = method(_javaPart);
+    return __result;
+  }
+  void JHybridNitroCameraConfigurationSpec::setHueRed(double hueRed) {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<void(double /* hueRed */)>("setHueRed");
+    method(_javaPart, hueRed);
+  }
+  double JHybridNitroCameraConfigurationSpec::getHueOrange() {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<double()>("getHueOrange");
+    auto __result = method(_javaPart);
+    return __result;
+  }
+  void JHybridNitroCameraConfigurationSpec::setHueOrange(double hueOrange) {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<void(double /* hueOrange */)>("setHueOrange");
+    method(_javaPart, hueOrange);
+  }
+  double JHybridNitroCameraConfigurationSpec::getHueYellow() {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<double()>("getHueYellow");
+    auto __result = method(_javaPart);
+    return __result;
+  }
+  void JHybridNitroCameraConfigurationSpec::setHueYellow(double hueYellow) {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<void(double /* hueYellow */)>("setHueYellow");
+    method(_javaPart, hueYellow);
+  }
+  double JHybridNitroCameraConfigurationSpec::getHueGreen() {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<double()>("getHueGreen");
+    auto __result = method(_javaPart);
+    return __result;
+  }
+  void JHybridNitroCameraConfigurationSpec::setHueGreen(double hueGreen) {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<void(double /* hueGreen */)>("setHueGreen");
+    method(_javaPart, hueGreen);
+  }
+  double JHybridNitroCameraConfigurationSpec::getHueCyan() {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<double()>("getHueCyan");
+    auto __result = method(_javaPart);
+    return __result;
+  }
+  void JHybridNitroCameraConfigurationSpec::setHueCyan(double hueCyan) {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<void(double /* hueCyan */)>("setHueCyan");
+    method(_javaPart, hueCyan);
+  }
+  double JHybridNitroCameraConfigurationSpec::getHueBlue() {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<double()>("getHueBlue");
+    auto __result = method(_javaPart);
+    return __result;
+  }
+  void JHybridNitroCameraConfigurationSpec::setHueBlue(double hueBlue) {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<void(double /* hueBlue */)>("setHueBlue");
+    method(_javaPart, hueBlue);
+  }
+  double JHybridNitroCameraConfigurationSpec::getHuePurple() {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<double()>("getHuePurple");
+    auto __result = method(_javaPart);
+    return __result;
+  }
+  void JHybridNitroCameraConfigurationSpec::setHuePurple(double huePurple) {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<void(double /* huePurple */)>("setHuePurple");
+    method(_javaPart, huePurple);
+  }
+  double JHybridNitroCameraConfigurationSpec::getHueMagenta() {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<double()>("getHueMagenta");
+    auto __result = method(_javaPart);
+    return __result;
+  }
+  void JHybridNitroCameraConfigurationSpec::setHueMagenta(double hueMagenta) {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<void(double /* hueMagenta */)>("setHueMagenta");
+    method(_javaPart, hueMagenta);
+  }
 
   // Methods
   

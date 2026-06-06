@@ -96,6 +96,14 @@ describe('SubPanels', () => {
     expect(toJSON()).toBeDefined();
   });
 
+  it('renders hue sub-panel when activeParameter is hue', () => {
+    act(() => {
+      useSystemStore.getState().setActiveParameter('hue');
+    });
+    const { toJSON } = render(<SubPanels translateY={mockTranslateY} />);
+    expect(toJSON()).toBeDefined();
+  });
+
   it('applies debugWrapper style when isDebugEnabled is true', () => {
     act(() => {
       useSystemStore.getState().setActiveParameter('saturation');

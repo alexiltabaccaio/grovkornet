@@ -13,7 +13,7 @@ TEST(GrovkornetEngineTest, BasicInitializationAndProperties) {
 }
 
 TEST(GrovkornetEngineTest, ParseRenderParams_mapsArrayCorrectly) {
-    float mockParams[50] = {
+    float mockParams[59] = {
         1.2f,  // 0: saturation
         0.9f,  // 1: contrast
         0.5f,  // 2: grainIntensity
@@ -63,7 +63,16 @@ TEST(GrovkornetEngineTest, ParseRenderParams_mapsArrayCorrectly) {
         1.0f,    // 46: pixelationFactor
         0.2f,    // 47: tapeJitter
         0.3f,    // 48: scanlines
-        1.0f     // 49: chromaShiftInvert
+        1.0f,    // 49: chromaShiftInvert
+        15.0f,   // 50: hue
+        20.0f,   // 51: hueRed
+        21.0f,   // 52: hueOrange
+        22.0f,   // 53: hueYellow
+        23.0f,   // 54: hueGreen
+        24.0f,   // 55: hueCyan
+        25.0f,   // 56: hueBlue
+        26.0f,   // 57: huePurple
+        27.0f    // 58: hueMagenta
     };
 
     RenderParams rp = parseRenderParams(mockParams);
@@ -110,4 +119,13 @@ TEST(GrovkornetEngineTest, ParseRenderParams_mapsArrayCorrectly) {
     EXPECT_FLOAT_EQ(rp.tapeJitter, 0.2f);
     EXPECT_FLOAT_EQ(rp.scanlines, 0.3f);
     EXPECT_FLOAT_EQ(rp.chromaShiftInvert, 1.0f);
+    EXPECT_FLOAT_EQ(rp.hue, 15.0f);
+    EXPECT_FLOAT_EQ(rp.hueRed, 20.0f);
+    EXPECT_FLOAT_EQ(rp.hueOrange, 21.0f);
+    EXPECT_FLOAT_EQ(rp.hueYellow, 22.0f);
+    EXPECT_FLOAT_EQ(rp.hueGreen, 23.0f);
+    EXPECT_FLOAT_EQ(rp.hueCyan, 24.0f);
+    EXPECT_FLOAT_EQ(rp.hueBlue, 25.0f);
+    EXPECT_FLOAT_EQ(rp.huePurple, 26.0f);
+    EXPECT_FLOAT_EQ(rp.hueMagenta, 27.0f);
 }

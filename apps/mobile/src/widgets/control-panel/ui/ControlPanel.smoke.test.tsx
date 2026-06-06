@@ -109,6 +109,7 @@ describe('ControlPanel Component Stability Test', () => {
   const mockFilmStoreValue = {
     grainIntensity: { value: 0.5 },
     saturation: { value: 1.0 },
+    hue: { value: 0.0 },
     contrast: { value: 1.0 },
     chromaticAberration: { value: 0 },
     resetEffect: jest.fn(),

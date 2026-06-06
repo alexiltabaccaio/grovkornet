@@ -56,6 +56,15 @@ interface FilmState {
   tapeJitter: SharedValue<number>;
   scanlines: SharedValue<number>;
   chromaShiftInvert: SharedValue<boolean>;
+  hue: SharedValue<number>;
+  hueRed: SharedValue<number>;
+  hueOrange: SharedValue<number>;
+  hueYellow: SharedValue<number>;
+  hueGreen: SharedValue<number>;
+  hueCyan: SharedValue<number>;
+  hueBlue: SharedValue<number>;
+  huePurple: SharedValue<number>;
+  hueMagenta: SharedValue<number>;
   // @@GEN_STATE_END@@
   capabilities?: FilmCapabilities;
 }
@@ -111,6 +120,15 @@ interface FilmActions {
   setTapeJitter: (value: number) => void;
   setScanlines: (value: number) => void;
   setChromaShiftInvert: (value: boolean) => void;
+  setHue: (value: number) => void;
+  setHueRed: (value: number) => void;
+  setHueOrange: (value: number) => void;
+  setHueYellow: (value: number) => void;
+  setHueGreen: (value: number) => void;
+  setHueCyan: (value: number) => void;
+  setHueBlue: (value: number) => void;
+  setHuePurple: (value: number) => void;
+  setHueMagenta: (value: number) => void;
   // @@GEN_ACTIONS_END@@
   setCapabilities?: (capabilities: FilmCapabilities) => void;
   resetEffect: (effect: string) => void;

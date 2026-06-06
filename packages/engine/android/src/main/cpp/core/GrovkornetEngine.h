@@ -83,7 +83,10 @@ public:
                           float boundMagentaRed, float boundRedOrange, float boundOrangeYellow, float boundYellowGreen,
                           float boundGreenCyan, float boundCyanBlue, float boundBluePurple, float boundPurpleMagenta,
                           float blackLevel, float highlights, float pivot,
-                          float contrastAuto, float blackLevelAuto, float highlightsAuto, float pivotAuto);
+                          float contrastAuto, float blackLevelAuto, float highlightsAuto, float pivotAuto,
+                          float hue,
+                          float hueRed, float hueOrange, float hueYellow, float hueGreen,
+                          float hueCyan, float hueBlue, float huePurple, float hueMagenta);
     void applyLutTextureUpdate();
     void applyShaderParameters(const RenderParams& params, filament::MaterialInstance* inputMaterial, bool waitForLut);
     

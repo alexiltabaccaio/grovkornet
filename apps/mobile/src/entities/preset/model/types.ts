@@ -52,6 +52,15 @@ export interface FilmPresetPayload {
   tapeJitter: number;
   scanlines: number;
   chromaShiftInvert: boolean;
+  hue: number;
+  hueRed: number;
+  hueOrange: number;
+  hueYellow: number;
+  hueGreen: number;
+  hueCyan: number;
+  hueBlue: number;
+  huePurple: number;
+  hueMagenta: number;
   // @@GEN_FILM_PAYLOAD_END@@
 }
 

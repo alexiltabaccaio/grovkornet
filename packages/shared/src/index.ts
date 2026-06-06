@@ -18,6 +18,8 @@ export const DEFAULT_SHUTTER_SPEED = 60; // 1/60s
 export const DEFAULT_TEMPERATURE = 5000; // 5000K daylight
 export const DEFAULT_TINT = 0; // -100 to 100
 export const DEFAULT_SELECTIVE_SATURATION = 50.0;
+export const DEFAULT_HUE = 0.0;
+export const DEFAULT_SELECTIVE_HUE = 0.0;
 
 export const DEFAULT_BOUND_MAGENTA_RED = 350.0;
 export const DEFAULT_BOUND_RED_ORANGE = 45.0;

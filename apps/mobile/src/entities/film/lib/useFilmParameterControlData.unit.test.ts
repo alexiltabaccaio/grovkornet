@@ -18,6 +18,7 @@ describe('useFilmParameterControlData', () => {
     film.setBloomIntensity(0);
     film.setVignetteIntensity(0);
     film.setTemperatureAuto(true);
+    film.setHue(0);
   });
 
   it('maps "grain" parameter correctly', () => {
@@ -238,5 +239,23 @@ describe('useFilmParameterControlData', () => {
 
     result.current.onReset?.();
     expect(useFilmStore.getState().vignetteIntensity.value).toBe(0.0);
+  });
+
+  it('maps "hue" parameter correctly', () => {
+    const { result } = renderHook(() => useFilmParameterControlData('hue'));
+
+    expect(result.current.minValue).toBe(-180.0);
+    expect(result.current.maxValue).toBe(180.0);
+    expect(result.current.centerValue).toBe(0.0);
+
+    result.current.onChange(45.0);
+    expect(useFilmStore.getState().hue.value).toBe(45.0);
+
+    expect(result.current.valueFormatter(45.0)).toBe('+45°');
+    expect(result.current.valueFormatter(-15.0)).toBe('-15°');
+    expect(result.current.valueFormatter(0)).toBe('0°');
+
+    result.current.onReset?.();
+    expect(useFilmStore.getState().hue.value).toBe(0.0);
   });
 });

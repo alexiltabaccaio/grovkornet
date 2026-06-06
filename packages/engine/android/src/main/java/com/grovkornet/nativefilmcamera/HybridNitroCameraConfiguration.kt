@@ -371,5 +371,77 @@ class HybridNitroCameraConfiguration : HybridNitroCameraConfigurationSpec() {
                 chromaShiftInvert = value
             }
         }
+
+    override var hue: Double
+        get() = NativeFilmCameraView.activeInstance?.config?.hue?.toDouble() ?: 0.0
+        set(value) {
+            NativeFilmCameraView.activeInstance?.updateEffect {
+                hue = value.toFloat()
+            }
+        }
+
+    override var hueRed: Double
+        get() = NativeFilmCameraView.activeInstance?.config?.hueRed?.toDouble() ?: 0.0
+        set(value) {
+            NativeFilmCameraView.activeInstance?.updateEffect {
+                hueRed = value.toFloat()
+            }
+        }
+
+    override var hueOrange: Double
+        get() = NativeFilmCameraView.activeInstance?.config?.hueOrange?.toDouble() ?: 0.0
+        set(value) {
+            NativeFilmCameraView.activeInstance?.updateEffect {
+                hueOrange = value.toFloat()
+            }
+        }
+
+    override var hueYellow: Double
+        get() = NativeFilmCameraView.activeInstance?.config?.hueYellow?.toDouble() ?: 0.0
+        set(value) {
+            NativeFilmCameraView.activeInstance?.updateEffect {
+                hueYellow = value.toFloat()
+            }
+        }
+
+    override var hueGreen: Double
+        get() = NativeFilmCameraView.activeInstance?.config?.hueGreen?.toDouble() ?: 0.0
+        set(value) {
+            NativeFilmCameraView.activeInstance?.updateEffect {
+                hueGreen = value.toFloat()
+            }
+        }
+
+    override var hueCyan: Double
+        get() = NativeFilmCameraView.activeInstance?.config?.hueCyan?.toDouble() ?: 0.0
+        set(value) {
+            NativeFilmCameraView.activeInstance?.updateEffect {
+                hueCyan = value.toFloat()
+            }
+        }
+
+    override var hueBlue: Double
+        get() = NativeFilmCameraView.activeInstance?.config?.hueBlue?.toDouble() ?: 0.0
+        set(value) {
+            NativeFilmCameraView.activeInstance?.updateEffect {
+                hueBlue = value.toFloat()
+            }
+        }
+
+    override var huePurple: Double
+        get() = NativeFilmCameraView.activeInstance?.config?.huePurple?.toDouble() ?: 0.0
+        set(value) {
+            NativeFilmCameraView.activeInstance?.updateEffect {
+                huePurple = value.toFloat()
+            }
+        }
+
+    override var hueMagenta: Double
+        get() = NativeFilmCameraView.activeInstance?.config?.hueMagenta?.toDouble() ?: 0.0
+        set(value) {
+            NativeFilmCameraView.activeInstance?.updateEffect {
+                hueMagenta = value.toFloat()
+            }
+        }
     // @@GEN_OVERRIDES_END@@
 }

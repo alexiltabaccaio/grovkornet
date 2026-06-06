@@ -39,6 +39,7 @@
       "speed": "VELOCITÀ",
       "roughness": "RUGOSITÀ",
       "saturation": "SATURAZIONE",
+      "hue": "TONALITÀ",
       "contrast": "CONTRASTO",
       "blackLevel": "OMBRE",
       "highlights": "LUCI",

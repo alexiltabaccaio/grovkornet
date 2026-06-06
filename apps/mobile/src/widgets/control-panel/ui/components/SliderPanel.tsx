@@ -17,6 +17,7 @@ const isFilmParameter = (p: ParameterType): p is FilmParameterType => {
     'grain',
     'sharpening',
     'saturation',
+    'hue',
     'contrast',
     'blackLevel',
     'highlights',

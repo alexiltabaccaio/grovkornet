@@ -85,6 +85,15 @@ RenderParams parseRenderParams(const float* params) {
     rp.tapeJitter = params[47];
     rp.scanlines = params[48];
     rp.chromaShiftInvert = params[49];
+    rp.hue = params[50];
+    rp.hueRed = params[51];
+    rp.hueOrange = params[52];
+    rp.hueYellow = params[53];
+    rp.hueGreen = params[54];
+    rp.hueCyan = params[55];
+    rp.hueBlue = params[56];
+    rp.huePurple = params[57];
+    rp.hueMagenta = params[58];
     // @@GEN_PARSING_END@@
     return rp;
 }
@@ -217,7 +226,10 @@ bool GrovkornetEngine::init(AAssetManager* assetManager) {
                      350.0f, 45.0f, 80.0f, 125.0f,
                      170.0f, 230.0f, 280.0f, 315.0f,
                      0.0f, 1.0f, 0.5f,
-                     1.0f, 1.0f, 1.0f, 1.0f);
+                     1.0f, 1.0f, 1.0f, 1.0f,
+                     0.0f,
+                     0.0f, 0.0f, 0.0f, 0.0f,
+                     0.0f, 0.0f, 0.0f, 0.0f);
 
     LOGI("Filament Engine initialized successfully.");
     return true;
@@ -299,14 +311,20 @@ void GrovkornetEngine::triggerLutUpdate(float saturation, float contrast, float 
                                         float boundMagentaRed, float boundRedOrange, float boundOrangeYellow, float boundYellowGreen,
                                         float boundGreenCyan, float boundCyanBlue, float boundBluePurple, float boundPurpleMagenta,
                                         float blackLevel, float highlights, float pivot,
-                                        float contrastAuto, float blackLevelAuto, float highlightsAuto, float pivotAuto) {
+                                        float contrastAuto, float blackLevelAuto, float highlightsAuto, float pivotAuto,
+                                        float hue,
+                                        float hueRed, float hueOrange, float hueYellow, float hueGreen,
+                                        float hueCyan, float hueBlue, float huePurple, float hueMagenta) {
     lutGenerator.triggerLutUpdate(saturation, contrast, ev, whiteBalance, tint,
                                   satRed, satOrange, satYellow, satGreen,
                                   satCyan, satBlue, satPurple, satMagenta,
                                   boundMagentaRed, boundRedOrange, boundOrangeYellow, boundYellowGreen,
                                   boundGreenCyan, boundCyanBlue, boundBluePurple, boundPurpleMagenta,
                                   blackLevel, highlights, pivot,
-                                  contrastAuto, blackLevelAuto, highlightsAuto, pivotAuto);
+                                  contrastAuto, blackLevelAuto, highlightsAuto, pivotAuto,
+                                  hue,
+                                  hueRed, hueOrange, hueYellow, hueGreen,
+                                  hueCyan, hueBlue, huePurple, hueMagenta);
 }
 
 void GrovkornetEngine::applyLutTextureUpdate() {
@@ -321,7 +339,10 @@ void GrovkornetEngine::applyShaderParameters(const RenderParams& params, filamen
                      params.boundMagentaRed, params.boundRedOrange, params.boundOrangeYellow, params.boundYellowGreen,
                      params.boundGreenCyan, params.boundCyanBlue, params.boundBluePurple, params.boundPurpleMagenta,
                      params.blackLevel, params.highlights, params.pivot,
-                     params.contrastAuto, params.blackLevelAuto, params.highlightsAuto, params.pivotAuto);
+                     params.contrastAuto, params.blackLevelAuto, params.highlightsAuto, params.pivotAuto,
+                     params.hue,
+                     params.hueRed, params.hueOrange, params.hueYellow, params.hueGreen,
+                     params.hueCyan, params.hueBlue, params.huePurple, params.hueMagenta);
     if (waitForLut) {
         lutGenerator.waitForLut();
     }

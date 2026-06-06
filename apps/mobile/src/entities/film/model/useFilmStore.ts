@@ -45,6 +45,8 @@ import {
   DEFAULT_TAPE_JITTER,
   DEFAULT_SCANLINES,
   DEFAULT_CHROMA_SHIFT_INVERT,
+  DEFAULT_HUE,
+  DEFAULT_SELECTIVE_HUE,
 } from '@grovkornet/shared';
 
 let nitroConfig: any = null;
@@ -112,6 +114,15 @@ export const useFilmStore = create<FilmStore>((set, get) => ({
   tapeJitter: makeMutable(DEFAULT_TAPE_JITTER),
   scanlines: makeMutable(DEFAULT_SCANLINES),
   chromaShiftInvert: makeMutable(DEFAULT_CHROMA_SHIFT_INVERT),
+  hue: makeMutable(DEFAULT_HUE),
+  hueRed: makeMutable(DEFAULT_SELECTIVE_HUE),
+  hueOrange: makeMutable(DEFAULT_SELECTIVE_HUE),
+  hueYellow: makeMutable(DEFAULT_SELECTIVE_HUE),
+  hueGreen: makeMutable(DEFAULT_SELECTIVE_HUE),
+  hueCyan: makeMutable(DEFAULT_SELECTIVE_HUE),
+  hueBlue: makeMutable(DEFAULT_SELECTIVE_HUE),
+  huePurple: makeMutable(DEFAULT_SELECTIVE_HUE),
+  hueMagenta: makeMutable(DEFAULT_SELECTIVE_HUE),
   // @@GEN_INIT_END@@
   capabilities: {
     availableNoiseReductionModes: [],
@@ -381,6 +392,42 @@ export const useFilmStore = create<FilmStore>((set, get) => ({
     get().chromaShiftInvert.value = value;
     getNitroConfig().chromaShiftInvert = value;
   },
+  setHue: (value) => {
+    get().hue.value = value;
+    getNitroConfig().hue = value;
+  },
+  setHueRed: (value) => {
+    get().hueRed.value = value;
+    getNitroConfig().hueRed = value;
+  },
+  setHueOrange: (value) => {
+    get().hueOrange.value = value;
+    getNitroConfig().hueOrange = value;
+  },
+  setHueYellow: (value) => {
+    get().hueYellow.value = value;
+    getNitroConfig().hueYellow = value;
+  },
+  setHueGreen: (value) => {
+    get().hueGreen.value = value;
+    getNitroConfig().hueGreen = value;
+  },
+  setHueCyan: (value) => {
+    get().hueCyan.value = value;
+    getNitroConfig().hueCyan = value;
+  },
+  setHueBlue: (value) => {
+    get().hueBlue.value = value;
+    getNitroConfig().hueBlue = value;
+  },
+  setHuePurple: (value) => {
+    get().huePurple.value = value;
+    getNitroConfig().huePurple = value;
+  },
+  setHueMagenta: (value) => {
+    get().hueMagenta.value = value;
+    getNitroConfig().hueMagenta = value;
+  },
   // @@GEN_SETTERS_END@@
   setCapabilities: (caps) => {
     logger.info('FilmStore', 'Capabilities updated for Film');
@@ -519,6 +566,26 @@ export const useFilmStore = create<FilmStore>((set, get) => ({
       case 'scanlines':
         state.scanlines.value = DEFAULT_SCANLINES;
         getNitroConfig().scanlines = DEFAULT_SCANLINES;
+        break;
+      case 'hue':
+        state.hue.value = DEFAULT_HUE;
+        getNitroConfig().hue = DEFAULT_HUE;
+        state.hueRed.value = DEFAULT_SELECTIVE_HUE;
+        getNitroConfig().hueRed = DEFAULT_SELECTIVE_HUE;
+        state.hueOrange.value = DEFAULT_SELECTIVE_HUE;
+        getNitroConfig().hueOrange = DEFAULT_SELECTIVE_HUE;
+        state.hueYellow.value = DEFAULT_SELECTIVE_HUE;
+        getNitroConfig().hueYellow = DEFAULT_SELECTIVE_HUE;
+        state.hueGreen.value = DEFAULT_SELECTIVE_HUE;
+        getNitroConfig().hueGreen = DEFAULT_SELECTIVE_HUE;
+        state.hueCyan.value = DEFAULT_SELECTIVE_HUE;
+        getNitroConfig().hueCyan = DEFAULT_SELECTIVE_HUE;
+        state.hueBlue.value = DEFAULT_SELECTIVE_HUE;
+        getNitroConfig().hueBlue = DEFAULT_SELECTIVE_HUE;
+        state.huePurple.value = DEFAULT_SELECTIVE_HUE;
+        getNitroConfig().huePurple = DEFAULT_SELECTIVE_HUE;
+        state.hueMagenta.value = DEFAULT_SELECTIVE_HUE;
+        getNitroConfig().hueMagenta = DEFAULT_SELECTIVE_HUE;
         break;
       // @@GEN_RESET_END@@
     }

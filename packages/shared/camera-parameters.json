@@ -1489,6 +1489,177 @@
         "store": "film"
       },
       "nitro": true
+    },
+    {
+      "name": "hue",
+      "category": "render",
+      "arrayIndex": 50,
+      "kotlin": {
+        "type": "Float",
+        "default": "0.0f"
+      },
+      "ts": {
+        "type": "number"
+      },
+      "zustand": {
+        "default": "DEFAULT_HUE",
+        "type": "number",
+        "resetGroup": "hue",
+        "store": "film"
+      },
+      "nitro": true
+    },
+    {
+      "name": "hueRed",
+      "category": "render",
+      "arrayIndex": 51,
+      "kotlin": {
+        "type": "Float",
+        "default": "0.0f"
+      },
+      "ts": {
+        "type": "number"
+      },
+      "zustand": {
+        "default": "DEFAULT_SELECTIVE_HUE",
+        "type": "number",
+        "resetGroup": "hue",
+        "store": "film"
+      },
+      "nitro": true
+    },
+    {
+      "name": "hueOrange",
+      "category": "render",
+      "arrayIndex": 52,
+      "kotlin": {
+        "type": "Float",
+        "default": "0.0f"
+      },
+      "ts": {
+        "type": "number"
+      },
+      "zustand": {
+        "default": "DEFAULT_SELECTIVE_HUE",
+        "type": "number",
+        "resetGroup": "hue",
+        "store": "film"
+      },
+      "nitro": true
+    },
+    {
+      "name": "hueYellow",
+      "category": "render",
+      "arrayIndex": 53,
+      "kotlin": {
+        "type": "Float",
+        "default": "0.0f"
+      },
+      "ts": {
+        "type": "number"
+      },
+      "zustand": {
+        "default": "DEFAULT_SELECTIVE_HUE",
+        "type": "number",
+        "resetGroup": "hue",
+        "store": "film"
+      },
+      "nitro": true
+    },
+    {
+      "name": "hueGreen",
+      "category": "render",
+      "arrayIndex": 54,
+      "kotlin": {
+        "type": "Float",
+        "default": "0.0f"
+      },
+      "ts": {
+        "type": "number"
+      },
+      "zustand": {
+        "default": "DEFAULT_SELECTIVE_HUE",
+        "type": "number",
+        "resetGroup": "hue",
+        "store": "film"
+      },
+      "nitro": true
+    },
+    {
+      "name": "hueCyan",
+      "category": "render",
+      "arrayIndex": 55,
+      "kotlin": {
+        "type": "Float",
+        "default": "0.0f"
+      },
+      "ts": {
+        "type": "number"
+      },
+      "zustand": {
+        "default": "DEFAULT_SELECTIVE_HUE",
+        "type": "number",
+        "resetGroup": "hue",
+        "store": "film"
+      },
+      "nitro": true
+    },
+    {
+      "name": "hueBlue",
+      "category": "render",
+      "arrayIndex": 56,
+      "kotlin": {
+        "type": "Float",
+        "default": "0.0f"
+      },
+      "ts": {
+        "type": "number"
+      },
+      "zustand": {
+        "default": "DEFAULT_SELECTIVE_HUE",
+        "type": "number",
+        "resetGroup": "hue",
+        "store": "film"
+      },
+      "nitro": true
+    },
+    {
+      "name": "huePurple",
+      "category": "render",
+      "arrayIndex": 57,
+      "kotlin": {
+        "type": "Float",
+        "default": "0.0f"
+      },
+      "ts": {
+        "type": "number"
+      },
+      "zustand": {
+        "default": "DEFAULT_SELECTIVE_HUE",
+        "type": "number",
+        "resetGroup": "hue",
+        "store": "film"
+      },
+      "nitro": true
+    },
+    {
+      "name": "hueMagenta",
+      "category": "render",
+      "arrayIndex": 58,
+      "kotlin": {
+        "type": "Float",
+        "default": "0.0f"
+      },
+      "ts": {
+        "type": "number"
+      },
+      "zustand": {
+        "default": "DEFAULT_SELECTIVE_HUE",
+        "type": "number",
+        "resetGroup": "hue",
+        "store": "film"
+      },
+      "nitro": true
     }
   ]
 }

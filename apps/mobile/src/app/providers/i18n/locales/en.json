@@ -39,6 +39,7 @@
       "speed": "SPEED",
       "roughness": "ROUGHNESS",
       "saturation": "SATURATION",
+      "hue": "HUE",
       "contrast": "CONTRAST",
       "blackLevel": "SHADOW",
       "highlights": "LIGHT",

@@ -21,7 +21,8 @@ export type FilmParameterType =
   | 'vignette'
   | 'chroma_shift'
   | 'tape_jitter'
-  | 'scanlines';
+  | 'scanlines'
+  | 'hue';
 
 type SelectedFilmState = Pick<
   FilmStore,
@@ -67,6 +68,8 @@ type SelectedFilmState = Pick<
   | 'setTapeJitter'
   | 'scanlines'
   | 'setScanlines'
+  | 'hue'
+  | 'setHue'
 >;
 
 export const useFilmParameterControlData = (
@@ -167,6 +170,11 @@ export const useFilmParameterControlData = (
           return {
             scanlines: s.scanlines,
             setScanlines: s.setScanlines,
+          };
+        case 'hue':
+          return {
+            hue: s.hue,
+            setHue: s.setHue,
           };
       }
     })
@@ -420,6 +428,21 @@ export const useFilmParameterControlData = (
             return `${Math.round(v * 100)}`;
           },
           onReset: () => film.setScanlines(0.0),
+        };
+      case 'hue':
+        return {
+          value: film.hue,
+          minValue: -180.0,
+          maxValue: 180.0,
+          centerValue: 0.0,
+          onChange: film.setHue,
+          onUpdateWorklet: filmWorklets.updateHue,
+          valueFormatter: (v: number) => {
+            'worklet';
+            const rounded = Math.round(v);
+            return rounded > 0 ? `+${rounded}°` : `${rounded}°`;
+          },
+          onReset: () => film.setHue(0.0),
         };
     }
   }, [parameter, film, filmWorklets]);

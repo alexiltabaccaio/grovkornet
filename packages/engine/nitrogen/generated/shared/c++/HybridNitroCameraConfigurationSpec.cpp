@@ -106,6 +106,24 @@ namespace margelo::nitro::grovkornet {
       prototype.registerHybridSetter("scanlines", &HybridNitroCameraConfigurationSpec::setScanlines);
       prototype.registerHybridGetter("chromaShiftInvert", &HybridNitroCameraConfigurationSpec::getChromaShiftInvert);
       prototype.registerHybridSetter("chromaShiftInvert", &HybridNitroCameraConfigurationSpec::setChromaShiftInvert);
+      prototype.registerHybridGetter("hue", &HybridNitroCameraConfigurationSpec::getHue);
+      prototype.registerHybridSetter("hue", &HybridNitroCameraConfigurationSpec::setHue);
+      prototype.registerHybridGetter("hueRed", &HybridNitroCameraConfigurationSpec::getHueRed);
+      prototype.registerHybridSetter("hueRed", &HybridNitroCameraConfigurationSpec::setHueRed);
+      prototype.registerHybridGetter("hueOrange", &HybridNitroCameraConfigurationSpec::getHueOrange);
+      prototype.registerHybridSetter("hueOrange", &HybridNitroCameraConfigurationSpec::setHueOrange);
+      prototype.registerHybridGetter("hueYellow", &HybridNitroCameraConfigurationSpec::getHueYellow);
+      prototype.registerHybridSetter("hueYellow", &HybridNitroCameraConfigurationSpec::setHueYellow);
+      prototype.registerHybridGetter("hueGreen", &HybridNitroCameraConfigurationSpec::getHueGreen);
+      prototype.registerHybridSetter("hueGreen", &HybridNitroCameraConfigurationSpec::setHueGreen);
+      prototype.registerHybridGetter("hueCyan", &HybridNitroCameraConfigurationSpec::getHueCyan);
+      prototype.registerHybridSetter("hueCyan", &HybridNitroCameraConfigurationSpec::setHueCyan);
+      prototype.registerHybridGetter("hueBlue", &HybridNitroCameraConfigurationSpec::getHueBlue);
+      prototype.registerHybridSetter("hueBlue", &HybridNitroCameraConfigurationSpec::setHueBlue);
+      prototype.registerHybridGetter("huePurple", &HybridNitroCameraConfigurationSpec::getHuePurple);
+      prototype.registerHybridSetter("huePurple", &HybridNitroCameraConfigurationSpec::setHuePurple);
+      prototype.registerHybridGetter("hueMagenta", &HybridNitroCameraConfigurationSpec::getHueMagenta);
+      prototype.registerHybridSetter("hueMagenta", &HybridNitroCameraConfigurationSpec::setHueMagenta);
     });
   }
 

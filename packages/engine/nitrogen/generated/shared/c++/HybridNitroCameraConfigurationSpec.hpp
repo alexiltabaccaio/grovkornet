@@ -136,6 +136,24 @@ namespace margelo::nitro::grovkornet {
       virtual void setScanlines(double scanlines) = 0;
       virtual bool getChromaShiftInvert() = 0;
       virtual void setChromaShiftInvert(bool chromaShiftInvert) = 0;
+      virtual double getHue() = 0;
+      virtual void setHue(double hue) = 0;
+      virtual double getHueRed() = 0;
+      virtual void setHueRed(double hueRed) = 0;
+      virtual double getHueOrange() = 0;
+      virtual void setHueOrange(double hueOrange) = 0;
+      virtual double getHueYellow() = 0;
+      virtual void setHueYellow(double hueYellow) = 0;
+      virtual double getHueGreen() = 0;
+      virtual void setHueGreen(double hueGreen) = 0;
+      virtual double getHueCyan() = 0;
+      virtual void setHueCyan(double hueCyan) = 0;
+      virtual double getHueBlue() = 0;
+      virtual void setHueBlue(double hueBlue) = 0;
+      virtual double getHuePurple() = 0;
+      virtual void setHuePurple(double huePurple) = 0;
+      virtual double getHueMagenta() = 0;
+      virtual void setHueMagenta(double hueMagenta) = 0;
 
     public:
       // Methods
