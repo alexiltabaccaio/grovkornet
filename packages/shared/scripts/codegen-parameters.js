@@ -569,7 +569,7 @@ function generateViewfinderProps(parameters) {
     torchStrength: 'resolvedTorchStrength as unknown as SharedValue<number | undefined>',
     noiseReduction: 'resolvedNoiseReduction as unknown as SharedValue<number | undefined>',
     previewIn4k: 'resolvedPreviewIn4k as unknown as SharedValue<boolean | undefined>',
-    targetFps: 'fpsSetting as unknown as SharedValue<number | undefined>',
+    targetFps: 'effectiveFps as unknown as SharedValue<number | undefined>',
     cameraAspectRatio: 'aspectRatio as unknown as SharedValue<number | undefined>',
     cameraId: 'cameraAuto ? undefined : cameraId',
     autoFocus: 'focusAuto as unknown as SharedValue<boolean | undefined>',

@@ -181,18 +181,21 @@ export const Viewfinder = React.memo(({ cameraKey, translateY, drawerAnimation }
     return () => clearTimeout(t);
   }, [cameraKey, isCameraSecure]);
 
-  const animatedProps = useAnimatedProps(() => {
-    let effectiveFps = fpsSetting.value;
+  const effectiveFps = useDerivedValue(() => {
+    let fps = fpsSetting.value;
     if (thermalState === 'warning') {
-      effectiveFps = Math.min(effectiveFps, 30);
+      fps = Math.min(fps, 30);
     } else if (thermalState === 'critical') {
-      effectiveFps = Math.min(effectiveFps, 15);
+      fps = Math.min(fps, 15);
     }
+    return fps;
+  }, [thermalState]);
 
+  const animatedProps = useAnimatedProps(() => {
     return {
       // @@GEN_ANIMATED_PROPS_START@@
       ev: ev.value,
-      targetFps: fpsSetting.value,
+      targetFps: effectiveFps.value,
       cameraAspectRatio: aspectRatio.value,
       noiseReduction: resolvedNoiseReduction.value,
       noiseReductionAuto: noiseReductionAuto.value,
