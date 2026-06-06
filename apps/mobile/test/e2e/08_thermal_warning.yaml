@@ -1,0 +1,89 @@
+appId: com.grovkornet.app
+---
+# Clean app initialization
+- launchApp:
+    clearState: true
+    permissions:
+      camera: grant
+      microphone: grant
+
+# Handle 16kB memory page compatibility popup (Android 15+)
+- tapOn:
+    text: "[Oo][Kk]"
+    optional: true
+
+# Handle runtime permissions popup if present
+- tapOn:
+    text: "(Mentre usi l'app|While using the app|Consenti|Allow).*"
+    optional: true
+
+# Wait for initial interface loading
+- extendedWaitUntil:
+    visible: "SISTEMA"
+    timeout: 30000
+
+# 1. Verify warning circle is NOT visible initially
+- assertNotVisible:
+    id: "device-health-warning-circle"
+
+# 2. Navigate to the debug panel under SISTEMA -> Preferenze
+- tapOn: "SISTEMA"
+- assertVisible: "Preferenze"
+- tapOn: "Preferenze"
+- assertVisible: "Debug"
+- tapOn: "Debug"
+- assertVisible: "TEMP: WARNING"
+
+# 3. Tap on "TEMP: WARNING" to activate thermal warning state
+- tapOn: "TEMP: WARNING"
+
+# 4. Verify warning circle is now visible on the left side
+- assertVisible:
+    id: "device-health-warning-circle"
+
+# 5. Verify inline warning text is NOT visible initially
+- assertNotVisible:
+    id: "device-health-warning-banner"
+
+# 6. Tap warning circle to show warning details to the right
+- tapOn:
+    id: "device-health-warning-circle"
+- assertVisible:
+    id: "device-health-warning-banner"
+
+# 7. Tap warning text bubble to hide it
+- tapOn:
+    id: "device-health-warning-text-button"
+- assertNotVisible:
+    id: "device-health-warning-banner"
+
+# 8. Tap warning circle to show warning details again
+- tapOn:
+    id: "device-health-warning-circle"
+- assertVisible:
+    id: "device-health-warning-banner"
+
+# 9. Wait for 5.5 seconds to verify auto-hide
+- delay: 5500
+- assertNotVisible:
+    id: "device-health-warning-banner"
+
+# 10. Tap "TEMP: CRITICAL" in the debug panel
+- tapOn: "TEMP: CRITICAL"
+- assertVisible:
+    id: "device-health-warning-circle"
+
+# 11. Tap warning circle to show critical text bubble
+- tapOn:
+    id: "device-health-warning-circle"
+- assertVisible:
+    id: "device-health-warning-banner"
+
+# 12. Tap "TEMP: NORMAL" in the debug panel to clear warning state
+- tapOn: "TEMP: NORMAL"
+
+# 13. Verify warning circle and text bubble are both dismissed
+- assertNotVisible:
+    id: "device-health-warning-circle"
+- assertNotVisible:
+    id: "device-health-warning-banner"

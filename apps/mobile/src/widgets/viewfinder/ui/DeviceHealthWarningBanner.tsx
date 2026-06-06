@@ -1,5 +1,5 @@
-import React, { useEffect } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import Animated, { FadeIn, FadeOut, useSharedValue, useAnimatedStyle, withRepeat, withTiming, withSequence } from 'react-native-reanimated';
 import { useTranslation } from 'react-i18next';
 import { useSystemStore } from '@entities/system';
@@ -10,21 +10,28 @@ export const DeviceHealthWarningBanner = () => {
   const thermalState = useSystemStore(state => state.thermalState);
   const preferredFps = usePreferencesStore(state => state.fpsSetting) ?? 60;
 
-  // Pulsing animation for the warning dot
-  const dotOpacity = useSharedValue(0.4);
-  useEffect(() => {
-    dotOpacity.value = withRepeat(
-      withSequence(
-        withTiming(1, { duration: 800 }),
-        withTiming(0.4, { duration: 800 })
-      ),
-      -1,
-      true
-    );
-  }, [dotOpacity]);
+  const [isTextVisible, setIsTextVisible] = useState(false);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  const dotAnimatedStyle = useAnimatedStyle(() => ({
-    opacity: dotOpacity.value,
+  // Pulsing animation for the warning circle dependent on the thermalState
+  const pulseOpacity = useSharedValue(1);
+  useEffect(() => {
+    if (thermalState === 'critical') {
+      pulseOpacity.value = withRepeat(
+        withSequence(
+          withTiming(1, { duration: 500 }),
+          withTiming(0.4, { duration: 500 })
+        ),
+        -1,
+        true
+      );
+    } else {
+      pulseOpacity.value = withTiming(1, { duration: 200 });
+    }
+  }, [thermalState, pulseOpacity]);
+
+  const circleAnimatedStyle = useAnimatedStyle(() => ({
+    opacity: pulseOpacity.value,
   }));
 
   // Determine if we should show the warning banner
@@ -39,58 +46,149 @@ export const DeviceHealthWarningBanner = () => {
     messageKey = 'device_health.critical';
   }
 
-  if (!shouldShow) return null;
+  // Clear timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, []);
+
+  // Hide text if the warning conditions are no longer met
+  useEffect(() => {
+    if (!shouldShow) {
+      setIsTextVisible(false);
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+        timeoutRef.current = null;
+      }
+    }
+  }, [shouldShow]);
+
+  const handleCirclePress = () => {
+    if (isTextVisible) {
+      setIsTextVisible(false);
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+        timeoutRef.current = null;
+      }
+    } else {
+      setIsTextVisible(true);
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+      timeoutRef.current = setTimeout(() => {
+        setIsTextVisible(false);
+        timeoutRef.current = null;
+      }, 5000);
+    }
+  };
+
+  const handleTextPress = () => {
+    setIsTextVisible(false);
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+    }
+  };
 
   return (
-    <Animated.View
-      entering={FadeIn.duration(300)}
-      exiting={FadeOut.duration(250)}
-      style={styles.bannerContainer}
-      testID="device-health-warning-banner"
-    >
-      <View style={styles.content}>
-        <Animated.View style={[styles.dot, dotAnimatedStyle]} />
-        <Text style={styles.text}>{t(messageKey)}</Text>
-      </View>
-    </Animated.View>
+    <>
+      {shouldShow && (
+        <Animated.View
+          entering={FadeIn.duration(300)}
+          exiting={FadeOut.duration(250)}
+          style={styles.container}
+          pointerEvents="box-none"
+        >
+          {/* Exclamation Circle on the left */}
+          <TouchableOpacity
+            onPress={handleCirclePress}
+            activeOpacity={0.7}
+            testID="device-health-warning-circle"
+          >
+            <Animated.View style={[styles.circle, circleAnimatedStyle]}>
+              <Text style={styles.exclamationText}>!</Text>
+            </Animated.View>
+          </TouchableOpacity>
+
+          {/* Warning Text on the same line, to the right of the circle */}
+          {isTextVisible && (
+            <Animated.View
+              entering={FadeIn.duration(300)}
+              exiting={FadeOut.duration(250)}
+              style={styles.textContainer}
+              testID="device-health-warning-banner"
+            >
+              <TouchableOpacity
+                onPress={handleTextPress}
+                activeOpacity={0.9}
+                testID="device-health-warning-text-button"
+              >
+                <Text style={styles.text}>{t(messageKey)}</Text>
+              </TouchableOpacity>
+            </Animated.View>
+          )}
+        </Animated.View>
+      )}
+    </>
   );
 };
 
 const styles = StyleSheet.create({
-  bannerContainer: {
+  container: {
     position: 'absolute',
     top: 16,
     left: 16,
-    right: 16,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 75, 75, 0.25)',
-    backgroundColor: 'rgba(20, 10, 10, 0.75)',
-    paddingVertical: 10,
-    paddingHorizontal: 16,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 6,
-    elevation: 4,
-    zIndex: 100,
-  },
-  content: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
+    zIndex: 100,
   },
-  dot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: '#ff4b4b',
-    marginRight: 8,
+  circle: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    borderWidth: 1.5,
+    borderColor: '#ff4b4b',
+    backgroundColor: 'rgba(20, 10, 10, 0.85)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  exclamationText: {
+    color: '#ff4b4b',
+    fontSize: 18,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    lineHeight: 20,
+  },
+  textContainer: {
+    backgroundColor: 'rgba(20, 10, 10, 0.9)',
+    borderColor: 'rgba(255, 75, 75, 0.35)',
+    borderWidth: 1,
+    borderRadius: 18,
+    paddingVertical: 7,
+    paddingHorizontal: 16,
+    marginLeft: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
   text: {
     color: '#ff4b4b',
-    fontSize: 13,
+    fontSize: 12,
     fontWeight: '600',
     letterSpacing: 0.5,
+    textAlign: 'center',
   },
 });
+

@@ -8,12 +8,20 @@ jest.mock('@entities/system', () => ({
     setIsDebugEnabled: jest.Mock;
     isLogsEnabled: boolean;
     setIsLogsEnabled: jest.Mock;
+    isCameraSecure: boolean;
+    setIsCameraSecure: jest.Mock;
+    thermalState: 'normal' | 'warning' | 'critical';
+    setThermalState: jest.Mock;
   }) => unknown) => {
     const state = {
       isDebugEnabled: false,
       setIsDebugEnabled: jest.fn(),
       isLogsEnabled: false,
       setIsLogsEnabled: jest.fn(),
+      isCameraSecure: false,
+      setIsCameraSecure: jest.fn(),
+      thermalState: 'normal' as const,
+      setThermalState: jest.fn(),
     };
     return fn ? fn(state) : state;
   }),

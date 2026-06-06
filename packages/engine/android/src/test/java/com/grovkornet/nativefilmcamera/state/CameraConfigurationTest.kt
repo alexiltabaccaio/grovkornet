@@ -104,7 +104,7 @@ class CameraConfigurationTest {
 
         val array = config.toRenderParamsArray(time = time, targetResolution = targetResolution)
 
-        assertEquals(50, array.size)
+        assertEquals(59, array.size)
         assertEquals(1.2f, array[0])
         assertEquals(0.9f, array[1])
         assertEquals(0.5f, array[2])
@@ -155,7 +155,15 @@ class CameraConfigurationTest {
         assertEquals(0.2f, array[47]) // tapeJitter
         assertEquals(0.3f, array[48]) // scanlines
         assertEquals(1.0f, array[49]) // chromaShiftInvert (true -> 1.0f)
-
+        assertEquals(0.0f, array[50]) // hue
+        assertEquals(0.0f, array[51]) // hueRed
+        assertEquals(0.0f, array[52]) // hueOrange
+        assertEquals(0.0f, array[53]) // hueYellow
+        assertEquals(0.0f, array[54]) // hueGreen
+        assertEquals(0.0f, array[55]) // hueCyan
+        assertEquals(0.0f, array[56]) // hueBlue
+        assertEquals(0.0f, array[57]) // huePurple
+        assertEquals(0.0f, array[58]) // hueMagenta
 
         // Test dynamic disabling features
         config.grainEnabled = false
