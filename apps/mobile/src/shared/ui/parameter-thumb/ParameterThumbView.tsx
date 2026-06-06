@@ -45,6 +45,8 @@ const ParameterThumbViewBase = forwardRef<View, ParameterThumbViewProps>((props,
         <View style={[styles.presetImageContainer, isActive && styles.presetImageContainerActive]}>
           <Image
             source={imageSource || defaultMonoscope}
+            placeholder={defaultMonoscope}
+            placeholderContentFit="cover"
             style={[styles.presetImage, !isActive && { opacity: 0.7 }]}
             contentFit="cover"
             transition={0}
