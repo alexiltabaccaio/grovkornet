@@ -9,3 +9,4 @@ export * from './ui/presets/QuickPresetSelector';
 export * from './ui/presets/AddPresetModal';
 export * from './ui/presets/DeletePresetModal';
 export * from './lib/presetActions';
+export * from './ui/theme/ThemeModule';

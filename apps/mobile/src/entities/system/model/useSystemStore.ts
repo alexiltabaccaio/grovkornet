@@ -41,6 +41,7 @@ export const useSystemStore = create<SystemStore>()(
     none: 'none',
     preferences: 'language',
     presets: 'presets',
+    theme: 'none',
     optics: 'camera_selection',
     artifacts: 'chromatic_aberration',
     exposure: 'iso',

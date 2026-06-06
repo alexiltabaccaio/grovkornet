@@ -14,6 +14,7 @@
     "modules": {
       "preferences": "Preferenze",
       "presets": "Preset",
+      "theme": "Tema",
       "optics": "Ottica",
       "artifacts": "Artefatti",
       "exposure": "Esposizione",

@@ -94,6 +94,7 @@ jest.mock('@features/system-settings', () => {
   const { Text } = require('react-native');
   return {
     PreferencesModule: () => <Text>PreferencesModule</Text>,
+    ThemeModule: () => <Text>ThemeModule</Text>,
   };
 });
 
@@ -288,6 +289,14 @@ describe('Parameters', () => {
     });
     const { getByText } = render(<Parameters />);
     expect(getByText('PreferencesModule')).toBeDefined();
+  });
+
+  it('renders ThemeModule', () => {
+    act(() => {
+      useSystemStore.getState().setActiveModule('theme');
+    });
+    const { getByText } = render(<Parameters />);
+    expect(getByText('ThemeModule')).toBeDefined();
   });
 
   it('renders coming soon for unknown module', () => {

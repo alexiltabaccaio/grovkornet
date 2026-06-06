@@ -58,7 +58,11 @@ describe('Modules', () => {
     });
     const { getByText } = render(<Modules />);
     expect(getByText('modules.presets')).toBeDefined();
+    expect(getByText('modules.theme')).toBeDefined();
     expect(getByText('modules.preferences')).toBeDefined();
+
+    fireEvent.press(getByText('modules.theme'));
+    expect(useSystemStore.getState().activeModule).toBe('theme');
 
     fireEvent.press(getByText('modules.preferences'));
     expect(useSystemStore.getState().activeModule).toBe('preferences');
