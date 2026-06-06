@@ -6,7 +6,7 @@ const mockSetChromaShiftDirection = jest.fn();
 const mockSetChromaShiftInvert = jest.fn();
 const mockUpdateChromaShiftDirection = jest.fn();
 const mockUpdateChromaShiftInvert = jest.fn();
-let mockIsDebugEnabled = false;
+let mockIsLayoutOverlayEnabled = false;
 let mockChromaShiftDirectionVal = 0;
 let mockChromaShiftInvertVal = false;
 
@@ -37,8 +37,8 @@ jest.mock('@entities/film', () => ({
 }));
 
 jest.mock('@entities/system', () => ({
-  useSystemStore: jest.fn((fn?: (state: { isDebugEnabled: boolean }) => unknown) => {
-    const state = { isDebugEnabled: mockIsDebugEnabled };
+  useSystemStore: jest.fn((fn?: (state: { isLayoutOverlayEnabled: boolean }) => unknown) => {
+    const state = { isLayoutOverlayEnabled: mockIsLayoutOverlayEnabled };
     return fn ? fn(state) : state;
   }),
 }));
@@ -46,7 +46,7 @@ jest.mock('@entities/system', () => ({
 describe('ChromaShiftSubPanel', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    mockIsDebugEnabled = false;
+    mockIsLayoutOverlayEnabled = false;
     mockChromaShiftDirectionVal = 0;
     mockChromaShiftInvertVal = false;
   });
@@ -91,8 +91,8 @@ describe('ChromaShiftSubPanel', () => {
     expect(mockUpdateChromaShiftInvert).toHaveBeenCalledWith(false);
   });
 
-  it('applies debug styles when isDebugEnabled is true', () => {
-    mockIsDebugEnabled = true;
+  it('applies debug styles when isLayoutOverlayEnabled is true', () => {
+    mockIsLayoutOverlayEnabled = true;
     const { toJSON } = render(<ChromaShiftSubPanel />);
     expect(toJSON()).toBeDefined();
   });

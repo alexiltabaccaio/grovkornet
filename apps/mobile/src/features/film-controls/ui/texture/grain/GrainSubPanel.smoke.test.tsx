@@ -13,9 +13,9 @@ jest.mock('react-i18next', () => ({
 }));
 
 jest.mock('@entities/system', () => ({
-  useSystemStore: jest.fn((fn?: (state: { isDebugEnabled: boolean }) => unknown) => {
+  useSystemStore: jest.fn((fn?: (state: { isLayoutOverlayEnabled: boolean }) => unknown) => {
     const state = {
-      isDebugEnabled: false,
+      isLayoutOverlayEnabled: false,
     };
     return fn ? fn(state) : state;
   }),

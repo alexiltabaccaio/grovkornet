@@ -13,7 +13,7 @@ interface ContrastSubPanelProps {
 
 export const ContrastSubPanel = ({ animatedStyle }: ContrastSubPanelProps) => {
   const { t } = useTranslation();
-  const isDebugEnabled = useSystemStore(state => state.isDebugEnabled);
+  const isLayoutOverlayEnabled = useSystemStore(state => state.isLayoutOverlayEnabled);
   const { 
     pivot, setPivot, pivotAuto, setPivotAuto 
   } = useFilmStore(
@@ -28,7 +28,7 @@ export const ContrastSubPanel = ({ animatedStyle }: ContrastSubPanelProps) => {
   const worklets = useFilmWorklets();
 
   return (
-    <SubPanelContainer style={[styles.container, animatedStyle]} isDebugEnabled={isDebugEnabled}>
+    <SubPanelContainer style={[styles.container, animatedStyle]} isLayoutOverlayEnabled={isLayoutOverlayEnabled}>
       <View style={styles.pivotContainer}>
         <ParameterControl
           label={t('parameters.pivot')}

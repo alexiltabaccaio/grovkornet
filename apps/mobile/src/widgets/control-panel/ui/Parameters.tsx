@@ -13,7 +13,7 @@ import { controlPanelStyles } from './ControlPanel.styles';
 import { ColorModule, ToneModule, TextureModule, ArtifactsModule } from '@features/film-controls';
 import { OpticsModule } from '@features/lens-controls';
 import { CaptureModule, ExposureModule, LightingModule, ProcessingModule } from '@features/body-controls';
-import { PreferencesModule, PresetsModule, ThemeModule } from '@features/system-settings';
+import { PreferencesModule, PresetsModule, ThemeModule, DebugModule } from '@features/system-settings';
 
 /**
  * Parameters acts as a router for the different camera control modules.
@@ -116,6 +116,8 @@ export const Parameters = React.memo(() => {
         return <PresetsModule />;
       case 'theme':
         return <ThemeModule />;
+      case 'debug':
+        return <DebugModule />;
       case 'none':
         return null;
       default:

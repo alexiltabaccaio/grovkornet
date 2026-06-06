@@ -74,12 +74,12 @@ describe('ControlPanel Component Stability Test', () => {
     activeModule: 'none' as ModuleType,
     activeParameter: 'none' as ParameterType,
     activeDetailPanel: 'none' as any,
-    isDebugEnabled: false,
+    isLayoutOverlayEnabled: false,
     setActiveSection: jest.fn(),
     setActiveModule: jest.fn(),
     setActiveParameter: jest.fn(),
     setActiveDetailPanel: jest.fn(),
-    setIsDebugEnabled: jest.fn(),
+    setIsLayoutOverlayEnabled: jest.fn(),
   };
 
   const mockBodyStoreValue = {

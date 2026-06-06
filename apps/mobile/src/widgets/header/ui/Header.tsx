@@ -7,7 +7,7 @@ const DEFAULT_ANDROID_HEIGHT = 24;
 const DEFAULT_IOS_HEIGHT = 47;
 
 export const Header = () => {
-  const isDebugEnabled = useSystemStore(state => state.isDebugEnabled);
+  const isLayoutOverlayEnabled = useSystemStore(state => state.isLayoutOverlayEnabled);
   
   // Try to use the native StatusBar height on Android, fallback to standard values
   const statusBarHeight = Platform.OS === 'android' 
@@ -19,7 +19,7 @@ export const Header = () => {
       style={[
         styles.statusBarHeader, 
         { height: statusBarHeight },
-        isDebugEnabled && styles.statusBarHeaderDebug
+        isLayoutOverlayEnabled && styles.statusBarHeaderDebug
       ]}
       pointerEvents="none"
     />

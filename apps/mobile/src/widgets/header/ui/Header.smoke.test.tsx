@@ -7,7 +7,7 @@ import { Header } from './Header';
 jest.mock('@entities/system', () => ({
   useSystemStore: jest.fn((selector: (state: Record<string, unknown>) => unknown) => 
     selector({
-      isDebugEnabled: false,
+      isLayoutOverlayEnabled: false,
     })
   ),
 }));
@@ -23,7 +23,7 @@ describe('Header Smoke Test', () => {
     const mockSystemStore = useSystemStore as unknown as jest.Mock;
     mockSystemStore.mockImplementationOnce((selector: (state: Record<string, unknown>) => unknown) => 
       selector({
-        isDebugEnabled: true,
+        isLayoutOverlayEnabled: true,
       })
     );
 

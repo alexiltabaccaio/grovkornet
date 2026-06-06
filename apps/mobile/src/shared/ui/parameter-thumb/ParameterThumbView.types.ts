@@ -19,7 +19,7 @@ export interface ParameterThumbViewProps {
   staticText?: string;
   hideValueInAuto?: boolean;
   autoValueText?: string;
-  isDebugEnabled?: boolean;
+  isLayoutOverlayEnabled?: boolean;
   disabled?: SharedValue<boolean>;
   isToggle?: boolean;
   centerValue?: number;

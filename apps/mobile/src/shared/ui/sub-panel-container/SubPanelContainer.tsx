@@ -6,17 +6,17 @@ interface SubPanelContainerProps {
   children: React.ReactNode;
   style?: StyleProp<ViewStyle>;
   showBorder?: boolean;
-  isDebugEnabled?: boolean;
+  isLayoutOverlayEnabled?: boolean;
 }
 
-export const SubPanelContainer = ({ children, style, showBorder = false, isDebugEnabled = false }: SubPanelContainerProps) => {
+export const SubPanelContainer = ({ children, style, showBorder = false, isLayoutOverlayEnabled = false }: SubPanelContainerProps) => {
   return (
     <Animated.View
       style={[
         styles.container,
         style,
-        isDebugEnabled && styles.debugPadding,
-        isDebugEnabled && showBorder && styles.debugBorder,
+        isLayoutOverlayEnabled && styles.debugPadding,
+        isLayoutOverlayEnabled && showBorder && styles.debugBorder,
       ]}
     >
       {children}

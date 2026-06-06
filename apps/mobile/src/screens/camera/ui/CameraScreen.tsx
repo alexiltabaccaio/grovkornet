@@ -28,8 +28,8 @@ export const CameraScreen = () => {
 
 const CameraScreenContent = () => {
   const insets = useSafeAreaInsets();
-  const { isDebugEnabled, triggerCapture, latestCapturedUri, latestPreviewUri } = useSystemStore(useShallow(state => ({
-    isDebugEnabled: state.isDebugEnabled,
+  const { isFpsOverlayEnabled, triggerCapture, latestCapturedUri, latestPreviewUri } = useSystemStore(useShallow(state => ({
+    isFpsOverlayEnabled: state.isFpsOverlayEnabled,
     triggerCapture: state.triggerCapture,
     latestCapturedUri: state.latestCapturedUri,
     latestPreviewUri: state.latestPreviewUri,
@@ -138,7 +138,7 @@ const CameraScreenContent = () => {
       </GestureController>
       <Header />
 
-      {isDebugEnabled && <DebugOverlay />}
+      {isFpsOverlayEnabled && <DebugOverlay />}
       
       <Animated.View 
         style={[

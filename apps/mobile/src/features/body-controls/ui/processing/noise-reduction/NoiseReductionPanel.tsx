@@ -18,7 +18,7 @@ export const NoiseReductionPanel = ({ animatedStyle }: NoiseReductionPanelProps)
     noiseReductionAuto: state.noiseReductionAuto,
     setNoiseReductionAuto: state.setNoiseReductionAuto,
   })));
-  const isDebugEnabled = useSystemStore(s => s.isDebugEnabled);
+  const isLayoutOverlayEnabled = useSystemStore(s => s.isLayoutOverlayEnabled);
 
   const getLabel = (opt: number) => {
     if (opt === 0) return 'OFF';
@@ -48,7 +48,7 @@ export const NoiseReductionPanel = ({ animatedStyle }: NoiseReductionPanelProps)
         <AutoButton
           isActive={noiseReductionAuto}
           onPress={() => setNoiseReductionAuto(!noiseReductionAuto.value)}
-          isDebugEnabled={isDebugEnabled}
+          isLayoutOverlayEnabled={isLayoutOverlayEnabled}
         />
       }
     />

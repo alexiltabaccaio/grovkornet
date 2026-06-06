@@ -5,10 +5,10 @@ import { useShallow } from 'zustand/react/shallow';
 import { useSystemStore } from '@entities/system';
 
 export const TopSection = React.memo(() => {
-  const { activeSection, lastNonNoneSection, isDebugEnabled } = useSystemStore(useShallow(state => ({
+  const { activeSection, lastNonNoneSection, isLayoutOverlayEnabled } = useSystemStore(useShallow(state => ({
     activeSection: state.activeSection,
     lastNonNoneSection: state.lastNonNoneSection,
-    isDebugEnabled: state.isDebugEnabled,
+    isLayoutOverlayEnabled: state.isLayoutOverlayEnabled,
   })));
   const { t } = useTranslation();
 
@@ -21,7 +21,7 @@ export const TopSection = React.memo(() => {
       <View style={styles.dragHandleContainer}>
         <View style={styles.dragHandle} />
       </View>
-      <View style={[styles.sectionHeaderFrame, isDebugEnabled && styles.debugFrame]}>
+      <View style={[styles.sectionHeaderFrame, isLayoutOverlayEnabled && styles.debugFrame]}>
         <Text style={styles.sectionTitle} allowFontScaling={false}>
           {t(`sections.${renderSection}`)}
         </Text>

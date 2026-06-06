@@ -20,10 +20,10 @@ export const TorchSubPanel = ({ animatedStyle: _animatedStyle }: TorchSubPanelPr
   const { t } = useTranslation();
   const bodyWorklets = useBodyWorklets();
 
-  const { activeDetailPanel, setActiveDetailPanel, isDebugEnabled } = useSystemStore(useShallow(state => ({
+  const { activeDetailPanel, setActiveDetailPanel, isLayoutOverlayEnabled } = useSystemStore(useShallow(state => ({
     activeDetailPanel: state.activeDetailPanel,
     setActiveDetailPanel: state.setActiveDetailPanel,
-    isDebugEnabled: state.isDebugEnabled,
+    isLayoutOverlayEnabled: state.isLayoutOverlayEnabled,
   })));
 
   const {
@@ -35,7 +35,7 @@ export const TorchSubPanel = ({ animatedStyle: _animatedStyle }: TorchSubPanelPr
   })));
 
   return (
-    <SubPanelContainer style={[styles.childSubContainer, _animatedStyle]} isDebugEnabled={isDebugEnabled}>
+    <SubPanelContainer style={[styles.childSubContainer, _animatedStyle]} isLayoutOverlayEnabled={isLayoutOverlayEnabled}>
       <ParameterControl
         label={t('parameters.torch_dimmer')}
         isActive={activeDetailPanel === 'torch_strength'}

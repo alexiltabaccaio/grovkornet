@@ -19,7 +19,7 @@ const ParameterThumbViewBase = forwardRef<View, ParameterThumbViewProps>((props,
     isActive,
     variant = 'text',
     imageSource,
-    isDebugEnabled = false,
+    isLayoutOverlayEnabled = false,
     value,
     staticText,
     icon,
@@ -76,7 +76,7 @@ const ParameterThumbViewBase = forwardRef<View, ParameterThumbViewProps>((props,
           styles.filterThumb,
           isMainParameter && { flex: 1 },
           { justifyContent: 'center', height: 82 },
-          isDebugEnabled && { backgroundColor: 'rgba(0, 255, 0, 0.2)', borderColor: 'green' }
+          isLayoutOverlayEnabled && { backgroundColor: 'rgba(0, 255, 0, 0.2)', borderColor: 'green' }
         ]}
       >
         <Text 
@@ -101,7 +101,7 @@ const ParameterThumbViewBase = forwardRef<View, ParameterThumbViewProps>((props,
         styles.filterThumb,
         isMainParameter && { flex: 1 },
         variant === 'slider' && { width: '100%', alignItems: 'center' },
-        isDebugEnabled && { backgroundColor: 'rgba(0, 255, 0, 0.2)', borderColor: 'green' }
+        isLayoutOverlayEnabled && { backgroundColor: 'rgba(0, 255, 0, 0.2)', borderColor: 'green' }
       ]}
     >
       {!!label && (
@@ -126,7 +126,7 @@ const ParameterThumbViewBase = forwardRef<View, ParameterThumbViewProps>((props,
         variant === 'text' && !imageSource && styles.textVariantPlaceholder,
         variant === 'text' && !imageSource && { width: 'auto', height: 'auto' },
         variant === 'slider' && { width: '100%', height: 'auto', backgroundColor: 'transparent', borderWidth: 0, overflow: 'visible' },
-        isDebugEnabled && variant === 'text' && { backgroundColor: 'rgba(255,0,0,0.2)', borderColor: 'red' }
+        isLayoutOverlayEnabled && variant === 'text' && { backgroundColor: 'rgba(255,0,0,0.2)', borderColor: 'red' }
       ]}>
         {variant === 'text' && !imageSource && <TextThumb {...props} />}
         {variant === 'slider' && <SliderThumb key={parameterId ?? label} {...props} />}
@@ -165,7 +165,7 @@ const arePropsEqual = (prev: ParameterThumbViewProps, next: ParameterThumbViewPr
     prev.label === next.label &&
     prev.isActive === next.isActive &&
     prev.variant === next.variant &&
-    prev.isDebugEnabled === next.isDebugEnabled &&
+    prev.isLayoutOverlayEnabled === next.isLayoutOverlayEnabled &&
     prev.staticText === next.staticText &&
     prev.renderValue === next.renderValue &&
     prev.isToggle === next.isToggle &&

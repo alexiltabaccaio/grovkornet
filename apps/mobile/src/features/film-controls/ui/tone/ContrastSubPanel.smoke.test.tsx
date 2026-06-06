@@ -33,7 +33,7 @@ jest.mock('@entities/system', () => {
   return {
     useSystemStore: jest.fn((fn?: (state: any) => unknown) => {
       const state = {
-        isDebugEnabled: false,
+        isLayoutOverlayEnabled: false,
       };
       return fn ? fn(state) : state;
     }),

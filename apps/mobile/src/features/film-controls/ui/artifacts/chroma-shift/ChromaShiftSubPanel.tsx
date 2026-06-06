@@ -14,7 +14,7 @@ interface ChromaShiftSubPanelProps {
 
 export const ChromaShiftSubPanel = ({ animatedStyle: _animatedStyle }: ChromaShiftSubPanelProps) => {
   const { t } = useTranslation();
-  const isDebugEnabled = useSystemStore((s) => s.isDebugEnabled);
+  const isLayoutOverlayEnabled = useSystemStore((s) => s.isLayoutOverlayEnabled);
   
   const { chromaShiftDirection, setChromaShiftDirection, chromaShiftInvert, setChromaShiftInvert } = useFilmStore(
     useShallow((state) => ({
@@ -42,7 +42,7 @@ export const ChromaShiftSubPanel = ({ animatedStyle: _animatedStyle }: ChromaShi
   const isInverted = useDerivedValue(() => chromaShiftInvert.value);
 
   return (
-    <SubPanelContainer style={[styles.container, _animatedStyle]} showBorder={true} isDebugEnabled={isDebugEnabled}>
+    <SubPanelContainer style={[styles.container, _animatedStyle]} showBorder={true} isLayoutOverlayEnabled={isLayoutOverlayEnabled}>
       <ResettableLabel
         label={t('parameters.direction').toUpperCase()}
         style={styles.label}
@@ -56,14 +56,14 @@ export const ChromaShiftSubPanel = ({ animatedStyle: _animatedStyle }: ChromaShi
           label="HOR"
           isActive={isHorActive}
           onPress={() => handleDirectionPress(0)}
-          isDebugEnabled={isDebugEnabled}
+          isLayoutOverlayEnabled={isLayoutOverlayEnabled}
           style={styles.pressable}
         />
         <PillButton
           label="VER"
           isActive={isVerActive}
           onPress={() => handleDirectionPress(1)}
-          isDebugEnabled={isDebugEnabled}
+          isLayoutOverlayEnabled={isLayoutOverlayEnabled}
           style={styles.pressable}
         />
         <View style={styles.divider} />
@@ -71,7 +71,7 @@ export const ChromaShiftSubPanel = ({ animatedStyle: _animatedStyle }: ChromaShi
           label="INV"
           isActive={isInverted}
           onPress={handleInvertPress}
-          isDebugEnabled={isDebugEnabled}
+          isLayoutOverlayEnabled={isLayoutOverlayEnabled}
           style={styles.pressableInvert}
         />
       </View>

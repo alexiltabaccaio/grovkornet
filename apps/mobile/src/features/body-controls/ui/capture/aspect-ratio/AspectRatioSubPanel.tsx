@@ -17,7 +17,7 @@ interface AspectRatioSubPanelProps {
 
 export const AspectRatioSubPanel = ({ animatedStyle }: AspectRatioSubPanelProps) => {
   const { t } = useTranslation();
-  const isDebugEnabled = useSystemStore(state => state.isDebugEnabled);
+  const isLayoutOverlayEnabled = useSystemStore(state => state.isLayoutOverlayEnabled);
   const { 
     aspectRatio, 
     resolutionSetting,
@@ -69,7 +69,7 @@ export const AspectRatioSubPanel = ({ animatedStyle }: AspectRatioSubPanelProps)
   }
 
   return (
-    <SubPanelContainer style={[styles.cropContainer, animatedStyle]} isDebugEnabled={isDebugEnabled}>
+    <SubPanelContainer style={[styles.cropContainer, animatedStyle]} isLayoutOverlayEnabled={isLayoutOverlayEnabled}>
       <View style={styles.toggleRowContainer}>
         <Text style={styles.toggleLabel} allowFontScaling={false}>
           {t('parameters.apply_crop')}

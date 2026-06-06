@@ -13,18 +13,18 @@ describe('SubPanelContainer', () => {
     expect(getByText('Test Child')).toBeDefined();
   });
 
-  it('applies debug padding when isDebugEnabled is true', () => {
+  it('applies debug padding when isLayoutOverlayEnabled is true', () => {
     const { toJSON } = render(
-      <SubPanelContainer isDebugEnabled={true}>
+      <SubPanelContainer isLayoutOverlayEnabled={true}>
         <Text>Test Child</Text>
       </SubPanelContainer>
     );
     expect(toJSON()).toBeDefined();
   });
 
-  it('applies debug border when isDebugEnabled and showBorder are true', () => {
+  it('applies debug border when isLayoutOverlayEnabled and showBorder are true', () => {
     const { toJSON } = render(
-      <SubPanelContainer showBorder={true} isDebugEnabled={true}>
+      <SubPanelContainer showBorder={true} isLayoutOverlayEnabled={true}>
         <Text>Test Child</Text>
       </SubPanelContainer>
     );

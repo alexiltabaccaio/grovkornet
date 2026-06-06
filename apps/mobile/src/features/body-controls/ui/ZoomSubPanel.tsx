@@ -12,7 +12,7 @@ interface ZoomSubPanelProps {
 }
 
 export const ZoomSubPanel = ({ animatedStyle }: ZoomSubPanelProps) => {
-  const isDebugEnabled = useSystemStore((s) => s.isDebugEnabled);
+  const isLayoutOverlayEnabled = useSystemStore((s) => s.isLayoutOverlayEnabled);
   const { zoom, setZoom, capabilities } = useBodyStore(
     useShallow((state) => ({
       zoom: state.zoom,
@@ -53,7 +53,7 @@ export const ZoomSubPanel = ({ animatedStyle }: ZoomSubPanelProps) => {
   }
 
   return (
-    <SubPanelContainer style={[styles.container, animatedStyle]} isDebugEnabled={isDebugEnabled}>
+    <SubPanelContainer style={[styles.container, animatedStyle]} isLayoutOverlayEnabled={isLayoutOverlayEnabled}>
       <View style={styles.buttonRow}>
 
         {options.map((opt) => {
@@ -68,7 +68,7 @@ export const ZoomSubPanel = ({ animatedStyle }: ZoomSubPanelProps) => {
                 setZoom(opt);
                 worklets.updateZoom(opt);
               }}
-              isDebugEnabled={isDebugEnabled}
+              isLayoutOverlayEnabled={isLayoutOverlayEnabled}
               style={styles.pressable}
             />
           );

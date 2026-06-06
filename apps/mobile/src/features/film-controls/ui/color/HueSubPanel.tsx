@@ -32,7 +32,7 @@ interface HueSubPanelProps {
 export const HueSubPanel = ({
   animatedStyle
 }: HueSubPanelProps) => {
-  const isDebugEnabled = useSystemStore(state => state.isDebugEnabled);
+  const isLayoutOverlayEnabled = useSystemStore(state => state.isLayoutOverlayEnabled);
   const {
     activeColorIndex,
     activeValue,
@@ -43,7 +43,7 @@ export const HueSubPanel = ({
   } = useSelectiveHue();
 
   return (
-    <SubPanelContainer style={[styles.container, animatedStyle]} isDebugEnabled={isDebugEnabled}>
+    <SubPanelContainer style={[styles.container, animatedStyle]} isLayoutOverlayEnabled={isLayoutOverlayEnabled}>
       <View style={styles.colorCirclesRow}>
         {COLOR_MAPPING.map((item, index) => (
           <ColorCircle

@@ -14,14 +14,14 @@ export const Modules = React.memo(() => {
     lastNonNoneSection,
     lastNonNoneModule,
     setActiveModule, 
-    isDebugEnabled 
+    isLayoutOverlayEnabled 
   } = useSystemStore(useShallow(state => ({
     activeSection: state.activeSection,
     activeModule: state.activeModule,
     lastNonNoneSection: state.lastNonNoneSection,
     lastNonNoneModule: state.lastNonNoneModule,
     setActiveModule: state.setActiveModule,
-    isDebugEnabled: state.isDebugEnabled
+    isLayoutOverlayEnabled: state.isLayoutOverlayEnabled
   })));
   const { t } = useTranslation();
 
@@ -32,7 +32,7 @@ export const Modules = React.memo(() => {
 
   return (
     <>
-      <View style={[styles.container, isDebugEnabled && styles.debugContainerWrapper]}>
+      <View style={[styles.container, isLayoutOverlayEnabled && styles.debugContainerWrapper]}>
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
@@ -46,7 +46,7 @@ export const Modules = React.memo(() => {
               label={t(`modules.${moduleName}`)}
               isActive={renderModule === moduleName}
               onPress={() => setActiveModule(moduleName)}
-              isDebugEnabled={isDebugEnabled}
+              isLayoutOverlayEnabled={isLayoutOverlayEnabled}
               style={styles.pill}
             />
           ))}

@@ -22,7 +22,7 @@ jest.mock('@entities/body', () => ({
 jest.mock('@entities/system', () => ({
   useSystemStore: (fn: (state: any) => any) => {
     const state = {
-      isDebugEnabled: false,
+      isLayoutOverlayEnabled: false,
     };
     return fn(state);
   },

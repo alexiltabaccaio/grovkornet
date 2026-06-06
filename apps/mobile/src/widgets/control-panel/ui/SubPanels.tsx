@@ -13,9 +13,9 @@ interface SubPanelsProps {
 }
 
 export const SubPanels = React.memo(({ translateY }: SubPanelsProps) => {
-  const { activeParameter, isDebugEnabled } = useSystemStore(useShallow(state => ({
+  const { activeParameter, isLayoutOverlayEnabled } = useSystemStore(useShallow(state => ({
     activeParameter: state.activeParameter,
-    isDebugEnabled: state.isDebugEnabled,
+    isLayoutOverlayEnabled: state.isLayoutOverlayEnabled,
   })));
 
   const parentAnimatedStyle = useAnimatedStyle(() => {
@@ -61,7 +61,7 @@ export const SubPanels = React.memo(({ translateY }: SubPanelsProps) => {
       <View
         style={[
           styles.wrapper,
-          isDebugEnabled && styles.debugWrapper,
+          isLayoutOverlayEnabled && styles.debugWrapper,
         ]}
       >
         {content}

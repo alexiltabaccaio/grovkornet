@@ -22,7 +22,7 @@ jest.mock('@entities/system', () => ({
       activeTab: 'none',
       activeModule: 'none',
       activeParameter: 'none',
-      isDebugEnabled: true,
+      isFpsOverlayEnabled: true,
       latestCapturedUri: 'file:///test.jpg',
       triggerCapture: mockTriggerCapture,
     };

@@ -24,8 +24,8 @@ interface ControlPanelProps {
 
 export const ControlPanel = React.memo(({ translateY: externalTranslateY, drawerAnimation: externalDrawerAnimation, galleryTransition }: ControlPanelProps) => {
   const insets = useSafeAreaInsets();
-  const { isDebugEnabled } = useSystemStore(useShallow(state => ({
-    isDebugEnabled: state.isDebugEnabled,
+  const { isLayoutOverlayEnabled } = useSystemStore(useShallow(state => ({
+    isLayoutOverlayEnabled: state.isLayoutOverlayEnabled,
   })));
 
   const {
@@ -70,7 +70,7 @@ export const ControlPanel = React.memo(({ translateY: externalTranslateY, drawer
               <Modules />
               <Parameters />
             </View>
-            {isDebugEnabled && (
+            {isLayoutOverlayEnabled && (
               <View style={styles.debugContainer} pointerEvents="none">
                 <AnimatedTextInput
                   style={styles.debugText}

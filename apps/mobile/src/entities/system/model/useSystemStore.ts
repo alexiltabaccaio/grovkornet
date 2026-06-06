@@ -16,7 +16,8 @@ export const useSystemStore = create<SystemStore>()(
   activeModule: 'none',
   activeParameter: 'none',
   activeDetailPanel: 'none',
-  isDebugEnabled: false,
+  isFpsOverlayEnabled: false,
+  isLayoutOverlayEnabled: false,
   isLogsEnabled: __DEV__,
   isDetailPanelOpen: false,
   isCapturing: false,
@@ -51,6 +52,7 @@ export const useSystemStore = create<SystemStore>()(
     color: 'temperature',
     texture: 'grain',
     capture: 'aspect_ratio',
+    debug: 'ui_overlay',
   },
 
   // Actions
@@ -95,8 +97,12 @@ export const useSystemStore = create<SystemStore>()(
     }));
   },
 
-  setIsDebugEnabled: (enabled: boolean) => {
-    set({ isDebugEnabled: enabled });
+  setIsFpsOverlayEnabled: (enabled: boolean) => {
+    set({ isFpsOverlayEnabled: enabled });
+  },
+
+  setIsLayoutOverlayEnabled: (enabled: boolean) => {
+    set({ isLayoutOverlayEnabled: enabled });
   },
 
   setIsLogsEnabled: (enabled: boolean) => {

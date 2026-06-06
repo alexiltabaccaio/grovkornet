@@ -104,16 +104,16 @@ describe('SubPanels', () => {
     expect(toJSON()).toBeDefined();
   });
 
-  it('applies debugWrapper style when isDebugEnabled is true', () => {
+  it('applies debugWrapper style when isLayoutOverlayEnabled is true', () => {
     act(() => {
       useSystemStore.getState().setActiveParameter('saturation');
-      useSystemStore.getState().setIsDebugEnabled(true);
+      useSystemStore.getState().setIsLayoutOverlayEnabled(true);
     });
     const { toJSON } = render(<SubPanels translateY={mockTranslateY} />);
     expect(toJSON()).toBeDefined();
     // Reset state after test
     act(() => {
-      useSystemStore.getState().setIsDebugEnabled(false);
+      useSystemStore.getState().setIsLayoutOverlayEnabled(false);
     });
   });
 });

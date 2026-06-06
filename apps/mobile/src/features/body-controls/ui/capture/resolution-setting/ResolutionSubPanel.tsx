@@ -17,7 +17,7 @@ interface ResolutionSubPanelProps {
 
 export const ResolutionSubPanel = ({ animatedStyle }: ResolutionSubPanelProps) => {
   const { t } = useTranslation();
-  const isDebugEnabled = useSystemStore(state => state.isDebugEnabled);
+  const isLayoutOverlayEnabled = useSystemStore(state => state.isLayoutOverlayEnabled);
   const {
     resolutionSetting,
     previewQuality,
@@ -52,7 +52,7 @@ export const ResolutionSubPanel = ({ animatedStyle }: ResolutionSubPanelProps) =
   );
 
   return (
-    <SubPanelContainer style={[styles.previewQualityContainer, animatedStyle]} isDebugEnabled={isDebugEnabled}>
+    <SubPanelContainer style={[styles.previewQualityContainer, animatedStyle]} isLayoutOverlayEnabled={isLayoutOverlayEnabled}>
       <View style={styles.rowContainer}>
         <Text style={styles.label} allowFontScaling={false}>
           {t('parameters.preview_quality').toUpperCase()}

@@ -13,7 +13,7 @@ interface TorchPanelProps {
 }
 
 export const TorchPanel = ({ animatedStyle }: TorchPanelProps) => {
-  const isDebugEnabled = useSystemStore(state => state.isDebugEnabled);
+  const isLayoutOverlayEnabled = useSystemStore(state => state.isLayoutOverlayEnabled);
 
   const {
     torchState,
@@ -52,7 +52,7 @@ export const TorchPanel = ({ animatedStyle }: TorchPanelProps) => {
         label={buttonLabel}
         isActive={isTorchActive}
         onPress={handleToggle}
-        isDebugEnabled={isDebugEnabled}
+        isLayoutOverlayEnabled={isLayoutOverlayEnabled}
         style={styles.toggleButton}
       />
     </ParameterPanelWrapper>

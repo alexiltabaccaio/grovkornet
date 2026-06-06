@@ -16,10 +16,10 @@ interface SectionsProps {
 }
 
 export const Sections = React.memo(({ galleryTransition }: SectionsProps) => {
-  const { activeSection, setActiveSection, isDebugEnabled } = useSystemStore(useShallow(state => ({
+  const { activeSection, setActiveSection, isLayoutOverlayEnabled } = useSystemStore(useShallow(state => ({
     activeSection: state.activeSection,
     setActiveSection: state.setActiveSection,
-    isDebugEnabled: state.isDebugEnabled,
+    isLayoutOverlayEnabled: state.isLayoutOverlayEnabled,
   })));
   const { t } = useTranslation();
 
@@ -62,9 +62,9 @@ export const Sections = React.memo(({ galleryTransition }: SectionsProps) => {
           return (
             <View
               key={section.id}
-              style={[styles.tabButton, isDebugEnabled && styles.debugTabButton]}
+              style={[styles.tabButton, isLayoutOverlayEnabled && styles.debugTabButton]}
             >
-              {isDebugEnabled && (
+              {isLayoutOverlayEnabled && (
                 <View style={styles.debugHitbox} pointerEvents="none" />
               )}
               <TouchableOpacity

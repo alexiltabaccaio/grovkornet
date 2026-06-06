@@ -17,7 +17,7 @@ export const LensSelectionPanel = ({ animatedStyle }: LensSelectionPanelProps) =
     cameraAuto: state.cameraAuto,
     setCameraAuto: state.setCameraAuto,
   })));
-  const isDebugEnabled = useSystemStore((s) => s.isDebugEnabled);
+  const isLayoutOverlayEnabled = useSystemStore((s) => s.isLayoutOverlayEnabled);
 
   return (
     <GenericPillPanel
@@ -38,7 +38,7 @@ export const LensSelectionPanel = ({ animatedStyle }: LensSelectionPanelProps) =
         <AutoButton
           isActive={cameraAuto}
           onPress={() => setCameraAuto(!cameraAuto)}
-          isDebugEnabled={isDebugEnabled}
+          isLayoutOverlayEnabled={isLayoutOverlayEnabled}
         />
       }
     />

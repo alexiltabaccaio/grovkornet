@@ -6,7 +6,7 @@ import { useSystemStore } from '@entities/system';
 
 import { SliderPanel } from './components/SliderPanel';
 import { TorchPanel, FpsPanel, ResolutionPanel, AspectRatioPanel } from '@features/body-controls';
-import { PresetsPanel, LanguagePanel, VibrationPanel, DebugPanel } from '@features/system-settings';
+import { PresetsPanel, LanguagePanel, VibrationPanel, DebugPanels } from '@features/system-settings';
 import { LensSelectionPanel } from '@features/lens-controls';
 import { NoiseReductionPanel } from '@features/body-controls';
 
@@ -69,8 +69,10 @@ export const Panels = React.memo(({ translateY }: PanelsProps) => {
         return <LanguagePanel animatedStyle={panelAnimatedStyle} />;
       case 'vibration':
         return <VibrationPanel animatedStyle={panelAnimatedStyle} />;
-      case 'debug':
-        return <DebugPanel animatedStyle={panelAnimatedStyle} />;
+      case 'ui_overlay':
+      case 'temperature_test':
+      case 'developer_options':
+        return <DebugPanels parameter={activeParameter} animatedStyle={panelAnimatedStyle} />;
       case 'camera_selection':
         return <LensSelectionPanel animatedStyle={panelAnimatedStyle} />;
       case 'noise_reduction':

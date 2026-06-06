@@ -6,7 +6,7 @@ import { useSystemStore } from '../../model/useSystemStore';
 
 describe('ParameterPanelWrapper', () => {
   beforeEach(() => {
-    useSystemStore.setState({ isDebugEnabled: false });
+    useSystemStore.setState({ isLayoutOverlayEnabled: false });
   });
 
   it('renders children and default layout correctly', () => {
@@ -43,8 +43,8 @@ describe('ParameterPanelWrapper', () => {
     expect(getByText('Scroll Child')).toBeDefined();
   });
 
-  it('applies debug styles when isDebugEnabled is true', () => {
-    useSystemStore.setState({ isDebugEnabled: true });
+  it('applies debug styles when isLayoutOverlayEnabled is true', () => {
+    useSystemStore.setState({ isLayoutOverlayEnabled: true });
     
     const { getByText } = render(
       <ParameterPanelWrapper>

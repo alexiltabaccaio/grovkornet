@@ -49,29 +49,29 @@ describe('PillButton Unit Tests', () => {
   });
 
   describe('getColors branching (including debug and variants)', () => {
-    it('handles isDebugEnabled = true and variant = module', () => {
+    it('handles isLayoutOverlayEnabled = true and variant = module', () => {
       const { getByText } = render(
         <>
-          <PillButton label="DebugModuleActive" isActive={true} isDebugEnabled={true} variant="module" onPress={() => {}} />
-          <PillButton label="DebugModuleInactive" isActive={false} isDebugEnabled={true} variant="module" onPress={() => {}} />
+          <PillButton label="DebugModuleActive" isActive={true} isLayoutOverlayEnabled={true} variant="module" onPress={() => {}} />
+          <PillButton label="DebugModuleInactive" isActive={false} isLayoutOverlayEnabled={true} variant="module" onPress={() => {}} />
         </>
       );
       expect(getByText('DebugModuleActive')).toBeDefined();
       expect(getByText('DebugModuleInactive')).toBeDefined();
     });
 
-    it('handles isDebugEnabled = true and other variants', () => {
+    it('handles isLayoutOverlayEnabled = true and other variants', () => {
       const { getByText } = render(
         <>
-          <PillButton label="DebugDefaultActive" isActive={true} isDebugEnabled={true} variant="default" onPress={() => {}} />
-          <PillButton label="DebugDefaultInactive" isActive={false} isDebugEnabled={true} variant="default" onPress={() => {}} />
+          <PillButton label="DebugDefaultActive" isActive={true} isLayoutOverlayEnabled={true} variant="default" onPress={() => {}} />
+          <PillButton label="DebugDefaultInactive" isActive={false} isLayoutOverlayEnabled={true} variant="default" onPress={() => {}} />
         </>
       );
       expect(getByText('DebugDefaultActive')).toBeDefined();
       expect(getByText('DebugDefaultInactive')).toBeDefined();
     });
 
-    it('handles isDebugEnabled = false and inactive variants', () => {
+    it('handles isLayoutOverlayEnabled = false and inactive variants', () => {
       const { getByText } = render(
         <>
           <PillButton label="DefaultInactive" isActive={false} variant="default" onPress={() => {}} />
@@ -92,7 +92,7 @@ describe('PillButton Unit Tests', () => {
       isActive: false,
       onPress: () => {},
       variant: 'default' as const,
-      isDebugEnabled: false,
+      isLayoutOverlayEnabled: false,
       opacity: 1,
       style: { margin: 10 },
       textStyle: { color: 'red' },
@@ -113,8 +113,8 @@ describe('PillButton Unit Tests', () => {
       expect(result).toBe(false);
     });
 
-    it('returns false when isDebugEnabled differs', () => {
-      const result = compare(defaultProps, { ...defaultProps, isDebugEnabled: true });
+    it('returns false when isLayoutOverlayEnabled differs', () => {
+      const result = compare(defaultProps, { ...defaultProps, isLayoutOverlayEnabled: true });
       expect(result).toBe(false);
     });
 

@@ -9,7 +9,7 @@ export interface AutoButtonProps {
   style?: StyleProp<ViewStyle>;
   disabled?: boolean | SharedValue<boolean>;
   opacity?: number | SharedValue<number>;
-  isDebugEnabled?: boolean;
+  isLayoutOverlayEnabled?: boolean;
 }
 
 export const AutoButton = ({
@@ -18,7 +18,7 @@ export const AutoButton = ({
   style,
   disabled: _disabled,
   opacity,
-  isDebugEnabled,
+  isLayoutOverlayEnabled,
 }: AutoButtonProps) => {
   return (
     <PillButton
@@ -28,7 +28,7 @@ export const AutoButton = ({
       variant="auto"
       style={[styles.autoButtonWrapper, style]}
       opacity={opacity}
-      isDebugEnabled={isDebugEnabled}
+      isLayoutOverlayEnabled={isLayoutOverlayEnabled}
     />
   );
 };

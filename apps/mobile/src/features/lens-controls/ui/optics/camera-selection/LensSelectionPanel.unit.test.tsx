@@ -24,8 +24,8 @@ jest.mock('@entities/lens', () => ({
 }));
 
 jest.mock('@entities/system', () => ({
-  useSystemStore: jest.fn((fn?: (state: { isDebugEnabled: boolean }) => unknown) => {
-    const state = { isDebugEnabled: true };
+  useSystemStore: jest.fn((fn?: (state: { isLayoutOverlayEnabled: boolean }) => unknown) => {
+    const state = { isLayoutOverlayEnabled: true };
     return fn ? fn(state) : state;
   }),
   GenericPillPanel: 'GenericPillPanel',

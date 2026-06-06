@@ -22,7 +22,7 @@ export const ParameterPanelWrapper = ({
   leftAccessory,
   rightAccessory,
 }: ParameterPanelWrapperProps) => {
-  const isDebugEnabled = useSystemStore(state => state.isDebugEnabled);
+  const isLayoutOverlayEnabled = useSystemStore(state => state.isLayoutOverlayEnabled);
 
   const renderRightAccessory = () => {
     if (rightAccessory) {
@@ -44,7 +44,7 @@ export const ParameterPanelWrapper = ({
         <View
           style={[
             styles.debugWrapper,
-            isDebugEnabled && {
+            isLayoutOverlayEnabled && {
               backgroundColor: 'rgba(0, 255, 0, 0.2)',
               borderColor: 'green',
             },

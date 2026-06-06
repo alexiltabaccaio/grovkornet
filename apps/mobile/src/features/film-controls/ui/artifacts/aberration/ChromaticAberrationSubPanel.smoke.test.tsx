@@ -4,7 +4,7 @@ import { ChromaticAberrationSubPanel } from './ChromaticAberrationSubPanel';
 
 const mockSetAberrationInvert = jest.fn();
 const mockUpdateAberrationInvert = jest.fn();
-let mockIsDebugEnabled = false;
+let mockIsLayoutOverlayEnabled = false;
 let mockAberrationInvertVal = false;
 
 jest.mock('react-i18next', () => ({
@@ -31,8 +31,8 @@ jest.mock('@entities/film', () => ({
 }));
 
 jest.mock('@entities/system', () => ({
-  useSystemStore: jest.fn((fn?: (state: { isDebugEnabled: boolean }) => unknown) => {
-    const state = { isDebugEnabled: mockIsDebugEnabled };
+  useSystemStore: jest.fn((fn?: (state: { isLayoutOverlayEnabled: boolean }) => unknown) => {
+    const state = { isLayoutOverlayEnabled: mockIsLayoutOverlayEnabled };
     return fn ? fn(state) : state;
   }),
 }));
@@ -40,7 +40,7 @@ jest.mock('@entities/system', () => ({
 describe('ChromaticAberrationSubPanel', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    mockIsDebugEnabled = false;
+    mockIsLayoutOverlayEnabled = false;
     mockAberrationInvertVal = false;
   });
 
@@ -71,8 +71,8 @@ describe('ChromaticAberrationSubPanel', () => {
     expect(mockUpdateAberrationInvert).toHaveBeenCalledWith(false);
   });
 
-  it('applies debug styles when isDebugEnabled is true', () => {
-    mockIsDebugEnabled = true;
+  it('applies debug styles when isLayoutOverlayEnabled is true', () => {
+    mockIsLayoutOverlayEnabled = true;
     const { toJSON } = render(<ChromaticAberrationSubPanel />);
     expect(toJSON()).toBeDefined();
   });

@@ -33,7 +33,7 @@ interface GrainSubPanelProps {
 
 export const GrainSubPanel = ({ parameterDetailPanelAnimatedStyle: _parameterDetailPanelAnimatedStyle, animatedStyle: _animatedStyle }: GrainSubPanelProps) => {
   const { t } = useTranslation();
-  const isDebugEnabled = useSystemStore((s) => s.isDebugEnabled);
+  const isLayoutOverlayEnabled = useSystemStore((s) => s.isLayoutOverlayEnabled);
   const { 
     grainChroma, setGrainChroma, 
     grainSize, setGrainSize, 
@@ -58,11 +58,11 @@ export const GrainSubPanel = ({ parameterDetailPanelAnimatedStyle: _parameterDet
   const isRgbActive = useDerivedValue(() => grainChroma.value === 1);
 
   return (
-    <SubPanelContainer style={[styles.container, _animatedStyle]} isDebugEnabled={isDebugEnabled}>
+    <SubPanelContainer style={[styles.container, _animatedStyle]} isLayoutOverlayEnabled={isLayoutOverlayEnabled}>
       <View style={styles.row}>
           <View style={[
             styles.chromaContainer,
-            isDebugEnabled && { backgroundColor: 'rgba(0, 255, 0, 0.2)', borderColor: 'green' }
+            isLayoutOverlayEnabled && { backgroundColor: 'rgba(0, 255, 0, 0.2)', borderColor: 'green' }
           ]}>
             <ResettableLabel
               label={t('parameters.chroma').toUpperCase()}
@@ -80,7 +80,7 @@ export const GrainSubPanel = ({ parameterDetailPanelAnimatedStyle: _parameterDet
                   setGrainChroma(0);
                   worklets.updateGrainChroma(0);
                 }}
-                isDebugEnabled={isDebugEnabled}
+                isLayoutOverlayEnabled={isLayoutOverlayEnabled}
                 style={styles.pressable}
               />
               <PillButton
@@ -90,7 +90,7 @@ export const GrainSubPanel = ({ parameterDetailPanelAnimatedStyle: _parameterDet
                   setGrainChroma(1);
                   worklets.updateGrainChroma(1);
                 }}
-                isDebugEnabled={isDebugEnabled}
+                isLayoutOverlayEnabled={isLayoutOverlayEnabled}
                 style={styles.pressable}
               />
             </View>

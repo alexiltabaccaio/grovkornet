@@ -22,7 +22,7 @@ describe('SystemPreferencesAndTelemetry Integration', () => {
     act(() => {
       useSystemStore.getState().setActiveSection('none');
       useSystemStore.getState().setActiveModule('none');
-      useSystemStore.getState().setIsDebugEnabled(false);
+      useSystemStore.getState().setIsFpsOverlayEnabled(false);
       useBodyStore.getState().setDebugInfo(0, '1080p', 0);
     });
   });
@@ -38,7 +38,7 @@ describe('SystemPreferencesAndTelemetry Integration', () => {
 
     // Enable debug mode
     act(() => {
-      useSystemStore.getState().setIsDebugEnabled(true);
+      useSystemStore.getState().setIsFpsOverlayEnabled(true);
     });
 
     // Verify debug overlay appears with default values

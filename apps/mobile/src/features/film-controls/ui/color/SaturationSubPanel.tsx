@@ -31,7 +31,7 @@ interface SaturationSubPanelProps {
 export const SaturationSubPanel = ({
   animatedStyle
 }: SaturationSubPanelProps) => {
-  const isDebugEnabled = useSystemStore(state => state.isDebugEnabled);
+  const isLayoutOverlayEnabled = useSystemStore(state => state.isLayoutOverlayEnabled);
   const {
     activeColorIndex,
     activeValue,
@@ -42,7 +42,7 @@ export const SaturationSubPanel = ({
   } = useSelectiveSaturation();
 
   return (
-    <SubPanelContainer style={[styles.container, animatedStyle]} isDebugEnabled={isDebugEnabled}>
+    <SubPanelContainer style={[styles.container, animatedStyle]} isLayoutOverlayEnabled={isLayoutOverlayEnabled}>
       <View style={styles.colorCirclesRow}>
         {COLOR_MAPPING.map((item, index) => (
           <ColorCircle

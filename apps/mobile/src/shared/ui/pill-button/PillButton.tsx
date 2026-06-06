@@ -9,15 +9,15 @@ export interface PillButtonProps {
   isActive: boolean | SharedValue<boolean>;
   onPress: () => void;
   variant?: 'default' | 'auto' | 'module';
-  isDebugEnabled?: boolean;
+  isLayoutOverlayEnabled?: boolean;
   opacity?: number | SharedValue<number>;
   style?: StyleProp<ViewStyle>;
   textStyle?: StyleProp<TextStyle>;
 }
 
-const getColors = (variant: 'default' | 'auto' | 'module', active: boolean, isDebugEnabled: boolean) => {
+const getColors = (variant: 'default' | 'auto' | 'module', active: boolean, isLayoutOverlayEnabled: boolean) => {
   'worklet';
-  if (isDebugEnabled) {
+  if (isLayoutOverlayEnabled) {
     if (variant === 'module') {
       return {
         borderColor: 'cyan',
@@ -74,7 +74,7 @@ const StaticPillButton = memo(({
   isActive,
   onPress,
   variant = 'default',
-  isDebugEnabled = false,
+  isLayoutOverlayEnabled = false,
   opacity = 1,
   style,
   textStyle,
@@ -91,7 +91,7 @@ const StaticPillButton = memo(({
 
   const active = typeof isActive === 'boolean' ? isActive : false;
   const op = typeof opacity === 'number' ? opacity : 1;
-  const colors = getColors(variant, active, isDebugEnabled);
+  const colors = getColors(variant, active, isLayoutOverlayEnabled);
 
   return (
     <View style={style}>
@@ -135,7 +135,7 @@ const AnimatedPillButton = memo(({
   isActive,
   onPress,
   variant = 'default',
-  isDebugEnabled = false,
+  isLayoutOverlayEnabled = false,
   opacity = 1,
   style,
   textStyle,
@@ -153,7 +153,7 @@ const AnimatedPillButton = memo(({
   const animatedStyle = useAnimatedStyle(() => {
     const active = typeof isActive === 'object' && 'value' in isActive ? isActive.value : isActive;
     const op = typeof opacity === 'object' && 'value' in opacity ? opacity.value : opacity;
-    const colors = getColors(variant, active, isDebugEnabled);
+    const colors = getColors(variant, active, isLayoutOverlayEnabled);
 
     return {
       borderColor: colors.borderColor,
@@ -164,7 +164,7 @@ const AnimatedPillButton = memo(({
 
   const animatedTextStyle = useAnimatedStyle(() => {
     const active = typeof isActive === 'object' && 'value' in isActive ? isActive.value : isActive;
-    const colors = getColors(variant, active, isDebugEnabled);
+    const colors = getColors(variant, active, isLayoutOverlayEnabled);
 
     return {
       color: colors.textColor,
@@ -206,7 +206,7 @@ AnimatedPillButton.displayName = 'AnimatedPillButton';
 const arePropsEqual = (prevProps: PillButtonProps, nextProps: PillButtonProps) => {
   if (prevProps.label !== nextProps.label) return false;
   if (prevProps.variant !== nextProps.variant) return false;
-  if (prevProps.isDebugEnabled !== nextProps.isDebugEnabled) return false;
+  if (prevProps.isLayoutOverlayEnabled !== nextProps.isLayoutOverlayEnabled) return false;
 
   const getVal = (val: boolean | number | SharedValue<boolean> | SharedValue<number> | undefined): boolean | number | undefined => 
     typeof val === 'object' && val !== null && 'value' in val ? (val as SharedValue<boolean | number>).value : val;

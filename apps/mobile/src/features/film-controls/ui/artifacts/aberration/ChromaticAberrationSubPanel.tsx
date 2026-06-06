@@ -13,7 +13,7 @@ interface ChromaticAberrationSubPanelProps {
 
 export const ChromaticAberrationSubPanel = ({ animatedStyle }: ChromaticAberrationSubPanelProps) => {
   const { t } = useTranslation();
-  const isDebugEnabled = useSystemStore((s) => s.isDebugEnabled);
+  const isLayoutOverlayEnabled = useSystemStore((s) => s.isLayoutOverlayEnabled);
   const { aberrationInvert, setAberrationInvert } = useFilmStore(
     useShallow((state) => ({
       aberrationInvert: state.aberrationInvert,
@@ -31,7 +31,7 @@ export const ChromaticAberrationSubPanel = ({ animatedStyle }: ChromaticAberrati
   const isInverted = useDerivedValue(() => aberrationInvert.value);
 
   return (
-    <SubPanelContainer style={[styles.container, animatedStyle]} showBorder={true} isDebugEnabled={isDebugEnabled}>
+    <SubPanelContainer style={[styles.container, animatedStyle]} showBorder={true} isLayoutOverlayEnabled={isLayoutOverlayEnabled}>
       <Text allowFontScaling={false} style={styles.label}>
         {t('parameters.direction').toUpperCase()}
       </Text>
@@ -40,7 +40,7 @@ export const ChromaticAberrationSubPanel = ({ animatedStyle }: ChromaticAberrati
           label="INV"
           isActive={isInverted}
           onPress={handleInvertPress}
-          isDebugEnabled={isDebugEnabled}
+          isLayoutOverlayEnabled={isLayoutOverlayEnabled}
           style={styles.pressableInvert}
         />
       </View>

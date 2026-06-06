@@ -31,7 +31,7 @@ function GenericPillItemShared<T>({
   getLabel,
   onChange,
   pillMaxWidth,
-  isDebugEnabled,
+  isLayoutOverlayEnabled,
   opacity,
   scrollable,
 }: {
@@ -42,7 +42,7 @@ function GenericPillItemShared<T>({
   getLabel: (option: T, index: number) => string;
   onChange: (option: T, index: number) => void;
   pillMaxWidth: number;
-  isDebugEnabled: boolean;
+  isLayoutOverlayEnabled: boolean;
   opacity: number | SharedValue<number> | ((option: T, index: number) => number | SharedValue<number>);
   scrollable: boolean;
 }) {
@@ -54,7 +54,7 @@ function GenericPillItemShared<T>({
       label={getLabel(option, index)}
       isActive={isActive}
       onPress={() => onChange(option, index)}
-      isDebugEnabled={isDebugEnabled}
+      isLayoutOverlayEnabled={isLayoutOverlayEnabled}
       opacity={itemOpacity}
       style={[
         scrollable ? styles.pressableScrollable : styles.pressable,
@@ -71,7 +71,7 @@ function GenericPillItemStatic<T>({
   getLabel,
   onChange,
   pillMaxWidth,
-  isDebugEnabled,
+  isLayoutOverlayEnabled,
   opacity,
   scrollable,
 }: {
@@ -81,7 +81,7 @@ function GenericPillItemStatic<T>({
   getLabel: (option: T, index: number) => string;
   onChange: (option: T, index: number) => void;
   pillMaxWidth: number;
-  isDebugEnabled: boolean;
+  isLayoutOverlayEnabled: boolean;
   opacity: number | SharedValue<number> | ((option: T, index: number) => number | SharedValue<number>);
   scrollable: boolean;
 }) {
@@ -93,7 +93,7 @@ function GenericPillItemStatic<T>({
       label={getLabel(option, index)}
       isActive={isActive}
       onPress={() => onChange(option, index)}
-      isDebugEnabled={isDebugEnabled}
+      isLayoutOverlayEnabled={isLayoutOverlayEnabled}
       opacity={itemOpacity}
       style={[
         scrollable ? styles.pressableScrollable : styles.pressable,
@@ -120,7 +120,7 @@ export function GenericPillPanel<T>({
   leftAccessory,
   rightAccessory,
 }: GenericPillPanelProps<T>) {
-  const isDebugEnabled = useSystemStore((s) => s.isDebugEnabled);
+  const isLayoutOverlayEnabled = useSystemStore((s) => s.isLayoutOverlayEnabled);
 
   return (
     <ParameterPanelWrapper
@@ -144,7 +144,7 @@ export function GenericPillPanel<T>({
               getLabel={getLabel}
               onChange={onChange}
               pillMaxWidth={pillMaxWidth}
-              isDebugEnabled={isDebugEnabled}
+              isLayoutOverlayEnabled={isLayoutOverlayEnabled}
               opacity={opacity}
               scrollable={scrollable}
             />
@@ -159,7 +159,7 @@ export function GenericPillPanel<T>({
             getLabel={getLabel}
             onChange={onChange}
             pillMaxWidth={pillMaxWidth}
-            isDebugEnabled={isDebugEnabled}
+            isLayoutOverlayEnabled={isLayoutOverlayEnabled}
             opacity={opacity}
             scrollable={scrollable}
           />

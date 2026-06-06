@@ -59,6 +59,15 @@ type FilmActionsKeys =
   | 'setTapeJitter'
   | 'setScanlines'
   | 'setChromaShiftInvert'
+  | 'setHue'
+  | 'setHueRed'
+  | 'setHueOrange'
+  | 'setHueYellow'
+  | 'setHueGreen'
+  | 'setHueCyan'
+  | 'setHueBlue'
+  | 'setHuePurple'
+  | 'setHueMagenta'
   | 'resetEffect';
 
 type FilmExcludedKeys = 'capabilities' | 'isSelfieCamera';

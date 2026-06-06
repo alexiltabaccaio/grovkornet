@@ -8,7 +8,8 @@ describe('useSystemStore', () => {
       activeModule: 'none',
       activeParameter: 'none',
       activeDetailPanel: 'none',
-      isDebugEnabled: false,
+      isFpsOverlayEnabled: false,
+      isLayoutOverlayEnabled: false,
       isLogsEnabled: false,
       lastActiveModules: {
         none: 'none',
@@ -30,6 +31,8 @@ describe('useSystemStore', () => {
         color: 'temperature',
         texture: 'grain',
         capture: 'aspect_ratio',
+        theme: 'none',
+        debug: 'ui_overlay',
       },
     });
   });
@@ -71,10 +74,16 @@ describe('useSystemStore', () => {
     expect(useSystemStore.getState().activeParameter).toBe('saturation'); // Should be restored
   });
 
-  it('updates debug mode correctly', () => {
-    const { setIsDebugEnabled } = useSystemStore.getState();
-    setIsDebugEnabled(true);
-    expect(useSystemStore.getState().isDebugEnabled).toBe(true);
+  it('updates layout overlay mode correctly', () => {
+    const { setIsLayoutOverlayEnabled } = useSystemStore.getState();
+    setIsLayoutOverlayEnabled(true);
+    expect(useSystemStore.getState().isLayoutOverlayEnabled).toBe(true);
+  });
+
+  it('updates fps overlay mode correctly', () => {
+    const { setIsFpsOverlayEnabled } = useSystemStore.getState();
+    setIsFpsOverlayEnabled(true);
+    expect(useSystemStore.getState().isFpsOverlayEnabled).toBe(true);
   });
 
   it('updates logs mode correctly', () => {

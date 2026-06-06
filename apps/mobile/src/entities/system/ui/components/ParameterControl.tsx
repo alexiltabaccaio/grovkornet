@@ -41,7 +41,7 @@ interface ParameterControlProps {
 }
 
 const StaticParameterControl = React.memo((props: ParameterControlProps) => {
-  const isDebugEnabled = useSystemStore((s) => s.isDebugEnabled);
+  const isLayoutOverlayEnabled = useSystemStore((s) => s.isLayoutOverlayEnabled);
   const fallbackTrackWidth = useSharedValue(globalMeasuredTrackWidth);
   const effectiveTrackWidth = props.sliderTrackWidth || fallbackTrackWidth;
   
@@ -61,7 +61,7 @@ const StaticParameterControl = React.memo((props: ParameterControlProps) => {
       staticText={props.staticText}
       hideValueInAuto={props.hideValueInAuto}
       autoValueText={props.autoValueText}
-      isDebugEnabled={!props.hideDebugRectangles && isDebugEnabled}
+      isLayoutOverlayEnabled={!props.hideDebugRectangles && isLayoutOverlayEnabled}
       disabled={props.disabled}
       isToggle={props.isToggle}
       centerValue={props.centerValue}
@@ -117,7 +117,7 @@ export const ParameterControl = React.memo((props: ParameterControlProps) => {
   }
 
   // eslint-disable-next-line react-hooks/rules-of-hooks
-  const { combinedGesture, isDebugEnabled, effectiveTrackWidth } = useParameterGesture({
+  const { combinedGesture, isLayoutOverlayEnabled, effectiveTrackWidth } = useParameterGesture({
     isActive,
     value,
     minValue,
@@ -150,7 +150,7 @@ export const ParameterControl = React.memo((props: ParameterControlProps) => {
         staticText={staticText}
         hideValueInAuto={hideValueInAuto}
         autoValueText={autoValueText}
-        isDebugEnabled={!hideDebugRectangles && isDebugEnabled}
+        isLayoutOverlayEnabled={!hideDebugRectangles && isLayoutOverlayEnabled}
         disabled={disabled}
         isToggle={isToggle}
         centerValue={centerValue}

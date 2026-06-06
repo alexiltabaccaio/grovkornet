@@ -45,7 +45,7 @@ export const useParameterGesture = ({
   const accumulatedValue = useSharedValue(minValue);
   const fallbackTrackWidth = useSharedValue(globalMeasuredTrackWidth);
   const effectiveTrackWidth = sliderTrackWidth || fallbackTrackWidth;
-  const isDebugEnabled = useSystemStore((s) => s.isDebugEnabled);
+  const isLayoutOverlayEnabled = useSystemStore((s) => s.isLayoutOverlayEnabled);
   const atBoundary = useSharedValue(false);
 
   const isSlider = variant === 'slider';
@@ -167,7 +167,7 @@ export const useParameterGesture = ({
 
   return {
     combinedGesture,
-    isDebugEnabled,
+    isLayoutOverlayEnabled,
     effectiveTrackWidth,
   };
 };

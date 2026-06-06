@@ -10,7 +10,7 @@ describe('Modules', () => {
         activeSection: 'none',
         activeModule: 'none',
         activeParameter: 'none',
-        isDebugEnabled: false,
+        isLayoutOverlayEnabled: false,
       });
     });
   });
@@ -106,11 +106,11 @@ describe('Modules', () => {
     expect(useSystemStore.getState().activeModule).toBe('exposure');
   });
 
-  it('renders with debug styles if isDebugEnabled is true', () => {
+  it('renders with debug styles if isLayoutOverlayEnabled is true', () => {
     act(() => {
       useSystemStore.setState({
         activeSection: 'film',
-        isDebugEnabled: true,
+        isLayoutOverlayEnabled: true,
       });
     });
     const { toJSON } = render(<Modules />);
