@@ -16,11 +16,9 @@ import { DeviceHealthWarningBanner } from './DeviceHealthWarningBanner';
 
 interface ViewfinderProps {
   cameraKey?: number;
-  translateY?: SharedValue<number>;
-  drawerAnimation?: SharedValue<number>;
 }
 
-export const Viewfinder = React.memo(({ cameraKey, translateY, drawerAnimation }: ViewfinderProps) => {
+export const Viewfinder = React.memo(({ cameraKey }: ViewfinderProps) => {
   // 1. Stable reference SharedValues (statically extracted to avoid React subscription)
   const {
     iso,
@@ -80,55 +78,6 @@ export const Viewfinder = React.memo(({ cameraKey, translateY, drawerAnimation }
       useVerificationStore.getState().setVerified(uri, true);
     }
   }, [setLatestPreviewUri, setLatestCapturedUri]);
-
-  const layoutHeight = useSharedValue(1);
-  const layoutWidth = useSharedValue(1);
-
-  const panelY = useDerivedValue(() => {
-    if (!translateY || !drawerAnimation) return 1.0;
-    const t = translateY.value + drawerAnimation.value;
-    const heightOfGlass = 144.0 - t;
-    
-    const viewWidth = layoutWidth.value || 1.0;
-    const viewHeight = layoutHeight.value || 1.0;
-    
-    // Default screen Y coordinate for the top of the glass panel
-    const screenY = viewHeight - heightOfGlass;
-
-    // View aspect ratio
-    const viewAspect = viewWidth / viewHeight;
-    
-    // Calculate target aspect from aspectRatio setting
-    const setting = aspectRatio.value;
-    let targetAspect = 4.0 / 3.0; // default to 4:3
-    if (setting === 0) targetAspect = 4.0 / 3.0;
-    else if (setting === 1) targetAspect = 16.0 / 9.0;
-    else if (setting === 2) targetAspect = 1.0;
-    else if (setting === 3) targetAspect = 3.0 / 2.0;
-    else if (setting === 4) targetAspect = 65.0 / 24.0;
-    
-    const isPortrait = viewWidth < viewHeight;
-    const finalTargetAspect = isPortrait ? (1.0 / targetAspect) : targetAspect;
-    
-    let scaleY = 1.0;
-    if (viewAspect <= finalTargetAspect) {
-        // Viewport is taller than target -> Letterbox on top/bottom
-        scaleY = viewAspect / finalTargetAspect;
-    }
-    
-    const vpHeight = viewHeight * scaleY;
-    const vpY = (viewHeight - vpHeight) / 2.0;
-    
-    // Calculate the UV coordinate in the viewport
-    const uvY = (screenY - vpY) / vpHeight;
-    
-    return uvY;
-  });
-
-  const handleLayout = React.useCallback((event: import('react-native').LayoutChangeEvent) => {
-    layoutHeight.value = event.nativeEvent.layout.height;
-    layoutWidth.value = event.nativeEvent.layout.width;
-  }, [layoutHeight, layoutWidth]);
 
   const resolvedNoiseReduction = useDerivedValue(() => {
     return noiseReductionAuto.value ? -1 : noiseReductionMode.value;
@@ -216,7 +165,7 @@ export const Viewfinder = React.memo(({ cameraKey, translateY, drawerAnimation }
   }, [thermalState]);
 
   return (
-    <View style={styles.container} onLayout={handleLayout}>
+    <View style={styles.container}>
       <GestureDetector gesture={gestures}>
         <Animated.View style={StyleSheet.absoluteFill}>
           <NativeRenderer
