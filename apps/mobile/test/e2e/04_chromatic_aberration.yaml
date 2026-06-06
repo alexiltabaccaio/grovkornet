@@ -22,13 +22,13 @@ appId: com.grovkornet.app
     visible: "SISTEMA"
     timeout: 30000
 
-# 1. Navigation to the LENS section
-- tapOn: "OBIETTIVO"
-- assertVisible: "Ottica"
-- assertVisible: "Difetti Ottici"
+# 1. Navigation to the FILM section
+- tapOn: "PELLICOLA"
+- assertVisible: "Colore"
+- assertVisible: "Artefatti"
 
-# 2. Selection of "Lens Flaws" module (which activates Chromatic Aberration)
-- tapOn: "Difetti Ottici"
+# 2. Selection of "Artefatti" module (which activates Chromatic Aberration)
+- tapOn: "Artefatti"
 - assertVisible: "ABERRAZIONE CROMATICA"
 
 # 3. Drag up the bottom sheet starting from the Chromatic Aberration label

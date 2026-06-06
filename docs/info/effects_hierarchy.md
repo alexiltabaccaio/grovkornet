@@ -16,7 +16,7 @@ Il sistema è progettato per essere rapido da usare con una mano (run-and-gun), 
 
 ## 🚦 Pipeline di Rendering (L'Ordine del Segnale)
 Per garantire il massimo realismo, l'Uber Shader elabora l'immagine applicando i filtri nel percorso fisico esatto della luce:
-`LENS (Ottica)` ➔ `BODY (Sensore)` ➔ `FILM (Sviluppo)` ➔ `DECK (Nastro/Schermo)`
+`LENS (Ottica)` ➔ `BODY (Sensore / Elaborazione)` ➔ `FILM (Sviluppo / Artefatti)` ➔ `DECK (Nastro / Schermo)`
 *(La tab SYSTEM è esclusa in quanto non fa parte del flusso ottico)*
 
 ---
@@ -25,18 +25,17 @@ Per garantire il massimo realismo, l'Uber Shader elabora l'immagine applicando i
 
 ### 1. ⚙️ SYSTEM (Sistema)
 > *Impostazioni tecniche dell'applicazione, posizionate per prime a sinistra nell'interfaccia.*
-* **Module: Preferenze**
+* **Module: Preferenze (Preferences)**
   * `[Parameter]` **Lingua** (Cambio lingua UI)
   * `[Parameter]` **Debug** (Statistiche on-screen per FPS, rendering)
+* **Module: Preset (Presets)**
+  * `[Parameter]` **Preset** (Gestione e salvataggio dei profili di colore/effetto)
 
 ### 2. 👁️ LENS (L'Obiettivo)
 > *Tutto ciò che riguarda il vetro e l'ottica fisica prima che la luce tocchi il sensore.*
 * **Module: Ottica (Optics)**
-  * `[Parameter]` **Selezione Fotocamera** (Grandangolo, Teleobiettivo)
+  * `[Parameter]` **Selezione Lente** (Grandangolo, Teleobiettivo)
   * `[Parameter]` **Messa a Fuoco** (Distanza, AF/MF)
-* **Module: Difetti Ottici (Flaws)**
-  * `[Parameter]` **Aberrazione Cromatica** (Amount)
-  * `[Parameter]` **Bloom** (Diffusione luci)
 
 ### 3. 📷 BODY (Corpo Macchina)
 > *La meccanica della fotocamera: cattura elettronica, illuminazione ed hardware integrato.*
@@ -47,6 +46,9 @@ Per garantire il massimo realismo, l'Uber Shader elabora l'immagine applicando i
 * **Module: Illuminazione (Lighting)**
   * `[Parameter]` **Torcia** (On / Off)
     * ↳ `[SubParameter]` *Intensità Torcia (Dimmer)*
+* **Module: Elaborazione (Processing)**
+  * `[Parameter]` **Riduzione Rumore** (Noise Reduction - Algoritmo Hardware)
+  * `[Parameter]` **Nitidezza** (Sharpening - Post-Processing)
 * **Module: Acquisizione (Capture)**
   * `[Parameter]` **Aspect Ratio** (Formato, es. 65:24)
   * `[Parameter]` **Resolution Setting** (Risoluzione video, es. 1080p)
@@ -56,14 +58,21 @@ Per garantire il massimo realismo, l'Uber Shader elabora l'immagine applicando i
 ### 4. 🎞️ FILM (Pellicola)
 > *La chimica e il carattere visivo del supporto (il rullino scelto).*
 * **Module: Sviluppo (Development / Color)**
-  * `[Parameter]` **Temperature** (Bilanciamento colore)
-  * `[Parameter]` **Tint** (Tinta verde/magenta)
+  * `[Parameter]` **Temperatura** (Bilanciamento colore)
+  * `[Parameter]` **Tinta** (Tinta verde/magenta)
   * `[Parameter]` **Saturazione** (Generale Master)
     * ↳ `[SubParameter]` *Saturazione Selettiva (Range per colore specifico)*
   * `[Parameter]` **Contrasto**
 * **Module: Texture (Materiale visibile)**
   * `[Parameter]` **Grana** (Amount / Intensità)
-    * ↳ `[SubParameter]` *Dimensione Grana (Scale), Modalità Colore (Luma B/N o Chroma RGB)*
-  * `[Parameter]` **Sharpening** (Nitidezza)
-  * `[Parameter]` **Noise Reduction** (Riduzione Rumore)
-
+    * ↳ `[SubParameter]` *Dimensione Grana, Crominanza, Rugosità, Velocità*
+* **Module: Artefatti (Artifacts)**
+  * `[Parameter]` **Aberrazione Cromatica**
+    * ↳ `[SubParameter]` *Inversione Direzione (STD, HOR, RAD, INV)*
+  * `[Parameter]` **Bloom** (Diffusione luci)
+  * `[Parameter]` **Vignettatura** (Vignette)
+  * `[Parameter]` **Scostamento** (Chroma Shift)
+    * ↳ `[SubParameter]` *Direzione e Inversione Scostamento*
+  * `[Parameter]` **Jitter** (Tape Jitter)
+  * `[Parameter]` **Scanlines**
+  * `[Parameter]` **Pixelazione** (Pixelation)

@@ -30,8 +30,8 @@ jest.mock('@features/film-controls', () => {
         handlePressWithDouble('contrast', () => {});
       }} />
     ),
-    FlawsModule: ({ handlePressWithDouble }: any) => (
-      <Button testID="btn-film-flaws" title="Film Flaws" onPress={() => {
+    ArtifactsModule: ({ handlePressWithDouble }: any) => (
+      <Button testID="btn-film-artifacts" title="Film Artifacts" onPress={() => {
         handlePressWithDouble('chroma_shift', () => {});
         handlePressWithDouble('chroma_shift', () => {});
       }} />
@@ -43,12 +43,6 @@ jest.mock('@features/lens-controls', () => {
   const React = require('react');
   const { Button } = require('react-native');
   return {
-    FlawsModule: ({ handlePressWithDouble }: any) => (
-      <Button testID="btn-flaws" title="Flaws" onPress={() => {
-        handlePressWithDouble('chromatic_aberration', () => {});
-        handlePressWithDouble('chromatic_aberration', () => {});
-      }} />
-    ),
     OpticsModule: ({ handlePressWithDouble }: any) => (
       <Button testID="btn-optics" title="Optics" onPress={() => {
         handlePressWithDouble('focus', () => {});
@@ -84,6 +78,12 @@ jest.mock('@features/body-controls', () => {
       <Button testID="btn-capture" title="Capture" onPress={() => {
         handlePressWithDouble('fps_setting', () => {});
         handlePressWithDouble('fps_setting', () => {});
+      }} />
+    ),
+    ProcessingModule: ({ handlePressWithDouble }: any) => (
+      <Button testID="btn-processing" title="Processing" onPress={() => {
+        handlePressWithDouble('noise_reduction', () => {});
+        handlePressWithDouble('noise_reduction', () => {});
       }} />
     ),
   };
@@ -188,26 +188,26 @@ describe('Parameters', () => {
     expect(spySetContrastAuto).toHaveBeenCalledWith(true);
   });
 
-  it('renders LensFlawsModule and resets chromatic_aberration effect', () => {
+  it('renders ArtifactsModule and resets chroma_shift effect', () => {
     act(() => {
-      useSystemStore.setState({ activeSection: 'lens', activeModule: 'flaws' });
+      useSystemStore.setState({ activeSection: 'film', activeModule: 'artifacts' });
     });
     const { getByTestId } = render(<Parameters />);
-    const button = getByTestId('btn-flaws');
-    
-    fireEvent.press(button);
-    expect(spyResetEffect).toHaveBeenCalledWith('chromatic_aberration');
-  });
-
-  it('renders FilmFlawsModule and resets chroma_shift effect', () => {
-    act(() => {
-      useSystemStore.setState({ activeSection: 'film', activeModule: 'flaws' });
-    });
-    const { getByTestId } = render(<Parameters />);
-    const button = getByTestId('btn-film-flaws');
+    const button = getByTestId('btn-film-artifacts');
     
     fireEvent.press(button);
     expect(spyResetEffect).toHaveBeenCalledWith('chroma_shift');
+  });
+
+  it('renders ProcessingModule and resets noise_reduction effect', () => {
+    act(() => {
+      useSystemStore.setState({ activeSection: 'body', activeModule: 'processing' });
+    });
+    const { getByTestId } = render(<Parameters />);
+    const button = getByTestId('btn-processing');
+    
+    fireEvent.press(button);
+    expect(spyResetEffect).toHaveBeenCalledWith('noise_reduction');
   });
 
   it('renders OpticsModule and resets focus / camera_selection', () => {

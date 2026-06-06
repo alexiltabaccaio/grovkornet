@@ -5,8 +5,7 @@ import { useShallow } from 'zustand/react/shallow';
 import { useSystemStore } from '@entities/system';
 
 // We will import the new SubPanels here once they are ready.
-import { GrainSubPanel, ContrastSubPanel, SaturationSubPanel, ChromaShiftSubPanel } from '@features/film-controls';
-import { ChromaticAberrationSubPanel } from '@features/lens-controls';
+import { GrainSubPanel, ContrastSubPanel, SaturationSubPanel, ChromaShiftSubPanel, ChromaticAberrationSubPanel } from '@features/film-controls';
 import { ZoomSubPanel, TorchSubPanel, ResolutionSubPanel, AspectRatioSubPanel } from '@features/body-controls';
 
 interface SubPanelsProps {

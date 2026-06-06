@@ -33,7 +33,6 @@ appId: com.grovkornet.app
 - tapOn: "OBIETTIVO"
 - assertVisible: "OBIETTIVO"
 - assertVisible: "Ottica"
-- assertVisible: "Difetti Ottici"
 - assertNotVisible: "Preferenze"
 - assertNotVisible: "Esposizione"
 
@@ -42,6 +41,7 @@ appId: com.grovkornet.app
 - assertVisible: "CORPO"
 - assertVisible: "Esposizione"
 - assertVisible: "Illuminazione"
+- assertVisible: "Elaborazione"
 - assertVisible: "Acquisizione"
 - assertNotVisible: "Ottica"
 - assertNotVisible: "Colore"
@@ -53,6 +53,7 @@ appId: com.grovkornet.app
 - assertVisible: "Colore"
 - assertVisible: "Tono"
 - assertVisible: "Texture"
+- assertVisible: "Artefatti"
 - assertNotVisible: "Esposizione"
 - assertNotVisible: "Preferenze"
 

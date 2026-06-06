@@ -54,4 +54,3 @@ export const NoiseReductionPanel = ({ animatedStyle }: NoiseReductionPanelProps)
     />
   );
 };
-

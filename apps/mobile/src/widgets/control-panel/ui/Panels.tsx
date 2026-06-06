@@ -8,7 +8,7 @@ import { SliderPanel } from './components/SliderPanel';
 import { TorchPanel, FpsPanel, ResolutionPanel, AspectRatioPanel } from '@features/body-controls';
 import { PresetsPanel, LanguagePanel, VibrationPanel, DebugPanel } from '@features/system-settings';
 import { LensSelectionPanel } from '@features/lens-controls';
-import { NoiseReductionPanel } from '@features/film-controls';
+import { NoiseReductionPanel } from '@features/body-controls';
 
 const SLIDER_PARAMETERS = [
   'grain',

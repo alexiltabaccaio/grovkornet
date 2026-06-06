@@ -2,21 +2,19 @@ import React from 'react';
 import { ParameterType } from '@entities/system';
 import { GenericParameterModule } from '@entities/system';
 
-
-interface FlawsModuleProps {
+interface ProcessingModuleProps {
   handlePressWithDouble: (param: ParameterType, action: () => void) => void;
 }
 
-const FLAWS_PARAMETERS: ParameterType[] = ['chromatic_aberration', 'bloom'];
+const PROCESSING_PARAMETERS: ParameterType[] = ['noise_reduction', 'sharpening'];
 
-export const FlawsModule = ({ handlePressWithDouble }: FlawsModuleProps) => {
+export const ProcessingModule = React.memo(({ handlePressWithDouble }: ProcessingModuleProps) => {
   return (
     <GenericParameterModule
-      parameters={FLAWS_PARAMETERS}
+      parameters={PROCESSING_PARAMETERS}
       handlePressWithDouble={handlePressWithDouble}
     />
   );
-};
+});
 
-// FlawsModule.whyDidYouRender = true;
-
+ProcessingModule.displayName = 'ProcessingModule';

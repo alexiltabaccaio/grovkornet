@@ -28,15 +28,15 @@ To enforce these rules and prevent architectural degradation (like circular depe
 
 The interface is organized into four main physical sections, designed for run-and-gun filmmaking:
 
-1.  **⚙️ SYSTEM**: Technical settings, debug overlays, and language preferences.
-2.  **👁️ LENS**: Physical glass settings (Camera selection, Focus, Chromatic Aberration, Bloom).
-3.  **📷 BODY**: Camera mechanics and capture setup (ISO, Shutter Speed, Torch, Aspect Ratio, Resolution, FPS).
-4.  **🎞️ FILM**: Chemical development and texture (Temperature, Tint, Saturation, Grain, Sharpening, Noise Reduction).
+1.  **⚙️ SYSTEM**: Technical settings, debug overlays, and presets profiles.
+2.  **👁️ LENS**: Physical glass settings (Camera selection, Focus).
+3.  **📷 BODY**: Camera mechanics, capture setup, and ISP signal processing (ISO, Shutter Speed, Torch, Noise Reduction, Sharpening, Aspect Ratio, Resolution, FPS).
+4.  **🎞️ FILM**: Chemical development, grain texture, and creative print artifacts (Temperature, Tint, Saturation, Contrast, Grain, Chromatic Aberration, Bloom, Vignette, Chroma Shift, Tape Jitter, Scanlines, Pixelation).
 
 ## 🚦 Rendering Pipeline (Uber Shader)
 
 To ensure maximum realism, the engine processes the image in the exact physical order of light:
-`LENS (Optics)` ➔ `BODY (Sensor)` ➔ `FILM (Development)` ➔ `DECK (Output)`
+`LENS (Optics)` ➔ `BODY (Sensor / Processing)` ➔ `FILM (Development / Artifacts)` ➔ `DECK (Output)`
 
 ## 🛠️ Tech Stack
 

@@ -22,13 +22,13 @@ appId: com.grovkornet.app
     visible: "SISTEMA"
     timeout: 30000
 
-# 1. Open the LENS section
-- tapOn: "OBIETTIVO"
-- assertVisible: "Ottica"
-- assertVisible: "Difetti Ottici"
+# 1. Open the FILM section
+- tapOn: "PELLICOLA"
+- assertVisible: "Colore"
+- assertVisible: "Artefatti"
 
-# 3. Attempt to switch to the Lens Flaws module
-- tapOn: "Difetti Ottici"
+# 3. Attempt to switch to the Film Artifacts module
+- tapOn: "Artefatti"
 
 # 4. Verify that the module has indeed changed.
 # If the tap is swallowed by the PanGesture, this assertion will fail

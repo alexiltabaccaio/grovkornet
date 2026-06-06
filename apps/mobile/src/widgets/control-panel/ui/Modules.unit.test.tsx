@@ -28,7 +28,7 @@ describe('Modules', () => {
     expect(getByText('modules.tone')).toBeDefined();
     expect(getByText('modules.color')).toBeDefined();
     expect(getByText('modules.texture')).toBeDefined();
-    expect(getByText('modules.flaws')).toBeDefined();
+    expect(getByText('modules.artifacts')).toBeDefined();
   });
 
   it('switches active module on press in film section', () => {
@@ -44,8 +44,8 @@ describe('Modules', () => {
     fireEvent.press(getByText('modules.color'));
     expect(useSystemStore.getState().activeModule).toBe('color');
 
-    fireEvent.press(getByText('modules.flaws'));
-    expect(useSystemStore.getState().activeModule).toBe('flaws');
+    fireEvent.press(getByText('modules.artifacts'));
+    expect(useSystemStore.getState().activeModule).toBe('artifacts');
 
     fireEvent.press(getByText('modules.tone'));
     expect(useSystemStore.getState().activeModule).toBe('tone');
@@ -72,15 +72,10 @@ describe('Modules', () => {
       useSystemStore.getState().setActiveSection('lens');
       useSystemStore.getState().setActiveModule('optics');
     });
-    const { getByText } = render(<Modules />);
+    const { getByText, queryByText } = render(<Modules />);
     expect(getByText('modules.optics')).toBeDefined();
-    expect(getByText('modules.flaws')).toBeDefined();
-
-    fireEvent.press(getByText('modules.flaws'));
-    expect(useSystemStore.getState().activeModule).toBe('flaws');
-
-    fireEvent.press(getByText('modules.optics'));
-    expect(useSystemStore.getState().activeModule).toBe('optics');
+    expect(queryByText('modules.flaws')).toBeNull();
+    expect(queryByText('modules.artifacts')).toBeNull();
   });
 
   it('renders correct modules and handles press for body section', () => {
@@ -91,10 +86,14 @@ describe('Modules', () => {
     const { getByText } = render(<Modules />);
     expect(getByText('modules.exposure')).toBeDefined();
     expect(getByText('modules.lighting')).toBeDefined();
+    expect(getByText('modules.processing')).toBeDefined();
     expect(getByText('modules.capture')).toBeDefined();
 
     fireEvent.press(getByText('modules.lighting'));
     expect(useSystemStore.getState().activeModule).toBe('lighting');
+
+    fireEvent.press(getByText('modules.processing'));
+    expect(useSystemStore.getState().activeModule).toBe('processing');
 
     fireEvent.press(getByText('modules.capture'));
     expect(useSystemStore.getState().activeModule).toBe('capture');

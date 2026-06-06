@@ -12,3 +12,5 @@ export * from './ui/capture/resolution-setting/ResolutionPanel';
 export * from './ui/capture/resolution-setting/ResolutionSubPanel';
 export * from './ui/CameraFlipButton';
 export * from './ui/ZoomSubPanel';
+export * from './ui/processing/ProcessingModule';
+export * from './ui/processing/noise-reduction/NoiseReductionPanel';
