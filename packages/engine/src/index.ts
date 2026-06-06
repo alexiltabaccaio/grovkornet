@@ -20,7 +20,7 @@ export interface NativeFilmCameraViewProps extends ViewProps {
   torchStrength?: number;
   cameraId?: string;
   resolutionSetting?: number;
-  previewIn4k?: boolean;
+  previewQuality?: number;
   force4k60fpsCrop?: boolean;
   secureViewEnabled?: boolean;
   isSelfieCamera?: boolean;

@@ -18,18 +18,17 @@ jest.mock('@shared/lib/logger', () => ({
   },
 }));
 
-const mockSetPreviewIn4k = jest.fn();
-
+const mockSetPreviewQuality = jest.fn();
 
 let mockResolutionSettingValue = 0;
-let mockPreviewIn4kValue = 0;
+let mockPreviewQualityValue = 1;
 
 jest.mock('@entities/body', () => ({
   useBodyStore: (fn: (state: any) => any) => {
     const state = {
       resolutionSetting: { value: mockResolutionSettingValue },
-      previewIn4k: { value: mockPreviewIn4kValue },
-      setPreviewIn4k: mockSetPreviewIn4k,
+      previewQuality: { value: mockPreviewQualityValue },
+      setPreviewQuality: mockSetPreviewQuality,
     };
     return fn(state);
   },
@@ -39,26 +38,26 @@ describe('ResolutionSubPanel', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     mockResolutionSettingValue = 0;
-    mockPreviewIn4kValue = 0;
+    mockPreviewQualityValue = 1;
   });
 
-  it('renders correctly when resolutionSetting is 0', () => {
+  it('renders correctly', () => {
     const { toJSON, getByText } = render(<ResolutionSubPanel />);
     expect(toJSON()).toBeDefined();
-    expect(getByText('OFF')).toBeDefined();
+    expect(getByText('parameters.preview_quality_opt')).toBeDefined();
   });
 
-  it('renders null when resolutionSetting is not 0', () => {
+  it('renders even when resolutionSetting is not 0', () => {
     mockResolutionSettingValue = 1;
     const { toJSON } = render(<ResolutionSubPanel />);
-    expect(toJSON()).toBeNull();
+    expect(toJSON()).not.toBeNull();
   });
 
-  it('handles toggle press correctly', () => {
-    const { getByRole } = render(<ResolutionSubPanel />);
-    const btn = getByRole('button');
+  it('handles option press correctly', () => {
+    const { getByLabelText } = render(<ResolutionSubPanel />);
+    const btn = getByLabelText('parameters.preview_quality_max');
     fireEvent.press(btn);
 
-    expect(mockSetPreviewIn4k).toHaveBeenCalledWith(1);
+    expect(mockSetPreviewQuality).toHaveBeenCalledWith(0);
   });
 });

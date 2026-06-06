@@ -9,6 +9,7 @@ import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import { logger } from '@shared/lib/logger';
 import { SubPanelContainer } from '@shared/ui';
+import { usePreferencesStore } from '@entities/preferences';
 
 interface ResolutionSubPanelProps {
   animatedStyle?: StyleProp<ViewStyle>;
@@ -19,16 +20,16 @@ export const ResolutionSubPanel = ({ animatedStyle }: ResolutionSubPanelProps) =
   const isDebugEnabled = useSystemStore(state => state.isDebugEnabled);
   const {
     resolutionSetting,
-    previewIn4k,
-    setPreviewIn4k,
+    previewQuality,
+    setPreviewQuality,
   } = useBodyStore(useShallow(state => ({
     resolutionSetting: state.resolutionSetting,
-    previewIn4k: state.previewIn4k,
-    setPreviewIn4k: state.setPreviewIn4k,
+    previewQuality: state.previewQuality,
+    setPreviewQuality: state.setPreviewQuality,
   })));
 
   const [localResolutionSetting, setLocalResolutionSetting] = React.useState(() => resolutionSetting.value);
-  const [localPreviewIn4k, setLocalPreviewIn4k] = React.useState(() => previewIn4k.value);
+  const [localPreviewQuality, setLocalPreviewQuality] = React.useState(() => previewQuality.value);
 
   useAnimatedReaction(
     () => resolutionSetting.value,
@@ -41,59 +42,66 @@ export const ResolutionSubPanel = ({ animatedStyle }: ResolutionSubPanelProps) =
   );
 
   useAnimatedReaction(
-    () => previewIn4k.value,
+    () => previewQuality.value,
     (currentValue, previousValue) => {
       if (currentValue !== previousValue) {
-        runOnJS(setLocalPreviewIn4k)(currentValue);
+        runOnJS(setLocalPreviewQuality)(currentValue);
       }
     },
-    [previewIn4k]
+    [previewQuality]
   );
 
-  if (localResolutionSetting !== 0) {
-    return null;
-  }
-
   return (
-    <SubPanelContainer style={[styles.previewIn4kContainer, animatedStyle]} isDebugEnabled={isDebugEnabled}>
-      <View style={styles.toggleRowContainer}>
-        <Text style={styles.toggleLabel} allowFontScaling={false}>
-          {t('parameters.preview_in_4k').toUpperCase()}
+    <SubPanelContainer style={[styles.previewQualityContainer, animatedStyle]} isDebugEnabled={isDebugEnabled}>
+      <View style={styles.rowContainer}>
+        <Text style={styles.label} allowFontScaling={false}>
+          {t('parameters.preview_quality').toUpperCase()}
         </Text>
-        <TouchableOpacity
-          onPress={() => {
-            logger.debug('ResolutionSubPanel', 'Preview in 4K toggle pressed');
-            const next = previewIn4k.value === 0 ? 1 : 0;
-            setPreviewIn4k(next);
-            setLocalPreviewIn4k(next);
-          }}
-          activeOpacity={0.8}
-          accessible={true}
-          accessibilityRole="button"
-          accessibilityLabel={t('parameters.preview_in_4k')}
-          style={[
-            styles.pillButton,
-            localPreviewIn4k === 1 ? styles.pillButtonActive : styles.pillButtonInactive
-          ]}
-        >
-          <Text style={styles.pillValueText} allowFontScaling={false}>
-            {localPreviewIn4k === 1 ? 'ON' : 'OFF'}
-          </Text>
-        </TouchableOpacity>
+        <View style={styles.buttonGroup}>
+          {[
+            { value: 0, label: t('parameters.preview_quality_max') },
+            { value: 1, label: t('parameters.preview_quality_opt') },
+            { value: 2, label: t('parameters.preview_quality_save') },
+          ].map((option) => (
+            <TouchableOpacity
+              key={option.value}
+              onPress={() => {
+                logger.debug('ResolutionSubPanel', `Preview quality changed to: ${option.value}`);
+                setPreviewQuality(option.value);
+                setLocalPreviewQuality(option.value);
+                usePreferencesStore.getState().setPreviewQualityPref(option.value);
+              }}
+              activeOpacity={0.8}
+              accessible={true}
+              accessibilityRole="button"
+              accessibilityLabel={option.label}
+              style={[
+                styles.pillButton,
+                localPreviewQuality === option.value ? styles.pillButtonActive : styles.pillButtonInactive
+              ]}
+            >
+              <Text style={styles.pillValueText} allowFontScaling={false}>
+                {option.label}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </View>
       </View>
         
-      <View style={styles.warningContainer}>
-        <Ionicons name="warning-outline" size={14} color="#FF453A" style={{ marginRight: 4 }} />
-        <Text style={styles.warningText} allowFontScaling={false}>
-          {t('parameters.preview_in_4k_warning')}
-        </Text>
-      </View>
+      {localPreviewQuality === 0 && localResolutionSetting === 0 && (
+        <View style={styles.warningContainer}>
+          <Ionicons name="warning-outline" size={14} color="#FF453A" style={{ marginRight: 4 }} />
+          <Text style={styles.warningText} allowFontScaling={false}>
+            {t('parameters.preview_quality_warning')}
+          </Text>
+        </View>
+      )}
     </SubPanelContainer>
   );
 };
 
 const styles = StyleSheet.create({
-  previewIn4kContainer: {
+  previewQualityContainer: {
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
@@ -101,17 +109,23 @@ const styles = StyleSheet.create({
     width: '100%',
     gap: 8,
   },
-  toggleRowContainer: {
+  rowContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
-    gap: 8,
+    justifyContent: 'space-between',
+    width: '100%',
+    paddingHorizontal: 8,
   },
-  toggleLabel: {
+  label: {
     color: '#CCC',
     fontSize: 11,
     fontWeight: '700',
     letterSpacing: 0.5,
+  },
+  buttonGroup: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
   },
   pillButton: {
     height: 28,
@@ -149,11 +163,13 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
     borderWidth: 1,
     borderColor: 'rgba(255, 69, 58, 0.2)',
+    width: '100%',
   },
   warningText: {
     color: '#FF453A',
     fontSize: 10,
     fontWeight: '800',
     letterSpacing: 0.5,
+    flexShrink: 1,
   },
 });

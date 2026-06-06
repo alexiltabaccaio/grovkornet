@@ -13,7 +13,7 @@ import {
   DEFAULT_TORCH_STATE,
   DEFAULT_TORCH_STRENGTH,
   DEFAULT_RESOLUTION_SETTING,
-  DEFAULT_PREVIEW_IN_4K,
+  DEFAULT_PREVIEW_QUALITY,
   DEFAULT_FORCE_4K_60FPS_CROP,
   DEFAULT_ZOOM,
 } from '@grovkornet/shared';
@@ -34,7 +34,7 @@ export const useBodyStore = create<BodyStore>((set, get) => ({
   torchState: makeMutable(DEFAULT_TORCH_STATE),
   torchStrength: makeMutable(DEFAULT_TORCH_STRENGTH),
   resolutionSetting: makeMutable(DEFAULT_RESOLUTION_SETTING),
-  previewIn4k: makeMutable(DEFAULT_PREVIEW_IN_4K),
+  previewQuality: makeMutable(DEFAULT_PREVIEW_QUALITY),
   force4k60fpsCrop: makeMutable(DEFAULT_FORCE_4K_60FPS_CROP),
   zoom: makeMutable(DEFAULT_ZOOM),
   // @@GEN_STATE_END@@
@@ -121,8 +121,8 @@ export const useBodyStore = create<BodyStore>((set, get) => ({
   setResolutionSetting: (value) => {
     get().resolutionSetting.value = value;
   },
-  setPreviewIn4k: (value) => {
-    get().previewIn4k.value = value;
+  setPreviewQuality: (value) => {
+    get().previewQuality.value = value;
   },
   setForce4k60fpsCrop: (value) => {
     get().force4k60fpsCrop.value = value;

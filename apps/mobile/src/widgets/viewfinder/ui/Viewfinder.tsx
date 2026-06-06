@@ -33,7 +33,7 @@ export const Viewfinder = React.memo(({ cameraKey, translateY, drawerAnimation }
     aspectRatio,
     resolutionSetting,
     fpsSetting,
-    previewIn4k,
+    previewQuality,
     force4k60fpsCrop,
     zoom,
   } = useBodyStore.getState();
@@ -138,9 +138,7 @@ export const Viewfinder = React.memo(({ cameraKey, translateY, drawerAnimation }
     return Math.max(1, Math.round(torchStrength.value * (capabilities.maxTorchStrength ?? 1)));
   }, [capabilities.maxTorchStrength]);
 
-  const resolvedPreviewIn4k = useDerivedValue(() => {
-    return previewIn4k.value === 1;
-  });
+
 
   const resolvedForce4k60fpsCrop = useDerivedValue(() => {
     return force4k60fpsCrop.value === 1;
@@ -209,7 +207,7 @@ export const Viewfinder = React.memo(({ cameraKey, translateY, drawerAnimation }
       torchState: torchState.value,
       torchStrength: resolvedTorchStrength.value,
       resolutionSetting: resolutionSetting.value,
-      previewIn4k: resolvedPreviewIn4k.value,
+      previewQuality: previewQuality.value,
       force4k60fpsCrop: resolvedForce4k60fpsCrop.value,
       isSelfieCamera: isSelfieCamera.value,
       zoom: zoom.value,

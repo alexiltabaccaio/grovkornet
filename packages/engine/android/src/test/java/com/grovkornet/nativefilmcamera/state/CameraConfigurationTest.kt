@@ -8,6 +8,7 @@ class CameraConfigurationTest {
     @Test
     fun defaultValues_areCorrect() {
         val config = CameraConfiguration()
+        val oldCam = config.cameraId
         assertEquals(1.0f, config.saturation)
         assertEquals(50.0f, config.satRed)
         assertEquals(50.0f, config.satBlue)
@@ -15,7 +16,7 @@ class CameraConfigurationTest {
         assertTrue(config.isoAuto)
         assertEquals(400, config.iso)
         assertNull(config.cameraId)
-        assertFalse(config.previewIn4k)
+        assertEquals(1, config.previewQuality)
         assertEquals(1.0f, config.zoom)
         assertEquals(1.0f, config.pixelationFactor)
     }
@@ -29,7 +30,7 @@ class CameraConfigurationTest {
         config.zoom = 2.0f
         config.satRed = 80.0f
         config.satBlue = 20.0f
-        config.previewIn4k = true
+        config.previewQuality = 0
         
         assertEquals(800, config.iso)
         assertFalse(config.isoAuto)
@@ -37,7 +38,7 @@ class CameraConfigurationTest {
         assertEquals(2.0f, config.zoom)
         assertEquals(80.0f, config.satRed)
         assertEquals(20.0f, config.satBlue)
-        assertTrue(config.previewIn4k)
+        assertEquals(0, config.previewQuality)
         config.pixelationFactor = 4.0f
         assertEquals(4.0f, config.pixelationFactor)
     }

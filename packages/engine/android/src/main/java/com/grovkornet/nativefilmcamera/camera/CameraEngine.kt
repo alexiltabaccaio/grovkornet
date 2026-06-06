@@ -41,7 +41,7 @@ class CameraEngine(
     private var lastBoundCameraId: String? = null
     private var lastBoundAspectRatio: Int = -1
     private var lastBoundResolutionSetting: Int = -1
-    private var lastBoundPreviewIn4K: Boolean? = null
+    private var lastBoundPreviewQuality: Int? = null
     private var lastBoundForce4k60fpsCrop: Boolean? = null
     private var lastBoundSelfieCamera: Boolean? = null
     private var currentSurfaceTexture: SurfaceTexture? = null
@@ -51,7 +51,7 @@ class CameraEngine(
         lastBoundCameraId = config.cameraId
         lastBoundAspectRatio = config.aspectRatio
         lastBoundResolutionSetting = config.resolutionSetting
-        lastBoundPreviewIn4K = config.previewIn4k
+        lastBoundPreviewQuality = config.previewQuality
         lastBoundForce4k60fpsCrop = config.force4k60fpsCrop
         lastBoundSelfieCamera = config.isSelfieCamera
         sessionManager.start(surfaceTexture, controlManager.createCaptureCallback())
@@ -60,7 +60,7 @@ class CameraEngine(
     fun updateCameraControls() {
         if (config.cameraId != lastBoundCameraId || 
             config.resolutionSetting != lastBoundResolutionSetting ||
-            config.previewIn4k != lastBoundPreviewIn4K ||
+            config.previewQuality != lastBoundPreviewQuality ||
             config.aspectRatio != lastBoundAspectRatio ||
             config.force4k60fpsCrop != lastBoundForce4k60fpsCrop ||
             config.isSelfieCamera != lastBoundSelfieCamera
@@ -68,7 +68,7 @@ class CameraEngine(
             lastBoundCameraId = config.cameraId
             lastBoundAspectRatio = config.aspectRatio
             lastBoundResolutionSetting = config.resolutionSetting
-            lastBoundPreviewIn4K = config.previewIn4k
+            lastBoundPreviewQuality = config.previewQuality
             lastBoundForce4k60fpsCrop = config.force4k60fpsCrop
             lastBoundSelfieCamera = config.isSelfieCamera
             currentSurfaceTexture?.let { 

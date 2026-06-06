@@ -94,12 +94,30 @@ class CameraSessionManager(
             .setResolutionStrategy(captureResolutionStrategy)
             .build()
 
-        val previewResolutionStrategy = if (config.resolutionSetting == 0 && !config.previewIn4k) {
-            val defaultPreview = if (is169) Size(1920, 1080) else Size(1920, 1440)
-            ResolutionStrategy(defaultPreview, ResolutionStrategy.FALLBACK_RULE_CLOSEST_HIGHER_THEN_LOWER)
-        } else {
-            ResolutionStrategy(targetSize, ResolutionStrategy.FALLBACK_RULE_CLOSEST_HIGHER_THEN_LOWER)
+        val maxPreviewWidth = when (config.previewQuality) {
+            0 -> 3840 // MASSIMA (fino a 4K)
+            1 -> 1920 // OTTIMIZZATA (fino a 1080p)
+            2 -> 1280 // RISPARMIO (fino a 720p)
+            else -> 1920
         }
+        
+        val previewSize = if (targetSize.width > maxPreviewWidth) {
+            if (is169) {
+                when (config.previewQuality) {
+                    2 -> Size(1280, 720)
+                    else -> Size(1920, 1080)
+                }
+            } else {
+                when (config.previewQuality) {
+                    2 -> Size(1280, 960)
+                    else -> Size(1920, 1440)
+                }
+            }
+        } else {
+            targetSize
+        }
+
+        val previewResolutionStrategy = ResolutionStrategy(previewSize, ResolutionStrategy.FALLBACK_RULE_CLOSEST_HIGHER_THEN_LOWER)
 
         val previewResolutionSelector = ResolutionSelector.Builder()
             .setAspectRatioStrategy(AspectRatioStrategy(targetAspectRatio, AspectRatioStrategy.FALLBACK_RULE_AUTO))

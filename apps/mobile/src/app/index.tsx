@@ -66,6 +66,9 @@ export function App() {
     if (prefs.force4k60fpsCrop !== null) {
       bodyStore.force4k60fpsCrop.value = prefs.force4k60fpsCrop;
     }
+    if (prefs.previewQuality !== null) {
+      bodyStore.previewQuality.value = prefs.previewQuality;
+    }
     if (prefs.language !== null) {
       void i18n.changeLanguage(prefs.language).catch(() => {});
     }

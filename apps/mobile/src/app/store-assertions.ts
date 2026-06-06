@@ -86,7 +86,7 @@ type BodyActionsKeys =
   | 'setAspectRatio'
   | 'setResolutionSetting'
   | 'setFpsSetting'
-  | 'setPreviewIn4k'
+  | 'setPreviewQuality'
   | 'setForce4k60fpsCrop'
   | 'setCapabilities'
   | 'setZoom';
@@ -100,7 +100,7 @@ type BodyExcludedKeys =
   | 'aspectRatio'
   | 'resolutionSetting'
   | 'fpsSetting'
-  | 'previewIn4k'
+  | 'previewQuality'
   | 'force4k60fpsCrop'
   | 'capabilities'
   | 'zoom';

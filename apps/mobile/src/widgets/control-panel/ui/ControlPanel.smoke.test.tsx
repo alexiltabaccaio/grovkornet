@@ -93,8 +93,8 @@ describe('ControlPanel Component Stability Test', () => {
     resolutionSetting: { value: 1 },
     fpsSetting: { value: 30 },
     aspectRatio: { value: 1 },
-    previewIn4k: { value: 0 },
-    setPreviewIn4k: jest.fn(),
+    previewQuality: { value: 1 },
+    setPreviewQuality: jest.fn(),
   };
 
   const mockLensStoreValue = {

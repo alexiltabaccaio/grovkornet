@@ -63,35 +63,35 @@ describe('SystemPreferencesAndTelemetry Integration', () => {
     expect(useBodyStore.getState().resolution.value).toBe('3840x2160');
   });
 
-  it('handles 4K preview decoupling integration correctly (toggle off)', () => {
+  it('handles preview quality integration correctly (optimized)', () => {
     act(() => {
       useSystemStore.getState().setActiveParameter('resolution_setting');
       useBodyStore.getState().resolutionSetting.value = 1; // 1080p
-      useBodyStore.getState().previewIn4k.value = 0;
+      useBodyStore.getState().previewQuality.value = 1; // Optimized
     });
 
     const { getByTestId, queryByText } = render(<CameraScreen />);
     const nativeCamera = getByTestId('native-film-camera');
 
-    // 4K preview toggle and warning should not render when resolution is 1080p
-    expect(queryByText('PARAMETERS.PREVIEW_IN_4K')).toBeNull();
-    expect(queryByText('parameters.preview_in_4k_warning')).toBeNull();
-    expect(nativeCamera.props.animatedProps.previewIn4k).toBe(false);
+    // Preview quality label should render (always visible) and warning should be null
+    expect(queryByText('PARAMETERS.PREVIEW_QUALITY')).toBeDefined();
+    expect(queryByText('parameters.preview_quality_warning')).toBeNull();
+    expect(nativeCamera.props.animatedProps.previewQuality).toBe(1);
   });
 
-  it('handles 4K preview decoupling integration correctly (toggle on)', () => {
+  it('handles preview quality warning correctly (maximum on 4K)', () => {
     act(() => {
       useSystemStore.getState().setActiveParameter('resolution_setting');
       useBodyStore.getState().resolutionSetting.value = 0; // 4K
-      useBodyStore.getState().previewIn4k.value = 1; // ON
+      useBodyStore.getState().previewQuality.value = 0; // Maximum
     });
 
     const { getByTestId, queryByText } = render(<CameraScreen />);
     const nativeCamera = getByTestId('native-film-camera');
 
-    // 4K preview toggle and warning should render and native prop should be true
-    expect(queryByText('PARAMETERS.PREVIEW_IN_4K')).toBeDefined();
-    expect(queryByText('parameters.preview_in_4k_warning')).toBeDefined();
-    expect(nativeCamera.props.animatedProps.previewIn4k).toBe(true);
+    // Warning should render and native prop should be 0 (Maximum)
+    expect(queryByText('PARAMETERS.PREVIEW_QUALITY')).toBeDefined();
+    expect(queryByText('parameters.preview_quality_warning')).toBeDefined();
+    expect(nativeCamera.props.animatedProps.previewQuality).toBe(0);
   });
 });

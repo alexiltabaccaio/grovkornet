@@ -70,11 +70,11 @@ class NativeFilmCameraView(context: Context) : SurfaceView(context), SurfaceHold
         synchronized(config) {
             val oldCam = config.cameraId
             val oldRes = config.resolutionSetting
-            val oldPrev = config.previewIn4k
+            val oldPrev = config.previewQuality
             val oldAspect = config.aspectRatio
             val oldSelfie = config.isSelfieCamera
             config.action()
-            if (oldCam != config.cameraId || oldRes != config.resolutionSetting || oldPrev != config.previewIn4k || oldAspect != config.aspectRatio || oldSelfie != config.isSelfieCamera) {
+            if (oldCam != config.cameraId || oldRes != config.resolutionSetting || oldPrev != config.previewQuality || oldAspect != config.aspectRatio || oldSelfie != config.isSelfieCamera) {
                 lastReconfigureTime = System.currentTimeMillis()
                 renderThread?.notifyHardwareChange()
             }
@@ -90,11 +90,11 @@ class NativeFilmCameraView(context: Context) : SurfaceView(context), SurfaceHold
         synchronized(config) {
             val oldCam = config.cameraId
             val oldRes = config.resolutionSetting
-            val oldPrev = config.previewIn4k
+            val oldPrev = config.previewQuality
             val oldAspect = config.aspectRatio
             val oldSelfie = config.isSelfieCamera
             config.action()
-            if (oldCam != config.cameraId || oldRes != config.resolutionSetting || oldPrev != config.previewIn4k || oldAspect != config.aspectRatio || oldSelfie != config.isSelfieCamera) {
+            if (oldCam != config.cameraId || oldRes != config.resolutionSetting || oldPrev != config.previewQuality || oldAspect != config.aspectRatio || oldSelfie != config.isSelfieCamera) {
                 lastReconfigureTime = System.currentTimeMillis()
                 renderThread?.notifyHardwareChange()
             }

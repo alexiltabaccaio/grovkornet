@@ -172,10 +172,10 @@ class NativeFilmCameraModule : Module() {
               }
       }
 
-      Prop("previewIn4k") { view: NativeFilmCameraView, value: Boolean? ->
+      Prop("previewQuality") { view: NativeFilmCameraView, value: Int? ->
         value?.let { value ->
-                if (view.config.previewIn4k != value) {
-                          view.updateBoth { previewIn4k = value }
+                if (view.config.previewQuality != value) {
+                          view.updateBoth { previewQuality = value }
                         }
               }
       }

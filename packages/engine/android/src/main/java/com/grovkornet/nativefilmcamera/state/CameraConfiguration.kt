@@ -69,7 +69,7 @@ data class CameraConfiguration(
     var torchStrength: Int = 1,
     var cameraId: String? = null,
     var resolutionSetting: Int = 1,
-    var previewIn4k: Boolean = false,
+    var previewQuality: Int = 1,
     var force4k60fpsCrop: Boolean = true,
     var secureViewEnabled: Boolean = false,
     var isSelfieCamera: Boolean = false,
@@ -314,8 +314,8 @@ fun CameraConfiguration.loadFromMap(payload: Map<String, Any>) {
     payload["resolutionSetting"]?.let { rawValue ->
         (rawValue as? Number)?.toInt()?.let { resolutionSetting = it }
     }
-    payload["previewIn4k"]?.let { rawValue ->
-        (rawValue as? Boolean)?.let { previewIn4k = it }
+    payload["previewQuality"]?.let { rawValue ->
+        (rawValue as? Number)?.toInt()?.let { previewQuality = it }
     }
     payload["force4k60fpsCrop"]?.let { rawValue ->
         (rawValue as? Boolean)?.let { force4k60fpsCrop = it }

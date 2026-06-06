@@ -1137,19 +1137,19 @@
       }
     },
     {
-      "name": "previewIn4k",
+      "name": "previewQuality",
       "category": "hardware",
       "kotlin": {
-        "type": "Boolean",
-        "default": "false",
-        "propHandler": "if (view.config.previewIn4k != value) {\n          view.updateBoth { previewIn4k = value }\n        }"
+        "type": "Int",
+        "default": "1",
+        "propHandler": "if (view.config.previewQuality != value) {\n          view.updateBoth { previewQuality = value }\n        }"
       },
       "ts": {
-        "type": "boolean"
+        "type": "number"
       },
       "zustand": {
         "store": "body",
-        "default": "DEFAULT_PREVIEW_IN_4K",
+        "default": "DEFAULT_PREVIEW_QUALITY",
         "type": "number"
       }
     },
