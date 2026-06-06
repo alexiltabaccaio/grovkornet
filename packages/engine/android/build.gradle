@@ -156,28 +156,67 @@ task downloadMatc {
   }
 }
 
-// Compile shaders using matc
+// Compile shaders using matc with preprocessing support
 task compileShaders {
   dependsOn downloadMatc
   def matcBin = file("${projectDir}/filament-host/bin/matc" + (org.gradle.internal.os.OperatingSystem.current().isWindows() ? ".exe" : ""))
   def shadersDir = file("${projectDir}/src/main/filament-shaders")
+  def preprocessedDir = file("${buildDir}/preprocessed-shaders")
   def assetsDir = file("${projectDir}/src/main/assets/materials")
   
   inputs.dir(shadersDir)
   outputs.dir(assetsDir)
   
   doLast {
+    if (preprocessedDir.exists()) {
+      preprocessedDir.deleteDir()
+    }
+    preprocessedDir.mkdirs()
     if (!assetsDir.exists()) {
       assetsDir.mkdirs()
     }
     
+    // Helper closure to preprocess files and handle #include directives
+    def preprocessFile
+    preprocessFile = { File file ->
+      def content = ""
+      file.eachLine { line ->
+        def matcher = line =~ /^\s*#include\s+"([^"]+)"/
+        if (matcher) {
+          def includePath = matcher[0][1]
+          def includeFile = new File(file.parentFile, includePath)
+          if (!includeFile.exists()) {
+            includeFile = new File(shadersDir, includePath)
+          }
+          if (includeFile.exists()) {
+            content += "// START INCLUDE: ${includePath}\n"
+            content += preprocessFile(includeFile)
+            content += "\n// END INCLUDE: ${includePath}\n"
+          } else {
+            throw new RuntimeException("Shader include file not found: ${includeFile.absolutePath} (included from ${file.absolutePath})")
+          }
+        } else {
+          content += line + "\n"
+        }
+      }
+      return content
+    }
+
     fileTree(dir: shadersDir, include: '**/*.mat').each { File file ->
+      def relativePath = shadersDir.relativePath(file)
+      def preprocessedFile = new File(preprocessedDir, relativePath)
+      preprocessedFile.parentFile.mkdirs()
+      
+      // Preprocess the file
+      def processedContent = preprocessFile(file)
+      preprocessedFile.text = processedContent
+      
       def baseName = file.name.substring(0, file.name.lastIndexOf('.'))
       def outputFile = new File(assetsDir, "${baseName}.filamat")
-      println "Compiling ${file.name} -> ${outputFile.name}..."
+      println "Compiling preprocessed ${file.name} -> ${outputFile.name}..."
       
       exec {
-        commandLine matcBin.absolutePath, '-a', 'opengl', '-p', 'mobile', '-o', outputFile.absolutePath, file.absolutePath
+        commandLine matcBin.absolutePath, '-a', 'opengl', '-p', 'mobile', '-o', outputFile.absolutePath, preprocessedFile.absolutePath
       }
     }
   }
