@@ -117,24 +117,29 @@ fragment {
         }
     }
 
-    // 3. Sharpening filter
+    // 3. Sharpening filter (Unsharp Mask for Detail Effect)
     vec3 applySharpening(vec3 centerColor, vec2 compositeUv) {
         if (materialParams.u_Sharpening > 0.0) {
-            vec2 texel = materialParams.u_TexelSize;
-            vec3 colN = textureLod(materialParams_u_Texture, compositeUv + vec2(0.0, texel.y), 0.0).rgb;
-            vec3 colS = textureLod(materialParams_u_Texture, compositeUv - vec2(0.0, texel.y), 0.0).rgb;
-            vec3 colE = textureLod(materialParams_u_Texture, compositeUv + vec2(texel.x, 0.0), 0.0).rgb;
-            vec3 colW = textureLod(materialParams_u_Texture, compositeUv - vec2(texel.x, 0.0), 0.0).rgb;
+            // Raggio allargato per estrarre dettagli/strutture anziché rumore a singolo pixel.
+            // Un offset di 1.5 sfrutta il filtro bilineare hardware per un fast blur efficiente.
+            vec2 texel = materialParams.u_TexelSize * 1.5;
             
-            vec3 laplacian = 4.0 * centerColor - (colN + colS + colE + colW);
+            vec3 colNW = textureLod(materialParams_u_Texture, compositeUv + vec2(-texel.x, texel.y), 0.0).rgb;
+            vec3 colNE = textureLod(materialParams_u_Texture, compositeUv + vec2(texel.x, texel.y), 0.0).rgb;
+            vec3 colSW = textureLod(materialParams_u_Texture, compositeUv + vec2(-texel.x, -texel.y), 0.0).rgb;
+            vec3 colSE = textureLod(materialParams_u_Texture, compositeUv + vec2(texel.x, -texel.y), 0.0).rgb;
             
-            // Soft-coring to avoid sharpening sensor noise (especially when noise reduction is OFF)
-            // Using a quadratic rational function keeps the transition completely smooth and prevents flickering/popping.
-            float laplacianLuma = abs(dot(laplacian, vec3(0.299, 0.587, 0.114)));
-            const float epsilon = 0.045; // Tuned threshold for raw sensor noise
-            float noiseFactor = (laplacianLuma * laplacianLuma) / (laplacianLuma * laplacianLuma + epsilon * epsilon);
+            // Fast blur usando 4 sample bilineari + il centro
+            vec3 blurred = (centerColor * 4.0 + colNW + colNE + colSW + colSE) / 8.0;
             
-            return centerColor + (laplacian * noiseFactor) * materialParams.u_Sharpening * 10.0;
+            // High-pass: differenza tra originale e sfocato (dettaglio)
+            vec3 detail = centerColor - blurred;
+            
+            // Maschera per evitare di esaltare il rumore nelle aree piatte
+            float detailLuma = abs(dot(detail, vec3(0.299, 0.587, 0.114)));
+            float mask = smoothstep(0.003, 0.025, detailLuma);
+            
+            return centerColor + detail * (materialParams.u_Sharpening * 12.0) * mask;
         }
         return centerColor;
     }
