@@ -10,12 +10,13 @@ interface LensSelectionPanelProps {
 }
 
 export const LensSelectionPanel = ({ animatedStyle }: LensSelectionPanelProps) => {
-  const { capabilities, cameraId, setCameraId, cameraAuto, setCameraAuto } = useLensStore(useShallow(state => ({
+  const { capabilities, cameraId, setCameraId, cameraAuto, setCameraAuto, activeCameraId } = useLensStore(useShallow(state => ({
     capabilities: state.capabilities,
     cameraId: state.cameraId,
     setCameraId: state.setCameraId,
     cameraAuto: state.cameraAuto,
     setCameraAuto: state.setCameraAuto,
+    activeCameraId: state.activeCameraId,
   })));
   const isLayoutOverlayEnabled = useSystemStore((s) => s.isLayoutOverlayEnabled);
 
@@ -26,14 +27,14 @@ export const LensSelectionPanel = ({ animatedStyle }: LensSelectionPanelProps) =
         setCameraAuto(false);
         setCameraId(cam.id);
       }}
-      isActiveStatic={(cam) => !cameraAuto && cameraId === cam.id}
+      isActiveStatic={(cam) => cameraAuto ? activeCameraId === cam.id : cameraId === cam.id}
       getLabel={(cam) => `${cam.focalLength35mm}mm`}
       animatedStyle={animatedStyle}
       pillMaxWidth={75}
       gap={8}
       paddingHorizontal={24}
       scrollable={true}
-      opacity={cameraAuto ? 0.4 : 1}
+      opacity={(cam) => cameraAuto ? (activeCameraId === cam.id ? 1 : 0.4) : 1}
       leftAccessory={
         <AutoButton
           isActive={cameraAuto}

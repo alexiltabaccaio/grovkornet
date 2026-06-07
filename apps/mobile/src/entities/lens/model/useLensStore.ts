@@ -15,6 +15,7 @@ export const useLensStore = create<LensStore>((set, get) => ({
   aberrationDirection: makeMutable(0),
   bloomEnabled: makeMutable(false),
   bloomIntensity: makeMutable(0),
+  activeCameraId: DEFAULT_CAMERA_ID,
   // @@GEN_STATE_START@@
   focusAuto: makeMutable(DEFAULT_FOCUS_AUTO),
   focusDistance: makeMutable(DEFAULT_FOCUS_DISTANCE),
@@ -52,6 +53,9 @@ export const useLensStore = create<LensStore>((set, get) => ({
 
   },
   // @@GEN_SETTERS_END@@
+  setActiveCameraId: (value) => {
+    set({ activeCameraId: value });
+  },
   setCapabilities: (caps) => {
     logger.info('LensStore', 'Hardware capabilities updated for Lens');
     set((state) => ({

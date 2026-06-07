@@ -27,7 +27,7 @@ class CameraControlManager(
     private var lastAutoShutter = 1000000000L / 60
 
     interface Listener {
-        fun onExposureUpdate(iso: Int, shutterSpeed: Double, focusDistance: Float, noiseReduction: Int)
+        fun onExposureUpdate(iso: Int, shutterSpeed: Double, focusDistance: Float, noiseReduction: Int, activeCameraId: String?)
     }
 
     fun updateControls(camera: Camera, baseZoom: Float = 1.0f) {
@@ -207,7 +207,36 @@ class CameraControlManager(
                     val currentNR = result.get(CaptureResult.NOISE_REDUCTION_MODE) ?: 1
                     val shutterDenominator = 1_000_000_000.0 / currentShutter.toDouble()
 
-                    listener.onExposureUpdate(currentIso, shutterDenominator, currentFocus, currentNR)
+                    var activeCameraId: String? = null
+                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.P) {
+                        activeCameraId = result.get(CaptureResult.LOGICAL_MULTI_CAMERA_ACTIVE_PHYSICAL_ID)
+                    }
+                    if (activeCameraId.isNullOrEmpty()) {
+                        activeCameraId = config.cameraId
+                    }
+                    if (activeCameraId.isNullOrEmpty()) {
+                        try {
+                            val cameraManager = context.getSystemService(Context.CAMERA_SERVICE) as android.hardware.camera2.CameraManager
+                            for (id in cameraManager.cameraIdList) {
+                                val chars = cameraManager.getCameraCharacteristics(id)
+                                if (chars.get(CameraCharacteristics.LENS_FACING) == CameraCharacteristics.LENS_FACING_BACK) {
+                                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.P) {
+                                        val physicalIds = chars.physicalCameraIds
+                                        if (physicalIds != null && physicalIds.isNotEmpty()) {
+                                            activeCameraId = physicalIds.firstOrNull()
+                                            break
+                                        }
+                                    }
+                                    activeCameraId = id
+                                    break
+                                }
+                            }
+                        } catch (e: Exception) {
+                            // ignore fallback errors
+                        }
+                    }
+
+                    listener.onExposureUpdate(currentIso, shutterDenominator, currentFocus, currentNR, activeCameraId)
                     lastExposureUpdateTime = now
                 }
             }

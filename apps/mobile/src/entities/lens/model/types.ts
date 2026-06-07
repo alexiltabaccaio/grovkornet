@@ -15,6 +15,7 @@ interface LensState {
   aberrationDirection: SharedValue<number>;
   bloomEnabled: SharedValue<boolean>;
   bloomIntensity: SharedValue<number>;
+  activeCameraId: string;
   // @@GEN_STATE_START@@
   focusAuto: SharedValue<boolean>;
   focusDistance: SharedValue<number>;
@@ -30,6 +31,7 @@ interface LensActions {
   setFocusDistance: (value: number) => void;
   setCameraId: (value: string) => void;
   // @@GEN_ACTIONS_END@@
+  setActiveCameraId: (value: string) => void;
   setCapabilities: (capabilities: LensCapabilities) => void;
 }
 

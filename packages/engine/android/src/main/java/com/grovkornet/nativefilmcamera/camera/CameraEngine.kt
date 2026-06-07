@@ -23,7 +23,7 @@ class CameraEngine(
     private val TAG = "CameraEngine"
 
     interface Listener {
-        fun onExposureUpdate(iso: Int, shutterSpeed: Double, focusDistance: Float, noiseReduction: Int)
+        fun onExposureUpdate(iso: Int, shutterSpeed: Double, focusDistance: Float, noiseReduction: Int, activeCameraId: String?)
         fun onCapabilitiesUpdate(capabilities: WritableMap)
         fun onCameraResolutionDetected(width: Int, height: Int)
         fun onPhotoCaptured(uri: String)
@@ -122,8 +122,8 @@ class CameraEngine(
     }
 
     // --- ControlManager.Listener ---
-    override fun onExposureUpdate(iso: Int, shutterSpeed: Double, focusDistance: Float, noiseReduction: Int) {
-        listener.onExposureUpdate(iso, shutterSpeed, focusDistance, noiseReduction)
+    override fun onExposureUpdate(iso: Int, shutterSpeed: Double, focusDistance: Float, noiseReduction: Int, activeCameraId: String?) {
+        listener.onExposureUpdate(iso, shutterSpeed, focusDistance, noiseReduction, activeCameraId)
     }
 
     // --- CapturePipeline.Listener ---

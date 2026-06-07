@@ -1,4 +1,4 @@
-import { useEvent } from 'react-native-reanimated';
+import { useEvent, runOnJS } from 'react-native-reanimated';
 import { updateSharedValue } from '@shared/lib/reanimated/safeUpdate';
 import { useBodyStore, BodyCapabilities } from '@entities/body';
 import { useLensStore, LensCapabilities } from '@entities/lens';
@@ -9,6 +9,7 @@ interface ExposureUpdatePayload {
   shutterSpeed: number;
   focusDistance?: number;
   noiseReduction?: number;
+  activeCameraId?: string;
 }
 
 interface DebugUpdatePayload {
@@ -38,6 +39,9 @@ export const useCameraEvents = () => {
     }
     if (filmStore.noiseReductionAuto.value && nativeEvent.noiseReduction !== undefined) {
       updateSharedValue(filmStore.noiseReductionMode, nativeEvent.noiseReduction);
+    }
+    if (nativeEvent.activeCameraId !== undefined) {
+      runOnJS(lensStore.setActiveCameraId)(nativeEvent.activeCameraId);
     }
   }, ['onExposureUpdate']);
 

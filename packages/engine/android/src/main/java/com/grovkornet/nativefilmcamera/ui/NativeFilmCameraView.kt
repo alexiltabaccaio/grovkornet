@@ -134,14 +134,18 @@ class NativeFilmCameraView(context: Context) : SurfaceView(context), SurfaceHold
         holder.addCallback(this)
 
         val cameraListener = object : CameraEngine.Listener {
-            override fun onExposureUpdate(iso: Int, shutterSpeed: Double, focusDistance: Float, noiseReduction: Int) {
+            override fun onExposureUpdate(iso: Int, shutterSpeed: Double, focusDistance: Float, noiseReduction: Int, activeCameraId: String?) {
                 if (isReleased) return
-                this@NativeFilmCameraView.onExposureUpdate(mapOf(
+                val eventPayload = mutableMapOf<String, Any>(
                     "iso" to iso,
                     "shutterSpeed" to shutterSpeed,
                     "focusDistance" to focusDistance.toDouble(),
                     "noiseReduction" to noiseReduction
-                ))
+                )
+                if (activeCameraId != null) {
+                    eventPayload["activeCameraId"] = activeCameraId
+                }
+                this@NativeFilmCameraView.onExposureUpdate(eventPayload)
             }
 
             override fun onCapabilitiesUpdate(capabilities: WritableMap) {
