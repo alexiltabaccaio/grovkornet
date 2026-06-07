@@ -179,10 +179,14 @@ Object.keys(storeRecord).forEach((key) => {
     const originalFn = storeRecord[key] as (...args: unknown[]) => void;
     storeRecord[key] = (...args: unknown[]) => {
       originalFn(...args);
-      if (bodyListenerTimeout) clearTimeout(bodyListenerTimeout);
-      bodyListenerTimeout = setTimeout(() => {
+      if (process.env.NODE_ENV === 'test') {
         parameterChangeListener?.();
-      }, 50);
+      } else {
+        if (bodyListenerTimeout) clearTimeout(bodyListenerTimeout);
+        bodyListenerTimeout = setTimeout(() => {
+          parameterChangeListener?.();
+        }, 50);
+      }
     };
   }
 });

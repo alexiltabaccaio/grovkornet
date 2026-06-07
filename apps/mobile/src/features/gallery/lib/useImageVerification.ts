@@ -22,11 +22,12 @@ export const useImageVerification = () => {
 
     setVerifying(true);
     verifyingQueue.add(item.uri);
+    let timeoutId: NodeJS.Timeout | undefined;
     try {
       logger.debug('Gallery', `Running verifyGrovkornetAuthenticity for selected photo: ${item.uri}`);
-      const verifyTimeout = new Promise<boolean>((_, reject) =>
-        setTimeout(() => reject(new Error('VERIFY_TIMEOUT')), 5000)
-      );
+      const verifyTimeout = new Promise<boolean>((_, reject) => {
+        timeoutId = setTimeout(() => reject(new Error('VERIFY_TIMEOUT')), 5000);
+      });
 
       const verified = await Promise.race([
         verifyGrovkornetAuthenticity(item.uri),
@@ -39,6 +40,7 @@ export const useImageVerification = () => {
       logger.error('Gallery', `Verification error or timeout for ${item.uri}`, error);
       useVerificationStore.getState().setVerified(item.uri, false);
     } finally {
+      if (timeoutId) clearTimeout(timeoutId);
       verifyingQueue.delete(item.uri);
       setVerifying(false);
     }
@@ -66,11 +68,12 @@ export const useImageVerification = () => {
 
       await Promise.all(
         chunk.map(async (uri) => {
+          let timeoutId: NodeJS.Timeout | undefined;
           try {
             logger.debug('Gallery', `Background verifying: ${uri}`);
-            const verifyTimeout = new Promise<boolean>((_, reject) =>
-              setTimeout(() => reject(new Error('VERIFY_TIMEOUT')), 5000)
-            );
+            const verifyTimeout = new Promise<boolean>((_, reject) => {
+              timeoutId = setTimeout(() => reject(new Error('VERIFY_TIMEOUT')), 5000);
+            });
 
             const verified = await Promise.race([
               verifyGrovkornetAuthenticity(uri),
@@ -82,6 +85,7 @@ export const useImageVerification = () => {
             logger.error('Gallery', `Background verification failed for ${uri}`, error);
             useVerificationStore.getState().setVerified(uri, false);
           } finally {
+            if (timeoutId) clearTimeout(timeoutId);
             verifyingQueue.delete(uri);
           }
         })

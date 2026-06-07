@@ -590,10 +590,14 @@ export const useFilmStore = create<FilmStore>((set, get) => ({
       // @@GEN_RESET_END@@
     }
     logger.debug('FilmStore', 'end of resetEffect, triggering listener');
-    if (filmListenerTimeout) clearTimeout(filmListenerTimeout);
-    filmListenerTimeout = setTimeout(() => {
+    if (process.env.NODE_ENV === 'test') {
       parameterChangeListener?.();
-    }, 50);
+    } else {
+      if (filmListenerTimeout) clearTimeout(filmListenerTimeout);
+      filmListenerTimeout = setTimeout(() => {
+        parameterChangeListener?.();
+      }, 50);
+    }
   },
 }));
 
@@ -618,10 +622,14 @@ Object.keys(storeRecord).forEach((key) => {
     const originalFn = storeRecord[key] as (...args: unknown[]) => void;
     storeRecord[key] = (...args: unknown[]) => {
       originalFn(...args);
-      if (filmListenerTimeout) clearTimeout(filmListenerTimeout);
-      filmListenerTimeout = setTimeout(() => {
+      if (process.env.NODE_ENV === 'test') {
         parameterChangeListener?.();
-      }, 50);
+      } else {
+        if (filmListenerTimeout) clearTimeout(filmListenerTimeout);
+        filmListenerTimeout = setTimeout(() => {
+          parameterChangeListener?.();
+        }, 50);
+      }
     };
   }
 });
