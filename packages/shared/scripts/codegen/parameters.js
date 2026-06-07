@@ -1,9 +1,8 @@
 const fs = require('fs');
 const path = require('path');
+const { loadYamlConfig, PROJECT_ROOT } = require('./utils/config-loader');
 
-// Target file paths
-const PROJECT_ROOT = path.resolve(__dirname, '../../..');
-const PARAMETERS_JSON_PATH = path.join(PROJECT_ROOT, 'packages/shared/camera-parameters.json');
+const PARAMETERS_YAML_PATH = 'packages/shared/camera-parameters.yaml';
 
 // File paths relative to PROJECT_ROOT
 const FILE_PATHS = {
@@ -70,19 +69,8 @@ function replaceBetweenMarkers(filePath, startMarker, endMarker, newContent, ind
 }
 
 function validateAndLoadParameters() {
-  console.log(`Loading parameters from: ${PARAMETERS_JSON_PATH}`);
-  
-  if (!fs.existsSync(PARAMETERS_JSON_PATH)) {
-    throw new Error(`Parameters JSON file not found at ${PARAMETERS_JSON_PATH}`);
-  }
-  
-  const content = fs.readFileSync(PARAMETERS_JSON_PATH, 'utf8');
-  let data;
-  try {
-    data = JSON.parse(content);
-  } catch (err) {
-    throw new Error(`Failed to parse camera-parameters.json: ${err.message}`);
-  }
+  console.log(`Loading parameters from: ${PARAMETERS_YAML_PATH}`);
+  const data = loadYamlConfig(PARAMETERS_YAML_PATH);
   
   if (!data.parameters || !Array.isArray(data.parameters)) {
     throw new Error("Invalid schema: 'parameters' array is required.");
@@ -239,7 +227,7 @@ function generateNativeBridge(parameters, renderParams) {
       
       return `Prop("${propName}") { view: NativeFilmCameraView, value: ${kotlinPropType} ->\n  ${indentedBody}\n}`;
     })
-    .join('\n\n'); // Separate Prop declarations with empty line for legibility
+    .join('\n\n');
   replaceBetweenMarkers(FILE_PATHS.kotlinModule, '// @@GEN_PROPS_START@@', '// @@GEN_PROPS_END@@', kotlinPropsContent, '      ');
 
   // 3. Generate CameraConfiguration.kt Fields
@@ -753,3 +741,7 @@ function main() {
 if (require.main === module) {
   main();
 }
+
+module.exports = {
+  main
+};

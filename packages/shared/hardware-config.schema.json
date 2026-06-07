@@ -1,0 +1,25 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "HardwareConfig",
+  "type": "object",
+  "required": ["lut", "drs"],
+  "properties": {
+    "lut": {
+      "type": "object",
+      "required": ["size"],
+      "properties": {
+        "size": { "type": "integer" }
+      }
+    },
+    "drs": {
+      "type": "object",
+      "required": ["min_scale", "max_scale", "frame_time_window_size", "cooldown_frames"],
+      "properties": {
+        "min_scale": { "type": "number" },
+        "max_scale": { "type": "number" },
+        "frame_time_window_size": { "type": "integer" },
+        "cooldown_frames": { "type": "integer" }
+      }
+    }
+  }
+}

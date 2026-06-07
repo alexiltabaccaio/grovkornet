@@ -1,8 +1,8 @@
 const { spawn } = require('child_process');
 const path = require('path');
-const helper = require('./android-helper');
+const helper = require('./helper');
 
-const PROJECT_ROOT = path.resolve(__dirname, '../../..');
+const PROJECT_ROOT = path.resolve(__dirname, '../../../..');
 
 async function start() {
   process.env.APP_ENV = 'production';

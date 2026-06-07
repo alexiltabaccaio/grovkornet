@@ -1,0 +1,26 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "CameraErrors",
+  "type": "object",
+  "required": ["errors"],
+  "properties": {
+    "errors": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "code", "severity", "category", "required_params", "description"],
+        "properties": {
+          "name": { "type": "string" },
+          "code": { "type": "integer" },
+          "severity": { "type": "string", "enum": ["fatal", "warning"] },
+          "category": { "type": "string" },
+          "required_params": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "description": { "type": "string" }
+        }
+      }
+    }
+  }
+}

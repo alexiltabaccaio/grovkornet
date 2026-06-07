@@ -1,5 +1,9 @@
 import fs from 'fs';
 import path from 'path';
+import { createRequire } from 'module';
+const requireNode = createRequire(__filename);
+const yamlPath = path.resolve(__dirname, '../../../../../../node_modules/yaml/dist/index.js');
+const YAML = requireNode(yamlPath);
 import { act } from '@testing-library/react-native';
 import { useFilmStore } from '@entities/film';
 import { useLensStore } from '@entities/lens';
@@ -9,10 +13,10 @@ describe('Parameter Sync & Zustand Stores Integration', () => {
   let parameters: any[] = [];
 
   beforeAll(() => {
-    // Resolve path to packages/shared/camera-parameters.json from current directory
-    const jsonPath = path.resolve(__dirname, '../../../../../../packages/shared/camera-parameters.json');
-    const content = fs.readFileSync(jsonPath, 'utf8');
-    const parsed = JSON.parse(content);
+    // Resolve path to packages/shared/camera-parameters.yaml from current directory
+    const yamlPath = path.resolve(__dirname, '../../../../../../packages/shared/camera-parameters.yaml');
+    const content = fs.readFileSync(yamlPath, 'utf8');
+    const parsed = YAML.parse(content);
     parameters = parsed.parameters || [];
   });
 

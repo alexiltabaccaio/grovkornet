@@ -1,0 +1,73 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "CameraParameters",
+  "type": "object",
+  "required": ["parameters"],
+  "properties": {
+    "parameters": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "category"],
+        "properties": {
+          "name": { "type": "string" },
+          "category": { "type": "string", "enum": ["render", "hardware", "transient", "viewport"] },
+          "arrayIndex": { "type": "integer" },
+          "nitro": { "type": "boolean" },
+          "excludeFromPreset": { "type": "boolean" },
+          "kotlin": {
+            "type": "object",
+            "required": ["type"],
+            "properties": {
+              "type": { "type": "string" },
+              "default": { "type": "string" },
+              "name": { "type": "string" },
+              "transient": { "type": "boolean" },
+              "argumentName": { "type": "string" },
+              "arrayMapping": { "type": "string" },
+              "propHandler": { "type": "string" }
+            }
+          },
+          "ts": {
+            "type": "object",
+            "required": ["type"],
+            "properties": {
+              "type": { "type": "string" },
+              "name": { "type": "string" },
+              "optional": { "type": "boolean" }
+            }
+          },
+          "cpp": {
+            "type": "object",
+            "properties": {
+              "name": { "type": "string" }
+            }
+          },
+          "zustand": {
+            "type": "object",
+            "properties": {
+              "store": { "type": "string", "enum": ["film", "body", "lens", "preset"] },
+              "name": { "type": "string" },
+              "type": { "type": "string" },
+              "default": { "type": "string" },
+              "resetGroup": { "type": "string" },
+              "setSideEffects": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": ["target", "value"],
+                  "properties": {
+                    "target": { "type": "string" },
+                    "value": { "type": "string" },
+                    "store": { "type": "string" },
+                    "condition": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
