@@ -88,6 +88,45 @@ describe('useGalleryViewer', () => {
     });
   });
 
+  it('synchronously migrates temp preview to final capture when initialUri changes', () => {
+    const tempUri = 'file:///data/preview-123.jpg';
+    const finalUri = 'file:///storage/GVK-123.jpg';
+
+    // Initial render with temp URI
+    mockUseGalleryPhotos.mockReturnValue({
+      photos: [{ id: 'preview-temp', uri: tempUri, filename: 'preview-123.jpg' }],
+      setPhotos: mockSetPhotos,
+      loading: false,
+      permissionGranted: true,
+    });
+    mockUseImageVerification.mockReturnValue({
+      selectedPhoto: { id: 'preview-temp', uri: tempUri, filename: 'preview-123.jpg' },
+      verifyPhoto: mockVerifyPhoto,
+    });
+
+    const { rerender } = renderHook(
+      (props: { initialUri: string }) => useGalleryViewer(props.initialUri),
+      { initialProps: { initialUri: tempUri } }
+    );
+
+    // Re-render hook with final URI (simulate store/prop update)
+    rerender({ initialUri: finalUri });
+
+    // Verify it updated the photos array immediately replacing the temp one
+    expect(mockSetPhotos).toHaveBeenCalled();
+    const updateFn = mockSetPhotos.mock.calls[0][0];
+    const originalPhotos = [{ id: 'preview-temp', uri: tempUri, filename: 'preview-123.jpg' }];
+    const updatedPhotos = updateFn(originalPhotos);
+    expect(updatedPhotos[0].uri).toBe(finalUri);
+
+    // Verify verifyPhoto was immediately called with the new migrated final item
+    expect(mockVerifyPhoto).toHaveBeenCalledWith(
+      expect.objectContaining({
+        uri: finalUri,
+      })
+    );
+  });
+
   it('updates selection when onPhotoVisible is called with a new photo', () => {
     mockUseImageVerification.mockReturnValue({
       selectedPhoto: mockPhotos[0],

@@ -74,7 +74,7 @@ export const PhotoPreview = ({ selectedPhoto, photos, onPhotoVisible, rotationY 
             if (!photo) return null;
             return (
               <AnimatedSlot
-                key={photo.id}
+                key={index}
                 photo={photo}
                 index={index}
                 translateX={translateX}

@@ -11,8 +11,10 @@ export const useGalleryPhotos = (initialUri?: string | null) => {
 
   useEffect(() => {
     let active = true;
+    logger.debug('useGalleryPhotos', `Effect started: initialUri=${initialUri}`);
 
     const loadPhotos = async () => {
+      logger.debug('useGalleryPhotos', `loadPhotos started: initialUri=${initialUri}`);
       try {
         logger.debug('Gallery', 'Checking MediaLibrary permissions...');
         const checkPerms = async () => {
@@ -36,13 +38,17 @@ export const useGalleryPhotos = (initialUri?: string | null) => {
           logger.warn('Gallery', 'Permissions timeout or error', e);
         }
 
-        if (!active) return;
+        if (!active) {
+          logger.debug('useGalleryPhotos', `loadPhotos: active became false during permission check`);
+          return;
+        }
 
         if (status !== 'granted') {
           logger.warn('Gallery', 'MediaLibrary permissions not granted or timed out');
           setPermissionGranted(false);
           setLoading(false);
           if (initialUri) {
+            logger.debug('useGalleryPhotos', `Permissions not granted: setting photos to single fallback item: ${initialUri}`);
             setPhotos([{ id: 'initial', uri: initialUri }]);
           }
           return;
@@ -59,7 +65,10 @@ export const useGalleryPhotos = (initialUri?: string | null) => {
           albumsTimeout
         ]).finally(() => clearTimeout(albumsTimer));
 
-        if (!active) return;
+        if (!active) {
+          logger.debug('useGalleryPhotos', `loadPhotos: active became false during album fetch`);
+          return;
+        }
 
         const grovkornetAlbums = allAlbums.filter(a => a.title.toLowerCase() === 'grovkornet');
 
@@ -114,7 +123,10 @@ export const useGalleryPhotos = (initialUri?: string | null) => {
           }
         }
 
-        if (!active) return;
+        if (!active) {
+          logger.debug('useGalleryPhotos', `loadPhotos: active became false during media resolution`);
+          return;
+        }
 
         const items: GalleryItem[] = media.map(asset => ({
           id: asset.id,
@@ -129,11 +141,14 @@ export const useGalleryPhotos = (initialUri?: string | null) => {
             (initialFilenameOrId && (item.filename === initialFilenameOrId || item.id === initialFilenameOrId))
           );
 
+          logger.debug('useGalleryPhotos', `loadPhotos check: initialUri=${initialUri}, alreadyExists=${alreadyExists}`);
           if (!alreadyExists) {
+            logger.debug('useGalleryPhotos', `loadPhotos: unshifting temp preview: ${initialUri}`);
             items.unshift({ id: 'preview-temp', uri: initialUri, filename: initialFilenameOrId });
           }
         }
 
+        logger.debug('useGalleryPhotos', `loadPhotos complete: setting ${items.length} photos`);
         setPhotos(items);
         setLoading(false);
       } catch (error) {
@@ -151,12 +166,14 @@ export const useGalleryPhotos = (initialUri?: string | null) => {
     void loadPhotos();
 
     const subscription = AppState.addEventListener('change', nextAppState => {
+      logger.debug('useGalleryPhotos', `AppState change: status=${nextAppState}, active=${active}`);
       if (nextAppState === 'active' && active) {
         void loadPhotos();
       }
     });
 
     return () => {
+      logger.debug('useGalleryPhotos', `Effect cleanup running for initialUri=${initialUri}`);
       active = false;
       subscription.remove();
     };
