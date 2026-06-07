@@ -93,4 +93,53 @@ class LiveFilmProcessorTest {
         processor.release()
         st.release()
     }
+
+    @Test
+    fun testRapidSurfaceRecreationStress() = runBlocking {
+        val processor = LiveFilmProcessor()
+        val width = 128
+        val height = 128
+        
+        val context = InstrumentationRegistry.getInstrumentation().targetContext
+        
+        // Initial setup
+        val initialSt = SurfaceTexture(0)
+        initialSt.setDefaultBufferSize(width, height)
+        processor.prepare(initialSt, width, height, context.assets)
+        
+        val dummyMatrix = FloatArray(16) { 0f }.apply {
+            this[0] = 1f
+            this[5] = 1f
+            this[10] = 1f
+            this[15] = 1f
+        }
+        
+        val params = CameraConfiguration(
+            saturation = 1.0f,
+            contrast = 1.0f,
+            ev = 0.0f,
+            whiteBalance = 5000.0f,
+            tint = 0.0f
+        )
+        
+        // Stress-test rapid creation/destruction and rendering across different surfaces
+        for (i in 1..5) {
+            val loopSt = SurfaceTexture(i)
+            loopSt.setDefaultBufferSize(width, height)
+            val loopSurface = Surface(loopSt)
+            
+            // Simulates rendering a frame onto this temporary surface
+            processor.renderLiveFrame(loopSurface, params, dummyMatrix)
+            
+            // Release loop surfaces immediately
+            loopSurface.release()
+            loopSt.release()
+        }
+        
+        // Verify processor is still active and can be released successfully
+        assertEquals("DRS scale should still be accessible", 1.0f, processor.getDrsScale(), 0.001f)
+        
+        processor.release()
+        initialSt.release()
+    }
 }

@@ -12,7 +12,7 @@ object WatermarkEngine {
     init {
         try {
             System.loadLibrary("grovkornet_engine")
-        } catch (e: Exception) {
+        } catch (e: Throwable) {
             Log.e(TAG, "Failed to load grovkornet-engine library", e)
         }
     }

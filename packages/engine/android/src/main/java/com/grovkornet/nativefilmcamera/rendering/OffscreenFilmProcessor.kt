@@ -34,7 +34,7 @@ class OffscreenFilmProcessor {
                 if (BuildConfig.DEBUG) {
                     Log.i("OffscreenProcessor", "Successfully loaded native grovkornet_engine library")
                 }
-            } catch (e: Exception) {
+            } catch (e: Throwable) {
                 Log.e("OffscreenProcessor", "Failed to load engine library", e)
             }
         }

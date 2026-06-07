@@ -50,6 +50,13 @@ android {
 
   packagingOptions {
     pickFirst 'lib/*/libc++_shared.so'
+    pickFirst 'lib/**/*.so'
+    exclude 'META-INF/LICENSE.md'
+    exclude 'META-INF/LICENSE-notice.md'
+    exclude 'META-INF/LICENSE'
+    exclude 'META-INF/NOTICE'
+    exclude 'META-INF/NOTICE.txt'
+    exclude 'META-INF/LICENSE.txt'
   }
 
   lintOptions {
@@ -247,11 +254,14 @@ dependencies {
   implementation "androidx.lifecycle:lifecycle-process:2.6.2"
 
   testImplementation 'junit:junit:4.13.2'
+  testImplementation "io.mockk:mockk:1.13.5"
+  testImplementation 'org.robolectric:robolectric:4.11.1'
   
   // Instrumented tests dependencies
   androidTestImplementation 'androidx.test:runner:1.5.2'
   androidTestImplementation 'androidx.test:rules:1.5.0'
   androidTestImplementation 'androidx.test.ext:junit:1.1.5'
+  androidTestImplementation "io.mockk:mockk-android:1.13.5"
 }
 
 jacoco {
