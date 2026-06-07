@@ -1,15 +1,13 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 import { useBodyStore } from '@entities/body';
 import { ParameterType } from '@entities/system';
-import { GenericParameterModule } from '@entities/system';
+import { GenericParameterModule, ParameterConfig } from '@entities/system';
 
 
 interface LightingModuleProps {
   handlePressWithDouble: (param: ParameterType, action: () => void) => void;
 }
-
-const LIGHTING_PARAMETERS: ParameterType[] = ['torch'];
 
 export const LightingModule = ({ handlePressWithDouble }: LightingModuleProps) => {
   const { capabilities } = useBodyStore(
@@ -18,11 +16,18 @@ export const LightingModule = ({ handlePressWithDouble }: LightingModuleProps) =
     }))
   );
 
-  if (!capabilities.hasTorch) return null;
+  const parameters = useMemo((): (ParameterType | ParameterConfig)[] => {
+    return [
+      {
+        id: 'torch',
+        visible: !!capabilities.hasTorch,
+      },
+    ];
+  }, [capabilities.hasTorch]);
 
   return (
     <GenericParameterModule
-      parameters={LIGHTING_PARAMETERS}
+      parameters={parameters}
       handlePressWithDouble={handlePressWithDouble}
     />
   );

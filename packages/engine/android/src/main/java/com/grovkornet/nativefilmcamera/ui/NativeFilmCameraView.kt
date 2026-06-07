@@ -176,7 +176,7 @@ class NativeFilmCameraView(context: Context) : SurfaceView(context), SurfaceHold
 
         cameraTorchManager = CameraTorchManager.create(
             context = context,
-            getTargetCameraId = { config.cameraId ?: CameraTorchManager.getBackCameraIdFallback(context) },
+            getTargetCameraId = { CameraTorchManager.getCameraIdWithFlash(context, config.cameraId) },
             isTorchLogicalEnabled = { config.torchEnabled },
             onTorchStateChanged = { enabled ->
                 if (System.currentTimeMillis() - lastReconfigureTime < 2000) {

@@ -14,6 +14,7 @@ import androidx.camera.core.Camera
 import com.grovkornet.nativefilmcamera.state.CameraConfiguration
 import com.grovkornet.nativefilmcamera.BuildConfig
 import android.hardware.camera2.CameraCharacteristics
+import android.hardware.camera2.CameraManager
 
 class CameraControlManager(
     private val context: Context,
@@ -99,17 +100,67 @@ class CameraControlManager(
                 builder.setCaptureRequestOption(CaptureRequest.LENS_FOCUS_DISTANCE, config.focusDistance)
             }
 
-            if (config.torchEnabled) {
-                camera.cameraControl.enableTorch(true)
+            val hasFlash = camera.cameraInfo.hasFlashUnit()
+            if (hasFlash) {
+                // Clear any direct system torch we turned on
                 try {
-                    camera.cameraControl.setTorchStrengthLevel(config.torchStrength)
-                } catch (e: Exception) {
-                    if (BuildConfig.DEBUG) {
-                        Log.w(TAG, "setTorchStrengthLevel failed: ${e.message}")
+                    val cameraManager = context.getSystemService(Context.CAMERA_SERVICE) as CameraManager
+                    for (id in cameraManager.cameraIdList) {
+                        val chars = cameraManager.getCameraCharacteristics(id)
+                        if (chars.get(CameraCharacteristics.FLASH_INFO_AVAILABLE) == true) {
+                            cameraManager.setTorchMode(id, false)
+                        }
                     }
+                } catch (e: Exception) {
+                    // Ignore, it might already be controlled by CameraX or closed
+                }
+
+                if (config.torchEnabled) {
+                    camera.cameraControl.enableTorch(true)
+                    try {
+                        camera.cameraControl.setTorchStrengthLevel(config.torchStrength)
+                    } catch (e: Exception) {
+                        if (BuildConfig.DEBUG) {
+                            Log.w(TAG, "setTorchStrengthLevel failed: ${e.message}")
+                        }
+                    }
+                } else {
+                    camera.cameraControl.enableTorch(false)
                 }
             } else {
+                // Current camera does NOT have a flash.
+                // Disable torch via CameraX on current camera
                 camera.cameraControl.enableTorch(false)
+
+                // Turn physical torch on/off using CameraManager on the camera ID that does have a flash
+                try {
+                    val cameraManager = context.getSystemService(Context.CAMERA_SERVICE) as CameraManager
+                    var fallbackCameraId: String? = null
+                    for (id in cameraManager.cameraIdList) {
+                        val chars = cameraManager.getCameraCharacteristics(id)
+                        if (chars.get(CameraCharacteristics.FLASH_INFO_AVAILABLE) == true) {
+                            fallbackCameraId = id
+                            break
+                        }
+                    }
+                    if (fallbackCameraId != null) {
+                        if (config.torchEnabled) {
+                            if (android.os.Build.VERSION.SDK_INT >= 33 && config.torchStrength > 1) {
+                                try {
+                                    cameraManager.turnOnTorchWithStrengthLevel(fallbackCameraId, config.torchStrength)
+                                } catch (e: Exception) {
+                                    cameraManager.setTorchMode(fallbackCameraId, true)
+                                }
+                            } else {
+                                cameraManager.setTorchMode(fallbackCameraId, true)
+                            }
+                        } else {
+                            cameraManager.setTorchMode(fallbackCameraId, false)
+                        }
+                    }
+                } catch (e: Exception) {
+                    Log.e(TAG, "Failed to control system-level torch", e)
+                }
             }
 
             control.captureRequestOptions = builder.build()

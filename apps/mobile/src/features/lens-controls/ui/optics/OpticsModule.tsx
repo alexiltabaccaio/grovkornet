@@ -16,16 +16,18 @@ export const OpticsModule = ({ handlePressWithDouble }: OpticsModuleProps) => {
     }))
   );
 
-  const parameters = useMemo(() => {
-    const list: (ParameterType | ParameterConfig)[] = [];
-    if (capabilities.availableCameras.length > 0) {
-      list.push({
+  const parameters = useMemo((): (ParameterType | ParameterConfig)[] => {
+    return [
+      {
         id: 'camera_selection',
         labelKey: 'parameters.lens',
-      });
-    }
-    list.push('focus');
-    return list;
+        visible: capabilities.availableCameras.length > 0,
+      },
+      {
+        id: 'focus',
+        visible: true,
+      },
+    ];
   }, [capabilities.availableCameras.length]);
 
   return (

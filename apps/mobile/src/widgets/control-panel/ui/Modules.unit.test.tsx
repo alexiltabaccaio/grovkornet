@@ -2,6 +2,9 @@ import React from 'react';
 import { render, fireEvent, act } from '@testing-library/react-native';
 import { Modules } from './Modules';
 import { useSystemStore } from '@entities/system';
+import { useBodyStore } from '@entities/body';
+import { useLensStore } from '@entities/lens';
+import { useFilmStore } from '@entities/film';
 
 describe('Modules', () => {
   beforeEach(() => {
@@ -11,6 +14,27 @@ describe('Modules', () => {
         activeModule: 'none',
         activeParameter: 'none',
         isLayoutOverlayEnabled: false,
+      });
+      useBodyStore.setState({
+        capabilities: {
+          hasTorch: true,
+          maxTorchStrength: 1,
+          isoMin: 100,
+          isoMax: 3200,
+          maxFps: 60,
+        },
+      });
+      useLensStore.setState({
+        capabilities: {
+          supportsFocus: true,
+          availableCameras: [{ id: '0', focalLength: 26, focalLength35mm: 26 }],
+        },
+      });
+      useFilmStore.setState({
+        capabilities: {
+          availableNoiseReductionModes: [1, 2],
+          availableEdgeModes: [1, 2],
+        },
       });
     });
   });

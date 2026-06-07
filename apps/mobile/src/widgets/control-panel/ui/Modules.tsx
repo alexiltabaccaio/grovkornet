@@ -4,7 +4,7 @@ import { ScrollView } from 'react-native-gesture-handler';
 import { useTranslation } from 'react-i18next';
 
 import { useShallow } from 'zustand/react/shallow';
-import { useSystemStore, SECTION_MODULES } from '@entities/system';
+import { useSystemStore, useVisibleModules } from '@entities/system';
 import { PillButton } from '@shared/ui';
 
 export const Modules = React.memo(() => {
@@ -27,6 +27,7 @@ export const Modules = React.memo(() => {
 
   const renderSection = activeSection === 'none' ? lastNonNoneSection : activeSection;
   const renderModule = activeModule === 'none' ? lastNonNoneModule : activeModule;
+  const visibleModules = useVisibleModules(renderSection);
 
   if (renderSection === 'none') return null;
 
@@ -39,7 +40,7 @@ export const Modules = React.memo(() => {
           contentContainerStyle={styles.pillMenuContainer}
           style={styles.pillMenuWrapper}
         >
-          {SECTION_MODULES[renderSection].map((moduleName) => (
+          {visibleModules.map((moduleName) => (
             <PillButton
               key={moduleName}
               variant="module"

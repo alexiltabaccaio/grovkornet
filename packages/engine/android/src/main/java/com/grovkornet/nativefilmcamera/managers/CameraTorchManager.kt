@@ -115,5 +115,26 @@ class CameraTorchManager(
             }
             return null
         }
+
+        fun getCameraIdWithFlash(context: Context, preferredId: String?): String? {
+            val cameraManager = context.getSystemService(Context.CAMERA_SERVICE) as? CameraManager ?: return null
+            try {
+                if (preferredId != null) {
+                    val chars = cameraManager.getCameraCharacteristics(preferredId)
+                    if (chars.get(CameraCharacteristics.FLASH_INFO_AVAILABLE) == true) {
+                        return preferredId
+                    }
+                }
+                for (id in cameraManager.cameraIdList) {
+                    val chars = cameraManager.getCameraCharacteristics(id)
+                    if (chars.get(CameraCharacteristics.FLASH_INFO_AVAILABLE) == true) {
+                        return id
+                    }
+                }
+            } catch (e: Exception) {
+                Log.e("CameraTorchManager", "Failed to find camera ID with flash", e)
+            }
+            return null
+        }
     }
 }

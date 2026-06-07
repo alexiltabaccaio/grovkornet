@@ -1,6 +1,7 @@
 export * from './model/useSystemStore';
 export * from './model/types';
 export * from './model/constants';
+export * from './model/useVisibleModules';
 export * from './ui/components/GenericParameterModule';
 export * from './ui/components/GenericPillPanel';
 export * from './ui/components/ParameterControl';

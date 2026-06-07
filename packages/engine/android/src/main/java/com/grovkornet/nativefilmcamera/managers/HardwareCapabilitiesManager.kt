@@ -77,13 +77,30 @@ class HardwareCapabilitiesManager(private val context: Context) {
             event.putBoolean("supportsFocus", afModes?.any { m -> m != CameraCharacteristics.CONTROL_AF_MODE_OFF } ?: false)
             
             // Torch support
-            event.putBoolean("hasTorch", it.cameraInfo.hasFlashUnit())
-            if (Build.VERSION.SDK_INT >= 33) {
-                val maxStrength = info.getCameraCharacteristic(CameraCharacteristics.FLASH_INFO_STRENGTH_MAXIMUM_LEVEL) ?: 1
-                event.putInt("maxTorchStrength", maxStrength)
-            } else {
-                event.putInt("maxTorchStrength", 1)
+            var deviceHasTorch = false
+            var maxTorchStrength = 1
+            try {
+                val cameraManager = context.getSystemService(Context.CAMERA_SERVICE) as CameraManager
+                for (id in cameraManager.cameraIdList) {
+                    val chars = cameraManager.getCameraCharacteristics(id)
+                    if (chars.get(CameraCharacteristics.FLASH_INFO_AVAILABLE) == true) {
+                        deviceHasTorch = true
+                        if (Build.VERSION.SDK_INT >= 33) {
+                            maxTorchStrength = chars.get(CameraCharacteristics.FLASH_INFO_STRENGTH_MAXIMUM_LEVEL) ?: 1
+                        }
+                        break
+                    }
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "Failed to query torch capabilities globally", e)
+                // Fallback to active camera info
+                deviceHasTorch = it.cameraInfo.hasFlashUnit()
+                if (deviceHasTorch && Build.VERSION.SDK_INT >= 33) {
+                    maxTorchStrength = info.getCameraCharacteristic(CameraCharacteristics.FLASH_INFO_STRENGTH_MAXIMUM_LEVEL) ?: 1
+                }
             }
+            event.putBoolean("hasTorch", deviceHasTorch)
+            event.putInt("maxTorchStrength", maxTorchStrength)
 
             // ISO range
             info.getCameraCharacteristic(CameraCharacteristics.SENSOR_INFO_SENSITIVITY_RANGE)?.let { range ->
