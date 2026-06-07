@@ -24,13 +24,14 @@ export const useGalleryPhotos = (initialUri?: string | null) => {
           return req.status;
         };
 
+        let permTimer: NodeJS.Timeout;
         const permTimeout = new Promise<string>((_, reject) =>
-          setTimeout(() => reject(new Error('PERM_TIMEOUT')), 15000)
+          permTimer = setTimeout(() => reject(new Error('PERM_TIMEOUT')), 15000)
         );
 
         let status = 'denied';
         try {
-          status = await Promise.race([checkPerms(), permTimeout]);
+          status = await Promise.race([checkPerms(), permTimeout]).finally(() => clearTimeout(permTimer));
         } catch (e) {
           logger.warn('Gallery', 'Permissions timeout or error', e);
         }
@@ -49,22 +50,21 @@ export const useGalleryPhotos = (initialUri?: string | null) => {
 
         setPermissionGranted(true);
 
+        let albumsTimer: NodeJS.Timeout;
         const albumsTimeout = new Promise<never>((_, reject) =>
-          setTimeout(() => reject(new Error('ALBUM_TIMEOUT')), 10000)
+          albumsTimer = setTimeout(() => reject(new Error('ALBUM_TIMEOUT')), 10000)
         );
         const allAlbums = await Promise.race([
           MediaLibrary.getAlbumsAsync(),
           albumsTimeout
-        ]);
+        ]).finally(() => clearTimeout(albumsTimer));
 
         if (!active) return;
 
         const grovkornetAlbums = allAlbums.filter(a => a.title.toLowerCase() === 'grovkornet');
 
         let media: MediaLibrary.Asset[] = [];
-        const assetsTimeout = new Promise<never>((_, reject) =>
-          setTimeout(() => reject(new Error('ASSETS_TIMEOUT')), 15000)
-        );
+        let assetsTimer: NodeJS.Timeout;
 
         if (grovkornetAlbums.length > 0) {
           logger.debug('Gallery', `Found ${grovkornetAlbums.length} Grovkornet albums, fetching from all...`);
@@ -77,10 +77,14 @@ export const useGalleryPhotos = (initialUri?: string | null) => {
             })
           );
           
+          const assetsTimeout = new Promise<never>((_, reject) =>
+            assetsTimer = setTimeout(() => reject(new Error('ASSETS_TIMEOUT')), 15000)
+          );
+
           const results = await Promise.race([
             Promise.all(fetchPromises),
             assetsTimeout
-          ]);
+          ]).finally(() => clearTimeout(assetsTimer));
           
           // Combine and sort descending by creationTime
           const combinedAssets = results.flatMap(r => r.assets);
