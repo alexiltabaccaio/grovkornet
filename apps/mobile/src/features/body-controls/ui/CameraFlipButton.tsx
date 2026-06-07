@@ -34,11 +34,8 @@ export const CameraFlipButton = () => {
       stiffness: 150,
     });
 
-    if (nextVal) {
-      // If switching to selfie mode:
-      // 1. Disable the torch safely
-      useBodyStore.getState().setTorchState(0);
-    }
+    // We removed the code that disables the torch safely when switching to selfie mode
+    // to allow the torch to stay on or turn back on automatically.
   };
 
   const animatedStyle = useAnimatedStyle(() => {

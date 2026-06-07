@@ -144,19 +144,37 @@ class CameraControlManager(
                         }
                     }
                     if (fallbackCameraId != null) {
-                        if (config.torchEnabled) {
-                            if (android.os.Build.VERSION.SDK_INT >= 33 && config.torchStrength > 1) {
-                                try {
-                                    cameraManager.turnOnTorchWithStrengthLevel(fallbackCameraId, config.torchStrength)
-                                } catch (e: Exception) {
+                        val applyTorch = {
+                            if (config.torchEnabled) {
+                                if (android.os.Build.VERSION.SDK_INT >= 33 && config.torchStrength > 1) {
+                                    try {
+                                        cameraManager.turnOnTorchWithStrengthLevel(fallbackCameraId, config.torchStrength)
+                                    } catch (e: Exception) {
+                                        cameraManager.setTorchMode(fallbackCameraId, true)
+                                    }
+                                } else {
                                     cameraManager.setTorchMode(fallbackCameraId, true)
                                 }
                             } else {
-                                cameraManager.setTorchMode(fallbackCameraId, true)
+                                cameraManager.setTorchMode(fallbackCameraId, false)
                             }
-                        } else {
-                            cameraManager.setTorchMode(fallbackCameraId, false)
                         }
+
+                        try {
+                            applyTorch()
+                        } catch (e: Exception) {
+                            Log.w(TAG, "Failed to control system-level torch immediately, will retry")
+                        }
+
+                        // Proactively retry after 800ms to allow CameraX to finish closing the previous camera.
+                        // We read the latest config.torchEnabled state inside the lambda.
+                        android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({
+                            try {
+                                applyTorch()
+                            } catch (e: Exception) {
+                                Log.e(TAG, "Failed to control system-level torch after delay", e)
+                            }
+                        }, 800)
                     }
                 } catch (e: Exception) {
                     Log.e(TAG, "Failed to control system-level torch", e)
