@@ -71,11 +71,34 @@ firebase-export-*
 .env.*
 !.env.example
 .DS_Store
+._*
+.Spotlight-V100
+.Trashes
 Thumbs.db
 [Dd]esktop.ini
-*.swp
-*.swo
+*.sw?
+*~
 compile_commands.json
+
+# C++ / CMake / Clangd Tooling
+.clangd/
+.cache/
+**/.cache/
+*.o
+*.obj
+*.dll
+*.dylib
+*.so
+*.a
+*.lib
+*.out
+*.app
+CMakeCache.txt
+CMakeFiles/
+CMakeScripts/
+cmake_install.cmake
+Makefile
+targets.cmake
 
 # Testing / Build
 coverage/
@@ -88,11 +111,17 @@ out/
 *.bundle
 *.bundle.map
 
+# Additional Package Managers / Tools
+.pnpm-debug.log
+.npm/
+
 # EAS / Expo
 .eas/
 eas-cli-local.json
 .metro/
 .metro-cache/
+**/ios/.xcode.env.local
+**/xcuserdata/
 grovkornet_source_bundle.txt
 .gemini_workflows/analyze.js
 **/output.graph.json
