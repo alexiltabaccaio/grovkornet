@@ -71,4 +71,23 @@ describe('Viewfinder', () => {
 
     expect(bodyStore.iso.value).toBe(800);
   });
+
+  it('limits FPS to 30 for 4:3 high-res when crop is disabled, but keeps 60 for 16:9', () => {
+    const bodyStore = useBodyStore.getState();
+    bodyStore.fpsSetting.value = 60;
+    bodyStore.resolutionSetting.value = 0; // High-res (4K)
+    bodyStore.force60fpsCrop.value = 0; // Crop disabled
+    
+    // Test 1: 4:3 aspect ratio (e.g. 0)
+    bodyStore.aspectRatio.value = 0;
+    const { getByTestId, rerender } = render(<Viewfinder cameraKey={1} />);
+    let nativeCamera = getByTestId('native-camera');
+    expect(nativeCamera.props.animatedProps.targetFps).toBe(30);
+
+    // Test 2: 16:9 aspect ratio (1)
+    bodyStore.aspectRatio.value = 1;
+    rerender(<Viewfinder cameraKey={2} />);
+    nativeCamera = getByTestId('native-camera');
+    expect(nativeCamera.props.animatedProps.targetFps).toBe(60);
+  });
 });
