@@ -183,7 +183,7 @@ export const Viewfinder = React.memo(({ cameraKey }: ViewfinderProps) => {
             style={StyleSheet.absoluteFill}
             // @@GEN_PROPS_START@@
         animatedProps={animatedProps}
-        cameraId={cameraAuto ? undefined : cameraId}
+        cameraId={cameraAuto ? null : cameraId}
         secureViewEnabled={isCameraSecure}
         // @@GEN_PROPS_END@@
           onCapabilitiesUpdate={capabilitiesHandler}

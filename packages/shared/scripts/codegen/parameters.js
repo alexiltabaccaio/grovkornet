@@ -181,11 +181,11 @@ function generateNativeBridge(parameters, renderParams) {
       const kotlinName = p.kotlin.name || p.name;
       
       let kotlinPropType = 'Float?';
-      if (p.ts.type === 'boolean') {
+      if (p.ts.type.includes('boolean')) {
         kotlinPropType = 'Boolean?';
-      } else if (p.ts.type === 'string') {
+      } else if (p.ts.type.includes('string')) {
         kotlinPropType = 'String?';
-      } else if (p.ts.type === 'number') {
+      } else if (p.ts.type.includes('number')) {
         if (p.kotlin.type === 'Long') {
           kotlinPropType = 'Double?';
         } else if (propName === 'cameraAspectRatio' || propName === 'torchState') {
@@ -197,16 +197,31 @@ function generateNativeBridge(parameters, renderParams) {
         }
       }
       
+      const isNullable = p.kotlin && p.kotlin.type && p.kotlin.type.endsWith('?');
       let body = '';
       if (p.kotlin.propHandler) {
-        body = `value?.let { value ->\n  ${p.kotlin.propHandler.split('\n').join('\n  ')}\n}`;
-      } else {
-        if (p.category === 'render') {
-          body = `value?.let { view.updateEffect { ${kotlinName} = it } }`;
-        } else if (p.category === 'hardware') {
-          body = `value?.let { if (view.config.${kotlinName} != it) view.updateHardware { ${kotlinName} = it } }`;
+        if (isNullable) {
+          body = p.kotlin.propHandler;
         } else {
-          body = `value?.let { if (view.config.${kotlinName} != it) view.updateBoth { ${kotlinName} = it } }`;
+          body = `value?.let { value ->\n  ${p.kotlin.propHandler.split('\n').join('\n  ')}\n}`;
+        }
+      } else {
+        if (isNullable) {
+          if (p.category === 'render') {
+            body = `view.updateEffect { ${kotlinName} = value }`;
+          } else if (p.category === 'hardware') {
+            body = `if (view.config.${kotlinName} != value) view.updateHardware { ${kotlinName} = value }`;
+          } else {
+            body = `if (view.config.${kotlinName} != value) view.updateBoth { ${kotlinName} = value }`;
+          }
+        } else {
+          if (p.category === 'render') {
+            body = `value?.let { view.updateEffect { ${kotlinName} = it } }`;
+          } else if (p.category === 'hardware') {
+            body = `value?.let { if (view.config.${kotlinName} != it) view.updateHardware { ${kotlinName} = it } }`;
+          } else {
+            body = `value?.let { if (view.config.${kotlinName} != it) view.updateBoth { ${kotlinName} = it } }`;
+          }
         }
       }
       
@@ -549,7 +564,7 @@ function generateViewfinderProps(parameters) {
     previewQuality: 'previewQuality as unknown as SharedValue<number | undefined>',
     targetFps: 'effectiveFps as unknown as SharedValue<number | undefined>',
     cameraAspectRatio: 'aspectRatio as unknown as SharedValue<number | undefined>',
-    cameraId: 'cameraAuto ? undefined : cameraId',
+    cameraId: 'cameraAuto ? null : cameraId',
     autoFocus: 'focusAuto as unknown as SharedValue<boolean | undefined>',
     torchState: 'torchState as unknown as SharedValue<number | undefined>',
     force60fpsCrop: 'resolvedForce60fpsCrop as unknown as SharedValue<boolean | undefined>',
@@ -599,7 +614,7 @@ function generateViewfinderProps(parameters) {
 
   // 4. Generate JSX Props
   const propsContent = `animatedProps={animatedProps}
-cameraId={cameraAuto ? undefined : cameraId}
+cameraId={cameraAuto ? null : cameraId}
 secureViewEnabled={isCameraSecure}`;
   replaceBetweenMarkers(FILE_PATHS.zustandViewfinder, '        // @@GEN_PROPS_START@@', '        // @@GEN_PROPS_END@@', propsContent, '        ');
 }

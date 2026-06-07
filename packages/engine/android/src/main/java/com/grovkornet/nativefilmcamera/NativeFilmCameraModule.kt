@@ -159,9 +159,7 @@ class NativeFilmCameraModule : Module() {
       }
 
       Prop("cameraId") { view: NativeFilmCameraView, value: String? ->
-        value?.let { value ->
-                if (view.config.cameraId != value) view.updateHardware { cameraId = value }
-              }
+        if (view.config.cameraId != value) view.updateHardware { cameraId = value }
       }
 
       Prop("resolutionSetting") { view: NativeFilmCameraView, value: Int? ->

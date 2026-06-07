@@ -29,7 +29,7 @@ describe('CameraFlipButton Unit Tests', () => {
     expect(Haptics.selectionAsync).toHaveBeenCalledTimes(1);
   });
 
-  it('turns off the torch but leaves activeSection untouched when switching to selfie mode', () => {
+  it('leaves the torch and activeSection untouched when switching to selfie mode', () => {
     useSystemStore.getState().activeSection = 'lens';
     
     const { getByTestId } = render(<CameraFlipButton />);
@@ -37,8 +37,8 @@ describe('CameraFlipButton Unit Tests', () => {
 
     fireEvent.press(button);
 
-    // Switch to selfie is true, so torch should go off
-    expect(useBodyStore.getState().torchState.value).toBe(0);
+    // Switch to selfie is true, but torch should remain 1 (untouched)
+    expect(useBodyStore.getState().torchState.value).toBe(1);
     // Active section should remain 'lens'
     expect(useSystemStore.getState().activeSection).toBe('lens');
   });

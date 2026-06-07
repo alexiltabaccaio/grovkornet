@@ -18,7 +18,7 @@ export interface NativeFilmCameraViewProps extends ViewProps {
   focusDistance?: number;
   torchState?: number;
   torchStrength?: number;
-  cameraId?: string;
+  cameraId?: string | null;
   resolutionSetting?: number;
   previewQuality?: number;
   force60fpsCrop?: boolean;

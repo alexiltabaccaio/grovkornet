@@ -853,7 +853,7 @@ parameters:
       default: "null"
       propHandler: if (view.config.cameraId != value) view.updateHardware { cameraId = value }
     ts:
-      type: string
+      type: string | null
     zustand:
       store: lens
       default: DEFAULT_CAMERA_ID
