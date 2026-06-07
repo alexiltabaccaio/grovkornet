@@ -5,6 +5,7 @@ import * as reanimated from 'react-native-reanimated';
 import { GestureController } from './GestureController';
 import { useSystemStore } from '@entities/system';
 import { Gesture } from 'react-native-gesture-handler';
+import { useBodyStore } from '@entities/body';
 
 // Mock the stores
 jest.mock('@entities/system', () => ({
@@ -20,6 +21,7 @@ describe('GestureController', () => {
   let originalTap: any;
   let originalPan: any;
   let originalSpring: any;
+  let dateNowSpy: any;
 
   beforeAll(() => {
     originalSpring = reanimated.withSpring;
@@ -37,6 +39,7 @@ describe('GestureController', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+    jest.useFakeTimers();
     currentActiveSection = 'none';
 
     (useSystemStore as unknown as jest.Mock).mockImplementation((selector?: (state: any) => any) => {
@@ -68,6 +71,10 @@ describe('GestureController', () => {
   afterEach(() => {
     Gesture.Tap = originalTap;
     Gesture.Pan = originalPan;
+    jest.useRealTimers();
+    if (dateNowSpy) {
+      dateNowSpy.mockRestore();
+    }
   });
 
   it('should render children correctly', () => {
@@ -79,8 +86,11 @@ describe('GestureController', () => {
     expect(getByTestId('test-child')).toBeDefined();
   });
 
-  it('handles Tap gesture to close active section', () => {
+  it('handles Tap gesture to close active section instantly when zoom is 1.0', () => {
     currentActiveSection = 'lens';
+    const bodyStore = useBodyStore.getState();
+    bodyStore.zoom.value = 1.0;
+
     render(<GestureController />);
 
     expect(capturedTapGesture).toBeDefined();
@@ -94,10 +104,68 @@ describe('GestureController', () => {
 
   it('does not close section on Tap gesture if activeSection is none', () => {
     currentActiveSection = 'none';
+    const bodyStore = useBodyStore.getState();
+    bodyStore.zoom.value = 1.0;
+
     render(<GestureController />);
 
     act(() => {
       capturedTapGesture._onEnd();
+    });
+
+    expect(mockSetActiveSection).not.toHaveBeenCalled();
+  });
+
+  it('handles Tap gesture to close active section after delay when zoom is not 1.0', () => {
+    currentActiveSection = 'lens';
+    const bodyStore = useBodyStore.getState();
+    bodyStore.zoom.value = 2.0;
+
+    render(<GestureController />);
+
+    act(() => {
+      capturedTapGesture._onEnd();
+    });
+
+    // Should not close instantly
+    expect(mockSetActiveSection).not.toHaveBeenCalled();
+
+    // Advance fake timers by 200ms
+    act(() => {
+      jest.advanceTimersByTime(200);
+    });
+
+    expect(mockSetActiveSection).toHaveBeenCalledWith('none');
+  });
+
+  it('handles DoubleTap gesture to reset zoom and cancel close when zoom is not 1.0', () => {
+    currentActiveSection = 'lens';
+    const bodyStore = useBodyStore.getState();
+    bodyStore.zoom.value = 2.0;
+
+    let mockTime = 1000;
+    dateNowSpy = jest.spyOn(Date, 'now').mockImplementation(() => mockTime);
+
+    render(<GestureController />);
+
+    // First tap
+    act(() => {
+      capturedTapGesture._onEnd();
+    });
+    expect(mockSetActiveSection).not.toHaveBeenCalled();
+
+    // Simulate second tap 100ms later
+    mockTime = 1100;
+    act(() => {
+      capturedTapGesture._onEnd();
+    });
+
+    // Zoom should be reset to 1.0
+    expect(bodyStore.zoom.value).toBe(1.0);
+
+    // Fast-forward all timers to make sure the timeout was cleared and setActiveSection is not called
+    act(() => {
+      jest.runAllTimers();
     });
 
     expect(mockSetActiveSection).not.toHaveBeenCalled();

@@ -6,7 +6,7 @@ import { useLensStore } from '@entities/lens';
 import { useFilmStore } from '@entities/film';
 import { useSystemStore } from '@entities/system';
 import { NativeRenderer } from '@entities/lens';
-import Animated, { useDerivedValue, SharedValue, useSharedValue, withSpring, withTiming, Easing, useAnimatedProps } from 'react-native-reanimated';
+import Animated, { useDerivedValue, SharedValue, useSharedValue, withSpring, useAnimatedProps } from 'react-native-reanimated';
 import { GestureDetector, Gesture } from 'react-native-gesture-handler';
 import { useVerificationStore } from '@entities/verification';
 import { FlashOverlay } from '@features/body-controls';
@@ -97,24 +97,13 @@ export const Viewfinder = React.memo(({ cameraKey }: ViewfinderProps) => {
   const bodyWorklets = useBodyWorklets();
 
   const gestures = React.useMemo(() => {
-    const pinch = Gesture.Pinch()
+    return Gesture.Pinch()
       .onStart(() => {
         startZoom.value = zoom.value;
       })
       .onChange((event) => {
         bodyWorklets.updateZoom(startZoom.value * event.scale);
       });
-
-    const doubleTap = Gesture.Tap()
-      .numberOfTaps(2)
-      .maxDelay(200)
-      .maxDuration(250)
-      .maxDistance(20)
-      .onEnd(() => {
-        zoom.value = withTiming(1.0, { duration: 250, easing: Easing.out(Easing.quad) });
-      });
-
-    return Gesture.Simultaneous(pinch, doubleTap);
   }, [zoom, bodyWorklets, startZoom]);
 
   React.useEffect(() => {

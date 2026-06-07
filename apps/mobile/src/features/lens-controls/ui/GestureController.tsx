@@ -1,9 +1,10 @@
 import React, { ReactNode, useMemo } from 'react';
 import { StyleSheet } from 'react-native';
 import { GestureDetector, Gesture } from 'react-native-gesture-handler';
-import Animated, { useSharedValue, useAnimatedStyle, withSpring, runOnJS } from 'react-native-reanimated';
+import Animated, { useSharedValue, useAnimatedStyle, withSpring, runOnJS, withTiming, Easing } from 'react-native-reanimated';
 import { useSystemStore } from '@entities/system';
 import { useShallow } from 'zustand/react/shallow';
+import { useBodyStore } from '@entities/body';
 
 /**
  * GestureController handles global vertical swipe gestures to update the active camera parameter.
@@ -22,12 +23,53 @@ export const GestureController = ({ children }: GestureControllerProps) => {
 
   const translateY = useSharedValue(0);
 
+  const lastTapTime = React.useRef<number>(0);
+  const tapTimeout = React.useRef<NodeJS.Timeout | null>(null);
+
+  React.useEffect(() => {
+    return () => {
+      if (tapTimeout.current) {
+        clearTimeout(tapTimeout.current);
+      }
+    };
+  }, []);
+
   const composedGesture = useMemo(() => {
+    const { zoom } = useBodyStore.getState();
+
     const tap = Gesture.Tap()
       .runOnJS(true)
       .onEnd(() => {
-        if (activeSection !== 'none') {
-          setActiveSection('none');
+        const now = Date.now();
+        const zoomVal = zoom.value;
+        const isAtOneX = Math.abs(zoomVal - 1.0) < 0.01;
+
+        if (isAtOneX) {
+          if (activeSection !== 'none') {
+            setActiveSection('none');
+          }
+          return;
+        }
+
+        // If not at 1x, check for double tap
+        if (now - lastTapTime.current < 200) {
+          if (tapTimeout.current) {
+            clearTimeout(tapTimeout.current);
+            tapTimeout.current = null;
+          }
+          zoom.value = withTiming(1.0, { duration: 250, easing: Easing.out(Easing.quad) });
+          lastTapTime.current = 0; // Reset
+        } else {
+          lastTapTime.current = now;
+          if (tapTimeout.current) {
+            clearTimeout(tapTimeout.current);
+          }
+          tapTimeout.current = setTimeout(() => {
+            if (activeSection !== 'none') {
+              setActiveSection('none');
+            }
+            tapTimeout.current = null;
+          }, 200);
         }
       });
 
