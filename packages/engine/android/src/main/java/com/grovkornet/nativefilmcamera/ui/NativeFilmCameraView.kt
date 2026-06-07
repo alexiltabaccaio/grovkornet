@@ -56,7 +56,19 @@ class NativeFilmCameraView(context: Context) : SurfaceView(context), SurfaceHold
 
 
     companion object {
-        @Volatile var activeInstance: NativeFilmCameraView? = null
+        private val activeInstances = java.util.concurrent.CopyOnWriteArraySet<NativeFilmCameraView>()
+
+        fun dispatchUpdate(action: CameraConfiguration.() -> Unit) {
+            activeInstances.forEach {
+                if (!it.isReleased) {
+                    it.updateEffect(action)
+                }
+            }
+        }
+
+        fun getFirstValidConfig(): CameraConfiguration? {
+            return activeInstances.firstOrNull { !it.isReleased }?.config
+        }
     }
 
     fun updateEffect(action: CameraConfiguration.() -> Unit) {
@@ -116,7 +128,7 @@ class NativeFilmCameraView(context: Context) : SurfaceView(context), SurfaceHold
     }
 
     init {
-        activeInstance = this
+        activeInstances.add(this)
         // Obscures the video feed in screenshots and screen recordings (hardware FLAG_SECURE)
         this.setSecure(true)
         holder.addCallback(this)
@@ -253,9 +265,7 @@ class NativeFilmCameraView(context: Context) : SurfaceView(context), SurfaceHold
     fun release() {
         if (isReleased) return
         isReleased = true
-        if (activeInstance == this) {
-            activeInstance = null
-        }
+        activeInstances.remove(this)
         if (BuildConfig.DEBUG) {
             Log.i("NativeFilmCameraView", "Releasing NativeFilmCameraView...")
         }

@@ -692,9 +692,9 @@ function generateNitroConfig(parameters) {
       }
 
       return `override var ${name}: ${tsToKotlinType}
-    get() = NativeFilmCameraView.activeInstance?.config?.${kotlinName}${returnCastExpr} ?: ${defaultValue}
+    get() = NativeFilmCameraView.getFirstValidConfig()?.${kotlinName}${returnCastExpr} ?: ${defaultValue}
     set(value) {
-        NativeFilmCameraView.activeInstance?.updateEffect {
+        NativeFilmCameraView.dispatchUpdate {
             ${kotlinName} = ${castExpr}
         }
     }`;
@@ -727,6 +727,8 @@ function generateSharedIndex(data) {
     }
     content += `export const ${key} = ${formattedValue};\n`;
   }
+  
+  content += `\nexport * from './hardwareConfig';\n`;
   
   const indexPath = path.resolve(PROJECT_ROOT, 'packages/shared/src/index.ts');
   fs.writeFileSync(indexPath, content, 'utf8');

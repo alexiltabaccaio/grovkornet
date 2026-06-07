@@ -69,3 +69,5 @@ export const DEFAULT_PREVIEW_QUALITY = 1;
 export const DEFAULT_FORCE_60FPS_CROP = 1;
 export const DEFAULT_IS_SELFIE_CAMERA = false;
 export const DEFAULT_ZOOM = 1;
+
+export * from './hardwareConfig';

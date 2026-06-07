@@ -5,441 +5,441 @@ import com.grovkornet.nativefilmcamera.ui.NativeFilmCameraView
 class HybridNitroCameraConfiguration : HybridNitroCameraConfigurationSpec() {
     // @@GEN_OVERRIDES_START@@
     override var saturation: Double
-        get() = NativeFilmCameraView.activeInstance?.config?.saturation?.toDouble() ?: 1.0
+        get() = NativeFilmCameraView.getFirstValidConfig()?.saturation?.toDouble() ?: 1.0
         set(value) {
-            NativeFilmCameraView.activeInstance?.updateEffect {
+            NativeFilmCameraView.dispatchUpdate {
                 saturation = value.toFloat()
             }
         }
 
     override var contrast: Double
-        get() = NativeFilmCameraView.activeInstance?.config?.contrast?.toDouble() ?: 1.0
+        get() = NativeFilmCameraView.getFirstValidConfig()?.contrast?.toDouble() ?: 1.0
         set(value) {
-            NativeFilmCameraView.activeInstance?.updateEffect {
+            NativeFilmCameraView.dispatchUpdate {
                 contrast = value.toFloat()
             }
         }
 
     override var grainIntensity: Double
-        get() = NativeFilmCameraView.activeInstance?.config?.grainIntensity?.toDouble() ?: 0.0
+        get() = NativeFilmCameraView.getFirstValidConfig()?.grainIntensity?.toDouble() ?: 0.0
         set(value) {
-            NativeFilmCameraView.activeInstance?.updateEffect {
+            NativeFilmCameraView.dispatchUpdate {
                 grainIntensity = value.toFloat()
             }
         }
 
     override var grainChroma: Double
-        get() = NativeFilmCameraView.activeInstance?.config?.grainChroma?.toDouble() ?: 0.0
+        get() = NativeFilmCameraView.getFirstValidConfig()?.grainChroma?.toDouble() ?: 0.0
         set(value) {
-            NativeFilmCameraView.activeInstance?.updateEffect {
+            NativeFilmCameraView.dispatchUpdate {
                 grainChroma = value.toFloat()
             }
         }
 
     override var grainSize: Double
-        get() = NativeFilmCameraView.activeInstance?.config?.grainSize?.toDouble() ?: 1.0
+        get() = NativeFilmCameraView.getFirstValidConfig()?.grainSize?.toDouble() ?: 1.0
         set(value) {
-            NativeFilmCameraView.activeInstance?.updateEffect {
+            NativeFilmCameraView.dispatchUpdate {
                 grainSize = value.toFloat()
             }
         }
 
     override var grainSpeed: Double
-        get() = NativeFilmCameraView.activeInstance?.config?.grainSpeed?.toDouble() ?: 20.0
+        get() = NativeFilmCameraView.getFirstValidConfig()?.grainSpeed?.toDouble() ?: 20.0
         set(value) {
-            NativeFilmCameraView.activeInstance?.updateEffect {
+            NativeFilmCameraView.dispatchUpdate {
                 grainSpeed = value.toFloat()
             }
         }
 
     override var vignetteIntensity: Double
-        get() = NativeFilmCameraView.activeInstance?.config?.vignetteIntensity?.toDouble() ?: 0.0
+        get() = NativeFilmCameraView.getFirstValidConfig()?.vignetteIntensity?.toDouble() ?: 0.0
         set(value) {
-            NativeFilmCameraView.activeInstance?.updateEffect {
+            NativeFilmCameraView.dispatchUpdate {
                 vignetteIntensity = value.toFloat()
             }
         }
 
     override var chromaShift: Double
-        get() = NativeFilmCameraView.activeInstance?.config?.chromaShift?.toDouble() ?: 0.0
+        get() = NativeFilmCameraView.getFirstValidConfig()?.chromaShift?.toDouble() ?: 0.0
         set(value) {
-            NativeFilmCameraView.activeInstance?.updateEffect {
+            NativeFilmCameraView.dispatchUpdate {
                 chromaShift = value.toFloat()
             }
         }
 
     override var whiteBalance: Double
-        get() = NativeFilmCameraView.activeInstance?.config?.whiteBalance?.toDouble() ?: 5000.0
+        get() = NativeFilmCameraView.getFirstValidConfig()?.whiteBalance?.toDouble() ?: 5000.0
         set(value) {
-            NativeFilmCameraView.activeInstance?.updateEffect {
+            NativeFilmCameraView.dispatchUpdate {
                 whiteBalance = value.toFloat()
             }
         }
 
     override var tint: Double
-        get() = NativeFilmCameraView.activeInstance?.config?.tint?.toDouble() ?: 0.0
+        get() = NativeFilmCameraView.getFirstValidConfig()?.tint?.toDouble() ?: 0.0
         set(value) {
-            NativeFilmCameraView.activeInstance?.updateEffect {
+            NativeFilmCameraView.dispatchUpdate {
                 tint = value.toFloat()
             }
         }
 
     override var bloomIntensity: Double
-        get() = NativeFilmCameraView.activeInstance?.config?.bloomIntensity?.toDouble() ?: 0.0
+        get() = NativeFilmCameraView.getFirstValidConfig()?.bloomIntensity?.toDouble() ?: 0.0
         set(value) {
-            NativeFilmCameraView.activeInstance?.updateEffect {
+            NativeFilmCameraView.dispatchUpdate {
                 bloomIntensity = value.toFloat()
             }
         }
 
     override var chromaticAberration: Double
-        get() = NativeFilmCameraView.activeInstance?.config?.aberration?.toDouble() ?: 0.0
+        get() = NativeFilmCameraView.getFirstValidConfig()?.aberration?.toDouble() ?: 0.0
         set(value) {
-            NativeFilmCameraView.activeInstance?.updateEffect {
+            NativeFilmCameraView.dispatchUpdate {
                 aberration = value.toFloat()
             }
         }
 
     override var chromaShiftDirection: Double
-        get() = NativeFilmCameraView.activeInstance?.config?.chromaShiftDirection?.toDouble() ?: 0.0
+        get() = NativeFilmCameraView.getFirstValidConfig()?.chromaShiftDirection?.toDouble() ?: 0.0
         set(value) {
-            NativeFilmCameraView.activeInstance?.updateEffect {
+            NativeFilmCameraView.dispatchUpdate {
                 chromaShiftDirection = value.toInt()
             }
         }
 
     override var sharpening: Double
-        get() = NativeFilmCameraView.activeInstance?.config?.sharpening?.toDouble() ?: 0.0
+        get() = NativeFilmCameraView.getFirstValidConfig()?.sharpening?.toDouble() ?: 0.0
         set(value) {
-            NativeFilmCameraView.activeInstance?.updateEffect {
+            NativeFilmCameraView.dispatchUpdate {
                 sharpening = value.toFloat()
             }
         }
 
     override var satRed: Double
-        get() = NativeFilmCameraView.activeInstance?.config?.satRed?.toDouble() ?: 50.0
+        get() = NativeFilmCameraView.getFirstValidConfig()?.satRed?.toDouble() ?: 50.0
         set(value) {
-            NativeFilmCameraView.activeInstance?.updateEffect {
+            NativeFilmCameraView.dispatchUpdate {
                 satRed = value.toFloat()
             }
         }
 
     override var satOrange: Double
-        get() = NativeFilmCameraView.activeInstance?.config?.satOrange?.toDouble() ?: 50.0
+        get() = NativeFilmCameraView.getFirstValidConfig()?.satOrange?.toDouble() ?: 50.0
         set(value) {
-            NativeFilmCameraView.activeInstance?.updateEffect {
+            NativeFilmCameraView.dispatchUpdate {
                 satOrange = value.toFloat()
             }
         }
 
     override var satYellow: Double
-        get() = NativeFilmCameraView.activeInstance?.config?.satYellow?.toDouble() ?: 50.0
+        get() = NativeFilmCameraView.getFirstValidConfig()?.satYellow?.toDouble() ?: 50.0
         set(value) {
-            NativeFilmCameraView.activeInstance?.updateEffect {
+            NativeFilmCameraView.dispatchUpdate {
                 satYellow = value.toFloat()
             }
         }
 
     override var satGreen: Double
-        get() = NativeFilmCameraView.activeInstance?.config?.satGreen?.toDouble() ?: 50.0
+        get() = NativeFilmCameraView.getFirstValidConfig()?.satGreen?.toDouble() ?: 50.0
         set(value) {
-            NativeFilmCameraView.activeInstance?.updateEffect {
+            NativeFilmCameraView.dispatchUpdate {
                 satGreen = value.toFloat()
             }
         }
 
     override var satCyan: Double
-        get() = NativeFilmCameraView.activeInstance?.config?.satCyan?.toDouble() ?: 50.0
+        get() = NativeFilmCameraView.getFirstValidConfig()?.satCyan?.toDouble() ?: 50.0
         set(value) {
-            NativeFilmCameraView.activeInstance?.updateEffect {
+            NativeFilmCameraView.dispatchUpdate {
                 satCyan = value.toFloat()
             }
         }
 
     override var satBlue: Double
-        get() = NativeFilmCameraView.activeInstance?.config?.satBlue?.toDouble() ?: 50.0
+        get() = NativeFilmCameraView.getFirstValidConfig()?.satBlue?.toDouble() ?: 50.0
         set(value) {
-            NativeFilmCameraView.activeInstance?.updateEffect {
+            NativeFilmCameraView.dispatchUpdate {
                 satBlue = value.toFloat()
             }
         }
 
     override var satPurple: Double
-        get() = NativeFilmCameraView.activeInstance?.config?.satPurple?.toDouble() ?: 50.0
+        get() = NativeFilmCameraView.getFirstValidConfig()?.satPurple?.toDouble() ?: 50.0
         set(value) {
-            NativeFilmCameraView.activeInstance?.updateEffect {
+            NativeFilmCameraView.dispatchUpdate {
                 satPurple = value.toFloat()
             }
         }
 
     override var satMagenta: Double
-        get() = NativeFilmCameraView.activeInstance?.config?.satMagenta?.toDouble() ?: 50.0
+        get() = NativeFilmCameraView.getFirstValidConfig()?.satMagenta?.toDouble() ?: 50.0
         set(value) {
-            NativeFilmCameraView.activeInstance?.updateEffect {
+            NativeFilmCameraView.dispatchUpdate {
                 satMagenta = value.toFloat()
             }
         }
 
     override var aberrationInvert: Boolean
-        get() = NativeFilmCameraView.activeInstance?.config?.aberrationInvert ?: false
+        get() = NativeFilmCameraView.getFirstValidConfig()?.aberrationInvert ?: false
         set(value) {
-            NativeFilmCameraView.activeInstance?.updateEffect {
+            NativeFilmCameraView.dispatchUpdate {
                 aberrationInvert = value
             }
         }
 
     override var boundMagentaRed: Double
-        get() = NativeFilmCameraView.activeInstance?.config?.boundMagentaRed?.toDouble() ?: 350.0
+        get() = NativeFilmCameraView.getFirstValidConfig()?.boundMagentaRed?.toDouble() ?: 350.0
         set(value) {
-            NativeFilmCameraView.activeInstance?.updateEffect {
+            NativeFilmCameraView.dispatchUpdate {
                 boundMagentaRed = value.toFloat()
             }
         }
 
     override var boundRedOrange: Double
-        get() = NativeFilmCameraView.activeInstance?.config?.boundRedOrange?.toDouble() ?: 40.0
+        get() = NativeFilmCameraView.getFirstValidConfig()?.boundRedOrange?.toDouble() ?: 40.0
         set(value) {
-            NativeFilmCameraView.activeInstance?.updateEffect {
+            NativeFilmCameraView.dispatchUpdate {
                 boundRedOrange = value.toFloat()
             }
         }
 
     override var boundOrangeYellow: Double
-        get() = NativeFilmCameraView.activeInstance?.config?.boundOrangeYellow?.toDouble() ?: 70.0
+        get() = NativeFilmCameraView.getFirstValidConfig()?.boundOrangeYellow?.toDouble() ?: 70.0
         set(value) {
-            NativeFilmCameraView.activeInstance?.updateEffect {
+            NativeFilmCameraView.dispatchUpdate {
                 boundOrangeYellow = value.toFloat()
             }
         }
 
     override var boundYellowGreen: Double
-        get() = NativeFilmCameraView.activeInstance?.config?.boundYellowGreen?.toDouble() ?: 110.0
+        get() = NativeFilmCameraView.getFirstValidConfig()?.boundYellowGreen?.toDouble() ?: 110.0
         set(value) {
-            NativeFilmCameraView.activeInstance?.updateEffect {
+            NativeFilmCameraView.dispatchUpdate {
                 boundYellowGreen = value.toFloat()
             }
         }
 
     override var boundGreenCyan: Double
-        get() = NativeFilmCameraView.activeInstance?.config?.boundGreenCyan?.toDouble() ?: 170.0
+        get() = NativeFilmCameraView.getFirstValidConfig()?.boundGreenCyan?.toDouble() ?: 170.0
         set(value) {
-            NativeFilmCameraView.activeInstance?.updateEffect {
+            NativeFilmCameraView.dispatchUpdate {
                 boundGreenCyan = value.toFloat()
             }
         }
 
     override var boundCyanBlue: Double
-        get() = NativeFilmCameraView.activeInstance?.config?.boundCyanBlue?.toDouble() ?: 230.0
+        get() = NativeFilmCameraView.getFirstValidConfig()?.boundCyanBlue?.toDouble() ?: 230.0
         set(value) {
-            NativeFilmCameraView.activeInstance?.updateEffect {
+            NativeFilmCameraView.dispatchUpdate {
                 boundCyanBlue = value.toFloat()
             }
         }
 
     override var boundBluePurple: Double
-        get() = NativeFilmCameraView.activeInstance?.config?.boundBluePurple?.toDouble() ?: 280.0
+        get() = NativeFilmCameraView.getFirstValidConfig()?.boundBluePurple?.toDouble() ?: 280.0
         set(value) {
-            NativeFilmCameraView.activeInstance?.updateEffect {
+            NativeFilmCameraView.dispatchUpdate {
                 boundBluePurple = value.toFloat()
             }
         }
 
     override var boundPurpleMagenta: Double
-        get() = NativeFilmCameraView.activeInstance?.config?.boundPurpleMagenta?.toDouble() ?: 315.0
+        get() = NativeFilmCameraView.getFirstValidConfig()?.boundPurpleMagenta?.toDouble() ?: 315.0
         set(value) {
-            NativeFilmCameraView.activeInstance?.updateEffect {
+            NativeFilmCameraView.dispatchUpdate {
                 boundPurpleMagenta = value.toFloat()
             }
         }
 
     override var grainRoughness: Double
-        get() = NativeFilmCameraView.activeInstance?.config?.grainRoughness?.toDouble() ?: 0.0
+        get() = NativeFilmCameraView.getFirstValidConfig()?.grainRoughness?.toDouble() ?: 0.0
         set(value) {
-            NativeFilmCameraView.activeInstance?.updateEffect {
+            NativeFilmCameraView.dispatchUpdate {
                 grainRoughness = value.toFloat()
             }
         }
 
     override var panelY: Double
-        get() = NativeFilmCameraView.activeInstance?.config?.panelY?.toDouble() ?: 1.0
+        get() = NativeFilmCameraView.getFirstValidConfig()?.panelY?.toDouble() ?: 1.0
         set(value) {
-            NativeFilmCameraView.activeInstance?.updateEffect {
+            NativeFilmCameraView.dispatchUpdate {
                 panelY = value.toFloat()
             }
         }
 
     override var grainEnabled: Boolean
-        get() = NativeFilmCameraView.activeInstance?.config?.grainEnabled ?: false
+        get() = NativeFilmCameraView.getFirstValidConfig()?.grainEnabled ?: false
         set(value) {
-            NativeFilmCameraView.activeInstance?.updateEffect {
+            NativeFilmCameraView.dispatchUpdate {
                 grainEnabled = value
             }
         }
 
     override var bloomEnabled: Boolean
-        get() = NativeFilmCameraView.activeInstance?.config?.bloomEnabled ?: false
+        get() = NativeFilmCameraView.getFirstValidConfig()?.bloomEnabled ?: false
         set(value) {
-            NativeFilmCameraView.activeInstance?.updateEffect {
+            NativeFilmCameraView.dispatchUpdate {
                 bloomEnabled = value
             }
         }
 
     override var blackLevel: Double
-        get() = NativeFilmCameraView.activeInstance?.config?.blackLevel?.toDouble() ?: 0.0
+        get() = NativeFilmCameraView.getFirstValidConfig()?.blackLevel?.toDouble() ?: 0.0
         set(value) {
-            NativeFilmCameraView.activeInstance?.updateEffect {
+            NativeFilmCameraView.dispatchUpdate {
                 blackLevel = value.toFloat()
             }
         }
 
     override var highlights: Double
-        get() = NativeFilmCameraView.activeInstance?.config?.highlights?.toDouble() ?: 1.0
+        get() = NativeFilmCameraView.getFirstValidConfig()?.highlights?.toDouble() ?: 1.0
         set(value) {
-            NativeFilmCameraView.activeInstance?.updateEffect {
+            NativeFilmCameraView.dispatchUpdate {
                 highlights = value.toFloat()
             }
         }
 
     override var pivot: Double
-        get() = NativeFilmCameraView.activeInstance?.config?.pivot?.toDouble() ?: 0.5
+        get() = NativeFilmCameraView.getFirstValidConfig()?.pivot?.toDouble() ?: 0.5
         set(value) {
-            NativeFilmCameraView.activeInstance?.updateEffect {
+            NativeFilmCameraView.dispatchUpdate {
                 pivot = value.toFloat()
             }
         }
 
     override var contrastAuto: Boolean
-        get() = NativeFilmCameraView.activeInstance?.config?.contrastAuto ?: false
+        get() = NativeFilmCameraView.getFirstValidConfig()?.contrastAuto ?: false
         set(value) {
-            NativeFilmCameraView.activeInstance?.updateEffect {
+            NativeFilmCameraView.dispatchUpdate {
                 contrastAuto = value
             }
         }
 
     override var blackLevelAuto: Boolean
-        get() = NativeFilmCameraView.activeInstance?.config?.blackLevelAuto ?: false
+        get() = NativeFilmCameraView.getFirstValidConfig()?.blackLevelAuto ?: false
         set(value) {
-            NativeFilmCameraView.activeInstance?.updateEffect {
+            NativeFilmCameraView.dispatchUpdate {
                 blackLevelAuto = value
             }
         }
 
     override var highlightsAuto: Boolean
-        get() = NativeFilmCameraView.activeInstance?.config?.highlightsAuto ?: false
+        get() = NativeFilmCameraView.getFirstValidConfig()?.highlightsAuto ?: false
         set(value) {
-            NativeFilmCameraView.activeInstance?.updateEffect {
+            NativeFilmCameraView.dispatchUpdate {
                 highlightsAuto = value
             }
         }
 
     override var pivotAuto: Boolean
-        get() = NativeFilmCameraView.activeInstance?.config?.pivotAuto ?: false
+        get() = NativeFilmCameraView.getFirstValidConfig()?.pivotAuto ?: false
         set(value) {
-            NativeFilmCameraView.activeInstance?.updateEffect {
+            NativeFilmCameraView.dispatchUpdate {
                 pivotAuto = value
             }
         }
 
     override var pixelationFactor: Double
-        get() = NativeFilmCameraView.activeInstance?.config?.pixelationFactor?.toDouble() ?: 1.0
+        get() = NativeFilmCameraView.getFirstValidConfig()?.pixelationFactor?.toDouble() ?: 1.0
         set(value) {
-            NativeFilmCameraView.activeInstance?.updateEffect {
+            NativeFilmCameraView.dispatchUpdate {
                 pixelationFactor = value.toFloat()
             }
         }
 
     override var tapeJitter: Double
-        get() = NativeFilmCameraView.activeInstance?.config?.tapeJitter?.toDouble() ?: 0.0
+        get() = NativeFilmCameraView.getFirstValidConfig()?.tapeJitter?.toDouble() ?: 0.0
         set(value) {
-            NativeFilmCameraView.activeInstance?.updateEffect {
+            NativeFilmCameraView.dispatchUpdate {
                 tapeJitter = value.toFloat()
             }
         }
 
     override var scanlines: Double
-        get() = NativeFilmCameraView.activeInstance?.config?.scanlines?.toDouble() ?: 0.0
+        get() = NativeFilmCameraView.getFirstValidConfig()?.scanlines?.toDouble() ?: 0.0
         set(value) {
-            NativeFilmCameraView.activeInstance?.updateEffect {
+            NativeFilmCameraView.dispatchUpdate {
                 scanlines = value.toFloat()
             }
         }
 
     override var chromaShiftInvert: Boolean
-        get() = NativeFilmCameraView.activeInstance?.config?.chromaShiftInvert ?: false
+        get() = NativeFilmCameraView.getFirstValidConfig()?.chromaShiftInvert ?: false
         set(value) {
-            NativeFilmCameraView.activeInstance?.updateEffect {
+            NativeFilmCameraView.dispatchUpdate {
                 chromaShiftInvert = value
             }
         }
 
     override var hue: Double
-        get() = NativeFilmCameraView.activeInstance?.config?.hue?.toDouble() ?: 0.0
+        get() = NativeFilmCameraView.getFirstValidConfig()?.hue?.toDouble() ?: 0.0
         set(value) {
-            NativeFilmCameraView.activeInstance?.updateEffect {
+            NativeFilmCameraView.dispatchUpdate {
                 hue = value.toFloat()
             }
         }
 
     override var hueRed: Double
-        get() = NativeFilmCameraView.activeInstance?.config?.hueRed?.toDouble() ?: 0.0
+        get() = NativeFilmCameraView.getFirstValidConfig()?.hueRed?.toDouble() ?: 0.0
         set(value) {
-            NativeFilmCameraView.activeInstance?.updateEffect {
+            NativeFilmCameraView.dispatchUpdate {
                 hueRed = value.toFloat()
             }
         }
 
     override var hueOrange: Double
-        get() = NativeFilmCameraView.activeInstance?.config?.hueOrange?.toDouble() ?: 0.0
+        get() = NativeFilmCameraView.getFirstValidConfig()?.hueOrange?.toDouble() ?: 0.0
         set(value) {
-            NativeFilmCameraView.activeInstance?.updateEffect {
+            NativeFilmCameraView.dispatchUpdate {
                 hueOrange = value.toFloat()
             }
         }
 
     override var hueYellow: Double
-        get() = NativeFilmCameraView.activeInstance?.config?.hueYellow?.toDouble() ?: 0.0
+        get() = NativeFilmCameraView.getFirstValidConfig()?.hueYellow?.toDouble() ?: 0.0
         set(value) {
-            NativeFilmCameraView.activeInstance?.updateEffect {
+            NativeFilmCameraView.dispatchUpdate {
                 hueYellow = value.toFloat()
             }
         }
 
     override var hueGreen: Double
-        get() = NativeFilmCameraView.activeInstance?.config?.hueGreen?.toDouble() ?: 0.0
+        get() = NativeFilmCameraView.getFirstValidConfig()?.hueGreen?.toDouble() ?: 0.0
         set(value) {
-            NativeFilmCameraView.activeInstance?.updateEffect {
+            NativeFilmCameraView.dispatchUpdate {
                 hueGreen = value.toFloat()
             }
         }
 
     override var hueCyan: Double
-        get() = NativeFilmCameraView.activeInstance?.config?.hueCyan?.toDouble() ?: 0.0
+        get() = NativeFilmCameraView.getFirstValidConfig()?.hueCyan?.toDouble() ?: 0.0
         set(value) {
-            NativeFilmCameraView.activeInstance?.updateEffect {
+            NativeFilmCameraView.dispatchUpdate {
                 hueCyan = value.toFloat()
             }
         }
 
     override var hueBlue: Double
-        get() = NativeFilmCameraView.activeInstance?.config?.hueBlue?.toDouble() ?: 0.0
+        get() = NativeFilmCameraView.getFirstValidConfig()?.hueBlue?.toDouble() ?: 0.0
         set(value) {
-            NativeFilmCameraView.activeInstance?.updateEffect {
+            NativeFilmCameraView.dispatchUpdate {
                 hueBlue = value.toFloat()
             }
         }
 
     override var huePurple: Double
-        get() = NativeFilmCameraView.activeInstance?.config?.huePurple?.toDouble() ?: 0.0
+        get() = NativeFilmCameraView.getFirstValidConfig()?.huePurple?.toDouble() ?: 0.0
         set(value) {
-            NativeFilmCameraView.activeInstance?.updateEffect {
+            NativeFilmCameraView.dispatchUpdate {
                 huePurple = value.toFloat()
             }
         }
 
     override var hueMagenta: Double
-        get() = NativeFilmCameraView.activeInstance?.config?.hueMagenta?.toDouble() ?: 0.0
+        get() = NativeFilmCameraView.getFirstValidConfig()?.hueMagenta?.toDouble() ?: 0.0
         set(value) {
-            NativeFilmCameraView.activeInstance?.updateEffect {
+            NativeFilmCameraView.dispatchUpdate {
                 hueMagenta = value.toFloat()
             }
         }
