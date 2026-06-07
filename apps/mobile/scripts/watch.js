@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const { spawn } = require('child_process');
 
-const PROJECT_ROOT = path.resolve(__dirname, '../../../..');
+const PROJECT_ROOT = path.resolve(__dirname, '../../..');
 
 // Helper to run a command synchronously and log output
 function runScript(scriptPath) {
@@ -33,12 +33,13 @@ function debounce(fn, delay) {
 async function start() {
   console.log('🚀 Starting Codegen & GraphRAG Watcher...');
   
-  // 1. Initial run of all three
+  // 1. Initial run of all tasks
   const paramOk = await runScript('packages/shared/scripts/codegen/parameters.js');
   const errorOk = await runScript('packages/shared/scripts/codegen/errors.js');
+  const i18nOk = await runScript('packages/shared/scripts/codegen/i18n.js');
   const graphOk = await runScript('packages/shared/scripts/graphrag/builder.js');
 
-  if (!paramOk || !errorOk || !graphOk) {
+  if (!paramOk || !errorOk || !i18nOk || !graphOk) {
     console.error('⚠️ Initial codegen failed. Starting watchers anyway...');
   }
 
@@ -59,6 +60,15 @@ async function start() {
       await runScript('packages/shared/scripts/codegen/errors.js');
     }
   }, 100));
+
+  // 3.5 Watcher for i18n translation files
+  const localesPath = path.resolve(PROJECT_ROOT, 'apps/mobile/src/app/providers/i18n/locales');
+  if (fs.existsSync(localesPath)) {
+    fs.watch(localesPath, debounce(async (event) => {
+      console.log(`\n📝 Localization files changed.`);
+      await runScript('packages/shared/scripts/codegen/i18n.js');
+    }, 100));
+  }
 
   // 4. Watcher for source directories (FSD/GraphRAG)
   const watchDirs = [
@@ -88,7 +98,7 @@ async function start() {
   console.log('👀 Watchers are active. Monitoring files for changes...');
 
   // 5. Spawn React Native Metro bundler
-  const helper = require('../android/helper');
+  const helper = require('./android/helper');
   const args = process.argv.slice(2);
   const mode = args.includes('--simulator') ? '--simulator' : '--device';
   const targetArgs = helper.getTargetDeviceArg(mode);

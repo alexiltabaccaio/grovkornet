@@ -4,6 +4,12 @@
   "type": "object",
   "required": ["parameters"],
   "properties": {
+    "constants": {
+      "type": "object",
+      "additionalProperties": {
+        "type": ["number", "boolean", "string"]
+      }
+    },
     "parameters": {
       "type": "array",
       "items": {

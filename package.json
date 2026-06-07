@@ -5,7 +5,8 @@
   "packageManager": "npm@10.8.1",
   "workspaces": [
     "apps/*",
-    "packages/*"
+    "packages/*",
+    "packages/shared/scripts/graphrag"
   ],
   "installConfig": {
     "hoistingLimits": "workspaces"
@@ -13,14 +14,14 @@
   "scripts": {
     "dev": "turbo run dev",
     "dev:web": "turbo run dev --filter=@grovkornet/web",
-    "dev:android": "node packages/shared/scripts/codegen/watch.js --device",
-    "dev:android_sim": "node packages/shared/scripts/codegen/watch.js --simulator",
-    "dev:mobile": "node packages/shared/scripts/codegen/watch.js --device",
+    "dev:android": "node apps/mobile/scripts/watch.js --device",
+    "dev:android_sim": "node apps/mobile/scripts/watch.js --simulator",
+    "dev:mobile": "node apps/mobile/scripts/watch.js --device",
     "build": "turbo run build",
     "build:web": "turbo run build --filter=@grovkornet/web",
-    "build:android": "npm run codegen && node packages/shared/scripts/android/build.js --device",
-    "build:android_sim": "npm run codegen && node packages/shared/scripts/android/build.js --simulator",
-    "build:mobile": "npm run codegen && node packages/shared/scripts/android/build.js --device",
+    "build:android": "npm run codegen && node apps/mobile/scripts/android/build.js --device",
+    "build:android_sim": "npm run codegen && node apps/mobile/scripts/android/build.js --simulator",
+    "build:mobile": "npm run codegen && node apps/mobile/scripts/android/build.js --device",
     "codegen": "node packages/shared/scripts/codegen/index.js && node packages/shared/scripts/graphrag/builder.js",
     "lint": "turbo run lint",
     "android": "npm run android -w @grovkornet/mobile",
