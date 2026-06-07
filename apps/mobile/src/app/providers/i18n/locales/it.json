@@ -66,7 +66,7 @@
       "preview_quality_save": "RISPARMIO",
       "preview_quality_warning": "Qualità massima attiva. Può causare surriscaldamento e consumo della batteria.",
       "apply_crop": "APPLICA CROP",
-      "crop_active_warning": "Crop attivo. Mantiene 60 FPS in 4:3 ma riduce il campo visivo.",
+      "crop_active_warning": "Crop attivo. Mantiene 60 FPS ma riduce il campo visivo.",
       "crop_inactive_warning": "Limite hardware: 30 FPS. Attiva il crop per avere i 60 FPS.",
       "fps_setting": "FPS",
       "noise_reduction": "RIDUZIONE RUMORE",

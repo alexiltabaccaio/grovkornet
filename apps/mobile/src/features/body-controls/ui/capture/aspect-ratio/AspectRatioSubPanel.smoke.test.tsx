@@ -73,16 +73,16 @@ describe('AspectRatioSubPanel', () => {
     expect(toJSON()).toBeNull();
   });
 
-  it('renders null when aspectRatio is 1', () => {
+  it('does not render null when aspectRatio is 1', () => {
     mockAspectRatioValue = 1;
     const { toJSON } = render(<AspectRatioSubPanel />);
-    expect(toJSON()).toBeNull();
+    expect(toJSON()).not.toBeNull();
   });
 
-  it('renders null when aspectRatio is 4', () => {
+  it('does not render null when aspectRatio is 4', () => {
     mockAspectRatioValue = 4;
     const { toJSON } = render(<AspectRatioSubPanel />);
-    expect(toJSON()).toBeNull();
+    expect(toJSON()).not.toBeNull();
   });
 
   it('handles toggle press correctly', () => {

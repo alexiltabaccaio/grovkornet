@@ -122,12 +122,9 @@ export const Viewfinder = React.memo(({ cameraKey }: ViewfinderProps) => {
     
     // If we are at high resolution (4K or 1440p) and the 60 FPS crop is disabled,
     // limit the target FPS to 30 (hardware limit) to allow the full uncropped frame.
-    // However, if the aspect ratio itself is 16:9 (1) or 65:24 (4), we are natively
-    // using a 16:9 crop that bypasses the 30fps lock, so we don't limit the FPS.
     const isHighRes = resolutionSetting.value <= 1;
     const isCropDisabled = force60fpsCrop.value === 0;
-    const isTargetAspect43 = aspectRatio.value !== 1 && aspectRatio.value !== 4;
-    if (isHighRes && isCropDisabled && isTargetAspect43) {
+    if (isHighRes && isCropDisabled) {
       fps = Math.min(fps, 30);
     }
 

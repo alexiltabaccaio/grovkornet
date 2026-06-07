@@ -66,8 +66,12 @@ class CameraSessionManager(
         val provider = cameraProvider ?: return
 
         val isHighRes = config.resolutionSetting <= 1
-        val targetAspectRatio = if (isHighRes && config.force60fpsCrop) {
-            AspectRatio.RATIO_16_9 // Force hardware to 16:9 for 4K and 1440p to bypass 30fps lock on 4:3 sensors
+        val targetAspectRatio = if (isHighRes) {
+            if (config.force60fpsCrop) {
+                AspectRatio.RATIO_16_9 // Force hardware to 16:9 for 4K and 1440p to bypass 30fps lock on 4:3 sensors
+            } else {
+                AspectRatio.RATIO_4_3 // Request full sensor width (4:3) at 30fps, shader will crop
+            }
         } else {
             when (config.aspectRatio) {
                 1, 4 -> AspectRatio.RATIO_16_9 // 16:9 and 65:24 map to 16:9

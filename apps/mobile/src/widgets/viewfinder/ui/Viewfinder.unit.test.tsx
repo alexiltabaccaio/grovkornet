@@ -72,21 +72,32 @@ describe('Viewfinder', () => {
     expect(bodyStore.iso.value).toBe(800);
   });
 
-  it('limits FPS to 30 for 4:3 high-res when crop is disabled, but keeps 60 for 16:9', () => {
+  it('limits FPS to 30 for all aspect ratios when crop is disabled, and allows 60 when crop is enabled', () => {
     const bodyStore = useBodyStore.getState();
     bodyStore.fpsSetting.value = 60;
     bodyStore.resolutionSetting.value = 0; // High-res (4K)
-    bodyStore.force60fpsCrop.value = 0; // Crop disabled
     
-    // Test 1: 4:3 aspect ratio (e.g. 0)
-    bodyStore.aspectRatio.value = 0;
+    // Case 1: Crop disabled (force60fpsCrop = 0) -> all aspect ratios limited to 30
+    bodyStore.force60fpsCrop.value = 0;
+    bodyStore.aspectRatio.value = 0; // 4:3
     const { getByTestId, rerender } = render(<Viewfinder cameraKey={1} />);
     let nativeCamera = getByTestId('native-camera');
     expect(nativeCamera.props.animatedProps.targetFps).toBe(30);
 
-    // Test 2: 16:9 aspect ratio (1)
-    bodyStore.aspectRatio.value = 1;
+    bodyStore.aspectRatio.value = 1; // 16:9
     rerender(<Viewfinder cameraKey={2} />);
+    nativeCamera = getByTestId('native-camera');
+    expect(nativeCamera.props.animatedProps.targetFps).toBe(30);
+
+    // Case 2: Crop enabled (force60fpsCrop = 1) -> allows 60 FPS
+    bodyStore.force60fpsCrop.value = 1;
+    bodyStore.aspectRatio.value = 0; // 4:3
+    rerender(<Viewfinder cameraKey={3} />);
+    nativeCamera = getByTestId('native-camera');
+    expect(nativeCamera.props.animatedProps.targetFps).toBe(60);
+
+    bodyStore.aspectRatio.value = 1; // 16:9
+    rerender(<Viewfinder cameraKey={4} />);
     nativeCamera = getByTestId('native-camera');
     expect(nativeCamera.props.animatedProps.targetFps).toBe(60);
   });

@@ -66,7 +66,7 @@ export const AspectRatioSubPanel = ({ animatedStyle }: AspectRatioSubPanelProps)
 
   const isHighResolution = localResolutionSetting <= 1;
 
-  if (!(isHighResolution && localAspectRatio !== 1 && localAspectRatio !== 4)) {
+  if (!isHighResolution) {
     return null;
   }
 
