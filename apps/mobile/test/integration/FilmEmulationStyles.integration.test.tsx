@@ -11,6 +11,7 @@ jest.mock('@widgets/viewfinder', () => {
   const { View } = require('react-native') as typeof import('react-native');
   return {
     Viewfinder: (_props: unknown) => <View testID="connected-camera" />,
+    DeviceHealthWarningBanner: (_props: unknown) => <View testID="device-health-warning" />,
   };
 });
 

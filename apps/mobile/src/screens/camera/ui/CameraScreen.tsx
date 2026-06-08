@@ -7,7 +7,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useShallow } from 'zustand/react/shallow';
 import { useSystemStore } from '@entities/system';
 import { ControlPanel } from '@widgets/control-panel';
-import { Viewfinder } from '@widgets/viewfinder';
+import { Viewfinder, DeviceHealthWarningBanner } from '@widgets/viewfinder';
 import { Header } from '@widgets/header';
 import { ShutterButton, CameraFlipButton } from '@features/body-controls';
 import { GestureController } from '@features/lens-controls';
@@ -178,6 +178,12 @@ const CameraScreenContent = () => {
       
       <AddPresetModal />
       <DeletePresetModal />
+
+      <View 
+        style={{ position: 'absolute', top: statusBarHeight, left: 0, right: 0, pointerEvents: 'box-none', zIndex: 90 }}
+      >
+        <DeviceHealthWarningBanner />
+      </View>
     </View>
   );
 };

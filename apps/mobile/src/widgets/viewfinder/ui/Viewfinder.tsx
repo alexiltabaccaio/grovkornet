@@ -12,7 +12,6 @@ import { useVerificationStore } from '@entities/verification';
 import { FlashOverlay } from '@features/body-controls';
 import { useCameraCapture } from '../lib/useCameraCapture';
 import { useCameraEvents } from '../lib/useCameraEvents';
-import { DeviceHealthWarningBanner } from './DeviceHealthWarningBanner';
 
 interface ViewfinderProps {
   cameraKey?: number;
@@ -184,7 +183,6 @@ export const Viewfinder = React.memo(({ cameraKey }: ViewfinderProps) => {
         </Animated.View>
       </GestureDetector>
       <FlashOverlay />
-      <DeviceHealthWarningBanner />
     </View>
   );
 });

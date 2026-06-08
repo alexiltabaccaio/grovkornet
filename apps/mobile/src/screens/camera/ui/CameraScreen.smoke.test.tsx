@@ -36,6 +36,7 @@ jest.mock('@widgets/control-panel', () => ({
 
 jest.mock('@widgets/viewfinder', () => ({
   Viewfinder: 'Viewfinder',
+  DeviceHealthWarningBanner: 'DeviceHealthWarningBanner',
 }));
 
 jest.mock('@widgets/header', () => ({
