@@ -1,7 +1,7 @@
 import React, { ReactNode, useMemo } from 'react';
 import { StyleSheet } from 'react-native';
 import { GestureDetector, Gesture } from 'react-native-gesture-handler';
-import Animated, { useSharedValue, useAnimatedStyle, withSpring, runOnJS, withTiming, Easing } from 'react-native-reanimated';
+import Animated, { useSharedValue, useAnimatedStyle, withSpring, runOnJS, withTiming, Easing, useAnimatedReaction } from 'react-native-reanimated';
 import { useSystemStore } from '@entities/system';
 import { useShallow } from 'zustand/react/shallow';
 import { useBodyStore } from '@entities/body';
@@ -38,9 +38,22 @@ export const GestureController = ({ children }: GestureControllerProps) => {
 
   React.useEffect(() => {
     if (activeSection === 'none') {
-      translateY.value = withSpring(0, { damping: 15, stiffness: 150 });
+      translateY.value = withTiming(0, { duration: 300 });
     }
   }, [activeSection, translateY]);
+
+  const { aspectRatio } = useBodyStore.getState();
+
+  useAnimatedReaction(
+    () => {
+      return aspectRatio.value;
+    },
+    (currentValue, previousValue) => {
+      if (previousValue !== undefined && previousValue !== null && currentValue !== previousValue) {
+        translateY.value = 0;
+      }
+    }
+  );
 
   const composedGesture = useMemo(() => {
     const { zoom } = useBodyStore.getState();

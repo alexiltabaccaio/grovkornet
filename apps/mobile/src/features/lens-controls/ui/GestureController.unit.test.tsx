@@ -22,6 +22,8 @@ describe('GestureController', () => {
   let originalPan: any;
   let originalSpring: any;
   let originalUseSharedValue: any;
+  let originalAnimatedReaction: any;
+  let capturedReactionCallback: any;
   let mockTranslateY: any;
   let mockStartY: any;
   let sharedValuesArray: any[] = [];
@@ -30,6 +32,7 @@ describe('GestureController', () => {
   beforeAll(() => {
     originalSpring = reanimated.withSpring;
     originalUseSharedValue = reanimated.useSharedValue;
+    originalAnimatedReaction = reanimated.useAnimatedReaction;
 
     (reanimated as any).withSpring = (value: any, config: any, callback: any) => {
       if (typeof callback === 'function') {
@@ -52,11 +55,16 @@ describe('GestureController', () => {
       }
       return ref.current;
     };
+
+    (reanimated as any).useAnimatedReaction = (prepare: any, react: any) => {
+      capturedReactionCallback = react;
+    };
   });
 
   afterAll(() => {
     (reanimated as any).withSpring = originalSpring;
     (reanimated as any).useSharedValue = originalUseSharedValue;
+    (reanimated as any).useAnimatedReaction = originalAnimatedReaction;
   });
 
   beforeEach(() => {
@@ -66,6 +74,7 @@ describe('GestureController', () => {
     sharedValuesArray = [];
     mockTranslateY = null;
     mockStartY = null;
+    capturedReactionCallback = null;
 
     (useSystemStore as unknown as jest.Mock).mockImplementation((selector?: (state: any) => any) => {
       const state = {
@@ -373,6 +382,30 @@ describe('GestureController', () => {
 
     // Should successfully close the active section on this tap
     expect(mockSetActiveSection).toHaveBeenCalledWith('none');
+  });
+
+  it('resets translateY when aspect ratio changes', () => {
+    currentActiveSection = 'lens';
+    render(<GestureController />);
+
+    act(() => {
+      capturedPanGesture._onStart();
+    });
+
+    act(() => {
+      capturedPanGesture._onChange({ translationY: -100 });
+    });
+
+    expect(mockTranslateY.value).toBe(-100);
+
+    // Simulate aspect ratio change (from 1 to 2)
+    act(() => {
+      if (capturedReactionCallback) {
+        capturedReactionCallback(2, 1);
+      }
+    });
+
+    expect(mockTranslateY.value).toBe(0);
   });
 });
 
