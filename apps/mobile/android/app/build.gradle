@@ -91,19 +91,22 @@ if (localPropertiesFile.exists()) {
     }
 }
 
-def appVersionName = "0.10.2"
-def appVersionCode = 5
+// Resolve version details strictly from app.json
 def appJsonFile = file("${rootDir}/../app.json")
-if (appJsonFile.exists()) {
-    try {
-        def slurper = Class.forName("groovy.json.JsonSlurper").getDeclaredConstructor().newInstance()
-        def appJson = slurper.parse(appJsonFile)
-        appVersionName = appJson.expo.version
-        def androidMap = appJson.expo.android
-        appVersionCode = (androidMap != null && androidMap.containsKey('version' + 'Code') ? androidMap.get('version' + 'Code') : 1) as Integer
-    } catch (Exception e) {
-        // fallback
-    }
+if (!appJsonFile.exists()) {
+    throw new RuntimeException("Required configuration file app.json is missing at: ${appJsonFile.absolutePath}")
+}
+
+def appVersionName
+def appVersionCode
+try {
+    def slurper = Class.forName("groovy.json.JsonSlurper").getDeclaredConstructor().newInstance()
+    def appJson = slurper.parse(appJsonFile)
+    appVersionName = appJson.expo.version
+    def androidMap = appJson.expo.android
+    appVersionCode = (androidMap != null && androidMap.containsKey('versionCode') ? androidMap.get('versionCode') : 1) as Integer
+} catch (Exception e) {
+    throw new RuntimeException("Failed to parse app.json version configuration: " + e.message, e)
 }
 
 android {
