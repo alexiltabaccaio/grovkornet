@@ -160,6 +160,12 @@ namespace margelo::nitro::grovkornet {
     void setHuePurple(double huePurple) override;
     double getHueMagenta() override;
     void setHueMagenta(double hueMagenta) override;
+    bool getScanlinesHorizontal() override;
+    void setScanlinesHorizontal(bool scanlinesHorizontal) override;
+    double getScanlinesMode() override;
+    void setScanlinesMode(double scanlinesMode) override;
+    double getScanlinesDensity() override;
+    void setScanlinesDensity(double scanlinesDensity) override;
 
   public:
     // Methods

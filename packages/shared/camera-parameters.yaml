@@ -42,6 +42,9 @@ constants:
   DEFAULT_PIVOT_AUTO: true
   DEFAULT_TAPE_JITTER: 0.0
   DEFAULT_SCANLINES: 0.0
+  DEFAULT_SCANLINES_HORIZONTAL: true
+  DEFAULT_SCANLINES_MODE: 0
+  DEFAULT_SCANLINES_DENSITY: 800.0
   DEFAULT_CHROMA_SHIFT_INVERT: false
   DEFAULT_FPS_SETTING: 60
   DEFAULT_ASPECT_RATIO: 1
@@ -1255,5 +1258,47 @@ parameters:
       default: DEFAULT_SELECTIVE_HUE
       type: number
       resetGroup: hue
+      store: film
+    nitro: true
+  - name: scanlinesHorizontal
+    category: render
+    arrayIndex: 59
+    kotlin:
+      type: Boolean
+      default: "true"
+      arrayMapping: if (scanlinesHorizontal) 1.0f else 0.0f
+    ts:
+      type: boolean
+    zustand:
+      default: DEFAULT_SCANLINES_HORIZONTAL
+      type: boolean
+      resetGroup: scanlines
+      store: film
+    nitro: true
+  - name: scanlinesMode
+    category: render
+    kotlin:
+      type: Int
+      default: "0"
+    ts:
+      type: number
+    zustand:
+      default: DEFAULT_SCANLINES_MODE
+      type: number
+      resetGroup: scanlines
+      store: film
+    nitro: true
+  - name: scanlinesDensity
+    category: render
+    arrayIndex: 60
+    kotlin:
+      type: Float
+      default: 800.0f
+    ts:
+      type: number
+    zustand:
+      default: DEFAULT_SCANLINES_DENSITY
+      type: number
+      resetGroup: scanlines
       store: film
     nitro: true

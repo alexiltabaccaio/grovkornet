@@ -61,6 +61,9 @@ data class CameraConfiguration(
     var hueBlue: Float = 0.0f,
     var huePurple: Float = 0.0f,
     var hueMagenta: Float = 0.0f,
+    var scanlinesHorizontal: Boolean = true,
+    var scanlinesMode: Int = 0,
+    var scanlinesDensity: Float = 800.0f,
 
     // Hardware Props
     var ev: Float = 0.0f,
@@ -110,7 +113,7 @@ fun CameraConfiguration.toRenderParamsArray(
     targetFpsOverride: Float = targetFps.toFloat(),
     invertYShift: Boolean = false
 ): FloatArray = // @@GEN_ARRAY_START@@
-FloatArray(59).apply {
+FloatArray(61).apply {
     this[0 ] = saturation
     this[1 ] = contrast
     this[2 ] = if (grainEnabled) grainIntensity else 0f
@@ -170,6 +173,8 @@ FloatArray(59).apply {
     this[56] = hueBlue
     this[57] = huePurple
     this[58] = hueMagenta
+    this[59] = if (scanlinesHorizontal) 1.0f else 0.0f
+    this[60] = scanlinesDensity
 }
 // @@GEN_ARRAY_END@@
 
@@ -413,6 +418,15 @@ fun CameraConfiguration.loadFromMap(payload: Map<String, Any>) {
     }
     payload["hueMagenta"]?.let { rawValue ->
         (rawValue as? Number)?.toFloat()?.let { hueMagenta = it }
+    }
+    payload["scanlinesHorizontal"]?.let { rawValue ->
+        (rawValue as? Boolean)?.let { scanlinesHorizontal = it }
+    }
+    payload["scanlinesMode"]?.let { rawValue ->
+        (rawValue as? Number)?.toInt()?.let { scanlinesMode = it }
+    }
+    payload["scanlinesDensity"]?.let { rawValue ->
+        (rawValue as? Number)?.toFloat()?.let { scanlinesDensity = it }
     }
     // @@GEN_MAP_LOADER_END@@
 }

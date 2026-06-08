@@ -44,6 +44,9 @@ import {
   DEFAULT_PIVOT_AUTO,
   DEFAULT_TAPE_JITTER,
   DEFAULT_SCANLINES,
+  DEFAULT_SCANLINES_HORIZONTAL,
+  DEFAULT_SCANLINES_MODE,
+  DEFAULT_SCANLINES_DENSITY,
   DEFAULT_CHROMA_SHIFT_INVERT,
   DEFAULT_HUE,
   DEFAULT_SELECTIVE_HUE,
@@ -123,6 +126,9 @@ export const useFilmStore = create<FilmStore>((set, get) => ({
   hueBlue: makeMutable(DEFAULT_SELECTIVE_HUE),
   huePurple: makeMutable(DEFAULT_SELECTIVE_HUE),
   hueMagenta: makeMutable(DEFAULT_SELECTIVE_HUE),
+  scanlinesHorizontal: makeMutable(DEFAULT_SCANLINES_HORIZONTAL),
+  scanlinesMode: makeMutable(DEFAULT_SCANLINES_MODE),
+  scanlinesDensity: makeMutable(DEFAULT_SCANLINES_DENSITY),
   // @@GEN_INIT_END@@
   capabilities: {
     availableNoiseReductionModes: [],
@@ -428,6 +434,18 @@ export const useFilmStore = create<FilmStore>((set, get) => ({
     get().hueMagenta.value = value;
     getNitroConfig().hueMagenta = value;
   },
+  setScanlinesHorizontal: (value) => {
+    get().scanlinesHorizontal.value = value;
+    getNitroConfig().scanlinesHorizontal = value;
+  },
+  setScanlinesMode: (value) => {
+    get().scanlinesMode.value = value;
+    getNitroConfig().scanlinesMode = value;
+  },
+  setScanlinesDensity: (value) => {
+    get().scanlinesDensity.value = value;
+    getNitroConfig().scanlinesDensity = value;
+  },
   // @@GEN_SETTERS_END@@
   setCapabilities: (caps) => {
     logger.info('FilmStore', 'Capabilities updated for Film');
@@ -566,6 +584,12 @@ export const useFilmStore = create<FilmStore>((set, get) => ({
       case 'scanlines':
         state.scanlines.value = DEFAULT_SCANLINES;
         getNitroConfig().scanlines = DEFAULT_SCANLINES;
+        state.scanlinesHorizontal.value = DEFAULT_SCANLINES_HORIZONTAL;
+        getNitroConfig().scanlinesHorizontal = DEFAULT_SCANLINES_HORIZONTAL;
+        state.scanlinesMode.value = DEFAULT_SCANLINES_MODE;
+        getNitroConfig().scanlinesMode = DEFAULT_SCANLINES_MODE;
+        state.scanlinesDensity.value = DEFAULT_SCANLINES_DENSITY;
+        getNitroConfig().scanlinesDensity = DEFAULT_SCANLINES_DENSITY;
         break;
       case 'hue':
         state.hue.value = DEFAULT_HUE;

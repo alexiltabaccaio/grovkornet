@@ -536,6 +536,33 @@ namespace margelo::nitro::grovkornet {
     static const auto method = _javaPart->javaClassStatic()->getMethod<void(double /* hueMagenta */)>("setHueMagenta");
     method(_javaPart, hueMagenta);
   }
+  bool JHybridNitroCameraConfigurationSpec::getScanlinesHorizontal() {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<jboolean()>("getScanlinesHorizontal");
+    auto __result = method(_javaPart);
+    return static_cast<bool>(__result);
+  }
+  void JHybridNitroCameraConfigurationSpec::setScanlinesHorizontal(bool scanlinesHorizontal) {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<void(jboolean /* scanlinesHorizontal */)>("setScanlinesHorizontal");
+    method(_javaPart, scanlinesHorizontal);
+  }
+  double JHybridNitroCameraConfigurationSpec::getScanlinesMode() {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<double()>("getScanlinesMode");
+    auto __result = method(_javaPart);
+    return __result;
+  }
+  void JHybridNitroCameraConfigurationSpec::setScanlinesMode(double scanlinesMode) {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<void(double /* scanlinesMode */)>("setScanlinesMode");
+    method(_javaPart, scanlinesMode);
+  }
+  double JHybridNitroCameraConfigurationSpec::getScanlinesDensity() {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<double()>("getScanlinesDensity");
+    auto __result = method(_javaPart);
+    return __result;
+  }
+  void JHybridNitroCameraConfigurationSpec::setScanlinesDensity(double scanlinesDensity) {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<void(double /* scanlinesDensity */)>("setScanlinesDensity");
+    method(_javaPart, scanlinesDensity);
+  }
 
   // Methods
   

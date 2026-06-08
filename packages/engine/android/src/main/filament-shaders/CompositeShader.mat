@@ -15,6 +15,8 @@ material {
         { type : float, name : u_ChromaShiftInvert },
         { type : float, name : u_TapeJitter },
         { type : float, name : u_Scanlines },
+        { type : float, name : u_ScanlinesHorizontal },
+        { type : float, name : u_ScanlinesDensity },
         { type : float, name : u_Time },
         { type : float, name : u_BloomIntensity },
         { type : float, name : u_ChromaticAberration },
@@ -71,7 +73,7 @@ fragment {
         baseColor.rgb = applySharpening(baseColor.rgb, compositeUv);
 
         // 5. Scanlines
-        baseColor.rgb = applyScanlines(baseColor.rgb, uv);
+        baseColor.rgb = applyScanlines(baseColor.rgb, uv, res);
         
         vec2 flippedBloomUv = vec2(compositeUv.x, materialParams.u_DrsScale - compositeUv.y);
         vec3 finalColor = baseColor.rgb;

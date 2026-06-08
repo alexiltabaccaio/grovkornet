@@ -183,4 +183,15 @@ describe('useFilmWorklets', () => {
     worklets.updateVignetteIntensity(0.75);
     expect(useFilmStore.getState().vignetteIntensity.value).toBe(0.75);
   });
+
+  it('correctly updates scanline parameters in worklets', () => {
+    const { result } = renderHook(() => useFilmWorklets());
+    const worklets = result.current;
+
+    worklets.updateScanlinesMode(1);
+    expect(useFilmStore.getState().scanlinesMode.value).toBe(1);
+
+    worklets.updateScanlinesDensity(950);
+    expect(useFilmStore.getState().scanlinesDensity.value).toBe(950);
+  });
 });

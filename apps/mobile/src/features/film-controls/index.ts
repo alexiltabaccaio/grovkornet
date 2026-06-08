@@ -2,6 +2,7 @@ export * from './ui/color/ColorModule';
 export * from './ui/tone/ToneModule';
 export * from './ui/texture/TextureModule';
 export * from './ui/texture/grain/GrainSubPanel';
+export * from './ui/texture/scanlines/ScanlinesSubPanel';
 export * from './ui/color/SaturationSubPanel';
 export * from './ui/color/HueSubPanel';
 export * from './ui/color/SelectiveColorSubPanel';

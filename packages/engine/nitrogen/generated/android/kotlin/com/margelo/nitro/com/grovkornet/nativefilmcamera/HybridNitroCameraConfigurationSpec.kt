@@ -354,6 +354,24 @@ abstract class HybridNitroCameraConfigurationSpec: HybridObject() {
   @set:DoNotStrip
   @set:Keep
   abstract var hueMagenta: Double
+  
+  @get:DoNotStrip
+  @get:Keep
+  @set:DoNotStrip
+  @set:Keep
+  abstract var scanlinesHorizontal: Boolean
+  
+  @get:DoNotStrip
+  @get:Keep
+  @set:DoNotStrip
+  @set:Keep
+  abstract var scanlinesMode: Double
+  
+  @get:DoNotStrip
+  @get:Keep
+  @set:DoNotStrip
+  @set:Keep
+  abstract var scanlinesDensity: Double
 
   // Methods
   

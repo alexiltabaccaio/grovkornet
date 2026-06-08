@@ -124,6 +124,12 @@ namespace margelo::nitro::grovkornet {
       prototype.registerHybridSetter("huePurple", &HybridNitroCameraConfigurationSpec::setHuePurple);
       prototype.registerHybridGetter("hueMagenta", &HybridNitroCameraConfigurationSpec::getHueMagenta);
       prototype.registerHybridSetter("hueMagenta", &HybridNitroCameraConfigurationSpec::setHueMagenta);
+      prototype.registerHybridGetter("scanlinesHorizontal", &HybridNitroCameraConfigurationSpec::getScanlinesHorizontal);
+      prototype.registerHybridSetter("scanlinesHorizontal", &HybridNitroCameraConfigurationSpec::setScanlinesHorizontal);
+      prototype.registerHybridGetter("scanlinesMode", &HybridNitroCameraConfigurationSpec::getScanlinesMode);
+      prototype.registerHybridSetter("scanlinesMode", &HybridNitroCameraConfigurationSpec::setScanlinesMode);
+      prototype.registerHybridGetter("scanlinesDensity", &HybridNitroCameraConfigurationSpec::getScanlinesDensity);
+      prototype.registerHybridSetter("scanlinesDensity", &HybridNitroCameraConfigurationSpec::setScanlinesDensity);
     });
   }
 

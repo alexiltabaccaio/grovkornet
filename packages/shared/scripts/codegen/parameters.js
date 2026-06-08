@@ -716,6 +716,16 @@ function generateNitroConfig(parameters) {
     })
     .join('\n\n');
   replaceBetweenMarkers(FILE_PATHS.nitroImpl, '    // @@GEN_OVERRIDES_START@@', '    // @@GEN_OVERRIDES_END@@', overrides, '    ');
+
+  // Trigger Nitrogen code generation automatically
+  try {
+    const { execSync } = require('child_process');
+    const engineDir = path.resolve(PROJECT_ROOT, 'packages/engine');
+    console.log('\n--- Running Nitrogen Generator (Step 7.5) ---');
+    execSync('npx nitrogen .', { cwd: engineDir, stdio: 'inherit' });
+  } catch (e) {
+    console.error('Failed to trigger Nitrogen:', e);
+  }
 }
 
 function generateSharedIndex(data) {

@@ -61,6 +61,9 @@ export interface FilmPresetPayload {
   hueBlue: number;
   huePurple: number;
   hueMagenta: number;
+  scanlinesHorizontal: boolean;
+  scanlinesMode: number;
+  scanlinesDensity: number;
   // @@GEN_FILM_PAYLOAD_END@@
 }
 

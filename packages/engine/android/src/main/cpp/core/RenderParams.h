@@ -61,6 +61,8 @@ struct RenderParams {
     float hueBlue;
     float huePurple;
     float hueMagenta;
+    float scanlinesHorizontal;
+    float scanlinesDensity;
     // @@GEN_STRUCT_END@@
 };
 

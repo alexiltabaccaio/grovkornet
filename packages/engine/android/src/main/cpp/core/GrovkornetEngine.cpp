@@ -94,6 +94,8 @@ RenderParams parseRenderParams(const float* params) {
     rp.hueBlue = params[56];
     rp.huePurple = params[57];
     rp.hueMagenta = params[58];
+    rp.scanlinesHorizontal = params[59];
+    rp.scanlinesDensity = params[60];
     // @@GEN_PARSING_END@@
     return rp;
 }
@@ -366,6 +368,8 @@ void GrovkornetEngine::applyShaderParameters(const RenderParams& params, filamen
     composite->setParameter("u_ChromaShiftInvert", params.chromaShiftInvert);
     composite->setParameter("u_TapeJitter", params.tapeJitter);
     composite->setParameter("u_Scanlines", params.scanlines);
+    composite->setParameter("u_ScanlinesHorizontal", params.scanlinesHorizontal);
+    composite->setParameter("u_ScanlinesDensity", params.scanlinesDensity);
     composite->setParameter("u_Time", params.time);
     composite->setParameter("u_BloomIntensity", params.bloomIntensity);
     composite->setParameter("u_ChromaticAberration", params.chromaticAberration);

@@ -217,6 +217,18 @@ export const useFilmWorklets = () => {
       config.scanlines = value;
     };
 
+    const updateScanlinesMode = (value: number) => {
+      'worklet';
+      updateSharedValue(film.scanlinesMode, value);
+      config.scanlinesMode = value;
+    };
+
+    const updateScanlinesDensity = (value: number) => {
+      'worklet';
+      updateSharedValue(film.scanlinesDensity, value);
+      config.scanlinesDensity = value;
+    };
+
     const updateTemperature = (value: number) => {
       'worklet';
       updateSharedValue(film.temperature, value);
@@ -355,6 +367,8 @@ export const useFilmWorklets = () => {
       updateChromaShiftInvert,
       updateTapeJitter,
       updateScanlines,
+      updateScanlinesMode,
+      updateScanlinesDensity,
       updateTemperature,
       updateTint,
       updateSharpening,

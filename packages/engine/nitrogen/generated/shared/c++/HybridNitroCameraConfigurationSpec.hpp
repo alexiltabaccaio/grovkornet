@@ -154,6 +154,12 @@ namespace margelo::nitro::grovkornet {
       virtual void setHuePurple(double huePurple) = 0;
       virtual double getHueMagenta() = 0;
       virtual void setHueMagenta(double hueMagenta) = 0;
+      virtual bool getScanlinesHorizontal() = 0;
+      virtual void setScanlinesHorizontal(bool scanlinesHorizontal) = 0;
+      virtual double getScanlinesMode() = 0;
+      virtual void setScanlinesMode(double scanlinesMode) = 0;
+      virtual double getScanlinesDensity() = 0;
+      virtual void setScanlinesDensity(double scanlinesDensity) = 0;
 
     public:
       // Methods

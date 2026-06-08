@@ -6,7 +6,8 @@ import { useLensStore } from '@entities/lens';
 import { useFilmStore } from '@entities/film';
 import { useSystemStore } from '@entities/system';
 import { NativeRenderer } from '@entities/lens';
-import Animated, { useDerivedValue, SharedValue, useSharedValue, withSpring, useAnimatedProps } from 'react-native-reanimated';
+import Animated, { useDerivedValue, SharedValue, useSharedValue, withSpring, useAnimatedProps, useAnimatedReaction, runOnJS } from 'react-native-reanimated';
+import { useDeviceRotation } from '@shared/lib/hooks/useDeviceRotation';
 import { GestureDetector, Gesture } from 'react-native-gesture-handler';
 import { useVerificationStore } from '@entities/verification';
 import { FlashOverlay } from '@features/body-controls';
@@ -104,6 +105,27 @@ export const Viewfinder = React.memo(({ cameraKey }: ViewfinderProps) => {
         bodyWorklets.updateZoom(startZoom.value * event.scale);
       });
   }, [zoom, bodyWorklets, startZoom]);
+
+  const rotationY = useDeviceRotation();
+  const { scanlinesMode } = useFilmStore.getState();
+
+  const syncScanlinesOrientation = React.useCallback((r: number, m: number) => {
+    const isLandscape = Math.abs(r) === 90;
+    const { setScanlinesHorizontal } = useFilmStore.getState();
+    const isHorizontal = m === 0 ? !isLandscape : isLandscape;
+    setScanlinesHorizontal(isHorizontal);
+  }, []);
+
+  useAnimatedReaction(
+    () => ({
+      rotation: rotationY.value,
+      mode: scanlinesMode.value,
+    }),
+    (current) => {
+      runOnJS(syncScanlinesOrientation)(current.rotation, current.mode);
+    },
+    [syncScanlinesOrientation]
+  );
 
   React.useEffect(() => {
     // When the NativeRenderer remounts (e.g. returning from background), the native view gets default parameters.

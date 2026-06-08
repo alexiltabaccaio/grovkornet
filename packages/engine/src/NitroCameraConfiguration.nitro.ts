@@ -57,5 +57,8 @@ export interface NitroCameraConfiguration extends HybridObject<{ ios: 'c++'; and
   hueBlue: number;
   huePurple: number;
   hueMagenta: number;
+  scanlinesHorizontal: boolean;
+  scanlinesMode: number;
+  scanlinesDensity: number;
   // @@GEN_PROPERTIES_END@@
 }

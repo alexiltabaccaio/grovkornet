@@ -443,5 +443,29 @@ class HybridNitroCameraConfiguration : HybridNitroCameraConfigurationSpec() {
                 hueMagenta = value.toFloat()
             }
         }
+
+    override var scanlinesHorizontal: Boolean
+        get() = NativeFilmCameraView.getFirstValidConfig()?.scanlinesHorizontal ?: false
+        set(value) {
+            NativeFilmCameraView.dispatchUpdate {
+                scanlinesHorizontal = value
+            }
+        }
+
+    override var scanlinesMode: Double
+        get() = NativeFilmCameraView.getFirstValidConfig()?.scanlinesMode?.toDouble() ?: 0.0
+        set(value) {
+            NativeFilmCameraView.dispatchUpdate {
+                scanlinesMode = value.toInt()
+            }
+        }
+
+    override var scanlinesDensity: Double
+        get() = NativeFilmCameraView.getFirstValidConfig()?.scanlinesDensity?.toDouble() ?: 800.0
+        set(value) {
+            NativeFilmCameraView.dispatchUpdate {
+                scanlinesDensity = value.toFloat()
+            }
+        }
     // @@GEN_OVERRIDES_END@@
 }

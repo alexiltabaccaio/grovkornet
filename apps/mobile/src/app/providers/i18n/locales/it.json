@@ -48,6 +48,7 @@
       "pivot": "PERNO",
       "chromatic_aberration": "ABERRAZIONE",
       "bloom": "BLOOM",
+      "density": "DENSITÀ",
       "direction": "DIREZIONE",
       "options": "OPZIONI",
       "iso": "ISO",

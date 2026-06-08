@@ -65,6 +65,9 @@ interface FilmState {
   hueBlue: SharedValue<number>;
   huePurple: SharedValue<number>;
   hueMagenta: SharedValue<number>;
+  scanlinesHorizontal: SharedValue<boolean>;
+  scanlinesMode: SharedValue<number>;
+  scanlinesDensity: SharedValue<number>;
   // @@GEN_STATE_END@@
   capabilities?: FilmCapabilities;
 }
@@ -129,6 +132,9 @@ interface FilmActions {
   setHueBlue: (value: number) => void;
   setHuePurple: (value: number) => void;
   setHueMagenta: (value: number) => void;
+  setScanlinesHorizontal: (value: boolean) => void;
+  setScanlinesMode: (value: number) => void;
+  setScanlinesDensity: (value: number) => void;
   // @@GEN_ACTIONS_END@@
   setCapabilities?: (capabilities: FilmCapabilities) => void;
   resetEffect: (effect: string) => void;
