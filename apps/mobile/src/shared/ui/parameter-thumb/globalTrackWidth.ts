@@ -1,10 +1,20 @@
 import { Dimensions } from 'react-native';
 
-const initialWidth = Dimensions.get('window').width - 188;
+const screenWidth = Dimensions.get('window').width;
 
-export let globalMeasuredTrackWidth = initialWidth;
-export let globalMainTrackWidth = initialWidth;
-export let globalSubTrackWidth = initialWidth;
+// 1. Main full-width sliders: ScreenWidth - 2 * 24 (parent wrapper padding) - 2 * 24 (SliderThumb padding) - 54 (auto button) - 16 (margin) - 54 (value text) - 16 (margin) = ScreenWidth - 236
+const initialMainWidth = screenWidth - 236;
+
+// 2. Wide sub-sliders: ScreenWidth - 2 * 24 (SliderThumb padding) - 54 (auto placeholder) - 16 (margin) - 54 (value text) - 16 (margin) = ScreenWidth - 188
+const initialSubFullWidth = screenWidth - 188;
+
+// 3. Narrow sub-sliders (Grain): (ScreenWidth - 32 - 16) / 2 - 2 * 8 (SliderThumb padding) - 54 (value text) - 16 (margin) = (ScreenWidth - 48) / 2 - 86
+const initialSubNarrowWidth = (screenWidth - 48) / 2 - 86;
+
+export let globalMeasuredTrackWidth = initialMainWidth;
+export let globalMainTrackWidth = initialMainWidth;
+export let globalSubTrackWidth = initialSubNarrowWidth;
+export let globalSubFullTrackWidth = initialSubFullWidth;
 
 export const setGlobalMeasuredTrackWidth = (width: number) => {
   if (width > 0) {
@@ -22,5 +32,11 @@ export const setGlobalMainTrackWidth = (width: number) => {
 export const setGlobalSubTrackWidth = (width: number) => {
   if (width > 0) {
     globalSubTrackWidth = width;
+  }
+};
+
+export const setGlobalSubFullTrackWidth = (width: number) => {
+  if (width > 0) {
+    globalSubFullTrackWidth = width;
   }
 };

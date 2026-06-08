@@ -13,8 +13,10 @@ import { AutoButton } from '../auto-button/AutoButton';
 import { 
   globalMainTrackWidth, 
   globalSubTrackWidth, 
+  globalSubFullTrackWidth,
   setGlobalMainTrackWidth, 
-  setGlobalSubTrackWidth 
+  setGlobalSubTrackWidth,
+  setGlobalSubFullTrackWidth
 } from './globalTrackWidth';
 
 const AnimatedTextInput = Animated.createAnimatedComponent(TextInput);
@@ -43,7 +45,11 @@ export const SliderThumb = React.memo(({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const internalTrackWidth = useSharedValue(isMainSlider ? globalMainTrackWidth : globalSubTrackWidth);
+  const internalTrackWidth = useSharedValue(
+    isMainSlider 
+      ? globalMainTrackWidth 
+      : (hideAutoPlaceholder ? globalSubTrackWidth : globalSubFullTrackWidth)
+  );
   const trackWidth = sliderTrackWidth || internalTrackWidth;
 
   const animatedTextProps = useAnimatedProps((): Record<string, unknown> => {
@@ -181,8 +187,10 @@ export const SliderThumb = React.memo(({
             trackWidth.value = e.nativeEvent.layout.width;
             if (isMainSlider) {
               setGlobalMainTrackWidth(e.nativeEvent.layout.width);
-            } else {
+            } else if (hideAutoPlaceholder) {
               setGlobalSubTrackWidth(e.nativeEvent.layout.width);
+            } else {
+              setGlobalSubFullTrackWidth(e.nativeEvent.layout.width);
             }
           }
         }}

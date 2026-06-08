@@ -131,6 +131,7 @@ export const ParameterControl = React.memo((props: ParameterControlProps) => {
     variant,
     hideAutoPlaceholder,
     onReset,
+    isMainSlider,
   });
 
   return (

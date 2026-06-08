@@ -3,7 +3,11 @@ import { Gesture } from 'react-native-gesture-handler';
 
 import { useSystemStore } from '../model/useSystemStore';
 import { updateSharedValue } from '@shared/lib/reanimated/safeUpdate';
-import { globalMeasuredTrackWidth } from '@shared/ui/parameter-thumb';
+import { 
+  globalMeasuredTrackWidth, 
+  globalSubTrackWidth, 
+  globalSubFullTrackWidth 
+} from '@shared/ui/parameter-thumb';
 import * as Haptics from '@shared/lib/haptics';
 
 
@@ -22,6 +26,7 @@ interface UseParameterGestureParams {
   variant?: 'text' | 'slider';
   hideAutoPlaceholder?: boolean;
   sliderTrackWidth?: SharedValue<number>;
+  isMainSlider?: boolean;
 }
 
 export const useParameterGesture = ({
@@ -39,11 +44,16 @@ export const useParameterGesture = ({
   variant,
   hideAutoPlaceholder,
   sliderTrackWidth,
+  isMainSlider,
 }: UseParameterGestureParams) => {
   const startVal = useSharedValue(minValue);
   const lastX = useSharedValue(0);
   const accumulatedValue = useSharedValue(minValue);
-  const fallbackTrackWidth = useSharedValue(globalMeasuredTrackWidth);
+  const fallbackTrackWidth = useSharedValue(
+    isMainSlider 
+      ? globalMeasuredTrackWidth 
+      : (hideAutoPlaceholder ? globalSubTrackWidth : globalSubFullTrackWidth)
+  );
   const effectiveTrackWidth = sliderTrackWidth || fallbackTrackWidth;
   const isLayoutOverlayEnabled = useSystemStore((s) => s.isLayoutOverlayEnabled);
   const atBoundary = useSharedValue(false);
