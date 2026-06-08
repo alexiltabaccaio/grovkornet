@@ -23,6 +23,7 @@
       "color": "Colore",
       "tone": "Tono",
       "texture": "Texture",
+      "details": "Dettaglio",
       "capture": "Acquisizione",
       "debug": "Debug"
     },

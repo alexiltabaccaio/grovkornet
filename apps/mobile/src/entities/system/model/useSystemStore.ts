@@ -52,6 +52,7 @@ export const useSystemStore = create<SystemStore>()(
     tone: 'contrast',
     color: 'temperature',
     texture: 'grain',
+    details: 'sharpening',
     capture: 'aspect_ratio',
     debug: 'ui_overlay',
   },

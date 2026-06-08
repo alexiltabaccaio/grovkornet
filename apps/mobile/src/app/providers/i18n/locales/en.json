@@ -23,6 +23,7 @@
       "color": "Color",
       "tone": "Tone",
       "texture": "Texture",
+      "details": "Details",
       "capture": "Capture",
       "debug": "Debug"
     },

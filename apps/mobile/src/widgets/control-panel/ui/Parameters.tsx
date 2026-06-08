@@ -10,7 +10,7 @@ import { useDoublePress } from '@shared/lib/hooks/useDoublePress';
 import { controlPanelStyles } from './ControlPanel.styles';
 
 // Import modules from feature slices
-import { ColorModule, ToneModule, TextureModule, ArtifactsModule } from '@features/film-controls';
+import { ColorModule, ToneModule, TextureModule, ArtifactsModule, DetailsModule } from '@features/film-controls';
 import { OpticsModule } from '@features/lens-controls';
 import { CaptureModule, ExposureModule, LightingModule, ProcessingModule } from '@features/body-controls';
 import { PreferencesModule, PresetsModule, ThemeModule, DebugModule } from '@features/system-settings';
@@ -94,6 +94,8 @@ export const Parameters = React.memo(() => {
     switch (renderActiveModule) {
       case 'texture':
         return <TextureModule handlePressWithDouble={handlePressWithDouble} />;
+      case 'details':
+        return <DetailsModule handlePressWithDouble={handlePressWithDouble} />;
       case 'color':
         return <ColorModule handlePressWithDouble={handlePressWithDouble} />;
       case 'tone':

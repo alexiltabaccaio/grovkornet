@@ -22,10 +22,6 @@ export const ProcessingModule = React.memo(({ handlePressWithDouble }: Processin
         id: 'noise_reduction',
         visible: !!hasNoiseReduction,
       },
-      {
-        id: 'sharpening',
-        visible: true,
-      },
     ];
   }, [capabilities?.availableNoiseReductionModes]);
 

@@ -30,6 +30,7 @@ describe('useSystemStore', () => {
         tone: 'contrast',
         color: 'temperature',
         texture: 'grain',
+        details: 'sharpening',
         capture: 'aspect_ratio',
         theme: 'none',
         debug: 'ui_overlay',

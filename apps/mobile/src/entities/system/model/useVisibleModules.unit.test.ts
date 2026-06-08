@@ -58,6 +58,23 @@ describe('useVisibleModules', () => {
 
   it('returns correct modules for film section', () => {
     const { result } = renderHook(() => useVisibleModules('film'));
-    expect(result.current).toEqual(['tone', 'color', 'texture', 'artifacts']);
+    expect(result.current).toEqual(['tone', 'color', 'texture', 'artifacts', 'details']);
+  });
+
+  it('filters out processing module when noise reduction is unavailable', () => {
+    act(() => {
+      useFilmStore.setState({
+        capabilities: {
+          availableNoiseReductionModes: [],
+          availableEdgeModes: [1, 2],
+        },
+      });
+    });
+
+    const { result } = renderHook(() => useVisibleModules('body'));
+    expect(result.current).toContain('exposure');
+    expect(result.current).toContain('lighting');
+    expect(result.current).not.toContain('processing');
+    expect(result.current).toContain('capture');
   });
 });

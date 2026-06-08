@@ -53,6 +53,7 @@ describe('Modules', () => {
     expect(getByText('modules.color')).toBeDefined();
     expect(getByText('modules.texture')).toBeDefined();
     expect(getByText('modules.artifacts')).toBeDefined();
+    expect(getByText('modules.details')).toBeDefined();
   });
 
   it('switches active module on press in film section', () => {
@@ -70,6 +71,9 @@ describe('Modules', () => {
 
     fireEvent.press(getByText('modules.artifacts'));
     expect(useSystemStore.getState().activeModule).toBe('artifacts');
+
+    fireEvent.press(getByText('modules.details'));
+    expect(useSystemStore.getState().activeModule).toBe('details');
 
     fireEvent.press(getByText('modules.tone'));
     expect(useSystemStore.getState().activeModule).toBe('tone');

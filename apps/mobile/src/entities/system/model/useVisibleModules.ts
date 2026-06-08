@@ -40,8 +40,8 @@ export const useVisibleModules = (section: SectionType): readonly ModuleType[] =
       }
 
       if (moduleName === 'processing') {
-        // processing has sharpening (always visible), so processing is always visible.
-        return true;
+        // processing now only has noise_reduction, so hide it if noise reduction is not available
+        return !!availableNoiseReductionModes && availableNoiseReductionModes.length > 0;
       }
       
       return true;

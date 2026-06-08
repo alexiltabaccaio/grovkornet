@@ -36,6 +36,12 @@ jest.mock('@features/film-controls', () => {
         handlePressWithDouble('chroma_shift', () => {});
       }} />
     ),
+    DetailsModule: ({ handlePressWithDouble }: any) => (
+      <Button testID="btn-sharpening" title="Details" onPress={() => {
+        handlePressWithDouble('sharpening', () => {});
+        handlePressWithDouble('sharpening', () => {});
+      }} />
+    ),
   };
 });
 
@@ -198,6 +204,17 @@ describe('Parameters', () => {
     
     fireEvent.press(button);
     expect(spyResetEffect).toHaveBeenCalledWith('chroma_shift');
+  });
+
+  it('renders DetailsModule and resets sharpening effect', () => {
+    act(() => {
+      useSystemStore.setState({ activeSection: 'film', activeModule: 'details' });
+    });
+    const { getByTestId } = render(<Parameters />);
+    const button = getByTestId('btn-sharpening');
+    
+    fireEvent.press(button);
+    expect(spyResetEffect).toHaveBeenCalledWith('sharpening');
   });
 
   it('renders ProcessingModule and resets noise_reduction effect', () => {
