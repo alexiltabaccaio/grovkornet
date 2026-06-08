@@ -5,6 +5,8 @@ import { ParameterType } from '@entities/system';
 import { GenericParameterModule, ParameterConfig } from '@entities/system';
 
 
+export const LIGHTING_PARAMETERS: ParameterType[] = ['torch'];
+
 interface LightingModuleProps {
   handlePressWithDouble: (param: ParameterType, action: () => void) => void;
 }

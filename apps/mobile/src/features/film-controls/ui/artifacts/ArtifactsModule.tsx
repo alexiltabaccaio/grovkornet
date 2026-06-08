@@ -6,7 +6,7 @@ interface ArtifactsModuleProps {
   handlePressWithDouble: (param: ParameterType, action: () => void) => void;
 }
 
-const ARTIFACTS_PARAMETERS: ParameterType[] = [
+export const ARTIFACTS_PARAMETERS: ParameterType[] = [
   'chromatic_aberration',
   'bloom',
   'vignette',

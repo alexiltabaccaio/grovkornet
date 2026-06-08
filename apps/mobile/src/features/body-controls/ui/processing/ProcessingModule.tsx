@@ -4,6 +4,8 @@ import { useFilmStore } from '@entities/film';
 import { ParameterType } from '@entities/system';
 import { GenericParameterModule, ParameterConfig } from '@entities/system';
 
+export const PROCESSING_PARAMETERS: ParameterType[] = ['noise_reduction'];
+
 interface ProcessingModuleProps {
   handlePressWithDouble: (param: ParameterType, action: () => void) => void;
 }

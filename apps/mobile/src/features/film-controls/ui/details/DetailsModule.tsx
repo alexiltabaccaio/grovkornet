@@ -6,7 +6,7 @@ interface DetailsModuleProps {
   handlePressWithDouble: (param: ParameterType, action: () => void) => void;
 }
 
-const DETAILS_PARAMETERS: ParameterType[] = ['sharpening'];
+export const DETAILS_PARAMETERS: ParameterType[] = ['sharpening'];
 
 export const DetailsModule = React.memo(({ handlePressWithDouble }: DetailsModuleProps) => {
   return (

@@ -4,8 +4,11 @@ import { ScrollView } from 'react-native-gesture-handler';
 import { useTranslation } from 'react-i18next';
 
 import { useShallow } from 'zustand/react/shallow';
-import { useSystemStore, useVisibleModules } from '@entities/system';
+import { useSystemStore, useVisibleModules, ModuleType } from '@entities/system';
 import { PillButton } from '@shared/ui';
+import { useDoublePress } from '@shared/lib/hooks/useDoublePress';
+import { useResetTool } from '../lib/useResetTool';
+import { MODULE_PARAMETERS } from '../config/moduleParameters';
 
 export const Modules = React.memo(() => {
   const { 
@@ -24,6 +27,16 @@ export const Modules = React.memo(() => {
     isLayoutOverlayEnabled: state.isLayoutOverlayEnabled
   })));
   const { t } = useTranslation();
+  const resetTool = useResetTool();
+
+  const { handlePressWithDouble } = useDoublePress<ModuleType>((moduleName) => {
+    const paramsToReset = MODULE_PARAMETERS[moduleName as keyof typeof MODULE_PARAMETERS];
+    if (paramsToReset) {
+      paramsToReset.forEach((param) => {
+        resetTool(param);
+      });
+    }
+  });
 
   const renderSection = activeSection === 'none' ? lastNonNoneSection : activeSection;
   const renderModule = activeModule === 'none' ? lastNonNoneModule : activeModule;
@@ -46,7 +59,7 @@ export const Modules = React.memo(() => {
               variant="module"
               label={t(`modules.${moduleName}`)}
               isActive={renderModule === moduleName}
-              onPress={() => setActiveModule(moduleName)}
+              onPress={() => handlePressWithDouble(moduleName, () => setActiveModule(moduleName))}
               isLayoutOverlayEnabled={isLayoutOverlayEnabled}
               style={styles.pill}
             />

@@ -6,7 +6,7 @@ interface ToneModuleProps {
   handlePressWithDouble: (param: ParameterType, action: () => void) => void;
 }
 
-const TONE_PARAMETERS: ParameterType[] = ['contrast', 'blackLevel', 'highlights'];
+export const TONE_PARAMETERS: ParameterType[] = ['contrast', 'blackLevel', 'highlights'];
 
 export const ToneModule = React.memo(({ handlePressWithDouble }: ToneModuleProps) => {
   return (

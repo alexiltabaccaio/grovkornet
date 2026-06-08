@@ -144,5 +144,30 @@ describe('Modules', () => {
     const { toJSON } = render(<Modules />);
     expect(toJSON()).toBeDefined();
   });
+
+  it('resets all parameters of a module on double press', () => {
+    const spyResetEffect = jest.spyOn(useFilmStore.getState(), 'resetEffect');
+
+    act(() => {
+      useSystemStore.setState({
+        activeSection: 'film',
+        activeModule: 'texture',
+      });
+    });
+
+    const { getByText } = render(<Modules />);
+    const button = getByText('modules.texture');
+
+    act(() => {
+      fireEvent.press(button);
+      fireEvent.press(button);
+    });
+
+    expect(spyResetEffect).toHaveBeenCalledWith('grain');
+    expect(spyResetEffect).toHaveBeenCalledWith('scanlines');
+    expect(spyResetEffect).toHaveBeenCalledWith('pixelation');
+
+    spyResetEffect.mockRestore();
+  });
 });
 

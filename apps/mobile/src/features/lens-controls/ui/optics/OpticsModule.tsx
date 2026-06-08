@@ -5,6 +5,8 @@ import { ParameterType } from '@entities/system';
 import { GenericParameterModule, ParameterConfig } from '@entities/system';
 
 
+export const OPTICS_PARAMETERS: ParameterType[] = ['camera_selection', 'focus'];
+
 interface OpticsModuleProps {
   handlePressWithDouble: (param: ParameterType, action: () => void) => void;
 }
