@@ -3,7 +3,7 @@ import { View, StyleSheet } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import Animated, { useAnimatedStyle, interpolate, Extrapolation, runOnJS, withTiming, SharedValue } from 'react-native-reanimated';
 import { ParameterType } from '../../model/types';
-import { WheelItem } from './ParameterWheel';
+import type { WheelItem } from './ParameterWheel';
 
 const ITEM_WIDTH = 120;
 
