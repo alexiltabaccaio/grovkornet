@@ -1,13 +1,12 @@
 import React, { useCallback, useRef, useEffect } from 'react';
-import { StyleSheet, View, FlatList, Pressable, Image as RNImage, Dimensions } from 'react-native';
-import { Image } from 'expo-image';
+import { StyleSheet, View, FlatList, Pressable, Dimensions } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { GalleryItem } from '../../lib/types';
 import { BottomFooter } from '@shared/ui';
 import * as Haptics from '@shared/lib/haptics';
-import Animated, { useAnimatedStyle, interpolate, SharedValue, withTiming } from 'react-native-reanimated';
-import { useVerificationStore } from '@entities/verification';
+import Animated, { useAnimatedStyle, interpolate, SharedValue } from 'react-native-reanimated';
 import { useImageVerification } from '../../lib/useImageVerification';
+import { GalleryStripItem } from './GalleryStripItem';
 
 const { width } = Dimensions.get('window');
 const ITEM_SIZE = 56 + 10; // thumbnailWidth (56) + marginRight (10) = 66px
@@ -16,49 +15,7 @@ const viewabilityConfig = {
   itemVisiblePercentThreshold: 50,
 };
 
-interface GalleryStripItemProps {
-  item: GalleryItem;
-  isSelected: boolean;
-  onSelect: (item: GalleryItem) => void;
-}
 
-const GalleryStripItem = React.memo(({ item, isSelected, onSelect }: GalleryStripItemProps) => {
-  const isVerified = useVerificationStore(state => state.verifiedMap[item.uri]);
-
-  const badgeStyle = useAnimatedStyle(() => {
-    const show = isVerified === true;
-    return {
-      opacity: withTiming(show ? 1 : 0, { duration: 250 }),
-      transform: [{ scale: withTiming(show ? 1 : 0.8, { duration: 250 }) }],
-    };
-  }, [isVerified]);
-
-  return (
-    <Pressable
-      testID={`gallery-strip-item-${item.id}`}
-      style={[
-        styles.thumbnailWrapper,
-        isSelected && styles.thumbnailSelected
-      ]}
-      onPress={() => {
-        void Haptics.selectionAsync();
-        onSelect(item);
-      }}
-    >
-      <Image
-        source={{ uri: item.uri }}
-        style={styles.thumbnailImage}
-        contentFit="cover"
-        recyclingKey={item.uri}
-      />
-      <Animated.View style={[styles.miniBadge, { backgroundColor: 'transparent' }, badgeStyle]}>
-        {/* eslint-disable-next-line @typescript-eslint/no-require-imports, @typescript-eslint/no-unsafe-assignment */}
-        <RNImage source={require('../../../../../assets/logo-badge.png')} style={{ width: 10, height: 10, resizeMode: 'contain', opacity: 0.85 }} />
-      </Animated.View>
-    </Pressable>
-  );
-});
-GalleryStripItem.displayName = 'GalleryStripItem';
 
 interface GalleryStripProps {
   photos: GalleryItem[];
@@ -199,30 +156,6 @@ const styles = StyleSheet.create({
   gridContent: {
     paddingHorizontal: 8,
     alignItems: 'center',
-  },
-  thumbnailWrapper: {
-    width: 56,
-    height: 56,
-    borderRadius: 8,
-    overflow: 'hidden',
-    marginRight: 10,
-    borderWidth: 2,
-    borderColor: 'transparent',
-  },
-  thumbnailSelected: {
-    borderColor: '#FF5722',
-  },
-  thumbnailImage: {
-    width: '100%',
-    height: '100%',
-  },
-  miniBadge: {
-    position: 'absolute',
-    bottom: 2,
-    right: 2,
-    backgroundColor: 'rgba(0,0,0,0.6)',
-    borderRadius: 6,
-    padding: 1,
   },
 });
 

@@ -1,100 +1,25 @@
 import React, { useEffect } from 'react';
-import { StyleSheet, View, Pressable, AppState } from 'react-native';
+import { StyleSheet, View, Pressable } from 'react-native';
 import { Image } from 'expo-image';
 import Animated, { useSharedValue, useAnimatedStyle, withTiming, Easing, withSpring } from 'react-native-reanimated';
 import { useState } from 'react';
 import { useSystemStore } from '@entities/system';
 import { useShallow } from 'zustand/react/shallow';
-import * as MediaLibrary from 'expo-media-library/legacy';
-import { logger } from '@shared/lib/logger';
 import * as Haptics from '@shared/lib/haptics';
+import { useRecentMediaThumbnail } from '../lib/useRecentMediaThumbnail';
 
 interface CaptureThumbnailProps {
   onPress: () => void;
 }
 
 export const CaptureThumbnail = ({ onPress }: CaptureThumbnailProps) => {
-  const { isCapturing, latestPreviewUri, latestCapturedUri, setLatestCapturedUri } = useSystemStore(useShallow(state => ({
+  const { isCapturing, latestPreviewUri, latestCapturedUri } = useSystemStore(useShallow(state => ({
     isCapturing: state.isCapturing,
     latestPreviewUri: state.latestPreviewUri,
     latestCapturedUri: state.latestCapturedUri,
-    setLatestCapturedUri: state.setLatestCapturedUri,
   })));
 
-  useEffect(() => {
-      const loadInitialThumbnail = async () => {
-        try {
-          const perms = await MediaLibrary.getPermissionsAsync();
-          if (perms.granted) {
-            const allAlbums = await MediaLibrary.getAlbumsAsync();
-            const grovkornetAlbums = allAlbums.filter(a => a.title.toLowerCase() === 'grovkornet');
-
-            let foundUri: string | null = null;
-
-            if (grovkornetAlbums.length > 0) {
-              const fetchPromises = grovkornetAlbums.map(album => 
-                MediaLibrary.getAssetsAsync({
-                  album: album.id,
-                  first: 1,
-                  sortBy: [[MediaLibrary.SortBy.creationTime, false]],
-                  mediaType: MediaLibrary.MediaType.photo,
-                })
-              );
-              
-              const results = await Promise.all(fetchPromises);
-              const combinedAssets = results.flatMap(r => r.assets);
-              combinedAssets.sort((a, b) => b.creationTime - a.creationTime);
-              
-              if (combinedAssets.length > 0) {
-                foundUri = combinedAssets[0].uri;
-              }
-            }
-            
-            if (!foundUri) {
-              // Robust fallback for thumbnail: get recent photos and find the first Grovkornet one
-              const recent = await MediaLibrary.getAssetsAsync({
-                first: 200,
-                sortBy: [[MediaLibrary.SortBy.creationTime, false]],
-                mediaType: MediaLibrary.MediaType.photo,
-              });
-              
-              const latestGrovkornet = recent.assets.find(a => 
-                a.uri.includes('Grovkornet') || 
-                a.filename.includes('Grovkornet') || 
-                a.filename.startsWith('Grovkornet_') ||
-                a.filename.startsWith('GVK_')
-              );
-              
-              if (latestGrovkornet) {
-                foundUri = latestGrovkornet.uri;
-              }
-            }
-
-            // Always update to keep in sync with external deletions
-            if (foundUri) {
-              setLatestCapturedUri(foundUri);
-            } else {
-              setLatestCapturedUri(null); // No photos left
-            }
-          }
-        } catch (e) {
-          logger.warn('CaptureThumbnail', 'Failed to load initial thumbnail', e);
-        }
-      };
-
-      void loadInitialThumbnail();
-
-      const subscription = AppState.addEventListener('change', nextAppState => {
-        if (nextAppState === 'active') {
-          void loadInitialThumbnail();
-        }
-      });
-
-      return () => {
-        subscription.remove();
-      };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  useRecentMediaThumbnail();
 
   const [prevUri, setPrevUri] = useState<string | null>(null);
   const [currentUri, setCurrentUri] = useState<string | null>(latestPreviewUri ?? latestCapturedUri ?? null);
