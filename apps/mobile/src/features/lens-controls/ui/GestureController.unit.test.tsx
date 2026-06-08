@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, act } from '@testing-library/react-native';
-import { View } from 'react-native';
+import { View, Dimensions } from 'react-native';
 import * as reanimated from 'react-native-reanimated';
 import { GestureController } from './GestureController';
 import { useSystemStore } from '@entities/system';
@@ -23,7 +23,9 @@ describe('GestureController', () => {
   let originalSpring: any;
   let originalUseSharedValue: any;
   let originalAnimatedReaction: any;
-  let capturedReactionCallback: any;
+  let capturedAspectReaction: any;
+  let capturedFooterReaction: any;
+  let reactionCount = 0;
   let mockTranslateY: any;
   let mockStartY: any;
   let sharedValuesArray: any[] = [];
@@ -57,7 +59,12 @@ describe('GestureController', () => {
     };
 
     (reanimated as any).useAnimatedReaction = (prepare: any, react: any) => {
-      capturedReactionCallback = react;
+      if (reactionCount === 0) {
+        capturedAspectReaction = react;
+      } else if (reactionCount === 1) {
+        capturedFooterReaction = react;
+      }
+      reactionCount++;
     };
   });
 
@@ -74,7 +81,9 @@ describe('GestureController', () => {
     sharedValuesArray = [];
     mockTranslateY = null;
     mockStartY = null;
-    capturedReactionCallback = null;
+    capturedAspectReaction = null;
+    capturedFooterReaction = null;
+    reactionCount = 0;
 
     (useSystemStore as unknown as jest.Mock).mockImplementation((selector?: (state: any) => any) => {
       const state = {
@@ -400,12 +409,83 @@ describe('GestureController', () => {
 
     // Simulate aspect ratio change (from 1 to 2)
     act(() => {
-      if (capturedReactionCallback) {
-        capturedReactionCallback(2, 1);
+      if (capturedAspectReaction) {
+        capturedAspectReaction(2, 1);
       }
     });
 
     expect(mockTranslateY.value).toBe(0);
+  });
+
+  it('clamps translateY to footerTranslateY during pan and reacts to footerTranslateY changes', () => {
+    currentActiveSection = 'lens';
+    const mockFooterTranslateY = { value: -120 };
+    render(<GestureController footerTranslateY={mockFooterTranslateY as any} />);
+
+    act(() => {
+      capturedPanGesture._onStart();
+    });
+
+    act(() => {
+      // Panning up past the limit (-300 is past limit: -120 - 144 = -264)
+      capturedPanGesture._onChange({ translationY: -300 });
+    });
+
+    // translateY should be clamped to -264
+    expect(mockTranslateY.value).toBe(-264);
+
+    // Now simulate footerTranslateY moving lower (e.g. from -120 to -80)
+    act(() => {
+      mockFooterTranslateY.value = -80;
+      if (capturedFooterReaction) {
+        capturedFooterReaction(-80 - 144, -120 - 144);
+      }
+    });
+
+    // translateY should be pushed down to -224
+    expect(mockTranslateY.value).toBe(-224);
+  });
+
+  it('calculates the dynamic limit based on aspect ratios when viewport dimensions are present', () => {
+    currentActiveSection = 'lens';
+    
+    // Spy on Dimensions.get to return a valid portrait screen
+    const dimensionsSpy = jest.spyOn(Dimensions, 'get').mockReturnValue({
+      width: 1080,
+      height: 1920,
+      scale: 1,
+      fontScale: 1,
+    });
+
+    const bodyStore = useBodyStore.getState();
+    const mockFooterTranslateY = { value: -250 }; // drawer pulled up completely
+
+    // 1. Test aspect ratio 16:9 (aspectRatio value = 1) -> L_bottom should be 0, limit should be -250 - 144 + 0 = -394
+    bodyStore.aspectRatio.value = 1;
+    const { rerender } = render(<GestureController footerTranslateY={mockFooterTranslateY as any} />);
+
+    act(() => {
+      capturedPanGesture._onStart();
+    });
+    act(() => {
+      capturedPanGesture._onChange({ translationY: -500 });
+    });
+    // With 16:9, limit = -394
+    expect(mockTranslateY.value).toBe(-394);
+
+    // limit = -250 - 144 + 356.5 = -37.5
+    bodyStore.aspectRatio.value = 2;
+    rerender(<GestureController footerTranslateY={mockFooterTranslateY as any} />);
+
+    act(() => {
+      capturedPanGesture._onStart();
+    });
+    act(() => {
+      capturedPanGesture._onChange({ translationY: -500 });
+    });
+    expect(mockTranslateY.value).toBe(-37.5);
+
+    dimensionsSpy.mockRestore();
   });
 });
 

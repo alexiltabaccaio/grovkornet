@@ -128,7 +128,7 @@ const CameraScreenContent = () => {
 
   return (
     <View style={styles.container}>
-      <GestureController>
+      <GestureController footerTranslateY={footerTranslateY} drawerAnimation={drawerAnimation}>
         <View style={{ flex: 1, width: '100%', marginTop: statusBarHeight, marginBottom: 80 + insets.bottom }}>
           {/* 60ms threshold is set to monitor realistic frame drops, avoiding dev mode / bundler overhead noise */}
           <Profiler id="Viewfinder" onRender={(id, phase, duration) => { if (__DEV__ && duration > 60) logger.warn('UI', `Viewfinder render took ${duration.toFixed(2)}ms`); }}>

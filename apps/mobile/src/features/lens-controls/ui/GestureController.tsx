@@ -1,10 +1,11 @@
 import React, { ReactNode, useMemo } from 'react';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, Dimensions, Platform, StatusBar } from 'react-native';
 import { GestureDetector, Gesture } from 'react-native-gesture-handler';
-import Animated, { useSharedValue, useAnimatedStyle, withSpring, runOnJS, withTiming, Easing, useAnimatedReaction } from 'react-native-reanimated';
+import Animated, { useSharedValue, useAnimatedStyle, withSpring, runOnJS, withTiming, Easing, useAnimatedReaction, SharedValue } from 'react-native-reanimated';
 import { useSystemStore } from '@entities/system';
 import { useShallow } from 'zustand/react/shallow';
 import { useBodyStore } from '@entities/body';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 /**
  * GestureController handles global vertical swipe gestures to update the active camera parameter.
@@ -13,13 +14,25 @@ import { useBodyStore } from '@entities/body';
  */
 interface GestureControllerProps {
   children?: ReactNode;
+  footerTranslateY?: SharedValue<number>;
+  drawerAnimation?: SharedValue<number>;
 }
 
-export const GestureController = ({ children }: GestureControllerProps) => {
+export const GestureController = ({ children, footerTranslateY, drawerAnimation }: GestureControllerProps) => {
   const { activeSection, setActiveSection } = useSystemStore(useShallow((s) => ({
     activeSection: s.activeSection,
     setActiveSection: s.setActiveSection,
   })));
+
+  const insets = useSafeAreaInsets();
+  const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
+
+  const statusBarHeight = Platform.OS === 'android' 
+    ? (StatusBar.currentHeight ?? 24) 
+    : 47;
+
+  const viewportWidth = screenWidth;
+  const viewportHeight = screenHeight - statusBarHeight - 80 - insets.bottom;
 
   const translateY = useSharedValue(0);
   const startY = useSharedValue(0);
@@ -51,6 +64,54 @@ export const GestureController = ({ children }: GestureControllerProps) => {
     (currentValue, previousValue) => {
       if (previousValue !== undefined && previousValue !== null && currentValue !== previousValue) {
         translateY.value = 0;
+      }
+    }
+  );
+
+  const getDynamicLimit = () => {
+    'worklet';
+    const ft = footerTranslateY ? footerTranslateY.value : 0;
+    const da = drawerAnimation ? drawerAnimation.value : 0;
+    if (!footerTranslateY) return 0;
+
+    const aspectValue = aspectRatio.value;
+    let targetAspect = 4.0 / 3.0;
+    if (aspectValue === 0) targetAspect = 4.0 / 3.0;
+    else if (aspectValue === 1) targetAspect = 16.0 / 9.0;
+    else if (aspectValue === 2) targetAspect = 1.0;
+    else if (aspectValue === 3) targetAspect = 3.0 / 2.0;
+    else if (aspectValue === 4) targetAspect = 65.0 / 24.0;
+
+    if (viewportHeight <= 0 || viewportWidth <= 0) {
+      const limit = ft + da - 144;
+      return limit > 0 ? 0 : limit;
+    }
+
+    const viewAspect = viewportWidth / viewportHeight;
+    const finalTargetAspect = 1.0 / targetAspect;
+
+    let lBottom = 0;
+    if (viewAspect <= finalTargetAspect) {
+      const previewHeight = viewportWidth * targetAspect;
+      lBottom = (viewportHeight - previewHeight) / 2;
+    }
+
+    const limit = ft + da - 144 + lBottom;
+    return limit > 0 ? 0 : limit;
+  };
+
+  useAnimatedReaction(
+    () => {
+      // Direct access to ensure Reanimated auto-subscribes to changes
+      const ftVal = footerTranslateY ? footerTranslateY.value : 0;
+      const daVal = drawerAnimation ? drawerAnimation.value : 0;
+      const aspectVal = aspectRatio.value;
+      
+      return getDynamicLimit();
+    },
+    (currentLimit) => {
+      if (footerTranslateY && translateY.value < currentLimit) {
+        translateY.value = currentLimit;
       }
     }
   );
@@ -110,6 +171,11 @@ export const GestureController = ({ children }: GestureControllerProps) => {
         if (activeSection !== 'none') {
           let newY = startY.value + event.translationY;
           if (newY > 0) newY = 0;
+          
+          if (footerTranslateY) {
+            const limit = getDynamicLimit();
+            if (newY < limit) newY = limit;
+          }
           translateY.value = newY;
         }
         if (Math.abs(event.translationY) > 5) {
@@ -122,7 +188,7 @@ export const GestureController = ({ children }: GestureControllerProps) => {
       });
 
     return Gesture.Simultaneous(tap, pan);
-  }, [activeSection, setActiveSection, translateY, startY, hasMoved]);
+  }, [activeSection, setActiveSection, translateY, startY, hasMoved, footerTranslateY, drawerAnimation, viewportWidth, viewportHeight]);
 
   const animatedStyle = useAnimatedStyle(() => {
     return {
