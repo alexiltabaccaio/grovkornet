@@ -10,6 +10,7 @@ import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import { useFilmStore, useFilmWorklets } from '@entities/film';
 import { unwrap, angleToX, xToAngle } from '../../lib/colorMath';
 import * as Haptics from '@shared/lib/haptics';
+import { globalSubFullTrackWidth, setGlobalSubFullTrackWidth } from '@shared/ui/parameter-thumb';
 import {
   DEFAULT_BOUND_RED_ORANGE,
   DEFAULT_BOUND_ORANGE_YELLOW,
@@ -78,7 +79,7 @@ interface ColorRangeSliderProps {
 export const ColorRangeSlider = ({ activeColorIndex }: ColorRangeSliderProps) => {
   const store = useFilmStore();
   const worklets = useFilmWorklets();
-  const trackWidth = useSharedValue(INITIAL_TRACK_WIDTH);
+  const trackWidth = useSharedValue(globalSubFullTrackWidth);
   const dragRefAngle = useSharedValue(0);
 
   // Map keys for the store dynamically
@@ -304,7 +305,10 @@ export const ColorRangeSlider = ({ activeColorIndex }: ColorRangeSliderProps) =>
           testID="color-range-slider-track"
           style={styles.sliderTrackContainer}
           onLayout={(e) => {
-            trackWidth.value = e.nativeEvent.layout.width;
+            if (e.nativeEvent.layout.width > 0) {
+              trackWidth.value = e.nativeEvent.layout.width;
+              setGlobalSubFullTrackWidth(e.nativeEvent.layout.width);
+            }
           }}
         >
           <Animated.View style={[styles.trackBgSection, leftBgStyle, { backgroundColor: prevColorHex }]} />
