@@ -16,7 +16,7 @@ interface GalleryViewerProps {
 
 export const GalleryViewer = ({ onClose, initialUri, galleryTransition, header }: GalleryViewerProps) => {
   const { t } = useTranslation();
-  const { photos, selectedPhoto, loading, onPhotoVisible, onSelectPhoto } = useGalleryViewer(initialUri);
+  const { photos, selectedPhoto, loading, onPhotoVisible, onSelectPhoto, permissionGranted } = useGalleryViewer(initialUri);
   const rotationY = useDeviceRotation();
   const { width, height } = useWindowDimensions();
 
@@ -25,6 +25,12 @@ export const GalleryViewer = ({ onClose, initialUri, galleryTransition, header }
   );
 
   const [showPlaceholder, setShowPlaceholder] = useState(true);
+
+  useEffect(() => {
+    if (!loading && !permissionGranted && photos.length === 0) {
+      onClose();
+    }
+  }, [loading, permissionGranted, photos.length, onClose]);
 
   useEffect(() => {
     if (!loading) {

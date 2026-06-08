@@ -122,10 +122,11 @@ export const useGalleryViewer = (initialUri?: string | null) => {
   };
 
   return {
-    photos: permissionGranted ? photos : [],
+    photos,
     selectedPhoto,
     loading: loading || (photos.length > 0 && !selectedPhoto),
     onPhotoVisible,
     onSelectPhoto,
+    permissionGranted,
   };
 };

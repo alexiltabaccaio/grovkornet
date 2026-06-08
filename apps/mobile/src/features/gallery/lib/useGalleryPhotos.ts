@@ -19,7 +19,7 @@ export const useGalleryPhotos = (initialUri?: string | null) => {
         logger.debug('Gallery', 'Checking MediaLibrary permissions...');
         const checkPerms = async () => {
           const current = await MediaLibrary.getPermissionsAsync();
-          if (current.granted) return 'granted';
+          if (current.granted || current.status === ('limited' as any)) return current.status;
 
           logger.debug('Gallery', 'Requesting MediaLibrary permissions (ignoring canAskAgain)...');
           const req = await MediaLibrary.requestPermissionsAsync();
@@ -28,7 +28,7 @@ export const useGalleryPhotos = (initialUri?: string | null) => {
 
         let permTimer: NodeJS.Timeout;
         const permTimeout = new Promise<string>((_, reject) =>
-          permTimer = setTimeout(() => reject(new Error('PERM_TIMEOUT')), 15000)
+          permTimer = setTimeout(() => reject(new Error('PERM_TIMEOUT')), 60000)
         );
 
         let status = 'denied';
@@ -43,7 +43,7 @@ export const useGalleryPhotos = (initialUri?: string | null) => {
           return;
         }
 
-        if (status !== 'granted') {
+        if (status !== 'granted' && status !== ('limited' as any)) {
           logger.warn('Gallery', 'MediaLibrary permissions not granted or timed out');
           setPermissionGranted(false);
           setLoading(false);

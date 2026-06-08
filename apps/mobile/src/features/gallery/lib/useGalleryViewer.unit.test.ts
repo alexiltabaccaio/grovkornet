@@ -173,7 +173,7 @@ describe('useGalleryViewer', () => {
     expect(mockVerifyPhoto).toHaveBeenLastCalledWith(mockPhotos[1]);
   });
 
-  it('returns empty photos array if permission is not granted', () => {
+  it('returns permissionGranted status correctly', () => {
     mockUseGalleryPhotos.mockReturnValue({
       photos: mockPhotos,
       setPhotos: mockSetPhotos,
@@ -183,6 +183,7 @@ describe('useGalleryViewer', () => {
 
     const { result } = renderHook(() => useGalleryViewer(null));
 
-    expect(result.current.photos).toEqual([]);
+    expect(result.current.permissionGranted).toBe(false);
+    expect(result.current.photos).toEqual(mockPhotos);
   });
 });
