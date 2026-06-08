@@ -29,6 +29,7 @@ export const useSystemStore = create<SystemStore>()(
   lastNonNoneModule: 'none',
   thermalState: 'normal',
   isLowRam: false,
+  selectedColorIndex: 0,
 
   lastActiveModules: {
     none: 'none',
@@ -148,6 +149,9 @@ export const useSystemStore = create<SystemStore>()(
 
   setIsLowRam: (isLowRam) => {
     set({ isLowRam });
+  },
+  setSelectedColorIndex: (index: number) => {
+    set({ selectedColorIndex: index });
   },
     }),
     {

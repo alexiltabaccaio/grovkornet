@@ -51,15 +51,9 @@ const mockMasterData = {
 jest.mock('@entities/system', () => {
   const React = require('react');
   const { View } = require('react-native');
+  const actual = jest.requireActual('@entities/system');
   return {
-    useSystemStore: jest.fn((fn?: (state: any) => unknown) => {
-      const state = {
-        activeParameter: 'hue',
-        activeDetailPanel: 'master',
-        setActiveDetailPanel: jest.fn(),
-      };
-      return fn ? fn(state) : state;
-    }),
+    ...actual,
     ParameterControl: (props: any) => {
       React.useEffect(() => {
         if (props.onChange) {
@@ -118,6 +112,12 @@ jest.mock('@entities/film', () => ({
 
 describe('HueSubPanel', () => {
   beforeEach(() => {
+    const { useSystemStore } = require('@entities/system');
+    useSystemStore.setState({
+      activeParameter: 'hue',
+      activeDetailPanel: 'master',
+      selectedColorIndex: 0,
+    });
     jest.clearAllMocks();
   });
 

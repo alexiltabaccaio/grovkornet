@@ -182,6 +182,7 @@ describe('useSystemStore', () => {
       const mockState = {
         latestCapturedUri: 'file:///captured.jpg',
         isLogsEnabled: true,
+        selectedColorIndex: 3,
         activeParameter: 'contrast',
         activeSection: 'film',
       };
@@ -230,6 +231,12 @@ describe('useSystemStore', () => {
 
       setIsLowRam(true);
       expect(useSystemStore.getState().isLowRam).toBe(true);
+    });
+
+    it('updates selectedColorIndex correctly via setter', () => {
+      const { setSelectedColorIndex } = useSystemStore.getState();
+      setSelectedColorIndex(4);
+      expect(useSystemStore.getState().selectedColorIndex).toBe(4);
     });
 
     it('subscribes to onDeviceHealthUpdate native events', () => {

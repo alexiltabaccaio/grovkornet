@@ -23,6 +23,7 @@ interface SystemState {
   lastNonNoneModule: ModuleType;
   thermalState: 'normal' | 'warning' | 'critical';
   isLowRam: boolean;
+  selectedColorIndex: number;
 }
 
 interface SystemActions {
@@ -41,6 +42,7 @@ interface SystemActions {
   setLatestCapturedUri: (uri: string | null) => void;
   setThermalState: (state: 'normal' | 'warning' | 'critical') => void;
   setIsLowRam: (isLowRam: boolean) => void;
+  setSelectedColorIndex: (index: number) => void;
 }
 
 export interface SystemStore extends SystemState, SystemActions {}

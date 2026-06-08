@@ -19,16 +19,12 @@ import { useSystemStore } from '@entities/system';
 export type ColorIndex = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7;
 
 export const useSelectiveColor = (type: 'saturation' | 'hue') => {
-  const [activeColorIndex, setActiveColorIndex] = React.useState<ColorIndex>(0);
-  const activeParameter = useSystemStore(useShallow(state => state.activeParameter));
-  const [prevActiveParameter, setPrevActiveParameter] = React.useState(activeParameter);
-
-  if (activeParameter !== prevActiveParameter) {
-    setPrevActiveParameter(activeParameter);
-    if (activeParameter === type) {
-      setActiveColorIndex(0);
-    }
-  }
+  const { activeColorIndex, setActiveColorIndex } = useSystemStore(
+    useShallow(state => ({
+      activeColorIndex: state.selectedColorIndex as ColorIndex,
+      setActiveColorIndex: state.setSelectedColorIndex,
+    }))
+  );
 
   const {
     satRed, setSatRed,
