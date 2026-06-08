@@ -6,8 +6,8 @@ describe('usePreferencesStore', () => {
     usePreferencesStore.setState({
       fpsSetting: null,
       resolutionSetting: null,
-      aspectRatio: null,
-      force60fpsCrop: null,
+      aspectRatio: 1,
+      force60fpsCrop: 1,
       language: null,
       cameraId: null,
       cameraAuto: null,
@@ -17,12 +17,12 @@ describe('usePreferencesStore', () => {
     });
   });
 
-  it('initializes with default null values', () => {
+  it('initializes with default values', () => {
     const state = usePreferencesStore.getState();
     expect(state.fpsSetting).toBeNull();
     expect(state.resolutionSetting).toBeNull();
-    expect(state.aspectRatio).toBeNull();
-    expect(state.force60fpsCrop).toBeNull();
+    expect(state.aspectRatio).toBe(1);
+    expect(state.force60fpsCrop).toBe(1);
     expect(state.language).toBeNull();
     expect(state.cameraId).toBeNull();
     expect(state.cameraAuto).toBeNull();

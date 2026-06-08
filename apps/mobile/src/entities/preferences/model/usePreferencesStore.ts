@@ -35,8 +35,8 @@ export const usePreferencesStore = create<PreferencesState & PreferencesActions>
     (set) => ({
       fpsSetting: null,
       resolutionSetting: null,
-      aspectRatio: null,
-      force60fpsCrop: null,
+      aspectRatio: 1,
+      force60fpsCrop: 1,
       language: null,
       cameraId: null,
       cameraAuto: null,
