@@ -21,26 +21,51 @@ describe('GestureController', () => {
   let originalTap: any;
   let originalPan: any;
   let originalSpring: any;
+  let originalUseSharedValue: any;
+  let mockTranslateY: any;
+  let mockStartY: any;
+  let sharedValuesArray: any[] = [];
   let dateNowSpy: any;
 
   beforeAll(() => {
     originalSpring = reanimated.withSpring;
+    originalUseSharedValue = reanimated.useSharedValue;
+
     (reanimated as any).withSpring = (value: any, config: any, callback: any) => {
       if (typeof callback === 'function') {
         callback(true);
       }
       return value;
     };
+
+    (reanimated as any).useSharedValue = (initialVal: any) => {
+      // eslint-disable-next-line react-hooks/rules-of-hooks
+      const ref = React.useRef<any>(null);
+      if (!ref.current) {
+        ref.current = { value: initialVal };
+        sharedValuesArray.push(ref.current);
+        if (sharedValuesArray.length === 1) {
+          mockTranslateY = ref.current;
+        } else if (sharedValuesArray.length === 2) {
+          mockStartY = ref.current;
+        }
+      }
+      return ref.current;
+    };
   });
 
   afterAll(() => {
     (reanimated as any).withSpring = originalSpring;
+    (reanimated as any).useSharedValue = originalUseSharedValue;
   });
 
   beforeEach(() => {
     jest.clearAllMocks();
     jest.useFakeTimers();
     currentActiveSection = 'none';
+    sharedValuesArray = [];
+    mockTranslateY = null;
+    mockStartY = null;
 
     (useSystemStore as unknown as jest.Mock).mockImplementation((selector?: (state: any) => any) => {
       const state = {
@@ -171,33 +196,55 @@ describe('GestureController', () => {
     expect(mockSetActiveSection).not.toHaveBeenCalled();
   });
 
-  it('handles Pan gesture updates and end with thresholds (swipe up to dismiss)', () => {
+  it('handles Pan gesture updates and does not dismiss on Pan end', () => {
     currentActiveSection = 'lens';
     render(<GestureController />);
 
     expect(capturedPanGesture).toBeDefined();
 
     act(() => {
+      capturedPanGesture._onStart();
+    });
+
+    act(() => {
       // Simulate panning up (negative translationY)
-      capturedPanGesture._onChange({ translationY: -50 });
-      // End gesture with translation exceeding threshold (-100)
+      capturedPanGesture._onChange({ translationY: -150 });
+    });
+
+    expect(mockTranslateY.value).toBe(-150);
+
+    act(() => {
       capturedPanGesture._onEnd({ translationY: -150, velocityY: 0 });
     });
 
-    expect(mockSetActiveSection).toHaveBeenCalledWith('none');
+    // Should NOT close the active section on pan release
+    expect(mockSetActiveSection).not.toHaveBeenCalled();
+    // translateY should stay at -150 (it persists)
+    expect(mockTranslateY.value).toBe(-150);
   });
 
-  it('handles Pan gesture end with high velocity dismiss', () => {
+  it('handles Pan gesture end with high velocity and does not dismiss', () => {
     currentActiveSection = 'lens';
     render(<GestureController />);
 
     act(() => {
-      capturedPanGesture._onChange({ translationY: -20 });
-      // End gesture with velocity exceeding threshold (-500)
-      capturedPanGesture._onEnd({ translationY: -50, velocityY: -600 });
+      capturedPanGesture._onStart();
     });
 
-    expect(mockSetActiveSection).toHaveBeenCalledWith('none');
+    act(() => {
+      capturedPanGesture._onChange({ translationY: -20 });
+    });
+
+    expect(mockTranslateY.value).toBe(-20);
+
+    act(() => {
+      capturedPanGesture._onEnd({ translationY: -20, velocityY: -600 });
+    });
+
+    // High velocity should NOT dismiss
+    expect(mockSetActiveSection).not.toHaveBeenCalled();
+    // And position persists
+    expect(mockTranslateY.value).toBe(-20);
   });
 
   it('does not dismiss on Pan gesture if threshold and velocity are not met', () => {
@@ -205,35 +252,127 @@ describe('GestureController', () => {
     render(<GestureController />);
 
     act(() => {
+      capturedPanGesture._onStart();
+    });
+
+    act(() => {
       capturedPanGesture._onChange({ translationY: -20 });
+    });
+
+    act(() => {
       capturedPanGesture._onEnd({ translationY: -50, velocityY: -100 });
     });
 
     expect(mockSetActiveSection).not.toHaveBeenCalled();
   });
 
-  it('does not pan if translationY is positive (swiping down)', () => {
+  it('does not pan if translationY is positive (swiping down) when at 0', () => {
     currentActiveSection = 'lens';
     render(<GestureController />);
+
+    act(() => {
+      capturedPanGesture._onStart();
+    });
 
     act(() => {
       // Positive translationY (swipe down) should be ignored
       capturedPanGesture._onChange({ translationY: 50 });
     });
 
+    expect(mockTranslateY.value).toBe(0);
     expect(mockSetActiveSection).not.toHaveBeenCalled();
   });
 
-  it('does not pan or animate back if activeSection is none on Pan end', () => {
+  it('does not pan if activeSection is none on Pan change', () => {
     currentActiveSection = 'none';
     render(<GestureController />);
 
     act(() => {
-      capturedPanGesture._onChange({ translationY: -20 });
-      capturedPanGesture._onEnd({ translationY: -150, velocityY: 0 });
+      capturedPanGesture._onStart();
     });
 
+    act(() => {
+      capturedPanGesture._onChange({ translationY: -20 });
+    });
+
+    expect(mockTranslateY.value).toBe(0);
     expect(mockSetActiveSection).not.toHaveBeenCalled();
+  });
+
+  it('resets translateY when activeSection becomes none', () => {
+    currentActiveSection = 'lens';
+    const { rerender } = render(<GestureController />);
+
+    act(() => {
+      capturedPanGesture._onStart();
+    });
+
+    act(() => {
+      capturedPanGesture._onChange({ translationY: -100 });
+    });
+
+    expect(mockTranslateY.value).toBe(-100);
+
+    // Simulate closing active section
+    currentActiveSection = 'none';
+    rerender(<GestureController />);
+
+    expect(mockTranslateY.value).toBe(0);
+  });
+
+  it('does not close active section on Tap if pan gesture was active and moved', () => {
+    currentActiveSection = 'lens';
+    const bodyStore = useBodyStore.getState();
+    bodyStore.zoom.value = 1.0;
+
+    render(<GestureController />);
+
+    act(() => {
+      capturedPanGesture._onStart();
+    });
+
+    act(() => {
+      capturedPanGesture._onChange({ translationY: -10 });
+    });
+
+    act(() => {
+      capturedTapGesture._onEnd();
+    });
+
+    // Should NOT close the section because we moved/panned
+    expect(mockSetActiveSection).not.toHaveBeenCalled();
+  });
+
+  it('allows Tap gesture to close active section on subsequent taps after a pan gesture', () => {
+    currentActiveSection = 'lens';
+    const bodyStore = useBodyStore.getState();
+    bodyStore.zoom.value = 1.0;
+
+    render(<GestureController />);
+
+    // 1. Simulate pan gesture (sets hasMoved.value = true)
+    act(() => {
+      capturedPanGesture._onStart();
+    });
+
+    act(() => {
+      capturedPanGesture._onChange({ translationY: -50 });
+    });
+
+    act(() => {
+      capturedPanGesture._onEnd({ translationY: -50, velocityY: 0 });
+    });
+
+    // 2. Simulate tap gesture (calls _onBegin to reset hasMoved.value = false, then _onEnd to tap)
+    act(() => {
+      if (capturedTapGesture._onBegin) {
+        capturedTapGesture._onBegin();
+      }
+      capturedTapGesture._onEnd();
+    });
+
+    // Should successfully close the active section on this tap
+    expect(mockSetActiveSection).toHaveBeenCalledWith('none');
   });
 });
 

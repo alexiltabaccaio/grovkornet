@@ -22,6 +22,8 @@ export const GestureController = ({ children }: GestureControllerProps) => {
   })));
 
   const translateY = useSharedValue(0);
+  const startY = useSharedValue(0);
+  const hasMoved = useSharedValue(false);
 
   const lastTapTime = React.useRef<number>(0);
   const tapTimeout = React.useRef<NodeJS.Timeout | null>(null);
@@ -34,12 +36,24 @@ export const GestureController = ({ children }: GestureControllerProps) => {
     };
   }, []);
 
+  React.useEffect(() => {
+    if (activeSection === 'none') {
+      translateY.value = withSpring(0, { damping: 15, stiffness: 150 });
+    }
+  }, [activeSection, translateY]);
+
   const composedGesture = useMemo(() => {
     const { zoom } = useBodyStore.getState();
 
     const tap = Gesture.Tap()
       .runOnJS(true)
+      .onBegin(() => {
+        hasMoved.value = false;
+      })
       .onEnd(() => {
+        if (hasMoved.value) {
+          return;
+        }
         const now = Date.now();
         const zoomVal = zoom.value;
         const isAtOneX = Math.abs(zoomVal - 1.0) < 0.01;
@@ -75,22 +89,27 @@ export const GestureController = ({ children }: GestureControllerProps) => {
 
     const pan = Gesture.Pan()
       .maxPointers(1)
+      .onStart(() => {
+        startY.value = translateY.value;
+        hasMoved.value = false;
+      })
       .onChange((event) => {
-        if (activeSection !== 'none' && event.translationY < 0) {
-          translateY.value = event.translationY;
+        if (activeSection !== 'none') {
+          let newY = startY.value + event.translationY;
+          if (newY > 0) newY = 0;
+          translateY.value = newY;
+        }
+        if (Math.abs(event.translationY) > 5) {
+          hasMoved.value = true;
         }
       })
-      .onEnd((event) => {
-        if (activeSection !== 'none') {
-          if (event.translationY < -100 || event.velocityY < -500) {
-            runOnJS(setActiveSection)('none');
-          }
-          translateY.value = withSpring(0, { damping: 15, stiffness: 150 });
-        }
+      .onEnd(() => {
+        // The viewfinder remains in its dragged position.
+        // No closing of active section, no snap-back here.
       });
 
     return Gesture.Simultaneous(tap, pan);
-  }, [activeSection, setActiveSection, translateY]);
+  }, [activeSection, setActiveSection, translateY, startY, hasMoved]);
 
   const animatedStyle = useAnimatedStyle(() => {
     return {
