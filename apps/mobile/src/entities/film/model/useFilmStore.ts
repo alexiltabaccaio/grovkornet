@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { makeMutable } from 'react-native-reanimated';
 import { logger } from '@shared/lib/logger';
 import { FilmStore } from './types';
+import { ParameterType } from '../../system/model/types';
 import { 
   DEFAULT_GRAIN_INTENSITY, 
   DEFAULT_SATURATION, 
@@ -621,6 +622,40 @@ export const useFilmStore = create<FilmStore>((set, get) => ({
       filmListenerTimeout = setTimeout(() => {
         parameterChangeListener?.();
       }, 50);
+    }
+  },
+  resetParameter: (param) => {
+    switch (param) {
+      case 'temperature':
+      case 'tint':
+        get().setTemperatureAuto(true);
+        return true;
+      case 'contrast':
+        get().setContrastAuto(true);
+        get().setPivotAuto(true);
+        return true;
+      case 'blackLevel':
+        get().setBlackLevelAuto(true);
+        return true;
+      case 'highlights':
+        get().setHighlightsAuto(true);
+        return true;
+      case 'pivot':
+        get().setPivotAuto(true);
+        return true;
+      default: {
+        const handledEffects = [
+          'saturation', 'contrast', 'grain', 'vignette', 'chroma_shift',
+          'temperature', 'tint', 'bloom', 'chromatic_aberration', 'sharpening',
+          'noise_reduction', 'camera_facing', 'tone', 'pixelation', 'tape_jitter',
+          'scanlines', 'hue'
+        ];
+        if (handledEffects.includes(param)) {
+          get().resetEffect(param as any);
+          return true;
+        }
+        return false;
+      }
     }
   },
 }));

@@ -1,5 +1,5 @@
 import { useBodyStore } from './useBodyStore';
-import { DEFAULT_ISO, DEFAULT_EV, DEFAULT_SHUTTER_SPEED, DEFAULT_ZOOM } from '@grovkornet/shared';
+import { DEFAULT_ISO, DEFAULT_EV, DEFAULT_SHUTTER_SPEED, DEFAULT_ZOOM, DEFAULT_TORCH_STRENGTH } from '@grovkornet/shared';
 
 describe('useBodyStore', () => {
   it('initializes correctly', () => {
@@ -173,5 +173,45 @@ describe('useBodyStore', () => {
       maxFps: 120,
     });
     expect(useBodyStore.getState().capabilities.maxFps).toBe(120);
+  });
+
+  it('resets parameters correctly using resetParameter', () => {
+    const store = useBodyStore.getState();
+
+    const spyEv = jest.spyOn(store, 'setEvAuto');
+    const spyIso = jest.spyOn(store, 'setIsoAuto');
+    const spyShutter = jest.spyOn(store, 'setShutterSpeedAuto');
+    const spyTorchState = jest.spyOn(store, 'setTorchState');
+    const spyTorchStrength = jest.spyOn(store, 'setTorchStrength');
+    const spyFpsSetting = jest.spyOn(store, 'setFpsSetting');
+
+    expect(store.resetParameter('ev')).toBe(true);
+    expect(spyEv).toHaveBeenCalledWith(true);
+
+    expect(store.resetParameter('iso')).toBe(true);
+    expect(spyIso).toHaveBeenCalledWith(true);
+
+    expect(store.resetParameter('shutter_speed')).toBe(true);
+    expect(spyShutter).toHaveBeenCalledWith(true);
+
+    expect(store.resetParameter('torch')).toBe(true);
+    expect(spyTorchState).toHaveBeenCalledWith(0);
+    expect(spyTorchStrength).toHaveBeenCalledWith(DEFAULT_TORCH_STRENGTH);
+
+    expect(store.resetParameter('torch_strength')).toBe(true);
+    expect(spyTorchStrength).toHaveBeenLastCalledWith(DEFAULT_TORCH_STRENGTH);
+
+    store.setCapabilities({ maxFps: 60 });
+    expect(store.resetParameter('fps_setting')).toBe(true);
+    expect(spyFpsSetting).toHaveBeenCalledWith(60);
+
+    expect(store.resetParameter('focus' as any)).toBe(false);
+
+    spyEv.mockRestore();
+    spyIso.mockRestore();
+    spyShutter.mockRestore();
+    spyTorchState.mockRestore();
+    spyTorchStrength.mockRestore();
+    spyFpsSetting.mockRestore();
   });
 });

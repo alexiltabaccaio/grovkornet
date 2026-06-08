@@ -1,4 +1,5 @@
 import { SharedValue } from 'react-native-reanimated';
+import { ParameterType } from '../../system/model/types';
 
 export interface FilmCapabilities {
   availableNoiseReductionModes?: number[];
@@ -138,6 +139,7 @@ interface FilmActions {
   // @@GEN_ACTIONS_END@@
   setCapabilities?: (capabilities: FilmCapabilities) => void;
   resetEffect: (effect: string) => void;
+  resetParameter: (param: ParameterType) => boolean;
 }
 
 export interface FilmStore extends FilmState, FilmActions {}

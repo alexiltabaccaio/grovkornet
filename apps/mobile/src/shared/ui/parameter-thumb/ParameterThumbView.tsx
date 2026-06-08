@@ -2,6 +2,7 @@ import React, { forwardRef, memo } from 'react';
 import { View, Text, ImageSourcePropType } from 'react-native';
 import { Image } from 'expo-image';
 import Animated from 'react-native-reanimated';
+import { GestureDetector } from 'react-native-gesture-handler';
 import { ParameterThumbViewProps } from './ParameterThumbView.types';
 import { styles } from './ParameterThumbView.styles';
 import { TextThumb } from './TextThumb';
@@ -12,6 +13,13 @@ import { SliderThumb } from './SliderThumb';
 
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const defaultMonoscope = require('../../../../assets/monoscope.jpg') as ImageSourcePropType;
+
+const OptionalGesture = ({ gesture, children }: { gesture?: any; children: React.ReactNode }) => {
+  if (gesture) {
+    return <GestureDetector gesture={gesture}>{children as React.ReactElement}</GestureDetector>;
+  }
+  return <>{children}</>;
+};
 
 const ParameterThumbViewBase = forwardRef<View, ParameterThumbViewProps>((props, ref) => {
   const {
@@ -27,6 +35,8 @@ const ParameterThumbViewBase = forwardRef<View, ParameterThumbViewProps>((props,
     renderValue,
     isToggle,
     parameterId,
+    labelGesture,
+    trackGesture,
   } = props;
 
   const hasValue = !!value || !!staticText || !!imageSource || !!icon;
@@ -34,14 +44,15 @@ const ParameterThumbViewBase = forwardRef<View, ParameterThumbViewProps>((props,
 
   if (variant === 'preset') {
     return (
-      <Animated.View
-        ref={ref}
-        {...({ onPress } as Record<string, unknown>)}
-        style={[
-          styles.presetContainer,
-          isActive && styles.presetContainerActive,
-        ]}
-      >
+      <OptionalGesture gesture={labelGesture}>
+        <Animated.View
+          ref={ref}
+          {...(!labelGesture ? ({ onPress } as Record<string, unknown>) : {})}
+          style={[
+            styles.presetContainer,
+            isActive && styles.presetContainerActive,
+          ]}
+        >
         <View style={[styles.presetImageContainer, isActive && styles.presetImageContainerActive]}>
           <Image
             source={imageSource || defaultMonoscope}
@@ -63,17 +74,19 @@ const ParameterThumbViewBase = forwardRef<View, ParameterThumbViewProps>((props,
         >
           {label.toUpperCase()}
         </Text>
-      </Animated.View>
+        </Animated.View>
+      </OptionalGesture>
     );
   }
 
   if (variant === 'text' && !hasValue) {
     return (
-      <Animated.View
-        ref={ref}
-        {...({ onPress } as Record<string, unknown>)}
-        style={[
-          styles.filterThumb,
+      <OptionalGesture gesture={labelGesture}>
+        <Animated.View
+          ref={ref}
+          {...(!labelGesture ? ({ onPress } as Record<string, unknown>) : {})}
+          style={[
+            styles.filterThumb,
           isMainParameter && { flex: 1 },
           { justifyContent: 'center', height: 82 },
           isLayoutOverlayEnabled && { backgroundColor: 'rgba(0, 255, 0, 0.2)', borderColor: 'green' }
@@ -89,14 +102,15 @@ const ParameterThumbViewBase = forwardRef<View, ParameterThumbViewProps>((props,
         >
           {label.toUpperCase().split(' ').join('\n')}
         </Text>
-      </Animated.View>
+        </Animated.View>
+      </OptionalGesture>
     );
   }
 
   return (
     <Animated.View
       ref={ref}
-      {...({ onPress } as Record<string, unknown>)}
+      {...(!labelGesture && !trackGesture ? ({ onPress } as Record<string, unknown>) : {})}
       style={[
         styles.filterThumb,
         isMainParameter && { flex: 1 },
@@ -105,20 +119,23 @@ const ParameterThumbViewBase = forwardRef<View, ParameterThumbViewProps>((props,
       ]}
     >
       {!!label && (
-        <Text 
-          allowFontScaling={false}
-          style={[
-            styles.filterText,
-            isActive && styles.filterTextActive,
-            !isActive && !!imageSource && { opacity: 0.3 },
-            { marginBottom: 6, minHeight: undefined },
-            variant === 'text' && { fontSize: 13, fontWeight: '800', marginBottom: 4 }
-          ]}
-        >
-          {label.toUpperCase().split(' ').join('\n')}
-        </Text>
+        <OptionalGesture gesture={labelGesture}>
+          <Animated.Text 
+            allowFontScaling={false}
+            style={[
+              styles.filterText,
+              isActive && styles.filterTextActive,
+              !isActive && !!imageSource && { opacity: 0.3 },
+              { marginBottom: 6, minHeight: undefined },
+              variant === 'text' && { fontSize: 13, fontWeight: '800', marginBottom: 4 }
+            ]}
+          >
+            {label.toUpperCase().split(' ').join('\n')}
+          </Animated.Text>
+        </OptionalGesture>
       )}
-      <View style={[
+      <OptionalGesture gesture={trackGesture}>
+        <Animated.View style={[
         styles.filterPlaceholder,
         { marginBottom: 0 },
         !!imageSource && { width: 40, height: 30 },
@@ -131,7 +148,8 @@ const ParameterThumbViewBase = forwardRef<View, ParameterThumbViewProps>((props,
         {variant === 'text' && !imageSource && <TextThumb {...props} />}
         {variant === 'slider' && <SliderThumb key={parameterId ?? label} {...props} />}
         {!!imageSource && <ImageThumb {...props} />}
-      </View>
+        </Animated.View>
+      </OptionalGesture>
     </Animated.View>
   );
 });

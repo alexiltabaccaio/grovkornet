@@ -12,11 +12,11 @@ describe('useParameterGesture', () => {
       })
     );
 
-    const combinedGesture = result.current.combinedGesture as any;
-    expect(combinedGesture.type).toBeUndefined(); // It is just the tap gesture object
+    const labelGesture = result.current.labelGesture as any;
+    expect(labelGesture.type).toBeUndefined(); // It is just the tap gesture object
 
     // Trigger tap
-    combinedGesture._onEnd();
+    labelGesture._onEnd();
     expect(mockOnPress).toHaveBeenCalledTimes(1);
   });
 
@@ -31,8 +31,8 @@ describe('useParameterGesture', () => {
       })
     );
 
-    const combinedGesture = result.current.combinedGesture as any;
-    combinedGesture._onEnd();
+    const labelGesture = result.current.labelGesture as any;
+    labelGesture._onEnd();
     expect(mockOnPress).not.toHaveBeenCalled();
   });
 
@@ -57,11 +57,11 @@ describe('useParameterGesture', () => {
       })
     );
 
-    const combinedGesture = result.current.combinedGesture as any;
-    expect(combinedGesture.type).toBe('race');
-    expect(combinedGesture.gestures).toHaveLength(2);
+    const trackGesture = result.current.trackGesture as any;
+    expect(trackGesture.type).toBe('race');
+    expect(trackGesture.gestures).toHaveLength(2);
 
-    const [tapGesture, panGesture] = combinedGesture.gestures;
+    const [tapGesture, panGesture] = trackGesture.gestures;
 
     // Trigger tap gesture
     tapGesture._onEnd();
@@ -101,7 +101,7 @@ describe('useParameterGesture', () => {
       })
     );
 
-    const [, panGesture] = (result.current.combinedGesture as any).gestures;
+    const [, panGesture] = (result.current.trackGesture as any).gestures;
 
     // Trigger start at 188
     panGesture._onStart({ x: 188 });
@@ -131,7 +131,7 @@ describe('useParameterGesture', () => {
       })
     );
 
-    const [, panGesture] = (result.current.combinedGesture as any).gestures;
+    const [, panGesture] = (result.current.trackGesture as any).gestures;
 
     panGesture._onStart({ x: 102 });
     expect(valueVal.value).toBe(0.5);
@@ -155,7 +155,7 @@ describe('useParameterGesture', () => {
       })
     );
 
-    const [, panGesture] = (result.current.combinedGesture as any).gestures;
+    const [, panGesture] = (result.current.trackGesture as any).gestures;
 
     panGesture._onStart({ x: 188 });
     panGesture._onUpdate({ translationX: 30 });
@@ -180,7 +180,7 @@ describe('useParameterGesture', () => {
         })
       );
 
-      const [, panGesture] = (result.current.combinedGesture as any).gestures;
+      const [, panGesture] = (result.current.trackGesture as any).gestures;
 
       panGesture._onStart({ x: 100 });
       expect(valueVal.value).toBe(0.5); // unchanged
@@ -205,7 +205,7 @@ describe('useParameterGesture', () => {
         })
       );
 
-      const [, panGesture] = (result.current.combinedGesture as any).gestures;
+      const [, panGesture] = (result.current.trackGesture as any).gestures;
 
       // Should not throw
       expect(() => {
@@ -229,7 +229,7 @@ describe('useParameterGesture', () => {
         })
       );
 
-      const [, panGesture] = (result.current.combinedGesture as any).gestures;
+      const [, panGesture] = (result.current.trackGesture as any).gestures;
 
       panGesture._onStart({ x: 188 }); // Sets value to 0.5
       expect(valueVal.value).toBe(0.5);
@@ -252,11 +252,43 @@ describe('useParameterGesture', () => {
         })
       );
 
-      const [, panGesture] = (result.current.combinedGesture as any).gestures;
+      const [, panGesture] = (result.current.trackGesture as any).gestures;
       
       expect(() => {
         panGesture._onEnd();
       }).not.toThrow();
     });
+  });
+
+  it('distinguishes between track DoubleTap (onReset) and label DoubleTap (onResetGroup)', () => {
+    const mockOnPress = jest.fn();
+    const mockOnReset = jest.fn();
+    const mockOnResetGroup = jest.fn();
+
+    const { result } = renderHook(() =>
+      useParameterGesture({
+        isActive: true,
+        onPress: mockOnPress,
+        onReset: mockOnReset,
+        onResetGroup: mockOnResetGroup,
+      })
+    );
+
+    const trackGesture = result.current.trackGesture as any;
+    const labelGesture = result.current.labelGesture as any;
+
+    expect(trackGesture.type).toBe('exclusive');
+    expect(labelGesture.type).toBe('exclusive');
+
+    const [trackDoubleTap] = trackGesture.gestures;
+    const [labelDoubleTap] = labelGesture.gestures;
+
+    trackDoubleTap._onEnd();
+    expect(mockOnReset).toHaveBeenCalledTimes(1);
+    expect(mockOnResetGroup).not.toHaveBeenCalled();
+
+    labelDoubleTap._onEnd();
+    expect(mockOnResetGroup).toHaveBeenCalledTimes(1);
+    expect(mockOnReset).toHaveBeenCalledTimes(1);
   });
 });

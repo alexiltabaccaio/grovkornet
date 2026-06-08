@@ -30,6 +30,7 @@ interface ParameterControlProps {
   isToggle?: boolean;
   centerValue?: number;
   onReset?: () => void;
+  onResetGroup?: () => void;
   onToggleAuto?: (active: boolean) => void;
   hideDebugRectangles?: boolean;
   disableGestures?: boolean;
@@ -103,6 +104,7 @@ export const ParameterControl = React.memo((props: ParameterControlProps) => {
     isToggle = false,
     centerValue,
     onReset,
+    onResetGroup,
     onToggleAuto,
     hideDebugRectangles = false,
     disableGestures = false,
@@ -117,7 +119,7 @@ export const ParameterControl = React.memo((props: ParameterControlProps) => {
   }
 
   // eslint-disable-next-line react-hooks/rules-of-hooks
-  const { combinedGesture, isLayoutOverlayEnabled, effectiveTrackWidth } = useParameterGesture({
+  const { labelGesture, trackGesture, isLayoutOverlayEnabled, effectiveTrackWidth } = useParameterGesture({
     isActive,
     value,
     minValue,
@@ -131,40 +133,41 @@ export const ParameterControl = React.memo((props: ParameterControlProps) => {
     variant,
     hideAutoPlaceholder,
     onReset,
+    onResetGroup,
     isMainSlider,
   });
 
   return (
-    <GestureDetector gesture={combinedGesture}>
-      <ParameterThumbView
-        label={label}
-        isActive={isActive}
-        value={value}
-        minValue={minValue}
-        maxValue={maxValue}
-        icon={icon}
-        imageSource={imageSource}
-        renderValue={renderValue}
-        valueFormatter={valueFormatter}
-        variant={variant}
-        isAuto={isAuto}
-        staticText={staticText}
-        hideValueInAuto={hideValueInAuto}
-        autoValueText={autoValueText}
-        isLayoutOverlayEnabled={!hideDebugRectangles && isLayoutOverlayEnabled}
-        disabled={disabled}
-        isToggle={isToggle}
-        centerValue={centerValue}
-        onReset={onReset}
-        onToggleAuto={onToggleAuto}
-        onPress={onPress}
-        hideAutoPlaceholder={hideAutoPlaceholder}
-        sliderTrackWidth={effectiveTrackWidth}
-        sliderColor={sliderColor}
-        parameterId={parameterId}
-        isMainSlider={isMainSlider}
-      />
-    </GestureDetector>
+    <ParameterThumbView
+      label={label}
+      isActive={isActive}
+      value={value}
+      minValue={minValue}
+      maxValue={maxValue}
+      icon={icon}
+      imageSource={imageSource}
+      renderValue={renderValue}
+      valueFormatter={valueFormatter}
+      variant={variant}
+      isAuto={isAuto}
+      staticText={staticText}
+      hideValueInAuto={hideValueInAuto}
+      autoValueText={autoValueText}
+      isLayoutOverlayEnabled={!hideDebugRectangles && isLayoutOverlayEnabled}
+      disabled={disabled}
+      isToggle={isToggle}
+      centerValue={centerValue}
+      onReset={onReset}
+      onToggleAuto={onToggleAuto}
+      onPress={onPress}
+      hideAutoPlaceholder={hideAutoPlaceholder}
+      sliderTrackWidth={effectiveTrackWidth}
+      sliderColor={sliderColor}
+      parameterId={parameterId}
+      isMainSlider={isMainSlider}
+      labelGesture={labelGesture}
+      trackGesture={trackGesture}
+    />
   );
 });
 

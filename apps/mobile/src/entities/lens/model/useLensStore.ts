@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { makeMutable } from 'react-native-reanimated';
 import { logger } from '@shared/lib/logger';
 import { usePreferencesStore } from '@entities/preferences';
+import { ParameterType } from '../../system/model/types';
 import { 
   DEFAULT_FOCUS_AUTO,
   DEFAULT_FOCUS_DISTANCE,
@@ -64,5 +65,17 @@ export const useLensStore = create<LensStore>((set, get) => ({
         ...caps,
       }
     }));
+  },
+  resetParameter: (param) => {
+    switch (param) {
+      case 'focus':
+        get().setFocusAuto(true);
+        return true;
+      case 'camera_selection':
+        get().setCameraAuto(true);
+        return true;
+      default:
+        return false;
+    }
   },
 }));

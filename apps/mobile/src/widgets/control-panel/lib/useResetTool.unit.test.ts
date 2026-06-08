@@ -3,6 +3,7 @@ import { useResetTool } from './useResetTool';
 import { useFilmStore } from '@entities/film';
 import { useBodyStore } from '@entities/body';
 import { useLensStore } from '@entities/lens';
+import { DEFAULT_TORCH_STRENGTH } from '@grovkornet/shared';
 
 describe('useResetTool', () => {
   let spyResetEffect: jest.SpyInstance;
@@ -17,6 +18,7 @@ describe('useResetTool', () => {
   let spySetPivotAuto: jest.SpyInstance;
   let spySetCameraAuto: jest.SpyInstance;
   let spySetTorchState: jest.SpyInstance;
+  let spySetTorchStrength: jest.SpyInstance;
   let spySetFpsSetting: jest.SpyInstance;
 
   beforeEach(() => {
@@ -34,6 +36,7 @@ describe('useResetTool', () => {
     spySetPivotAuto = jest.spyOn(useFilmStore.getState(), 'setPivotAuto');
     spySetCameraAuto = jest.spyOn(useLensStore.getState(), 'setCameraAuto');
     spySetTorchState = jest.spyOn(useBodyStore.getState(), 'setTorchState');
+    spySetTorchStrength = jest.spyOn(useBodyStore.getState(), 'setTorchStrength');
     spySetFpsSetting = jest.spyOn(useBodyStore.getState(), 'setFpsSetting');
   });
 
@@ -50,6 +53,7 @@ describe('useResetTool', () => {
     spySetPivotAuto.mockRestore();
     spySetCameraAuto.mockRestore();
     spySetTorchState.mockRestore();
+    spySetTorchStrength.mockRestore();
     spySetFpsSetting.mockRestore();
   });
 
@@ -155,5 +159,20 @@ describe('useResetTool', () => {
       result.current('scanlines');
     });
     expect(spyResetEffect).toHaveBeenCalledWith('scanlines');
+  });
+
+  it('resets torch and torch_strength correctly', () => {
+    const { result } = renderHook(() => useResetTool());
+
+    act(() => {
+      result.current('torch');
+    });
+    expect(spySetTorchState).toHaveBeenCalledWith(0);
+    expect(spySetTorchStrength).toHaveBeenCalledWith(DEFAULT_TORCH_STRENGTH);
+
+    act(() => {
+      result.current('torch_strength');
+    });
+    expect(spySetTorchStrength).toHaveBeenCalledWith(DEFAULT_TORCH_STRENGTH);
   });
 });

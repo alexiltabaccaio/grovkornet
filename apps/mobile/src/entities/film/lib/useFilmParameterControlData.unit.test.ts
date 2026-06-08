@@ -93,10 +93,17 @@ describe('useFilmParameterControlData', () => {
     expect(result.current.valueFormatter(1.15)).toBe('+15');
     expect(result.current.valueFormatter(0.9)).toBe('-10');
 
-    // Test onReset resets both contrast and pivot
+    // Test onReset resets contrast but NOT pivot
     useFilmStore.getState().setContrast(1.5);
     useFilmStore.getState().setPivot(0.7);
     result.current.onReset?.();
+    expect(useFilmStore.getState().contrast.value).toBe(1.0);
+    expect(useFilmStore.getState().pivot.value).toBe(0.7);
+
+    // Test onResetGroup resets BOTH contrast and pivot
+    useFilmStore.getState().setContrast(1.5);
+    useFilmStore.getState().setPivot(0.7);
+    result.current.onResetGroup?.();
     expect(useFilmStore.getState().contrast.value).toBe(1.0);
     expect(useFilmStore.getState().pivot.value).toBe(0.5);
   });

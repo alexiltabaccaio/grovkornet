@@ -1,4 +1,5 @@
 import { SharedValue } from 'react-native-reanimated';
+import { ParameterType } from '../../system/model/types';
 
 export interface BodyCapabilities {
   hasTorch?: boolean;
@@ -53,6 +54,7 @@ interface BodyActions {
   setZoom: (value: number) => void;
   // @@GEN_ACTIONS_END@@
   setCapabilities: (capabilities: BodyCapabilities) => void;
+  resetParameter: (param: ParameterType) => boolean;
 }
 
 export interface BodyStore extends BodyState, BodyActions {}

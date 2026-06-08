@@ -6,6 +6,7 @@ import { useSystemStore } from '@entities/system';
 import { useFilmStore } from '@entities/film';
 import { useBodyStore } from '@entities/body';
 import { useLensStore } from '@entities/lens';
+import { DEFAULT_TORCH_STRENGTH } from '@grovkornet/shared';
 
 // Mock submodules from features to render buttons that invoke handlePressWithDouble
 jest.mock('@features/film-controls', () => {
@@ -117,6 +118,7 @@ describe('Parameters', () => {
   let spySetPivotAuto: jest.SpyInstance;
   let spySetCameraAuto: jest.SpyInstance;
   let spySetTorchState: jest.SpyInstance;
+  let spySetTorchStrength: jest.SpyInstance;
   let spySetFpsSetting: jest.SpyInstance;
 
   beforeEach(() => {
@@ -134,6 +136,7 @@ describe('Parameters', () => {
     spySetPivotAuto = jest.spyOn(useFilmStore.getState(), 'setPivotAuto');
     spySetCameraAuto = jest.spyOn(useLensStore.getState(), 'setCameraAuto');
     spySetTorchState = jest.spyOn(useBodyStore.getState(), 'setTorchState');
+    spySetTorchStrength = jest.spyOn(useBodyStore.getState(), 'setTorchStrength');
     spySetFpsSetting = jest.spyOn(useBodyStore.getState(), 'setFpsSetting');
   });
 
@@ -150,6 +153,7 @@ describe('Parameters', () => {
     spySetPivotAuto.mockRestore();
     spySetCameraAuto.mockRestore();
     spySetTorchState.mockRestore();
+    spySetTorchStrength.mockRestore();
     spySetFpsSetting.mockRestore();
   });
 
@@ -262,6 +266,7 @@ describe('Parameters', () => {
     
     fireEvent.press(button);
     expect(spySetTorchState).toHaveBeenCalledWith(0);
+    expect(spySetTorchStrength).toHaveBeenCalledWith(DEFAULT_TORCH_STRENGTH);
   });
 
   it('renders CaptureModule and resets fps_setting (fps >= 60 case)', () => {

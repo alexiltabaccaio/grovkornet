@@ -1,4 +1,5 @@
 import { SharedValue } from 'react-native-reanimated';
+import { ParameterType } from '../../system/model/types';
 
 export interface LensCapabilities {
   supportsFocus: boolean;
@@ -33,6 +34,7 @@ interface LensActions {
   // @@GEN_ACTIONS_END@@
   setActiveCameraId: (value: string) => void;
   setCapabilities: (capabilities: LensCapabilities) => void;
+  resetParameter: (param: ParameterType) => boolean;
 }
 
 export interface LensStore extends LensState, LensActions {}

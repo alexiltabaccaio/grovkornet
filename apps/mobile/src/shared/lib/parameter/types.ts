@@ -12,6 +12,7 @@ export interface ParameterControlData {
   hideValueInAuto?: boolean;
   autoValueText?: string;
   onReset?: () => void;
+  onResetGroup?: () => void;
   onToggleAuto?: (auto: boolean) => void;
   disabled?: SharedValue<boolean>;
 }

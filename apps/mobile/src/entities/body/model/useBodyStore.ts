@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { makeMutable } from 'react-native-reanimated';
 import { logger } from '@shared/lib/logger';
 import { BodyStore } from './types';
+import { ParameterType } from '../../system/model/types';
 import { 
   DEFAULT_ISO,
   DEFAULT_EV,
@@ -148,6 +149,33 @@ export const useBodyStore = create<BodyStore>((set, get) => ({
         ...caps,
       }
     }));
+  },
+  resetParameter: (param) => {
+    switch (param) {
+      case 'ev':
+        get().setEvAuto(true);
+        return true;
+      case 'iso':
+        get().setIsoAuto(true);
+        return true;
+      case 'shutter_speed':
+        get().setShutterSpeedAuto(true);
+        return true;
+      case 'torch':
+        get().setTorchState(0);
+        get().setTorchStrength(DEFAULT_TORCH_STRENGTH);
+        return true;
+      case 'torch_strength':
+        get().setTorchStrength(DEFAULT_TORCH_STRENGTH);
+        return true;
+      case 'fps_setting': {
+        const maxFps = get().capabilities.maxFps ?? 60;
+        get().setFpsSetting(maxFps >= 60 ? 60 : 30);
+        return true;
+      }
+      default:
+        return false;
+    }
   },
 }));
 

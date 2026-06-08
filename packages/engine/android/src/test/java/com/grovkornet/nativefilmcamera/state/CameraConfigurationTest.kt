@@ -104,7 +104,7 @@ class CameraConfigurationTest {
 
         val array = config.toRenderParamsArray(time = time, targetResolution = targetResolution)
 
-        assertEquals(59, array.size)
+        assertEquals(61, array.size)
         assertEquals(1.2f, array[0])
         assertEquals(0.9f, array[1])
         assertEquals(0.5f, array[2])
@@ -164,6 +164,8 @@ class CameraConfigurationTest {
         assertEquals(0.0f, array[56]) // hueBlue
         assertEquals(0.0f, array[57]) // huePurple
         assertEquals(0.0f, array[58]) // hueMagenta
+        assertEquals(1.0f, array[59]) // scanlinesHorizontal (true -> 1.0f)
+        assertEquals(800.0f, array[60]) // scanlinesDensity
 
         // Test dynamic disabling features
         config.grainEnabled = false

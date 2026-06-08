@@ -8,15 +8,11 @@ import Animated, {
   useAnimatedReaction,
   SharedValue,
 } from 'react-native-reanimated';
-import { ParameterType } from '../../model/types';
 import { WheelItemComponent } from './WheelItemComponent';
+import type { WheelItem } from './WheelItemComponent';
+export type { WheelItem };
+import { ParameterType } from '../../model/types';
 const ITEM_WIDTH = 120;
-
-export interface WheelItem {
-  id: ParameterType;
-  component: React.ReactNode;
-  onPress?: () => void;
-}
 
 interface ParameterWheelProps {
   items: WheelItem[];

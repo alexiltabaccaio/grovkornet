@@ -245,4 +245,40 @@ describe('useFilmStore', () => {
     store.resetEffect('camera_facing');
     expect(useFilmStore.getState().isSelfieCamera.value).toBe(false);
   });
+
+  it('resets parameters correctly using resetParameter', () => {
+    const store = useFilmStore.getState();
+
+    const spyTemp = jest.spyOn(store, 'setTemperatureAuto');
+    const spyContrast = jest.spyOn(store, 'setContrastAuto');
+    const spyPivot = jest.spyOn(store, 'setPivotAuto');
+    const spyBlack = jest.spyOn(store, 'setBlackLevelAuto');
+    const spyHighlights = jest.spyOn(store, 'setHighlightsAuto');
+    const spyResetEffect = jest.spyOn(store, 'resetEffect');
+
+    expect(store.resetParameter('temperature')).toBe(true);
+    expect(spyTemp).toHaveBeenCalledWith(true);
+
+    expect(store.resetParameter('contrast')).toBe(true);
+    expect(spyContrast).toHaveBeenCalledWith(true);
+    expect(spyPivot).toHaveBeenCalledWith(true);
+
+    expect(store.resetParameter('blackLevel')).toBe(true);
+    expect(spyBlack).toHaveBeenCalledWith(true);
+
+    expect(store.resetParameter('highlights')).toBe(true);
+    expect(spyHighlights).toHaveBeenCalledWith(true);
+
+    expect(store.resetParameter('grain')).toBe(true);
+    expect(spyResetEffect).toHaveBeenCalledWith('grain');
+
+    expect(store.resetParameter('ev' as any)).toBe(false);
+
+    spyTemp.mockRestore();
+    spyContrast.mockRestore();
+    spyPivot.mockRestore();
+    spyBlack.mockRestore();
+    spyHighlights.mockRestore();
+    spyResetEffect.mockRestore();
+  });
 });

@@ -245,6 +245,9 @@ export const useFilmParameterControlData = (
           },
           onReset: () => {
             film.setContrastAuto(true);
+          },
+          onResetGroup: () => {
+            film.setContrastAuto(true);
             film.setPivotAuto(true);
           },
         };

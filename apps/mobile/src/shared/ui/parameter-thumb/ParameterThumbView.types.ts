@@ -31,5 +31,6 @@ export interface ParameterThumbViewProps {
   sliderColor?: string;
   parameterId?: string;
   isMainSlider?: boolean;
+  labelGesture?: any;
+  trackGesture?: any;
 }
-

@@ -21,6 +21,7 @@ interface UseParameterGestureParams {
   onUpdateWorklet?: (val: number) => void;
   onPress: () => void;
   onReset?: () => void;
+  onResetGroup?: () => void;
   isAuto?: SharedValue<boolean>;
   disabled?: SharedValue<boolean>;
   variant?: 'text' | 'slider';
@@ -39,6 +40,7 @@ export const useParameterGesture = ({
   onUpdateWorklet,
   onPress,
   onReset,
+  onResetGroup,
   isAuto,
   disabled,
   variant,
@@ -73,10 +75,11 @@ export const useParameterGesture = ({
     tap.maxDuration(250);
   }
 
-  let finalTap: ReturnType<typeof Gesture.Tap> | ReturnType<typeof Gesture.Exclusive> = tap;
+  let trackGesture: ReturnType<typeof Gesture.Tap> | ReturnType<typeof Gesture.Exclusive> | ReturnType<typeof Gesture.Race> = tap;
+  let labelGesture: ReturnType<typeof Gesture.Tap> | ReturnType<typeof Gesture.Exclusive> = tap;
 
   if (onReset) {
-    const doubleTap = Gesture.Tap()
+    const trackDoubleTap = Gesture.Tap()
       .numberOfTaps(2)
       .maxDistance(20)
       .onEnd(() => {
@@ -86,7 +89,23 @@ export const useParameterGesture = ({
         runOnJS(onReset)();
       });
       
-    finalTap = Gesture.Exclusive(doubleTap, tap);
+    trackGesture = Gesture.Exclusive(trackDoubleTap, tap);
+
+    const labelDoubleTap = Gesture.Tap()
+      .numberOfTaps(2)
+      .maxDistance(20)
+      .onEnd(() => {
+        'worklet';
+        if (disabled && disabled.value) return;
+        runOnJS(Haptics.impactAsync)(Haptics.ImpactFeedbackStyle.Medium);
+        if (onResetGroup) {
+          runOnJS(onResetGroup)();
+        } else {
+          runOnJS(onReset)();
+        }
+      });
+      
+    labelGesture = Gesture.Exclusive(labelDoubleTap, tap);
   }
 
   let panGesture;
@@ -173,10 +192,13 @@ export const useParameterGesture = ({
       });
   }
 
-  const combinedGesture = panGesture ? Gesture.Race(finalTap, panGesture) : finalTap;
+  if (panGesture) {
+    trackGesture = Gesture.Race(trackGesture, panGesture);
+  }
 
   return {
-    combinedGesture,
+    trackGesture,
+    labelGesture,
     isLayoutOverlayEnabled,
     effectiveTrackWidth,
   };

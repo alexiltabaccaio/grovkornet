@@ -68,4 +68,22 @@ describe('useLensStore', () => {
     expect(useLensStore.getState().capabilities.supportsFocus).toBe(false);
     expect(useLensStore.getState().capabilities.availableCameras).toEqual(availableCameras);
   });
+
+  it('resets parameters correctly using resetParameter', () => {
+    const store = useLensStore.getState();
+
+    const spyFocusAuto = jest.spyOn(store, 'setFocusAuto');
+    const spyCameraAuto = jest.spyOn(store, 'setCameraAuto');
+
+    expect(store.resetParameter('focus')).toBe(true);
+    expect(spyFocusAuto).toHaveBeenCalledWith(true);
+
+    expect(store.resetParameter('camera_selection')).toBe(true);
+    expect(spyCameraAuto).toHaveBeenCalledWith(true);
+
+    expect(store.resetParameter('ev' as any)).toBe(false);
+
+    spyFocusAuto.mockRestore();
+    spyCameraAuto.mockRestore();
+  });
 });
