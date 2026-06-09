@@ -120,6 +120,13 @@ class HardwareCapabilitiesManager(private val context: Context) {
                     }
                     maxIso = (maxIso * maxBoost) / 100
                 }
+                
+                // Cap the baseline max ISO to a reasonable value for manual control
+                // so that the linear UI slider doesn't become unusable.
+                if (maxIso > 12800) {
+                    maxIso = 12800
+                }
+                
                 event.putInt("isoMax", maxIso)
             }
 
