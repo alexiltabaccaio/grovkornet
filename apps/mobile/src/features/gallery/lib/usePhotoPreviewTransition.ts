@@ -1,6 +1,5 @@
-import { useEffect, useRef, useState, useLayoutEffect } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useSharedValue, withTiming, runOnJS } from 'react-native-reanimated';
-import * as Haptics from '@shared/lib/haptics';
 import { GalleryItem } from './types';
 
 interface UsePhotoPreviewTransitionProps {
@@ -21,7 +20,6 @@ export const usePhotoPreviewTransition = ({
     : 0;
 
   const currentIndex = useSharedValue(initialIndex);
-  const pendingTeleportRef = useRef<number | null>(null);
   const animatingToIndexRef = useRef<number | null>(null);
 
   const [renderIndices, setRenderIndices] = useState<number[]>([
@@ -35,21 +33,12 @@ export const usePhotoPreviewTransition = ({
   const translateX = useSharedValue(-initialIndex * slotWidth);
   const dragOffset = useSharedValue(0);
 
-  useLayoutEffect(() => {
-    if (pendingTeleportRef.current !== null) {
-      const targetIndex = pendingTeleportRef.current;
-      pendingTeleportRef.current = null;
-      translateX.value = -targetIndex * slotWidth;
-    }
-  });
-
   const finalizeTransition = (newIndex: number, isManualSwipe: boolean) => {
     currentIndex.value = newIndex;
     animatingToIndexRef.current = null;
     setRenderIndices([newIndex - 1, newIndex, newIndex + 1]);
 
     if (isManualSwipe && photos[newIndex]) {
-      void Haptics.selectionAsync();
       if (onPhotoVisible) {
         onPhotoVisible(photos[newIndex]);
       }
@@ -66,7 +55,6 @@ export const usePhotoPreviewTransition = ({
   const finalizeTeleport = (targetIndex: number) => {
     currentIndex.value = targetIndex;
     animatingToIndexRef.current = null;
-    pendingTeleportRef.current = targetIndex;
     setSlotOverrides({});
     setRenderIndices([targetIndex - 1, targetIndex, targetIndex + 1]);
   };
@@ -89,12 +77,21 @@ export const usePhotoPreviewTransition = ({
       
       /* eslint-disable react-hooks/set-state-in-effect */
       setSlotOverrides({ [mockAdjacentIndex]: photos[idx] });
-      setRenderIndices([currentIndex.value - 1, currentIndex.value, currentIndex.value + 1, mockAdjacentIndex]);
+      setRenderIndices([
+        currentIndex.value - 1, 
+        currentIndex.value, 
+        currentIndex.value + 1, 
+        mockAdjacentIndex,
+        idx - 1,
+        idx,
+        idx + 1
+      ]);
       /* eslint-enable react-hooks/set-state-in-effect */
 
       const targetVal = -mockAdjacentIndex * slotWidth;
       translateX.value = withTiming(targetVal, { duration: 250 }, (finished) => {
         if (finished) {
+          translateX.value = -idx * slotWidth;
           runOnJS(finalizeTeleport)(idx);
         }
       });
