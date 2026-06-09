@@ -61,11 +61,17 @@ export interface FilmPresetPayload {
   hueBlue: number;
   huePurple: number;
   hueMagenta: number;
-  scanlinesHorizontal: boolean;
   scanlinesMode: number;
   scanlinesDensity: number;
   // @@GEN_FILM_PAYLOAD_END@@
 }
+
+export type GeneratedFilmExcludedKeys =
+  // @@GEN_FILM_EXCLUDED_START@@
+  | 'isSelfieCamera'
+  | 'scanlinesHorizontal'
+  // @@GEN_FILM_EXCLUDED_END@@
+  ;
 
 /**
  * Serialized Exposure parameters from BodyStore

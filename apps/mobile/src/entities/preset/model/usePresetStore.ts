@@ -134,7 +134,6 @@ export const DEFAULT_FILM_PAYLOAD: FilmPresetPayload = {
   hueBlue: DEFAULT_SELECTIVE_HUE,
   huePurple: DEFAULT_SELECTIVE_HUE,
   hueMagenta: DEFAULT_SELECTIVE_HUE,
-  scanlinesHorizontal: DEFAULT_SCANLINES_HORIZONTAL,
   scanlinesMode: DEFAULT_SCANLINES_MODE,
   scanlinesDensity: DEFAULT_SCANLINES_DENSITY,
   // @@GEN_DEFAULTS_END@@

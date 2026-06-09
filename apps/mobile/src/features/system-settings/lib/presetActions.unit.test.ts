@@ -1,7 +1,7 @@
 import { usePresetStore, DEFAULT_FILM_PAYLOAD, DEFAULT_BODY_PAYLOAD } from '@entities/preset';
 import { useFilmStore, setFilmParameterChangeListener } from '@entities/film';
 import { useBodyStore, setBodyParameterChangeListener } from '@entities/body';
-import { addPreset, applyPreset, markAsCustomized, removePreset, nextQuickPreset, prevQuickPreset } from './presetActions';
+import { addPreset, applyPreset, markAsCustomized, removePreset, nextQuickPreset, prevQuickPreset, arePayloadsEqual } from './presetActions';
 
 jest.mock('@grovkornet/engine', () => ({
   generatePresetPreview: jest.fn().mockResolvedValue('file:///cache/preset_preview_mock.jpg'),
@@ -324,6 +324,30 @@ describe('presetActions', () => {
       expect(usePresetStore.getState().activePresetId).toBe('default');
       expect(usePresetStore.getState().customizedPayload).toEqual(customizedPayload);
       expect(usePresetStore.getState().customizedThumbnailUri).toBe('file:///custom.jpg');
+
+      // Change a dynamic/excluded film parameter: scanlinesHorizontal
+      useFilmStore.getState().setScanlinesHorizontal(true);
+
+      jest.runAllTimers();
+
+      expect(usePresetStore.getState().activePresetId).toBe('default');
+      expect(usePresetStore.getState().customizedPayload).toEqual(customizedPayload);
+      expect(usePresetStore.getState().customizedThumbnailUri).toBe('file:///custom.jpg');
+    });
+  });
+
+  describe('arePayloadsEqual dynamic parameters', () => {
+    it('ignores scanlinesHorizontal when comparing preset payloads', () => {
+      const p1 = {
+        film: { ...DEFAULT_FILM_PAYLOAD, scanlinesHorizontal: true } as any,
+        body: DEFAULT_BODY_PAYLOAD,
+      };
+      const p2 = {
+        film: { ...DEFAULT_FILM_PAYLOAD, scanlinesHorizontal: false } as any,
+        body: DEFAULT_BODY_PAYLOAD,
+      };
+
+      expect(arePayloadsEqual(p1, p2)).toBe(true);
     });
   });
 });

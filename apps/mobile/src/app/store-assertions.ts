@@ -1,6 +1,6 @@
 import { FilmStore } from '@entities/film';
 import { BodyStore } from '@entities/body';
-import { FilmPresetPayload, BodyPresetPayload } from '@entities/preset';
+import { FilmPresetPayload, BodyPresetPayload, GeneratedFilmExcludedKeys } from '@entities/preset';
 
 // ============================================================================
 // TypeScript Exhaustiveness Guards
@@ -71,9 +71,10 @@ type FilmActionsKeys =
   | 'setHueBlue'
   | 'setHuePurple'
   | 'setHueMagenta'
-  | 'resetEffect';
+  | 'resetEffect'
+  | 'resetParameter';
 
-type FilmExcludedKeys = 'capabilities' | 'isSelfieCamera';
+type FilmExcludedKeys = 'capabilities' | GeneratedFilmExcludedKeys;
 
 type IsFilmStoreFullyCategorized = Exclude<
   keyof FilmStore,
@@ -101,7 +102,8 @@ type BodyActionsKeys =
   | 'setPreviewQuality'
   | 'setForce60fpsCrop'
   | 'setCapabilities'
-  | 'setZoom';
+  | 'setZoom'
+  | 'resetParameter';
 
 type BodyExcludedKeys =
   | 'fps'

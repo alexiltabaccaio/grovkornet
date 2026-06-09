@@ -1275,6 +1275,7 @@ parameters:
       resetGroup: scanlines
       store: film
     nitro: true
+    excludeFromPreset: true
   - name: scanlinesMode
     category: render
     kotlin:

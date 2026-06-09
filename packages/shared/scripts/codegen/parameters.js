@@ -550,6 +550,17 @@ function generateZustandStore(parameters) {
   
   const resetContent = cases.join('\n');
   replaceBetweenMarkers(FILE_PATHS.zustandStore, '      // @@GEN_RESET_START@@', '      // @@GEN_RESET_END@@', resetContent, '      ');
+
+  // 5. Generate Excluded Film Setters
+  const excludedParams = parameters.filter(p => p.zustand && (p.zustand.store || 'film') === 'film' && p.excludeFromPreset);
+  const excludedSettersContent = excludedParams
+    .map(p => {
+      const name = p.zustand.name || p.name;
+      const capitalized = name.charAt(0).toUpperCase() + name.slice(1);
+      return `'set${capitalized}',`;
+    })
+    .join('\n');
+  replaceBetweenMarkers(FILE_PATHS.zustandStore, '  // @@GEN_EXCLUDED_SETTERS_START@@', '  // @@GEN_EXCLUDED_SETTERS_END@@', excludedSettersContent, '  ');
 }
 
 function generateViewfinderProps(parameters) {
@@ -633,6 +644,16 @@ function generatePresetSettings(parameters) {
     })
     .join('\n');
   replaceBetweenMarkers(FILE_PATHS.presetTypes, '  // @@GEN_FILM_PAYLOAD_START@@', '  // @@GEN_FILM_PAYLOAD_END@@', fieldsContent, '  ');
+
+  // 1.5. Generate GeneratedFilmExcludedKeys union in types.ts
+  const excludedParams = parameters.filter(p => p.zustand && (p.zustand.store || 'film') === 'film' && p.excludeFromPreset);
+  const excludedContent = excludedParams
+    .map(p => {
+      const name = p.zustand.name || p.name;
+      return `| '${name}'`;
+    })
+    .join('\n');
+  replaceBetweenMarkers(FILE_PATHS.presetTypes, '  // @@GEN_FILM_EXCLUDED_START@@', '  // @@GEN_FILM_EXCLUDED_END@@', excludedContent, '  ');
 
   // 2. Generate @grovkornet/shared imports in usePresetStore.ts
   const defaults = new Set(['DEFAULT_ISO', 'DEFAULT_EV', 'DEFAULT_SHUTTER_SPEED']);
