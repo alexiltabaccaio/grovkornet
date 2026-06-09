@@ -15,6 +15,8 @@ import com.grovkornet.nativefilmcamera.state.CameraConfiguration
 import com.grovkornet.nativefilmcamera.BuildConfig
 import android.hardware.camera2.CameraCharacteristics
 import android.hardware.camera2.CameraManager
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.ProcessLifecycleOwner
 
 class CameraControlManager(
     private val context: Context,
@@ -115,18 +117,22 @@ class CameraControlManager(
             }
 
             val hasFlash = camera.cameraInfo.hasFlashUnit()
+            val isInForeground = ProcessLifecycleOwner.get().lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)
+
             if (hasFlash) {
                 // Clear any direct system torch we turned on
-                try {
-                    val cameraManager = context.getSystemService(Context.CAMERA_SERVICE) as CameraManager
-                    for (id in cameraManager.cameraIdList) {
-                        val chars = cameraManager.getCameraCharacteristics(id)
-                        if (chars.get(CameraCharacteristics.FLASH_INFO_AVAILABLE) == true) {
-                            cameraManager.setTorchMode(id, false)
+                if (isInForeground) {
+                    try {
+                        val cameraManager = context.getSystemService(Context.CAMERA_SERVICE) as CameraManager
+                        for (id in cameraManager.cameraIdList) {
+                            val chars = cameraManager.getCameraCharacteristics(id)
+                            if (chars.get(CameraCharacteristics.FLASH_INFO_AVAILABLE) == true) {
+                                cameraManager.setTorchMode(id, false)
+                            }
                         }
+                    } catch (e: Exception) {
+                        // Ignore, it might already be controlled by CameraX or closed
                     }
-                } catch (e: Exception) {
-                    // Ignore, it might already be controlled by CameraX or closed
                 }
 
                 if (config.torchEnabled) {
@@ -146,52 +152,54 @@ class CameraControlManager(
                 // Disable torch via CameraX on current camera
                 camera.cameraControl.enableTorch(false)
 
-                // Turn physical torch on/off using CameraManager on the camera ID that does have a flash
-                try {
-                    val cameraManager = context.getSystemService(Context.CAMERA_SERVICE) as CameraManager
-                    var fallbackCameraId: String? = null
-                    for (id in cameraManager.cameraIdList) {
-                        val chars = cameraManager.getCameraCharacteristics(id)
-                        if (chars.get(CameraCharacteristics.FLASH_INFO_AVAILABLE) == true) {
-                            fallbackCameraId = id
-                            break
+                if (isInForeground) {
+                    // Turn physical torch on/off using CameraManager on the camera ID that does have a flash
+                    try {
+                        val cameraManager = context.getSystemService(Context.CAMERA_SERVICE) as CameraManager
+                        var fallbackCameraId: String? = null
+                        for (id in cameraManager.cameraIdList) {
+                            val chars = cameraManager.getCameraCharacteristics(id)
+                            if (chars.get(CameraCharacteristics.FLASH_INFO_AVAILABLE) == true) {
+                                fallbackCameraId = id
+                                break
+                            }
                         }
-                    }
-                    if (fallbackCameraId != null) {
-                        val applyTorch = {
-                            if (config.torchEnabled) {
-                                if (android.os.Build.VERSION.SDK_INT >= 33 && config.torchStrength > 1) {
-                                    try {
-                                        cameraManager.turnOnTorchWithStrengthLevel(fallbackCameraId, config.torchStrength)
-                                    } catch (e: Exception) {
+                        if (fallbackCameraId != null) {
+                            val applyTorch = {
+                                if (config.torchEnabled) {
+                                    if (android.os.Build.VERSION.SDK_INT >= 33 && config.torchStrength > 1) {
+                                        try {
+                                            cameraManager.turnOnTorchWithStrengthLevel(fallbackCameraId, config.torchStrength)
+                                        } catch (e: Exception) {
+                                            cameraManager.setTorchMode(fallbackCameraId, true)
+                                        }
+                                    } else {
                                         cameraManager.setTorchMode(fallbackCameraId, true)
                                     }
                                 } else {
-                                    cameraManager.setTorchMode(fallbackCameraId, true)
+                                    cameraManager.setTorchMode(fallbackCameraId, false)
                                 }
-                            } else {
-                                cameraManager.setTorchMode(fallbackCameraId, false)
                             }
-                        }
 
-                        try {
-                            applyTorch()
-                        } catch (e: Exception) {
-                            Log.w(TAG, "Failed to control system-level torch immediately, will retry")
-                        }
-
-                        // Proactively retry after 800ms to allow CameraX to finish closing the previous camera.
-                        // We read the latest config.torchEnabled state inside the lambda.
-                        android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({
                             try {
                                 applyTorch()
                             } catch (e: Exception) {
-                                Log.e(TAG, "Failed to control system-level torch after delay", e)
+                                Log.w(TAG, "Failed to control system-level torch immediately, will retry")
                             }
-                        }, 800)
+
+                            // Proactively retry after 800ms to allow CameraX to finish closing the previous camera.
+                            // We read the latest config.torchEnabled state inside the lambda.
+                            android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({
+                                try {
+                                    applyTorch()
+                                } catch (e: Exception) {
+                                    Log.e(TAG, "Failed to control system-level torch after delay", e)
+                                }
+                            }, 800)
+                        }
+                    } catch (e: Exception) {
+                        Log.e(TAG, "Failed to control system-level torch", e)
                     }
-                } catch (e: Exception) {
-                    Log.e(TAG, "Failed to control system-level torch", e)
                 }
             }
 

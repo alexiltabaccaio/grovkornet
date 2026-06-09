@@ -73,7 +73,8 @@ class CameraTorchManager(
     }
 
     override fun onStop(owner: LifecycleOwner) {
-        restoreTorchIfLogicalEnabled()
+        // Do not force the torch back on when the app goes to the background.
+        // It conflicts with the system torch state and user expectations.
     }
 
     companion object {
