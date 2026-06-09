@@ -20,7 +20,7 @@ interface UsePhotoPreviewGesturesProps {
   currentIndex: SharedValue<number>;
   rotationY?: SharedValue<number>;
   selectedPhoto: GalleryItem | null;
-  prepareTransition: (newIndex: number) => void;
+  prepareTransition: (newIndex: number, isManualSwipe?: boolean) => void;
   finalizeTransition: (newIndex: number, isManualSwipe: boolean) => void;
 }
 
@@ -161,9 +161,10 @@ export const usePhotoPreviewGestures = ({
 
         const targetTranslateX = -targetIndex * slotWidth;
 
-        runOnJS(prepareTransition)(targetIndex);
+        const isChangingPhoto = targetIndex !== currentIndex.value;
+        runOnJS(prepareTransition)(targetIndex, isChangingPhoto);
 
-        if (targetIndex !== currentIndex.value) {
+        if (isChangingPhoto) {
           translateX.value = withTiming(
             targetTranslateX,
             {

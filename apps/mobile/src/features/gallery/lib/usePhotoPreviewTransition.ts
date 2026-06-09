@@ -37,19 +37,20 @@ export const usePhotoPreviewTransition = ({
     currentIndex.value = newIndex;
     animatingToIndexRef.current = null;
     setRenderIndices([newIndex - 1, newIndex, newIndex + 1]);
-
-    if (isManualSwipe && photos[newIndex]) {
-      if (onPhotoVisible) {
-        onPhotoVisible(photos[newIndex]);
-      }
-    }
   };
 
-  const prepareTransition = (targetIndex: number) => {
+  const prepareTransition = (targetIndex: number, isManualSwipe?: boolean) => {
+    if (isManualSwipe) {
+      animatingToIndexRef.current = targetIndex;
+    }
     setRenderIndices((prev) => {
       const newIndices = new Set([...prev, targetIndex - 1, targetIndex, targetIndex + 1]);
       return Array.from(newIndices);
     });
+    
+    if (isManualSwipe && onPhotoVisible && photos[targetIndex]) {
+      onPhotoVisible(photos[targetIndex]);
+    }
   };
 
   const finalizeTeleport = (targetIndex: number) => {
