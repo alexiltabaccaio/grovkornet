@@ -23,8 +23,12 @@ object WatermarkEngine {
     @JvmStatic
     private external fun nativeVerifySignature(bitmap: Bitmap): Boolean
 
+    // Delegates to allow JNI call overriding in JVM host unit tests
+    internal var nativeEmbedDelegate: (Bitmap) -> Boolean = { nativeEmbedSignature(it) }
+    internal var nativeVerifyDelegate: (Bitmap) -> Boolean = { nativeVerifySignature(it) }
+
     fun embedSignature(bitmap: Bitmap): Bitmap {
-        val success = nativeEmbedSignature(bitmap)
+        val success = nativeEmbedDelegate(bitmap)
         if (!success) {
             Log.e(TAG, "Failed to embed watermark signature natively")
         }
@@ -60,7 +64,7 @@ object WatermarkEngine {
                 if (bitmap == null) {
                     return false
                 }
-                val result = nativeVerifySignature(bitmap)
+                val result = nativeVerifyDelegate(bitmap)
                 bitmap.recycle()
                 return result
             } finally {
