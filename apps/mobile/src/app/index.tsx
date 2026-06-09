@@ -25,7 +25,9 @@ import * as SystemUI from 'expo-system-ui';
 LogBox.ignoreAllLogs(true);
 
 // Set root background color at runtime to ensure the area under the nav bar is colored correctly
-void SystemUI.setBackgroundColorAsync('#0e0e0e');
+SystemUI.setBackgroundColorAsync('#0e0e0e').catch(() => {
+  // Ignore error if the current activity is not available during bundle evaluation
+});
 
 export function App() {
   useEffect(() => {

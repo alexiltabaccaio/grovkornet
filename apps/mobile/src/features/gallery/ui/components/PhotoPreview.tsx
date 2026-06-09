@@ -29,6 +29,7 @@ export const PhotoPreview = ({ selectedPhoto, photos, onPhotoVisible, rotationY 
     slotOverrides,
     translateX,
     dragOffset,
+    prepareTransition,
     finalizeTransition,
   } = usePhotoPreviewTransition({
     selectedPhoto,
@@ -52,6 +53,7 @@ export const PhotoPreview = ({ selectedPhoto, photos, onPhotoVisible, rotationY 
     currentIndex,
     rotationY,
     selectedPhoto,
+    prepareTransition,
     finalizeTransition,
   });
 

@@ -56,6 +56,13 @@ export const usePhotoPreviewTransition = ({
     }
   };
 
+  const prepareTransition = (targetIndex: number) => {
+    setRenderIndices((prev) => {
+      const newIndices = new Set([...prev, targetIndex - 1, targetIndex, targetIndex + 1]);
+      return Array.from(newIndices);
+    });
+  };
+
   const finalizeTeleport = (targetIndex: number) => {
     currentIndex.value = targetIndex;
     animatingToIndexRef.current = null;
@@ -100,6 +107,7 @@ export const usePhotoPreviewTransition = ({
     slotOverrides,
     translateX,
     dragOffset,
+    prepareTransition,
     finalizeTransition,
   };
 };

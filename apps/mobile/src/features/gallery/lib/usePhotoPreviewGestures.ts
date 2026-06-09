@@ -4,7 +4,6 @@ import {
   cancelAnimation,
   withTiming,
   withDecay,
-  withSpring,
   runOnJS,
   SharedValue,
 } from 'react-native-reanimated';
@@ -21,6 +20,7 @@ interface UsePhotoPreviewGesturesProps {
   currentIndex: SharedValue<number>;
   rotationY?: SharedValue<number>;
   selectedPhoto: GalleryItem | null;
+  prepareTransition: (newIndex: number) => void;
   finalizeTransition: (newIndex: number, isManualSwipe: boolean) => void;
 }
 
@@ -34,6 +34,7 @@ export const usePhotoPreviewGestures = ({
   currentIndex,
   rotationY,
   selectedPhoto,
+  prepareTransition,
   finalizeTransition,
 }: UsePhotoPreviewGesturesProps) => {
   const zoomScale = useSharedValue(1);
@@ -140,36 +141,41 @@ export const usePhotoPreviewGestures = ({
       } else {
         const dragThreshold = width / 2;
         const velocityThreshold = 500;
-        const idx = currentIndex.value;
-        const currentBaseX = -idx * slotWidth;
+        
+        // Calculate logical index at the start of THIS drag 
+        // (allows jumping 2+ photos during rapid swiping)
+        const startVirtualIndex = Math.round(-dragOffset.value / slotWidth);
+        const startIdx = Math.max(0, Math.min(photosLength - 1, startVirtualIndex));
+        
+        const currentBaseX = -startIdx * slotWidth;
         const shiftX = translateX.value - currentBaseX;
         const velocity = event.velocityX;
 
-        let targetIndex = idx;
+        let targetIndex = startIdx;
 
         if (shiftX > dragThreshold || velocity > velocityThreshold) {
-          if (idx > 0) targetIndex = idx - 1;
+          if (startIdx > 0) targetIndex = startIdx - 1;
         } else if (shiftX < -dragThreshold || velocity < -velocityThreshold) {
-          if (idx < photosLength - 1) targetIndex = idx + 1;
+          if (startIdx < photosLength - 1) targetIndex = startIdx + 1;
         }
 
         const targetTranslateX = -targetIndex * slotWidth;
 
-        if (targetIndex !== idx) {
-          translateX.value = withSpring(
+        runOnJS(prepareTransition)(targetIndex);
+
+        if (targetIndex !== currentIndex.value) {
+          translateX.value = withTiming(
             targetTranslateX,
             {
-              velocity: velocity,
-              overshootClamping: true,
+              duration: 250,
             },
             (finished) => {
               if (finished) runOnJS(finalizeTransition)(targetIndex, true);
             }
           );
         } else {
-          translateX.value = withSpring(targetTranslateX, {
-            velocity: velocity,
-            overshootClamping: true,
+          translateX.value = withTiming(targetTranslateX, {
+            duration: 250,
           });
         }
       }
@@ -239,6 +245,7 @@ export const usePhotoPreviewGestures = ({
     .numberOfTaps(2)
     .maxDelay(200)
     .maxDuration(250)
+    .maxDistance(20)
     .onEnd((event) => {
       'worklet';
       if (isZoomed.value) {

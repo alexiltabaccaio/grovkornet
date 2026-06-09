@@ -56,6 +56,7 @@ const mockDoubleTapGesture = {
   numberOfTaps: jest.fn().mockReturnThis(),
   maxDelay: jest.fn().mockReturnThis(),
   maxDuration: jest.fn().mockReturnThis(),
+  maxDistance: jest.fn().mockReturnThis(),
   onEnd: jest.fn().mockImplementation((cb) => {
     capturedDoubleTapCallbacks.onEnd = cb;
     return mockDoubleTapGesture;
@@ -80,6 +81,7 @@ describe('usePhotoPreviewGestures', () => {
   let mockDragOffset: { value: number };
   let mockCurrentIndex: { value: number };
   let mockRotationY: { value: number };
+  const mockPrepareTransition = jest.fn();
   const mockFinalizeTransition = jest.fn();
 
   beforeAll(() => {
@@ -135,6 +137,7 @@ describe('usePhotoPreviewGestures', () => {
         currentIndex: mockCurrentIndex as any,
         rotationY: mockRotationY as any,
         selectedPhoto: { id: '1', uri: 'file:///test/1.jpg' },
+        prepareTransition: mockPrepareTransition,
         finalizeTransition: mockFinalizeTransition,
       })
     );
