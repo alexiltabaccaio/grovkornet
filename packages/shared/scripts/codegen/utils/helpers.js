@@ -1,0 +1,73 @@
+const fs = require('fs');
+const path = require('path');
+const { PROJECT_ROOT } = require('./config-loader');
+
+// File paths relative to PROJECT_ROOT
+const FILE_PATHS = {
+  tsInterface: 'packages/engine/src/index.ts',
+  kotlinModule: 'packages/engine/android/src/main/java/com/grovkornet/nativefilmcamera/NativeFilmCameraModule.kt',
+  kotlinConfig: 'packages/engine/android/src/main/java/com/grovkornet/nativefilmcamera/state/CameraConfiguration.kt',
+  cppHeader: 'packages/engine/android/src/main/cpp/core/RenderParams.h',
+  cppSource: 'packages/engine/android/src/main/cpp/core/GrovkornetEngine.cpp',
+  zustandTypes: 'apps/mobile/src/entities/film/model/types.ts',
+  zustandStore: 'apps/mobile/src/entities/film/model/useFilmStore.ts',
+  bodyTypes: 'apps/mobile/src/entities/body/model/types.ts',
+  bodyStore: 'apps/mobile/src/entities/body/model/useBodyStore.ts',
+  lensTypes: 'apps/mobile/src/entities/lens/model/types.ts',
+  lensStore: 'apps/mobile/src/entities/lens/model/useLensStore.ts',
+  zustandViewfinder: 'apps/mobile/src/widgets/viewfinder/ui/Viewfinder.tsx',
+  presetTypes: 'apps/mobile/src/entities/preset/model/types.ts',
+  presetStore: 'apps/mobile/src/entities/preset/model/usePresetStore.ts',
+  nitroSpec: 'packages/engine/src/NitroCameraConfiguration.nitro.ts',
+  nitroImpl: 'packages/engine/android/src/main/java/com/grovkornet/nativefilmcamera/HybridNitroCameraConfiguration.kt'
+};
+
+function replaceBetweenMarkers(filePath, startMarker, endMarker, newContent, indent = '') {
+  const absolutePath = path.resolve(PROJECT_ROOT, filePath);
+  if (!fs.existsSync(absolutePath)) {
+    throw new Error(`Target file not found: ${filePath}`);
+  }
+  
+  let content = fs.readFileSync(absolutePath, 'utf8');
+  
+  // Detect original line endings
+  const hasCrlf = content.includes('\r\n');
+  const lineEnding = hasCrlf ? '\r\n' : '\n';
+  
+  // Normalize to LF for indexing
+  content = content.replace(/\r\n/g, '\n');
+  
+  const startIndex = content.indexOf(startMarker);
+  const endIndex = content.indexOf(endMarker);
+  
+  if (startIndex === -1) {
+    throw new Error(`Start marker "${startMarker}" not found in ${filePath}`);
+  }
+  if (endIndex === -1) {
+    throw new Error(`End marker "${endMarker}" not found in ${filePath}`);
+  }
+  if (startIndex > endIndex) {
+    throw new Error(`Markers are out of order in ${filePath}`);
+  }
+  
+  const before = content.substring(0, startIndex + startMarker.length);
+  const after = content.substring(endIndex);
+  
+  // Indent content lines
+  const indentedContent = newContent
+    .split('\n')
+    .map(line => line.trim() ? indent + line : '')
+    .join('\n');
+    
+  const updated = before + '\n' + indentedContent + '\n' + indent + after.trimStart();
+  
+  // Write back matching the original line ending format
+  fs.writeFileSync(absolutePath, updated.split('\n').join(lineEnding), 'utf8');
+  console.log(`Successfully updated: ${filePath}`);
+}
+
+module.exports = {
+  FILE_PATHS,
+  replaceBetweenMarkers,
+  PROJECT_ROOT
+};

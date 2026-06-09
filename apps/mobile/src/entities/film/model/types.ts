@@ -8,6 +8,10 @@ export interface FilmCapabilities {
 
 interface FilmState {
   // @@GEN_STATE_START@@
+  noiseReductionMode: SharedValue<number>;
+  noiseReductionAuto: SharedValue<boolean>;
+  temperatureAuto: SharedValue<boolean>;
+  isSelfieCamera: SharedValue<boolean>;
   saturation: SharedValue<number>;
   contrast: SharedValue<number>;
   grainIntensity: SharedValue<number>;
@@ -42,10 +46,6 @@ interface FilmState {
   grainRoughness: SharedValue<number>;
   grainEnabled: SharedValue<boolean>;
   bloomEnabled: SharedValue<boolean>;
-  noiseReductionMode: SharedValue<number>;
-  noiseReductionAuto: SharedValue<boolean>;
-  temperatureAuto: SharedValue<boolean>;
-  isSelfieCamera: SharedValue<boolean>;
   blackLevel: SharedValue<number>;
   highlights: SharedValue<number>;
   pivot: SharedValue<number>;
@@ -75,6 +75,10 @@ interface FilmState {
 
 interface FilmActions {
   // @@GEN_ACTIONS_START@@
+  setNoiseReductionMode: (mode: number) => void;
+  setNoiseReductionAuto: (value: boolean) => void;
+  setTemperatureAuto: (value: boolean) => void;
+  setIsSelfieCamera: (value: boolean) => void;
   setSaturation: (value: number) => void;
   setContrast: (value: number) => void;
   setGrainIntensity: (value: number) => void;
@@ -109,10 +113,6 @@ interface FilmActions {
   setGrainRoughness: (value: number) => void;
   setGrainEnabled: (value: boolean) => void;
   setBloomEnabled: (value: boolean) => void;
-  setNoiseReductionMode: (mode: number) => void;
-  setNoiseReductionAuto: (value: boolean) => void;
-  setTemperatureAuto: (value: boolean) => void;
-  setIsSelfieCamera: (value: boolean) => void;
   setBlackLevel: (value: number) => void;
   setHighlights: (value: number) => void;
   setPivot: (value: number) => void;

@@ -2,6 +2,17 @@ import { useBodyStore } from './useBodyStore';
 import { DEFAULT_ISO, DEFAULT_EV, DEFAULT_SHUTTER_SPEED, DEFAULT_ZOOM, DEFAULT_TORCH_STRENGTH } from '@grovkornet/shared';
 
 describe('useBodyStore', () => {
+  beforeEach(() => {
+    const store = useBodyStore.getState();
+    store.iso.value = DEFAULT_ISO;
+    store.shutterSpeed.value = DEFAULT_SHUTTER_SPEED;
+    store.ev.value = DEFAULT_EV;
+    store.isoAuto.value = true;
+    store.shutterSpeedAuto.value = true;
+    store.evAuto.value = true;
+    store.zoom.value = DEFAULT_ZOOM;
+  });
+
   it('initializes correctly', () => {
     const state = useBodyStore.getState();
     expect(state.iso.value).toBe(DEFAULT_ISO);

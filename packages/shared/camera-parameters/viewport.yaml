@@ -1,0 +1,11 @@
+parameters:
+  - name: viewportWidth
+    category: viewport
+    kotlin:
+      type: Float
+      default: 1080f
+  - name: viewportHeight
+    category: viewport
+    kotlin:
+      type: Float
+      default: 1920f

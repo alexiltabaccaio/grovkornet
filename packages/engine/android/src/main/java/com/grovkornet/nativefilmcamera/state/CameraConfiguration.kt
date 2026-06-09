@@ -180,75 +180,8 @@ FloatArray(61).apply {
 
 fun CameraConfiguration.loadFromMap(payload: Map<String, Any>) {
     // @@GEN_MAP_LOADER_START@@
-    payload["saturation"]?.let { rawValue ->
-        (rawValue as? Number)?.toFloat()?.let { saturation = it }
-    }
-    payload["contrast"]?.let { rawValue ->
-        (rawValue as? Number)?.toFloat()?.let { contrast = it }
-    }
-    payload["grainIntensity"]?.let { rawValue ->
-        (rawValue as? Number)?.toFloat()?.let { grainIntensity = it }
-    }
-    payload["grainChroma"]?.let { rawValue ->
-        (rawValue as? Number)?.toFloat()?.let { grainChroma = it }
-    }
-    payload["grainSize"]?.let { rawValue ->
-        (rawValue as? Number)?.toFloat()?.let { grainSize = it }
-    }
-    payload["grainSpeed"]?.let { rawValue ->
-        (rawValue as? Number)?.toFloat()?.let { grainSpeed = it }
-    }
-    payload["vignetteIntensity"]?.let { rawValue ->
-        (rawValue as? Number)?.toFloat()?.let { vignetteIntensity = it }
-    }
-    payload["chromaShift"]?.let { rawValue ->
-        (rawValue as? Number)?.toFloat()?.let { chromaShift = it }
-    }
     payload["ev"]?.let { rawValue ->
         (rawValue as? Number)?.toFloat()?.let { ev = it }
-    }
-    val raw_whiteBalance = payload["temperature"] ?: payload["whiteBalance"]
-    raw_whiteBalance?.let { rawValue ->
-        (rawValue as? Number)?.toFloat()?.let { whiteBalance = it }
-    }
-    payload["tint"]?.let { rawValue ->
-        (rawValue as? Number)?.toFloat()?.let { tint = it }
-    }
-    payload["bloomIntensity"]?.let { rawValue ->
-        (rawValue as? Number)?.toFloat()?.let { bloomIntensity = it }
-    }
-    payload["chromaticAberration"]?.let { rawValue ->
-        (rawValue as? Number)?.toFloat()?.let { aberration = it }
-    }
-    payload["chromaShiftDirection"]?.let { rawValue ->
-        (rawValue as? Number)?.toInt()?.let { chromaShiftDirection = it }
-    }
-    payload["sharpening"]?.let { rawValue ->
-        (rawValue as? Number)?.toFloat()?.let { sharpening = it }
-    }
-    payload["satRed"]?.let { rawValue ->
-        (rawValue as? Number)?.toFloat()?.let { satRed = it }
-    }
-    payload["satOrange"]?.let { rawValue ->
-        (rawValue as? Number)?.toFloat()?.let { satOrange = it }
-    }
-    payload["satYellow"]?.let { rawValue ->
-        (rawValue as? Number)?.toFloat()?.let { satYellow = it }
-    }
-    payload["satGreen"]?.let { rawValue ->
-        (rawValue as? Number)?.toFloat()?.let { satGreen = it }
-    }
-    payload["satCyan"]?.let { rawValue ->
-        (rawValue as? Number)?.toFloat()?.let { satCyan = it }
-    }
-    payload["satBlue"]?.let { rawValue ->
-        (rawValue as? Number)?.toFloat()?.let { satBlue = it }
-    }
-    payload["satPurple"]?.let { rawValue ->
-        (rawValue as? Number)?.toFloat()?.let { satPurple = it }
-    }
-    payload["satMagenta"]?.let { rawValue ->
-        (rawValue as? Number)?.toFloat()?.let { satMagenta = it }
     }
     val raw_targetFps = payload["fpsSetting"] ?: payload["targetFps"]
     raw_targetFps?.let { rawValue ->
@@ -257,45 +190,6 @@ fun CameraConfiguration.loadFromMap(payload: Map<String, Any>) {
     val raw_aspectRatio = payload["aspectRatio"] ?: payload["cameraAspectRatio"]
     raw_aspectRatio?.let { rawValue ->
         (rawValue as? Number)?.toInt()?.let { aspectRatio = it }
-    }
-    payload["aberrationInvert"]?.let { rawValue ->
-        (rawValue as? Boolean)?.let { aberrationInvert = it }
-    }
-    payload["boundMagentaRed"]?.let { rawValue ->
-        (rawValue as? Number)?.toFloat()?.let { boundMagentaRed = it }
-    }
-    payload["boundRedOrange"]?.let { rawValue ->
-        (rawValue as? Number)?.toFloat()?.let { boundRedOrange = it }
-    }
-    payload["boundOrangeYellow"]?.let { rawValue ->
-        (rawValue as? Number)?.toFloat()?.let { boundOrangeYellow = it }
-    }
-    payload["boundYellowGreen"]?.let { rawValue ->
-        (rawValue as? Number)?.toFloat()?.let { boundYellowGreen = it }
-    }
-    payload["boundGreenCyan"]?.let { rawValue ->
-        (rawValue as? Number)?.toFloat()?.let { boundGreenCyan = it }
-    }
-    payload["boundCyanBlue"]?.let { rawValue ->
-        (rawValue as? Number)?.toFloat()?.let { boundCyanBlue = it }
-    }
-    payload["boundBluePurple"]?.let { rawValue ->
-        (rawValue as? Number)?.toFloat()?.let { boundBluePurple = it }
-    }
-    payload["boundPurpleMagenta"]?.let { rawValue ->
-        (rawValue as? Number)?.toFloat()?.let { boundPurpleMagenta = it }
-    }
-    payload["grainRoughness"]?.let { rawValue ->
-        (rawValue as? Number)?.toFloat()?.let { grainRoughness = it }
-    }
-    payload["panelY"]?.let { rawValue ->
-        (rawValue as? Number)?.toFloat()?.let { panelY = it }
-    }
-    payload["grainEnabled"]?.let { rawValue ->
-        (rawValue as? Boolean)?.let { grainEnabled = it }
-    }
-    payload["bloomEnabled"]?.let { rawValue ->
-        (rawValue as? Boolean)?.let { bloomEnabled = it }
     }
     val raw_noiseReduction = payload["noiseReductionMode"] ?: payload["noiseReduction"]
     raw_noiseReduction?.let { rawValue ->
@@ -350,11 +244,114 @@ fun CameraConfiguration.loadFromMap(payload: Map<String, Any>) {
     payload["isSelfieCamera"]?.let { rawValue ->
         (rawValue as? Boolean)?.let { isSelfieCamera = it }
     }
-    payload["viewportWidth"]?.let { rawValue ->
-        (rawValue as? Number)?.toFloat()?.let { viewportWidth = it }
+    payload["zoom"]?.let { rawValue ->
+        (rawValue as? Number)?.toFloat()?.let { zoom = it }
     }
-    payload["viewportHeight"]?.let { rawValue ->
-        (rawValue as? Number)?.toFloat()?.let { viewportHeight = it }
+    payload["saturation"]?.let { rawValue ->
+        (rawValue as? Number)?.toFloat()?.let { saturation = it }
+    }
+    payload["contrast"]?.let { rawValue ->
+        (rawValue as? Number)?.toFloat()?.let { contrast = it }
+    }
+    payload["grainIntensity"]?.let { rawValue ->
+        (rawValue as? Number)?.toFloat()?.let { grainIntensity = it }
+    }
+    payload["grainChroma"]?.let { rawValue ->
+        (rawValue as? Number)?.toFloat()?.let { grainChroma = it }
+    }
+    payload["grainSize"]?.let { rawValue ->
+        (rawValue as? Number)?.toFloat()?.let { grainSize = it }
+    }
+    payload["grainSpeed"]?.let { rawValue ->
+        (rawValue as? Number)?.toFloat()?.let { grainSpeed = it }
+    }
+    payload["vignetteIntensity"]?.let { rawValue ->
+        (rawValue as? Number)?.toFloat()?.let { vignetteIntensity = it }
+    }
+    payload["chromaShift"]?.let { rawValue ->
+        (rawValue as? Number)?.toFloat()?.let { chromaShift = it }
+    }
+    val raw_whiteBalance = payload["temperature"] ?: payload["whiteBalance"]
+    raw_whiteBalance?.let { rawValue ->
+        (rawValue as? Number)?.toFloat()?.let { whiteBalance = it }
+    }
+    payload["tint"]?.let { rawValue ->
+        (rawValue as? Number)?.toFloat()?.let { tint = it }
+    }
+    payload["bloomIntensity"]?.let { rawValue ->
+        (rawValue as? Number)?.toFloat()?.let { bloomIntensity = it }
+    }
+    payload["chromaticAberration"]?.let { rawValue ->
+        (rawValue as? Number)?.toFloat()?.let { aberration = it }
+    }
+    payload["chromaShiftDirection"]?.let { rawValue ->
+        (rawValue as? Number)?.toInt()?.let { chromaShiftDirection = it }
+    }
+    payload["sharpening"]?.let { rawValue ->
+        (rawValue as? Number)?.toFloat()?.let { sharpening = it }
+    }
+    payload["satRed"]?.let { rawValue ->
+        (rawValue as? Number)?.toFloat()?.let { satRed = it }
+    }
+    payload["satOrange"]?.let { rawValue ->
+        (rawValue as? Number)?.toFloat()?.let { satOrange = it }
+    }
+    payload["satYellow"]?.let { rawValue ->
+        (rawValue as? Number)?.toFloat()?.let { satYellow = it }
+    }
+    payload["satGreen"]?.let { rawValue ->
+        (rawValue as? Number)?.toFloat()?.let { satGreen = it }
+    }
+    payload["satCyan"]?.let { rawValue ->
+        (rawValue as? Number)?.toFloat()?.let { satCyan = it }
+    }
+    payload["satBlue"]?.let { rawValue ->
+        (rawValue as? Number)?.toFloat()?.let { satBlue = it }
+    }
+    payload["satPurple"]?.let { rawValue ->
+        (rawValue as? Number)?.toFloat()?.let { satPurple = it }
+    }
+    payload["satMagenta"]?.let { rawValue ->
+        (rawValue as? Number)?.toFloat()?.let { satMagenta = it }
+    }
+    payload["aberrationInvert"]?.let { rawValue ->
+        (rawValue as? Boolean)?.let { aberrationInvert = it }
+    }
+    payload["boundMagentaRed"]?.let { rawValue ->
+        (rawValue as? Number)?.toFloat()?.let { boundMagentaRed = it }
+    }
+    payload["boundRedOrange"]?.let { rawValue ->
+        (rawValue as? Number)?.toFloat()?.let { boundRedOrange = it }
+    }
+    payload["boundOrangeYellow"]?.let { rawValue ->
+        (rawValue as? Number)?.toFloat()?.let { boundOrangeYellow = it }
+    }
+    payload["boundYellowGreen"]?.let { rawValue ->
+        (rawValue as? Number)?.toFloat()?.let { boundYellowGreen = it }
+    }
+    payload["boundGreenCyan"]?.let { rawValue ->
+        (rawValue as? Number)?.toFloat()?.let { boundGreenCyan = it }
+    }
+    payload["boundCyanBlue"]?.let { rawValue ->
+        (rawValue as? Number)?.toFloat()?.let { boundCyanBlue = it }
+    }
+    payload["boundBluePurple"]?.let { rawValue ->
+        (rawValue as? Number)?.toFloat()?.let { boundBluePurple = it }
+    }
+    payload["boundPurpleMagenta"]?.let { rawValue ->
+        (rawValue as? Number)?.toFloat()?.let { boundPurpleMagenta = it }
+    }
+    payload["grainRoughness"]?.let { rawValue ->
+        (rawValue as? Number)?.toFloat()?.let { grainRoughness = it }
+    }
+    payload["panelY"]?.let { rawValue ->
+        (rawValue as? Number)?.toFloat()?.let { panelY = it }
+    }
+    payload["grainEnabled"]?.let { rawValue ->
+        (rawValue as? Boolean)?.let { grainEnabled = it }
+    }
+    payload["bloomEnabled"]?.let { rawValue ->
+        (rawValue as? Boolean)?.let { bloomEnabled = it }
     }
     payload["blackLevel"]?.let { rawValue ->
         (rawValue as? Number)?.toFloat()?.let { blackLevel = it }
@@ -376,9 +373,6 @@ fun CameraConfiguration.loadFromMap(payload: Map<String, Any>) {
     }
     payload["pivotAuto"]?.let { rawValue ->
         (rawValue as? Boolean)?.let { pivotAuto = it }
-    }
-    payload["zoom"]?.let { rawValue ->
-        (rawValue as? Number)?.toFloat()?.let { zoom = it }
     }
     payload["pixelationFactor"]?.let { rawValue ->
         (rawValue as? Number)?.toFloat()?.let { pixelationFactor = it }
@@ -427,6 +421,12 @@ fun CameraConfiguration.loadFromMap(payload: Map<String, Any>) {
     }
     payload["scanlinesDensity"]?.let { rawValue ->
         (rawValue as? Number)?.toFloat()?.let { scanlinesDensity = it }
+    }
+    payload["viewportWidth"]?.let { rawValue ->
+        (rawValue as? Number)?.toFloat()?.let { viewportWidth = it }
+    }
+    payload["viewportHeight"]?.let { rawValue ->
+        (rawValue as? Number)?.toFloat()?.let { viewportHeight = it }
     }
     // @@GEN_MAP_LOADER_END@@
 }

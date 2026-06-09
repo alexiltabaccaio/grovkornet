@@ -4,6 +4,9 @@
  */
 export interface FilmPresetPayload {
   // @@GEN_FILM_PAYLOAD_START@@
+  noiseReductionMode: number;
+  noiseReductionAuto: boolean;
+  temperatureAuto: boolean;
   saturation: number;
   contrast: number;
   grainIntensity: number;
@@ -38,9 +41,6 @@ export interface FilmPresetPayload {
   grainRoughness: number;
   grainEnabled: boolean;
   bloomEnabled: boolean;
-  noiseReductionMode: number;
-  noiseReductionAuto: boolean;
-  temperatureAuto: boolean;
   blackLevel: number;
   highlights: number;
   pivot: number;

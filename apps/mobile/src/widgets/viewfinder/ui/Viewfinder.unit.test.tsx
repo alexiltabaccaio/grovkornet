@@ -22,6 +22,7 @@ describe('Viewfinder', () => {
     filmStore.satRed.value = 75.0;
     filmStore.satBlue.value = 25.0;
     bodyStore.iso.value = 400;
+    bodyStore.isoAuto.value = false;
     bodyStore.aspectRatio.value = 1; // 16:9
 
     const { getByTestId } = render(<Viewfinder />);

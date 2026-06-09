@@ -13,11 +13,17 @@ describe('Parameter Sync & Zustand Stores Integration', () => {
   let parameters: any[] = [];
 
   beforeAll(() => {
-    // Resolve path to packages/shared/camera-parameters.yaml from current directory
-    const yamlPath = path.resolve(__dirname, '../../../../../../packages/shared/camera-parameters.yaml');
-    const content = fs.readFileSync(yamlPath, 'utf8');
-    const parsed = YAML.parse(content);
-    parameters = parsed.parameters || [];
+    // Resolve path to packages/shared/camera-parameters folder from current directory
+    const paramsDir = path.resolve(__dirname, '../../../../../../packages/shared/camera-parameters');
+    const files = fs.readdirSync(paramsDir).filter(f => f.endsWith('.yaml') || f.endsWith('.yml'));
+    parameters = [];
+    files.forEach(file => {
+      const content = fs.readFileSync(path.join(paramsDir, file), 'utf8');
+      const parsed = YAML.parse(content);
+      if (parsed && Array.isArray(parsed.parameters)) {
+        parameters.push(...parsed.parameters);
+      }
+    });
   });
 
   it('loads parameters successfully', () => {

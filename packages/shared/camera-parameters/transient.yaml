@@ -1,0 +1,23 @@
+parameters:
+  - name: time
+    category: transient
+    arrayIndex: 8
+    kotlin:
+      type: Float
+      transient: true
+      argumentName: time
+  - name: targetResolution
+    category: transient
+    arrayIndex: 26
+    kotlin:
+      type: Float
+      transient: true
+      argumentName: targetResolution
+  - name: invertYShift
+    category: transient
+    arrayIndex: 27
+    kotlin:
+      type: Boolean
+      transient: true
+      argumentName: invertYShift
+      arrayMapping: if (invertYShift) 1.0f else 0.0f

@@ -43,11 +43,11 @@ async function start() {
     console.error('⚠️ Initial codegen failed. Starting watchers anyway...');
   }
 
-  // 2. Watcher for camera-parameters.yaml
-  const paramsPath = path.resolve(PROJECT_ROOT, 'packages/shared/camera-parameters.yaml');
-  fs.watch(paramsPath, debounce(async (event) => {
-    if (event === 'change') {
-      console.log(`\n📝 camera-parameters.yaml changed.`);
+  // 2. Watcher for camera-parameters directory
+  const paramsPath = path.resolve(PROJECT_ROOT, 'packages/shared/camera-parameters');
+  fs.watch(paramsPath, { recursive: true }, debounce(async (event, filename) => {
+    if (filename && (filename.endsWith('.yaml') || filename.endsWith('.yml'))) {
+      console.log(`\n📝 camera-parameters configuration changed: ${filename}`);
       await runScript('packages/shared/scripts/codegen/parameters.js');
     }
   }, 100));

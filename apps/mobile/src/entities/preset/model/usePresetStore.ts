@@ -77,6 +77,9 @@ import { Preset, PresetPayload, FilmPresetPayload, BodyPresetPayload } from './t
 
 export const DEFAULT_FILM_PAYLOAD: FilmPresetPayload = {
   // @@GEN_DEFAULTS_START@@
+  noiseReductionMode: DEFAULT_NOISE_REDUCTION_MODE,
+  noiseReductionAuto: DEFAULT_NOISE_REDUCTION_AUTO,
+  temperatureAuto: DEFAULT_TEMPERATURE_AUTO,
   saturation: DEFAULT_SATURATION,
   contrast: DEFAULT_CONTRAST,
   grainIntensity: DEFAULT_GRAIN_INTENSITY,
@@ -111,9 +114,6 @@ export const DEFAULT_FILM_PAYLOAD: FilmPresetPayload = {
   grainRoughness: DEFAULT_GRAIN_ROUGHNESS,
   grainEnabled: DEFAULT_GRAIN_ENABLED,
   bloomEnabled: DEFAULT_BLOOM_ENABLED,
-  noiseReductionMode: DEFAULT_NOISE_REDUCTION_MODE,
-  noiseReductionAuto: DEFAULT_NOISE_REDUCTION_AUTO,
-  temperatureAuto: DEFAULT_TEMPERATURE_AUTO,
   blackLevel: DEFAULT_BLACK_LEVEL,
   highlights: DEFAULT_HIGHLIGHTS,
   pivot: DEFAULT_PIVOT,

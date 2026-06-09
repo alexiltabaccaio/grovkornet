@@ -1,0 +1,350 @@
+parameters:
+  - name: ev
+    category: hardware
+    arrayIndex: 9
+    kotlin:
+      type: Float
+      default: 0.0f
+      propHandler: if (view.config.ev != value) view.updateBoth { ev = value }
+    ts:
+      type: number
+    zustand:
+      store: body
+      default: DEFAULT_EV
+      type: number
+      setSideEffects:
+        - target: evAuto
+          value: "false"
+        - target: isoAuto
+          value: "true"
+        - target: shutterSpeedAuto
+          value: "true"
+  - name: targetFps
+    category: hardware
+    arrayIndex: 24
+    kotlin:
+      type: Int
+      default: "60"
+      arrayMapping: targetFpsOverride
+      propHandler: if (view.config.targetFps != value) view.updateBoth { targetFps = value }
+    ts:
+      type: number
+    zustand:
+      name: fpsSetting
+      store: body
+      default: DEFAULT_FPS_SETTING
+      type: number
+  - name: cameraAspectRatio
+    category: hardware
+    arrayIndex: 25
+    kotlin:
+      name: aspectRatio
+      type: Int
+      default: "1"
+      arrayMapping: aspectRatio.toFloat()
+      propHandler: |-
+        val aspectInt = value.roundToInt()
+                if (view.config.aspectRatio != aspectInt) {
+                  view.updateBoth { aspectRatio = aspectInt }
+                }
+    ts:
+      type: number
+    cpp:
+      name: aspectRatio
+    zustand:
+      name: aspectRatio
+      store: body
+      default: DEFAULT_ASPECT_RATIO
+      type: number
+  - name: noiseReduction
+    category: hardware
+    kotlin:
+      type: Int
+      default: "1"
+      propHandler: if (view.config.noiseReduction != value) view.updateHardware {
+        noiseReduction = value }
+    ts:
+      type: number
+    zustand:
+      name: noiseReductionMode
+      default: DEFAULT_NOISE_REDUCTION_MODE
+      type: number
+      resetGroup: noise_reduction
+      store: film
+  - name: noiseReductionAuto
+    category: hardware
+    ts:
+      type: boolean
+    zustand:
+      default: DEFAULT_NOISE_REDUCTION_AUTO
+      type: boolean
+      resetGroup: noise_reduction
+      store: film
+  - name: isoAuto
+    category: hardware
+    kotlin:
+      type: Boolean
+      default: true
+      propHandler: if (view.config.isoAuto != value) view.updateHardware { isoAuto = value }
+    ts:
+      type: boolean
+    zustand:
+      store: body
+      default: DEFAULT_ISO_AUTO
+      type: boolean
+      setSideEffects:
+        - target: shutterSpeedAuto
+          value: value
+  - name: shutterSpeedAuto
+    category: hardware
+    kotlin:
+      type: Boolean
+      default: true
+      propHandler: if (view.config.shutterSpeedAuto != value) view.updateHardware {
+        shutterSpeedAuto = value }
+    ts:
+      type: boolean
+    zustand:
+      store: body
+      default: DEFAULT_SHUTTER_SPEED_AUTO
+      type: boolean
+      setSideEffects:
+        - target: isoAuto
+          value: value
+  - name: whiteBalanceAuto
+    category: hardware
+    kotlin:
+      type: Boolean
+      default: "true"
+      propHandler: if (view.config.whiteBalanceAuto != value) view.updateBoth {
+        whiteBalanceAuto = value }
+    ts:
+      type: boolean
+    zustand:
+      name: temperatureAuto
+      default: DEFAULT_TEMPERATURE_AUTO
+      type: boolean
+      resetGroup: temperature
+      setSideEffects:
+        - target: temperature
+          value: DEFAULT_TEMPERATURE
+          condition: value
+        - target: tint
+          value: DEFAULT_TINT
+          condition: value
+      store: film
+  - name: autoFocus
+    category: hardware
+    kotlin:
+      type: Boolean
+      default: "false"
+      propHandler: if (view.config.autoFocus != value) view.updateHardware { autoFocus
+        = value }
+    ts:
+      type: boolean
+    zustand:
+      name: focusAuto
+      store: lens
+      default: DEFAULT_FOCUS_AUTO
+      type: boolean
+      setSideEffects:
+        - store: preferences
+          target: setFocusAutoPref
+          value: value
+  - name: iso
+    category: hardware
+    kotlin:
+      type: Int
+      default: "400"
+      propHandler: if (view.config.iso != value) view.updateHardware { iso = value }
+    ts:
+      type: number
+    zustand:
+      store: body
+      default: DEFAULT_ISO
+      type: number
+      setSideEffects:
+        - target: isoAuto
+          value: "false"
+        - target: shutterSpeedAuto
+          value: "false"
+        - target: evAuto
+          value: "true"
+        - target: ev
+          value: DEFAULT_EV
+  - name: exposureTime
+    category: hardware
+    kotlin:
+      type: Long
+      default: 1000000000L / 60
+      propHandler: >-
+        if (value > 0) {
+                  val newTime = (1_000_000_000.0 / value).toLong()
+                  if (view.config.exposureTime != newTime) view.updateHardware { exposureTime = newTime }
+                }
+    ts:
+      type: number
+    zustand:
+      name: shutterSpeed
+      store: body
+      default: DEFAULT_SHUTTER_SPEED
+      type: number
+      setSideEffects:
+        - target: shutterSpeedAuto
+          value: "false"
+        - target: isoAuto
+          value: "false"
+        - target: evAuto
+          value: "true"
+        - target: ev
+          value: DEFAULT_EV
+  - name: focusDistance
+    category: hardware
+    kotlin:
+      type: Float
+      default: 0.0f
+      propHandler: if (view.config.focusDistance != value) view.updateHardware {
+        focusDistance = value }
+    ts:
+      type: number
+    zustand:
+      store: lens
+      default: DEFAULT_FOCUS_DISTANCE
+      type: number
+      setSideEffects:
+        - target: focusAuto
+          value: "false"
+        - store: preferences
+          target: setFocusDistancePref
+          value: value
+        - store: preferences
+          target: setFocusAutoPref
+          value: "false"
+  - name: torchEnabled
+    category: hardware
+    kotlin:
+      name: torchEnabled
+      type: Boolean
+      default: "false"
+      propHandler: >-
+        val enabled = value > 0.5f
+                if (view.config.torchEnabled != enabled) view.updateHardware { torchEnabled = enabled }
+    ts:
+      name: torchState
+      type: number
+    zustand:
+      name: torchState
+      store: body
+      default: DEFAULT_TORCH_STATE
+      type: number
+  - name: torchStrength
+    category: hardware
+    kotlin:
+      type: Int
+      default: "1"
+      propHandler: >-
+        val strength = value.toInt()
+                if (view.config.torchStrength != strength) view.updateHardware { torchStrength = strength }
+    ts:
+      type: number
+    zustand:
+      store: body
+      default: DEFAULT_TORCH_STRENGTH
+      type: number
+  - name: cameraId
+    category: hardware
+    kotlin:
+      type: String?
+      default: "null"
+      propHandler: if (view.config.cameraId != value) view.updateHardware { cameraId =
+        value }
+    ts:
+      type: string | null
+    zustand:
+      store: lens
+      default: DEFAULT_CAMERA_ID
+      type: string
+      setSideEffects:
+        - store: preferences
+          target: setCameraIdPref
+          value: value
+  - name: resolutionSetting
+    category: hardware
+    kotlin:
+      type: Int
+      default: "2"
+      propHandler: |-
+        if (view.config.resolutionSetting != value) {
+                  view.updateBoth { resolutionSetting = value }
+                }
+    ts:
+      type: number
+    zustand:
+      store: body
+      default: DEFAULT_RESOLUTION_SETTING
+      type: number
+  - name: previewQuality
+    category: hardware
+    kotlin:
+      type: Int
+      default: "1"
+      propHandler: |-
+        if (view.config.previewQuality != value) {
+                  view.updateBoth { previewQuality = value }
+                }
+    ts:
+      type: number
+    zustand:
+      store: body
+      default: DEFAULT_PREVIEW_QUALITY
+      type: number
+  - name: force60fpsCrop
+    category: hardware
+    kotlin:
+      type: Boolean
+      default: "true"
+      propHandler: |-
+        if (view.config.force60fpsCrop != value) {
+                  view.updateBoth { force60fpsCrop = value }
+                }
+    ts:
+      type: boolean
+    zustand:
+      store: body
+      default: DEFAULT_FORCE_60FPS_CROP
+      type: number
+  - name: secureViewEnabled
+    category: hardware
+    kotlin:
+      type: Boolean
+      default: "false"
+      propHandler: view.setSecureMode(value)
+    ts:
+      type: boolean
+  - name: isSelfieCamera
+    category: hardware
+    kotlin:
+      type: Boolean
+      default: "false"
+      propHandler: if (view.config.isSelfieCamera != value) view.updateHardware {
+        isSelfieCamera = value }
+    ts:
+      type: boolean
+    zustand:
+      default: DEFAULT_IS_SELFIE_CAMERA
+      type: boolean
+      resetGroup: camera_facing
+      store: film
+    excludeFromPreset: true
+  - name: zoom
+    category: hardware
+    kotlin:
+      type: Float
+      default: 1.0f
+      propHandler: if (view.config.zoom != value) view.updateHardware { zoom = value }
+    ts:
+      type: number
+    zustand:
+      store: body
+      default: DEFAULT_ZOOM
+      type: number

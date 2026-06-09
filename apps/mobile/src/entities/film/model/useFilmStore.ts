@@ -69,6 +69,10 @@ export const getNitroConfig = () => {
 
 export const useFilmStore = create<FilmStore>((set, get) => ({
   // @@GEN_INIT_START@@
+  noiseReductionMode: makeMutable(DEFAULT_NOISE_REDUCTION_MODE),
+  noiseReductionAuto: makeMutable(DEFAULT_NOISE_REDUCTION_AUTO),
+  temperatureAuto: makeMutable(DEFAULT_TEMPERATURE_AUTO),
+  isSelfieCamera: makeMutable(DEFAULT_IS_SELFIE_CAMERA),
   saturation: makeMutable(DEFAULT_SATURATION),
   contrast: makeMutable(DEFAULT_CONTRAST),
   grainIntensity: makeMutable(DEFAULT_GRAIN_INTENSITY),
@@ -103,10 +107,6 @@ export const useFilmStore = create<FilmStore>((set, get) => ({
   grainRoughness: makeMutable(DEFAULT_GRAIN_ROUGHNESS),
   grainEnabled: makeMutable(DEFAULT_GRAIN_ENABLED),
   bloomEnabled: makeMutable(DEFAULT_BLOOM_ENABLED),
-  noiseReductionMode: makeMutable(DEFAULT_NOISE_REDUCTION_MODE),
-  noiseReductionAuto: makeMutable(DEFAULT_NOISE_REDUCTION_AUTO),
-  temperatureAuto: makeMutable(DEFAULT_TEMPERATURE_AUTO),
-  isSelfieCamera: makeMutable(DEFAULT_IS_SELFIE_CAMERA),
   blackLevel: makeMutable(DEFAULT_BLACK_LEVEL),
   highlights: makeMutable(DEFAULT_HIGHLIGHTS),
   pivot: makeMutable(DEFAULT_PIVOT),
@@ -137,6 +137,26 @@ export const useFilmStore = create<FilmStore>((set, get) => ({
   },
 
   // @@GEN_SETTERS_START@@
+  setNoiseReductionMode: (mode) => {
+    get().noiseReductionMode.value = mode;
+  },
+  setNoiseReductionAuto: (value) => {
+    get().noiseReductionAuto.value = value;
+  },
+  setTemperatureAuto: (value) => {
+    const { temperatureAuto, temperature, tint } = get();
+    temperatureAuto.value = value;
+    if (value) {
+      temperature.value = DEFAULT_TEMPERATURE;
+      getNitroConfig().whiteBalance = DEFAULT_TEMPERATURE;
+      tint.value = DEFAULT_TINT;
+      getNitroConfig().tint = DEFAULT_TINT;
+    }
+
+  },
+  setIsSelfieCamera: (value) => {
+    get().isSelfieCamera.value = value;
+  },
   setSaturation: (value) => {
     logger.debug('FilmStore', `Setting Saturation: ${value}`);
     get().saturation.value = value;
@@ -299,26 +319,6 @@ export const useFilmStore = create<FilmStore>((set, get) => ({
     get().bloomEnabled.value = value;
     getNitroConfig().bloomEnabled = value;
   },
-  setNoiseReductionMode: (mode) => {
-    get().noiseReductionMode.value = mode;
-  },
-  setNoiseReductionAuto: (value) => {
-    get().noiseReductionAuto.value = value;
-  },
-  setTemperatureAuto: (value) => {
-    const { temperatureAuto, temperature, tint } = get();
-    temperatureAuto.value = value;
-    if (value) {
-      temperature.value = DEFAULT_TEMPERATURE;
-      getNitroConfig().whiteBalance = DEFAULT_TEMPERATURE;
-      tint.value = DEFAULT_TINT;
-      getNitroConfig().tint = DEFAULT_TINT;
-    }
-
-  },
-  setIsSelfieCamera: (value) => {
-    get().isSelfieCamera.value = value;
-  },
   setBlackLevel: (value) => {
     const { blackLevel, blackLevelAuto } = get();
     blackLevel.value = value;
@@ -461,6 +461,21 @@ export const useFilmStore = create<FilmStore>((set, get) => ({
     const state = get();
     switch (effect) {
       // @@GEN_RESET_START@@
+      case 'noise_reduction':
+        state.noiseReductionMode.value = DEFAULT_NOISE_REDUCTION_MODE;
+        state.noiseReductionAuto.value = DEFAULT_NOISE_REDUCTION_AUTO;
+        break;
+      case 'temperature':
+      case 'tint':
+        state.temperatureAuto.value = DEFAULT_TEMPERATURE_AUTO;
+        state.temperature.value = DEFAULT_TEMPERATURE;
+        getNitroConfig().whiteBalance = DEFAULT_TEMPERATURE;
+        state.tint.value = DEFAULT_TINT;
+        getNitroConfig().tint = DEFAULT_TINT;
+        break;
+      case 'camera_facing':
+        state.isSelfieCamera.value = DEFAULT_IS_SELFIE_CAMERA;
+        break;
       case 'saturation':
         state.saturation.value = DEFAULT_SATURATION;
         getNitroConfig().saturation = DEFAULT_SATURATION;
@@ -527,14 +542,6 @@ export const useFilmStore = create<FilmStore>((set, get) => ({
         state.chromaShiftInvert.value = DEFAULT_CHROMA_SHIFT_INVERT;
         getNitroConfig().chromaShiftInvert = DEFAULT_CHROMA_SHIFT_INVERT;
         break;
-      case 'temperature':
-      case 'tint':
-        state.temperature.value = DEFAULT_TEMPERATURE;
-        getNitroConfig().whiteBalance = DEFAULT_TEMPERATURE;
-        state.temperatureAuto.value = DEFAULT_TEMPERATURE_AUTO;
-        state.tint.value = DEFAULT_TINT;
-        getNitroConfig().tint = DEFAULT_TINT;
-        break;
       case 'bloom':
         state.bloomIntensity.value = DEFAULT_BLOOM_INTENSITY;
         getNitroConfig().bloomIntensity = DEFAULT_BLOOM_INTENSITY;
@@ -550,13 +557,6 @@ export const useFilmStore = create<FilmStore>((set, get) => ({
       case 'sharpening':
         state.sharpening.value = DEFAULT_SHARPENING;
         getNitroConfig().sharpening = DEFAULT_SHARPENING;
-        break;
-      case 'noise_reduction':
-        state.noiseReductionMode.value = DEFAULT_NOISE_REDUCTION_MODE;
-        state.noiseReductionAuto.value = DEFAULT_NOISE_REDUCTION_AUTO;
-        break;
-      case 'camera_facing':
-        state.isSelfieCamera.value = DEFAULT_IS_SELFIE_CAMERA;
         break;
       case 'tone':
         state.blackLevel.value = DEFAULT_BLACK_LEVEL;
