@@ -90,7 +90,7 @@ export const GalleryViewer = ({ onClose, initialUri, galleryTransition, header }
   });
 
   return (
-    <Animated.View style={[styles.absoluteContainer, animatedContainerStyle]} pointerEvents="box-none">
+    <Animated.View style={[styles.absoluteContainer, animatedContainerStyle]} pointerEvents="auto">
       <View style={styles.topArea} pointerEvents="box-none">
         {header}
       </View>

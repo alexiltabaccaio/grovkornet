@@ -148,8 +148,18 @@ export const useGalleryPhotos = (initialUri?: string | null) => {
           }
         }
 
-        logger.debug('useGalleryPhotos', `loadPhotos complete: setting ${items.length} photos`);
-        setPhotos(items);
+        // Deduplicate items by ID to prevent React "Encountered two children with the same key" crashes
+        const uniqueItems: GalleryItem[] = [];
+        const seenIds = new Set<string>();
+        for (const item of items) {
+          if (!seenIds.has(item.id)) {
+            seenIds.add(item.id);
+            uniqueItems.push(item);
+          }
+        }
+
+        logger.debug('useGalleryPhotos', `loadPhotos complete: setting ${uniqueItems.length} photos`);
+        setPhotos(uniqueItems);
         setLoading(false);
       } catch (error) {
         logger.error('Gallery', 'Failed to load photos (graceful fallback)', error);

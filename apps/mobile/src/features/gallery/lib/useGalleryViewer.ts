@@ -64,10 +64,17 @@ export const useGalleryViewer = (initialUri?: string | null) => {
       
       // Update photos list in state immediately to replace the temp preview
       setPhotos(prevPhotos => {
+        // If the processed photo is already in the list (from MediaLibrary fetch), just remove the temp preview
+        const alreadyExists = prevPhotos.some(p => p.id === newPhotoItem.id);
+        
         const index = prevPhotos.findIndex(p => p.uri === selectedPhoto.uri);
         if (index !== -1) {
           const updated = [...prevPhotos];
-          updated[index] = newPhotoItem;
+          if (alreadyExists) {
+            updated.splice(index, 1); // Remove temp preview entirely to avoid duplicates
+          } else {
+            updated[index] = newPhotoItem; // Replace temp preview with processed one
+          }
           return updated;
         }
         return prevPhotos;
