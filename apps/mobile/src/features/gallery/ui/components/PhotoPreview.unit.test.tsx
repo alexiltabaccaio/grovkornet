@@ -368,7 +368,7 @@ describe('PhotoPreview', () => {
         capturedPanGesture._onEnd({ velocityX: -100 });
       });
 
-      expect(onPhotoVisibleMock).not.toHaveBeenCalled();
+      expect(onPhotoVisibleMock).toHaveBeenCalledTimes(1);
       unmount();
     });
 

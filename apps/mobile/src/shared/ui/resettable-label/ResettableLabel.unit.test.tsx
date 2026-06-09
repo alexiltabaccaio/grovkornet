@@ -2,7 +2,6 @@ import React from 'react';
 import { render, act } from '@testing-library/react-native';
 import { ResettableLabel } from './ResettableLabel';
 import * as Haptics from '@shared/lib/haptics';
-import { Gesture } from 'react-native-gesture-handler';
 
 // Mock Haptics
 jest.mock('@shared/lib/haptics', () => ({

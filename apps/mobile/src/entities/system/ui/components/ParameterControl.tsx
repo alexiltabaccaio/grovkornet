@@ -1,7 +1,6 @@
 import React from 'react';
 import { SharedValue, useSharedValue } from 'react-native-reanimated';
 import { ImageSourcePropType } from 'react-native';
-import { GestureDetector } from 'react-native-gesture-handler';
 import { Ionicons } from '@expo/vector-icons';
 import { useParameterGesture } from '../../lib/useParameterGesture';
 import { ParameterThumbView, globalMeasuredTrackWidth } from '@shared/ui/parameter-thumb';

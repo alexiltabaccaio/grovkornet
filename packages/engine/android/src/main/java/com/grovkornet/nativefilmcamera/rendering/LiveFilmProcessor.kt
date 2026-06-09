@@ -6,7 +6,6 @@ import android.util.Log
 import com.grovkornet.nativefilmcamera.BuildConfig
 import android.view.Surface
 import com.grovkornet.nativefilmcamera.errors.CameraCodedException
-import com.grovkornet.nativefilmcamera.errors.CameraErrorCode
 import com.grovkornet.nativefilmcamera.errors.CameraErrorFactory
 import com.grovkornet.nativefilmcamera.state.CameraConfiguration
 import com.grovkornet.nativefilmcamera.state.getTargetResolutionValue

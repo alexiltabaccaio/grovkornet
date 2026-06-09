@@ -1,3 +1,4 @@
+import React from 'react';
 import { renderHook, act } from '@testing-library/react-native';
 import { usePhotoPreviewTransition } from './usePhotoPreviewTransition';
 import { GalleryItem } from './types';
@@ -29,7 +30,9 @@ describe('usePhotoPreviewTransition', () => {
     };
 
     const useMockSharedValue = (initialVal: any) => {
-      return { value: initialVal };
+      // Use useRef to preserve the shared value object across re-renders
+      // eslint-disable-next-line react-hooks/rules-of-hooks
+      return React.useRef({ value: initialVal }).current;
     };
 
     (reanimatedModule as any).useSharedValue = useMockSharedValue;

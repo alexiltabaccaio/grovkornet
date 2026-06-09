@@ -1,7 +1,6 @@
 import React from 'react';
 import { render } from '@testing-library/react-native';
 import { GenericParameterModule } from './GenericParameterModule';
-import { useSystemStore } from '../../model/useSystemStore';
 
 // Mock the system store
 const mockSetActiveParameter = jest.fn();

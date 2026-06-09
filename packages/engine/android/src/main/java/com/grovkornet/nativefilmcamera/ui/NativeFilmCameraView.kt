@@ -1,32 +1,16 @@
 package com.grovkornet.nativefilmcamera.ui
 
 import android.content.Context
-import android.graphics.SurfaceTexture
 import android.util.Log
-import android.view.Choreographer
 import android.view.SurfaceHolder
 import android.view.SurfaceView
-import android.hardware.camera2.CameraManager
-import android.hardware.camera2.CameraCharacteristics
-import android.os.Handler
-import android.os.Looper
-import androidx.lifecycle.DefaultLifecycleObserver
-import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ProcessLifecycleOwner
 import com.facebook.react.bridge.WritableMap
 import com.grovkornet.nativefilmcamera.camera.CameraEngine
-import com.grovkornet.nativefilmcamera.rendering.LiveFilmProcessor
 import com.grovkornet.nativefilmcamera.state.CameraConfiguration
 import com.grovkornet.nativefilmcamera.managers.CameraTorchManager
 import expo.modules.kotlin.viewevent.EventDispatcher
 import com.grovkornet.nativefilmcamera.BuildConfig
-import android.graphics.Bitmap
-import android.view.PixelCopy
-import java.io.File
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class NativeFilmCameraView(context: Context) : SurfaceView(context), SurfaceHolder.Callback {
 

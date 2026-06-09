@@ -1,4 +1,4 @@
-import React, { useMemo, useCallback } from 'react';
+import { useMemo, useCallback } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 import { useFilmStore, useFilmWorklets } from '@entities/film';
 import { 
@@ -223,7 +223,7 @@ export const useSelectiveColor = (type: 'saturation' | 'hue') => {
   const { handlePressWithDouble } = useDoublePress(handleFullColorReset);
 
   const handleColorPress = useCallback((key: string, index: number) => {
-    handlePressWithDouble(key, () => setActiveColorIndex(index as ColorIndex));
+    handlePressWithDouble(key, () => setActiveColorIndex(index));
   }, [handlePressWithDouble]);
 
   const worklets = useFilmWorklets();

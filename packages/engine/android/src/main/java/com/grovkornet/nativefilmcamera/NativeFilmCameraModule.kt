@@ -1,18 +1,9 @@
 package com.grovkornet.nativefilmcamera
 
-import androidx.lifecycle.ProcessLifecycleOwner
-import com.facebook.react.bridge.Arguments
-import com.facebook.react.bridge.WritableMap
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
-import expo.modules.kotlin.viewevent.EventDispatcher
-import com.grovkornet.nativefilmcamera.camera.CameraEngine
-import com.grovkornet.nativefilmcamera.errors.CameraCodedException
-import com.grovkornet.nativefilmcamera.errors.CameraErrorCode
 import com.grovkornet.nativefilmcamera.errors.CameraErrorFactory
 import com.grovkornet.nativefilmcamera.ui.NativeFilmCameraView
-import com.grovkornet.nativefilmcamera.rendering.OffscreenFilmProcessor
-import com.grovkornet.nativefilmcamera.state.CameraConfiguration
 import kotlin.math.roundToInt
 
 class NativeFilmCameraModule : Module() {

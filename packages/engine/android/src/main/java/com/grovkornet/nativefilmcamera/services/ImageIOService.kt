@@ -4,8 +4,6 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
-import com.grovkornet.nativefilmcamera.errors.CameraCodedException
-import com.grovkornet.nativefilmcamera.errors.CameraErrorCode
 import com.grovkornet.nativefilmcamera.errors.CameraErrorFactory
 import java.io.File
 import java.io.FileOutputStream

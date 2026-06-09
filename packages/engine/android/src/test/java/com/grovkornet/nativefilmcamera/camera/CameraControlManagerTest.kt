@@ -57,6 +57,7 @@ class CameraControlManagerTest {
         every { mockCameraControlImpl.getCamera2CameraControl() } returns mockCamera2Control
 
         every { mockCamera2Info.getCameraCharacteristic(CameraCharacteristics.CONTROL_AE_AVAILABLE_TARGET_FPS_RANGES) } returns null
+        every { mockCamera2Info.getCameraCharacteristic(CameraCharacteristics.SENSOR_INFO_SENSITIVITY_RANGE) } returns Range(100, 6400)
     }
 
     @After

@@ -2,7 +2,6 @@ import { create } from 'zustand';
 import { makeMutable } from 'react-native-reanimated';
 import { logger } from '@shared/lib/logger';
 import { FilmStore } from './types';
-import { ParameterType } from '../../system/model/types';
 import { 
   DEFAULT_GRAIN_INTENSITY, 
   DEFAULT_SATURATION, 
@@ -651,7 +650,7 @@ export const useFilmStore = create<FilmStore>((set, get) => ({
           'scanlines', 'hue'
         ];
         if (handledEffects.includes(param)) {
-          get().resetEffect(param as any);
+          get().resetEffect(param);
           return true;
         }
         return false;

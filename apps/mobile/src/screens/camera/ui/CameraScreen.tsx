@@ -1,6 +1,6 @@
 import React, { useEffect, useState, Profiler, useCallback } from 'react';
 import { StyleSheet, View, AppState, AppStateStatus, PermissionsAndroid, Platform, StatusBar } from 'react-native';
-import Animated, { useSharedValue, useAnimatedStyle, interpolate, withTiming, runOnJS, useAnimatedReaction } from 'react-native-reanimated';
+import Animated, { useSharedValue, useAnimatedStyle, interpolate, withTiming, runOnJS } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 

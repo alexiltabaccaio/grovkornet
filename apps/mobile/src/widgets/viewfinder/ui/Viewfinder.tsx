@@ -6,7 +6,7 @@ import { useLensStore } from '@entities/lens';
 import { useFilmStore } from '@entities/film';
 import { useSystemStore } from '@entities/system';
 import { NativeRenderer } from '@entities/lens';
-import Animated, { useDerivedValue, SharedValue, useSharedValue, withSpring, useAnimatedProps, useAnimatedReaction, runOnJS } from 'react-native-reanimated';
+import Animated, { useDerivedValue, useSharedValue, useAnimatedProps, useAnimatedReaction, runOnJS } from 'react-native-reanimated';
 import { useDeviceRotation } from '@shared/lib/hooks/useDeviceRotation';
 import { GestureDetector, Gesture } from 'react-native-gesture-handler';
 import { useVerificationStore } from '@entities/verification';

@@ -82,7 +82,7 @@ class CameraTorchManagerTest {
     }
 
     @Test
-    fun onStop_restoresTorchIfLogicalEnabled() {
+    fun onStop_doesNotRestoreTorch() {
         var setTorchCalledWithId: String? = null
         var setTorchCalledWithState: Boolean? = null
 
@@ -104,8 +104,8 @@ class CameraTorchManagerTest {
         }
 
         manager.onStop(mockLifecycleOwner)
-        assertEquals("camera_id_1", setTorchCalledWithId)
-        assertEquals(true, setTorchCalledWithState)
+        assertNull("Should not call setTorchMode on stop", setTorchCalledWithId)
+        assertNull("Should not set torch state on stop", setTorchCalledWithState)
     }
 
     @Test

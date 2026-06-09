@@ -2,7 +2,6 @@ import { create } from 'zustand';
 import { makeMutable } from 'react-native-reanimated';
 import { logger } from '@shared/lib/logger';
 import { usePreferencesStore } from '@entities/preferences';
-import { ParameterType } from '../../system/model/types';
 import { 
   DEFAULT_FOCUS_AUTO,
   DEFAULT_FOCUS_DISTANCE,

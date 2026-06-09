@@ -1,12 +1,11 @@
 import React, { useRef, useCallback, useMemo, memo } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { GestureDetector, Gesture } from 'react-native-gesture-handler';
-import Animated, {
+import {
   useSharedValue,
   withTiming,
   runOnJS,
   useAnimatedReaction,
-  SharedValue,
 } from 'react-native-reanimated';
 import { WheelItemComponent } from './WheelItemComponent';
 import type { WheelItem } from './WheelItemComponent';

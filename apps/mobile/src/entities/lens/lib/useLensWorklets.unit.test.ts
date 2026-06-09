@@ -1,6 +1,5 @@
 import { renderHook } from '@testing-library/react-native';
 import { useLensWorklets } from './useLensWorklets';
-import { useLensStore } from '../model/useLensStore';
 import { updateSharedValue } from '@shared/lib/reanimated/safeUpdate';
 
 // Mock useLensStore

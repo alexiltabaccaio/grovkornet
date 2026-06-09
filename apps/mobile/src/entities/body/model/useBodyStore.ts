@@ -2,7 +2,6 @@ import { create } from 'zustand';
 import { makeMutable } from 'react-native-reanimated';
 import { logger } from '@shared/lib/logger';
 import { BodyStore } from './types';
-import { ParameterType } from '../../system/model/types';
 import { 
   DEFAULT_ISO,
   DEFAULT_EV,
