@@ -105,7 +105,22 @@ class HardwareCapabilitiesManager(private val context: Context) {
             // ISO range
             info.getCameraCharacteristic(CameraCharacteristics.SENSOR_INFO_SENSITIVITY_RANGE)?.let { range ->
                 event.putInt("isoMin", range.lower)
-                event.putInt("isoMax", range.upper)
+                
+                var maxIso = range.upper
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                    val boostRange = info.getCameraCharacteristic(CameraCharacteristics.CONTROL_POST_RAW_SENSITIVITY_BOOST_RANGE)
+                    var maxBoost = boostRange?.upper ?: 100
+                    
+                    // Provide a sensible default fallback of 4x digital boost (400) if the device 
+                    // under-reports it or doesn't support it. This creates a reasonable baseline 
+                    // max ISO for the UI slider (e.g. ~42000 on modern Pixels).
+                    // If the camera exceeds this in Auto mode, the JS slider now dynamically expands.
+                    if (maxBoost <= 100) {
+                        maxBoost = 400
+                    }
+                    maxIso = (maxIso * maxBoost) / 100
+                }
+                event.putInt("isoMax", maxIso)
             }
 
             // Zoom range

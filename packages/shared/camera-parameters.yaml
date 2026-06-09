@@ -674,7 +674,7 @@ parameters:
     category: hardware
     kotlin:
       type: Boolean
-      default: "true"
+      default: true
       propHandler: if (view.config.isoAuto != value) view.updateHardware { isoAuto = value }
     ts:
       type: boolean
@@ -685,17 +685,11 @@ parameters:
       setSideEffects:
         - target: shutterSpeedAuto
           value: value
-        - target: iso
-          value: DEFAULT_ISO
-          condition: value
-        - target: shutterSpeed
-          value: DEFAULT_SHUTTER_SPEED
-          condition: value
   - name: shutterSpeedAuto
     category: hardware
     kotlin:
       type: Boolean
-      default: "true"
+      default: true
       propHandler: if (view.config.shutterSpeedAuto != value) view.updateHardware { shutterSpeedAuto = value }
     ts:
       type: boolean
@@ -706,12 +700,6 @@ parameters:
       setSideEffects:
         - target: isoAuto
           value: value
-        - target: shutterSpeed
-          value: DEFAULT_SHUTTER_SPEED
-          condition: value
-        - target: iso
-          value: DEFAULT_ISO
-          condition: value
   - name: whiteBalanceAuto
     category: hardware
     kotlin:

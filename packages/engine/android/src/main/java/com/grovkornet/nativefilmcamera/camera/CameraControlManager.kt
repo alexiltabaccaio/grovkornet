@@ -78,7 +78,21 @@ class CameraControlManager(
                 val isoToApply = if (!config.isoAuto) config.iso else lastAutoIso
                 val shutterToApply = if (!config.shutterSpeedAuto) config.exposureTime else lastAutoShutter
                 
-                builder.setCaptureRequestOption(CaptureRequest.SENSOR_SENSITIVITY, isoToApply)
+                var analogIso = isoToApply
+                var postRawBoost = 100
+                val isoRange = info.getCameraCharacteristic(CameraCharacteristics.SENSOR_INFO_SENSITIVITY_RANGE)
+                val maxAnalogIso = isoRange?.upper ?: 10000
+
+                if (analogIso > maxAnalogIso) {
+                    postRawBoost = (analogIso * 100) / maxAnalogIso
+                    analogIso = maxAnalogIso
+                }
+
+                builder.setCaptureRequestOption(CaptureRequest.SENSOR_SENSITIVITY, analogIso)
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+                    builder.setCaptureRequestOption(CaptureRequest.CONTROL_POST_RAW_SENSITIVITY_BOOST, postRawBoost)
+                }
+                
                 builder.setCaptureRequestOption(CaptureRequest.SENSOR_EXPOSURE_TIME, shutterToApply)
                 
                 val target = if (config.targetFps > 0) config.targetFps else 60
@@ -195,8 +209,15 @@ class CameraControlManager(
             override fun onCaptureCompleted(session: CameraCaptureSession, request: CaptureRequest, result: TotalCaptureResult) {
                 val now = System.currentTimeMillis()
                 if (now - lastExposureUpdateTime >= 250) {
-                    val currentIso = result.get(CaptureResult.SENSOR_SENSITIVITY) ?: return
+                    var currentIso = result.get(CaptureResult.SENSOR_SENSITIVITY) ?: return
                     val currentShutter = result.get(CaptureResult.SENSOR_EXPOSURE_TIME) ?: return
+                    
+                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+                        val boost = result.get(CaptureResult.CONTROL_POST_RAW_SENSITIVITY_BOOST)
+                        if (boost != null && boost != 100) {
+                            currentIso = currentIso * boost / 100
+                        }
+                    }
                     
                     if (config.isoAuto && config.shutterSpeedAuto) {
                         lastAutoIso = currentIso

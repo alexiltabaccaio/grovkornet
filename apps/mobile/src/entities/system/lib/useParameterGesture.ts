@@ -127,9 +127,12 @@ export const useParameterGesture = ({
         const thumbSize = 12;
         const travel = effectiveTrackWidth.value - thumbSize;
         
+        // If the current value exceeds the normal UI max, expand the bounds temporarily
+        const effectiveMax = value ? Math.max(maxValue, value.value) : maxValue;
+        
         // Calculate value based on exact touch position (absolute jump)
         const percentage = Math.max(0, Math.min(1, (e.x - trackStartX) / travel));
-        const newValue = minValue + percentage * (maxValue - minValue);
+        const newValue = minValue + percentage * (effectiveMax - minValue);
         
         updateSharedValue(value, newValue);
         startVal.value = newValue;
@@ -157,13 +160,14 @@ export const useParameterGesture = ({
         const dx = e.translationX - lastX.value;
         lastX.value = e.translationX;
         
-        const range = maxValue - minValue;
+        const effectiveMax = value ? Math.max(maxValue, startVal.value) : maxValue;
+        const range = effectiveMax - minValue;
         const delta = (dx / travel) * range * direction;
           
-        const newValue = Math.min(Math.max(accumulatedValue.value + delta, minValue), maxValue);
+        const newValue = Math.min(Math.max(accumulatedValue.value + delta, minValue), effectiveMax);
         accumulatedValue.value = newValue;
         
-        const isCurrentlyAtBoundary = newValue <= minValue || newValue >= maxValue;
+        const isCurrentlyAtBoundary = newValue <= minValue || newValue >= effectiveMax;
         if (isCurrentlyAtBoundary && !atBoundary.value) {
           runOnJS(Haptics.impactAsync)(Haptics.ImpactFeedbackStyle.Light);
           atBoundary.value = true;

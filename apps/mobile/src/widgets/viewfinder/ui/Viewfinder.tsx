@@ -83,6 +83,18 @@ export const Viewfinder = React.memo(({ cameraKey }: ViewfinderProps) => {
     return noiseReductionAuto.value ? -1 : noiseReductionMode.value;
   });
 
+  const resolvedIso = useDerivedValue(() => {
+    return isoAuto.value ? -1 : iso.value;
+  });
+
+  const resolvedShutterSpeed = useDerivedValue(() => {
+    return shutterSpeedAuto.value ? -1 : shutterSpeed.value;
+  });
+
+  const resolvedFocusDistance = useDerivedValue(() => {
+    return focusAuto.value ? -1.0 : focusDistance.value;
+  });
+
   const resolvedTorchStrength = useDerivedValue(() => {
     return Math.max(1, Math.round(torchStrength.value * (capabilities.maxTorchStrength ?? 1)));
   }, [capabilities.maxTorchStrength]);
@@ -169,9 +181,9 @@ export const Viewfinder = React.memo(({ cameraKey }: ViewfinderProps) => {
       shutterSpeedAuto: shutterSpeedAuto.value,
       whiteBalanceAuto: temperatureAuto.value,
       autoFocus: focusAuto.value,
-      iso: iso.value,
-      exposureTime: shutterSpeed.value,
-      focusDistance: focusDistance.value,
+      iso: resolvedIso.value,
+      exposureTime: resolvedShutterSpeed.value,
+      focusDistance: resolvedFocusDistance.value,
       torchState: torchState.value,
       torchStrength: resolvedTorchStrength.value,
       resolutionSetting: resolutionSetting.value,

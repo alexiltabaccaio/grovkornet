@@ -567,7 +567,7 @@ function generateViewfinderProps(parameters) {
   console.log('\n--- Generating Viewfinder Props (Step 5) ---');
   
   const VIEWFINDER_PROP_EXPRESSIONS = {
-    exposureTime: 'shutterSpeed as unknown as SharedValue<number | undefined>',
+    exposureTime: 'resolvedShutterSpeed as unknown as SharedValue<number | undefined>',
     whiteBalance: 'temperature as unknown as SharedValue<number | undefined>',
     whiteBalanceAuto: 'temperatureAuto as unknown as SharedValue<boolean | undefined>',
     torchStrength: 'resolvedTorchStrength as unknown as SharedValue<number | undefined>',
@@ -577,6 +577,8 @@ function generateViewfinderProps(parameters) {
     cameraAspectRatio: 'aspectRatio as unknown as SharedValue<number | undefined>',
     cameraId: 'cameraAuto ? null : cameraId',
     autoFocus: 'focusAuto as unknown as SharedValue<boolean | undefined>',
+    iso: 'resolvedIso as unknown as SharedValue<number | undefined>',
+    focusDistance: 'resolvedFocusDistance as unknown as SharedValue<number | undefined>',
     torchState: 'torchState as unknown as SharedValue<number | undefined>',
     force60fpsCrop: 'resolvedForce60fpsCrop as unknown as SharedValue<boolean | undefined>',
     secureViewEnabled: 'isCameraSecure',

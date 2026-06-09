@@ -74,23 +74,15 @@ export const useBodyStore = create<BodyStore>((set, get) => ({
     get().aspectRatio.value = value;
   },
   setIsoAuto: (value) => {
-    const { isoAuto, shutterSpeedAuto, iso, shutterSpeed } = get();
+    const { isoAuto, shutterSpeedAuto } = get();
     isoAuto.value = value;
     shutterSpeedAuto.value = value;
-    if (value) {
-      iso.value = DEFAULT_ISO;
-      shutterSpeed.value = DEFAULT_SHUTTER_SPEED;
-    }
 
   },
   setShutterSpeedAuto: (value) => {
-    const { shutterSpeedAuto, isoAuto, shutterSpeed, iso } = get();
+    const { shutterSpeedAuto, isoAuto } = get();
     shutterSpeedAuto.value = value;
     isoAuto.value = value;
-    if (value) {
-      shutterSpeed.value = DEFAULT_SHUTTER_SPEED;
-      iso.value = DEFAULT_ISO;
-    }
 
   },
   setIso: (value) => {
