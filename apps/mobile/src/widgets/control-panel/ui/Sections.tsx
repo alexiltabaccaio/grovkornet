@@ -50,13 +50,6 @@ export const Sections = React.memo(({ galleryTransition }: SectionsProps) => {
   return (
     <BottomFooter style={styles.bottomFooterPosition}>
       <Animated.View style={[styles.tabContainer, animatedStyle]}>
-        {/* <BlurView intensity={80} tint="dark" style={StyleSheet.absoluteFill} /> */}
-        <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.scrollContent}
-        bounces={true}
-      >
         {sections.map((section) => {
           const isActive = activeSection === section.id;
           return (
@@ -86,7 +79,6 @@ export const Sections = React.memo(({ galleryTransition }: SectionsProps) => {
             </View>
           );
         })}
-        </ScrollView>
       </Animated.View>
     </BottomFooter>
   );
@@ -107,12 +99,7 @@ const styles = StyleSheet.create({
   tabContainer: {
     flex: 1,
     width: '100%',
-  },
-
-
-  scrollContent: {
     flexDirection: 'row',
-    flexGrow: 1,
   },
   tabButton: {
     flex: 1,
