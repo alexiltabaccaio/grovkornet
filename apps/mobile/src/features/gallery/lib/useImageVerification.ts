@@ -4,24 +4,22 @@ import { logger } from '@shared/lib/logger';
 import { useVerificationStore } from '@entities/verification';
 import { GalleryItem } from './types';
 
-// Module-level singleton queue to prevent duplicate verification work
-const verifyingQueue = new Set<string>();
-
 export const useImageVerification = () => {
   const [selectedPhoto, setSelectedPhoto] = useState<GalleryItem | null>(null);
-  const [verifying, setVerifying] = useState(false);
+
+  const verifyingUris = useVerificationStore((state) => state.verifyingUris || {});
+  const verifying = selectedPhoto ? !!verifyingUris[selectedPhoto.uri] : false;
 
   const verifyPhoto = useCallback(async (item: GalleryItem) => {
     logger.debug('Gallery', `verifyPhoto for: ${item.uri}`);
     setSelectedPhoto(item);
 
-    const verifiedMap = useVerificationStore.getState().verifiedMap;
-    if (verifiedMap[item.uri] !== undefined || verifyingQueue.has(item.uri)) {
+    const { verifiedMap, verifyingUris: activeVerifying, setVerifying, setVerified } = useVerificationStore.getState();
+    if (verifiedMap[item.uri] !== undefined || activeVerifying[item.uri]) {
       return;
     }
 
-    setVerifying(true);
-    verifyingQueue.add(item.uri);
+    setVerifying(item.uri, true);
     let timeoutId: NodeJS.Timeout | undefined;
     try {
       logger.debug('Gallery', `Running verifyGrovkornetAuthenticity for selected photo: ${item.uri}`);
@@ -35,22 +33,21 @@ export const useImageVerification = () => {
       ]);
 
       logger.debug('Gallery', `Verification result for ${item.uri}: ${verified}`);
-      useVerificationStore.getState().setVerified(item.uri, verified);
+      setVerified(item.uri, verified);
     } catch (error) {
       logger.error('Gallery', `Verification error or timeout for ${item.uri}`, error);
-      useVerificationStore.getState().setVerified(item.uri, false);
+      setVerified(item.uri, false);
     } finally {
       if (timeoutId) clearTimeout(timeoutId);
-      verifyingQueue.delete(item.uri);
-      setVerifying(false);
+      setVerifying(item.uri, false);
     }
   }, []);
 
   const verifyPhotosBatch = useCallback(async (uris: string[]) => {
-    const verifiedMap = useVerificationStore.getState().verifiedMap;
-    // Filter out URIs that are already verified or currently in the queue
+    const { verifiedMap, verifyingUris: activeVerifying, setVerifying, setVerifyingBatch, setVerified } = useVerificationStore.getState();
+    // Filter out URIs that are already verified or currently verifying
     const toVerify = uris.filter(
-      (uri) => verifiedMap[uri] === undefined && !verifyingQueue.has(uri)
+      (uri) => verifiedMap[uri] === undefined && !activeVerifying[uri]
     );
 
     if (toVerify.length === 0) {
@@ -59,8 +56,8 @@ export const useImageVerification = () => {
 
     logger.debug('Gallery', `Starting batch verification for ${toVerify.length} photos`);
 
-    // Add all to queue immediately to prevent other calls from verifying them
-    toVerify.forEach((uri) => verifyingQueue.add(uri));
+    // Set all to verifying immediately to prevent other calls from verifying them
+    setVerifyingBatch(toVerify, true);
 
     const chunkSize = 3;
     for (let i = 0; i < toVerify.length; i += chunkSize) {
@@ -80,13 +77,13 @@ export const useImageVerification = () => {
               verifyTimeout
             ]);
 
-            useVerificationStore.getState().setVerified(uri, verified);
+            setVerified(uri, verified);
           } catch (error) {
             logger.error('Gallery', `Background verification failed for ${uri}`, error);
-            useVerificationStore.getState().setVerified(uri, false);
+            setVerified(uri, false);
           } finally {
             if (timeoutId) clearTimeout(timeoutId);
-            verifyingQueue.delete(uri);
+            setVerifying(uri, false);
           }
         })
       );

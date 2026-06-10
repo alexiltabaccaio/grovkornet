@@ -5,6 +5,7 @@ describe('useVerificationStore', () => {
     // Reset store state
     useVerificationStore.setState({
       verifiedMap: {},
+      verifyingUris: {},
     });
   });
 
@@ -38,6 +39,24 @@ describe('useVerificationStore', () => {
 
     useVerificationStore.getState().clearCache();
     expect(useVerificationStore.getState().verifiedMap).toEqual({});
+  });
+
+  it('updates verifyingUris correctly with setVerifying', () => {
+    useVerificationStore.getState().setVerifying('file:///test/1.jpg', true);
+    expect(useVerificationStore.getState().verifyingUris['file:///test/1.jpg']).toBe(true);
+
+    useVerificationStore.getState().setVerifying('file:///test/1.jpg', false);
+    expect(useVerificationStore.getState().verifyingUris['file:///test/1.jpg']).toBe(false);
+  });
+
+  it('updates verifyingUris correctly with setVerifyingBatch', () => {
+    useVerificationStore.getState().setVerifyingBatch(['file:///test/1.jpg', 'file:///test/2.jpg'], true);
+    expect(useVerificationStore.getState().verifyingUris['file:///test/1.jpg']).toBe(true);
+    expect(useVerificationStore.getState().verifyingUris['file:///test/2.jpg']).toBe(true);
+
+    useVerificationStore.getState().setVerifyingBatch(['file:///test/1.jpg'], false);
+    expect(useVerificationStore.getState().verifyingUris['file:///test/1.jpg']).toBe(false);
+    expect(useVerificationStore.getState().verifyingUris['file:///test/2.jpg']).toBe(true);
   });
 
   describe('Zustand Persist Configuration', () => {

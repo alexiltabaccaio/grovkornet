@@ -10,7 +10,7 @@ jest.mock('@grovkornet/engine', () => ({
 
 describe('useImageVerification', () => {
   beforeEach(() => {
-    useVerificationStore.setState({ verifiedMap: {} });
+    useVerificationStore.setState({ verifiedMap: {}, verifyingUris: {} });
     jest.clearAllMocks();
   });
 
@@ -86,5 +86,45 @@ describe('useImageVerification', () => {
     // verifyGrovkornetAuthenticity should only be called once because of deduplication
     expect(verifyGrovkornetAuthenticity).toHaveBeenCalledTimes(1);
     expect(verifyGrovkornetAuthenticity).toHaveBeenCalledWith('file:///test/4.jpg');
+  });
+
+  it('desynchronizes verifying state when verification is requested across different hook instances', async () => {
+    let resolveVerification: (value: boolean) => void = () => {};
+    (verifyGrovkornetAuthenticity as jest.Mock).mockImplementation(() => {
+      return new Promise<boolean>((resolve) => {
+        resolveVerification = resolve;
+      });
+    });
+
+    const { result: resultA } = renderHook(() => useImageVerification());
+    const { result: resultB } = renderHook(() => useImageVerification());
+
+    const item: GalleryItem = { id: '5', uri: 'file:///test/5.jpg' };
+
+    // Instance A starts verifying
+    act(() => {
+      void resultA.current.verifyPhoto(item);
+    });
+
+    expect(resultA.current.verifying).toBe(true);
+    expect(resultB.current.verifying).toBe(false);
+
+    // Instance B also selects and verifies the same photo (e.g. user selects it in B)
+    act(() => {
+      void resultB.current.verifyPhoto(item);
+    });
+
+    // BUG: B's verifying state is false because it returned early due to module-level queue,
+    // so B does not know verification is happening. This is the assertion that will FAIL.
+    expect(resultB.current.verifying).toBe(true);
+
+    // Resolve the verification
+    await act(async () => {
+      resolveVerification(true);
+    });
+
+    // Both should finish verifying and set verifying to false
+    expect(resultA.current.verifying).toBe(false);
+    expect(resultB.current.verifying).toBe(false);
   });
 });
