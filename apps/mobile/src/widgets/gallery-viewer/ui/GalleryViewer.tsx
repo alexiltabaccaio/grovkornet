@@ -27,10 +27,10 @@ export const GalleryViewer = ({ onClose, initialUri, galleryTransition, header }
   const [showPlaceholder, setShowPlaceholder] = useState(true);
 
   useEffect(() => {
-    if (!loading && !permissionGranted && photos.length === 0) {
+    if (!loading && photos.length === 0) {
       onClose();
     }
-  }, [loading, permissionGranted, photos.length, onClose]);
+  }, [loading, photos.length, onClose]);
 
   useEffect(() => {
     if (!loading) {

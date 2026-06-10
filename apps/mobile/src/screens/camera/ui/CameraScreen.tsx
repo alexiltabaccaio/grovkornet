@@ -51,12 +51,13 @@ const CameraScreenContent = () => {
   }, [galleryTransition]);
 
   const closeGallery = useCallback(() => {
-    if (galleryTransition.value === 0) {
+    if (galleryTransition.value <= 0) {
       setShouldRenderGallery(false);
       return;
     }
-    galleryTransition.value = withTiming(0, { duration: 300 }, (finished) => {
-      if (finished || galleryTransition.value === 0) {
+    galleryTransition.value = withTiming(0, { duration: 300 }, () => {
+      if (galleryTransition.value < 0.1) {
+        galleryTransition.value = 0;
         runOnJS(setShouldRenderGallery)(false);
       }
     });
