@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, StyleProp, ViewStyle } from 'react-native';
-import { useShallow } from 'zustand/react/shallow';
+import { useShallow } from 'zustand/shallow';
 import { ParameterPanelWrapper } from '@entities/system';
 import { usePreferencesStore } from '@entities/preferences';
 import { PillButton } from '@shared/ui';

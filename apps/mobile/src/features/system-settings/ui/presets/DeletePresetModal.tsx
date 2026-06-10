@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, View, Text, TouchableOpacity, Pressable } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { useShallow } from 'zustand/react/shallow';
+import { useShallow } from 'zustand/shallow';
 import { usePresetStore, Preset, PresetStore } from '@entities/preset';
 import * as Haptics from '@shared/lib/haptics';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';

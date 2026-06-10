@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, View, Text, StyleProp, ViewStyle } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import { useShallow } from 'zustand/react/shallow';
+import { useShallow } from 'zustand/shallow';
 import { useBodyStore } from '@entities/body';
 import { usePreferencesStore } from '@entities/preferences';
 import { useSystemStore } from '@entities/system';

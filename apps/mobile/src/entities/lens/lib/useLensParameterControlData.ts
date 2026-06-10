@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { useShallow } from 'zustand/react/shallow';
+import { useShallow } from 'zustand/shallow';
 import { useLensStore } from '../model/useLensStore';
 import { useLensWorklets } from './useLensWorklets';
 import { ParameterControlData } from '@shared/lib/parameter/types';

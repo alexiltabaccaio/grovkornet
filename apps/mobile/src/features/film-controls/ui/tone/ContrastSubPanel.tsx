@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, StyleSheet, StyleProp, ViewStyle } from 'react-native';
-import { useShallow } from 'zustand/react/shallow';
+import { useShallow } from 'zustand/shallow';
 import { useFilmStore } from '@entities/film';
 import { useFilmWorklets } from '@entities/film';
 import { ParameterControl, useSystemStore } from '@entities/system';

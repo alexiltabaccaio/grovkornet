@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { useShallow } from 'zustand/react/shallow';
+import { useShallow } from 'zustand/shallow';
 import { useBodyStore } from '@entities/body';
 import { ParameterType } from '@entities/system';
 import { GenericParameterModule, ParameterConfig } from '@entities/system';

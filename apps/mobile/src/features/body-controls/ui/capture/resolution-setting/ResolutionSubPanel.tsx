@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, View, Text, StyleProp, ViewStyle } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import { useShallow } from 'zustand/react/shallow';
+import { useShallow } from 'zustand/shallow';
 import { useBodyStore } from '@entities/body';
 import { useSystemStore } from '@entities/system';
 import { useAnimatedReaction, runOnJS } from 'react-native-reanimated';

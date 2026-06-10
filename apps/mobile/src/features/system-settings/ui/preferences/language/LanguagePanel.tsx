@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleProp, ViewStyle, ImageSourcePropType } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { useShallow } from 'zustand/react/shallow';
+import { useShallow } from 'zustand/shallow';
 import { useSystemStore } from '@entities/system';
 import { ParameterControl, ParameterPanelWrapper } from '@entities/system';
 import { usePreferencesStore } from '@entities/preferences';

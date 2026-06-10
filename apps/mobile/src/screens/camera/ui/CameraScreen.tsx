@@ -1,10 +1,10 @@
 import React, { useEffect, useState, Profiler, useCallback, useMemo } from 'react';
 import { StyleSheet, View, AppState, AppStateStatus, PermissionsAndroid, Platform, StatusBar } from 'react-native';
-import Animated, { useSharedValue, useAnimatedStyle, interpolate, withTiming, runOnJS, runOnUI, Extrapolation } from 'react-native-reanimated';
+import Animated, { useSharedValue, useAnimatedStyle, interpolate, withTiming, runOnJS, Extrapolation } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 
-import { useShallow } from 'zustand/react/shallow';
+import { useShallow } from 'zustand/shallow';
 import { useSystemStore } from '@entities/system';
 import { ControlPanel } from '@widgets/control-panel';
 import { Viewfinder, DeviceHealthWarningBanner } from '@widgets/viewfinder';

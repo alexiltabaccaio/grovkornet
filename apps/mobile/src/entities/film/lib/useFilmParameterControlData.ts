@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { useShallow } from 'zustand/react/shallow';
+import { useShallow } from 'zustand/shallow';
 import { useFilmStore } from '../model/useFilmStore';
 import { useFilmWorklets } from './useFilmWorklets';
 import { ParameterControlData } from '@shared/lib/parameter/types';

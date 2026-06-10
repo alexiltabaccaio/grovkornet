@@ -7,7 +7,7 @@ import { BottomFooter } from '@shared/ui';
 import * as Haptics from '@shared/lib/haptics';
 import Animated, { useAnimatedStyle, interpolate, SharedValue } from 'react-native-reanimated';
 
-import { useShallow } from 'zustand/react/shallow';
+import { useShallow } from 'zustand/shallow';
 
 const { width } = Dimensions.get('window');
 

@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { useShallow } from 'zustand/react/shallow';
+import { useShallow } from 'zustand/shallow';
 import { useDerivedValue } from 'react-native-reanimated';
 import { useBodyStore } from '../model/useBodyStore';
 import { useBodyWorklets } from './useBodyWorklets';

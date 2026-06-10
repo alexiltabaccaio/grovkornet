@@ -4,7 +4,7 @@ import { Image } from 'expo-image';
 import Animated, { useSharedValue, useAnimatedStyle, withTiming, Easing, withSpring } from 'react-native-reanimated';
 import { useState } from 'react';
 import { useSystemStore } from '@entities/system';
-import { useShallow } from 'zustand/react/shallow';
+import { useShallow } from 'zustand/shallow';
 import * as Haptics from '@shared/lib/haptics';
 import { useRecentMediaThumbnail } from '../lib/useRecentMediaThumbnail';
 

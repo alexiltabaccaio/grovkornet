@@ -3,7 +3,7 @@ import { StyleSheet, View, Text, StyleProp, ViewStyle } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
-import { useShallow } from 'zustand/react/shallow';
+import { useShallow } from 'zustand/shallow';
 import { usePresetStore, Preset, PresetStore } from '@entities/preset';
 import { ParameterPanelWrapper } from '@entities/system';
 import * as Haptics from '@shared/lib/haptics';

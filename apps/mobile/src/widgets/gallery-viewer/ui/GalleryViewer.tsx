@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { StyleSheet, Text, View, ActivityIndicator, Platform, useWindowDimensions, BackHandler } from 'react-native';
 import { Image } from 'expo-image';
-import Animated, { useAnimatedStyle, SharedValue, interpolate, useSharedValue, withTiming, runOnJS, withDelay } from 'react-native-reanimated';
+import Animated, { useAnimatedStyle, SharedValue, interpolate, useSharedValue, withTiming, runOnJS, useAnimatedProps } from 'react-native-reanimated';
 import { useTranslation } from 'react-i18next';
 import { ShareButton, PhotoPreview, GalleryStrip, useGalleryViewer } from '@features/gallery';
 import { useDeviceRotation } from '@shared/lib/hooks/useDeviceRotation';
@@ -86,6 +86,9 @@ export const GalleryViewer = React.memo(({ onClose, initialUri, galleryTransitio
     if (!galleryTransition) return {};
     return {
       opacity: galleryTransition.value,
+      // Move off-screen when virtually invisible to prevent touch interception
+      // if JS thread is congested and unmount is delayed.
+      transform: [{ translateY: galleryTransition.value <= 0.01 ? 9999 : 0 }]
     };
   }, [galleryTransition]);
 
@@ -116,7 +119,10 @@ export const GalleryViewer = React.memo(({ onClose, initialUri, galleryTransitio
   }, [width, height, galleryTransition]);
 
   return (
-    <Animated.View style={[styles.absoluteContainer, animatedContainerStyle]} pointerEvents="auto">
+    <Animated.View 
+      style={[styles.absoluteContainer, animatedContainerStyle]} 
+      pointerEvents="auto"
+    >
       <View style={styles.topArea} pointerEvents="box-none">
         {header}
       </View>

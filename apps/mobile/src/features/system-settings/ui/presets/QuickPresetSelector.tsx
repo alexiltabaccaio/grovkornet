@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useShallow } from 'zustand/react/shallow';
+import { useShallow } from 'zustand/shallow';
 import { usePresetStore, PresetStore } from '@entities/preset';
 import * as Haptics from '@shared/lib/haptics';
 import { useTranslation } from 'react-i18next';

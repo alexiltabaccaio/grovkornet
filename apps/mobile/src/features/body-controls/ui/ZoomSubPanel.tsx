@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, StyleSheet, StyleProp, ViewStyle } from 'react-native';
 import { useDerivedValue, SharedValue } from 'react-native-reanimated';
-import { useShallow } from 'zustand/react/shallow';
+import { useShallow } from 'zustand/shallow';
 import { useBodyStore, useBodyWorklets } from '@entities/body';
 import { useSystemStore } from '@entities/system';
 import { PillButton, SubPanelContainer } from '@shared/ui';

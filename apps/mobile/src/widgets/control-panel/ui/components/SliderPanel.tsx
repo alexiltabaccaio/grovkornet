@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleProp, ViewStyle } from 'react-native';
-import { useShallow } from 'zustand/react/shallow';
+import { useShallow } from 'zustand/shallow';
 import { useSystemStore, ParameterType, ParameterControl, ParameterPanelWrapper } from '@entities/system';
 import { useFilmParameterControlData, FilmParameterType } from '@entities/film';
 import { useBodyParameterControlData, BodyParameterType } from '@entities/body';

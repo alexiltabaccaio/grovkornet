@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
-import { useShallow } from 'zustand/react/shallow';
+import { useShallow } from 'zustand/shallow';
 import { useBodyStore, useBodyWorklets } from '@entities/body';
 import { useLensStore } from '@entities/lens';
 import { useFilmStore } from '@entities/film';

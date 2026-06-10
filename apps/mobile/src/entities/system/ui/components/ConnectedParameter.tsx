@@ -1,5 +1,5 @@
 import React, { memo, useCallback } from 'react';
-import { useShallow } from 'zustand/react/shallow';
+import { useShallow } from 'zustand/shallow';
 import { useSystemStore } from '../../model/useSystemStore';
 import { ParameterType } from '../../model/types';
 import { ParameterControl } from './ParameterControl';

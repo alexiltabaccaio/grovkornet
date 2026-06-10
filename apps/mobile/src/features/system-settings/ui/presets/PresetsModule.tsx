@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react';
 import { StyleSheet, View, ImageSourcePropType } from 'react-native';
 import { ScrollView, TouchableOpacity } from 'react-native-gesture-handler';
-import { useShallow } from 'zustand/react/shallow';
+import { useShallow } from 'zustand/shallow';
 import { usePresetStore, Preset, PresetStore } from '@entities/preset';
 import { useSystemStore } from '@entities/system';
 import { useTranslation } from 'react-i18next';

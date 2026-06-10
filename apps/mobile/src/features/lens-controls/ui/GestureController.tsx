@@ -3,7 +3,7 @@ import { StyleSheet, Dimensions, Platform, StatusBar } from 'react-native';
 import { GestureDetector, Gesture } from 'react-native-gesture-handler';
 import Animated, { useSharedValue, useAnimatedStyle, withTiming, Easing, useAnimatedReaction, SharedValue } from 'react-native-reanimated';
 import { useSystemStore } from '@entities/system';
-import { useShallow } from 'zustand/react/shallow';
+import { useShallow } from 'zustand/shallow';
 import { useBodyStore } from '@entities/body';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 

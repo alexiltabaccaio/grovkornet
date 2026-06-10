@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleProp, ViewStyle } from 'react-native';
-import { useShallow } from 'zustand/react/shallow';
+import { useShallow } from 'zustand/shallow';
 import { useLensStore } from '@entities/lens';
 import { useSystemStore, GenericPillPanel } from '@entities/system';
 import { AutoButton } from '@shared/ui';

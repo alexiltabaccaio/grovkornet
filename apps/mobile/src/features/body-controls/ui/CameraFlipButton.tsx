@@ -7,7 +7,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { Ionicons } from '@expo/vector-icons';
 import { useFilmStore } from '@entities/film';
-import { useShallow } from 'zustand/react/shallow';
+import { useShallow } from 'zustand/shallow';
 import { useTranslation } from 'react-i18next';
 import * as Haptics from '@shared/lib/haptics';
 

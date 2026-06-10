@@ -3,7 +3,7 @@ import { StyleSheet, View } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import { useTranslation } from 'react-i18next';
 
-import { useShallow } from 'zustand/react/shallow';
+import { useShallow } from 'zustand/shallow';
 import { useSystemStore, useVisibleModules, ModuleType } from '@entities/system';
 import { PillButton } from '@shared/ui';
 import { useDoublePress } from '@shared/lib/hooks/useDoublePress';

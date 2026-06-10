@@ -1,5 +1,5 @@
 import React, { useMemo, useCallback } from 'react';
-import { useShallow } from 'zustand/react/shallow';
+import { useShallow } from 'zustand/shallow';
 import { useFilmStore, useFilmWorklets } from '@entities/film';
 import { 
   DEFAULT_SELECTIVE_HUE,

@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, StyleProp, ViewStyle } from 'react-native';
-import { useShallow } from 'zustand/react/shallow';
+import { useShallow } from 'zustand/shallow';
 import { useSystemStore, ParameterControl } from '@entities/system';
 import { useBodyStore, useBodyWorklets } from '@entities/body';
 import { useTranslation } from 'react-i18next';

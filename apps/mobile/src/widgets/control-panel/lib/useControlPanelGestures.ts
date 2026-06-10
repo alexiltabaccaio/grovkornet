@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef } from 'react';
-import { useShallow } from 'zustand/react/shallow';
+import { useShallow } from 'zustand/shallow';
 import { useSystemStore } from '@entities/system';
 import { Gesture } from 'react-native-gesture-handler';
 import { useSharedValue, withTiming, withSpring, SharedValue } from 'react-native-reanimated';

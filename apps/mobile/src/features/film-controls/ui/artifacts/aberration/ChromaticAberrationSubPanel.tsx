@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, View, Text, StyleProp, ViewStyle } from 'react-native';
 import { useDerivedValue } from 'react-native-reanimated';
-import { useShallow } from 'zustand/react/shallow';
+import { useShallow } from 'zustand/shallow';
 import { useFilmStore, useFilmWorklets } from '@entities/film';
 import { useTranslation } from 'react-i18next';
 import { useSystemStore } from '@entities/system';
