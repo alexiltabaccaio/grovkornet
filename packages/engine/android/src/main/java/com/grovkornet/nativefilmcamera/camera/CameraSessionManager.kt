@@ -158,7 +158,7 @@ class CameraSessionManager(
             val (selector, targetZoomRatio) = calculateCameraSelector()
 
             imageCapture = ImageCapture.Builder()
-                .setCaptureMode(ImageCapture.CAPTURE_MODE_MAXIMIZE_QUALITY)
+                .setCaptureMode(ImageCapture.CAPTURE_MODE_ZERO_SHUTTER_LAG)
                 .setResolutionSelector(captureResolutionSelector)
                 .build()
 
