@@ -60,8 +60,6 @@ export const useRecentMediaThumbnail = () => {
 
           if (foundUri) {
             setLatestCapturedUri(foundUri);
-          } else {
-            setLatestCapturedUri(null);
           }
         }
       } catch (e) {

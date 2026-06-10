@@ -116,8 +116,10 @@ export const useGalleryViewer = (initialUri?: string | null) => {
    * Initiates authenticity verification only if the photo is not already selected.
    */
   const onPhotoVisible = useCallback((photo: GalleryItem) => {
-    void verifyPhoto(photo);
-  }, [verifyPhoto]);
+    if (selectedPhoto?.uri !== photo.uri && selectedPhoto?.id !== photo.id) {
+      void verifyPhoto(photo);
+    }
+  }, [verifyPhoto, selectedPhoto]);
 
   /**
    * Called by GalleryStrip when a thumbnail is selected.

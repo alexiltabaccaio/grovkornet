@@ -86,7 +86,7 @@ export const usePhotoPreviewGestures = ({
         cancelAnimation(translateX);
         panMode.value = 'swipe';
         dragOffset.value = translateX.value;
-        panStartTranslationX.value = event.translationX;
+        panStartTranslationX.value = event?.translationX ?? 0;
       }
     })
     .onUpdate((event) => {

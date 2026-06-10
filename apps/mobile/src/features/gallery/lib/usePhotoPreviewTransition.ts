@@ -54,7 +54,7 @@ export const usePhotoPreviewTransition = ({
       return Array.from(newIndices);
     });
     
-    if (isManualSwipe && onPhotoVisible && photos[targetIndex]) {
+    if (isManualSwipe && onPhotoVisible && photos[targetIndex] && targetIndex !== currentIndex.value) {
       const uri = photos[targetIndex].uri;
       expectedEchoesRef.current.push(uri);
       if (expectedEchoesRef.current.length > 10) {
@@ -62,7 +62,7 @@ export const usePhotoPreviewTransition = ({
       }
       onPhotoVisible(photos[targetIndex]);
     }
-  }, [onPhotoVisible, photos]);
+  }, [onPhotoVisible, photos, currentIndex]);
 
   const finalizeTeleport = useCallback((targetIndex: number) => {
     currentIndex.value = targetIndex;
