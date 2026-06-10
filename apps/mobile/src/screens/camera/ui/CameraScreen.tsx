@@ -1,6 +1,6 @@
 import React, { useEffect, useState, Profiler, useCallback } from 'react';
 import { StyleSheet, View, AppState, AppStateStatus, PermissionsAndroid, Platform, StatusBar } from 'react-native';
-import Animated, { useSharedValue, useAnimatedStyle, interpolate, withTiming, runOnJS } from 'react-native-reanimated';
+import Animated, { useSharedValue, useAnimatedStyle, interpolate, withTiming, runOnJS, runOnUI } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 
@@ -68,13 +68,28 @@ const CameraScreenContent = () => {
       const nextIsActive = nextAppState === 'active';
       if (nextIsActive) {
         setCameraKey(prev => prev + 1);
+        
+        // When returning from background on Android, Reanimated can sometimes lose the
+        // current UI-thread value of SharedValues if the Activity was recreated.
+        // Since the native views and Reanimated's UI context take some time to rebuild 
+        // after onHostResume, we must delay the sync slightly, otherwise the runOnUI 
+        // instruction is executed before the context is ready and gets lost.
+        if (shouldRenderGallery) {
+          setTimeout(() => {
+            runOnUI(() => {
+              'worklet';
+              galleryTransition.value = 0.99;
+              galleryTransition.value = 1;
+            })();
+          }, 150);
+        }
       }
     });
 
     return () => {
       subscription.remove();
     };
-  }, []);
+  }, [shouldRenderGallery, galleryTransition]);
 
   const [hasPermission, setHasPermission] = useState(false);
 
