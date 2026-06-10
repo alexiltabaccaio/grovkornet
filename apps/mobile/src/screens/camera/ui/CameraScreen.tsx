@@ -65,8 +65,24 @@ export const CameraScreen = () => {
         // Since the native views and Reanimated's UI context take some time to rebuild 
         // after onHostResume, we must delay the sync slightly, otherwise the runOnUI 
         // instruction is executed before the context is ready and gets lost.
-        if (shouldRenderGallery) {
-          setTimeout(() => {
+        setTimeout(() => {
+          // Restore basic layout state that could be lost
+          const isActiveSectionNone = useSystemStore.getState().activeSection === 'none';
+          if (isActiveSectionNone) {
+             drawerAnimation.value = 249.9;
+             footerTranslateY.value = 0.1;
+             requestAnimationFrame(() => {
+               drawerAnimation.value = 250;
+               footerTranslateY.value = 0;
+             });
+          } else {
+             drawerAnimation.value = 0.1;
+             requestAnimationFrame(() => {
+               drawerAnimation.value = 0;
+             });
+          }
+          
+          if (shouldRenderGallery) {
             // Modify the value on the JS thread to ensure Reanimated's JS proxy
             // correctly re-binds and notifies all child components (like GalleryViewer).
             // runOnUI bypasses this, causing cross-component useAnimatedStyle to stay stuck.
@@ -74,15 +90,15 @@ export const CameraScreen = () => {
             requestAnimationFrame(() => {
               galleryTransition.value = 1;
             });
-          }, 150);
-        }
+          }
+        }, 150);
       }
     });
 
     return () => {
       subscription.remove();
     };
-  }, [shouldRenderGallery, galleryTransition]);
+  }, [shouldRenderGallery, galleryTransition, drawerAnimation, footerTranslateY]);
 
   const [hasPermission, setHasPermission] = useState(false);
 
