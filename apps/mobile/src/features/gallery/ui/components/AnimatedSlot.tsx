@@ -15,6 +15,8 @@ interface AnimatedSlotProps {
   zoomTranslateX?: SharedValue<number>;
   zoomTranslateY?: SharedValue<number>;
   currentIndex?: SharedValue<number>;
+  onLoad?: () => void;
+  initialUri?: string | null;
 }
 
 export const AnimatedSlot = ({
@@ -28,6 +30,8 @@ export const AnimatedSlot = ({
   zoomTranslateX,
   zoomTranslateY,
   currentIndex,
+  onLoad,
+  initialUri,
 }: AnimatedSlotProps) => {
   const { width: screenW, height: screenH } = useWindowDimensions();
 
@@ -94,8 +98,11 @@ export const AnimatedSlot = ({
         <Animated.View style={innerStyle}>
           <Image
             source={photo.uri}
+            placeholder={initialUri ? { uri: initialUri } : undefined}
             style={styles.previewImage}
             contentFit="contain"
+            transition={0}
+            onLoad={onLoad}
           />
         </Animated.View>
       </Animated.View>

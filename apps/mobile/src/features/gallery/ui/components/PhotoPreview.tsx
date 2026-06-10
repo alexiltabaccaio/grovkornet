@@ -15,9 +15,11 @@ interface PhotoPreviewProps {
   photos: GalleryItem[];
   onPhotoVisible?: (photo: GalleryItem) => void;
   rotationY?: SharedValue<number>;
+  onInitialImageLoad?: () => void;
+  initialUri?: string | null;
 }
 
-export const PhotoPreview = ({ selectedPhoto, photos, onPhotoVisible, rotationY }: PhotoPreviewProps) => {
+export const PhotoPreview = ({ selectedPhoto, photos, onPhotoVisible, rotationY, onInitialImageLoad, initialUri }: PhotoPreviewProps) => {
   const { t } = useTranslation();
   const { width, height } = useWindowDimensions();
   const GAP = 20;
@@ -89,6 +91,8 @@ export const PhotoPreview = ({ selectedPhoto, photos, onPhotoVisible, rotationY 
                 zoomTranslateX={zoomTranslateX}
                 zoomTranslateY={zoomTranslateY}
                 currentIndex={currentIndex}
+                onLoad={photo.uri === selectedPhoto?.uri ? onInitialImageLoad : undefined}
+                initialUri={photo.uri === selectedPhoto?.uri ? initialUri : undefined}
               />
             );
           })}

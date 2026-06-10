@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { StyleSheet, Text, View, ActivityIndicator, Platform, useWindowDimensions, BackHandler } from 'react-native';
 import { Image } from 'expo-image';
-import Animated, { useAnimatedStyle, SharedValue, interpolate } from 'react-native-reanimated';
+import Animated, { useAnimatedStyle, SharedValue, interpolate, useSharedValue, withTiming, runOnJS, withDelay } from 'react-native-reanimated';
 import { useTranslation } from 'react-i18next';
 import { ShareButton, PhotoPreview, GalleryStrip, useGalleryViewer } from '@features/gallery';
 import { useDeviceRotation } from '@shared/lib/hooks/useDeviceRotation';
@@ -14,17 +14,32 @@ interface GalleryViewerProps {
   header?: React.ReactNode;
 }
 
-export const GalleryViewer = ({ onClose, initialUri, galleryTransition, header }: GalleryViewerProps) => {
+export const GalleryViewer = React.memo(({ onClose, initialUri, galleryTransition, header }: GalleryViewerProps) => {
   const { t } = useTranslation();
   const { photos, selectedPhoto, loading, onPhotoVisible, onSelectPhoto, permissionGranted } = useGalleryViewer(initialUri);
   const rotationY = useDeviceRotation();
   const { width, height } = useWindowDimensions();
 
-  const isVerified = useVerificationStore(state =>
-    selectedPhoto ? !!state.verifiedMap[selectedPhoto.uri] : false
+  const selectedPhotoUri = selectedPhoto?.uri;
+  const isVerified = useVerificationStore(
+    useCallback(state => (selectedPhotoUri ? !!state.verifiedMap[selectedPhotoUri] : false), [selectedPhotoUri])
   );
 
   const [showPlaceholder, setShowPlaceholder] = useState(true);
+  const placeholderOpacity = useSharedValue(1);
+
+  const [isHighResLoaded, setIsHighResLoaded] = useState(false);
+  const [isReadyToFade, setIsReadyToFade] = useState(false);
+
+  useEffect(() => {
+    // Ensures we don't fade out the placeholder while it's still animating its opening scale (300ms)
+    const timer = setTimeout(() => {
+      setIsReadyToFade(true);
+    }, 300);
+    return () => {
+      clearTimeout(timer);
+    };
+  }, []);
 
   useEffect(() => {
     if (!loading && photos.length === 0) {
@@ -33,15 +48,20 @@ export const GalleryViewer = ({ onClose, initialUri, galleryTransition, header }
   }, [loading, photos.length, onClose]);
 
   useEffect(() => {
-    if (!loading) {
-      // Delay unmounting the placeholder to allow PhotoPreview to render completely,
-      // avoiding the React component unmount/mount black screen flash.
-      const timer = setTimeout(() => setShowPlaceholder(false), 50);
-      return () => clearTimeout(timer);
-    } else {
+    if (!loading && isHighResLoaded && isReadyToFade) {
+      // Both the 300ms opening transition is complete AND the high-res image has finished decoding.
+      // Now we can safely fade out the placeholder.
+      placeholderOpacity.value = withTiming(0, { duration: 250 }, (finished) => {
+        if (finished) {
+          runOnJS(setShowPlaceholder)(false);
+        }
+      });
+    } else if (loading) {
+      placeholderOpacity.value = 1;
       setShowPlaceholder(true);
+      setIsHighResLoaded(false); // reset if loading state re-triggers
     }
-  }, [loading]);
+  }, [loading, isHighResLoaded, isReadyToFade, placeholderOpacity]);
 
   const onCloseRef = React.useRef(onClose);
   useEffect(() => {
@@ -67,7 +87,13 @@ export const GalleryViewer = ({ onClose, initialUri, galleryTransition, header }
     return {
       opacity: galleryTransition.value,
     };
-  });
+  }, [galleryTransition]);
+
+  const animatedOverlayStyle = useAnimatedStyle(() => {
+    return {
+      opacity: placeholderOpacity.value,
+    };
+  }, [placeholderOpacity]);
 
   const animatedPlaceholderStyle = useAnimatedStyle(() => {
     if (!galleryTransition) return {};
@@ -87,7 +113,7 @@ export const GalleryViewer = ({ onClose, initialUri, galleryTransition, header }
       borderRadius: interpolate(t, [0, 1], [8, 0]),
       overflow: 'hidden',
     };
-  });
+  }, [width, height, galleryTransition]);
 
   return (
     <Animated.View style={[styles.absoluteContainer, animatedContainerStyle]} pointerEvents="auto">
@@ -110,6 +136,8 @@ export const GalleryViewer = ({ onClose, initialUri, galleryTransition, header }
                   photos={photos}
                   onPhotoVisible={onPhotoVisible}
                   rotationY={rotationY}
+                  onInitialImageLoad={() => setIsHighResLoaded(true)}
+                  initialUri={initialUri}
                 />
                 
                 {/* Share Instagram Action */}
@@ -127,7 +155,7 @@ export const GalleryViewer = ({ onClose, initialUri, galleryTransition, header }
 
             {/* Placeholder Overlay (sits EXACTLY over PhotoPreview) */}
             {showPlaceholder && (
-              <View style={[StyleSheet.absoluteFill, styles.center]} pointerEvents="none">
+              <Animated.View style={[StyleSheet.absoluteFill, styles.center, animatedOverlayStyle]} pointerEvents="none">
                 {initialUri ? (
                   <Animated.View style={[StyleSheet.absoluteFill, animatedPlaceholderStyle]}>
                     <Image
@@ -145,7 +173,7 @@ export const GalleryViewer = ({ onClose, initialUri, galleryTransition, header }
                     <Text style={styles.loadingText}>{t('gallery.loading', 'Loading gallery...')}</Text>
                   </>
                 ) : null}
-              </View>
+              </Animated.View>
             )}
 
           </View>
@@ -163,7 +191,7 @@ export const GalleryViewer = ({ onClose, initialUri, galleryTransition, header }
 
     </Animated.View>
   );
-};
+});
 
 const styles = StyleSheet.create({
   absoluteContainer: {
