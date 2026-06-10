@@ -1,6 +1,6 @@
-import React, { useEffect, useState, Profiler, useCallback } from 'react';
+import React, { useEffect, useState, Profiler, useCallback, useMemo } from 'react';
 import { StyleSheet, View, AppState, AppStateStatus, PermissionsAndroid, Platform, StatusBar } from 'react-native';
-import Animated, { useSharedValue, useAnimatedStyle, interpolate, withTiming, runOnJS, runOnUI } from 'react-native-reanimated';
+import Animated, { useSharedValue, useAnimatedStyle, interpolate, withTiming, runOnJS, runOnUI, Extrapolation } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 
@@ -18,15 +18,16 @@ import { logger } from '@shared/lib/logger';
 
 
 
-export const CameraScreen = () => {
+export const CameraScreen = React.memo(() => {
   return (
     <CameraScreenContent />
   );
-};
+});
+CameraScreen.displayName = 'CameraScreen';
 
 // CameraScreen.whyDidYouRender = true;
 
-const CameraScreenContent = () => {
+const CameraScreenContent = React.memo(() => {
   const insets = useSafeAreaInsets();
   const { isFpsOverlayEnabled, triggerCapture, latestCapturedUri, latestPreviewUri } = useSystemStore(useShallow(state => ({
     isFpsOverlayEnabled: state.isFpsOverlayEnabled,
@@ -55,9 +56,8 @@ const CameraScreenContent = () => {
       setShouldRenderGallery(false);
       return;
     }
-    galleryTransition.value = withTiming(0, { duration: 300 }, () => {
-      if (galleryTransition.value < 0.1) {
-        galleryTransition.value = 0;
+    galleryTransition.value = withTiming(0, { duration: 300 }, (finished) => {
+      if (finished) {
         runOnJS(setShouldRenderGallery)(false);
       }
     });
@@ -118,19 +118,50 @@ const CameraScreenContent = () => {
       totalOffset,
       [250, 150],
       [1, 0],
-      'clamp'
+      Extrapolation.CLAMP
     );
     const translateY = interpolate(
       totalOffset,
       [250, 150],
       [0, 30],
-      'clamp'
+      Extrapolation.CLAMP
     );
     return {
       opacity,
       transform: [{ translateY }],
     };
   });
+  const statusBarHeight = Platform.OS === 'android' 
+    ? (StatusBar.currentHeight ?? 24) 
+    : 47;
+
+  const onRenderViewfinder = useCallback((id: string, phase: string, duration: number) => {
+    if (__DEV__ && duration > 60) logger.warn('UI', `Viewfinder render took ${duration.toFixed(2)}ms`);
+  }, []);
+
+  const onRenderControlPanel = useCallback((id: string, phase: string, duration: number) => {
+    if (__DEV__ && duration > 60) logger.warn('UI', `ControlPanel render took ${duration.toFixed(2)}ms`);
+  }, []);
+
+  const viewfinderContainerStyle = useMemo(() => ({
+    flex: 1, 
+    width: '100%' as const, 
+    marginTop: statusBarHeight, 
+    marginBottom: 80 + insets.bottom 
+  }), [statusBarHeight, insets.bottom]);
+
+  const bottomControlsStyle = useMemo(() => [
+    styles.bottomControlsContainer,
+    { bottom: 96 + insets.bottom }
+  ], [insets.bottom]);
+
+  const bannerContainerStyle = useMemo(() => ({
+    position: 'absolute' as const, 
+    top: statusBarHeight, 
+    left: 0, 
+    right: 0, 
+    zIndex: 90 
+  }), [statusBarHeight]);
 
   if (!hasPermission) {
     return (
@@ -138,16 +169,12 @@ const CameraScreenContent = () => {
     );
   }
 
-  const statusBarHeight = Platform.OS === 'android' 
-    ? (StatusBar.currentHeight ?? 24) 
-    : 47;
-
   return (
     <View style={styles.container}>
       <GestureController footerTranslateY={footerTranslateY} drawerAnimation={drawerAnimation}>
-        <View style={{ flex: 1, width: '100%', marginTop: statusBarHeight, marginBottom: 80 + insets.bottom }}>
+        <View style={viewfinderContainerStyle}>
           {/* 60ms threshold is set to monitor realistic frame drops, avoiding dev mode / bundler overhead noise */}
-          <Profiler id="Viewfinder" onRender={(id, phase, duration) => { if (__DEV__ && duration > 60) logger.warn('UI', `Viewfinder render took ${duration.toFixed(2)}ms`); }}>
+          <Profiler id="Viewfinder" onRender={onRenderViewfinder}>
             <Viewfinder cameraKey={cameraKey} />
           </Profiler>
         </View>
@@ -158,8 +185,7 @@ const CameraScreenContent = () => {
       
       <Animated.View 
         style={[
-          styles.bottomControlsContainer, 
-          { bottom: 96 + insets.bottom },
+          bottomControlsStyle,
           animatedBottomControlsStyle
         ]} 
         pointerEvents="box-none"
@@ -179,7 +205,7 @@ const CameraScreenContent = () => {
       </Animated.View>
 
       {/* 60ms threshold filters out initial mount/unmount and dev overhead but flags real rendering bottlenecks */}
-      <Profiler id="ControlPanel" onRender={(id, phase, duration) => { if (__DEV__ && duration > 60) logger.warn('UI', `ControlPanel render took ${duration.toFixed(2)}ms`); }}>
+      <Profiler id="ControlPanel" onRender={onRenderControlPanel}>
         <ControlPanel translateY={footerTranslateY} drawerAnimation={drawerAnimation} galleryTransition={galleryTransition} />
       </Profiler>
 
@@ -196,13 +222,16 @@ const CameraScreenContent = () => {
       <DeletePresetModal />
 
       <View 
-        style={{ position: 'absolute', top: statusBarHeight, left: 0, right: 0, pointerEvents: 'box-none', zIndex: 90 }}
+        style={bannerContainerStyle}
+        pointerEvents="box-none"
       >
         <DeviceHealthWarningBanner />
       </View>
     </View>
   );
-};
+});
+
+CameraScreenContent.displayName = 'CameraScreenContent';
 
 // CameraScreenContent.whyDidYouRender = true;
 
