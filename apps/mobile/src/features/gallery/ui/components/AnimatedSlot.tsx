@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { StyleSheet, useWindowDimensions } from 'react-native';
 import Animated, { useAnimatedStyle, SharedValue } from 'react-native-reanimated';
 import { Image } from 'expo-image';
@@ -19,7 +19,7 @@ interface AnimatedSlotProps {
   initialUri?: string | null;
 }
 
-export const AnimatedSlot = ({
+export const AnimatedSlot = memo(({
   photo,
   index,
   translateX,
@@ -108,7 +108,16 @@ export const AnimatedSlot = ({
       </Animated.View>
     </Animated.View>
   );
-};
+}, (prevProps, nextProps) => {
+  return (
+    prevProps.index === nextProps.index &&
+    prevProps.slotWidth === nextProps.slotWidth &&
+    prevProps.gap === nextProps.gap &&
+    prevProps.initialUri === nextProps.initialUri &&
+    prevProps.photo.id === nextProps.photo.id &&
+    prevProps.photo.uri === nextProps.photo.uri
+  );
+});
 
 const styles = StyleSheet.create({
   slotContainer: {
