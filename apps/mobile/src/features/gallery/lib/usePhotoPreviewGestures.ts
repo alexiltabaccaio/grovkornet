@@ -171,7 +171,7 @@ export const usePhotoPreviewGestures = ({
           isTransitioning.value = true;
           translateX.value = withTiming(
             targetTranslateX,
-            { duration: 250 },
+            { duration: 150 },
             (finished) => {
               if (finished) {
                 isTransitioning.value = false;

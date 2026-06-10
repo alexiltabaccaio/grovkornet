@@ -91,7 +91,7 @@ export const usePhotoPreviewTransition = ({
     if (Math.abs(diff) === 1) {
       const targetVal = -idx * slotWidth;
       isTransitioning.value = true;
-      translateX.value = withTiming(targetVal, { duration: 250 }, (finished) => {
+      translateX.value = withTiming(targetVal, { duration: 150 }, (finished) => {
         if (finished) {
           isTransitioning.value = false;
           runOnJS(finalizeTransition)(idx, false);
@@ -115,7 +115,7 @@ export const usePhotoPreviewTransition = ({
 
       const targetVal = -mockAdjacentIndex * slotWidth;
       isTransitioning.value = true;
-      translateX.value = withTiming(targetVal, { duration: 250 }, (finished) => {
+      translateX.value = withTiming(targetVal, { duration: 150 }, (finished) => {
         if (finished) {
           translateX.value = -idx * slotWidth;
           runOnJS(finalizeTeleport)(idx);
