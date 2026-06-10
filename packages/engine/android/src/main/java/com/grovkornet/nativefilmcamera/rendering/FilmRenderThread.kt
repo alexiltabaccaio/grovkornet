@@ -213,14 +213,29 @@ class FilmRenderThread(
             Log.i(TAG, "Releasing FilmRenderThread...")
         }
 
+        val latch = java.util.concurrent.CountDownLatch(1)
         handler.post {
-            handler.removeCallbacks(watchdogRunnable)
-            choreographer?.removeFrameCallback(frameCallback)
-            liveProcessor?.release()
-            liveProcessor = null
-            surfaceTexture?.release()
-            surfaceTexture = null
-            quitSafely()
+            try {
+                handler.removeCallbacks(watchdogRunnable)
+                choreographer?.removeFrameCallback(frameCallback)
+                liveProcessor?.release()
+                liveProcessor = null
+                surfaceTexture?.release()
+                surfaceTexture = null
+            } finally {
+                latch.countDown()
+                quitSafely()
+            }
+        }
+
+        try {
+            // Block up to 1500ms to ensure Filament finishes using the Surface
+            // before Android destroys the underlying native window.
+            if (!latch.await(1500, java.util.concurrent.TimeUnit.MILLISECONDS)) {
+                Log.w(TAG, "Timeout waiting for FilmRenderThread to release")
+            }
+        } catch (e: InterruptedException) {
+            Log.e(TAG, "Interrupted while waiting for release", e)
         }
     }
 }
