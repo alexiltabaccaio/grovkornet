@@ -161,24 +161,17 @@ export const usePhotoPreviewGestures = ({
 
         const targetTranslateX = -targetIndex * slotWidth;
 
-        const isChangingPhoto = targetIndex !== currentIndex.value;
-        runOnJS(prepareTransition)(targetIndex, isChangingPhoto);
+        runOnJS(prepareTransition)(targetIndex, true);
 
-        if (isChangingPhoto) {
-          translateX.value = withTiming(
-            targetTranslateX,
-            {
-              duration: 250,
-            },
-            (finished) => {
-              if (finished) runOnJS(finalizeTransition)(targetIndex, true);
-            }
-          );
-        } else {
-          translateX.value = withTiming(targetTranslateX, {
+        translateX.value = withTiming(
+          targetTranslateX,
+          {
             duration: 250,
-          });
-        }
+          },
+          (finished) => {
+            if (finished) runOnJS(finalizeTransition)(targetIndex, true);
+          }
+        );
       }
     });
 
