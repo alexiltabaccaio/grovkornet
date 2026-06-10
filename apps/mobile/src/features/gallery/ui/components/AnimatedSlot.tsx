@@ -98,7 +98,6 @@ export const AnimatedSlot = memo(({
         <Animated.View style={innerStyle}>
           <Image
             source={photo.uri}
-            placeholder={initialUri ? { uri: initialUri } : undefined}
             style={styles.previewImage}
             contentFit="contain"
             transition={0}

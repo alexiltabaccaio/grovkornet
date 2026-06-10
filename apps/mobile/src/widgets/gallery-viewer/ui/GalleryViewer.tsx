@@ -32,7 +32,12 @@ export const GalleryViewer = React.memo(({ onClose, initialUri, galleryTransitio
   const [isReadyToFade, setIsReadyToFade] = useState(false);
 
   const handleInitialImageLoad = useCallback(() => {
-    setIsHighResLoaded(true);
+    // Aggiungiamo un piccolo ritardo dopo l'onLoad per garantire che l'immagine
+    // sia effettivamente renderizzata sulla GPU prima di avviare il fade-out.
+    // Questo previene il flash nero durante la transizione.
+    setTimeout(() => {
+      setIsHighResLoaded(true);
+    }, 150);
   }, []);
 
   useEffect(() => {
@@ -225,7 +230,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#0e0e0e',
+    backgroundColor: 'transparent',
   },
 
   loadingText: {
