@@ -77,8 +77,10 @@ export const CameraScreen = () => {
              });
           } else {
              drawerAnimation.value = 0.1;
+             footerTranslateY.value = -49.9;
              requestAnimationFrame(() => {
                drawerAnimation.value = 0;
+               footerTranslateY.value = -50;
              });
           }
           
