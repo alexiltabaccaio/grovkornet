@@ -16,8 +16,8 @@ jest.mock('react-i18next', () => ({
   }),
 }));
 
-jest.mock('@entities/system', () => ({
-  useSystemStore: jest.fn((fn?: (state: any) => unknown) => {
+jest.mock('@entities/system', () => {
+  const mockSystemStoreFn = jest.fn((fn?: (state: any) => unknown) => {
     const state = {
       activeTab: 'none',
       activeModule: 'none',
@@ -25,10 +25,25 @@ jest.mock('@entities/system', () => ({
       isFpsOverlayEnabled: true,
       latestCapturedUri: 'file:///test.jpg',
       triggerCapture: mockTriggerCapture,
+      activeSection: 'none',
     };
     return fn ? fn(state) : state;
-  }),
-}));
+  });
+
+  (mockSystemStoreFn as any).getState = jest.fn(() => ({
+    activeTab: 'none',
+    activeModule: 'none',
+    activeParameter: 'none',
+    isFpsOverlayEnabled: true,
+    latestCapturedUri: 'file:///test.jpg',
+    triggerCapture: mockTriggerCapture,
+    activeSection: 'none',
+  }));
+
+  return {
+    useSystemStore: mockSystemStoreFn,
+  };
+});
 
 jest.mock('@widgets/control-panel', () => ({
   ControlPanel: 'ControlPanel',
@@ -96,6 +111,9 @@ jest.mock('react-native-reanimated', () => {
     }),
     runOnJS: jest.fn((f: any) => f),
     interpolate: jest.fn((v, _i, _o) => v),
+    Extrapolation: {
+      CLAMP: 'clamp',
+    },
     View,
     default: {
       View,
@@ -109,6 +127,12 @@ describe('CameraScreen Component', () => {
     jest.clearAllMocks();
     Platform.OS = 'android';
     StatusBar.currentHeight = 30;
+    jest.useFakeTimers();
+  });
+
+  afterEach(() => {
+    jest.runOnlyPendingTimers();
+    jest.useRealTimers();
   });
 
   it('renders nothing initially if permission is not granted, then renders viewfinder when permission is resolved', () => {

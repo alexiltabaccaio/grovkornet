@@ -36,9 +36,9 @@ export const GalleryViewer = React.memo(({ onClose, initialUri, galleryTransitio
   const [isReadyToFade, setIsReadyToFade] = useState(false);
 
   const handleInitialImageLoad = useCallback(() => {
-    // Aggiungiamo un piccolo ritardo dopo l'onLoad per garantire che l'immagine
-    // sia effettivamente renderizzata sulla GPU prima di avviare il fade-out.
-    // Questo previene il flash nero durante la transizione.
+    // Add a small delay after onLoad to ensure the image
+    // is actually rendered on the GPU before starting the fade-out.
+    // This prevents the black flash during transition.
     setTimeout(() => {
       setIsHighResLoaded(true);
     }, 150);

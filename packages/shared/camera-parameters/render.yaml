@@ -13,6 +13,14 @@ parameters:
       type: number
       resetGroup: saturation
       store: film
+    ui:
+      name: saturation
+      control: slider
+      min: 0.0
+      max: 2.0
+      center: 1.0
+      formatter: percentage
+      formatterScale: 100
   - name: contrast
     category: render
     arrayIndex: 1
@@ -30,6 +38,20 @@ parameters:
           value: "false"
       store: film
     nitro: true
+    ui:
+      name: contrast
+      control: slider
+      min: 0.0
+      max: 2.0
+      center: 1.0
+      formatter: signed
+      formatterScale: 100
+      formatterOffset: -1.0
+    worklet:
+      sideEffects:
+        - target: contrastAuto
+          value: "false"
+          type: boolean
   - name: grainIntensity
     category: render
     arrayIndex: 2
@@ -48,6 +70,19 @@ parameters:
           value: value > 0
       store: film
     nitro: true
+    ui:
+      name: grain
+      control: slider
+      min: 0.0
+      max: 2.0
+      formatter: percentage
+      formatterScale: 100
+    worklet:
+      clamp: [0.0, 2.0]
+      sideEffects:
+        - target: grainEnabled
+          value: "value > 0"
+          type: boolean
   - name: grainChroma
     category: render
     arrayIndex: 3
@@ -104,6 +139,13 @@ parameters:
       resetGroup: vignette
       store: film
     nitro: true
+    ui:
+      name: vignette
+      control: slider
+      min: 0.0
+      max: 1.0
+      formatter: percentage
+      formatterScale: 100
   - name: chromaShift
     category: render
     arrayIndex: 7
@@ -118,6 +160,13 @@ parameters:
       resetGroup: chroma_shift
       store: film
     nitro: true
+    ui:
+      name: chroma_shift
+      control: slider
+      min: 0.0
+      max: 2.0
+      formatter: percentage
+      formatterScale: 100
   - name: whiteBalance
     category: render
     arrayIndex: 10
@@ -136,6 +185,19 @@ parameters:
           value: "false"
       store: film
     nitro: true
+    ui:
+      name: temperature
+      control: slider
+      min: 2000.0
+      max: 10000.0
+      formatter: kelvin
+      hasAuto: true
+      autoText: AWB
+    worklet:
+      sideEffects:
+        - target: temperatureAuto
+          value: "false"
+          type: boolean
   - name: tint
     category: render
     arrayIndex: 11
@@ -153,6 +215,20 @@ parameters:
           value: "false"
       store: film
     nitro: true
+    ui:
+      name: tint
+      control: slider
+      min: -100.0
+      max: 100.0
+      center: 0.0
+      formatter: signed
+      hasAuto: true
+      autoText: AWB
+    worklet:
+      sideEffects:
+        - target: temperatureAuto
+          value: "false"
+          type: boolean
   - name: bloomIntensity
     category: render
     arrayIndex: 12
@@ -171,6 +247,19 @@ parameters:
           value: value > 0
       store: film
     nitro: true
+    ui:
+      name: bloom
+      control: slider
+      min: 0.0
+      max: 1.0
+      formatter: percentage
+      formatterScale: 100
+    worklet:
+      clamp: [0.0, 9999.0]
+      sideEffects:
+        - target: bloomEnabled
+          value: "value > 0"
+          type: boolean
   - name: chromaticAberration
     category: render
     arrayIndex: 13
@@ -186,6 +275,13 @@ parameters:
       resetGroup: chromatic_aberration
       store: film
     nitro: true
+    ui:
+      name: chromatic_aberration
+      control: slider
+      min: 0.0
+      max: 2.0
+      formatter: percentage
+      formatterScale: 100
   - name: chromaShiftDirection
     category: render
     arrayIndex: 14
@@ -215,6 +311,13 @@ parameters:
       resetGroup: sharpening
       store: film
     nitro: true
+    ui:
+      name: sharpening
+      control: slider
+      min: 0.0
+      max: 1.0
+      formatter: percentage
+      formatterScale: 100
   - name: satRed
     category: render
     arrayIndex: 16
@@ -520,6 +623,19 @@ parameters:
           value: "false"
       store: film
     nitro: true
+    ui:
+      name: blackLevel
+      control: slider
+      min: -0.5
+      max: 0.5
+      center: 0.0
+      formatter: signed
+      formatterScale: 200
+    worklet:
+      sideEffects:
+        - target: blackLevelAuto
+          value: "false"
+          type: boolean
   - name: highlights
     category: render
     arrayIndex: 40
@@ -537,6 +653,20 @@ parameters:
           value: "false"
       store: film
     nitro: true
+    ui:
+      name: highlights
+      control: slider
+      min: 0.0
+      max: 2.0
+      center: 1.0
+      formatter: signed
+      formatterScale: 100
+      formatterOffset: -1.0
+    worklet:
+      sideEffects:
+        - target: highlightsAuto
+          value: "false"
+          type: boolean
   - name: pivot
     category: render
     arrayIndex: 41
@@ -554,6 +684,20 @@ parameters:
           value: "false"
       store: film
     nitro: true
+    ui:
+      name: pivot
+      control: slider
+      min: 0.0
+      max: 1.0
+      center: 0.5
+      formatter: signed
+      formatterScale: 200
+      formatterOffset: -0.5
+    worklet:
+      sideEffects:
+        - target: pivotAuto
+          value: "false"
+          type: boolean
   - name: contrastAuto
     category: render
     arrayIndex: 42
@@ -640,6 +784,12 @@ parameters:
       resetGroup: pixelation
       store: film
     nitro: true
+    ui:
+      name: pixelation
+      control: slider
+      min: 1.0
+      max: 16.0
+      formatter: multiplier
   - name: tapeJitter
     category: render
     arrayIndex: 47
@@ -654,6 +804,13 @@ parameters:
       resetGroup: tape_jitter
       store: film
     nitro: true
+    ui:
+      name: tape_jitter
+      control: slider
+      min: 0.0
+      max: 1.0
+      formatter: percentage
+      formatterScale: 100
   - name: scanlines
     category: render
     arrayIndex: 48
@@ -668,6 +825,13 @@ parameters:
       resetGroup: scanlines
       store: film
     nitro: true
+    ui:
+      name: scanlines
+      control: slider
+      min: 0.0
+      max: 1.0
+      formatter: percentage
+      formatterScale: 100
   - name: chromaShiftInvert
     category: render
     arrayIndex: 49
@@ -697,6 +861,13 @@ parameters:
       resetGroup: hue
       store: film
     nitro: true
+    ui:
+      name: hue
+      control: slider
+      min: -180.0
+      max: 180.0
+      center: 0.0
+      formatter: degree
   - name: hueRed
     category: render
     arrayIndex: 51

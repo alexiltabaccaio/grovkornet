@@ -4,12 +4,13 @@ import Animated, {
   useAnimatedStyle,
   useAnimatedProps,
   useSharedValue,
-  runOnJS,
 } from 'react-native-reanimated';
-import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+import { GestureDetector } from 'react-native-gesture-handler';
 import { useFilmStore, useFilmWorklets } from '@entities/film';
-import { unwrap, angleToX, xToAngle } from '../../lib/colorMath';
-import * as Haptics from '@shared/lib/haptics';
+import { unwrap } from '../../lib/colorMath';
+import { useColorRangeGestures } from '../../lib/useColorRangeGestures';
+import { ColorRangeTrack } from './ColorRangeTrack';
+import { ColorRangeThumb } from './ColorRangeThumb';
 import { globalSubFullTrackWidth, setGlobalSubFullTrackWidth } from '@shared/ui/parameter-thumb';
 import {
   DEFAULT_BOUND_RED_ORANGE,
@@ -21,7 +22,6 @@ import {
   DEFAULT_BOUND_PURPLE_MAGENTA,
   DEFAULT_BOUND_MAGENTA_RED,
 } from '@grovkornet/shared';
-
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const INITIAL_TRACK_WIDTH = SCREEN_WIDTH - 188;
@@ -80,7 +80,6 @@ export const ColorRangeSlider = ({ activeColorIndex }: ColorRangeSliderProps) =>
   const store = useFilmStore();
   const worklets = useFilmWorklets();
   const trackWidth = useSharedValue(globalSubFullTrackWidth);
-  const dragRefAngle = useSharedValue(0);
 
   // Map keys for the store dynamically
   const leftKey = BOUND_STORE_KEYS[(activeColorIndex - 1 + 8) % 8];
@@ -99,148 +98,19 @@ export const ColorRangeSlider = ({ activeColorIndex }: ColorRangeSliderProps) =>
   const updateLeftBound = worklets[leftWorkletKey];
   const updateRightBound = worklets[rightWorkletKey];
 
-  const getMinAngle = () => {
-    'worklet';
-    return dragRefAngle.value;
-  };
-
-  const getMaxAngle = () => {
-    'worklet';
-    return unwrap(limitRightShared.value, dragRefAngle.value);
-  };
-
-  const angleToXLocal = (angle: number) => {
-    'worklet';
-    return angleToX(angle, getMinAngle(), getMaxAngle(), trackWidth.value);
-  };
-
-  const xToAngleLocal = (x: number) => {
-    'worklet';
-    return xToAngle(x, getMinAngle(), getMaxAngle(), trackWidth.value);
-  };
-
-  const startXLeft = useSharedValue(0);
-  const startXRight = useSharedValue(0);
-  const activeThumb = useSharedValue(0); // 0 = left, 1 = right
-
-  const panGesture = Gesture.Pan()
-    .onStart((event) => {
-      dragRefAngle.value = limitLeftShared.value;
-      const leftUnwrapped = unwrap(leftShared.value, dragRefAngle.value);
-      const rightUnwrapped = unwrap(rightShared.value, dragRefAngle.value);
-      
-      const leftX = angleToXLocal(leftUnwrapped);
-      const rightX = angleToXLocal(rightUnwrapped);
-      
-      const distLeft = Math.abs(event.x - leftX);
-      const distRight = Math.abs(event.x - rightX);
-      
-      if (distLeft <= distRight) {
-        activeThumb.value = 0;
-        startXLeft.value = leftX;
-      } else {
-        activeThumb.value = 1;
-        startXRight.value = rightX;
-      }
-    })
-    .onUpdate((event) => {
-      if (activeThumb.value === 0) {
-        const newX = startXLeft.value + event.translationX;
-        const newAngleUnwrapped = xToAngleLocal(newX);
-        
-        const minVal = dragRefAngle.value;
-        const maxVal = unwrap(rightShared.value, dragRefAngle.value);
-        
-        const clampedAngleUnwrapped = Math.min(Math.max(newAngleUnwrapped, minVal), maxVal);
-        
-        let finalAngle = clampedAngleUnwrapped % 360;
-        if (finalAngle < 0) finalAngle += 360;
-        updateLeftBound(finalAngle);
-      } else {
-        const newX = startXRight.value + event.translationX;
-        const newAngleUnwrapped = xToAngleLocal(newX);
-        
-        const minVal = unwrap(leftShared.value, dragRefAngle.value);
-        const maxVal = unwrap(limitRightShared.value, dragRefAngle.value);
-        
-        const clampedAngleUnwrapped = Math.min(Math.max(newAngleUnwrapped, minVal), maxVal);
-        
-        let finalAngle = clampedAngleUnwrapped % 360;
-        if (finalAngle < 0) finalAngle += 360;
-        updateRightBound(finalAngle);
-      }
-    });
-
   const leftDefault = BOUND_DEFAULTS[(activeColorIndex - 1 + 8) % 8];
   const rightDefault = BOUND_DEFAULTS[activeColorIndex];
 
-  const doubleTap = Gesture.Tap()
-    .numberOfTaps(2)
-    .maxDistance(20)
-    .onEnd(() => {
-      'worklet';
-      runOnJS(Haptics.impactAsync)(Haptics.ImpactFeedbackStyle.Medium);
-      updateLeftBound(leftDefault);
-      updateRightBound(rightDefault);
-    });
-
-  const combinedGesture = Gesture.Simultaneous(panGesture, doubleTap);
-
-  // Animated background track sections
-  const leftBgStyle = useAnimatedStyle(() => {
-    const ref = limitLeftShared.value;
-    const maxA = unwrap(limitRightShared.value, ref);
-    const range = maxA - ref;
-    let widthVal = 0;
-    
-    if (range > 0 && trackWidth.value > 0) {
-      const unwrappedLeft = unwrap(leftShared.value, ref);
-      widthVal = ((unwrappedLeft - ref) / range) * (trackWidth.value - 12);
-    }
-    
-    return {
-      left: 6,
-      width: Math.max(widthVal, 0),
-    };
-  });
-
-  const centerBgStyle = useAnimatedStyle(() => {
-    const ref = limitLeftShared.value;
-    const maxA = unwrap(limitRightShared.value, ref);
-    const range = maxA - ref;
-    let leftVal = 0;
-    let widthVal = 0;
-    
-    if (range > 0 && trackWidth.value > 0) {
-      const unwrappedLeft = unwrap(leftShared.value, ref);
-      const unwrappedRight = unwrap(rightShared.value, ref);
-      leftVal = ((unwrappedLeft - ref) / range) * (trackWidth.value - 12);
-      widthVal = ((unwrappedRight - unwrappedLeft) / range) * (trackWidth.value - 12);
-    }
-    
-    return {
-      left: 6 + leftVal,
-      width: Math.max(widthVal, 0),
-    };
-  });
-
-  const rightBgStyle = useAnimatedStyle(() => {
-    const ref = limitLeftShared.value;
-    const maxA = unwrap(limitRightShared.value, ref);
-    const range = maxA - ref;
-    let leftVal = 0;
-    let widthVal = 0;
-    
-    if (range > 0 && trackWidth.value > 0) {
-      const unwrappedRight = unwrap(rightShared.value, ref);
-      leftVal = ((unwrappedRight - ref) / range) * (trackWidth.value - 12);
-      widthVal = (trackWidth.value - 12) - leftVal;
-    }
-    
-    return {
-      left: 6 + leftVal,
-      width: Math.max(widthVal, 0),
-    };
+  const combinedGesture = useColorRangeGestures({
+    trackWidth,
+    leftShared,
+    rightShared,
+    limitLeftShared,
+    limitRightShared,
+    updateLeftBound,
+    updateRightBound,
+    leftDefault,
+    rightDefault,
   });
 
   // Thumb positions
@@ -311,15 +181,22 @@ export const ColorRangeSlider = ({ activeColorIndex }: ColorRangeSliderProps) =>
             }
           }}
         >
-          <Animated.View style={[styles.trackBgSection, leftBgStyle, { backgroundColor: prevColorHex }]} />
-          <Animated.View style={[styles.trackBgSection, centerBgStyle, { backgroundColor: activeColorHex }]} />
-          <Animated.View style={[styles.trackBgSection, rightBgStyle, { backgroundColor: nextColorHex }]} />
+          <ColorRangeTrack
+            trackWidth={trackWidth}
+            leftShared={leftShared}
+            rightShared={rightShared}
+            limitLeftShared={limitLeftShared}
+            limitRightShared={limitRightShared}
+            prevColorHex={prevColorHex}
+            activeColorHex={activeColorHex}
+            nextColorHex={nextColorHex}
+          />
   
           {/* Left Thumb */}
-          <Animated.View style={[styles.thumb, leftThumbStyle, { borderColor: activeColorHex }]} />
+          <ColorRangeThumb style={leftThumbStyle} activeColorHex={activeColorHex} />
   
           {/* Right Thumb */}
-          <Animated.View style={[styles.thumb, rightThumbStyle, { borderColor: activeColorHex }]} />
+          <ColorRangeThumb style={rightThumbStyle} activeColorHex={activeColorHex} />
         </View>
       </GestureDetector>
 
@@ -378,25 +255,5 @@ const styles = StyleSheet.create({
     height: 30, // Touch-sensitive area
     position: 'relative',
     justifyContent: 'center',
-  },
-  trackBgSection: {
-    position: 'absolute',
-    height: 4,
-    borderRadius: 2,
-    opacity: 0.85,
-  },
-  thumb: {
-    position: 'absolute',
-    left: 0,
-    width: 12,
-    height: 12,
-    borderRadius: 6,
-    backgroundColor: '#FFF',
-    borderWidth: 2,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.35,
-    shadowRadius: 2,
-    elevation: 3,
   },
 });

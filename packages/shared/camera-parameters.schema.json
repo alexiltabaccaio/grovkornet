@@ -71,6 +71,44 @@
                 }
               }
             }
+          },
+          "ui": {
+            "type": "object",
+            "properties": {
+              "name": { "type": "string" },
+              "control": { "type": "string", "enum": ["slider", "switch", "wheel"] },
+              "min": { "type": "number" },
+              "max": { "type": "number" },
+              "center": { "type": "number" },
+              "formatter": { "type": "string", "enum": ["percentage", "kelvin", "signed", "multiplier", "degree"] },
+              "formatterScale": { "type": "number" },
+              "formatterOffset": { "type": "number" },
+              "hasAuto": { "type": "boolean" },
+              "autoText": { "type": "string" }
+            }
+          },
+          "worklet": {
+            "type": "object",
+            "properties": {
+              "clamp": {
+                "type": "array",
+                "items": { "type": "number" },
+                "minItems": 2,
+                "maxItems": 2
+              },
+              "sideEffects": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": ["target", "value"],
+                  "properties": {
+                    "target": { "type": "string" },
+                    "value": { "type": "string" },
+                    "type": { "type": "string", "enum": ["boolean", "number"] }
+                  }
+                }
+              }
+            }
           }
         }
       }

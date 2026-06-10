@@ -8,373 +8,450 @@ export const useFilmWorklets = () => {
   return useMemo(() => {
     const film = useFilmStore.getState();
 
-    const updateGrain = (value: number) => {
-      'worklet';
-      const safeValue = Math.min(Math.max(value, 0), 2.0);
-      updateSharedValue(film.grainIntensity, safeValue);
-      updateSharedValue(film.grainEnabled, safeValue > 0);
-      config.grainIntensity = safeValue;
-      config.grainEnabled = safeValue > 0;
-    };
-    
-    const updateGrainChroma = (value: number) => {
-      'worklet';
-      updateSharedValue(film.grainChroma, value);
-      config.grainChroma = value;
-    };
-    
-    const updateGrainSize = (value: number) => {
-      'worklet';
-      updateSharedValue(film.grainSize, value);
-      config.grainSize = value;
-    };
+    // @@GEN_WORKLETS_START@@
+        const updateNoiseReductionMode = (value: number) => {
+        'worklet';
+        updateSharedValue(film.noiseReductionMode, value);
+        };
 
-    const updateGrainSpeed = (value: number) => {
-      'worklet';
-      updateSharedValue(film.grainSpeed, value);
-      config.grainSpeed = value;
-    };
+        const updateNoiseReductionAuto = (value: boolean) => {
+        'worklet';
+        updateSharedValue(film.noiseReductionAuto, value);
+        };
 
-    const updateGrainRoughness = (value: number) => {
-      'worklet';
-      updateSharedValue(film.grainRoughness, value);
-      config.grainRoughness = value;
-    };
+        const updateTemperatureAuto = (value: boolean) => {
+        'worklet';
+        updateSharedValue(film.temperatureAuto, value);
+        };
 
-    const updateSaturation = (value: number) => {
-      'worklet';
-      updateSharedValue(film.saturation, value);
-      config.saturation = value;
-    };
+        const updateIsSelfieCamera = (value: boolean) => {
+        'worklet';
+        updateSharedValue(film.isSelfieCamera, value);
+        };
 
-    const updateSatRed = (value: number) => {
-      'worklet';
-      updateSharedValue(film.satRed, value);
-      config.satRed = value;
-    };
+        const updateSaturation = (value: number) => {
+        'worklet';
+        updateSharedValue(film.saturation, value);
+        config.saturation = value;
+        };
 
-    const updateSatOrange = (value: number) => {
-      'worklet';
-      updateSharedValue(film.satOrange, value);
-      config.satOrange = value;
-    };
+        const updateContrast = (value: number) => {
+        'worklet';
+        updateSharedValue(film.contrast, value);
+        config.contrast = value;
+        updateSharedValue(film.contrastAuto, false);
+        config.contrastAuto = false;
+        };
 
-    const updateSatYellow = (value: number) => {
-      'worklet';
-      updateSharedValue(film.satYellow, value);
-      config.satYellow = value;
-    };
+        const updateGrainIntensity = (value: number) => {
+        'worklet';
+        const safeValue = Math.min(Math.max(value, 0.0), 2.0);
+        updateSharedValue(film.grainIntensity, safeValue);
+        config.grainIntensity = safeValue;
+        updateSharedValue(film.grainEnabled, safeValue > 0);
+        config.grainEnabled = safeValue > 0;
+        };
 
-    const updateSatGreen = (value: number) => {
-      'worklet';
-      updateSharedValue(film.satGreen, value);
-      config.satGreen = value;
-    };
+        const updateGrainChroma = (value: number) => {
+        'worklet';
+        updateSharedValue(film.grainChroma, value);
+        config.grainChroma = value;
+        };
 
-    const updateSatCyan = (value: number) => {
-      'worklet';
-      updateSharedValue(film.satCyan, value);
-      config.satCyan = value;
-    };
+        const updateGrainSize = (value: number) => {
+        'worklet';
+        updateSharedValue(film.grainSize, value);
+        config.grainSize = value;
+        };
 
-    const updateSatBlue = (value: number) => {
-      'worklet';
-      updateSharedValue(film.satBlue, value);
-      config.satBlue = value;
-    };
+        const updateGrainSpeed = (value: number) => {
+        'worklet';
+        updateSharedValue(film.grainSpeed, value);
+        config.grainSpeed = value;
+        };
 
-    const updateSatPurple = (value: number) => {
-      'worklet';
-      updateSharedValue(film.satPurple, value);
-      config.satPurple = value;
-    };
+        const updateVignetteIntensity = (value: number) => {
+        'worklet';
+        updateSharedValue(film.vignetteIntensity, value);
+        config.vignetteIntensity = value;
+        };
 
-    const updateSatMagenta = (value: number) => {
-      'worklet';
-      updateSharedValue(film.satMagenta, value);
-      config.satMagenta = value;
-    };
+        const updateChromaShift = (value: number) => {
+        'worklet';
+        updateSharedValue(film.chromaShift, value);
+        config.chromaShift = value;
+        };
 
-    const updateBoundMagentaRed = (value: number) => {
-      'worklet';
-      updateSharedValue(film.boundMagentaRed, value);
-      config.boundMagentaRed = value;
-    };
+        const updateTemperature = (value: number) => {
+        'worklet';
+        updateSharedValue(film.temperature, value);
+        config.whiteBalance = value;
+        updateSharedValue(film.temperatureAuto, false);
+        };
 
-    const updateBoundRedOrange = (value: number) => {
-      'worklet';
-      updateSharedValue(film.boundRedOrange, value);
-      config.boundRedOrange = value;
-    };
+        const updateTint = (value: number) => {
+        'worklet';
+        updateSharedValue(film.tint, value);
+        config.tint = value;
+        updateSharedValue(film.temperatureAuto, false);
+        };
 
-    const updateBoundOrangeYellow = (value: number) => {
-      'worklet';
-      updateSharedValue(film.boundOrangeYellow, value);
-      config.boundOrangeYellow = value;
-    };
+        const updateBloomIntensity = (value: number) => {
+        'worklet';
+        const safeValue = Math.min(Math.max(value, 0.0), 9999.0);
+        updateSharedValue(film.bloomIntensity, safeValue);
+        config.bloomIntensity = safeValue;
+        updateSharedValue(film.bloomEnabled, safeValue > 0);
+        config.bloomEnabled = safeValue > 0;
+        };
 
-    const updateBoundYellowGreen = (value: number) => {
-      'worklet';
-      updateSharedValue(film.boundYellowGreen, value);
-      config.boundYellowGreen = value;
-    };
+        const updateChromaticAberration = (value: number) => {
+        'worklet';
+        updateSharedValue(film.chromaticAberration, value);
+        config.chromaticAberration = value;
+        };
 
-    const updateBoundGreenCyan = (value: number) => {
-      'worklet';
-      updateSharedValue(film.boundGreenCyan, value);
-      config.boundGreenCyan = value;
-    };
+        const updateChromaShiftDirection = (value: number) => {
+        'worklet';
+        updateSharedValue(film.chromaShiftDirection, value);
+        config.chromaShiftDirection = value;
+        };
 
-    const updateBoundCyanBlue = (value: number) => {
-      'worklet';
-      updateSharedValue(film.boundCyanBlue, value);
-      config.boundCyanBlue = value;
-    };
+        const updateSharpening = (value: number) => {
+        'worklet';
+        updateSharedValue(film.sharpening, value);
+        config.sharpening = value;
+        };
 
-    const updateBoundBluePurple = (value: number) => {
-      'worklet';
-      updateSharedValue(film.boundBluePurple, value);
-      config.boundBluePurple = value;
-    };
+        const updateSatRed = (value: number) => {
+        'worklet';
+        updateSharedValue(film.satRed, value);
+        config.satRed = value;
+        };
 
-    const updateBoundPurpleMagenta = (value: number) => {
-      'worklet';
-      updateSharedValue(film.boundPurpleMagenta, value);
-      config.boundPurpleMagenta = value;
-    };
+        const updateSatOrange = (value: number) => {
+        'worklet';
+        updateSharedValue(film.satOrange, value);
+        config.satOrange = value;
+        };
 
-    const updateContrast = (value: number) => {
-      'worklet';
-      updateSharedValue(film.contrast, value);
-      updateSharedValue(film.contrastAuto, false);
-      config.contrast = value;
-      config.contrastAuto = false;
-    };
+        const updateSatYellow = (value: number) => {
+        'worklet';
+        updateSharedValue(film.satYellow, value);
+        config.satYellow = value;
+        };
 
-    const updateBlackLevel = (value: number) => {
-      'worklet';
-      updateSharedValue(film.blackLevel, value);
-      updateSharedValue(film.blackLevelAuto, false);
-      config.blackLevel = value;
-      config.blackLevelAuto = false;
-    };
+        const updateSatGreen = (value: number) => {
+        'worklet';
+        updateSharedValue(film.satGreen, value);
+        config.satGreen = value;
+        };
 
-    const updateHighlights = (value: number) => {
-      'worklet';
-      updateSharedValue(film.highlights, value);
-      updateSharedValue(film.highlightsAuto, false);
-      config.highlights = value;
-      config.highlightsAuto = false;
-    };
+        const updateSatCyan = (value: number) => {
+        'worklet';
+        updateSharedValue(film.satCyan, value);
+        config.satCyan = value;
+        };
 
-    const updatePivot = (value: number) => {
-      'worklet';
-      updateSharedValue(film.pivot, value);
-      updateSharedValue(film.pivotAuto, false);
-      config.pivot = value;
-      config.pivotAuto = false;
-    };
+        const updateSatBlue = (value: number) => {
+        'worklet';
+        updateSharedValue(film.satBlue, value);
+        config.satBlue = value;
+        };
 
-    const updateChromaticAberration = (value: number) => {
-      'worklet';
-      updateSharedValue(film.chromaticAberration, value);
-      config.chromaticAberration = value;
-    };
+        const updateSatPurple = (value: number) => {
+        'worklet';
+        updateSharedValue(film.satPurple, value);
+        config.satPurple = value;
+        };
 
-    const updateAberrationInvert = (value: boolean) => {
-      'worklet';
-      updateSharedValue(film.aberrationInvert, value);
-      config.aberrationInvert = value;
-    };
+        const updateSatMagenta = (value: number) => {
+        'worklet';
+        updateSharedValue(film.satMagenta, value);
+        config.satMagenta = value;
+        };
 
-    const updateChromaShift = (value: number) => {
-      'worklet';
-      updateSharedValue(film.chromaShift, value);
-      config.chromaShift = value;
-    };
+        const updateAberrationInvert = (value: boolean) => {
+        'worklet';
+        updateSharedValue(film.aberrationInvert, value);
+        config.aberrationInvert = value;
+        };
 
-    const updateChromaShiftDirection = (value: number) => {
-      'worklet';
-      updateSharedValue(film.chromaShiftDirection, value);
-      config.chromaShiftDirection = value;
-    };
+        const updateBoundMagentaRed = (value: number) => {
+        'worklet';
+        updateSharedValue(film.boundMagentaRed, value);
+        config.boundMagentaRed = value;
+        };
 
-    const updateChromaShiftInvert = (value: boolean) => {
-      'worklet';
-      updateSharedValue(film.chromaShiftInvert, value);
-      config.chromaShiftInvert = value;
-    };
+        const updateBoundRedOrange = (value: number) => {
+        'worklet';
+        updateSharedValue(film.boundRedOrange, value);
+        config.boundRedOrange = value;
+        };
 
-    const updateTapeJitter = (value: number) => {
-      'worklet';
-      updateSharedValue(film.tapeJitter, value);
-      config.tapeJitter = value;
-    };
+        const updateBoundOrangeYellow = (value: number) => {
+        'worklet';
+        updateSharedValue(film.boundOrangeYellow, value);
+        config.boundOrangeYellow = value;
+        };
 
-    const updateScanlines = (value: number) => {
-      'worklet';
-      updateSharedValue(film.scanlines, value);
-      config.scanlines = value;
-    };
+        const updateBoundYellowGreen = (value: number) => {
+        'worklet';
+        updateSharedValue(film.boundYellowGreen, value);
+        config.boundYellowGreen = value;
+        };
 
-    const updateScanlinesMode = (value: number) => {
-      'worklet';
-      updateSharedValue(film.scanlinesMode, value);
-      config.scanlinesMode = value;
-    };
+        const updateBoundGreenCyan = (value: number) => {
+        'worklet';
+        updateSharedValue(film.boundGreenCyan, value);
+        config.boundGreenCyan = value;
+        };
 
-    const updateScanlinesDensity = (value: number) => {
-      'worklet';
-      updateSharedValue(film.scanlinesDensity, value);
-      config.scanlinesDensity = value;
-    };
+        const updateBoundCyanBlue = (value: number) => {
+        'worklet';
+        updateSharedValue(film.boundCyanBlue, value);
+        config.boundCyanBlue = value;
+        };
 
-    const updateTemperature = (value: number) => {
-      'worklet';
-      updateSharedValue(film.temperature, value);
-      updateSharedValue(film.temperatureAuto, false);
-      config.whiteBalance = value;
-    };
+        const updateBoundBluePurple = (value: number) => {
+        'worklet';
+        updateSharedValue(film.boundBluePurple, value);
+        config.boundBluePurple = value;
+        };
 
-    const updateTint = (value: number) => {
-      'worklet';
-      updateSharedValue(film.tint, value);
-      updateSharedValue(film.temperatureAuto, false);
-      config.tint = value;
-    };
+        const updateBoundPurpleMagenta = (value: number) => {
+        'worklet';
+        updateSharedValue(film.boundPurpleMagenta, value);
+        config.boundPurpleMagenta = value;
+        };
 
-    const updateSharpening = (value: number) => {
-      'worklet';
-      updateSharedValue(film.sharpening, value);
-      config.sharpening = value;
-    };
+        const updateGrainRoughness = (value: number) => {
+        'worklet';
+        updateSharedValue(film.grainRoughness, value);
+        config.grainRoughness = value;
+        };
 
-    const updatePixelationFactor = (value: number) => {
-      'worklet';
-      updateSharedValue(film.pixelationFactor, value);
-      config.pixelationFactor = value;
-    };
+        const updateGrainEnabled = (value: boolean) => {
+        'worklet';
+        updateSharedValue(film.grainEnabled, value);
+        config.grainEnabled = value;
+        };
 
-    const updateVignetteIntensity = (value: number) => {
-      'worklet';
-      updateSharedValue(film.vignetteIntensity, value);
-      config.vignetteIntensity = value;
-    };
+        const updateBloomEnabled = (value: boolean) => {
+        'worklet';
+        updateSharedValue(film.bloomEnabled, value);
+        config.bloomEnabled = value;
+        };
 
-    const updateBloomIntensity = (value: number) => {
-      'worklet';
-      const safeValue = Math.max(value, 0);
-      updateSharedValue(film.bloomIntensity, safeValue);
-      updateSharedValue(film.bloomEnabled, safeValue > 0);
-      config.bloomIntensity = safeValue;
-      config.bloomEnabled = safeValue > 0;
-    };
+        const updateBlackLevel = (value: number) => {
+        'worklet';
+        updateSharedValue(film.blackLevel, value);
+        config.blackLevel = value;
+        updateSharedValue(film.blackLevelAuto, false);
+        config.blackLevelAuto = false;
+        };
 
-    const updateHue = (value: number) => {
-      'worklet';
-      updateSharedValue(film.hue, value);
-      config.hue = value;
-    };
+        const updateHighlights = (value: number) => {
+        'worklet';
+        updateSharedValue(film.highlights, value);
+        config.highlights = value;
+        updateSharedValue(film.highlightsAuto, false);
+        config.highlightsAuto = false;
+        };
 
-    const updateHueRed = (value: number) => {
-      'worklet';
-      updateSharedValue(film.hueRed, value);
-      config.hueRed = value;
-    };
+        const updatePivot = (value: number) => {
+        'worklet';
+        updateSharedValue(film.pivot, value);
+        config.pivot = value;
+        updateSharedValue(film.pivotAuto, false);
+        config.pivotAuto = false;
+        };
 
-    const updateHueOrange = (value: number) => {
-      'worklet';
-      updateSharedValue(film.hueOrange, value);
-      config.hueOrange = value;
-    };
+        const updateContrastAuto = (value: boolean) => {
+        'worklet';
+        updateSharedValue(film.contrastAuto, value);
+        config.contrastAuto = value;
+        };
 
-    const updateHueYellow = (value: number) => {
-      'worklet';
-      updateSharedValue(film.hueYellow, value);
-      config.hueYellow = value;
-    };
+        const updateBlackLevelAuto = (value: boolean) => {
+        'worklet';
+        updateSharedValue(film.blackLevelAuto, value);
+        config.blackLevelAuto = value;
+        };
 
-    const updateHueGreen = (value: number) => {
-      'worklet';
-      updateSharedValue(film.hueGreen, value);
-      config.hueGreen = value;
-    };
+        const updateHighlightsAuto = (value: boolean) => {
+        'worklet';
+        updateSharedValue(film.highlightsAuto, value);
+        config.highlightsAuto = value;
+        };
 
-    const updateHueCyan = (value: number) => {
-      'worklet';
-      updateSharedValue(film.hueCyan, value);
-      config.hueCyan = value;
-    };
+        const updatePivotAuto = (value: boolean) => {
+        'worklet';
+        updateSharedValue(film.pivotAuto, value);
+        config.pivotAuto = value;
+        };
 
-    const updateHueBlue = (value: number) => {
-      'worklet';
-      updateSharedValue(film.hueBlue, value);
-      config.hueBlue = value;
-    };
+        const updatePixelationFactor = (value: number) => {
+        'worklet';
+        updateSharedValue(film.pixelationFactor, value);
+        config.pixelationFactor = value;
+        };
 
-    const updateHuePurple = (value: number) => {
-      'worklet';
-      updateSharedValue(film.huePurple, value);
-      config.huePurple = value;
-    };
+        const updateTapeJitter = (value: number) => {
+        'worklet';
+        updateSharedValue(film.tapeJitter, value);
+        config.tapeJitter = value;
+        };
 
-    const updateHueMagenta = (value: number) => {
-      'worklet';
-      updateSharedValue(film.hueMagenta, value);
-      config.hueMagenta = value;
-    };
+        const updateScanlines = (value: number) => {
+        'worklet';
+        updateSharedValue(film.scanlines, value);
+        config.scanlines = value;
+        };
+
+        const updateChromaShiftInvert = (value: boolean) => {
+        'worklet';
+        updateSharedValue(film.chromaShiftInvert, value);
+        config.chromaShiftInvert = value;
+        };
+
+        const updateHue = (value: number) => {
+        'worklet';
+        updateSharedValue(film.hue, value);
+        config.hue = value;
+        };
+
+        const updateHueRed = (value: number) => {
+        'worklet';
+        updateSharedValue(film.hueRed, value);
+        config.hueRed = value;
+        };
+
+        const updateHueOrange = (value: number) => {
+        'worklet';
+        updateSharedValue(film.hueOrange, value);
+        config.hueOrange = value;
+        };
+
+        const updateHueYellow = (value: number) => {
+        'worklet';
+        updateSharedValue(film.hueYellow, value);
+        config.hueYellow = value;
+        };
+
+        const updateHueGreen = (value: number) => {
+        'worklet';
+        updateSharedValue(film.hueGreen, value);
+        config.hueGreen = value;
+        };
+
+        const updateHueCyan = (value: number) => {
+        'worklet';
+        updateSharedValue(film.hueCyan, value);
+        config.hueCyan = value;
+        };
+
+        const updateHueBlue = (value: number) => {
+        'worklet';
+        updateSharedValue(film.hueBlue, value);
+        config.hueBlue = value;
+        };
+
+        const updateHuePurple = (value: number) => {
+        'worklet';
+        updateSharedValue(film.huePurple, value);
+        config.huePurple = value;
+        };
+
+        const updateHueMagenta = (value: number) => {
+        'worklet';
+        updateSharedValue(film.hueMagenta, value);
+        config.hueMagenta = value;
+        };
+
+        const updateScanlinesHorizontal = (value: boolean) => {
+        'worklet';
+        updateSharedValue(film.scanlinesHorizontal, value);
+        config.scanlinesHorizontal = value;
+        };
+
+        const updateScanlinesMode = (value: number) => {
+        'worklet';
+        updateSharedValue(film.scanlinesMode, value);
+        config.scanlinesMode = value;
+        };
+
+        const updateScanlinesDensity = (value: number) => {
+        'worklet';
+        updateSharedValue(film.scanlinesDensity, value);
+        config.scanlinesDensity = value;
+        };
+    // @@GEN_WORKLETS_END@@
 
     return {
-      updateHue,
-      updateHueRed,
-      updateHueOrange,
-      updateHueYellow,
-      updateHueGreen,
-      updateHueCyan,
-      updateHueBlue,
-      updateHuePurple,
-      updateHueMagenta,
-      updateGrain,
-      updateGrainChroma,
-      updateGrainSize,
-      updateGrainSpeed,
-      updateGrainRoughness,
-      updateSaturation,
-      updateSatRed,
-      updateSatOrange,
-      updateSatYellow,
-      updateSatGreen,
-      updateSatCyan,
-      updateSatBlue,
-      updateSatPurple,
-      updateSatMagenta,
-      updateBoundMagentaRed,
-      updateBoundRedOrange,
-      updateBoundOrangeYellow,
-      updateBoundYellowGreen,
-      updateBoundGreenCyan,
-      updateBoundCyanBlue,
-      updateBoundBluePurple,
-      updateBoundPurpleMagenta,
-      updateContrast,
-      updateBlackLevel,
-      updateHighlights,
-      updatePivot,
-      updateChromaticAberration,
-      updateAberrationInvert,
-      updateChromaShift,
-      updateChromaShiftDirection,
-      updateChromaShiftInvert,
-      updateTapeJitter,
-      updateScanlines,
-      updateScanlinesMode,
-      updateScanlinesDensity,
-      updateTemperature,
-      updateTint,
-      updateSharpening,
-      updateBloomIntensity,
-      updatePixelationFactor,
-      updateVignetteIntensity,
+      // @@GEN_WORKLET_EXPORTS_START@@
+      updateNoiseReductionMode,
+            updateNoiseReductionAuto,
+            updateTemperatureAuto,
+            updateIsSelfieCamera,
+            updateSaturation,
+            updateContrast,
+            updateGrainIntensity,
+            updateGrainChroma,
+            updateGrainSize,
+            updateGrainSpeed,
+            updateVignetteIntensity,
+            updateChromaShift,
+            updateTemperature,
+            updateTint,
+            updateBloomIntensity,
+            updateChromaticAberration,
+            updateChromaShiftDirection,
+            updateSharpening,
+            updateSatRed,
+            updateSatOrange,
+            updateSatYellow,
+            updateSatGreen,
+            updateSatCyan,
+            updateSatBlue,
+            updateSatPurple,
+            updateSatMagenta,
+            updateAberrationInvert,
+            updateBoundMagentaRed,
+            updateBoundRedOrange,
+            updateBoundOrangeYellow,
+            updateBoundYellowGreen,
+            updateBoundGreenCyan,
+            updateBoundCyanBlue,
+            updateBoundBluePurple,
+            updateBoundPurpleMagenta,
+            updateGrainRoughness,
+            updateGrainEnabled,
+            updateBloomEnabled,
+            updateBlackLevel,
+            updateHighlights,
+            updatePivot,
+            updateContrastAuto,
+            updateBlackLevelAuto,
+            updateHighlightsAuto,
+            updatePivotAuto,
+            updatePixelationFactor,
+            updateTapeJitter,
+            updateScanlines,
+            updateChromaShiftInvert,
+            updateHue,
+            updateHueRed,
+            updateHueOrange,
+            updateHueYellow,
+            updateHueGreen,
+            updateHueCyan,
+            updateHueBlue,
+            updateHuePurple,
+            updateHueMagenta,
+            updateScanlinesHorizontal,
+            updateScanlinesMode,
+            updateScanlinesDensity,
+      // @@GEN_WORKLET_EXPORTS_END@@
     };
   }, []);
 };

@@ -64,7 +64,7 @@ jest.mock('@entities/film', () => ({
     onChange: jest.fn(),
   }),
   useFilmWorklets: () => ({
-    updateGrain: jest.fn(),
+    updateGrainIntensity: jest.fn(),
   }),
 }));
 

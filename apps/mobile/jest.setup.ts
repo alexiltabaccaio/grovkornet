@@ -35,9 +35,30 @@ jest.mock('react-native-reanimated', () => {
     useSharedValue: jest.fn(val),
     useEvent: jest.fn((h: any) => h),
     useDerivedValue: jest.fn((cb: any) => ({ value: cb() })),
-    withSpring: jest.fn((v: any) => v),
-    withTiming: jest.fn((v: any) => v),
-    withDecay: jest.fn((v: any) => v),
+    withSpring: jest.fn((value: any, config: any, callback: any) => {
+      if (typeof callback === 'function') {
+        callback(true);
+      } else if (typeof config === 'function') {
+        config(true);
+      }
+      return value;
+    }),
+    withTiming: jest.fn((value: any, config: any, callback: any) => {
+      if (typeof callback === 'function') {
+        callback(true);
+      } else if (typeof config === 'function') {
+        config(true);
+      }
+      return value;
+    }),
+    withDecay: jest.fn((value: any, config: any, callback: any) => {
+      if (typeof callback === 'function') {
+        callback(true);
+      } else if (typeof config === 'function') {
+        config(true);
+      }
+      return value;
+    }),
     cancelAnimation: jest.fn(),
     withSequence: jest.fn((...args: any[]) => args[args.length - 1]),
     withRepeat: jest.fn((v: any) => v),
@@ -273,14 +294,30 @@ jest.mock('expo-system-ui', () => ({
   setBackgroundColorAsync: jest.fn(() => Promise.resolve()),
 }));
 
-// Mock expo-image
+// Mock expo-image to support triggering onLoad
 jest.mock('expo-image', () => {
   const actualExpoImage = jest.requireActual('expo-image');
-  const { Image } = jest.requireActual('react-native');
-  Image.prefetch = jest.fn().mockImplementation(() => Promise.resolve(true));
+  const React = require('react');
+  const { View } = require('react-native');
+
+  const MockImage = React.forwardRef(({ onLoad, source, ...props }: any, ref: any) => {
+    React.useEffect(() => {
+      if (onLoad) {
+        const timer = setTimeout(() => {
+          onLoad({ source });
+        }, 50);
+        return () => clearTimeout(timer);
+      }
+    }, [onLoad, source]);
+
+    return React.createElement(View, { ref, source, ...props });
+  });
+
+  (MockImage as any).prefetch = jest.fn().mockImplementation(() => Promise.resolve(true));
+
   return {
     ...actualExpoImage,
-    Image,
+    Image: MockImage,
   };
 });
 

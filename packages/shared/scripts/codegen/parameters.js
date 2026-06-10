@@ -5,6 +5,8 @@ const { generateZustandTypes, generateZustandStore } = require('./generators/zus
 const { generateViewfinderProps } = require('./generators/viewfinder');
 const { generatePresetSettings } = require('./generators/preset');
 const { generateNitroConfig } = require('./generators/nitro');
+const { generateWorklets } = require('./generators/worklets');
+const { generateControlData } = require('./generators/controlData');
 
 const PARAMETERS_YAML_PATH = 'packages/shared/camera-parameters';
 
@@ -26,6 +28,8 @@ function main() {
       generateViewfinderProps(parameters);
       generatePresetSettings(parameters);
       generateNitroConfig(parameters);
+      generateWorklets(parameters);
+      generateControlData(parameters);
       console.log("\nCodegen execution completed successfully!");
     }
   } catch (err) {

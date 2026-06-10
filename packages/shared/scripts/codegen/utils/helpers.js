@@ -19,7 +19,9 @@ const FILE_PATHS = {
   presetTypes: 'apps/mobile/src/entities/preset/model/types.ts',
   presetStore: 'apps/mobile/src/entities/preset/model/usePresetStore.ts',
   nitroSpec: 'packages/engine/src/NitroCameraConfiguration.nitro.ts',
-  nitroImpl: 'packages/engine/android/src/main/java/com/grovkornet/nativefilmcamera/HybridNitroCameraConfiguration.kt'
+  nitroImpl: 'packages/engine/android/src/main/java/com/grovkornet/nativefilmcamera/HybridNitroCameraConfiguration.kt',
+  worklets: 'apps/mobile/src/entities/film/lib/useFilmWorklets.ts',
+  controlData: 'apps/mobile/src/entities/film/lib/useFilmParameterControlData.ts'
 };
 
 function replaceBetweenMarkers(filePath, startMarker, endMarker, newContent, indent = '') {

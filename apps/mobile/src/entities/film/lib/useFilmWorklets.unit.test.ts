@@ -34,16 +34,16 @@ describe('useFilmWorklets', () => {
     const { result } = renderHook(() => useFilmWorklets());
     const worklets = result.current;
 
-    // Test updateGrain
-    worklets.updateGrain(1.5);
+    // Test updateGrainIntensity
+    worklets.updateGrainIntensity(1.5);
     expect(useFilmStore.getState().grainIntensity.value).toBe(1.5);
     expect(useFilmStore.getState().grainEnabled.value).toBe(true);
 
-    // Test clamping in updateGrain
-    worklets.updateGrain(3.0);
+    // Test clamping in updateGrainIntensity
+    worklets.updateGrainIntensity(3.0);
     expect(useFilmStore.getState().grainIntensity.value).toBe(2.0);
 
-    worklets.updateGrain(-0.5);
+    worklets.updateGrainIntensity(-0.5);
     expect(useFilmStore.getState().grainIntensity.value).toBe(0.0);
     expect(useFilmStore.getState().grainEnabled.value).toBe(false);
 
