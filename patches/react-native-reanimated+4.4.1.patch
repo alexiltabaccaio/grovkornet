@@ -1,8 +1,8 @@
 diff --git a/node_modules/react-native-reanimated/Common/cpp/reanimated/CSS/interpolation/transforms/TransformOperationInterpolator.cpp b/node_modules/react-native-reanimated/Common/cpp/reanimated/CSS/interpolation/transforms/TransformOperationInterpolator.cpp
-index 19a89ab..8e1c60b 100644
+index 19a89ab..02b9bb6 100644
 --- a/node_modules/react-native-reanimated/Common/cpp/reanimated/CSS/interpolation/transforms/TransformOperationInterpolator.cpp
 +++ b/node_modules/react-native-reanimated/Common/cpp/reanimated/CSS/interpolation/transforms/TransformOperationInterpolator.cpp
-@@ -141,52 +141,7 @@ template TransformMatrix3D TransformOperationInterpolator<MatrixOperation>::inte
+@@ -141,52 +141,8 @@ template TransformMatrix3D TransformOperationInterpolator<MatrixOperation>::inte
      const TransformMatrix::Shared &,
      const TransformMatrix::Shared &) const;
  
@@ -25,7 +25,8 @@ index 19a89ab..8e1c60b 100644
 -  return std::make_unique<TOperation>(
 -      fromOp.value.interpolate(progress, toOp.value, getResolvableValueContext(context)));
 -}
--
++// Specialization for resolvable operations is now defined inline in the header file.
+ 
 -template <ResolvableOp TOperation>
 -std::shared_ptr<StyleOperation> TransformOperationInterpolator<TOperation>::resolveOperation(
 -    const std::shared_ptr<StyleOperation> &operation,
@@ -52,7 +53,6 @@ index 19a89ab..8e1c60b 100644
 -      .relativeProperty = config_.relativeProperty,
 -      .relativeTo = config_.relativeTo};
 -}
-+// Specialization for resolvable operations is now defined inline in the header file.
  
  // Rotate operations
  template class TransformOperationInterpolator<RotateOperation>;
