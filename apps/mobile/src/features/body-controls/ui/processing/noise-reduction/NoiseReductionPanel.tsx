@@ -11,7 +11,7 @@ interface NoiseReductionPanelProps {
 
 const MODES = [0, 1, 2];
 
-export const NoiseReductionPanel = ({ animatedStyle }: NoiseReductionPanelProps) => {
+export const NoiseReductionPanel = React.memo(({ animatedStyle }: NoiseReductionPanelProps) => {
   const { noiseReductionMode, setNoiseReductionMode, noiseReductionAuto, setNoiseReductionAuto } = useFilmStore(useShallow(state => ({
     noiseReductionMode: state.noiseReductionMode,
     setNoiseReductionMode: state.setNoiseReductionMode,
@@ -53,4 +53,4 @@ export const NoiseReductionPanel = ({ animatedStyle }: NoiseReductionPanelProps)
       }
     />
   );
-};
+});

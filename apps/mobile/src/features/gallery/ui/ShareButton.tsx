@@ -17,7 +17,7 @@ interface ShareButtonProps {
   isVerified: boolean;
 }
 
-export const ShareButton = ({ id, uri, isVerified }: ShareButtonProps) => {
+export const ShareButton = React.memo(({ id, uri, isVerified }: ShareButtonProps) => {
   const { t } = useTranslation();
 
   const handleInstagramShare = async () => {
@@ -112,7 +112,7 @@ export const ShareButton = ({ id, uri, isVerified }: ShareButtonProps) => {
       </TouchableOpacity>
     </View>
   );
-};
+});
 
 const styles = StyleSheet.create({
   container: {

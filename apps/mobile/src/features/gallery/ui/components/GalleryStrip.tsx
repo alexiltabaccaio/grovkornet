@@ -25,7 +25,7 @@ interface GalleryStripProps {
   galleryTransition?: SharedValue<number>;
 }
 
-export const GalleryStrip = ({ photos, selectedPhoto, onSelectPhoto, onClose, galleryTransition }: GalleryStripProps) => {
+export const GalleryStrip = React.memo(({ photos, selectedPhoto, onSelectPhoto, onClose, galleryTransition }: GalleryStripProps) => {
   const { verifyPhotosBatch } = useImageVerification();
 
   const photosRef = useRef(photos);
@@ -130,7 +130,7 @@ export const GalleryStrip = ({ photos, selectedPhoto, onSelectPhoto, onClose, ga
       </Animated.View>
     </BottomFooter>
   );
-};
+});
 
 const styles = StyleSheet.create({
   footerContainer: {

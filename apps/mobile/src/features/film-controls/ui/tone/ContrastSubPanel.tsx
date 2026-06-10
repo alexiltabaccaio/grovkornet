@@ -11,7 +11,7 @@ interface ContrastSubPanelProps {
   animatedStyle?: StyleProp<ViewStyle>;
 }
 
-export const ContrastSubPanel = ({ animatedStyle }: ContrastSubPanelProps) => {
+export const ContrastSubPanel = React.memo(({ animatedStyle }: ContrastSubPanelProps) => {
   const { t } = useTranslation();
   const isLayoutOverlayEnabled = useSystemStore(state => state.isLayoutOverlayEnabled);
   const { 
@@ -51,7 +51,7 @@ export const ContrastSubPanel = ({ animatedStyle }: ContrastSubPanelProps) => {
       </View>
     </SubPanelContainer>
   );
-};
+});
 
 const styles = StyleSheet.create({
   container: {

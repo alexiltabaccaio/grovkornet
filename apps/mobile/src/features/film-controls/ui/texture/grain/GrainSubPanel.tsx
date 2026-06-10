@@ -31,7 +31,7 @@ interface GrainSubPanelProps {
   animatedStyle?: StyleProp<ViewStyle>;
 }
 
-export const GrainSubPanel = ({ parameterDetailPanelAnimatedStyle: _parameterDetailPanelAnimatedStyle, animatedStyle: _animatedStyle }: GrainSubPanelProps) => {
+export const GrainSubPanel = React.memo(({ parameterDetailPanelAnimatedStyle: _parameterDetailPanelAnimatedStyle, animatedStyle: _animatedStyle }: GrainSubPanelProps) => {
   const { t } = useTranslation();
   const isLayoutOverlayEnabled = useSystemStore((s) => s.isLayoutOverlayEnabled);
   const { 
@@ -157,7 +157,7 @@ export const GrainSubPanel = ({ parameterDetailPanelAnimatedStyle: _parameterDet
       </View>
     </SubPanelContainer>
   );
-};
+});
 
 const styles = StyleSheet.create({
   container: {

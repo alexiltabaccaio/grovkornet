@@ -11,7 +11,7 @@ interface OpticsModuleProps {
   handlePressWithDouble: (param: ParameterType, action: () => void) => void;
 }
 
-export const OpticsModule = ({ handlePressWithDouble }: OpticsModuleProps) => {
+export const OpticsModule = React.memo(({ handlePressWithDouble }: OpticsModuleProps) => {
   const { capabilities } = useLensStore(
     useShallow(s => ({
       capabilities: s.capabilities,
@@ -38,7 +38,7 @@ export const OpticsModule = ({ handlePressWithDouble }: OpticsModuleProps) => {
       handlePressWithDouble={handlePressWithDouble}
     />
   );
-};
+});
 
 // OpticsModule.whyDidYouRender = true;
 

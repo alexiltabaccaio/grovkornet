@@ -11,7 +11,7 @@ interface LightingModuleProps {
   handlePressWithDouble: (param: ParameterType, action: () => void) => void;
 }
 
-export const LightingModule = ({ handlePressWithDouble }: LightingModuleProps) => {
+export const LightingModule = React.memo(({ handlePressWithDouble }: LightingModuleProps) => {
   const { capabilities } = useBodyStore(
     useShallow(s => ({
       capabilities: s.capabilities,
@@ -33,7 +33,7 @@ export const LightingModule = ({ handlePressWithDouble }: LightingModuleProps) =
       handlePressWithDouble={handlePressWithDouble}
     />
   );
-};
+});
 
 // LightingModule.whyDidYouRender = true;
 

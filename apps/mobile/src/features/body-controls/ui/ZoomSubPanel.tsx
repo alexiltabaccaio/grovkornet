@@ -11,7 +11,7 @@ interface ZoomSubPanelProps {
   animatedStyle?: StyleProp<ViewStyle>;
 }
 
-export const ZoomSubPanel = ({ animatedStyle }: ZoomSubPanelProps) => {
+export const ZoomSubPanel = React.memo(({ animatedStyle }: ZoomSubPanelProps) => {
   const isLayoutOverlayEnabled = useSystemStore((s) => s.isLayoutOverlayEnabled);
   const { zoom, setZoom, capabilities } = useBodyStore(
     useShallow((state) => ({
@@ -76,7 +76,7 @@ export const ZoomSubPanel = ({ animatedStyle }: ZoomSubPanelProps) => {
       </View>
     </SubPanelContainer>
   );
-};
+});
 
 const styles = StyleSheet.create({
   container: {

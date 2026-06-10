@@ -9,14 +9,14 @@ interface CaptureModuleProps {
 
 export const CAPTURE_PARAMETERS: ParameterType[] = ['aspect_ratio', 'resolution_setting', 'fps_setting'];
 
-export const CaptureModule = ({ handlePressWithDouble }: CaptureModuleProps) => {
+export const CaptureModule = React.memo(({ handlePressWithDouble }: CaptureModuleProps) => {
   return (
     <GenericParameterModule
       parameters={CAPTURE_PARAMETERS}
       handlePressWithDouble={handlePressWithDouble}
     />
   );
-};
+});
 
 // CaptureModule.whyDidYouRender = true;
 

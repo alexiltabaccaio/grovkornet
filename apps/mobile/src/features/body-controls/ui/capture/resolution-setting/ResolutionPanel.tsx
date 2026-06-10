@@ -23,7 +23,7 @@ const RESOLUTION_WIDTHS: Record<string, number> = {
   '144p': 256,
 };
 
-export const ResolutionPanel = ({ animatedStyle }: ResolutionPanelProps) => {
+export const ResolutionPanel = React.memo(({ animatedStyle }: ResolutionPanelProps) => {
   const {
     resolutionSetting,
     setResolutionSetting,
@@ -67,7 +67,7 @@ export const ResolutionPanel = ({ animatedStyle }: ResolutionPanelProps) => {
       />
     </View>
   );
-};
+});
 
 const styles = StyleSheet.create({
   container: {

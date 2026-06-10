@@ -16,7 +16,7 @@ interface TorchSubPanelProps {
   animatedStyle?: StyleProp<ViewStyle>;
 }
 
-export const TorchSubPanel = ({ animatedStyle: _animatedStyle }: TorchSubPanelProps) => {
+export const TorchSubPanel = React.memo(({ animatedStyle: _animatedStyle }: TorchSubPanelProps) => {
   const { t } = useTranslation();
   const bodyWorklets = useBodyWorklets();
 
@@ -55,7 +55,7 @@ export const TorchSubPanel = ({ animatedStyle: _animatedStyle }: TorchSubPanelPr
       />
     </SubPanelContainer>
   );
-};
+});
 
 const styles = StyleSheet.create({
   childSubContainer: {

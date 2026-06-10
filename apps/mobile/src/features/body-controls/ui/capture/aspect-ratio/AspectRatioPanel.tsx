@@ -11,7 +11,7 @@ interface AspectRatioPanelProps {
 
 const ASPECT_RATIOS = ['4:3', '16:9', '1:1', '3:2', '65:24'];
 
-export const AspectRatioPanel = ({ animatedStyle }: AspectRatioPanelProps) => {
+export const AspectRatioPanel = React.memo(({ animatedStyle }: AspectRatioPanelProps) => {
   const { 
     aspectRatio, 
     setAspectRatio,
@@ -39,7 +39,7 @@ export const AspectRatioPanel = ({ animatedStyle }: AspectRatioPanelProps) => {
       />
     </View>
   );
-};
+});
 
 const styles = StyleSheet.create({
   container: {

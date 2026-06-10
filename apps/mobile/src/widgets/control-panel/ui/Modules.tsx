@@ -10,7 +10,7 @@ import { useDoublePress } from '@shared/lib/hooks/useDoublePress';
 import { useResetTool } from '../lib/useResetTool';
 import { MODULE_PARAMETERS } from '../config/moduleParameters';
 
-export const Modules = React.memo(() => {
+export const Modules = () => {
   const { 
     activeSection, 
     activeModule, 
@@ -68,33 +68,13 @@ export const Modules = React.memo(() => {
       </View>
     </>
   );
-});
-
-Modules.displayName = 'Modules';
+};
 
 const styles = StyleSheet.create({
   container: {
     paddingHorizontal: 16,
     marginTop: 2,
     marginBottom: 2,
-  },
-  sectionHeaderFrame: {
-    width: '100%',
-    marginTop: 0,
-    marginBottom: 0,
-    paddingVertical: 8,
-    borderWidth: 1,
-    borderColor: 'transparent',
-  },
-  sectionTitle: {
-    color: '#FF5722',
-    fontSize: 10,
-    lineHeight: 14,
-    fontWeight: '800',
-    letterSpacing: 2,
-    textTransform: 'uppercase',
-    textAlign: 'center',
-    backgroundColor: 'transparent',
   },
   pillMenuWrapper: {
     maxHeight: 35,
@@ -105,10 +85,6 @@ const styles = StyleSheet.create({
   },
   pill: {
     marginRight: 8,
-  },
-  debugFrame: {
-    borderColor: 'magenta',
-    backgroundColor: 'rgba(255, 0, 255, 0.2)',
   },
   debugContainerWrapper: {
     borderWidth: 1,

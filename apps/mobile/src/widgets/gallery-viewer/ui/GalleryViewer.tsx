@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { StyleSheet, Text, View, ActivityIndicator, Platform, useWindowDimensions, BackHandler } from 'react-native';
 import { Image } from 'expo-image';
-import Animated, { useAnimatedStyle, SharedValue, interpolate, useSharedValue, withTiming, runOnJS, useAnimatedProps } from 'react-native-reanimated';
+import Animated, { useAnimatedStyle, SharedValue, interpolate, useSharedValue, withTiming, runOnJS } from 'react-native-reanimated';
 import { useTranslation } from 'react-i18next';
 import { ShareButton, PhotoPreview, GalleryStrip, useGalleryViewer } from '@features/gallery';
 import { useDeviceRotation } from '@shared/lib/hooks/useDeviceRotation';
@@ -16,7 +16,7 @@ interface GalleryViewerProps {
 
 export const GalleryViewer = React.memo(({ onClose, initialUri, galleryTransition, header }: GalleryViewerProps) => {
   const { t } = useTranslation();
-  const { photos, selectedPhoto, loading, onPhotoVisible, onSelectPhoto, permissionGranted } = useGalleryViewer(initialUri);
+  const { photos, selectedPhoto, loading, onPhotoVisible, onSelectPhoto } = useGalleryViewer(initialUri);
   const rotationY = useDeviceRotation();
   const { width, height } = useWindowDimensions();
 
@@ -30,6 +30,10 @@ export const GalleryViewer = React.memo(({ onClose, initialUri, galleryTransitio
 
   const [isHighResLoaded, setIsHighResLoaded] = useState(false);
   const [isReadyToFade, setIsReadyToFade] = useState(false);
+
+  const handleInitialImageLoad = useCallback(() => {
+    setIsHighResLoaded(true);
+  }, []);
 
   useEffect(() => {
     // Ensures we don't fade out the placeholder while it's still animating its opening scale (300ms)
@@ -142,7 +146,7 @@ export const GalleryViewer = React.memo(({ onClose, initialUri, galleryTransitio
                   photos={photos}
                   onPhotoVisible={onPhotoVisible}
                   rotationY={rotationY}
-                  onInitialImageLoad={() => setIsHighResLoaded(true)}
+                  onInitialImageLoad={handleInitialImageLoad}
                   initialUri={initialUri}
                 />
                 
@@ -198,6 +202,7 @@ export const GalleryViewer = React.memo(({ onClose, initialUri, galleryTransitio
     </Animated.View>
   );
 });
+GalleryViewer.displayName = 'GalleryViewer';
 
 const styles = StyleSheet.create({
   absoluteContainer: {

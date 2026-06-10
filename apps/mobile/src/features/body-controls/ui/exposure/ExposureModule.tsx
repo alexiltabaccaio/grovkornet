@@ -9,14 +9,14 @@ interface ExposureModuleProps {
 
 export const EXPOSURE_PARAMETERS: ParameterType[] = ['ev', 'iso', 'shutter_speed'];
 
-export const ExposureModule = ({ handlePressWithDouble }: ExposureModuleProps) => {
+export const ExposureModule = React.memo(({ handlePressWithDouble }: ExposureModuleProps) => {
   return (
     <GenericParameterModule
       parameters={EXPOSURE_PARAMETERS}
       handlePressWithDouble={handlePressWithDouble}
     />
   );
-};
+});
 
 // ExposureModule.whyDidYouRender = true;
 

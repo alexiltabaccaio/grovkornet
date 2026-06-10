@@ -18,16 +18,7 @@ import { logger } from '@shared/lib/logger';
 
 
 
-export const CameraScreen = React.memo(() => {
-  return (
-    <CameraScreenContent />
-  );
-});
-CameraScreen.displayName = 'CameraScreen';
-
-// CameraScreen.whyDidYouRender = true;
-
-const CameraScreenContent = React.memo(() => {
+export const CameraScreen = () => {
   const insets = useSafeAreaInsets();
   const { isFpsOverlayEnabled, triggerCapture, latestCapturedUri, latestPreviewUri } = useSystemStore(useShallow(state => ({
     isFpsOverlayEnabled: state.isFpsOverlayEnabled,
@@ -231,11 +222,7 @@ const CameraScreenContent = React.memo(() => {
       </View>
     </View>
   );
-});
-
-CameraScreenContent.displayName = 'CameraScreenContent';
-
-// CameraScreenContent.whyDidYouRender = true;
+};
 
 const styles = StyleSheet.create({
   container: {

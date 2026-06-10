@@ -9,7 +9,7 @@ interface FpsPanelProps {
   animatedStyle?: StyleProp<ViewStyle>;
 }
 
-export const FpsPanel = ({ animatedStyle }: FpsPanelProps) => {
+export const FpsPanel = React.memo(({ animatedStyle }: FpsPanelProps) => {
   const { fpsSetting, setFpsSetting, capabilities } = useBodyStore(useShallow(state => ({
     fpsSetting: state.fpsSetting,
     setFpsSetting: state.setFpsSetting,
@@ -36,4 +36,4 @@ export const FpsPanel = ({ animatedStyle }: FpsPanelProps) => {
       pillMaxWidth={80}
     />
   );
-};
+});

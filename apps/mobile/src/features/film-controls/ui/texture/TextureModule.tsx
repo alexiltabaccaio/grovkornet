@@ -9,14 +9,14 @@ interface TextureModuleProps {
 
 export const TEXTURE_PARAMETERS: ParameterType[] = ['grain', 'scanlines', 'pixelation'];
 
-export const TextureModule = ({ handlePressWithDouble }: TextureModuleProps) => {
+export const TextureModule = React.memo(({ handlePressWithDouble }: TextureModuleProps) => {
   return (
     <GenericParameterModule
       parameters={TEXTURE_PARAMETERS}
       handlePressWithDouble={handlePressWithDouble}
     />
   );
-};
+});
 
 // TextureModule.whyDidYouRender = true;
 

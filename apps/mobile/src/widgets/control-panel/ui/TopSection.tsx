@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useShallow } from 'zustand/shallow';
 import { useSystemStore } from '@entities/system';
 
-export const TopSection = React.memo(() => {
+export const TopSection = () => {
   const { activeSection, lastNonNoneSection, isLayoutOverlayEnabled } = useSystemStore(useShallow(state => ({
     activeSection: state.activeSection,
     lastNonNoneSection: state.lastNonNoneSection,
@@ -28,9 +28,7 @@ export const TopSection = React.memo(() => {
       </View>
     </View>
   );
-});
-
-TopSection.displayName = 'TopSection';
+};
 
 const styles = StyleSheet.create({
   container: {

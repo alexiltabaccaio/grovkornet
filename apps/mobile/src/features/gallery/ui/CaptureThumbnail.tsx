@@ -12,7 +12,7 @@ interface CaptureThumbnailProps {
   onPress: () => void;
 }
 
-export const CaptureThumbnail = ({ onPress }: CaptureThumbnailProps) => {
+export const CaptureThumbnail = React.memo(({ onPress }: CaptureThumbnailProps) => {
   const { isCapturing, latestPreviewUri, latestCapturedUri } = useSystemStore(useShallow(state => ({
     isCapturing: state.isCapturing,
     latestPreviewUri: state.latestPreviewUri,
@@ -121,7 +121,7 @@ export const CaptureThumbnail = ({ onPress }: CaptureThumbnailProps) => {
       )}
     </Pressable>
   );
-};
+});
 
 const styles = StyleSheet.create({
   wrapper: {

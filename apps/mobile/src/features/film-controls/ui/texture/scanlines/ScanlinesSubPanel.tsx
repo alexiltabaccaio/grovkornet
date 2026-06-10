@@ -23,7 +23,7 @@ interface ScanlinesSubPanelProps {
   animatedStyle?: StyleProp<ViewStyle>;
 }
 
-export const ScanlinesSubPanel = ({ animatedStyle: _animatedStyle }: ScanlinesSubPanelProps) => {
+export const ScanlinesSubPanel = React.memo(({ animatedStyle: _animatedStyle }: ScanlinesSubPanelProps) => {
   const { t } = useTranslation();
   const isLayoutOverlayEnabled = useSystemStore((s) => s.isLayoutOverlayEnabled);
   const { 
@@ -103,7 +103,7 @@ export const ScanlinesSubPanel = ({ animatedStyle: _animatedStyle }: ScanlinesSu
       </View>
     </SubPanelContainer>
   );
-};
+});
 
 const styles = StyleSheet.create({
   container: {

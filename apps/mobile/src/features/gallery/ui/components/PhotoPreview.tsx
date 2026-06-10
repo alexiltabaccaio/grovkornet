@@ -19,7 +19,7 @@ interface PhotoPreviewProps {
   initialUri?: string | null;
 }
 
-export const PhotoPreview = ({ selectedPhoto, photos, onPhotoVisible, rotationY, onInitialImageLoad, initialUri }: PhotoPreviewProps) => {
+export const PhotoPreview = React.memo(({ selectedPhoto, photos, onPhotoVisible, rotationY, onInitialImageLoad, initialUri }: PhotoPreviewProps) => {
   const { t } = useTranslation();
   const { width, height } = useWindowDimensions();
   const GAP = 20;
@@ -100,7 +100,7 @@ export const PhotoPreview = ({ selectedPhoto, photos, onPhotoVisible, rotationY,
       </GestureDetector>
     </View>
   );
-};
+});
 
 const styles = StyleSheet.create({
   center: {
