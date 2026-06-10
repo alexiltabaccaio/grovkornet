@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useCallback } from 'react';
 import { logger } from '@shared/lib/logger';
 import { useGalleryPhotos } from './useGalleryPhotos';
 import { useImageVerification } from './useImageVerification';
@@ -115,18 +115,18 @@ export const useGalleryViewer = (initialUri?: string | null) => {
    * Called by PhotoPreview when the user swipes/scrolls to a new photo.
    * Initiates authenticity verification only if the photo is not already selected.
    */
-  const onPhotoVisible = (photo: GalleryItem) => {
+  const onPhotoVisible = useCallback((photo: GalleryItem) => {
     if (selectedPhoto?.uri !== photo.uri) {
       void verifyPhoto(photo);
     }
-  };
+  }, [selectedPhoto, verifyPhoto]);
 
   /**
    * Called by GalleryStrip when a thumbnail is selected.
    */
-  const onSelectPhoto = (photo: GalleryItem) => {
+  const onSelectPhoto = useCallback((photo: GalleryItem) => {
     void verifyPhoto(photo);
-  };
+  }, [verifyPhoto]);
 
   return {
     photos,

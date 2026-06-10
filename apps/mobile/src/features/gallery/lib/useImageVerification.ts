@@ -16,7 +16,7 @@ export const useImageVerification = () => {
     setSelectedPhoto(item);
 
     const verifiedMap = useVerificationStore.getState().verifiedMap;
-    if (verifiedMap[item.uri] !== undefined) {
+    if (verifiedMap[item.uri] !== undefined || verifyingQueue.has(item.uri)) {
       return;
     }
 

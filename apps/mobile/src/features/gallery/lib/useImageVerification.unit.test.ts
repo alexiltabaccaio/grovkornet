@@ -66,4 +66,25 @@ describe('useImageVerification', () => {
     expect(verifyGrovkornetAuthenticity).not.toHaveBeenCalled();
     expect(result.current.selectedPhoto?.uri).toBe('file:///test/3.jpg');
   });
+
+  it('deduplicates concurrent calls to verifyPhoto for the same item', async () => {
+    (verifyGrovkornetAuthenticity as jest.Mock).mockResolvedValue(true);
+
+    const { result } = renderHook(() => useImageVerification());
+
+    const item: GalleryItem = { id: '4', uri: 'file:///test/4.jpg' };
+
+    act(() => {
+      void result.current.verifyPhoto(item);
+      void result.current.verifyPhoto(item);
+    });
+
+    expect(result.current.verifying).toBe(true);
+
+    await waitFor(() => expect(result.current.verifying).toBe(false));
+
+    // verifyGrovkornetAuthenticity should only be called once because of deduplication
+    expect(verifyGrovkornetAuthenticity).toHaveBeenCalledTimes(1);
+    expect(verifyGrovkornetAuthenticity).toHaveBeenCalledWith('file:///test/4.jpg');
+  });
 });
