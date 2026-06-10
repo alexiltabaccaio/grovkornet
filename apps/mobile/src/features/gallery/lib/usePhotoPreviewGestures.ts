@@ -22,6 +22,7 @@ interface UsePhotoPreviewGesturesProps {
   selectedPhoto: GalleryItem | null;
   prepareTransition: (newIndex: number, isManualSwipe?: boolean) => void;
   finalizeTransition: (newIndex: number, isManualSwipe: boolean) => void;
+  isTransitioning: SharedValue<boolean>;
 }
 
 export const usePhotoPreviewGestures = ({
@@ -36,6 +37,7 @@ export const usePhotoPreviewGestures = ({
   selectedPhoto,
   prepareTransition,
   finalizeTransition,
+  isTransitioning,
 }: UsePhotoPreviewGesturesProps) => {
   const zoomScale = useSharedValue(1);
   const zoomTranslateX = useSharedValue(0);
@@ -45,6 +47,7 @@ export const usePhotoPreviewGestures = ({
   const savedZoomTranslateX = useSharedValue(0);
   const savedZoomTranslateY = useSharedValue(0);
   const isZoomed = useSharedValue(false);
+  const panStartTranslationX = useSharedValue(0);
   const panMode = useSharedValue<'swipe' | 'pan'>('swipe');
   const isDecaying = useSharedValue(0);
   const recentlyStoppedDecay = useSharedValue(0);
@@ -71,19 +74,19 @@ export const usePhotoPreviewGestures = ({
         cancelAnimation(zoomTranslateX);
         cancelAnimation(zoomTranslateY);
         isDecaying.value = 0;
-      } else {
-        cancelAnimation(translateX);
       }
     })
-    .onStart(() => {
+    .onStart((event) => {
       'worklet';
       if (isZoomed.value) {
         panMode.value = 'pan';
         savedZoomTranslateX.value = zoomTranslateX.value;
         savedZoomTranslateY.value = zoomTranslateY.value;
       } else {
+        cancelAnimation(translateX);
         panMode.value = 'swipe';
         dragOffset.value = translateX.value;
+        panStartTranslationX.value = event.translationX;
       }
     })
     .onUpdate((event) => {
@@ -104,7 +107,8 @@ export const usePhotoPreviewGestures = ({
         zoomTranslateX.value = Math.max(minTx, Math.min(maxTx, savedZoomTranslateX.value + event.translationX));
         zoomTranslateY.value = Math.max(minTy, Math.min(maxTy, savedZoomTranslateY.value + event.translationY));
       } else {
-        const proposedVal = dragOffset.value + event.translationX;
+        const activeTranslationX = event.translationX - panStartTranslationX.value;
+        const proposedVal = dragOffset.value + activeTranslationX;
         const maxTranslateX = 0;
         const minTranslateX = -(photosLength - 1) * slotWidth;
         translateX.value = Math.max(minTranslateX, Math.min(maxTranslateX, proposedVal));
@@ -163,15 +167,22 @@ export const usePhotoPreviewGestures = ({
 
         runOnJS(prepareTransition)(targetIndex, true);
 
-        translateX.value = withTiming(
-          targetTranslateX,
-          {
-            duration: 250,
-          },
-          (finished) => {
-            if (finished) runOnJS(finalizeTransition)(targetIndex, true);
-          }
-        );
+        if (Math.abs(translateX.value - targetTranslateX) > 0.1) {
+          isTransitioning.value = true;
+          translateX.value = withTiming(
+            targetTranslateX,
+            { duration: 250 },
+            (finished) => {
+              if (finished) {
+                isTransitioning.value = false;
+                runOnJS(finalizeTransition)(targetIndex, true);
+              }
+            }
+          );
+        } else {
+          isTransitioning.value = false;
+          runOnJS(finalizeTransition)(targetIndex, true);
+        }
       }
     });
 
@@ -242,6 +253,9 @@ export const usePhotoPreviewGestures = ({
     .maxDistance(20)
     .onEnd((event) => {
       'worklet';
+      if (isTransitioning.value) {
+        return;
+      }
       if (isZoomed.value) {
         if (recentlyStoppedDecay.value > 0) {
           recentlyStoppedDecay.value = 0;

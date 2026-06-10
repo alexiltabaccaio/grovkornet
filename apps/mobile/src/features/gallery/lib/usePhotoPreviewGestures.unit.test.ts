@@ -83,6 +83,7 @@ describe('usePhotoPreviewGestures', () => {
   let mockRotationY: { value: number };
   const mockPrepareTransition = jest.fn();
   const mockFinalizeTransition = jest.fn();
+  let mockIsTransitioning: { value: boolean };
 
   beforeAll(() => {
     originalTiming = reanimatedModule.withTiming;
@@ -123,6 +124,7 @@ describe('usePhotoPreviewGestures', () => {
     mockDragOffset = { value: 0 };
     mockCurrentIndex = { value: 0 };
     mockRotationY = { value: 0 };
+    mockIsTransitioning = { value: false };
   });
 
   const getHookResult = () => {
@@ -139,6 +141,7 @@ describe('usePhotoPreviewGestures', () => {
         selectedPhoto: { id: '1', uri: 'file:///test/1.jpg' },
         prepareTransition: mockPrepareTransition,
         finalizeTransition: mockFinalizeTransition,
+        isTransitioning: mockIsTransitioning as any,
       })
     );
   };
@@ -168,6 +171,18 @@ describe('usePhotoPreviewGestures', () => {
     expect(result.current.zoomTranslateX.value).toBe(75);
     // centerY=400, targetY = (400 - 300) * 1.5 = 150
     expect(result.current.zoomTranslateY.value).toBe(150);
+  });
+
+  it('does not zoom on double tap if transition is in progress', () => {
+    const { result } = getHookResult();
+    mockIsTransitioning.value = true;
+
+    act(() => {
+      capturedDoubleTapCallbacks.onEnd({ x: 150, y: 300 });
+    });
+
+    expect(result.current.isZoomed.value).toBe(false);
+    expect(result.current.zoomScale.value).toBe(1);
   });
 
   it('handles double tap to zoom out when already zoomed', () => {
@@ -223,7 +238,7 @@ describe('usePhotoPreviewGestures', () => {
 
     // Start swipe
     act(() => {
-      capturedPanCallbacks.onStart();
+      capturedPanCallbacks.onStart({ translationX: 0 });
     });
     expect(mockDragOffset.value).toBe(0);
 

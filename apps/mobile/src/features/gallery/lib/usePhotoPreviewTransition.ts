@@ -24,6 +24,7 @@ export const usePhotoPreviewTransition = ({
   const initialIndex = initialIndexRef.current;
 
   const currentIndex = useSharedValue(initialIndex);
+  const isTransitioning = useSharedValue(false);
   const animatingToIndexRef = useRef<number | null>(null);
   const expectedEchoesRef = useRef<string[]>([]);
 
@@ -89,8 +90,12 @@ export const usePhotoPreviewTransition = ({
 
     if (Math.abs(diff) === 1) {
       const targetVal = -idx * slotWidth;
+      isTransitioning.value = true;
       translateX.value = withTiming(targetVal, { duration: 250 }, (finished) => {
-        if (finished) runOnJS(finalizeTransition)(idx, false);
+        if (finished) {
+          isTransitioning.value = false;
+          runOnJS(finalizeTransition)(idx, false);
+        }
       });
     } else {
       const mockAdjacentIndex = diff > 0 ? currentIndex.value + 1 : currentIndex.value - 1;
@@ -109,10 +114,12 @@ export const usePhotoPreviewTransition = ({
       /* eslint-enable react-hooks/set-state-in-effect */
 
       const targetVal = -mockAdjacentIndex * slotWidth;
+      isTransitioning.value = true;
       translateX.value = withTiming(targetVal, { duration: 250 }, (finished) => {
         if (finished) {
           translateX.value = -idx * slotWidth;
           runOnJS(finalizeTeleport)(idx);
+          isTransitioning.value = false;
         }
       });
     }
@@ -126,5 +133,6 @@ export const usePhotoPreviewTransition = ({
     dragOffset,
     prepareTransition,
     finalizeTransition,
+    isTransitioning,
   };
 };
