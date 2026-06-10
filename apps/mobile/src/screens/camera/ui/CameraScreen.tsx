@@ -76,11 +76,13 @@ const CameraScreenContent = React.memo(() => {
         // instruction is executed before the context is ready and gets lost.
         if (shouldRenderGallery) {
           setTimeout(() => {
-            runOnUI(() => {
-              'worklet';
-              galleryTransition.value = 0.99;
+            // Modify the value on the JS thread to ensure Reanimated's JS proxy
+            // correctly re-binds and notifies all child components (like GalleryViewer).
+            // runOnUI bypasses this, causing cross-component useAnimatedStyle to stay stuck.
+            galleryTransition.value = 0.99;
+            requestAnimationFrame(() => {
               galleryTransition.value = 1;
-            })();
+            });
           }, 150);
         }
       }
