@@ -17,9 +17,12 @@ interface PhotoPreviewProps {
   rotationY?: SharedValue<number>;
   onInitialImageLoad?: () => void;
   initialUri?: string | null;
+  zoomScale?: SharedValue<number>;
+  zoomTranslateX?: SharedValue<number>;
+  zoomTranslateY?: SharedValue<number>;
 }
 
-export const PhotoPreview = React.memo(({ selectedPhoto, photos, onPhotoVisible, rotationY, onInitialImageLoad, initialUri }: PhotoPreviewProps) => {
+export const PhotoPreview = React.memo(({ selectedPhoto, photos, onPhotoVisible, rotationY, onInitialImageLoad, initialUri, zoomScale: zoomScaleRef, zoomTranslateX: zoomTranslateXRef, zoomTranslateY: zoomTranslateYRef }: PhotoPreviewProps) => {
   const { t } = useTranslation();
   const { width, height } = useWindowDimensions();
   const GAP = 20;
@@ -59,6 +62,9 @@ export const PhotoPreview = React.memo(({ selectedPhoto, photos, onPhotoVisible,
     prepareTransition,
     finalizeTransition,
     isTransitioning,
+    zoomScaleRef,
+    zoomTranslateXRef,
+    zoomTranslateYRef,
   });
 
   if (!selectedPhoto || photos.length === 0) {

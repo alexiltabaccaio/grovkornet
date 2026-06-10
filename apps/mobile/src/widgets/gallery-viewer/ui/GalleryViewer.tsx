@@ -28,6 +28,10 @@ export const GalleryViewer = React.memo(({ onClose, initialUri, galleryTransitio
   const [showPlaceholder, setShowPlaceholder] = useState(true);
   const placeholderOpacity = useSharedValue(1);
 
+  const zoomScale = useSharedValue(1);
+  const zoomTranslateX = useSharedValue(0);
+  const zoomTranslateY = useSharedValue(0);
+
   const [isHighResLoaded, setIsHighResLoaded] = useState(false);
   const [isReadyToFade, setIsReadyToFade] = useState(false);
 
@@ -120,12 +124,15 @@ export const GalleryViewer = React.memo(({ onClose, initialUri, galleryTransitio
       transform: [
         { translateX },
         { translateY },
-        { scale }
+        { scale },
+        { translateX: zoomTranslateX.value },
+        { translateY: zoomTranslateY.value },
+        { scale: zoomScale.value }
       ],
       borderRadius: interpolate(t, [0, 1], [8, 0]),
       overflow: 'hidden',
     };
-  }, [width, height, galleryTransition]);
+  }, [width, height, galleryTransition, zoomScale, zoomTranslateX, zoomTranslateY]);
 
   return (
     <Animated.View 
@@ -153,6 +160,9 @@ export const GalleryViewer = React.memo(({ onClose, initialUri, galleryTransitio
                   rotationY={rotationY}
                   onInitialImageLoad={handleInitialImageLoad}
                   initialUri={initialUri}
+                  zoomScale={zoomScale}
+                  zoomTranslateX={zoomTranslateX}
+                  zoomTranslateY={zoomTranslateY}
                 />
                 
                 {/* Share Instagram Action */}

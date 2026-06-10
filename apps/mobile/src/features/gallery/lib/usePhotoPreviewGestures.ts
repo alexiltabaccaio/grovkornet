@@ -23,6 +23,9 @@ interface UsePhotoPreviewGesturesProps {
   prepareTransition: (newIndex: number, isManualSwipe?: boolean) => void;
   finalizeTransition: (newIndex: number, isManualSwipe: boolean) => void;
   isTransitioning: SharedValue<boolean>;
+  zoomScaleRef?: SharedValue<number>;
+  zoomTranslateXRef?: SharedValue<number>;
+  zoomTranslateYRef?: SharedValue<number>;
 }
 
 export const usePhotoPreviewGestures = ({
@@ -38,10 +41,17 @@ export const usePhotoPreviewGestures = ({
   prepareTransition,
   finalizeTransition,
   isTransitioning,
+  zoomScaleRef,
+  zoomTranslateXRef,
+  zoomTranslateYRef,
 }: UsePhotoPreviewGesturesProps) => {
-  const zoomScale = useSharedValue(1);
-  const zoomTranslateX = useSharedValue(0);
-  const zoomTranslateY = useSharedValue(0);
+  const localZoomScale = useSharedValue(1);
+  const localZoomTranslateX = useSharedValue(0);
+  const localZoomTranslateY = useSharedValue(0);
+
+  const zoomScale = zoomScaleRef || localZoomScale;
+  const zoomTranslateX = zoomTranslateXRef || localZoomTranslateX;
+  const zoomTranslateY = zoomTranslateYRef || localZoomTranslateY;
 
   const savedZoomScale = useSharedValue(1);
   const savedZoomTranslateX = useSharedValue(0);
