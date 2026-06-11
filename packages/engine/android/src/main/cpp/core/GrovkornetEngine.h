@@ -71,6 +71,7 @@ public:
     int viewportY = 0;
     int viewportWidth = 0;
     int viewportHeight = 0;
+    bool skipGlFlush = false;
 
     GrovkornetEngine(int w, int h);
     ~GrovkornetEngine();

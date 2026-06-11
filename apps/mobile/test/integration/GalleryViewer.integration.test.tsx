@@ -22,6 +22,17 @@ jest.mock('expo-modules-core', () => {
   };
 });
 
+jest.mock('@grovkornet/engine', () => {
+  const actual = jest.requireActual('@grovkornet/engine');
+  return {
+    ...actual,
+    verifyGrovkornetAuthenticity: jest.fn((uri) => {
+      console.log(`--- MOCKED verifyGrovkornetAuthenticity CALLED FOR ${uri} ---`);
+      return Promise.resolve(mockVerificationResult);
+    }),
+  };
+});
+
 // Mock expo-file-system
 jest.mock('expo-file-system/legacy', () => ({
   copyAsync: jest.fn().mockResolvedValue(true),
@@ -32,14 +43,23 @@ describe('GalleryViewer Integration', () => {
   const mockOnClose = jest.fn();
   let originalPlatformOS: typeof Platform.OS;
 
-  // Helper to flush asynchronous tasks and fake timers incrementally
+  // Helper to flush asynchronous tasks and allow timers to run
   const flushEffects = async () => {
-    for (let i = 0; i < 15; i++) {
+    for (let i = 0; i < 4; i++) {
       await act(async () => {
-        jest.advanceTimersByTime(100);
+        jest.runOnlyPendingTimers();
         await Promise.resolve();
       });
     }
+  };
+
+  const pressAndFlush = async (element: any) => {
+    await act(async () => {
+      fireEvent.press(element);
+      jest.runOnlyPendingTimers();
+      await Promise.resolve();
+    });
+    await flushEffects();
   };
 
   beforeAll(() => {
@@ -97,17 +117,11 @@ describe('GalleryViewer Integration', () => {
     const thumbnail2 = getByTestId('gallery-strip-item-2');
     expect(thumbnail2).toBeTruthy();
 
-    await act(async () => {
-      fireEvent.press(thumbnail2); // Press second item
-    });
-    await flushEffects();
+    await pressAndFlush(thumbnail2);
 
     // Verify that the preview image updates by pressing generic share and checking shared URI
     const genericShareButton = getByLabelText('gallery.share_generic');
-    await act(async () => {
-      fireEvent.press(genericShareButton);
-    });
-    await flushEffects();
+    await pressAndFlush(genericShareButton);
 
     expect(Share.open).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -126,10 +140,7 @@ describe('GalleryViewer Integration', () => {
 
     const genericShareButton = getByLabelText('gallery.share_generic');
     
-    await act(async () => {
-      fireEvent.press(genericShareButton);
-    });
-    await flushEffects();
+    await pressAndFlush(genericShareButton);
 
     expect(Share.open).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -160,8 +171,7 @@ describe('GalleryViewer Integration', () => {
     });
     expect(Share.shareSingle).not.toHaveBeenCalled();
 
-    // 2. Set the image as verified in store and re-render/verify
-    await act(async () => {
+    act(() => {
       useVerificationStore.setState({
         verifiedMap: {
           'file:///test/1.jpg': true,
@@ -174,10 +184,7 @@ describe('GalleryViewer Integration', () => {
     const igVerifiedButton = getByLabelText('gallery.share_instagram');
     expect(igVerifiedButton).toBeTruthy();
 
-    await act(async () => {
-      fireEvent.press(igVerifiedButton);
-    });
-    await flushEffects();
+    await pressAndFlush(igVerifiedButton);
 
     expect(Share.shareSingle).toHaveBeenCalled();
   });

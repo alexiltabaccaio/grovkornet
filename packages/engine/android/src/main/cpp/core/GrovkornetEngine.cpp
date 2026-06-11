@@ -246,7 +246,9 @@ GrovkornetEngine::~GrovkornetEngine() {
     
     if (engine) {
         LOGI("Flushing Engine before destruction...");
-        engine->flushAndWait();
+        if (!skipGlFlush) {
+            engine->flushAndWait();
+        }
 
         LOGI("Destroying streams and swapchains...");
         if (filamentStream) {

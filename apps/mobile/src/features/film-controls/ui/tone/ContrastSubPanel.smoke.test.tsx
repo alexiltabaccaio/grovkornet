@@ -40,9 +40,20 @@ jest.mock('@entities/system', () => {
     ParameterControl: (props: any) => {
       React.useEffect(() => {
         if (props.valueFormatter) {
+          // Trigger both positive and negative formatting paths
           props.valueFormatter(0.7);
+          props.valueFormatter(0.3);
         }
-      }, [props.valueFormatter]);
+        if (props.onReset) {
+          props.onReset();
+        }
+        if (props.onChange) {
+          props.onChange(0.6);
+        }
+        if (props.onUpdateWorklet) {
+          props.onUpdateWorklet(0.6);
+        }
+      }, [props]);
       return <View testID="ParameterControl" />;
     },
   };
@@ -53,9 +64,14 @@ describe('ContrastSubPanel', () => {
     jest.clearAllMocks();
   });
 
-  it('renders correctly', () => {
+  it('renders correctly and executes callbacks including resets', () => {
     const { toJSON, getByTestId } = render(<ContrastSubPanel />);
     expect(toJSON()).toBeDefined();
     expect(getByTestId('ParameterControl')).toBeDefined();
+
+    // Verify pivot updates
+    expect(mockSetPivotAuto).toHaveBeenCalledWith(true);
+    expect(mockSetPivot).toHaveBeenCalledWith(0.6);
+    expect(mockUpdatePivot).toHaveBeenCalledWith(0.6);
   });
 });

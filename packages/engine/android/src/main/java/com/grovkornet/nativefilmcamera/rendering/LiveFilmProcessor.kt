@@ -33,7 +33,7 @@ class LiveFilmProcessor {
                 if (BuildConfig.DEBUG) {
                     Log.i("LiveFilmProcessor", "Successfully loaded native grovkornet_engine library")
                 }
-            } catch (e: Exception) {
+            } catch (e: Throwable) {
                 Log.e("LiveFilmProcessor", "Failed to load engine library", e)
             }
         }

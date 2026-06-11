@@ -12,7 +12,7 @@ import com.grovkornet.nativefilmcamera.BuildConfig
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicLong
 
-class FilmRenderThread(
+open class FilmRenderThread(
     private val assetManager: AssetManager,
     private val surfaceProvider: () -> Surface?,
     private val onSurfaceTextureReady: (SurfaceTexture) -> Unit,
@@ -39,7 +39,7 @@ class FilmRenderThread(
     @Volatile private var lastFrameTimestamp = 0L
     private val lastFrameReceivedTimeMs = AtomicLong(System.currentTimeMillis())
 
-    fun notifyHardwareChange() {
+    open fun notifyHardwareChange() {
         hardwareChangeTime = System.currentTimeMillis()
         isTransitioningCamera = true
         lastFrameReceivedTimeMs.set(System.currentTimeMillis())
@@ -87,11 +87,11 @@ class FilmRenderThread(
         handler.post(watchdogRunnable)
     }
 
-    fun updateConfig(config: CameraConfiguration) {
+    open fun updateConfig(config: CameraConfiguration) {
         renderConfig = config.copy()
     }
 
-    fun updateDimensions(w: Int, h: Int) {
+    open fun updateDimensions(w: Int, h: Int) {
         width = w
         height = h
         handler.post {
@@ -99,7 +99,7 @@ class FilmRenderThread(
         }
     }
 
-    fun updateCameraResolution(w: Int, h: Int) {
+    open fun updateCameraResolution(w: Int, h: Int) {
         cameraWidth = w
         cameraHeight = h
     }
@@ -207,7 +207,7 @@ class FilmRenderThread(
         }
     }
 
-    fun release() {
+    open fun release() {
         if (isReleased.getAndSet(true)) return
         if (BuildConfig.DEBUG) {
             Log.i(TAG, "Releasing FilmRenderThread...")
@@ -237,5 +237,13 @@ class FilmRenderThread(
         } catch (e: InterruptedException) {
             Log.e(TAG, "Interrupted while waiting for release", e)
         }
+    }
+
+    open override fun start() {
+        super.start()
+    }
+
+    open override fun getLooper(): android.os.Looper {
+        return super.getLooper() ?: android.os.Looper.getMainLooper()
     }
 }

@@ -1,10 +1,12 @@
 package com.grovkornet.nativefilmcamera.rendering
 
+import android.content.res.AssetManager
 import android.graphics.Bitmap
 import android.graphics.Color
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.grovkornet.nativefilmcamera.state.CameraConfiguration
+import io.mockk.mockk
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.*
@@ -137,7 +139,9 @@ class OffscreenFilmProcessorTest {
             contrast = 1.0f,
             ev = 0.0f,
             whiteBalance = 5000.0f,
-            tint = 0.0f
+            tint = 0.0f,
+            bloomEnabled = true,
+            bloomIntensity = 1.0f
         )
         
         val outputBitmap = processor.process(inputBitmap, params, context)
@@ -262,7 +266,8 @@ class OffscreenFilmProcessorTest {
         val output = processor.process(inputBitmap, params, context)
         
         // Center-ish pixel (25, 25) should now be red
-        val pixelOver = output.getPixel(25, 25)
+        // Since the pipeline output is vertically flipped, y=25 maps to y=height-1-25
+        val pixelOver = output.getPixel(25, height - 1 - 25)
         val r = Color.red(pixelOver)
         val g = Color.green(pixelOver)
         val b = Color.blue(pixelOver)
@@ -302,5 +307,123 @@ class OffscreenFilmProcessorTest {
         assertTrue("DRS scale should have recovered/increased under low load (current: $scaleAfterRecovery)", scaleAfterRecovery > scaleAfterHighLoad)
         
         processor.release()
+    }
+
+    @Test
+    fun testHardwareBufferProcessing() = runBlocking {
+        val processor = OffscreenFilmProcessor()
+        val context = InstrumentationRegistry.getInstrumentation().targetContext
+        val width = 64
+        val height = 64
+        
+        // 1. Prepare
+        processor.prepare(width, height, context.assets)
+        
+        // 2. Create HardwareBuffer
+        val usage = android.hardware.HardwareBuffer.USAGE_GPU_SAMPLED_IMAGE or android.hardware.HardwareBuffer.USAGE_GPU_COLOR_OUTPUT
+        val hardwareBuffer = android.hardware.HardwareBuffer.create(
+            width, height,
+            android.hardware.HardwareBuffer.RGBA_8888,
+            1,
+            usage
+        )
+        
+        val params = CameraConfiguration(
+            saturation = 1.0f,
+            contrast = 1.0f,
+            ev = 0.0f,
+            whiteBalance = 5000.0f,
+            tint = 0.0f
+        )
+        
+        // 3. Process
+        processor.processHardwareBuffer(hardwareBuffer, params, context)
+        
+        // 4. Test resolution change in processHardwareBuffer
+        val diffWidth = 128
+        val diffHeight = 128
+        val diffHardwareBuffer = android.hardware.HardwareBuffer.create(
+            diffWidth, diffHeight,
+            android.hardware.HardwareBuffer.RGBA_8888,
+            1,
+            usage
+        )
+        // This should auto-prepare for the new size
+        processor.processHardwareBuffer(diffHardwareBuffer, params, context)
+        
+        // 5. Test exception case (closed HardwareBuffer)
+        val closedBuffer = android.hardware.HardwareBuffer.create(
+            width, height,
+            android.hardware.HardwareBuffer.RGBA_8888,
+            1,
+            usage
+        )
+        closedBuffer.close()
+        try {
+            processor.processHardwareBuffer(closedBuffer, params, context)
+            fail("Expected exception when processing a closed HardwareBuffer")
+        } catch (e: Exception) {
+            // Expected
+        }
+        
+        // Clean up
+        hardwareBuffer.close()
+        diffHardwareBuffer.close()
+        processor.release()
+    }
+
+    @Test
+    fun testDuplicatePrepare() = runBlocking {
+        val processor = OffscreenFilmProcessor()
+        val context = InstrumentationRegistry.getInstrumentation().targetContext
+        val width = 64
+        val height = 64
+        
+        processor.prepare(width, height, context.assets)
+        // Second prepare with same size should return early
+        processor.prepare(width, height, context.assets)
+        
+        // Prepare with different size should release and re-prepare
+        processor.prepare(width * 2, height * 2, context.assets)
+        
+        processor.release()
+    }
+
+    @Test
+    fun testResolutionChangeAutoPrepare() = runBlocking {
+        val processor = OffscreenFilmProcessor()
+        val context = InstrumentationRegistry.getInstrumentation().targetContext
+        val width = 64
+        val height = 64
+        
+        val params = CameraConfiguration()
+        val input1 = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+        
+        // Calling process without prepare should auto-prepare
+        val output1 = processor.process(input1, params, context)
+        assertNotNull(output1)
+        
+        // Calling process with different dimensions should auto-prepare
+        val input2 = Bitmap.createBitmap(width * 2, height * 2, Bitmap.Config.ARGB_8888)
+        val output2 = processor.process(input2, params, context)
+        assertNotNull(output2)
+        
+        input1.recycle()
+        input2.recycle()
+        output1.recycle()
+        output2.recycle()
+        processor.release()
+    }
+
+    @Test
+    fun testOffscreenPrepareException() = runBlocking {
+        val processor = OffscreenFilmProcessor()
+        val mockAssets = mockk<AssetManager>(relaxed = true)
+        try {
+            processor.prepare(128, 128, mockAssets)
+            fail("Expected FilamentInitFailed exception due to mocked AssetManager")
+        } catch (e: Exception) {
+            // Expected to catch CameraCodedException
+        }
     }
 }

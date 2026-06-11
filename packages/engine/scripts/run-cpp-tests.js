@@ -68,8 +68,11 @@ function findLlvmTools() {
     return null;
   }
 
-  // Pick the latest NDK version
-  const latestNdk = ndkVersions.sort().reverse()[0];
+  // Try to find the exact NDK version used by the project first
+  let latestNdk = '26.1.10909125';
+  if (!ndkVersions.includes(latestNdk)) {
+    latestNdk = ndkVersions.sort().reverse()[0];
+  }
   const ndkPath = path.join(ndkDir, latestNdk);
 
   const platform = process.platform;

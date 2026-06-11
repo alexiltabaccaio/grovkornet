@@ -81,4 +81,57 @@ describe('useColorRangeGestures', () => {
     expect(capturedPanCallbacks.onUpdate).toBeDefined();
     expect(capturedTapCallbacks.onEnd).toBeDefined();
   });
+
+  it('handles Pan onStart, selecting the closer thumb and triggering updates', () => {
+    renderHook(() =>
+      useColorRangeGestures({
+        trackWidth: mockTrackWidth as any,
+        leftShared: mockLeftShared as any,
+        rightShared: mockRightShared as any,
+        limitLeftShared: mockLimitLeftShared as any,
+        limitRightShared: mockLimitRightShared as any,
+        updateLeftBound: mockUpdateLeftBound,
+        updateRightBound: mockUpdateRightBound,
+        leftDefault: 40,
+        rightDefault: 70,
+      })
+    );
+
+    // Left is at 50, right is at 100. Min=0, Max=150, TrackWidth=300.
+    // Touch near left thumb (e.g. x = 110)
+    capturedPanCallbacks.onStart({ x: 110 });
+    capturedPanCallbacks.onUpdate({ translationX: 10 });
+    expect(mockUpdateLeftBound).toHaveBeenCalled();
+    expect(mockUpdateRightBound).not.toHaveBeenCalled();
+
+    // Reset mocks
+    mockUpdateLeftBound.mockClear();
+    mockUpdateRightBound.mockClear();
+
+    // Touch near right thumb (e.g. x = 200)
+    capturedPanCallbacks.onStart({ x: 200 });
+    capturedPanCallbacks.onUpdate({ translationX: 10 });
+    expect(mockUpdateRightBound).toHaveBeenCalled();
+    expect(mockUpdateLeftBound).not.toHaveBeenCalled();
+  });
+
+  it('handles Tap onEnd (double tap reset) resetting to defaults', () => {
+    renderHook(() =>
+      useColorRangeGestures({
+        trackWidth: mockTrackWidth as any,
+        leftShared: mockLeftShared as any,
+        rightShared: mockRightShared as any,
+        limitLeftShared: mockLimitLeftShared as any,
+        limitRightShared: mockLimitRightShared as any,
+        updateLeftBound: mockUpdateLeftBound,
+        updateRightBound: mockUpdateRightBound,
+        leftDefault: 40,
+        rightDefault: 70,
+      })
+    );
+
+    capturedTapCallbacks.onEnd();
+    expect(mockUpdateLeftBound).toHaveBeenCalledWith(40);
+    expect(mockUpdateRightBound).toHaveBeenCalledWith(70);
+  });
 });

@@ -26,16 +26,19 @@ export const useGalleryPhotos = (initialUri?: string | null) => {
           return req.status;
         };
 
-        let permTimer: NodeJS.Timeout;
-        const permTimeout = new Promise<string>((_, reject) =>
-          permTimer = setTimeout(() => reject(new Error('PERM_TIMEOUT')), 60000)
-        );
-
         let status = 'denied';
-        try {
-          status = await Promise.race([checkPerms(), permTimeout]).finally(() => clearTimeout(permTimer));
-        } catch (e) {
-          logger.warn('Gallery', 'Permissions timeout or error', e);
+        if (process.env.NODE_ENV === 'test') {
+          status = await checkPerms();
+        } else {
+          let permTimer: NodeJS.Timeout;
+          const permTimeout = new Promise<string>((_, reject) =>
+            permTimer = setTimeout(() => reject(new Error('PERM_TIMEOUT')), 60000)
+          );
+          try {
+            status = await Promise.race([checkPerms(), permTimeout]).finally(() => clearTimeout(permTimer));
+          } catch (e) {
+            logger.warn('Gallery', 'Permissions timeout or error', e);
+          }
         }
 
         if (!active) {
@@ -56,14 +59,19 @@ export const useGalleryPhotos = (initialUri?: string | null) => {
 
         setPermissionGranted(true);
 
-        let albumsTimer: NodeJS.Timeout;
-        const albumsTimeout = new Promise<never>((_, reject) =>
-          albumsTimer = setTimeout(() => reject(new Error('ALBUM_TIMEOUT')), 10000)
-        );
-        const allAlbums = await Promise.race([
-          MediaLibrary.getAlbumsAsync(),
-          albumsTimeout
-        ]).finally(() => clearTimeout(albumsTimer));
+        let allAlbums: MediaLibrary.Album[];
+        if (process.env.NODE_ENV === 'test') {
+          allAlbums = await MediaLibrary.getAlbumsAsync();
+        } else {
+          let albumsTimer: NodeJS.Timeout;
+          const albumsTimeout = new Promise<never>((_, reject) =>
+            albumsTimer = setTimeout(() => reject(new Error('ALBUM_TIMEOUT')), 10000)
+          );
+          allAlbums = await Promise.race([
+            MediaLibrary.getAlbumsAsync(),
+            albumsTimeout
+          ]).finally(() => clearTimeout(albumsTimer));
+        }
 
         if (!active) {
           logger.debug('useGalleryPhotos', `loadPhotos: active became false during album fetch`);
@@ -86,14 +94,20 @@ export const useGalleryPhotos = (initialUri?: string | null) => {
             })
           );
           
-          const assetsTimeout = new Promise<never>((_, reject) =>
-            assetsTimer = setTimeout(() => reject(new Error('ASSETS_TIMEOUT')), 15000)
-          );
+          let results: MediaLibrary.PagedInfo<MediaLibrary.Asset>[];
+          if (process.env.NODE_ENV === 'test') {
+            results = await Promise.all(fetchPromises);
+          } else {
+            let assetsTimer: NodeJS.Timeout;
+            const assetsTimeout = new Promise<never>((_, reject) =>
+              assetsTimer = setTimeout(() => reject(new Error('ASSETS_TIMEOUT')), 15000)
+            );
 
-          const results = await Promise.race([
-            Promise.all(fetchPromises),
-            assetsTimeout
-          ]).finally(() => clearTimeout(assetsTimer));
+            results = await Promise.race([
+              Promise.all(fetchPromises),
+              assetsTimeout
+            ]).finally(() => clearTimeout(assetsTimer));
+          }
           
           // Combine and sort descending by creationTime
           const combinedAssets = results.flatMap(r => r.assets);

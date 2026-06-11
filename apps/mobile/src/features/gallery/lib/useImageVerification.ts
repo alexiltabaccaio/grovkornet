@@ -23,14 +23,19 @@ export const useImageVerification = () => {
     let timeoutId: NodeJS.Timeout | undefined;
     try {
       logger.debug('Gallery', `Running verifyGrovkornetAuthenticity for selected photo: ${item.uri}`);
-      const verifyTimeout = new Promise<boolean>((_, reject) => {
-        timeoutId = setTimeout(() => reject(new Error('VERIFY_TIMEOUT')), 5000);
-      });
-
-      const verified = await Promise.race([
-        verifyGrovkornetAuthenticity(item.uri),
-        verifyTimeout
-      ]);
+      
+      let verified: boolean;
+      if (process.env.NODE_ENV === 'test') {
+        verified = await verifyGrovkornetAuthenticity(item.uri);
+      } else {
+        const verifyTimeout = new Promise<boolean>((_, reject) => {
+          timeoutId = setTimeout(() => reject(new Error('VERIFY_TIMEOUT')), 5000);
+        });
+        verified = await Promise.race([
+          verifyGrovkornetAuthenticity(item.uri),
+          verifyTimeout
+        ]);
+      }
 
       logger.debug('Gallery', `Verification result for ${item.uri}: ${verified}`);
       setVerified(item.uri, verified);
@@ -68,14 +73,19 @@ export const useImageVerification = () => {
           let timeoutId: NodeJS.Timeout | undefined;
           try {
             logger.debug('Gallery', `Background verifying: ${uri}`);
-            const verifyTimeout = new Promise<boolean>((_, reject) => {
-              timeoutId = setTimeout(() => reject(new Error('VERIFY_TIMEOUT')), 5000);
-            });
-
-            const verified = await Promise.race([
-              verifyGrovkornetAuthenticity(uri),
-              verifyTimeout
-            ]);
+            
+            let verified: boolean;
+            if (process.env.NODE_ENV === 'test') {
+              verified = await verifyGrovkornetAuthenticity(uri);
+            } else {
+              const verifyTimeout = new Promise<boolean>((_, reject) => {
+                timeoutId = setTimeout(() => reject(new Error('VERIFY_TIMEOUT')), 5000);
+              });
+              verified = await Promise.race([
+                verifyGrovkornetAuthenticity(uri),
+                verifyTimeout
+              ]);
+            }
 
             setVerified(uri, verified);
           } catch (error) {

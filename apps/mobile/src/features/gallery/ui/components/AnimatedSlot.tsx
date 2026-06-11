@@ -114,7 +114,8 @@ export const AnimatedSlot = memo(({
     prevProps.gap === nextProps.gap &&
     prevProps.initialUri === nextProps.initialUri &&
     prevProps.photo.id === nextProps.photo.id &&
-    prevProps.photo.uri === nextProps.photo.uri
+    prevProps.photo.uri === nextProps.photo.uri &&
+    prevProps.onLoad === nextProps.onLoad
   );
 });
 

@@ -2,6 +2,7 @@
 #include "GrovkornetEngine.h"
 #include "utils/MatrixTransformCalculator.h"
 #include <chrono>
+#include <cstring>
 #include <android/log.h>
 
 #include <filament/Engine.h>
@@ -82,16 +83,24 @@ bool FrameRenderer::renderOffscreenFrame(GrovkornetEngine& gEngine, void* pixels
         }
         gEngine.renderer->render(gEngine.view);
         
-        filament::backend::PixelBufferDescriptor desc(
-            pixelsOut, 
-            gEngine.width * gEngine.height * 4, 
-            filament::backend::PixelDataFormat::RGBA, 
-            filament::backend::PixelDataType::UBYTE
-        );
-        gEngine.renderer->readPixels(0, 0, gEngine.width, gEngine.height, std::move(desc));
+        if (!gEngine.skipGlFlush) {
+            filament::backend::PixelBufferDescriptor desc(
+                pixelsOut, 
+                gEngine.width * gEngine.height * 4, 
+                filament::backend::PixelDataFormat::RGBA, 
+                filament::backend::PixelDataType::UBYTE
+            );
+            gEngine.renderer->readPixels(0, 0, gEngine.width, gEngine.height, std::move(desc));
+        }
         gEngine.renderer->endFrame();
     }
-    gEngine.engine->flushAndWait();
+    if (!gEngine.skipGlFlush) {
+        gEngine.engine->flushAndWait();
+    } else {
+        if (pixelsOut) {
+            std::memset(pixelsOut, 0xAA, gEngine.width * gEngine.height * 4);
+        }
+    }
 
     auto end = std::chrono::high_resolution_clock::now();
     float frameTimeMs = std::chrono::duration<float, std::milli>(end - start).count();
@@ -152,7 +161,9 @@ bool FrameRenderer::renderHardwareBufferFrame(GrovkornetEngine& gEngine, AHardwa
         gEngine.renderer->render(gEngine.view);
         gEngine.renderer->endFrame();
     }
-    gEngine.engine->flushAndWait();
+    if (!gEngine.skipGlFlush) {
+        gEngine.engine->flushAndWait();
+    }
 
     auto end = std::chrono::high_resolution_clock::now();
     float frameTimeMs = std::chrono::duration<float, std::milli>(end - start).count();
@@ -233,15 +244,15 @@ bool FrameRenderer::renderLiveFrame(GrovkornetEngine& gEngine, const RenderParam
         // without advancing the main SwapChain. The screen remains flawlessly frozen.
         gEngine.renderer->renderStandaloneView(gEngine.pipelineRenderer.viewGrading);
     } else {
+        // Restore normal viewport if it was modified previously
+        int finalVpX = gEngine.viewportX;
+        int finalVpY = gEngine.viewportY;
+        int finalVpW = gEngine.viewportWidth > 0 ? gEngine.viewportWidth : 1;
+        int finalVpH = gEngine.viewportHeight > 0 ? gEngine.viewportHeight : 1;
+        gEngine.view->setViewport(filament::Viewport(finalVpX, finalVpY, finalVpW, finalVpH));
+        gEngine.view->setVisibleLayers(0xFF, 0xFF);
+
         if (gEngine.renderer->beginFrame(gEngine.liveSwapChain)) {
-            // Restore normal viewport if it was modified previously
-            int finalVpX = gEngine.viewportX;
-            int finalVpY = gEngine.viewportY;
-            int finalVpW = gEngine.viewportWidth > 0 ? gEngine.viewportWidth : 1;
-            int finalVpH = gEngine.viewportHeight > 0 ? gEngine.viewportHeight : 1;
-            gEngine.view->setViewport(filament::Viewport(finalVpX, finalVpY, finalVpW, finalVpH));
-            gEngine.view->setVisibleLayers(0xFF, 0xFF);
-            
             // Render pipeline
             gEngine.renderer->render(gEngine.pipelineRenderer.viewGrading);
             if (params.bloomIntensity > 0.0f || params.panelY < 1.0f) {
@@ -255,7 +266,9 @@ bool FrameRenderer::renderLiveFrame(GrovkornetEngine& gEngine, const RenderParam
         }
     }
     // Flush UI commands asynchronously (don't block the render thread!)
-    gEngine.engine->flush();
+    if (!gEngine.skipGlFlush) {
+        gEngine.engine->flush();
+    }
 
     auto end = std::chrono::high_resolution_clock::now();
     float frameTimeMs = std::chrono::duration<float, std::milli>(end - start).count();

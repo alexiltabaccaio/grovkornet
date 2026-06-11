@@ -32,9 +32,18 @@ jest.mock('react-native-reanimated', () => {
   const mockReanimated = {
     __esModule: true,
     makeMutable: jest.fn(val),
-    useSharedValue: jest.fn(val),
+    useSharedValue: jest.fn((v: any) => {
+      const React = require('react');
+      const ref = React.useRef({ value: v });
+      return ref.current;
+    }),
     useEvent: jest.fn((h: any) => h),
-    useDerivedValue: jest.fn((cb: any) => ({ value: cb() })),
+    useDerivedValue: jest.fn((cb: any) => {
+      const React = require('react');
+      const ref = React.useRef({ value: cb() });
+      ref.current.value = cb();
+      return ref.current;
+    }),
     withSpring: jest.fn((value: any, config: any, callback: any) => {
       if (typeof callback === 'function') {
         callback(true);
