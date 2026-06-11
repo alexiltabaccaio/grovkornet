@@ -48,9 +48,10 @@ export const useControlPanelGestures = ({
       .activeOffsetY([-15, 15]) // Increased to prevent small movements (wiggles) during tap from hijacking the event
       .failOffsetX([-15, 15]) // Fails the gesture if moving horizontally, unlocking touch events
       .onStart(() => {
-        startY.value = translateY.value;
+        startY.value = isNaN(translateY.value) ? -50 : translateY.value;
       })
       .onUpdate((e) => {
+        if (isNaN(e.translationY) || isNaN(startY.value)) return;
         let newY = startY.value + e.translationY;
         // Clamp between open and closed (now restricted to -50px as base)
         if (newY < MAX_UP) newY = MAX_UP;
@@ -59,7 +60,9 @@ export const useControlPanelGestures = ({
         translateY.value = newY;
       })
       .onEnd((e) => {
-        const estimatedY = translateY.value + e.velocityY * 0.1;
+        const currentY = isNaN(translateY.value) ? -50 : translateY.value;
+        const vY = isNaN(e.velocityY) ? 0 : e.velocityY;
+        const estimatedY = currentY + vY * 0.1;
         const snapPoints = [-50, -115, -150, MAX_UP];
 
         const targetY = snapPoints.reduce((prev, curr) =>

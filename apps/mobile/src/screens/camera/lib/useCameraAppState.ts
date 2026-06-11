@@ -40,7 +40,7 @@ export const useCameraAppState = ({
           } else {
             drawerAnimation.value = 0.1;
             const currentY = footerTranslateY.value;
-            const targetY = currentY < 0 ? currentY : -50;
+            const targetY = isNaN(currentY) ? -50 : (currentY < 0 ? currentY : -50);
             
             footerTranslateY.value = targetY + 0.1;
             requestAnimationFrame(() => {

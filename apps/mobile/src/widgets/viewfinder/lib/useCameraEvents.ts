@@ -1,3 +1,4 @@
+import { useCallback } from 'react';
 import { useEvent, runOnJS } from 'react-native-reanimated';
 import { updateSharedValue } from '@shared/lib/reanimated/safeUpdate';
 import { useBodyStore, BodyCapabilities } from '@entities/body';
@@ -20,28 +21,50 @@ interface DebugUpdatePayload {
 }
 
 export const useCameraEvents = () => {
-  const bodyStore = useBodyStore.getState();
-  const lensStore = useLensStore.getState();
-  const filmStore = useFilmStore.getState();
+  // Destructure ONLY the SharedValues needed in the worklets to prevent capturing the entire store objects
+  const { 
+    isoAuto, 
+    iso, 
+    shutterSpeedAuto, 
+    shutterSpeed, 
+    fps, 
+    hwFps, 
+    resolution, 
+    torchState 
+  } = useBodyStore.getState();
+  
+  const { 
+    focusAuto, 
+    focusDistance 
+  } = useLensStore.getState();
+  
+  const { 
+    noiseReductionAuto, 
+    noiseReductionMode 
+  } = useFilmStore.getState();
+
+  // Extract JS functions to avoid capturing the whole store object on Hermes JSI via JSI reference copying
+  const setActiveCameraId = useLensStore.getState().setActiveCameraId;
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const exposureHandler = useEvent((event: any) => {
     'worklet';
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const nativeEvent = (event.nativeEvent || event) as ExposureUpdatePayload;
-    if (bodyStore.isoAuto.value) {
-      updateSharedValue(bodyStore.iso, nativeEvent.iso);
+    if (isoAuto.value) {
+      updateSharedValue(iso, nativeEvent.iso);
     }
-    if (bodyStore.shutterSpeedAuto.value) {
-      updateSharedValue(bodyStore.shutterSpeed, nativeEvent.shutterSpeed);
+    if (shutterSpeedAuto.value) {
+      updateSharedValue(shutterSpeed, nativeEvent.shutterSpeed);
     }
-    if (lensStore.focusAuto.value && nativeEvent.focusDistance !== undefined) {
-      updateSharedValue(lensStore.focusDistance, nativeEvent.focusDistance);
+    if (focusAuto.value && nativeEvent.focusDistance !== undefined) {
+      updateSharedValue(focusDistance, nativeEvent.focusDistance);
     }
-    if (filmStore.noiseReductionAuto.value && nativeEvent.noiseReduction !== undefined) {
-      updateSharedValue(filmStore.noiseReductionMode, nativeEvent.noiseReduction);
+    if (noiseReductionAuto.value && nativeEvent.noiseReduction !== undefined) {
+      updateSharedValue(noiseReductionMode, nativeEvent.noiseReduction);
     }
     if (nativeEvent.activeCameraId !== undefined) {
-      runOnJS(lensStore.setActiveCameraId)(nativeEvent.activeCameraId);
+      runOnJS(setActiveCameraId)(nativeEvent.activeCameraId);
     }
   }, ['onExposureUpdate']);
 
@@ -53,33 +76,34 @@ export const useCameraEvents = () => {
 
     // Bridge latency logging disabled to reduce terminal noise
 
-    updateSharedValue(bodyStore.fps, nativeEvent.fps);
-    updateSharedValue(bodyStore.hwFps, nativeEvent.hwFps);
+    updateSharedValue(fps, nativeEvent.fps);
+    updateSharedValue(hwFps, nativeEvent.hwFps);
      
-    bodyStore.resolution.value = nativeEvent.resolution;
+    resolution.value = nativeEvent.resolution;
   }, ['onDebugUpdate']);
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const capabilitiesHandler = (event: any) => {
+  const capabilitiesHandler = useCallback((event: any) => {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const nativeEvent = (event?.nativeEvent || event) as BodyCapabilities & LensCapabilities & FilmCapabilities;
     if (nativeEvent) {
-      bodyStore.setCapabilities(nativeEvent);
-      lensStore.setCapabilities(nativeEvent);
+      useBodyStore.getState().setCapabilities(nativeEvent);
+      useLensStore.getState().setCapabilities(nativeEvent);
+      const filmStore = useFilmStore.getState();
       if (filmStore.setCapabilities) {
         filmStore.setCapabilities(nativeEvent);
       }
     }
-  };
+  }, []);
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const torchStateHandler = (event: any) => {
+  const torchStateHandler = useCallback((event: any) => {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const nativeEvent = (event?.nativeEvent || event) as { enabled: boolean };
     if (nativeEvent && nativeEvent.enabled !== undefined) {
-      updateSharedValue(bodyStore.torchState, nativeEvent.enabled ? 1 : 0);
+      updateSharedValue(torchState, nativeEvent.enabled ? 1 : 0);
     }
-  };
+  }, [torchState]);
 
   return {
     exposureHandler,

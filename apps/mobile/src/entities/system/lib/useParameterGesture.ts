@@ -153,6 +153,11 @@ export const useParameterGesture = ({
         if (disabled && disabled.value) return;
         if (!value) return;
         
+        if (isNaN(e.translationX) || isNaN(lastX.value)) {
+          lastX.value = isNaN(e.translationX) ? 0 : e.translationX;
+          return;
+        }
+
         const direction = invertDrag ? -1 : 1;
         const travel = effectiveTrackWidth.value - 12; // 12 is thumb size
         
@@ -165,6 +170,8 @@ export const useParameterGesture = ({
         const delta = (dx / travel) * range * direction;
           
         const newValue = Math.min(Math.max(accumulatedValue.value + delta, minValue), effectiveMax);
+        if (isNaN(newValue)) return;
+        
         accumulatedValue.value = newValue;
         
         const isCurrentlyAtBoundary = newValue <= minValue || newValue >= effectiveMax;
