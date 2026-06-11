@@ -49,14 +49,14 @@ export const CameraScreen = () => {
     const totalOffset = drawerAnimation.value + footerTranslateY.value - (galleryTransition.value * 100);
     const opacity = interpolate(
       totalOffset,
-      [250, 150],
-      [1, 0],
+      [150, 250],
+      [0, 1],
       Extrapolation.CLAMP
     );
     const translateY = interpolate(
       totalOffset,
-      [250, 150],
-      [0, 30],
+      [150, 250],
+      [30, 0],
       Extrapolation.CLAMP
     );
     return {
