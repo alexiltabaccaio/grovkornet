@@ -136,16 +136,10 @@ class OffscreenFilmProcessor {
                     params.toRenderParamsArray(time, params.getTargetResolutionValue(), invertYShift = true)
                 )
 
-                // FIX: Filament reads pixels with a bottom-left origin, so the resulting bitmap is upside down.
-                // We must vertically flip the bitmap to match Android's top-left coordinate system.
-                val flipMatrix = android.graphics.Matrix().apply { postScale(1f, -1f) }
-                val flippedBitmap = Bitmap.createBitmap(outputBitmap, 0, 0, width, height, flipMatrix, true)
-                outputBitmap.recycle()
-
                 if (BuildConfig.DEBUG) {
-                    Log.i(TAG, "Frame processed natively in ${System.currentTimeMillis() - startTime}ms")
+                    Log.i(TAG, "Frame processed natively (with C++ flip) in ${System.currentTimeMillis() - startTime}ms")
                 }
-                return@withContext flippedBitmap
+                return@withContext outputBitmap
             } catch (e: Exception) {
                 Log.e(TAG, "Offscreen native processing failed", e)
                 if (e is CameraCodedException) throw e

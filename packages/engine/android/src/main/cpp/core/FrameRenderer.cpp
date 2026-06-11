@@ -96,6 +96,18 @@ bool FrameRenderer::renderOffscreenFrame(GrovkornetEngine& gEngine, void* pixels
     }
     if (!gEngine.skipGlFlush) {
         gEngine.engine->flushAndWait();
+        if (pixelsOut) {
+            uint8_t* pixels = static_cast<uint8_t*>(pixelsOut);
+            int rowSize = gEngine.width * 4;
+            std::vector<uint8_t> tempRow(rowSize);
+            for (int y = 0; y < gEngine.height / 2; ++y) {
+                uint8_t* rowTop = pixels + y * rowSize;
+                uint8_t* rowBottom = pixels + (gEngine.height - 1 - y) * rowSize;
+                std::memcpy(tempRow.data(), rowTop, rowSize);
+                std::memcpy(rowTop, rowBottom, rowSize);
+                std::memcpy(rowBottom, tempRow.data(), rowSize);
+            }
+        }
     } else {
         if (pixelsOut) {
             std::memset(pixelsOut, 0xAA, gEngine.width * gEngine.height * 4);
