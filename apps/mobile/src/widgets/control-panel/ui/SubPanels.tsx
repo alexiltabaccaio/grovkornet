@@ -8,6 +8,8 @@ import { useSystemStore } from '@entities/system';
 import { GrainSubPanel, ContrastSubPanel, SelectiveColorSubPanel, ChromaShiftSubPanel, ChromaticAberrationSubPanel, ScanlinesSubPanel } from '@features/film-controls';
 import { ZoomSubPanel, TorchSubPanel, ResolutionSubPanel, AspectRatioSubPanel } from '@features/body-controls';
 
+const DUMMY_STYLE = {};
+
 interface SubPanelsProps {
   translateY: SharedValue<number>;
 }
@@ -29,27 +31,26 @@ export const SubPanels = React.memo(({ translateY }: SubPanelsProps) => {
   if (activeParameter === 'none') return null;
 
   const renderContent = () => {
-    const dummyStyle = {};
     switch (activeParameter) {
       case 'grain':
-        return <GrainSubPanel animatedStyle={dummyStyle} />;
+        return <GrainSubPanel animatedStyle={DUMMY_STYLE} />;
       case 'scanlines':
-        return <ScanlinesSubPanel animatedStyle={dummyStyle} />;
+        return <ScanlinesSubPanel animatedStyle={DUMMY_STYLE} />;
       case 'contrast':
-        return <ContrastSubPanel animatedStyle={dummyStyle} />;
+        return <ContrastSubPanel animatedStyle={DUMMY_STYLE} />;
       case 'chromatic_aberration':
-        return <ChromaticAberrationSubPanel animatedStyle={dummyStyle} />;
+        return <ChromaticAberrationSubPanel animatedStyle={DUMMY_STYLE} />;
       case 'zoom':
-        return <ZoomSubPanel animatedStyle={dummyStyle} />;
+        return <ZoomSubPanel animatedStyle={DUMMY_STYLE} />;
       case 'saturation':
-        return <SelectiveColorSubPanel type="saturation" animatedStyle={dummyStyle} />;
+        return <SelectiveColorSubPanel type="saturation" animatedStyle={DUMMY_STYLE} />;
       case 'hue':
-        return <SelectiveColorSubPanel type="hue" animatedStyle={dummyStyle} />;
+        return <SelectiveColorSubPanel type="hue" animatedStyle={DUMMY_STYLE} />;
       case 'chroma_shift':
-        return <ChromaShiftSubPanel animatedStyle={dummyStyle} />;
-      case 'torch': return <TorchSubPanel animatedStyle={dummyStyle} />;
-      case 'resolution_setting': return <ResolutionSubPanel animatedStyle={dummyStyle} />;
-      case 'aspect_ratio': return <AspectRatioSubPanel animatedStyle={dummyStyle} />;
+        return <ChromaShiftSubPanel animatedStyle={DUMMY_STYLE} />;
+      case 'torch': return <TorchSubPanel animatedStyle={DUMMY_STYLE} />;
+      case 'resolution_setting': return <ResolutionSubPanel animatedStyle={DUMMY_STYLE} />;
+      case 'aspect_ratio': return <AspectRatioSubPanel animatedStyle={DUMMY_STYLE} />;
       default:
         return null;
     }
