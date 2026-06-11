@@ -1,6 +1,6 @@
 {
   "name": "@grovkornet/shared",
-  "version": "0.10.3",
+  "version": "0.11.0",
   "description": "Single Source of Truth (SSOT) for Grovkornet shared TypeScript types, interfaces, and constants.",
   "main": "./src/index.ts",
   "types": "./src/index.ts",
