@@ -88,6 +88,21 @@
       "appConfigFieldsNotSyncedCheck": {
         "enabled": false
       }
+    },
+    "install": {
+      "exclude": [
+        "react-native-reanimated",
+        "react-native-worklets",
+        "expo",
+        "expo-asset",
+        "expo-build-properties",
+        "expo-file-system",
+        "expo-font",
+        "expo-image",
+        "expo-media-library",
+        "expo-sensors",
+        "jest-expo"
+      ]
     }
   }
 }

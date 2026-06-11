@@ -69,7 +69,7 @@ function findLlvmTools() {
   }
 
   // Try to find the exact NDK version used by the project first
-  let latestNdk = '26.1.10909125';
+  let latestNdk = '27.1.12297006';
   if (!ndkVersions.includes(latestNdk)) {
     latestNdk = ndkVersions.sort().reverse()[0];
   }
