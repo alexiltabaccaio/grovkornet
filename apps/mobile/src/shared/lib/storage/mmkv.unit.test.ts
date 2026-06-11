@@ -4,7 +4,7 @@ describe('createZustandMMKVStorage', () => {
   it('should store, retrieve, and remove values correctly', () => {
     const storage = createZustandMMKVStorage('test-store');
 
-    // Test setItem e getItem
+    // Test setItem and getItem
     storage.setItem('test-key', 'test-value');
     expect(storage.getItem('test-key')).toBe('test-value');
 

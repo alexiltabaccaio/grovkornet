@@ -77,7 +77,7 @@ export const usePhotoPreviewTransition = ({
     const uri = selectedPhoto.uri;
     const expectedIndex = expectedEchoesRef.current.indexOf(uri);
     if (expectedIndex !== -1) {
-      // Ignora questo aggiornamento in quanto è un'eco (echo) dei nostri swipe manuali
+      // Ignore this update as it is an echo of our manual swipes
       expectedEchoesRef.current.splice(0, expectedIndex + 1);
       return;
     }

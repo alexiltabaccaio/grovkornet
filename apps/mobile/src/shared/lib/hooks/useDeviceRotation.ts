@@ -22,9 +22,9 @@ export const useDeviceRotation = () => {
         }
       } else {
         if (y > 0.5) {
-          targetAngle = 0; // Standard Portrait
+          targetAngle = 0; // Device is upside down -> map to layout angle 0
         } else if (y < -0.5) {
-          targetAngle = 180; // Portrait Upside Down
+          targetAngle = 180; // Device is upright (standard portrait) -> map to layout angle 180
         }
       }
 

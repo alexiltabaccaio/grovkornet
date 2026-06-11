@@ -29,7 +29,7 @@ describe('useDeviceRotation', () => {
     expect(mockRemove).toHaveBeenCalledTimes(1);
   });
 
-  it('should update rotationY to 90 when device is in Landscape Right (x < -0.5)', () => {
+  it('should update rotationY to -90 when device is in Landscape Right (x < -0.5)', () => {
     const { result } = renderHook(() => useDeviceRotation());
     
     expect(accelerometerCallback).not.toBeNull();
@@ -40,7 +40,7 @@ describe('useDeviceRotation', () => {
     expect(result.current.value).toBe(-90);
   });
 
-  it('should update rotationY to -90 when device is in Landscape Left (x > 0.5)', () => {
+  it('should update rotationY to 90 when device is in Landscape Left (x > 0.5)', () => {
     const { result } = renderHook(() => useDeviceRotation());
     
     expect(accelerometerCallback).not.toBeNull();
@@ -51,7 +51,7 @@ describe('useDeviceRotation', () => {
     expect(result.current.value).toBe(90);
   });
 
-  it('should update rotationY to 180 when device is Portrait Upside Down (y > 0.5)', () => {
+  it('should update rotationY to 0 when device is Portrait Upside Down (y > 0.5)', () => {
     const { result } = renderHook(() => useDeviceRotation());
     
     expect(accelerometerCallback).not.toBeNull();
@@ -62,16 +62,16 @@ describe('useDeviceRotation', () => {
     expect(result.current.value).toBe(0);
   });
 
-  it('should update rotationY to 0 when device is Portrait Standard (y < -0.5)', () => {
+  it('should update rotationY to 180 when device is Portrait Standard (y < -0.5)', () => {
     const { result } = renderHook(() => useDeviceRotation());
     
-    // First rotate to Landscape Right (90)
+    // First rotate to Landscape Right (-90)
     act(() => {
       accelerometerCallback!({ x: -0.8, y: 0.1, z: 0 });
     });
     expect(result.current.value).toBe(-90);
 
-    // Now rotate back to Standard Portrait (0)
+    // Now rotate back to Standard Portrait (180)
     act(() => {
       accelerometerCallback!({ x: 0.1, y: -0.8, z: 0 });
     });

@@ -32,7 +32,7 @@ jest.mock('@entities/preferences', () => ({
 }));
 
 let mockResolutionSettingValue = 0;
-let mockAspectRatioValue = 2; // non 1, non 4
+let mockAspectRatioValue = 2; // neither 1 nor 4
 let mockForce60fpsCropValue = 0;
 
 jest.mock('@entities/body', () => ({

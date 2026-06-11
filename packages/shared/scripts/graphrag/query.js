@@ -91,9 +91,9 @@ console.log("");
 // 2. BFS to extract the subgraph
 const visited = new Set();
 const subgraphNodes = new Map(); // id -> attributes
-const subgraphEdges = []; // array di { source, target, relation }
+const subgraphEdges = []; // array of { source, target, relation }
 
-const queue = []; // array di { nodeId, currentDepth }
+const queue = []; // array of { nodeId, currentDepth }
 
 for (const startNode of startNodes) {
   queue.push({ nodeId: startNode, currentDepth: 0 });
