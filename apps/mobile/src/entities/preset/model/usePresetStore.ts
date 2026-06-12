@@ -184,7 +184,6 @@ interface PresetStoreActions {
   toggleQuickSelect: (id: string) => void;
   setAddModalVisible: (visible: boolean) => void;
   setDeleteModalVisible: (visible: boolean) => void;
-  getQuickSelectList: () => { id: string; name: string }[];
 }
 
 export interface PresetStore extends PresetStoreState, PresetStoreActions {}
@@ -244,38 +243,6 @@ export const usePresetStore = create<PresetStore>()(
         });
 
         set({ userPresets: updated });
-      },
-
-      getQuickSelectList: () => {
-        const { userPresets, customizedPayload, activePresetId } = get();
-        const tDefault = i18n.t ? i18n.t('presets.default', 'Default') : 'Default';
-        const list = [{ id: 'default', name: tDefault || 'Default' }];
-        
-        if (customizedPayload) {
-          const tCustomized = i18n.t ? i18n.t('presets.customized', 'Custom') : 'Custom';
-          list.push({ id: 'customized', name: tCustomized || 'Custom' });
-        }
-
-        const sortedPresets = [...userPresets].sort((a, b) => {
-          // 1. Favorite preset first
-          if (a.isFavorite && !b.isFavorite) return -1;
-          if (!a.isFavorite && b.isFavorite) return 1;
-
-          // 2. Quick select (pinned) next
-          if (a.inQuickSelect && !b.inQuickSelect) return -1;
-          if (!a.inQuickSelect && b.inQuickSelect) return 1;
-
-          // 3. Alphabetical sorting
-          return a.name.localeCompare(b.name, undefined, { sensitivity: 'base', numeric: true });
-        });
-
-        sortedPresets.forEach((p) => {
-          if (p.inQuickSelect || p.id === activePresetId) {
-            list.push({ id: p.id, name: p.name });
-          }
-        });
-
-        return list;
       },
 
       setAddModalVisible: (visible: boolean) => {

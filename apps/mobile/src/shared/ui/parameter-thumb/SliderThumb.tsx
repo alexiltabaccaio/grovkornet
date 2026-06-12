@@ -45,6 +45,19 @@ export const SliderThumb = React.memo(({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const [resumeKey, setResumeKey] = React.useState(0);
+
+  React.useEffect(() => {
+    const { AppState } = require('react-native');
+    const subscription = AppState.addEventListener('change', (nextAppState: string) => {
+      if (nextAppState === 'active') {
+        // Increment key to force remount on resume, ensuring track width onLayout is recalculated
+        setResumeKey(prev => prev + 1);
+      }
+    });
+    return () => subscription.remove();
+  }, []);
+
   const internalTrackWidth = useSharedValue(
     isMainSlider 
       ? globalMainTrackWidth 
@@ -154,7 +167,7 @@ export const SliderThumb = React.memo(({
   });
 
   return (
-    <View style={[styles.container, hideAutoPlaceholder && { paddingHorizontal: 8 }]}>
+    <View key={resumeKey} style={[styles.container, hideAutoPlaceholder && { paddingHorizontal: 8 }]}>
       {isAuto && (onReset || onToggleAuto) ? (
         <AutoButton
           isActive={isAuto}

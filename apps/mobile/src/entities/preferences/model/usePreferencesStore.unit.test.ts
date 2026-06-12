@@ -88,5 +88,42 @@ describe('usePreferencesStore', () => {
       expect(persistOptions.name).toBe('grovkornet-preferences-storage');
       expect(persistOptions.storage).toBeDefined();
     });
+
+    it('sanitizes invalid or corrupted state on merge', () => {
+      const persistOptions = (usePreferencesStore as any).persist?.getOptions();
+      expect(persistOptions.merge).toBeDefined();
+
+      const corruptedState = {
+        fpsSetting: 'sixty', // Corrupted type (string instead of number)
+        resolutionSetting: undefined,
+        aspectRatio: 'invalid', // Corrupted type
+        language: 123, // Corrupted type
+        cameraId: '', // Corrupted (empty string is treated as invalid)
+        cameraAuto: 'yes', // Corrupted type
+      };
+
+      const currentState = {
+        fpsSetting: null,
+        resolutionSetting: null,
+        aspectRatio: 1,
+        force60fpsCrop: 1,
+        language: null,
+        cameraId: 'default-id',
+        cameraAuto: null,
+        focusDistance: null,
+        focusAuto: null,
+        hapticsEnabled: null,
+        previewQuality: null,
+      };
+
+      const merged = persistOptions.merge(corruptedState, currentState);
+
+      // Invalid properties should fallback to current/default state values
+      expect(merged.fpsSetting).toBeNull();
+      expect(merged.aspectRatio).toBe(1);
+      expect(merged.language).toBeNull();
+      expect(merged.cameraId).toBe('default-id');
+      expect(merged.cameraAuto).toBeNull();
+    });
   });
 });

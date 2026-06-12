@@ -1,6 +1,7 @@
-import { usePresetStore, Preset, PresetPayload, FilmPresetPayload, BodyPresetPayload, DEFAULT_PRESET_PAYLOAD, DEFAULT_FILM_PAYLOAD, DEFAULT_BODY_PAYLOAD } from '@entities/preset';
+import { usePresetStore, Preset, PresetPayload, FilmPresetPayload, BodyPresetPayload, DEFAULT_PRESET_PAYLOAD, DEFAULT_FILM_PAYLOAD, DEFAULT_BODY_PAYLOAD, PresetStore } from '@entities/preset';
 import { useFilmStore, getNitroConfig } from '@entities/film';
 import { useBodyStore } from '@entities/body';
+import i18n from 'i18next';
 
 /**
  * Snapshots the current runtime values of FilmStore and BodyStore
@@ -274,11 +275,46 @@ export const markAsCustomized = (): void => {
 };
 
 /**
+ * Generates the list of quick presets dynamically based on the store's raw data
+ */
+export const generateQuickSelectList = (state: Pick<PresetStore, 'userPresets' | 'customizedPayload' | 'activePresetId'>) => {
+  const { userPresets, customizedPayload, activePresetId } = state;
+  const tDefault = i18n.t ? i18n.t('presets.default', 'Default') : 'Default';
+  const list = [{ id: 'default', name: tDefault || 'Default' }];
+  
+  if (customizedPayload) {
+    const tCustomized = i18n.t ? i18n.t('presets.customized', 'Custom') : 'Custom';
+    list.push({ id: 'customized', name: tCustomized || 'Custom' });
+  }
+
+  const sortedPresets = [...userPresets].sort((a, b) => {
+    // 1. Favorite preset first
+    if (a.isFavorite && !b.isFavorite) return -1;
+    if (!a.isFavorite && b.isFavorite) return 1;
+
+    // 2. Quick select (pinned) next
+    if (a.inQuickSelect && !b.inQuickSelect) return -1;
+    if (!a.inQuickSelect && b.inQuickSelect) return 1;
+
+    // 3. Alphabetical sorting
+    return a.name.localeCompare(b.name, undefined, { sensitivity: 'base', numeric: true });
+  });
+
+  sortedPresets.forEach((p) => {
+    if (p.inQuickSelect || p.id === activePresetId) {
+      list.push({ id: p.id, name: p.name });
+    }
+  });
+
+  return list;
+};
+
+/**
  * Navigates to the next quick preset
  */
 export const nextQuickPreset = (): void => {
   const store = usePresetStore.getState();
-  const list = store.getQuickSelectList();
+  const list = generateQuickSelectList(store);
   if (list.length <= 1) return;
   const currentIndex = list.findIndex((p) => p.id === store.activePresetId);
   const nextIndex = (currentIndex + 1) % list.length;
@@ -290,7 +326,7 @@ export const nextQuickPreset = (): void => {
  */
 export const prevQuickPreset = (): void => {
   const store = usePresetStore.getState();
-  const list = store.getQuickSelectList();
+  const list = generateQuickSelectList(store);
   if (list.length <= 1) return;
   const currentIndex = list.findIndex((p) => p.id === store.activePresetId);
   const prevIndex = (currentIndex - 1 + list.length) % list.length;

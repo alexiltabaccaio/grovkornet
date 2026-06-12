@@ -106,7 +106,6 @@ const ParameterThumbViewBase = forwardRef<View, ParameterThumbViewProps>((props,
       </OptionalGesture>
     );
   }
-
   return (
     <Animated.View
       ref={ref}
@@ -146,7 +145,7 @@ const ParameterThumbViewBase = forwardRef<View, ParameterThumbViewProps>((props,
         isLayoutOverlayEnabled && variant === 'text' && { backgroundColor: 'rgba(255,0,0,0.2)', borderColor: 'red' }
       ]}>
         {variant === 'text' && !imageSource && <TextThumb {...props} />}
-        {variant === 'slider' && <SliderThumb key={parameterId ?? label} {...props} />}
+        {variant === 'slider' && <SliderThumb {...props} />}
         {!!imageSource && <ImageThumb {...props} />}
         </Animated.View>
       </OptionalGesture>

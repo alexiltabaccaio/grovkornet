@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useShallow } from 'zustand/shallow';
@@ -6,23 +6,25 @@ import { usePresetStore, PresetStore } from '@entities/preset';
 import * as Haptics from '@shared/lib/haptics';
 import { useTranslation } from 'react-i18next';
 
-import { nextQuickPreset, prevQuickPreset } from '../../lib/presetActions';
+import { nextQuickPreset, prevQuickPreset, generateQuickSelectList } from '../../lib/presetActions';
 
 export const QuickPresetSelector = () => {
   const {
     activePresetId,
-    getQuickSelectList,
     userPresets,
+    customizedPayload,
   } = usePresetStore(
     useShallow((s: PresetStore) => ({
       activePresetId: s.activePresetId,
-      getQuickSelectList: s.getQuickSelectList,
       userPresets: s.userPresets,
+      customizedPayload: s.customizedPayload,
     }))
   );
 
   const { t } = useTranslation();
-  const quickSelectList = getQuickSelectList();
+  const quickSelectList = useMemo(() => {
+    return generateQuickSelectList({ activePresetId, userPresets, customizedPayload });
+  }, [activePresetId, userPresets, customizedPayload]);
   const areArrowsEnabled = quickSelectList.length > 1;
 
   let activeName = t('presets.default', 'Default');

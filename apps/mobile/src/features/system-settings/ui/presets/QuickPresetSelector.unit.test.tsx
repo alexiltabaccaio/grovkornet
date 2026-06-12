@@ -5,22 +5,20 @@ import { usePresetStore } from '@entities/preset';
 import { useSystemStore } from '@entities/system';
 import * as Haptics from 'expo-haptics';
 
-import { nextQuickPreset, prevQuickPreset } from '../../lib/presetActions';
+import { nextQuickPreset, prevQuickPreset, generateQuickSelectList } from '../../lib/presetActions';
 
 jest.mock('../../lib/presetActions', () => ({
   nextQuickPreset: jest.fn(),
   prevQuickPreset: jest.fn(),
+  generateQuickSelectList: jest.fn(),
 }));
 
 describe('QuickPresetSelector', () => {
-  const mockGetQuickSelectList = jest.fn();
-
   beforeEach(() => {
     jest.clearAllMocks();
 
     usePresetStore.setState({
       activePresetId: 'default',
-      getQuickSelectList: mockGetQuickSelectList,
     });
 
     useSystemStore.setState({
@@ -29,7 +27,7 @@ describe('QuickPresetSelector', () => {
   });
 
   it('renders default preset name and disables arrows when quick select list is single item', () => {
-    mockGetQuickSelectList.mockReturnValue([{ id: 'default', name: 'Default' }]);
+    (generateQuickSelectList as jest.Mock).mockReturnValue([{ id: 'default', name: 'Default' }]);
 
     const { getByText, getByLabelText } = render(<QuickPresetSelector />);
 
@@ -39,7 +37,7 @@ describe('QuickPresetSelector', () => {
   });
 
   it('renders enabled chevron arrows and navigates when quick list has multiple items', () => {
-    mockGetQuickSelectList.mockReturnValue([
+    (generateQuickSelectList as jest.Mock).mockReturnValue([
       { id: 'default', name: 'Default' },
       { id: 'customized', name: 'Custom' },
     ]);
@@ -65,7 +63,7 @@ describe('QuickPresetSelector', () => {
   it('applies correct preset text colors based on activePresetId', () => {
     // 1. Customized color
     usePresetStore.setState({ activePresetId: 'customized' });
-    mockGetQuickSelectList.mockReturnValue([
+    (generateQuickSelectList as jest.Mock).mockReturnValue([
       { id: 'customized', name: 'Custom' },
     ]);
     const { getByText, rerender } = render(<QuickPresetSelector />);
@@ -75,7 +73,7 @@ describe('QuickPresetSelector', () => {
 
     // 2. Custom user preset color
     usePresetStore.setState({ activePresetId: 'user-1' });
-    mockGetQuickSelectList.mockReturnValue([
+    (generateQuickSelectList as jest.Mock).mockReturnValue([
       { id: 'user-1', name: 'UserPreset1' },
     ]);
     rerender(<QuickPresetSelector />);

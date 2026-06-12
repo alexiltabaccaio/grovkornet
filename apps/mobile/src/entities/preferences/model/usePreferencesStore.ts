@@ -60,6 +60,27 @@ export const usePreferencesStore = create<PreferencesState & PreferencesActions>
     {
       name: 'grovkornet-preferences-storage',
       storage: createJSONStorage(() => createZustandMMKVStorage('grovkornet-global-preferences')),
+      merge: (persistedState: any, currentState: PreferencesState & PreferencesActions) => {
+        // Startup State Hygiene (Rehydration)
+        // Local storage is not reliable, so we sanitize the persisted data
+        // before merging it into the initial in-memory state.
+        const state = (persistedState || {}) as Partial<PreferencesState>;
+        
+        return {
+          ...currentState,
+          fpsSetting: typeof state.fpsSetting === 'number' ? state.fpsSetting : currentState.fpsSetting,
+          resolutionSetting: typeof state.resolutionSetting === 'number' ? state.resolutionSetting : currentState.resolutionSetting,
+          aspectRatio: typeof state.aspectRatio === 'number' ? state.aspectRatio : currentState.aspectRatio,
+          force60fpsCrop: typeof state.force60fpsCrop === 'number' ? state.force60fpsCrop : currentState.force60fpsCrop,
+          language: typeof state.language === 'string' ? state.language : currentState.language,
+          cameraId: typeof state.cameraId === 'string' && state.cameraId !== '' ? state.cameraId : currentState.cameraId,
+          cameraAuto: typeof state.cameraAuto === 'boolean' ? state.cameraAuto : currentState.cameraAuto,
+          focusDistance: typeof state.focusDistance === 'number' ? state.focusDistance : currentState.focusDistance,
+          focusAuto: typeof state.focusAuto === 'boolean' ? state.focusAuto : currentState.focusAuto,
+          hapticsEnabled: typeof state.hapticsEnabled === 'boolean' ? state.hapticsEnabled : currentState.hapticsEnabled,
+          previewQuality: typeof state.previewQuality === 'number' ? state.previewQuality : currentState.previewQuality,
+        };
+      },
     }
   )
 );

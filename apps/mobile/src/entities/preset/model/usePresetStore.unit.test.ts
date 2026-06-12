@@ -83,25 +83,7 @@ describe('usePresetStore', () => {
     });
   });
 
-  describe('Quick Selector List', () => {
-    it('builds quick select list correctly', () => {
-      const presets = [
-        { id: '1', name: 'P1', payload: { film: DEFAULT_FILM_PAYLOAD, body: DEFAULT_BODY_PAYLOAD }, isFavorite: false, inQuickSelect: true, createdAt: Date.now() },
-        { id: '2', name: 'P2', payload: { film: DEFAULT_FILM_PAYLOAD, body: DEFAULT_BODY_PAYLOAD }, isFavorite: false, inQuickSelect: false, createdAt: Date.now() },
-      ];
-      usePresetStore.setState({
-        userPresets: presets,
-        customizedPayload: { film: DEFAULT_FILM_PAYLOAD, body: DEFAULT_BODY_PAYLOAD },
-      });
 
-      const list = usePresetStore.getState().getQuickSelectList();
-      expect(list).toEqual([
-        { id: 'default', name: 'Default' },
-        { id: 'customized', name: 'Custom' },
-        { id: '1', name: 'P1' },
-      ]);
-    });
-  });
 
   describe('Modals and UI states', () => {
     it('sets add modal visible state', () => {
