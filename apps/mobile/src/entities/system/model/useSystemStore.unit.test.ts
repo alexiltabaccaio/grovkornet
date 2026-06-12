@@ -199,21 +199,29 @@ describe('useSystemStore', () => {
       const persistOptions = (useSystemStore as any).persist?.getOptions();
       expect(persistOptions).toBeDefined();
 
-      const spy = jest.spyOn(logger, 'setDebugEnabled');
+      const spyLogger = jest.spyOn(logger, 'setDebugEnabled');
+      const spyStore = jest.spyOn(useSystemStore.getState(), 'setIsLogsEnabled');
       
-      // Get the onRehydrateStorage callback and execute it
-      const onRehydrate = persistOptions.onRehydrateStorage();
-      expect(typeof onRehydrate).toBe('function');
+      const originalDev = global.__DEV__;
       
-      // Simulate successful rehydration with isLogsEnabled: true
-      onRehydrate({ isLogsEnabled: true }, null);
-      expect(spy).toHaveBeenCalledWith(true);
+      // Test when __DEV__ is true
+      global.__DEV__ = true;
+      const onRehydrateDev = persistOptions.onRehydrateStorage();
+      expect(typeof onRehydrateDev).toBe('function');
+      onRehydrateDev({ isLogsEnabled: true }, null);
+      expect(spyLogger).toHaveBeenCalledWith(true);
+      expect(spyStore).not.toHaveBeenCalled();
 
-      // Simulate successful rehydration with isLogsEnabled: false
-      onRehydrate({ isLogsEnabled: false }, null);
-      expect(spy).toHaveBeenCalledWith(false);
+      // Test when __DEV__ is false
+      global.__DEV__ = false;
+      const onRehydrateProd = persistOptions.onRehydrateStorage();
+      expect(typeof onRehydrateProd).toBe('function');
+      onRehydrateProd({ isLogsEnabled: true }, null);
+      expect(spyStore).toHaveBeenCalledWith(false);
 
-      spy.mockRestore();
+      global.__DEV__ = originalDev;
+      spyLogger.mockRestore();
+      spyStore.mockRestore();
     });
   });
 
@@ -238,23 +246,6 @@ describe('useSystemStore', () => {
       const { setSelectedColorIndex } = useSystemStore.getState();
       setSelectedColorIndex(4);
       expect(useSystemStore.getState().selectedColorIndex).toBe(4);
-    });
-
-    it('subscribes to onDeviceHealthUpdate native events', () => {
-      const { NativeCameraEventEmitter } = require('@grovkornet/engine');
-      
-      // Reset state
-      useSystemStore.setState({ thermalState: 'normal', isLowRam: false });
-      
-      // Emit event
-      NativeCameraEventEmitter.emit('onDeviceHealthUpdate', {
-        thermalState: 'critical',
-        isLowRam: true,
-      });
-
-      const state = useSystemStore.getState();
-      expect(state.thermalState).toBe('critical');
-      expect(state.isLowRam).toBe(true);
     });
   });
 });

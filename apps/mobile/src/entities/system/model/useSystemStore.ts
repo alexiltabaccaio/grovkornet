@@ -2,11 +2,8 @@ import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import { createZustandMMKVStorage } from '@shared/lib/storage/mmkv';
 import { logger } from '@shared/lib/logger';
-import { NativeCameraEventEmitter } from '@grovkornet/engine';
 import { SystemStore, ModuleType, ParameterType, SectionType, ParameterDetailPanelType } from './types';
 import { SECTION_MODULES } from './constants';
-
-
 
 export const useSystemStore = create<SystemStore>()(
   persist(
@@ -161,9 +158,13 @@ export const useSystemStore = create<SystemStore>()(
       onRehydrateStorage: () => (state) => {
         if (state) {
           if (!__DEV__) {
-            state.isLogsEnabled = false;
+            useSystemStore.getState().setIsLogsEnabled(false);
+          } else {
+            logger.setDebugEnabled(state.isLogsEnabled);
+            logger.debug('SystemStore', 'Store rehydrated successfully', state);
           }
-          logger.setDebugEnabled(state.isLogsEnabled);
+        } else {
+          logger.error('SystemStore', 'Store rehydration failed or storage is empty');
         }
       },
       partialize: (state) => ({
@@ -173,12 +174,3 @@ export const useSystemStore = create<SystemStore>()(
     }
   )
 );
-
-try {
-  NativeCameraEventEmitter.addListener('onDeviceHealthUpdate', (event: { thermalState: 'normal' | 'warning' | 'critical'; isLowRam: boolean }) => {
-    useSystemStore.getState().setThermalState(event.thermalState);
-    useSystemStore.getState().setIsLowRam(event.isLowRam);
-  });
-} catch (error) {
-  logger.error('SystemStore', 'Failed to subscribe to onDeviceHealthUpdate event', error);
-}

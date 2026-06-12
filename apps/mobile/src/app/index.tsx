@@ -16,9 +16,12 @@ import i18n from 'i18next';
 import { useBodyStore } from '@entities/body';
 import { useLensStore } from '@entities/lens';
 import { usePreferencesStore } from '@entities/preferences';
+import { useSystemStore } from '@entities/system';
 import { applyPreset, initPreferenceSync } from '@features/system-settings';
 import { initNativeSync } from '@features/camera-controls';
 import { setHapticsEnabledChecker } from '@shared/lib/haptics';
+import { NativeCameraEventEmitter } from '@grovkornet/engine';
+import { logger } from '@shared/lib/logger';
 
 import * as SystemUI from 'expo-system-ui';
 
@@ -94,6 +97,18 @@ export function App() {
     initNativeSync();
     initPreferenceSync();
 
+    // Subscribe to device health updates
+    let sub: any = null;
+    try {
+      sub = NativeCameraEventEmitter.addListener('onDeviceHealthUpdate', (event: { thermalState: 'normal' | 'warning' | 'critical'; isLowRam: boolean }) => {
+        logger.info('DeviceHealth', `Received thermalState: ${event.thermalState}, isLowRam: ${event.isLowRam}`);
+        useSystemStore.getState().setThermalState(event.thermalState);
+        useSystemStore.getState().setIsLowRam(event.isLowRam);
+      });
+    } catch (error) {
+      console.error('Failed to subscribe to onDeviceHealthUpdate event', error);
+    }
+
     // Apply the favorite preset or fallback to default on startup, 
     // ignoring the last active preset (which might have been 'customized')
     const presetStore = usePresetStore.getState();
@@ -108,6 +123,9 @@ export function App() {
 
     return () => {
       unsubscribeThumb();
+      if (sub) {
+        sub.remove();
+      }
     };
   }, []);
 
