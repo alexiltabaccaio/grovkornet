@@ -202,10 +202,10 @@ describe('useSystemStore', () => {
       const spyLogger = jest.spyOn(logger, 'setDebugEnabled');
       const spyStore = jest.spyOn(useSystemStore.getState(), 'setIsLogsEnabled');
       
-      const originalDev = global.__DEV__;
+      const originalDev = (global as any).__DEV__;
       
       // Test when __DEV__ is true
-      global.__DEV__ = true;
+      (global as any).__DEV__ = true;
       const onRehydrateDev = persistOptions.onRehydrateStorage();
       expect(typeof onRehydrateDev).toBe('function');
       onRehydrateDev({ isLogsEnabled: true }, null);
@@ -213,13 +213,13 @@ describe('useSystemStore', () => {
       expect(spyStore).not.toHaveBeenCalled();
 
       // Test when __DEV__ is false
-      global.__DEV__ = false;
+      (global as any).__DEV__ = false;
       const onRehydrateProd = persistOptions.onRehydrateStorage();
       expect(typeof onRehydrateProd).toBe('function');
       onRehydrateProd({ isLogsEnabled: true }, null);
       expect(spyStore).toHaveBeenCalledWith(false);
 
-      global.__DEV__ = originalDev;
+      (global as any).__DEV__ = originalDev;
       spyLogger.mockRestore();
       spyStore.mockRestore();
     });

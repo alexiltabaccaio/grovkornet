@@ -12,9 +12,10 @@ export const useCameraAppState = ({
   shouldRenderGallery,
   galleryTransition,
 }: UseCameraAppStateProps) => {
+  const initialActiveSection = useSystemStore.getState().activeSection;
   const [cameraKey, setCameraKey] = useState(0);
-  const drawerAnimation = useSharedValue(250);
-  const footerTranslateY = useSharedValue(0);
+  const drawerAnimation = useSharedValue(initialActiveSection === 'none' ? 250 : 0);
+  const footerTranslateY = useSharedValue(initialActiveSection === 'none' ? 0 : -50);
 
   useEffect(() => {
     const subscription = AppState.addEventListener('change', (nextAppState: AppStateStatus) => {

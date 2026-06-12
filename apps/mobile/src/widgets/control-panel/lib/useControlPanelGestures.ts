@@ -19,10 +19,10 @@ export const useControlPanelGestures = ({
     activeSection: state.activeSection,
   })));
 
-  const localTranslateY = useSharedValue(0);
+  const localTranslateY = useSharedValue(activeSection === 'none' ? 0 : -50);
   const translateY = externalTranslateY || localTranslateY;
   const startY = useSharedValue(0);
-  const localDrawerAnimation = useSharedValue(250);
+  const localDrawerAnimation = useSharedValue(activeSection === 'none' ? 250 : 0);
   const drawerAnimation = externalDrawerAnimation || localDrawerAnimation;
 
   const wasClosed = useRef(activeSection === 'none');
