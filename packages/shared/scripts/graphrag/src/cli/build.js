@@ -1,10 +1,11 @@
-import { parseFile, scanDirectory } from './parser.js';
-import * as typescriptLang from './languages/typescript.js';
-import * as kotlinLang from './languages/kotlin.js';
-import * as cppLang from './languages/cpp.js';
-import * as filamentLang from './languages/filament.js';
+import { parseFile } from '../core/Parser.js';
+import { scanDirectory } from '../core/Scanner.js';
+import { GraphStore } from '../core/GraphStore.js';
+import * as typescriptLang from '../languages/typescript.js';
+import * as kotlinLang from '../languages/kotlin.js';
+import * as cppLang from '../languages/cpp.js';
+import * as filamentLang from '../languages/filament.js';
 import graphology from 'graphology';
-import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
@@ -17,18 +18,21 @@ console.log("==== Building Grovkornet GraphRAG ====");
 const graph = new MultiDirectedGraph();
 
 // Target directories for scanning
-const mobileSrc = path.resolve(__dirname, '../../../../apps/mobile/src');
-const sharedSrc = path.resolve(__dirname, '../../../shared/src');
-const engineSrc = path.resolve(__dirname, '../../../../packages/engine/android/src/main');
-const engineTsSrc = path.resolve(__dirname, '../../../../packages/engine/src');
+const mobileSrc = path.resolve(__dirname, '../../../../../../apps/mobile/src');
+const webSrc = path.resolve(__dirname, '../../../../../../apps/web/src');
+const sharedSrc = path.resolve(__dirname, '../../../../../shared/src');
+const engineSrc = path.resolve(__dirname, '../../../../../../packages/engine/android/src/main');
+const engineTsSrc = path.resolve(__dirname, '../../../../../../packages/engine/src');
 
 console.log(`🔍 Scanning Mobile: ${mobileSrc}`);
+console.log(`🔍 Scanning Web: ${webSrc}`);
 console.log(`🔍 Scanning Shared: ${sharedSrc}`);
 console.log(`🔍 Scanning Engine: ${engineSrc}`);
 console.log(`🔍 Scanning Engine TS: ${engineTsSrc}`);
 
 const allFiles = [
   ...scanDirectory(mobileSrc),
+  ...scanDirectory(webSrc),
   ...scanDirectory(sharedSrc),
   ...scanDirectory(engineSrc),
   ...scanDirectory(engineTsSrc)
@@ -37,7 +41,7 @@ const allFiles = [
 console.log(`📁 Source files found: ${allFiles.length}`);
 
 // Helper to normalize paths and make them relative to the monorepo root
-const rootDir = path.resolve(__dirname, '../../../../');
+const rootDir = path.resolve(__dirname, '../../../../../../');
 function getRelativePath(absPath) {
   return path.relative(rootDir, absPath).replace(/\\/g, '/');
 }
@@ -186,23 +190,10 @@ for (const file of allFiles) {
   }
 }
 
-// 3. Serialization and output to JSON
-const graphData = {
-  nodes: [],
-  edges: []
-};
-
-graph.forEachNode((node, attributes) => {
-  graphData.nodes.push({ id: node, ...attributes });
-});
-
-graph.forEachEdge((edge, attributes, source, target) => {
-  graphData.edges.push({ id: edge, source, target, ...attributes });
-});
-
-const outputPath = path.resolve(__dirname, './output.graph.json');
-fs.writeFileSync(outputPath, JSON.stringify(graphData, null, 2));
+// 3. Serialization and output to JSON using GraphStore
+const outputPath = path.resolve(__dirname, '../../output.graph.json');
+const store = new GraphStore(outputPath);
+store.saveGraphology(graph);
 
 console.log(`🎉 Graph built successfully! Saved in: ${getRelativePath(outputPath)}`);
-console.log(`Total Nodes: ${graphData.nodes.length}, Total Edges: ${graphData.edges.length}`);
-
+console.log(`Total Nodes: ${graph.order}, Total Edges: ${graph.size}`);

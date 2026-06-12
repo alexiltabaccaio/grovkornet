@@ -6,7 +6,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Base directory for Kotlin source files in packages/engine
-const kotlinBaseDir = path.resolve(__dirname, '../../../../engine/android/src/main/java');
+const kotlinBaseDir = path.resolve(__dirname, '../../../../../engine/android/src/main/java');
 
 /**
  * Finds all nodes of a specific type recursively in the AST tree

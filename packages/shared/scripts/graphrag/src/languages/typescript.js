@@ -7,7 +7,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Load TSConfig of mobile app to resolve FSD path aliases
-const tsconfigPath = path.resolve(__dirname, '../../../../../apps/mobile/tsconfig.json');
+const tsconfigPath = path.resolve(__dirname, '../../../../../../apps/mobile/tsconfig.json');
 const configLoaderResult = loadConfig(tsconfigPath);
 
 let matchPath = () => null;

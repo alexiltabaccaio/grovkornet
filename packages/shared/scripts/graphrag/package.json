@@ -3,7 +3,13 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "main": "builder.js",
+  "main": "src/cli/build.js",
+  "scripts": {
+    "build": "node src/cli/build.js",
+    "query": "node src/cli/query.js",
+    "analyze": "node src/cli/analyze.js",
+    "test": "node test/run-tests.js && node test/run-algorithms-tests.js"
+  },
   "dependencies": {
     "graphology": "^0.25.4",
     "tree-sitter": "^0.21.0",

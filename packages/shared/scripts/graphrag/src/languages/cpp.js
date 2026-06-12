@@ -6,7 +6,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Base directory for C++ source files in packages/engine
-const cppBaseDir = path.resolve(__dirname, '../../../../engine/android/src/main/cpp');
+const cppBaseDir = path.resolve(__dirname, '../../../../../engine/android/src/main/cpp');
 
 // C++ compiler include directories
 const includePaths = [

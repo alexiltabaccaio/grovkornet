@@ -1,7 +1,8 @@
-import { scanDirectory, parseFile } from '../parser.js';
-import { resolve as resolveImport } from '../languages/typescript.js';
-import * as kotlinLang from '../languages/kotlin.js';
-import * as cppLang from '../languages/cpp.js';
+import { scanDirectory } from '../src/core/Scanner.js';
+import { parseFile } from '../src/core/Parser.js';
+import { resolve as resolveImport } from '../src/languages/typescript.js';
+import * as kotlinLang from '../src/languages/kotlin.js';
+import * as cppLang from '../src/languages/cpp.js';
 import { Query } from 'tree-sitter';
 import TypeScript from 'tree-sitter-typescript';
 import path from 'path';
