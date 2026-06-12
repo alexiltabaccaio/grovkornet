@@ -9,7 +9,7 @@ import { Image } from 'expo-image';
 import { initThumbnailGenerator } from '@features/preset-thumbnails';
 
 // Initialize i18n
-import './providers/i18n';
+import './providers';
 import './store-assertions';
 
 import i18n from 'i18next';

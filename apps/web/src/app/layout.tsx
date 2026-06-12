@@ -2,7 +2,7 @@ import "./globals.css";
 import type { Metadata } from "next";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
-import { I18nInitializer } from "./providers/I18nInitializer";
+import { I18nInitializer } from "./providers";
 import { cookies, headers } from "next/headers";
 
 export const metadata: Metadata = {

@@ -3,19 +3,12 @@ import { useShallow } from 'zustand/shallow';
 import { useBodyStore } from '@entities/body';
 import { useLensStore } from '@entities/lens';
 import { useFilmStore } from '@entities/film';
-import { SectionType, ModuleType } from './types';
-import { SECTION_MODULES } from './constants';
+import { SectionType, ModuleType, SECTION_MODULES } from '@entities/system';
 
 export const useVisibleModules = (section: SectionType): readonly ModuleType[] => {
   const { hasTorch } = useBodyStore(
     useShallow((s) => ({
       hasTorch: s.capabilities.hasTorch,
-    }))
-  );
-
-  const { availableCameras } = useLensStore(
-    useShallow((s) => ({
-      availableCameras: s.capabilities.availableCameras,
     }))
   );
 
@@ -46,5 +39,5 @@ export const useVisibleModules = (section: SectionType): readonly ModuleType[] =
       
       return true;
     });
-  }, [section, hasTorch, availableCameras, availableNoiseReductionModes]);
+  }, [section, hasTorch, availableNoiseReductionModes]);
 };

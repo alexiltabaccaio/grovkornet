@@ -102,7 +102,19 @@ export function detectOrphanedFiles(allNodes, nodeTypes, adjListIn) {
         const basename = path.basename(node);
         const ext = path.extname(node);
         const isTsFile = ext === '.ts' || ext === '.tsx';
-        const isEntryPoint = node.includes('app/index.tsx') || node.includes('app/App.tsx');
+        const isEntryPoint = 
+          node.includes('app/index.tsx') || 
+          node.includes('app/App.tsx') ||
+          (node.includes('apps/web/src/app') && (
+            basename === 'page.tsx' ||
+            basename === 'layout.tsx' ||
+            basename === 'template.tsx' ||
+            basename === 'loading.tsx' ||
+            basename === 'error.tsx' ||
+            basename === 'not-found.tsx' ||
+            basename === 'global-error.tsx' ||
+            basename === 'route.ts'
+          ));
         const isTestFile = node.includes('.test.') || node.includes('.spec.') || node.includes('.smoke.');
         const isFsdIndex = basename === 'index.ts' || basename === 'index.tsx';
         const isConfig = basename.includes('config') || basename.includes('setup');

@@ -37,7 +37,7 @@ async function start() {
   const paramOk = await runScript('packages/shared/scripts/codegen/parameters.js');
   const errorOk = await runScript('packages/shared/scripts/codegen/errors.js');
   const i18nOk = await runScript('packages/shared/scripts/codegen/i18n.js');
-  const graphOk = await runScript('packages/shared/scripts/graphrag/builder.js');
+  const graphOk = await runScript('packages/shared/scripts/graphrag/src/cli/build.js');
 
   if (!paramOk || !errorOk || !i18nOk || !graphOk) {
     console.error('⚠️ Initial codegen failed. Starting watchers anyway...');
@@ -78,7 +78,7 @@ async function start() {
 
   const rebuildGraph = debounce(async () => {
     console.log(`\n📝 Source code changed. Rebuilding GraphRAG...`);
-    await runScript('packages/shared/scripts/graphrag/builder.js');
+    await runScript('packages/shared/scripts/graphrag/src/cli/build.js');
   }, 1000); // 1 second debounce for code typing
 
   for (const dir of watchDirs) {

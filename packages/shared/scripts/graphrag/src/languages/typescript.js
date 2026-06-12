@@ -6,18 +6,31 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Load TSConfig of mobile app to resolve FSD path aliases
-const tsconfigPath = path.resolve(__dirname, '../../../../../../apps/mobile/tsconfig.json');
-const configLoaderResult = loadConfig(tsconfigPath);
+// Load TSConfigs to resolve FSD path aliases
+const mobileTsconfigPath = path.resolve(__dirname, '../../../../../../apps/mobile/tsconfig.json');
+const mobileConfigResult = loadConfig(mobileTsconfigPath);
 
-let matchPath = () => null;
-if (configLoaderResult.resultType === 'success') {
-  matchPath = createMatchPath(
-    configLoaderResult.absoluteBaseUrl,
-    configLoaderResult.paths
+let mobileMatchPath = () => null;
+if (mobileConfigResult.resultType === 'success') {
+  mobileMatchPath = createMatchPath(
+    mobileConfigResult.absoluteBaseUrl,
+    mobileConfigResult.paths
   );
 } else {
   console.warn("⚠️ Failed to load apps/mobile/tsconfig.json. FSD path aliases might not resolve properly.");
+}
+
+const webTsconfigPath = path.resolve(__dirname, '../../../../../../apps/web/tsconfig.json');
+const webConfigResult = loadConfig(webTsconfigPath);
+
+let webMatchPath = () => null;
+if (webConfigResult.resultType === 'success') {
+  webMatchPath = createMatchPath(
+    webConfigResult.absoluteBaseUrl,
+    webConfigResult.paths
+  );
+} else {
+  console.warn("⚠️ Failed to load apps/web/tsconfig.json. Web path aliases might not resolve properly.");
 }
 
 /**
@@ -182,7 +195,9 @@ export function resolve(currentFilePath, importPath) {
   const currentFileDir = path.dirname(currentFilePath);
 
   // 1. Resolve TSConfig path aliases (FSD path mappings)
-  const resolvedAlias = matchPath(importPath, undefined, undefined, ['.ts', '.tsx', '.js', '.jsx']);
+  const isWeb = currentFilePath.includes('apps/web') || currentFilePath.includes('apps\\web');
+  const match = isWeb ? webMatchPath : mobileMatchPath;
+  const resolvedAlias = match(importPath, undefined, undefined, ['.ts', '.tsx', '.js', '.jsx']);
   if (resolvedAlias) {
     return ensureFileExtension(resolvedAlias);
   }

@@ -22,7 +22,7 @@
     "build:android": "npm run codegen && node apps/mobile/scripts/android/build.js --device",
     "build:android_sim": "npm run codegen && node apps/mobile/scripts/android/build.js --simulator",
     "build:mobile": "npm run codegen && node apps/mobile/scripts/android/build.js --device",
-    "codegen": "node packages/shared/scripts/codegen/index.js && node packages/shared/scripts/graphrag/builder.js",
+    "codegen": "node packages/shared/scripts/codegen/index.js && node packages/shared/scripts/graphrag/src/cli/build.js",
     "lint": "turbo run lint",
     "android": "npm run android -w @grovkornet/mobile",
     "ios": "npm run ios -w @grovkornet/mobile",
