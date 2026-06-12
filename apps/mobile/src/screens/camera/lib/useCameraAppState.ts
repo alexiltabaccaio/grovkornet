@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { AppState, AppStateStatus } from 'react-native';
-import { useSharedValue, SharedValue } from 'react-native-reanimated';
+import { useSharedValue, SharedValue, withTiming } from 'react-native-reanimated';
 import { useSystemStore } from '@entities/system';
 
 interface UseCameraAppStateProps {
@@ -43,11 +43,9 @@ export const useCameraAppState = ({
             const currentY = footerTranslateY.value;
             const targetY = isNaN(currentY) ? -50 : (currentY < 0 ? currentY : -50);
             
-            footerTranslateY.value = targetY + 0.1;
-            requestAnimationFrame(() => {
-              drawerAnimation.value = 0;
-              footerTranslateY.value = targetY;
-            });
+            // Force Reanimated to update the UI thread by using an animation
+            drawerAnimation.value = withTiming(0, { duration: 50 });
+            footerTranslateY.value = withTiming(targetY, { duration: 50 });
           }
 
           if (shouldRenderGallery) {
