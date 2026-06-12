@@ -43,6 +43,10 @@ describe('useCameraAppState', () => {
     jest.clearAllMocks();
     jest.useFakeTimers();
 
+    (useSystemStore.getState as jest.Mock).mockReturnValue({
+      activeSection: 'none',
+    });
+
     galleryTransitionMock = { value: 0 };
     appStateCallback = null;
 

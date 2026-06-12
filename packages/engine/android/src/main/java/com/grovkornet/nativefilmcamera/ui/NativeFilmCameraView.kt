@@ -2,6 +2,7 @@ package com.grovkornet.nativefilmcamera.ui
 
 import android.content.Context
 import android.util.Log
+import com.grovkornet.nativefilmcamera.events.CameraEvents
 import android.view.SurfaceHolder
 import android.view.SurfaceView
 import androidx.lifecycle.ProcessLifecycleOwner
@@ -120,15 +121,13 @@ class NativeFilmCameraView(context: Context) : SurfaceView(context), SurfaceHold
         val cameraListener = object : CameraEngine.Listener {
             override fun onExposureUpdate(iso: Int, shutterSpeed: Double, focusDistance: Float, noiseReduction: Int, activeCameraId: String?) {
                 if (isReleased) return
-                val eventPayload = mutableMapOf<String, Any>(
-                    "iso" to iso,
-                    "shutterSpeed" to shutterSpeed,
-                    "focusDistance" to focusDistance.toDouble(),
-                    "noiseReduction" to noiseReduction
+                val eventPayload = CameraEvents.createOnExposureUpdate(
+                    iso = iso.toDouble(),
+                    shutterSpeed = shutterSpeed,
+                    focusDistance = focusDistance.toDouble(),
+                    activeCameraId = activeCameraId,
+                    noiseReduction = noiseReduction.toDouble()
                 )
-                if (activeCameraId != null) {
-                    eventPayload["activeCameraId"] = activeCameraId
-                }
                 this@NativeFilmCameraView.onExposureUpdate(eventPayload)
             }
 
@@ -144,14 +143,16 @@ class NativeFilmCameraView(context: Context) : SurfaceView(context), SurfaceHold
                 cameraHeight = height
                 renderThread?.updateCameraResolution(width, height)
                 
-                this@NativeFilmCameraView.onDebugUpdate(mapOf(
-                    "resolution" to "${width}x${height}"
+                this@NativeFilmCameraView.onDebugUpdate(CameraEvents.createOnDebugUpdate(
+                    fps = 0.0,
+                    hwFps = 0.0,
+                    resolution = "${width}x${height}"
                 ))
             }
 
             override fun onPhotoCaptured(uri: String) {
                 if (isReleased) return
-                this@NativeFilmCameraView.onPhotoCaptured(mapOf("uri" to uri))
+                this@NativeFilmCameraView.onPhotoCaptured(CameraEvents.createOnPhotoCaptured(uri = uri))
             }
         }
 
@@ -178,7 +179,7 @@ class NativeFilmCameraView(context: Context) : SurfaceView(context), SurfaceHold
                     updateScheduler?.schedule()
                 }
                 if (!isReleased) {
-                    onTorchStateChanged(mapOf("enabled" to enabled))
+                    onTorchStateChanged(CameraEvents.createOnTorchStateChanged(enabled = enabled))
                 }
             }
         ).apply {
@@ -195,7 +196,7 @@ class NativeFilmCameraView(context: Context) : SurfaceView(context), SurfaceHold
             surfaceHeight = surfaceHeight,
             onThumbnailCaptured = { previewUri ->
                 if (!isReleased) {
-                    onPhotoCaptured(mapOf("uri" to previewUri))
+                    onPhotoCaptured(CameraEvents.createOnPhotoCaptured(uri = previewUri))
                 }
             }
         )

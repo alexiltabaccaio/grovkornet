@@ -1,0 +1,82 @@
+# yaml-language-server: $schema=./camera-events.schema.json
+events:
+  - name: onDebugUpdate
+    scope: view
+    frequency: high
+    properties:
+      - name: fps
+        type: number
+      - name: hwFps
+        type: number
+      - name: resolution
+        type: string
+      - name: timestamp
+        type: number
+        optional: true
+
+  - name: onExposureUpdate
+    scope: view
+    frequency: low
+    properties:
+      - name: iso
+        type: number
+      - name: shutterSpeed
+        type: number
+      - name: focusDistance
+        type: number
+        optional: true
+      - name: activeCameraId
+        type: string
+        optional: true
+      - name: noiseReduction
+        type: number
+        optional: true
+
+  - name: onCapabilitiesUpdate
+    scope: view
+    frequency: low
+    properties:
+      - name: supportsFocus
+        type: boolean
+      - name: isoMin
+        type: number
+        optional: true
+      - name: isoMax
+        type: number
+        optional: true
+      - name: availableCameras
+        type: array
+        properties:
+          - name: id
+            type: string
+          - name: focalLength
+            type: number
+          - name: focalLength35mm
+            type: number
+
+  - name: onPhotoCaptured
+    scope: view
+    frequency: low
+    properties:
+      - name: uri
+        type: string
+
+  - name: onTorchStateChanged
+    scope: view
+    frequency: low
+    properties:
+      - name: enabled
+        type: boolean
+
+  - name: onDeviceHealthUpdate
+    scope: module
+    frequency: low
+    properties:
+      - name: thermalState
+        type: string
+        enum:
+          - normal
+          - warning
+          - critical
+      - name: isLowRam
+        type: boolean

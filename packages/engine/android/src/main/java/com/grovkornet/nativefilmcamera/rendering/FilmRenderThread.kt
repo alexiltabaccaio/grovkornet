@@ -9,6 +9,7 @@ import android.view.Choreographer
 import android.view.Surface
 import com.grovkornet.nativefilmcamera.state.CameraConfiguration
 import com.grovkornet.nativefilmcamera.BuildConfig
+import com.grovkornet.nativefilmcamera.events.CameraEvents
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicLong
 
@@ -172,11 +173,11 @@ open class FilmRenderThread(
                 if (!isReleased.get()) {
                     val now = System.currentTimeMillis()
                     if (now - lastDebugUpdateTime >= 500) {
-                        onDebugUpdate(mapOf(
-                            "fps" to stampedFps,
-                            "resolution" to "${cameraWidth}x${cameraHeight}",
-                            "hwFps" to actualFps,
-                            "timestamp" to now.toDouble()
+                        onDebugUpdate(CameraEvents.createOnDebugUpdate(
+                            fps = stampedFps.toDouble(),
+                            hwFps = actualFps.toDouble(),
+                            resolution = "${cameraWidth}x${cameraHeight}",
+                            timestamp = now.toDouble()
                         ))
                         lastDebugUpdateTime = now
                     }

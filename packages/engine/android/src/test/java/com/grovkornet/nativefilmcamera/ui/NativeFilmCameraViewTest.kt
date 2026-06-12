@@ -10,6 +10,7 @@ import com.grovkornet.nativefilmcamera.camera.CameraEngine
 import com.grovkornet.nativefilmcamera.capture.ThumbnailCaptureService
 import com.grovkornet.nativefilmcamera.managers.CameraTorchManager
 import com.grovkornet.nativefilmcamera.rendering.FilmRenderThread
+import com.grovkornet.nativefilmcamera.events.CameraEvents
 import io.mockk.*
 import org.junit.After
 import org.junit.Assert.*
@@ -240,12 +241,12 @@ class NativeFilmCameraViewTest {
         // 1. onExposureUpdate
         cameraListener.onExposureUpdate(200, 0.02, 1.2f, 2, "cam_back")
         verify { 
-            mockOnExposureUpdate(mapOf(
-                "iso" to 200,
-                "shutterSpeed" to 0.02,
-                "focusDistance" to 1.2f.toDouble(),
-                "noiseReduction" to 2,
-                "activeCameraId" to "cam_back"
+            mockOnExposureUpdate(CameraEvents.createOnExposureUpdate(
+                iso = 200.0,
+                shutterSpeed = 0.02,
+                focusDistance = 1.2f.toDouble(),
+                noiseReduction = 2.0,
+                activeCameraId = "cam_back"
             )) 
         }
 
@@ -268,11 +269,11 @@ class NativeFilmCameraViewTest {
         assertEquals(1280, view.cameraWidth)
         assertEquals(720, view.cameraHeight)
         verify { renderThreadInstance.updateCameraResolution(1280, 720) }
-        verify { mockOnDebugUpdate(mapOf("resolution" to "1280x720")) }
-
+        verify { mockOnDebugUpdate(CameraEvents.createOnDebugUpdate(fps = 0.0, hwFps = 0.0, resolution = "1280x720")) }
+        
         // 4. onPhotoCaptured
         cameraListener.onPhotoCaptured("file:///image.jpg")
-        verify { mockOnPhotoCaptured(mapOf("uri" to "file:///image.jpg")) }
+        verify { mockOnPhotoCaptured(CameraEvents.createOnPhotoCaptured("file:///image.jpg")) }
     }
 
     @Test
@@ -286,7 +287,7 @@ class NativeFilmCameraViewTest {
         // Trigger thumbnail captured callback
         assertTrue(thumbnailSlot.isCaptured)
         thumbnailSlot.captured("file:///thumb.png")
-        verify { mockOnPhotoCaptured(mapOf("uri" to "file:///thumb.png")) }
+        verify { mockOnPhotoCaptured(CameraEvents.createOnPhotoCaptured("file:///thumb.png")) }
 
         // 2. scheduler execution
         val schedulerField = NativeFilmCameraView::class.java.getDeclaredField("updateScheduler")
@@ -320,7 +321,7 @@ class NativeFilmCameraViewTest {
         val onTorchStateChangedCallback = torchCallbackSlot.captured
         onTorchStateChangedCallback(true)
         assertTrue(view.config.torchEnabled)
-        verify { mockOnTorchStateChanged(mapOf("enabled" to true)) }
+        verify { mockOnTorchStateChanged(CameraEvents.createOnTorchStateChanged(true)) }
 
         // Trigger callback during reconfiguration window (< 2 seconds)
         // Set lastReconfigureTime reflectively

@@ -4,6 +4,7 @@ import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import com.grovkornet.nativefilmcamera.errors.CameraErrorFactory
 import com.grovkornet.nativefilmcamera.ui.NativeFilmCameraView
+import com.grovkornet.nativefilmcamera.events.CameraEvents
 import kotlin.math.roundToInt
 
 class NativeFilmCameraModule : Module() {
@@ -22,9 +23,9 @@ class NativeFilmCameraModule : Module() {
       deviceHealthManager = com.grovkornet.nativefilmcamera.managers.DeviceHealthManager(
         ctx,
         onDeviceHealthUpdate = { thermalState, isLowRam ->
-          this@NativeFilmCameraModule.sendEvent("onDeviceHealthUpdate", mapOf(
-            "thermalState" to thermalState,
-            "isLowRam" to isLowRam
+          this@NativeFilmCameraModule.sendEvent("onDeviceHealthUpdate", CameraEvents.createOnDeviceHealthUpdate(
+            thermalState = thermalState,
+            isLowRam = isLowRam
           ))
         }
       ).apply {
