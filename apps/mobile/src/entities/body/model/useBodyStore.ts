@@ -59,7 +59,6 @@ export const useBodyStore = create<BodyStore>((set, get) => ({
   // @@GEN_SETTERS_START@@
   setEv: (value) => {
     const { ev, evAuto, isoAuto, shutterSpeedAuto } = get();
-    logger.debug('BodyStore', `Setting Ev: ${value}`);
     ev.value = value;
     evAuto.value = false;
     isoAuto.value = true;
@@ -86,7 +85,6 @@ export const useBodyStore = create<BodyStore>((set, get) => ({
   },
   setIso: (value) => {
     const { iso, isoAuto, shutterSpeedAuto, evAuto, ev } = get();
-    logger.debug('BodyStore', `Setting Iso: ${value}`);
     iso.value = value;
     isoAuto.value = false;
     shutterSpeedAuto.value = false;
@@ -96,7 +94,6 @@ export const useBodyStore = create<BodyStore>((set, get) => ({
   },
   setShutterSpeed: (value) => {
     const { shutterSpeed, shutterSpeedAuto, isoAuto, evAuto, ev } = get();
-    logger.debug('BodyStore', `Setting Shutter Speed: ${value}`);
     shutterSpeed.value = value;
     shutterSpeedAuto.value = false;
     isoAuto.value = false;

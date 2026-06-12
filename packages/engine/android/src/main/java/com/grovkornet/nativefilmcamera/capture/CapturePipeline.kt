@@ -22,6 +22,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
@@ -42,6 +44,7 @@ class CapturePipeline(
 
     private val activeCaptures = java.util.concurrent.atomic.AtomicInteger(0)
     private var releasePending = false
+    private val memoryMutex = Mutex()
 
     fun takePicture(imageCapture: ImageCapture) {
         shutterSound.play(MediaActionSound.SHUTTER_CLICK)
@@ -79,77 +82,81 @@ class CapturePipeline(
 
     private suspend fun processAndSave(image: ImageProxy) = withContext(Dispatchers.Default) {
         val procStartTime = System.currentTimeMillis()
-        var bitmap: Bitmap? = null
-        var originalExifMap: Map<String, String> = emptyMap()
         
-        try {
-            val rotation = image.imageInfo.rotationDegrees
-            val buffer = image.planes[0].buffer
-            val bytes = ByteArray(buffer.remaining())
-            buffer.get(bytes)
+        // 1. Light and fast extraction (allowed to run concurrently to free CameraX buffer quickly)
+        val rotation = image.imageInfo.rotationDegrees
+        val buffer = image.planes[0].buffer
+        val bytes = ByteArray(buffer.remaining())
+        buffer.get(bytes)
+        
+        image.close() // Unfreeze camera preview immediately!
+        
+        // 2. Heavy memory allocation and processing (serialized with a Mutex to prevent OOM)
+        memoryMutex.withLock {
+            var bitmap: Bitmap? = null
+            var originalExifMap: Map<String, String> = emptyMap()
             
-            originalExifMap = java.io.ByteArrayInputStream(bytes).use { stream ->
-                ExifMetadataManager.extractMetadata(stream)
+            try {
+                originalExifMap = java.io.ByteArrayInputStream(bytes).use { stream ->
+                    ExifMetadataManager.extractMetadata(stream)
+                }
+
+                val rawBitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
+                bitmap = ImageProcessorPipeline.rotateAndMirror(rawBitmap, rotation, config.isSelfieCamera)
+            } catch (e: Exception) {
+                Log.e(TAG, "Failed to decode photo buffer", e)
             }
 
-            val rawBitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
-            bitmap = ImageProcessorPipeline.rotateAndMirror(rawBitmap, rotation, config.isSelfieCamera)
-        } catch (e: Exception) {
-            Log.e(TAG, "Failed to decode photo buffer", e)
-        } finally {
-            // Close image proxy immediately to unfreeze CameraX preview stream!
-            image.close()
-        }
+            if (bitmap == null) return@withLock
 
-        if (bitmap == null) return@withContext
+            try {
+                // Crop to target aspect ratio
+                val cropped = ImageUtils.cropToAspectRatio(bitmap, config.aspectRatio)
+                if (cropped != bitmap) {
+                    bitmap.recycle()
+                    bitmap = cropped
+                }
 
-        try {
-            // Crop to target aspect ratio
-            val cropped = ImageUtils.cropToAspectRatio(bitmap, config.aspectRatio)
-            if (cropped != bitmap) {
-                bitmap.recycle()
-                bitmap = cropped
-            }
+                // Scale to target resolution
+                val scaled = ImageProcessorPipeline.scaleToTargetResolution(bitmap, config.resolutionSetting)
+                
+                // Process the full-resolution image
+                val processed = ImageProcessorPipeline.processRenderPipeline(scaled, config, context, offscreenProcessor)
+                if (scaled != processed) {
+                    scaled.recycle()
+                }
 
-            // Scale to target resolution
-            val scaled = ImageProcessorPipeline.scaleToTargetResolution(bitmap, config.resolutionSetting)
-            
-            // Process the full-resolution image
-            val processed = ImageProcessorPipeline.processRenderPipeline(scaled, config, context, offscreenProcessor)
-            if (scaled != processed) {
-                scaled.recycle()
-            }
+                val watermarked = WatermarkEngine.embedSignature(processed)
+                if (watermarked != processed) {
+                    processed.recycle()
+                }
 
-            val watermarked = WatermarkEngine.embedSignature(processed)
-            if (watermarked != processed) {
-                processed.recycle()
-            }
+                // 1. Get URI from MediaStore
+                val uri = galleryManager.createGalleryUri()
+                if (uri == null) {
+                    Log.e(TAG, "Failed to create Gallery URI")
+                    watermarked.recycle()
+                    return@withLock
+                }
 
-            // 1. Get URI from MediaStore
-            val uri = galleryManager.createGalleryUri()
-            if (uri == null) {
-                Log.e(TAG, "Failed to create Gallery URI")
+                // 2. Compress directly to MediaStore
+                context.contentResolver.openOutputStream(uri)?.use { os ->
+                    watermarked.compress(Bitmap.CompressFormat.JPEG, 95, os)
+                }
                 watermarked.recycle()
-                return@withContext
-            }
 
-            // 2. Compress directly to MediaStore
-            context.contentResolver.openOutputStream(uri)?.use { os ->
-                watermarked.compress(Bitmap.CompressFormat.JPEG, 95, os)
-            }
-            watermarked.recycle()
+                // 3. Write EXIF directly to MediaStore URI
+                ExifMetadataManager.writeMetadata(context, uri, originalExifMap)
 
-            // 3. Write EXIF directly to MediaStore URI
-            ExifMetadataManager.writeMetadata(context, uri, originalExifMap)
-
-            withContext(Dispatchers.Main) {
-                listener.onPhotoCaptured(uri.toString())
+                withContext(Dispatchers.Main) {
+                    listener.onPhotoCaptured(uri.toString())
+                }
+                if (BuildConfig.DEBUG) {
+                    Log.d(TAG, "Processing complete in ${System.currentTimeMillis() - procStartTime}ms: $uri")
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "Failed to process photo", e)
             }
-            if (BuildConfig.DEBUG) {
-                Log.d(TAG, "Processing complete in ${System.currentTimeMillis() - procStartTime}ms: $uri")
-            }
-        } catch (e: Exception) {
-            Log.e(TAG, "Failed to process photo", e)
         }
     }
 

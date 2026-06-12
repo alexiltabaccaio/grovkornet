@@ -157,13 +157,11 @@ export const useFilmStore = create<FilmStore>((set, get) => ({
     get().isSelfieCamera.value = value;
   },
   setSaturation: (value) => {
-    logger.debug('FilmStore', `Setting Saturation: ${value}`);
     get().saturation.value = value;
     getNitroConfig().saturation = value;
   },
   setContrast: (value) => {
     const { contrast, contrastAuto } = get();
-    logger.debug('FilmStore', `Setting Contrast: ${value}`);
     contrast.value = value;
     getNitroConfig().contrast = value;
     contrastAuto.value = false;
@@ -172,7 +170,6 @@ export const useFilmStore = create<FilmStore>((set, get) => ({
   },
   setGrainIntensity: (value) => {
     const { grainIntensity, grainEnabled } = get();
-    logger.debug('FilmStore', `Setting Grain Intensity: ${value}`);
     grainIntensity.value = value;
     getNitroConfig().grainIntensity = value;
     grainEnabled.value = value > 0;
@@ -201,7 +198,6 @@ export const useFilmStore = create<FilmStore>((set, get) => ({
   },
   setTemperature: (value) => {
     const { temperature, temperatureAuto } = get();
-    logger.debug('FilmStore', `Setting Temperature: ${value}`);
     temperature.value = value;
     getNitroConfig().whiteBalance = value;
     temperatureAuto.value = false;
@@ -209,7 +205,6 @@ export const useFilmStore = create<FilmStore>((set, get) => ({
   },
   setTint: (value) => {
     const { tint, temperatureAuto } = get();
-    logger.debug('FilmStore', `Setting Tint: ${value}`);
     tint.value = value;
     getNitroConfig().tint = value;
     temperatureAuto.value = false;
@@ -217,7 +212,6 @@ export const useFilmStore = create<FilmStore>((set, get) => ({
   },
   setBloomIntensity: (value) => {
     const { bloomIntensity, bloomEnabled } = get();
-    logger.debug('FilmStore', `Setting Bloom Intensity: ${value}`);
     bloomIntensity.value = value;
     getNitroConfig().bloomIntensity = value;
     bloomEnabled.value = value > 0;
@@ -225,7 +219,6 @@ export const useFilmStore = create<FilmStore>((set, get) => ({
 
   },
   setChromaticAberration: (value) => {
-    logger.debug('FilmStore', `Setting Chromatic Aberration: ${value}`);
     get().chromaticAberration.value = value;
     getNitroConfig().chromaticAberration = value;
   },
@@ -234,7 +227,6 @@ export const useFilmStore = create<FilmStore>((set, get) => ({
     getNitroConfig().chromaShiftDirection = value;
   },
   setSharpening: (value) => {
-    logger.debug('FilmStore', `Setting Sharpening: ${value}`);
     get().sharpening.value = value;
     getNitroConfig().sharpening = value;
   },

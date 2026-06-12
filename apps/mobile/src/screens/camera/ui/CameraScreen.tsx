@@ -1,4 +1,4 @@
-import React, { Profiler, useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { StyleSheet, View, Platform, StatusBar } from 'react-native';
 import Animated, { useAnimatedStyle, interpolate, Extrapolation } from 'react-native-reanimated';
 import { useCameraPermissions } from '../lib/useCameraPermissions';
@@ -68,13 +68,6 @@ export const CameraScreen = () => {
     ? (StatusBar.currentHeight ?? 24) 
     : 47;
 
-  const onRenderViewfinder = useCallback((id: string, phase: string, duration: number) => {
-    if (__DEV__ && duration > 60) logger.warn('UI', `Viewfinder render took ${duration.toFixed(2)}ms`);
-  }, []);
-
-  const onRenderControlPanel = useCallback((id: string, phase: string, duration: number) => {
-    if (__DEV__ && duration > 60) logger.warn('UI', `ControlPanel render took ${duration.toFixed(2)}ms`);
-  }, []);
 
   const viewfinderContainerStyle = useMemo(() => ({
     flex: 1, 
@@ -108,10 +101,7 @@ export const CameraScreen = () => {
     <View style={styles.container}>
       <GestureController footerTranslateY={footerTranslateY} drawerAnimation={drawerAnimation}>
         <View style={viewfinderContainerStyle}>
-          {/* 60ms threshold is set to monitor realistic frame drops, avoiding dev mode / bundler overhead noise */}
-          <Profiler id="Viewfinder" onRender={onRenderViewfinder}>
-            <Viewfinder cameraKey={cameraKey} />
-          </Profiler>
+          <Viewfinder cameraKey={cameraKey} />
         </View>
       </GestureController>
       <Header />
@@ -139,10 +129,7 @@ export const CameraScreen = () => {
         </View>
       </Animated.View>
 
-      {/* 60ms threshold filters out initial mount/unmount and dev overhead but flags real rendering bottlenecks */}
-      <Profiler id="ControlPanel" onRender={onRenderControlPanel}>
-        <ControlPanel translateY={footerTranslateY} drawerAnimation={drawerAnimation} galleryTransition={galleryTransition} />
-      </Profiler>
+      <ControlPanel translateY={footerTranslateY} drawerAnimation={drawerAnimation} galleryTransition={galleryTransition} />
 
       {shouldRenderGallery && (
         <GalleryViewer 

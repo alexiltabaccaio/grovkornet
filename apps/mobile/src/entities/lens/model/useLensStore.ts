@@ -27,7 +27,6 @@ export const useLensStore = create<LensStore>((set, get) => ({
   },
 
   setCameraAuto: (value) => {
-    logger.debug('LensStore', `Setting Camera Auto: ${value}`);
     set({ cameraAuto: value });
     usePreferencesStore.getState().setCameraAutoPref(value);
   },
@@ -40,7 +39,6 @@ export const useLensStore = create<LensStore>((set, get) => ({
   },
   setFocusDistance: (value) => {
     const { focusDistance, focusAuto } = get();
-    logger.debug('LensStore', `Setting Focus Distance: ${value}`);
     focusDistance.value = value;
     focusAuto.value = false;
     usePreferencesStore.getState().setFocusDistancePref(value);
