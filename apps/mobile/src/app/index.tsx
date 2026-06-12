@@ -13,11 +13,11 @@ import './providers/i18n';
 import './store-assertions';
 
 import i18n from 'i18next';
-import { useBodyStore, setBodyParameterChangeListener } from '@entities/body';
+import { useBodyStore } from '@entities/body';
 import { useLensStore } from '@entities/lens';
-import { setFilmParameterChangeListener } from '@entities/film';
 import { usePreferencesStore } from '@entities/preferences';
-import { applyPreset, markAsCustomized } from '@features/system-settings';
+import { applyPreset, initPreferenceSync } from '@features/system-settings';
+import { initNativeSync } from '@features/camera-controls';
 import { setHapticsEnabledChecker } from '@shared/lib/haptics';
 
 import * as SystemUI from 'expo-system-ui';
@@ -90,17 +90,9 @@ export function App() {
     // Initialize the preset thumbnail generator in the background
     const unsubscribeThumb = initThumbnailGenerator();
 
-    // Register listeners to mark preset as customized on manual changes
-    if (typeof setFilmParameterChangeListener === 'function') {
-      setFilmParameterChangeListener(() => {
-        markAsCustomized();
-      });
-    }
-    if (typeof setBodyParameterChangeListener === 'function') {
-      setBodyParameterChangeListener(() => {
-        markAsCustomized();
-      });
-    }
+    // Initialize Sync Managers for Native Camera JSI and User Preferences
+    initNativeSync();
+    initPreferenceSync();
 
     // Apply the favorite preset or fallback to default on startup, 
     // ignoring the last active preset (which might have been 'customized')

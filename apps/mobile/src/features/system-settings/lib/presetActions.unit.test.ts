@@ -1,6 +1,6 @@
 import { usePresetStore, DEFAULT_FILM_PAYLOAD, DEFAULT_BODY_PAYLOAD } from '@entities/preset';
-import { useFilmStore, setFilmParameterChangeListener } from '@entities/film';
-import { useBodyStore, setBodyParameterChangeListener } from '@entities/body';
+import { useFilmStore, setFilmStoreListener } from '@entities/film';
+import { useBodyStore, setBodyStoreListener } from '@entities/body';
 import { addPreset, applyPreset, markAsCustomized, removePreset, nextQuickPreset, prevQuickPreset, arePayloadsEqual } from './presetActions';
 
 jest.mock('@grovkornet/engine', () => ({
@@ -290,10 +290,12 @@ describe('presetActions', () => {
 
   describe('Non-preset parameters changes', () => {
     it('should not mark preset as customized or clear customized payload on changing non-preset parameters', () => {
-      setFilmParameterChangeListener(() => {
+      setFilmStoreListener((paramName) => {
+        if (paramName && !(paramName in DEFAULT_FILM_PAYLOAD)) return;
         markAsCustomized();
       });
-      setBodyParameterChangeListener(() => {
+      setBodyStoreListener((paramName) => {
+        if (paramName && !(paramName in DEFAULT_BODY_PAYLOAD)) return;
         markAsCustomized();
       });
 

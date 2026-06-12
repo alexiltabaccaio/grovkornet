@@ -4,6 +4,7 @@ import { render, act, fireEvent } from '@testing-library/react-native';
 import { Parameters } from './Parameters';
 import { useSystemStore } from '@entities/system';
 import { useFilmStore } from '@entities/film';
+import * as filmControls from '@features/film-controls';
 import { useBodyStore } from '@entities/body';
 import { useLensStore } from '@entities/lens';
 import { DEFAULT_TORCH_STRENGTH } from '@grovkornet/shared';
@@ -12,7 +13,18 @@ import { DEFAULT_TORCH_STRENGTH } from '@grovkornet/shared';
 jest.mock('@features/film-controls', () => {
   const React = require('react');
   const { Button } = require('react-native');
+  const actual = jest.requireActual('@features/film-controls');
+  const mockResetFilmEffect = jest.fn();
   return { 
+    ...actual,
+    resetFilmEffect: mockResetFilmEffect,
+    resetFilmParameter: jest.fn((param) => {
+      if (['grain', 'chroma_shift', 'sharpening', 'noise_reduction', 'scanlines', 'pixelation'].includes(param)) {
+        mockResetFilmEffect(param);
+        return true;
+      }
+      return actual.resetFilmParameter(param);
+    }),
     TextureModule: ({ handlePressWithDouble }: any) => (
       <Button testID="btn-grain" title="Texture" onPress={() => {
         handlePressWithDouble('grain', () => {});
@@ -49,7 +61,9 @@ jest.mock('@features/film-controls', () => {
 jest.mock('@features/lens-controls', () => {
   const React = require('react');
   const { Button } = require('react-native');
+  const actual = jest.requireActual('@features/lens-controls');
   return {
+    ...actual,
     OpticsModule: ({ handlePressWithDouble }: any) => (
       <Button testID="btn-optics" title="Optics" onPress={() => {
         handlePressWithDouble('focus', () => {});
@@ -64,7 +78,9 @@ jest.mock('@features/lens-controls', () => {
 jest.mock('@features/body-controls', () => {
   const React = require('react');
   const { Button } = require('react-native');
+  const actual = jest.requireActual('@features/body-controls');
   return {
+    ...actual,
     ExposureModule: ({ handlePressWithDouble }: any) => (
       <Button testID="btn-exposure" title="Exposure" onPress={() => {
         handlePressWithDouble('ev', () => {});
@@ -124,7 +140,7 @@ describe('Parameters', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     
-    spyResetEffect = jest.spyOn(useFilmStore.getState(), 'resetEffect');
+    spyResetEffect = jest.spyOn(filmControls, 'resetFilmEffect');
     spySetEvAuto = jest.spyOn(useBodyStore.getState(), 'setEvAuto');
     spySetIsoAuto = jest.spyOn(useBodyStore.getState(), 'setIsoAuto');
     spySetShutterSpeedAuto = jest.spyOn(useBodyStore.getState(), 'setShutterSpeedAuto');

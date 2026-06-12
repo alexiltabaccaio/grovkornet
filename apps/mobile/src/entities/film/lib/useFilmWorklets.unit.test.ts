@@ -27,7 +27,7 @@ describe('useFilmWorklets', () => {
     film.setBloomIntensity(0);
     film.setVignetteIntensity(0);
     film.setTemperatureAuto(true);
-    film.resetEffect('saturation');
+    film.setSaturation(DEFAULT_SATURATION);
   });
 
   it('correctly updates grain parameters in worklets', () => {

@@ -4,6 +4,7 @@ import { render, fireEvent, waitFor, act } from '@testing-library/react-native';
 import { CameraScreen } from '@screens/camera';
 import { useSystemStore } from '@entities/system';
 import { useFilmStore } from '@entities/film';
+import { resetFilmEffect } from '@features/film-controls';
 import { DEFAULT_GRAIN_INTENSITY } from '@grovkornet/shared';
 
 // Mock Viewfinder to avoid native issues during integration test
@@ -20,8 +21,8 @@ describe('FilmEmulationStyles Integration', () => {
     act(() => {
       useSystemStore.getState().setActiveSection('none');
       useSystemStore.getState().setActiveModule('none');
-      useFilmStore.getState().resetEffect('grain');
-      useFilmStore.getState().resetEffect('chromatic_aberration');
+      resetFilmEffect('grain');
+      resetFilmEffect('chromatic_aberration');
     });
   });
 
@@ -52,7 +53,7 @@ describe('FilmEmulationStyles Integration', () => {
 
     // Reset effect and verify it returns to default
     act(() => {
-      useFilmStore.getState().resetEffect('grain');
+      resetFilmEffect('grain');
     });
 
     expect(useFilmStore.getState().grainIntensity.value).toBe(DEFAULT_GRAIN_INTENSITY);

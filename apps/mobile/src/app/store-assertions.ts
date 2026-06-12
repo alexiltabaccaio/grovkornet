@@ -70,9 +70,7 @@ type FilmActionsKeys =
   | 'setHueCyan'
   | 'setHueBlue'
   | 'setHuePurple'
-  | 'setHueMagenta'
-  | 'resetEffect'
-  | 'resetParameter';
+  | 'setHueMagenta';
 
 type FilmExcludedKeys = 'capabilities' | GeneratedFilmExcludedKeys;
 
@@ -102,8 +100,7 @@ type BodyActionsKeys =
   | 'setPreviewQuality'
   | 'setForce60fpsCrop'
   | 'setCapabilities'
-  | 'setZoom'
-  | 'resetParameter';
+  | 'setZoom';
 
 type BodyExcludedKeys =
   | 'fps'

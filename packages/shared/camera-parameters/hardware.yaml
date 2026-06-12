@@ -147,10 +147,7 @@ parameters:
       store: lens
       default: DEFAULT_FOCUS_AUTO
       type: boolean
-      setSideEffects:
-        - store: preferences
-          target: setFocusAutoPref
-          value: value
+
   - name: iso
     category: hardware
     kotlin:
@@ -214,12 +211,6 @@ parameters:
       setSideEffects:
         - target: focusAuto
           value: "false"
-        - store: preferences
-          target: setFocusDistancePref
-          value: value
-        - store: preferences
-          target: setFocusAutoPref
-          value: "false"
   - name: torchEnabled
     category: hardware
     kotlin:
@@ -264,10 +255,7 @@ parameters:
       store: lens
       default: DEFAULT_CAMERA_ID
       type: string
-      setSideEffects:
-        - store: preferences
-          target: setCameraIdPref
-          value: value
+
   - name: resolutionSetting
     category: hardware
     kotlin:

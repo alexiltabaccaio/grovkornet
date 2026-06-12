@@ -5,6 +5,23 @@ import { useSystemStore } from '@entities/system';
 import { useBodyStore } from '@entities/body';
 import { useLensStore } from '@entities/lens';
 import { useFilmStore } from '@entities/film';
+import * as filmControls from '@features/film-controls';
+
+jest.mock('@features/film-controls', () => {
+  const actual = jest.requireActual('@features/film-controls');
+  const mockResetFilmEffect = jest.fn();
+  return {
+    ...actual,
+    resetFilmEffect: mockResetFilmEffect,
+    resetFilmParameter: jest.fn((param) => {
+      if (['grain', 'chroma_shift', 'sharpening', 'noise_reduction', 'scanlines', 'pixelation'].includes(param)) {
+        mockResetFilmEffect(param);
+        return true;
+      }
+      return actual.resetFilmParameter(param);
+    }),
+  };
+});
 
 describe('Modules', () => {
   beforeEach(() => {
@@ -146,7 +163,7 @@ describe('Modules', () => {
   });
 
   it('resets all parameters of a module on double press', () => {
-    const spyResetEffect = jest.spyOn(useFilmStore.getState(), 'resetEffect');
+    const spyResetEffect = jest.spyOn(filmControls, 'resetFilmEffect');
 
     act(() => {
       useSystemStore.setState({

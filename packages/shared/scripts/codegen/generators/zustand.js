@@ -69,9 +69,8 @@ function generateZustandStoreForStore(parameters, storeName, filePath, initMarke
       const capitalized = name.charAt(0).toUpperCase() + name.slice(1);
       const argName = name === 'noiseReductionMode' ? 'mode' : 'value';
       
-      const needsLogger = ['saturation', 'contrast', 'grainIntensity', 'chromaticAberration', 'sharpening', 'bloomIntensity', 'temperature', 'tint', 'iso', 'ev', 'shutterSpeed', 'focusDistance'].includes(name);
-      const storeLabel = storeName.charAt(0).toUpperCase() + storeName.slice(1) + 'Store';
-      const loggerLine = needsLogger ? `logger.debug('${storeLabel}', \`Setting ${capitalized.replace(/([A-Z])/g, ' $1').trim()}: \${${argName}}\`);` : '';
+      const storeLabel = storeName.charAt(0).toUpperCase() + storeName.slice(1);
+      const loggerLine = '';
       
       let body = '';
       if (p.zustand.setSideEffects && p.zustand.setSideEffects.length > 0) {
@@ -90,25 +89,16 @@ function generateZustandStoreForStore(parameters, storeName, filePath, initMarke
         } else {
           body += `set({ ${name}: ${argName} });\n`;
         }
-        if (p.nitro) {
-          body += `getNitroConfig().${p.name} = ${argName};\n`;
-        }
         
         const conditionalEffects = p.zustand.setSideEffects.filter(se => se.condition);
         const directEffects = p.zustand.setSideEffects.filter(se => !se.condition);
         
         for (const se of directEffects) {
-          if (se.store === 'preferences') {
-            body += `usePreferencesStore.getState().${se.target}(${se.value});\n`;
-          } else {
+          if (se.store !== 'preferences') {
             if (isSharedValue(parameters, se.target)) {
               body += `${se.target}.value = ${se.value};\n`;
             } else {
               body += `set({ ${se.target}: ${se.value} });\n`;
-            }
-            const targetParam = parameters.find(pr => pr.name === se.target || (pr.zustand && pr.zustand.name === se.target));
-            if (targetParam && targetParam.nitro) {
-              body += `getNitroConfig().${targetParam.name} = ${se.value};\n`;
             }
           }
         }
@@ -116,24 +106,16 @@ function generateZustandStoreForStore(parameters, storeName, filePath, initMarke
         if (conditionalEffects.length > 0) {
           const conditions = [...new Set(conditionalEffects.map(se => se.condition))];
           for (const cond of conditions) {
-            const effectsForCond = conditionalEffects.filter(se => se.condition === cond);
-            body += `if (${cond}) {\n  ` + effectsForCond.map(se => {
-              if (se.store === 'preferences') {
-                return `usePreferencesStore.getState().${se.target}(${se.value});`;
-              } else {
-                let effectStr = '';
+            const effectsForCond = conditionalEffects.filter(se => se.condition === cond && se.store !== 'preferences');
+            if (effectsForCond.length > 0) {
+              body += `if (${cond}) {\n  ` + effectsForCond.map(se => {
                 if (isSharedValue(parameters, se.target)) {
-                  effectStr = `${se.target}.value = ${se.value};`;
+                  return `${se.target}.value = ${se.value};`;
                 } else {
-                  effectStr = `set({ ${se.target}: ${se.value} });`;
+                  return `set({ ${se.target}: ${se.value} });`;
                 }
-                const targetParam = parameters.find(pr => pr.name === se.target || (pr.zustand && pr.zustand.name === se.target));
-                if (targetParam && targetParam.nitro) {
-                  effectStr += `\n  getNitroConfig().${targetParam.name} = ${se.value};`;
-                }
-                return effectStr;
-              }
-            }).join('\n  ') + '\n}\n';
+              }).join('\n  ') + '\n}\n';
+            }
           }
         }
       } else {
@@ -145,10 +127,9 @@ function generateZustandStoreForStore(parameters, storeName, filePath, initMarke
         } else {
           body += `set({ ${name}: ${argName} });`;
         }
-        if (p.nitro) {
-          body += `\ngetNitroConfig().${p.name} = ${argName};`;
-        }
       }
+      
+      body += `\nnotify${storeLabel}StoreListener('${name}');`;
       
       return `set${capitalized}: (${argName}) => {\n  ${body.split('\n').join('\n  ')}\n},`;
     })
@@ -167,7 +148,7 @@ function generateZustandStore(parameters) {
   // 3. Generate Lens Store
   generateZustandStoreForStore(parameters, 'lens', FILE_PATHS.lensStore, '  // @@GEN_STATE_START@@', '  // @@GEN_STATE_END@@');
 
-  // 4. Generate Reset Cases specifically for Film Store
+  // 4. Generate Reset Cases specifically for Film Store (relocated to filmActions.ts)
   const filmParams = parameters.filter(p => p.zustand && (p.zustand.store || 'film') === 'film');
   const groups = {};
   for (const p of filmParams) {
@@ -195,6 +176,7 @@ function generateZustandStore(parameters) {
       caseLabels = `case 'temperature':\ncase 'tint':`;
       params.push(...groups['temperature']);
       processed.add('temperature');
+      processed.add('tint'); // Make sure we mark both as processed
     }
     
     processed.add(rg);
@@ -202,15 +184,13 @@ function generateZustandStore(parameters) {
     const assignments = [];
     for (const p of params) {
       const name = p.zustand.name || p.name;
-      assignments.push(`state.${name}.value = ${p.zustand.default};`);
-      if (p.nitro) {
-        assignments.push(`getNitroConfig().${p.name} = ${p.zustand.default};`);
-      }
+      const capitalized = name.charAt(0).toUpperCase() + name.slice(1);
+      assignments.push(`store.set${capitalized}(${p.zustand.default});`);
     }
     
     if (params.some(p => p.name === 'whiteBalance' || p.name === 'tint')) {
-      if (!assignments.some(a => a.includes('temperatureAuto'))) {
-        assignments.push(`state.temperatureAuto.value = true;`);
+      if (!assignments.some(a => a.includes('setTemperatureAuto'))) {
+        assignments.push(`store.setTemperatureAuto(true);`);
       }
     }
     
@@ -218,18 +198,10 @@ function generateZustandStore(parameters) {
   }
   
   const resetContent = cases.join('\n');
-  replaceBetweenMarkers(FILE_PATHS.zustandStore, '      // @@GEN_RESET_START@@', '      // @@GEN_RESET_END@@', resetContent, '      ');
+  
+  // Populate the reset cases in filmActions.ts
+  replaceBetweenMarkers(FILE_PATHS.filmActions, '    // @@GEN_RESET_START@@', '    // @@GEN_RESET_END@@', resetContent, '    ');
 
-  // 5. Generate Excluded Film Setters
-  const excludedParams = parameters.filter(p => p.zustand && (p.zustand.store || 'film') === 'film' && p.excludeFromPreset);
-  const excludedSettersContent = excludedParams
-    .map(p => {
-      const name = p.zustand.name || p.name;
-      const capitalized = name.charAt(0).toUpperCase() + name.slice(1);
-      return `'set${capitalized}',`;
-    })
-    .join('\n');
-  replaceBetweenMarkers(FILE_PATHS.zustandStore, '  // @@GEN_EXCLUDED_SETTERS_START@@', '  // @@GEN_EXCLUDED_SETTERS_END@@', excludedSettersContent, '  ');
 }
 
 module.exports = {
