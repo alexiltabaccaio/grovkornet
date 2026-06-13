@@ -1,21 +1,27 @@
+import { useGalleryStore } from '@entities/gallery';
 import React from 'react';
 import { renderHook, act } from '@testing-library/react-native';
 import { useGalleryOverlay } from './useGalleryOverlay';
 import * as reanimatedModule from 'react-native-reanimated';
 
-// Mock system store
+// Mock gallery store
 let mockLatestCapturedUri: string | null = null;
 let mockLatestPreviewUri: string | null = null;
 
-jest.mock('@entities/system', () => {
-  const mockSystemStore = (fn: any) => {
+jest.mock('@entities/gallery', () => {
+  const ReactActual = jest.requireActual('react');
+  const mockGalleryStore = (fn: any) => {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    const [galleryOpen, setGalleryOpen] = ReactActual.useState(false);
     return fn({
       latestCapturedUri: mockLatestCapturedUri,
       latestPreviewUri: mockLatestPreviewUri,
+      isOpen: galleryOpen,
+      setIsOpen: setGalleryOpen,
     });
   };
   return {
-    useSystemStore: mockSystemStore,
+    useGalleryStore: mockGalleryStore,
   };
 });
 

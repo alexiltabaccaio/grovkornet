@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet, StyleProp, ViewStyle } from 'react-native';
 import Animated, { useAnimatedStyle, interpolate, Extrapolation, SharedValue } from 'react-native-reanimated';
 import { useShallow } from 'zustand/shallow';
-import { useSystemStore } from '@entities/system';
+import { useControlPanelStore } from '@entities/system';
 
 import { SliderPanel } from './components/SliderPanel';
 import { TorchPanel, FpsPanel, ResolutionPanel, AspectRatioPanel } from '@features/body-controls';
@@ -39,7 +39,7 @@ interface PanelsProps {
 }
 
 export const Panels = React.memo(({ translateY }: PanelsProps) => {
-  const { activeParameter } = useSystemStore(useShallow(state => ({
+  const { activeParameter } = useControlPanelStore(useShallow(state => ({
     activeParameter: state.activeParameter,
   })));
 

@@ -6,8 +6,8 @@ import { GenericParameterModule } from './GenericParameterModule';
 const mockSetActiveParameter = jest.fn();
 let mockCurrentActiveParameter = 'none';
 
-jest.mock('../../model/useSystemStore', () => ({
-  useSystemStore: jest.fn((fn?: (state: any) => unknown) => {
+jest.mock('../../model/useControlPanelStore', () => ({
+  useControlPanelStore: jest.fn((fn?: (state: any) => unknown) => {
     const state = {
       activeParameter: mockCurrentActiveParameter,
       setActiveParameter: mockSetActiveParameter,

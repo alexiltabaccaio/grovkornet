@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useRef } from 'react';
-import { useShallow } from 'zustand/shallow';
-import { useSystemStore } from '@entities/system';
+import { useControlPanelStore } from '@entities/system';
 import { Gesture } from 'react-native-gesture-handler';
 import { useSharedValue, withTiming, withSpring, SharedValue } from 'react-native-reanimated';
+import { useInteractionContext } from '@shared/lib';
 
 interface UseControlPanelGesturesProps {
   externalTranslateY?: SharedValue<number>;
@@ -15,9 +15,8 @@ export const useControlPanelGestures = ({
   externalTranslateY,
   externalDrawerAnimation,
 }: UseControlPanelGesturesProps = {}) => {
-  const { activeSection } = useSystemStore(useShallow(state => ({
-    activeSection: state.activeSection,
-  })));
+  const activeSection = useControlPanelStore(state => state.activeSection);
+  const { isInteractable } = useInteractionContext();
 
   const localTranslateY = useSharedValue(activeSection === 'none' ? 0 : -50);
   const translateY = externalTranslateY || localTranslateY;
@@ -45,6 +44,7 @@ export const useControlPanelGestures = ({
 
   const panGesture = useMemo(() => {
     return Gesture.Pan()
+      .enabled(activeSection !== 'none' && isInteractable)
       .activeOffsetY([-15, 15]) // Increased to prevent small movements (wiggles) during tap from hijacking the event
       .failOffsetX([-15, 15]) // Fails the gesture if moving horizontally, unlocking touch events
       .onStart(() => {
@@ -75,7 +75,7 @@ export const useControlPanelGestures = ({
           mass: 1,
         });
       });
-  }, [startY, translateY]);
+  }, [startY, translateY, activeSection, isInteractable]);
 
   return {
     translateY,

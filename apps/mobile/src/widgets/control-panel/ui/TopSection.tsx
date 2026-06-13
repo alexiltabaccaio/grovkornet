@@ -2,14 +2,14 @@ import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useShallow } from 'zustand/shallow';
-import { useSystemStore } from '@entities/system';
+import { useSystemStore, useControlPanelStore } from '@entities/system';
 
 export const TopSection = () => {
-  const { activeSection, lastNonNoneSection, isLayoutOverlayEnabled } = useSystemStore(useShallow(state => ({
+  const { activeSection, lastNonNoneSection } = useControlPanelStore(useShallow(state => ({
     activeSection: state.activeSection,
     lastNonNoneSection: state.lastNonNoneSection,
-    isLayoutOverlayEnabled: state.isLayoutOverlayEnabled,
   })));
+  const isLayoutOverlayEnabled = useSystemStore(state => state.isLayoutOverlayEnabled);
   const { t } = useTranslation();
 
   const renderSection = activeSection === 'none' ? lastNonNoneSection : activeSection;

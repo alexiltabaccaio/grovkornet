@@ -1,10 +1,10 @@
 import { useEffect, useRef } from 'react';
 import { NativeRendererRef } from '@entities/lens';
-import { useSystemStore } from '@entities/system';
+import { useCameraStore } from '@entities/camera';
 
 export const useCameraCapture = () => {
   const cameraRef = useRef<NativeRendererRef>(null);
-  const isCapturing = useSystemStore(state => state.isCapturing);
+  const isCapturing = useCameraStore(state => state.isCapturing);
 
   useEffect(() => {
     if (isCapturing && cameraRef.current) {

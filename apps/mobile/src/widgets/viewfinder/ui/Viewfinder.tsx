@@ -4,13 +4,15 @@ import { useShallow } from 'zustand/shallow';
 import { useBodyStore, useBodyWorklets } from '@entities/body';
 import { useLensStore } from '@entities/lens';
 import { useFilmStore } from '@entities/film';
-import { useSystemStore } from '@entities/system';
+import { useCameraStore } from '@entities/camera';
+import { useGalleryStore } from '@entities/gallery';
 import { NativeRenderer } from '@entities/lens';
 import Animated, { useDerivedValue, useSharedValue, useAnimatedProps, useAnimatedReaction, runOnJS } from 'react-native-reanimated';
 import { useDeviceRotation } from '@shared/lib/hooks/useDeviceRotation';
 import { GestureDetector, Gesture } from 'react-native-gesture-handler';
 import { useVerificationStore } from '@entities/verification';
 import { FlashOverlay } from '@features/body-controls';
+import { useInteractionContext } from '@shared/lib';
 import { useCameraCapture } from '../lib/useCameraCapture';
 import { useCameraEvents } from '../lib/useCameraEvents';
 
@@ -54,12 +56,14 @@ export const Viewfinder = React.memo(({ cameraKey }: ViewfinderProps) => {
   } = useFilmStore.getState();
 
   // 2. Stable actions
-  const setLatestPreviewUri = useSystemStore.getState().setLatestPreviewUri;
-  const setLatestCapturedUri = useSystemStore.getState().setLatestCapturedUri;
+  const setLatestPreviewUri = useGalleryStore.getState().setLatestPreviewUri;
+  const setLatestCapturedUri = useGalleryStore.getState().setLatestCapturedUri;
 
   // 3. Reactive primitives (subscribed to cause re-renders only when necessary)
-  const isCameraSecure = useSystemStore(state => state.isCameraSecure);
-  const thermalState = useSystemStore(state => state.thermalState);
+  const isCameraSecure = useCameraStore(state => state.isCameraSecure);
+  const thermalState = useCameraStore(state => state.thermalState);
+  const { isInteractable } = useInteractionContext();
+  
   const capabilities = useBodyStore(state => state.capabilities);
   const { cameraAuto, cameraId } = useLensStore(useShallow(state => ({
     cameraAuto: state.cameraAuto,
@@ -102,8 +106,6 @@ export const Viewfinder = React.memo(({ cameraKey }: ViewfinderProps) => {
     return Math.max(1, Math.round(torchStrength.value * (capabilities.maxTorchStrength ?? 1)));
   }, [capabilities.maxTorchStrength]);
 
-
-
   const resolvedForce60fpsCrop = useDerivedValue(() => {
     return force60fpsCrop.value === 1;
   });
@@ -113,13 +115,14 @@ export const Viewfinder = React.memo(({ cameraKey }: ViewfinderProps) => {
 
   const gestures = React.useMemo(() => {
     return Gesture.Pinch()
+      .enabled(isInteractable)
       .onStart(() => {
         startZoom.value = zoom.value;
       })
       .onChange((event) => {
         bodyWorklets.updateZoom(startZoom.value * event.scale);
       });
-  }, [zoom, bodyWorklets, startZoom]);
+  }, [zoom, bodyWorklets, startZoom, isInteractable]);
 
   const rotationY = useDeviceRotation();
   const { scanlinesMode } = useFilmStore.getState();
@@ -231,8 +234,6 @@ export const Viewfinder = React.memo(({ cameraKey }: ViewfinderProps) => {
 });
 
 Viewfinder.displayName = 'Viewfinder';
-// (Viewfinder as React.NamedExoticComponent<ViewfinderProps> & { whyDidYouRender?: boolean }).whyDidYouRender = true;
-
 
 const styles = StyleSheet.create({
   container: {
@@ -240,4 +241,3 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
 });
-

@@ -4,7 +4,7 @@ import { ScrollView } from 'react-native-gesture-handler';
 import { useTranslation } from 'react-i18next';
 
 import { useShallow } from 'zustand/shallow';
-import { useSystemStore, ModuleType } from '@entities/system';
+import { useSystemStore, useControlPanelStore, ModuleType } from '@entities/system';
 import { PillButton } from '@shared/ui';
 import { useDoublePress } from '@shared/lib/hooks/useDoublePress';
 import { useResetTool } from '../lib/useResetTool';
@@ -17,16 +17,15 @@ export const Modules = () => {
     activeModule, 
     lastNonNoneSection,
     lastNonNoneModule,
-    setActiveModule, 
-    isLayoutOverlayEnabled 
-  } = useSystemStore(useShallow(state => ({
+    setActiveModule 
+  } = useControlPanelStore(useShallow(state => ({
     activeSection: state.activeSection,
     activeModule: state.activeModule,
     lastNonNoneSection: state.lastNonNoneSection,
     lastNonNoneModule: state.lastNonNoneModule,
     setActiveModule: state.setActiveModule,
-    isLayoutOverlayEnabled: state.isLayoutOverlayEnabled
   })));
+  const isLayoutOverlayEnabled = useSystemStore(state => state.isLayoutOverlayEnabled);
   const { t } = useTranslation();
   const resetTool = useResetTool();
 

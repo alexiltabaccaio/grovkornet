@@ -2,7 +2,7 @@ import React from 'react';
 import { render, fireEvent } from '@testing-library/react-native';
 import { PresetsModule } from './PresetsModule';
 import { usePresetStore, DEFAULT_FILM_PAYLOAD, DEFAULT_BODY_PAYLOAD } from '@entities/preset';
-import { useSystemStore } from '@entities/system';
+import { useSystemStore, useControlPanelStore } from '@entities/system';
 
 import { applyPreset } from '../../lib/presetActions';
 
@@ -20,7 +20,7 @@ describe('PresetsModule', () => {
       userPresets: [],
     });
 
-    useSystemStore.setState({
+    useControlPanelStore.setState({
       activeParameter: 'none',
     });
   });
@@ -53,7 +53,7 @@ describe('PresetsModule', () => {
 
     fireEvent.press(userBtn);
     expect(applyPreset).toHaveBeenCalledWith('user-1');
-    expect(useSystemStore.getState().activeParameter).toBe('presets');
+    expect(useControlPanelStore.getState().activeParameter).toBe('presets');
   });
 
   it('renders Personalizzato button if customizedPayload is not null', () => {

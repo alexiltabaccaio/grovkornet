@@ -2,7 +2,7 @@
 import React from 'react';
 import { render, fireEvent, waitFor, act } from '@testing-library/react-native';
 import { CameraScreen } from '@screens/camera';
-import { useSystemStore } from '@entities/system';
+import { useSystemStore, useControlPanelStore } from '@entities/system';
 import { useFilmStore } from '@entities/film';
 import { resetFilmEffect } from '@features/film-controls';
 import { DEFAULT_GRAIN_INTENSITY } from '@grovkornet/shared';
@@ -19,8 +19,8 @@ jest.mock('@widgets/viewfinder', () => {
 describe('FilmEmulationStyles Integration', () => {
   beforeEach(() => {
     act(() => {
-      useSystemStore.getState().setActiveSection('none');
-      useSystemStore.getState().setActiveModule('none');
+      useControlPanelStore.getState().setActiveSection('none');
+      useControlPanelStore.getState().setActiveModule('none');
       resetFilmEffect('grain');
       resetFilmEffect('chromatic_aberration');
     });
@@ -41,7 +41,7 @@ describe('FilmEmulationStyles Integration', () => {
     });
 
     // Verify UI Store updated to film section
-    expect(useSystemStore.getState().activeSection).toBe('film');
+    expect(useControlPanelStore.getState().activeSection).toBe('film');
 
     // Adjust grain intensity and verify grainEnabled toggles automatically
     act(() => {

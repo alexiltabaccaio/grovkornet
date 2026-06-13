@@ -13,13 +13,13 @@ import {
   DEFAULT_BOUND_MAGENTA_RED,
 } from '@grovkornet/shared';
 import { useDoublePress } from '@shared/lib/hooks/useDoublePress';
-import { useSystemStore } from '@entities/system';
+import { useControlPanelStore } from '@entities/system';
 
 export type ColorIndex = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7;
 
 export const useSelectiveHue = () => {
   const [activeColorIndex, setActiveColorIndex] = React.useState<ColorIndex>(0);
-  const activeParameter = useSystemStore(useShallow(state => state.activeParameter));
+  const activeParameter = useControlPanelStore(useShallow(state => state.activeParameter));
   const [prevActiveParameter, setPrevActiveParameter] = React.useState(activeParameter);
 
   if (activeParameter !== prevActiveParameter) {

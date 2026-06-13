@@ -6,9 +6,12 @@ import { useCameraAppState } from '../lib/useCameraAppState';
 import { useGalleryOverlay } from '../lib/useGalleryOverlay';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-
 import { useShallow } from 'zustand/shallow';
 import { useSystemStore } from '@entities/system';
+import { useGalleryStore } from '@entities/gallery';
+import { useCameraStore } from '@entities/camera';
+import { InteractionContext } from '@shared/lib';
+
 import { ControlPanel } from '@widgets/control-panel';
 import { Viewfinder, DeviceHealthWarningBanner } from '@widgets/viewfinder';
 import { Header } from '@widgets/header';
@@ -19,15 +22,21 @@ import { CaptureThumbnail, useGalleryPrefetch } from '@features/gallery';
 import { GalleryViewer } from '@widgets/gallery-viewer';
 import { logger } from '@shared/lib/logger';
 
-
-
 export const CameraScreen = () => {
   const insets = useSafeAreaInsets();
-  const { isFpsOverlayEnabled, triggerCapture, latestCapturedUri, latestPreviewUri } = useSystemStore(useShallow(state => ({
+  
+  const { isFpsOverlayEnabled } = useSystemStore(useShallow(state => ({
     isFpsOverlayEnabled: state.isFpsOverlayEnabled,
+  })));
+
+  const { triggerCapture } = useCameraStore(useShallow(state => ({
     triggerCapture: state.triggerCapture,
+  })));
+
+  const { latestCapturedUri, latestPreviewUri, isOpen } = useGalleryStore(useShallow(state => ({
     latestCapturedUri: state.latestCapturedUri,
     latestPreviewUri: state.latestPreviewUri,
+    isOpen: state.isOpen,
   })));
 
   // Start background verification and caching of recently captured photos
@@ -68,7 +77,6 @@ export const CameraScreen = () => {
     ? (StatusBar.currentHeight ?? 24) 
     : 47;
 
-
   const viewfinderContainerStyle = useMemo(() => ({
     flex: 1, 
     width: '100%' as const, 
@@ -99,37 +107,49 @@ export const CameraScreen = () => {
 
   return (
     <View style={styles.container}>
-      <GestureController footerTranslateY={footerTranslateY} drawerAnimation={drawerAnimation}>
-        <View style={viewfinderContainerStyle}>
-          <Viewfinder cameraKey={cameraKey} />
-        </View>
-      </GestureController>
-      <Header />
-
-      {isFpsOverlayEnabled && <DebugOverlay />}
-      
-      <Animated.View 
-        style={[
-          bottomControlsStyle,
-          animatedBottomControlsStyle
-        ]} 
-        pointerEvents="box-none"
-      >
-        <View style={styles.controlsRow} pointerEvents="box-none">
-          <View style={styles.sideControl} pointerEvents="box-none">
-            <CaptureThumbnail onPress={openGallery} />
+      <InteractionContext.Provider value={{ isInteractable: !isOpen }}>
+        <GestureController footerTranslateY={footerTranslateY} drawerAnimation={drawerAnimation}>
+          <View style={viewfinderContainerStyle}>
+            <Viewfinder cameraKey={cameraKey} />
           </View>
-          <ShutterButton onPress={triggerCapture} translateY={footerTranslateY} />
-          <View style={styles.sideControl} pointerEvents="box-none">
-            <CameraFlipButton />
-          </View>
-        </View>
-        <View style={styles.presetSelectorContainer} pointerEvents="box-none">
-          <QuickPresetSelector />
-        </View>
-      </Animated.View>
+        </GestureController>
+        <Header />
 
-      <ControlPanel translateY={footerTranslateY} drawerAnimation={drawerAnimation} galleryTransition={galleryTransition} />
+        {isFpsOverlayEnabled && <DebugOverlay />}
+        
+        <Animated.View 
+          style={[
+            bottomControlsStyle,
+            animatedBottomControlsStyle
+          ]} 
+          pointerEvents="box-none"
+        >
+          <View style={styles.controlsRow} pointerEvents="box-none">
+            <View style={styles.sideControl} pointerEvents="box-none">
+              <CaptureThumbnail onPress={openGallery} />
+            </View>
+            <ShutterButton onPress={triggerCapture} translateY={footerTranslateY} />
+            <View style={styles.sideControl} pointerEvents="box-none">
+              <CameraFlipButton />
+            </View>
+          </View>
+          <View style={styles.presetSelectorContainer} pointerEvents="box-none">
+            <QuickPresetSelector />
+          </View>
+        </Animated.View>
+
+        <ControlPanel translateY={footerTranslateY} drawerAnimation={drawerAnimation} galleryTransition={galleryTransition} />
+
+        <AddPresetModal />
+        <DeletePresetModal />
+
+        <View 
+          style={bannerContainerStyle}
+          pointerEvents="box-none"
+        >
+          <DeviceHealthWarningBanner />
+        </View>
+      </InteractionContext.Provider>
 
       {shouldRenderGallery && (
         <GalleryViewer 
@@ -139,16 +159,6 @@ export const CameraScreen = () => {
           header={headerElement}
         />
       )}
-      
-      <AddPresetModal />
-      <DeletePresetModal />
-
-      <View 
-        style={bannerContainerStyle}
-        pointerEvents="box-none"
-      >
-        <DeviceHealthWarningBanner />
-      </View>
     </View>
   );
 };

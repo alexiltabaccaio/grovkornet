@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, StyleProp, ViewStyle } from 'react-native';
 import { useShallow } from 'zustand/shallow';
-import { useSystemStore, ParameterControl } from '@entities/system';
+import { useSystemStore, useControlPanelStore, ParameterControl } from '@entities/system';
 import { useBodyStore, useBodyWorklets } from '@entities/body';
 import { useTranslation } from 'react-i18next';
 import { DEFAULT_TORCH_STRENGTH } from '@grovkornet/shared';
@@ -20,11 +20,12 @@ export const TorchSubPanel = React.memo(({ animatedStyle: _animatedStyle }: Torc
   const { t } = useTranslation();
   const bodyWorklets = useBodyWorklets();
 
-  const { activeDetailPanel, setActiveDetailPanel, isLayoutOverlayEnabled } = useSystemStore(useShallow(state => ({
+  const { activeDetailPanel, setActiveDetailPanel } = useControlPanelStore(useShallow(state => ({
     activeDetailPanel: state.activeDetailPanel,
     setActiveDetailPanel: state.setActiveDetailPanel,
-    isLayoutOverlayEnabled: state.isLayoutOverlayEnabled,
   })));
+
+  const isLayoutOverlayEnabled = useSystemStore(state => state.isLayoutOverlayEnabled);
 
   const {
     torchStrength,

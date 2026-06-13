@@ -14,7 +14,9 @@ interface ChromaShiftSubPanelProps {
 
 export const ChromaShiftSubPanel = ({ animatedStyle: _animatedStyle }: ChromaShiftSubPanelProps) => {
   const { t } = useTranslation();
-  const isLayoutOverlayEnabled = useSystemStore((s) => s.isLayoutOverlayEnabled);
+  const isLayoutOverlayEnabled = useSystemStore(
+    (s) => s.isLayoutOverlayEnabled
+  );
   
   const { chromaShiftDirection, setChromaShiftDirection, chromaShiftInvert, setChromaShiftInvert } = useFilmStore(
     useShallow((state) => ({

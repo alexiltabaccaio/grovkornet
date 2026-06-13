@@ -1,3 +1,5 @@
+import { useCameraStore } from '@entities/camera';
+import { useGalleryStore } from '@entities/gallery';
 /* eslint-disable @typescript-eslint/no-require-imports */
 import React from 'react';
 import { render, fireEvent, act } from '@testing-library/react-native';
@@ -17,31 +19,61 @@ jest.mock('react-i18next', () => ({
 }));
 
 jest.mock('@entities/system', () => {
-  const mockSystemStoreFn = jest.fn((fn?: (state: any) => unknown) => {
+  const state = {
+    isFpsOverlayEnabled: true,
+    isLayoutOverlayEnabled: false,
+    isLogsEnabled: true,
+  };
+  const controlPanelState = {
+    activeSection: 'none',
+    activeModule: 'none',
+    activeParameter: 'none',
+    setActiveSection: jest.fn(),
+    setActiveModule: jest.fn(),
+    setActiveParameter: jest.fn(),
+  };
+  return {
+    useSystemStore: Object.assign(
+      jest.fn((fn?: (state: any) => unknown) => fn ? fn(state) : state),
+      {
+        getState: jest.fn(() => state),
+        setState: jest.fn(),
+      }
+    ),
+    useControlPanelStore: Object.assign(
+      jest.fn((fn?: (state: any) => unknown) => fn ? fn(controlPanelState) : controlPanelState),
+      {
+        getState: jest.fn(() => controlPanelState),
+        setState: jest.fn(),
+      }
+    ),
+  };
+});
+
+jest.mock('@entities/camera', () => {
+  const state = {
+    triggerCapture: mockTriggerCapture,
+  };
+  return {
+    useCameraStore: jest.fn((fn?: (state: any) => unknown) => fn ? fn(state) : state),
+  };
+});
+
+jest.mock('@entities/gallery', () => {
+  const ReactActual = jest.requireActual('react');
+  const mockGalleryStoreFn = jest.fn((fn?: (state: any) => unknown) => {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    const [galleryOpen, setGalleryOpen] = ReactActual.useState(false);
     const state = {
-      activeTab: 'none',
-      activeModule: 'none',
-      activeParameter: 'none',
-      isFpsOverlayEnabled: true,
       latestCapturedUri: 'file:///test.jpg',
-      triggerCapture: mockTriggerCapture,
-      activeSection: 'none',
+      latestPreviewUri: null,
+      isOpen: galleryOpen,
+      setIsOpen: setGalleryOpen,
     };
     return fn ? fn(state) : state;
   });
-
-  (mockSystemStoreFn as any).getState = jest.fn(() => ({
-    activeTab: 'none',
-    activeModule: 'none',
-    activeParameter: 'none',
-    isFpsOverlayEnabled: true,
-    latestCapturedUri: 'file:///test.jpg',
-    triggerCapture: mockTriggerCapture,
-    activeSection: 'none',
-  }));
-
   return {
-    useSystemStore: mockSystemStoreFn,
+    useGalleryStore: mockGalleryStoreFn,
   };
 });
 

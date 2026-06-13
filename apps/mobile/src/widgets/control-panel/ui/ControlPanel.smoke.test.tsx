@@ -2,7 +2,7 @@ import React from 'react';
 import { render } from '@testing-library/react-native';
 import { ControlPanel } from './ControlPanel';
 
-import { useSystemStore, SectionType, ModuleType, ParameterType } from '@entities/system';
+import { useSystemStore, useControlPanelStore, SectionType, ModuleType, ParameterType } from '@entities/system';
 import { useBodyStore } from '@entities/body';
 import { useLensStore } from '@entities/lens';
 import { useFilmStore } from '@entities/film';
@@ -28,6 +28,7 @@ jest.mock('./Parameters', () => ({
 
 jest.mock('@entities/system', () => ({
   useSystemStore: jest.fn(),
+  useControlPanelStore: jest.fn(),
   ParameterControl: 'ParameterControl',
   ParameterPanelWrapper: 'ParameterPanelWrapper',
 }));
@@ -122,6 +123,7 @@ describe('ControlPanel Component Stability Test', () => {
 
   beforeEach(() => {
     (useSystemStore as unknown as jest.Mock).mockReturnValue(mockSystemStoreValue);
+    (useControlPanelStore as unknown as jest.Mock).mockReturnValue(mockSystemStoreValue);
     (useBodyStore as unknown as jest.Mock).mockReturnValue(mockBodyStoreValue);
     (useLensStore as unknown as jest.Mock).mockReturnValue(mockLensStoreValue);
     (useFilmStore as unknown as jest.Mock).mockReturnValue(mockFilmStoreValue);
@@ -133,21 +135,25 @@ describe('ControlPanel Component Stability Test', () => {
   });
 
   it('should render correctly when film section is active', () => {
-    (useSystemStore as unknown as jest.Mock).mockReturnValue({
+    const activeState = {
       ...mockSystemStoreValue,
-      activeSection: 'film',
-      activeModule: 'tone',
-    });
+      activeSection: 'film' as SectionType,
+      activeModule: 'tone' as ModuleType,
+    };
+    (useSystemStore as unknown as jest.Mock).mockReturnValue(activeState);
+    (useControlPanelStore as unknown as jest.Mock).mockReturnValue(activeState);
     const { toJSON } = render(<ControlPanel />);
     expect(toJSON()).toBeDefined();
   });
 
   it('should render correctly when texture section is active', () => {
-    (useSystemStore as unknown as jest.Mock).mockReturnValue({
+    const activeState = {
       ...mockSystemStoreValue,
-      activeSection: 'film',
-      activeModule: 'texture',
-    });
+      activeSection: 'film' as SectionType,
+      activeModule: 'texture' as ModuleType,
+    };
+    (useSystemStore as unknown as jest.Mock).mockReturnValue(activeState);
+    (useControlPanelStore as unknown as jest.Mock).mockReturnValue(activeState);
     const { toJSON } = render(<ControlPanel />);
     expect(toJSON()).toBeDefined();
   });

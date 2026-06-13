@@ -1,33 +1,34 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { useSharedValue, withTiming, runOnJS } from 'react-native-reanimated';
-import { useSystemStore } from '@entities/system';
+import { useGalleryStore } from '@entities/gallery';
 import { useShallow } from 'zustand/shallow';
 
 export const useGalleryOverlay = () => {
-  const { latestCapturedUri, latestPreviewUri } = useSystemStore(useShallow(state => ({
+  const { latestCapturedUri, latestPreviewUri, isOpen, setIsOpen } = useGalleryStore(useShallow(state => ({
     latestCapturedUri: state.latestCapturedUri,
     latestPreviewUri: state.latestPreviewUri,
+    isOpen: state.isOpen,
+    setIsOpen: state.setIsOpen,
   })));
 
-  const [shouldRenderGallery, setShouldRenderGallery] = useState(false);
   const galleryTransition = useSharedValue(0);
 
   const openGallery = useCallback(() => {
-    setShouldRenderGallery(true);
+    setIsOpen(true);
     galleryTransition.value = withTiming(1, { duration: 300 });
-  }, [galleryTransition]);
+  }, [galleryTransition, setIsOpen]);
 
   const closeGallery = useCallback(() => {
     if (galleryTransition.value <= 0) {
-      setShouldRenderGallery(false);
+      setIsOpen(false);
       return;
     }
     galleryTransition.value = withTiming(0, { duration: 300 }, (finished) => {
       if (finished) {
-        runOnJS(setShouldRenderGallery)(false);
+        runOnJS(setIsOpen)(false);
       }
     });
-  }, [galleryTransition]);
+  }, [galleryTransition, setIsOpen]);
 
   // Track previous URIs to prevent the jiggle effect from killing the opening animation
   const prevUris = useRef({ captured: latestCapturedUri, preview: latestPreviewUri });
@@ -38,7 +39,7 @@ export const useGalleryOverlay = () => {
     const previewChanged = prevUris.current.preview !== latestPreviewUri;
     prevUris.current = { captured: latestCapturedUri, preview: latestPreviewUri };
 
-    if ((capturedChanged || previewChanged) && shouldRenderGallery) {
+    if ((capturedChanged || previewChanged) && isOpen) {
       // Modify the value on the JS thread to ensure Reanimated's JS proxy
       // correctly re-binds and notifies all child components (like GalleryViewer)
       // after the re-render caused by latestCapturedUri updating.
@@ -47,10 +48,10 @@ export const useGalleryOverlay = () => {
         galleryTransition.value = 1;
       });
     }
-  }, [latestCapturedUri, latestPreviewUri, shouldRenderGallery, galleryTransition]);
+  }, [latestCapturedUri, latestPreviewUri, isOpen, galleryTransition]);
 
   return {
-    shouldRenderGallery,
+    shouldRenderGallery: isOpen,
     galleryTransition,
     openGallery,
     closeGallery,

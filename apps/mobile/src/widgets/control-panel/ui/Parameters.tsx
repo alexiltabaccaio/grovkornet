@@ -2,7 +2,7 @@ import React from 'react';
 import { Text, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useShallow } from 'zustand/shallow';
-import { useSystemStore } from '@entities/system';
+import { useControlPanelStore } from '@entities/system';
 import { useDoublePress } from '@shared/lib/hooks/useDoublePress';
 import { useResetTool } from '../lib/useResetTool';
 import { controlPanelStyles } from './ControlPanel.styles';
@@ -19,7 +19,7 @@ import { PreferencesModule, PresetsModule, ThemeModule, DebugModule } from '@fea
  * moving state consumption into the individual modules.
  */
 export const Parameters = () => {
-  const { activeModule, lastNonNoneModule } = useSystemStore(useShallow(state => ({
+  const { activeModule, lastNonNoneModule } = useControlPanelStore(useShallow(state => ({
     activeModule: state.activeModule,
     lastNonNoneModule: state.lastNonNoneModule,
   })));

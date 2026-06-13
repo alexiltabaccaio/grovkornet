@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, View, TouchableOpacity, Dimensions } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { SectionType, useSystemStore } from '@entities/system';
+import { SectionType, useSystemStore, useControlPanelStore } from '@entities/system';
 import { Ionicons } from '@expo/vector-icons';
 import { BottomFooter } from '@shared/ui';
 import * as Haptics from '@shared/lib/haptics';
@@ -16,11 +16,11 @@ interface SectionsProps {
 }
 
 export const Sections = React.memo(({ galleryTransition }: SectionsProps) => {
-  const { activeSection, setActiveSection, isLayoutOverlayEnabled } = useSystemStore(useShallow(state => ({
+  const { activeSection, setActiveSection } = useControlPanelStore(useShallow(state => ({
     activeSection: state.activeSection,
     setActiveSection: state.setActiveSection,
-    isLayoutOverlayEnabled: state.isLayoutOverlayEnabled,
   })));
+  const isLayoutOverlayEnabled = useSystemStore(state => state.isLayoutOverlayEnabled);
   const { t } = useTranslation();
 
   const handleSectionChange = (section: SectionType) => {

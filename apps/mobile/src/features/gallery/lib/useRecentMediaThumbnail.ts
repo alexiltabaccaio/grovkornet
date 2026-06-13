@@ -1,12 +1,12 @@
 import { useEffect } from 'react';
 import { AppState } from 'react-native';
-import { useSystemStore } from '@entities/system';
+import { useGalleryStore } from '@entities/gallery';
 import { useShallow } from 'zustand/shallow';
 import * as MediaLibrary from 'expo-media-library/legacy';
 import { logger } from '@shared/lib/logger';
 
 export const useRecentMediaThumbnail = () => {
-  const { setLatestCapturedUri } = useSystemStore(useShallow(state => ({
+  const { setLatestCapturedUri } = useGalleryStore(useShallow(state => ({
     setLatestCapturedUri: state.setLatestCapturedUri,
   })));
 

@@ -3,7 +3,8 @@ import { StyleSheet, View, Pressable } from 'react-native';
 import { Image } from 'expo-image';
 import Animated, { useSharedValue, useAnimatedStyle, withTiming, Easing, withSpring } from 'react-native-reanimated';
 import { useState } from 'react';
-import { useSystemStore } from '@entities/system';
+import { useCameraStore } from '@entities/camera';
+import { useGalleryStore } from '@entities/gallery';
 import { useShallow } from 'zustand/shallow';
 import * as Haptics from '@shared/lib/haptics';
 import { useRecentMediaThumbnail } from '../lib/useRecentMediaThumbnail';
@@ -13,8 +14,8 @@ interface CaptureThumbnailProps {
 }
 
 export const CaptureThumbnail = React.memo(({ onPress }: CaptureThumbnailProps) => {
-  const { isCapturing, latestPreviewUri, latestCapturedUri } = useSystemStore(useShallow(state => ({
-    isCapturing: state.isCapturing,
+  const isCapturing = useCameraStore(state => state.isCapturing);
+  const { latestPreviewUri, latestCapturedUri } = useGalleryStore(useShallow(state => ({
     latestPreviewUri: state.latestPreviewUri,
     latestCapturedUri: state.latestCapturedUri,
   })));

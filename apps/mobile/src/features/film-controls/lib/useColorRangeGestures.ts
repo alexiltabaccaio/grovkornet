@@ -2,6 +2,7 @@ import { useSharedValue, runOnJS, SharedValue } from 'react-native-reanimated';
 import { Gesture } from 'react-native-gesture-handler';
 import * as Haptics from '@shared/lib/haptics';
 import { unwrap, angleToX, xToAngle } from './colorMath';
+import { useInteractionContext } from '@shared/lib';
 
 interface UseColorRangeGesturesProps {
   trackWidth: SharedValue<number>;
@@ -26,6 +27,7 @@ export const useColorRangeGestures = ({
   leftDefault,
   rightDefault,
 }: UseColorRangeGesturesProps) => {
+  const { isInteractable } = useInteractionContext();
   const dragRefAngle = useSharedValue(0);
   const startXLeft = useSharedValue(0);
   const startXRight = useSharedValue(0);
@@ -52,6 +54,7 @@ export const useColorRangeGestures = ({
   };
 
   const panGesture = Gesture.Pan()
+    .enabled(isInteractable)
     .onStart((event) => {
       dragRefAngle.value = limitLeftShared.value;
       const leftUnwrapped = unwrap(leftShared.value, dragRefAngle.value);
@@ -100,6 +103,7 @@ export const useColorRangeGestures = ({
     });
 
   const doubleTap = Gesture.Tap()
+    .enabled(isInteractable)
     .numberOfTaps(2)
     .maxDistance(20)
     .onEnd(() => {

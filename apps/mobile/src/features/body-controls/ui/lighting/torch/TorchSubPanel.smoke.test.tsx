@@ -18,10 +18,16 @@ jest.mock('@entities/system', () => {
   return {
     useSystemStore: (fn: (state: any) => any) => {
       const state = {
+        isLayoutOverlayEnabled: false,
+      };
+      return typeof fn === 'function' ? fn(state) : state;
+    },
+    useControlPanelStore: (fn: (state: any) => any) => {
+      const state = {
         activeDetailPanel: 'torch_strength',
         setActiveDetailPanel: mockSetActiveDetailPanel,
       };
-      return fn(state);
+      return typeof fn === 'function' ? fn(state) : state;
     },
     ParameterControl: (props: any) => {
       React.useEffect(() => {

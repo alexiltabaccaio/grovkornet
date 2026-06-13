@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, fireEvent, waitFor, act } from '@testing-library/react-native';
 import { CameraScreen } from '@screens/camera';
-import { useSystemStore } from '@entities/system';
+import { useSystemStore, useControlPanelStore } from '@entities/system';
 import { useFilmStore } from '@entities/film';
 
 const mockTakePhoto = jest.fn();
@@ -23,8 +23,8 @@ describe('CameraCapturePipeline Integration', () => {
   beforeEach(() => {
     mockTakePhoto.mockClear();
     act(() => {
-      useSystemStore.getState().setActiveSection('none');
-      useSystemStore.getState().setActiveModule('none');
+      useControlPanelStore.getState().setActiveSection('none');
+      useControlPanelStore.getState().setActiveModule('none');
       useFilmStore.getState().setNoiseReductionAuto(true);
       useFilmStore.getState().setNoiseReductionMode(1);
     });

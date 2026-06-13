@@ -3,7 +3,7 @@ import React from 'react';
 import { render, act, fireEvent } from '@testing-library/react-native';
 import { Image } from 'expo-image';
 import { Panels } from './Panels';
-import { useSystemStore } from '@entities/system';
+import { useSystemStore, useControlPanelStore } from '@entities/system';
 import { useBodyStore } from '@entities/body';
 
 // Mock Reanimated to execute useAnimatedReaction callback immediately to cover the sync effects
@@ -69,7 +69,7 @@ describe('Panels', () => {
 
   it('renders hidden slider when activeParameter is none', () => {
     act(() => {
-      useSystemStore.getState().setActiveParameter('none');
+      useControlPanelStore.getState().setActiveParameter('none');
     });
     const { toJSON } = render(<Panels translateY={mockTranslateY} />);
     expect(toJSON()).toBeDefined();
@@ -77,7 +77,7 @@ describe('Panels', () => {
 
   it('renders grain basic parameter when activeParameter is grain', () => {
     act(() => {
-      useSystemStore.getState().setActiveParameter('grain');
+      useControlPanelStore.getState().setActiveParameter('grain');
     });
     const { toJSON } = render(<Panels translateY={mockTranslateY} />);
     expect(toJSON()).toBeDefined();
@@ -85,7 +85,7 @@ describe('Panels', () => {
 
   it('renders torch basic parameter when activeParameter is torch and handles toggle', () => {
     act(() => {
-      useSystemStore.getState().setActiveParameter('torch');
+      useControlPanelStore.getState().setActiveParameter('torch');
       useBodyStore.getState().torchState.value = 0;
     });
     const { getByRole } = render(<Panels translateY={mockTranslateY} />);
@@ -102,7 +102,7 @@ describe('Panels', () => {
 
   it('renders chromatic aberration basic parameter when activeParameter is chromatic_aberration', () => {
     act(() => {
-      useSystemStore.getState().setActiveParameter('chromatic_aberration');
+      useControlPanelStore.getState().setActiveParameter('chromatic_aberration');
     });
     const { toJSON } = render(<Panels translateY={mockTranslateY} />);
     expect(toJSON()).toBeDefined();
@@ -110,7 +110,7 @@ describe('Panels', () => {
 
   it('renders language sub-parameters when activeParameter is language', () => {
     act(() => {
-      useSystemStore.getState().setActiveParameter('language');
+      useControlPanelStore.getState().setActiveParameter('language');
     });
     const { UNSAFE_getAllByType } = render(<Panels translateY={mockTranslateY} />);
     const images = UNSAFE_getAllByType(Image);
@@ -119,7 +119,7 @@ describe('Panels', () => {
 
   it('renders resolution settings and conditionally renders 4K preview warning and toggle', () => {
     act(() => {
-      useSystemStore.getState().setActiveParameter('resolution_setting');
+      useControlPanelStore.getState().setActiveParameter('resolution_setting');
       useBodyStore.getState().resolutionSetting.value = 2; // 1080p
     });
 
@@ -133,7 +133,7 @@ describe('Panels', () => {
 
   it('renders slider-only parameters like contrast', () => {
     act(() => {
-      useSystemStore.getState().setActiveParameter('contrast');
+      useControlPanelStore.getState().setActiveParameter('contrast');
     });
     const { toJSON } = render(<Panels translateY={mockTranslateY} />);
     expect(toJSON()).toBeDefined();
@@ -141,14 +141,14 @@ describe('Panels', () => {
 
   it('re-uses the same container root element when switching between different parameters', () => {
     act(() => {
-      useSystemStore.getState().setActiveParameter('contrast');
+      useControlPanelStore.getState().setActiveParameter('contrast');
     });
     const { toJSON, rerender } = render(<Panels translateY={mockTranslateY} />);
     const firstRender = toJSON() as any;
     expect(firstRender?.type).toBe('View');
 
     act(() => {
-      useSystemStore.getState().setActiveParameter('iso');
+      useControlPanelStore.getState().setActiveParameter('iso');
     });
     rerender(<Panels translateY={mockTranslateY} />);
     const secondRender = toJSON() as any;

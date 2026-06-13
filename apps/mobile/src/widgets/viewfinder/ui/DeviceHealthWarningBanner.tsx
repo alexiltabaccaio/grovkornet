@@ -2,12 +2,12 @@ import React, { useEffect, useRef, useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity } from 'react-native';
 import Animated, { FadeIn, FadeOut, useSharedValue, useAnimatedStyle, withRepeat, withTiming, withSequence } from 'react-native-reanimated';
 import { useTranslation } from 'react-i18next';
-import { useSystemStore } from '@entities/system';
+import { useCameraStore } from '@entities/camera';
 import { usePreferencesStore } from '@entities/preferences';
 
 export const DeviceHealthWarningBanner = () => {
   const { t } = useTranslation();
-  const thermalState = useSystemStore(state => state.thermalState);
+  const thermalState = useCameraStore(state => state.thermalState);
   const preferredFps = usePreferencesStore(state => state.fpsSetting) ?? 60;
 
   const [isTextVisible, setIsTextVisible] = useState(false);

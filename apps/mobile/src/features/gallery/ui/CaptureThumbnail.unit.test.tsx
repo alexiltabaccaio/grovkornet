@@ -1,11 +1,11 @@
 import React from 'react';
 import { render, fireEvent } from '@testing-library/react-native';
 import { CaptureThumbnail } from './CaptureThumbnail';
-import { useSystemStore } from '@entities/system';
+import { useGalleryStore } from '@entities/gallery';
 
 describe('CaptureThumbnail', () => {
   beforeEach(() => {
-    const state = useSystemStore.getState();
+    const state = useGalleryStore.getState();
     state.setLatestCapturedUri(null);
   });
 
@@ -15,7 +15,7 @@ describe('CaptureThumbnail', () => {
   });
 
   it('calls onPress when clicked', () => {
-    const state = useSystemStore.getState();
+    const state = useGalleryStore.getState();
     state.setLatestCapturedUri('file:///thumb.jpg');
 
     const onPressMock = jest.fn();

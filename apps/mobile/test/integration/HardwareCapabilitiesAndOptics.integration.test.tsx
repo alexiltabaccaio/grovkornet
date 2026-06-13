@@ -3,7 +3,7 @@ import { render, fireEvent, waitFor, act } from '@testing-library/react-native';
 import { CameraScreen } from '@screens/camera';
 import { useBodyStore } from '@entities/body';
 import { useLensStore } from '@entities/lens';
-import { useSystemStore } from '@entities/system';
+import { useSystemStore, useControlPanelStore } from '@entities/system';
 
 jest.mock('@entities/lens/ui/NativeRenderer', () => {
   const ReactActual = jest.requireActual('react');
@@ -21,8 +21,8 @@ jest.mock('@entities/lens/ui/NativeRenderer', () => {
 describe('HardwareCapabilitiesAndOptics Integration', () => {
   beforeEach(() => {
     act(() => {
-      useSystemStore.getState().setActiveSection('none');
-      useSystemStore.getState().setActiveModule('none');
+      useControlPanelStore.getState().setActiveSection('none');
+      useControlPanelStore.getState().setActiveModule('none');
       useBodyStore.getState().setFpsSetting(60);
     });
   });

@@ -1,3 +1,4 @@
+import { useCameraStore } from '@entities/camera';
 import React, { useEffect } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, View, LogBox } from 'react-native';
@@ -102,8 +103,8 @@ export function App() {
     try {
       sub = NativeCameraEventEmitter.addListener('onDeviceHealthUpdate', (event: { thermalState: 'normal' | 'warning' | 'critical'; isLowRam: boolean }) => {
         logger.info('DeviceHealth', `Received thermalState: ${event.thermalState}, isLowRam: ${event.isLowRam}`);
-        useSystemStore.getState().setThermalState(event.thermalState);
-        useSystemStore.getState().setIsLowRam(event.isLowRam);
+        useCameraStore.getState().setThermalState(event.thermalState);
+        useCameraStore.getState().setIsLowRam(event.isLowRam);
       });
     } catch (error) {
       console.error('Failed to subscribe to onDeviceHealthUpdate event', error);

@@ -6,7 +6,9 @@ import { useSystemStore } from '../../model/useSystemStore';
 
 describe('ParameterPanelWrapper', () => {
   beforeEach(() => {
-    useSystemStore.setState({ isLayoutOverlayEnabled: false });
+    useSystemStore.setState({
+      isLayoutOverlayEnabled: false,
+    });
   });
 
   it('renders children and default layout correctly', () => {
@@ -44,7 +46,9 @@ describe('ParameterPanelWrapper', () => {
   });
 
   it('applies debug styles when isLayoutOverlayEnabled is true', () => {
-    useSystemStore.setState({ isLayoutOverlayEnabled: true });
+    useSystemStore.setState({
+      isLayoutOverlayEnabled: true,
+    });
     
     const { getByText } = render(
       <ParameterPanelWrapper>

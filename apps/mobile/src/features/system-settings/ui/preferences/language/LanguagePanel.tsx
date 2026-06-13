@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleProp, ViewStyle, ImageSourcePropType } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useShallow } from 'zustand/shallow';
-import { useSystemStore } from '@entities/system';
+import { useControlPanelStore } from '@entities/system';
 import { ParameterControl, ParameterPanelWrapper } from '@entities/system';
 import { usePreferencesStore } from '@entities/preferences';
 
@@ -20,7 +20,7 @@ interface LanguagePanelProps {
 export const LanguagePanel = ({ animatedStyle }: LanguagePanelProps) => {
   const { i18n } = useTranslation();
 
-  const { activeDetailPanel, setActiveDetailPanel } = useSystemStore(useShallow(state => ({
+  const { activeDetailPanel, setActiveDetailPanel } = useControlPanelStore(useShallow(state => ({
     activeDetailPanel: state.activeDetailPanel,
     setActiveDetailPanel: state.setActiveDetailPanel,
   })));

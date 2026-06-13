@@ -3,6 +3,7 @@ import { StyleSheet, StyleProp, ViewStyle } from 'react-native';
 import { useShallow } from 'zustand/shallow';
 import { ParameterPanelWrapper } from '@entities/system';
 import { useSystemStore } from '@entities/system';
+import { useCameraStore } from '@entities/camera';
 import { PillButton } from '@shared/ui';
 
 interface DeveloperOptionsPanelProps {
@@ -13,15 +14,19 @@ export const DeveloperOptionsPanel = ({ animatedStyle }: DeveloperOptionsPanelPr
   const {
     isLogsEnabled,
     setIsLogsEnabled,
-    isCameraSecure,
-    setIsCameraSecure,
     isLayoutOverlayEnabled,
   } = useSystemStore(useShallow(state => ({
     isLogsEnabled: state.isLogsEnabled,
     setIsLogsEnabled: state.setIsLogsEnabled,
+    isLayoutOverlayEnabled: state.isLayoutOverlayEnabled,
+  })));
+
+  const {
+    isCameraSecure,
+    setIsCameraSecure,
+  } = useCameraStore(useShallow(state => ({
     isCameraSecure: state.isCameraSecure,
     setIsCameraSecure: state.setIsCameraSecure,
-    isLayoutOverlayEnabled: state.isLayoutOverlayEnabled,
   })));
 
   return (

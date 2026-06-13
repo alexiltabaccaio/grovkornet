@@ -2,16 +2,12 @@ import React, { ReactNode, useMemo } from 'react';
 import { StyleSheet, Dimensions, Platform, StatusBar } from 'react-native';
 import { GestureDetector, Gesture } from 'react-native-gesture-handler';
 import Animated, { useSharedValue, useAnimatedStyle, withTiming, Easing, useAnimatedReaction, SharedValue } from 'react-native-reanimated';
-import { useSystemStore } from '@entities/system';
+import { useControlPanelStore } from '@entities/system';
 import { useShallow } from 'zustand/shallow';
 import { useBodyStore } from '@entities/body';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useInteractionContext } from '@shared/lib';
 
-/**
- * GestureController handles global vertical swipe gestures to update the active camera parameter.
- * It is now generic and follows the Open-Closed Principle by consuming a GestureConfig 
- * provided by the active ParameterControl.
- */
 interface GestureControllerProps {
   children?: ReactNode;
   footerTranslateY?: SharedValue<number>;
@@ -19,11 +15,12 @@ interface GestureControllerProps {
 }
 
 export const GestureController = ({ children, footerTranslateY, drawerAnimation }: GestureControllerProps) => {
-  const { activeSection, setActiveSection } = useSystemStore(useShallow((s) => ({
+  const { activeSection, setActiveSection } = useControlPanelStore(useShallow((s) => ({
     activeSection: s.activeSection,
     setActiveSection: s.setActiveSection,
   })));
 
+  const { isInteractable } = useInteractionContext();
   const insets = useSafeAreaInsets();
   const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 
@@ -120,6 +117,7 @@ export const GestureController = ({ children, footerTranslateY, drawerAnimation 
     const { zoom } = useBodyStore.getState();
 
     const tap = Gesture.Tap()
+      .enabled(isInteractable)
       .runOnJS(true)
       .onBegin(() => {
         hasMoved.value = false;
@@ -162,6 +160,7 @@ export const GestureController = ({ children, footerTranslateY, drawerAnimation 
       });
 
     const pan = Gesture.Pan()
+      .enabled(isInteractable)
       .maxPointers(1)
       .onStart(() => {
         startY.value = translateY.value;
@@ -188,7 +187,7 @@ export const GestureController = ({ children, footerTranslateY, drawerAnimation 
       });
 
     return Gesture.Simultaneous(tap, pan);
-  }, [activeSection, setActiveSection, translateY, startY, hasMoved, footerTranslateY, drawerAnimation, viewportWidth, viewportHeight]);
+  }, [activeSection, setActiveSection, translateY, startY, hasMoved, footerTranslateY, drawerAnimation, viewportWidth, viewportHeight, isInteractable]);
 
   const animatedStyle = useAnimatedStyle(() => {
     return {

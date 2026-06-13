@@ -1,7 +1,7 @@
 import { renderHook, act } from '@testing-library/react-native';
 import { useSelectiveSaturation } from './useSelectiveSaturation';
 import { useFilmStore } from '@entities/film';
-import { useSystemStore } from '@entities/system';
+import { useSystemStore, useControlPanelStore } from '@entities/system';
 import { DEFAULT_SELECTIVE_SATURATION } from '@grovkornet/shared';
 
 // Mock double press to execute double tap callback immediately
@@ -28,7 +28,9 @@ describe('useSelectiveSaturation', () => {
       satPurple: { value: 70 } as any,
       satMagenta: { value: 80 } as any,
     });
-    useSystemStore.setState({ activeParameter: 'saturation' });
+    useControlPanelStore.setState({
+      activeParameter: 'saturation',
+    });
   });
 
   const colors = [
@@ -74,7 +76,9 @@ describe('useSelectiveSaturation', () => {
   });
 
   it('resets color index to 0 when activeParameter changes to saturation', () => {
-    useSystemStore.setState({ activeParameter: 'hue' });
+    useControlPanelStore.setState({
+      activeParameter: 'hue',
+    });
     const { result, rerender } = renderHook(() => useSelectiveSaturation());
 
     act(() => {
@@ -83,7 +87,9 @@ describe('useSelectiveSaturation', () => {
     expect(result.current.activeColorIndex).toBe(3);
 
     act(() => {
-      useSystemStore.setState({ activeParameter: 'saturation' });
+      useControlPanelStore.setState({
+      activeParameter: 'saturation',
+    });
     });
     rerender({});
 

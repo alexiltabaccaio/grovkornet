@@ -3,7 +3,7 @@ import { render, fireEvent } from '@testing-library/react-native';
 import { PresetsPanel } from './PresetsPanel';
 import { DeletePresetModal } from './DeletePresetModal';
 import { usePresetStore, DEFAULT_FILM_PAYLOAD, DEFAULT_BODY_PAYLOAD } from '@entities/preset';
-import { useSystemStore } from '@entities/system';
+import { useSystemStore, useControlPanelStore } from '@entities/system';
 
 jest.mock('react-native', () => {
   const RN = jest.requireActual('react-native');
@@ -33,7 +33,7 @@ describe('PresetsPanel', () => {
       setAddModalVisible: mockSetAddModalVisible,
     });
 
-    useSystemStore.setState({
+    useControlPanelStore.setState({
       activeParameter: 'none',
     });
   });

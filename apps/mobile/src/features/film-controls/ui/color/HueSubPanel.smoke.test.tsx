@@ -1,3 +1,4 @@
+import { useControlPanelStore } from '@entities/system';
 /* eslint-disable @typescript-eslint/no-require-imports, react-hooks/exhaustive-deps */
 import React from 'react';
 import { render, fireEvent } from '@testing-library/react-native';
@@ -113,9 +114,9 @@ jest.mock('@entities/film', () => ({
 describe('HueSubPanel', () => {
   beforeEach(() => {
     const { useSystemStore } = require('@entities/system');
-    useSystemStore.setState({
+    useControlPanelStore.setState({
       activeParameter: 'hue',
-      activeDetailPanel: 'master',
+      activeDetailPanel: 'master' as any,
       selectedColorIndex: 0,
     });
     jest.clearAllMocks();

@@ -2,19 +2,22 @@ import React from 'react';
 import { renderHook, act } from '@testing-library/react-native';
 import { AppState } from 'react-native';
 import { useCameraAppState } from './useCameraAppState';
-import { useSystemStore } from '@entities/system';
+import { useControlPanelStore } from '@entities/system';
 
 import * as reanimatedModule from 'react-native-reanimated';
 
 // Mock the system store
 jest.mock('@entities/system', () => {
-  const mockSystemStore = {
+  const mockControlPanelStore = {
     getState: jest.fn(() => ({
       activeSection: 'none',
     })),
   };
   return {
-    useSystemStore: mockSystemStore,
+    useSystemStore: {
+      getState: jest.fn(() => ({})),
+    },
+    useControlPanelStore: mockControlPanelStore,
   };
 });
 
@@ -43,7 +46,7 @@ describe('useCameraAppState', () => {
     jest.clearAllMocks();
     jest.useFakeTimers();
 
-    (useSystemStore.getState as jest.Mock).mockReturnValue({
+    (useControlPanelStore.getState as jest.Mock).mockReturnValue({
       activeSection: 'none',
     });
 
@@ -120,7 +123,7 @@ describe('useCameraAppState', () => {
 
   it('recovers state correctly when activeSection is not none', () => {
     // Override activeSection to not be 'none'
-    (useSystemStore.getState as jest.Mock).mockReturnValue({
+    (useControlPanelStore.getState as jest.Mock).mockReturnValue({
       activeSection: 'filters',
     });
 

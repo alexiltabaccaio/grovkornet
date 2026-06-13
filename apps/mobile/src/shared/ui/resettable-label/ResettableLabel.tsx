@@ -3,12 +3,14 @@ import { Text, StyleProp, TextStyle, StyleSheet } from 'react-native';
 import Animated, { runOnJS } from 'react-native-reanimated';
 import { GestureDetector, Gesture } from 'react-native-gesture-handler';
 import * as Haptics from '@shared/lib/haptics';
+import { useInteractionContext } from '@shared/lib';
 
 interface ResettableLabelProps {
   label: string;
   onReset?: () => void;
   style?: StyleProp<TextStyle>;
   allowFontScaling?: boolean;
+  enabled?: boolean;
 }
 
 export const ResettableLabel = React.memo(({
@@ -16,7 +18,11 @@ export const ResettableLabel = React.memo(({
   onReset,
   style,
   allowFontScaling = false,
+  enabled,
 }: ResettableLabelProps) => {
+  const { isInteractable } = useInteractionContext();
+  const finalEnabled = enabled !== undefined ? enabled : isInteractable;
+
   if (!onReset) {
     return (
       <Text allowFontScaling={allowFontScaling} style={style}>
@@ -26,6 +32,7 @@ export const ResettableLabel = React.memo(({
   }
 
   const doubleTap = Gesture.Tap()
+    .enabled(finalEnabled)
     .numberOfTaps(2)
     .maxDistance(20)
     .onEnd(() => {

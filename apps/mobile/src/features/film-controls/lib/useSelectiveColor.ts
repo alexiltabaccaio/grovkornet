@@ -14,12 +14,12 @@ import {
   DEFAULT_BOUND_MAGENTA_RED,
 } from '@grovkornet/shared';
 import { useDoublePress } from '@shared/lib/hooks/useDoublePress';
-import { useSystemStore } from '@entities/system';
+import { useControlPanelStore } from '@entities/system';
 
 export type ColorIndex = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7;
 
 export const useSelectiveColor = (type: 'saturation' | 'hue') => {
-  const { activeColorIndex, setActiveColorIndex } = useSystemStore(
+  const { activeColorIndex, setActiveColorIndex } = useControlPanelStore(
     useShallow(state => ({
       activeColorIndex: state.selectedColorIndex as ColorIndex,
       setActiveColorIndex: state.setSelectedColorIndex,

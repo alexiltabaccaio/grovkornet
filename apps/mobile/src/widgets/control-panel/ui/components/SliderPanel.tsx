@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleProp, ViewStyle } from 'react-native';
 import { useShallow } from 'zustand/shallow';
-import { useSystemStore, ParameterType, ParameterControl, ParameterPanelWrapper } from '@entities/system';
+import { useControlPanelStore, ParameterType, ParameterControl, ParameterPanelWrapper } from '@entities/system';
 import { useFilmParameterControlData, FilmParameterType } from '@entities/film';
 import { useBodyParameterControlData, BodyParameterType } from '@entities/body';
 import { useLensParameterControlData, LensParameterType } from '@entities/lens';
@@ -49,7 +49,7 @@ export const SliderPanel = React.memo(({
   animatedStyle,
   isActiveOverride,
 }: SliderPanelProps) => {
-  const { activeDetailPanel } = useSystemStore(
+  const { activeDetailPanel } = useControlPanelStore(
     useShallow((s) => ({
       activeDetailPanel: s.activeDetailPanel,
     }))

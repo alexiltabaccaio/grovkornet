@@ -1,11 +1,11 @@
 import React from 'react';
 import { render, fireEvent } from '@testing-library/react-native';
 import { Sections } from './Sections';
-import { useSystemStore } from '@entities/system';
+import { useSystemStore, useControlPanelStore } from '@entities/system';
 
 describe('Sections', () => {
   beforeEach(() => {
-    useSystemStore.getState().setActiveSection('none');
+    useControlPanelStore.getState().setActiveSection('none');
   });
 
   it('renders all sections', () => {
@@ -22,8 +22,8 @@ describe('Sections', () => {
     // Click on Film section
     fireEvent.press(getByLabelText('sections.film'));
     
-    expect(useSystemStore.getState().activeSection).toBe('film');
-    expect(useSystemStore.getState().activeModule).toBe('tone');
+    expect(useControlPanelStore.getState().activeSection).toBe('film');
+    expect(useControlPanelStore.getState().activeModule).toBe('tone');
   });
 
   it('toggles section off if clicked again', () => {
@@ -33,7 +33,7 @@ describe('Sections', () => {
     fireEvent.press(getByLabelText('sections.film'));
     fireEvent.press(getByLabelText('sections.film'));
     
-    expect(useSystemStore.getState().activeSection).toBe('none');
-    expect(useSystemStore.getState().activeModule).toBe('none');
+    expect(useControlPanelStore.getState().activeSection).toBe('none');
+    expect(useControlPanelStore.getState().activeModule).toBe('none');
   });
 });

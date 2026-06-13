@@ -2,7 +2,8 @@
 import React from 'react';
 import { render, fireEvent, act } from '@testing-library/react-native';
 import { View } from 'react-native';
-import { ParameterWheel, WheelItem } from './ParameterWheel';
+import { WheelSelector, GenericWheelItem } from './WheelSelector';
+import { InteractionContext } from '../../lib/InteractionContext';
 
 // Variables to capture gesture callbacks
 let panStart: (() => void) | undefined;
@@ -18,6 +19,7 @@ jest.mock('react-native-gesture-handler', () => {
       ...actual.Gesture,
       Pan: () => {
         const pan: any = {
+          enabled: jest.fn(() => pan),
           activeOffsetX: jest.fn(() => pan),
           failOffsetY: jest.fn(() => pan),
           onStart: jest.fn((cb) => { panStart = cb; return pan; }),
@@ -63,13 +65,13 @@ jest.mock('react-native-reanimated', () => {
   };
 });
 
-describe('ParameterWheel Component', () => {
-  const mockItems: WheelItem[] = [
+describe('WheelSelector Component', () => {
+  const mockItems: GenericWheelItem<string>[] = [
     { id: 'focus', component: <View testID="focus-comp" /> },
     { id: 'iso', component: <View testID="iso-comp" /> },
   ];
   
-  const mockSetActiveParameter = jest.fn();
+  const mockOnChangeActiveId = jest.fn();
   const mockHandlePressWithDouble = jest.fn();
 
   beforeEach(() => {
@@ -81,12 +83,20 @@ describe('ParameterWheel Component', () => {
     reactionReact = undefined;
   });
 
+  const renderWithContext = (element: React.ReactElement, isInteractable = true) => {
+    return render(
+      <InteractionContext.Provider value={{ isInteractable }}>
+        {element}
+      </InteractionContext.Provider>
+    );
+  };
+
   it('renders null when items list is empty', () => {
-    const { toJSON } = render(
-      <ParameterWheel
+    const { toJSON } = renderWithContext(
+      <WheelSelector
         items={[]}
-        activeParameter="none"
-        setActiveParameter={mockSetActiveParameter}
+        activeId="none"
+        onChangeActiveId={mockOnChangeActiveId}
         handlePressWithDouble={mockHandlePressWithDouble}
       />
     );
@@ -94,11 +104,11 @@ describe('ParameterWheel Component', () => {
   });
 
   it('renders items and handles press/double press logic', () => {
-    const { getAllByTestId } = render(
-      <ParameterWheel
+    const { getAllByTestId } = renderWithContext(
+      <WheelSelector
         items={mockItems}
-        activeParameter="focus"
-        setActiveParameter={mockSetActiveParameter}
+        activeId="focus"
+        onChangeActiveId={mockOnChangeActiveId}
         handlePressWithDouble={mockHandlePressWithDouble}
       />
     );
@@ -110,15 +120,15 @@ describe('ParameterWheel Component', () => {
     
     const doublePressCallback = mockHandlePressWithDouble.mock.calls[0][1];
     doublePressCallback();
-    expect(mockSetActiveParameter).toHaveBeenCalledWith('focus');
+    expect(mockOnChangeActiveId).toHaveBeenCalledWith('focus');
   });
 
   it('handles tap on a non-centered item to animate and center it', () => {
-    const { getAllByTestId } = render(
-      <ParameterWheel
+    const { getAllByTestId } = renderWithContext(
+      <WheelSelector
         items={mockItems}
-        activeParameter="focus"
-        setActiveParameter={mockSetActiveParameter}
+        activeId="focus"
+        onChangeActiveId={mockOnChangeActiveId}
         handlePressWithDouble={mockHandlePressWithDouble}
       />
     );
@@ -129,16 +139,16 @@ describe('ParameterWheel Component', () => {
 
   it('handles item custom onPress if defined', () => {
     const mockOnPress = jest.fn();
-    const itemsWithOnPress: WheelItem[] = [
+    const itemsWithOnPress: GenericWheelItem<string>[] = [
       { id: 'focus', component: <View testID="focus-comp" />, onPress: mockOnPress },
       { id: 'iso', component: <View testID="iso-comp" /> },
     ];
 
-    const { getAllByTestId } = render(
-      <ParameterWheel
+    const { getAllByTestId } = renderWithContext(
+      <WheelSelector
         items={itemsWithOnPress}
-        activeParameter="focus"
-        setActiveParameter={mockSetActiveParameter}
+        activeId="focus"
+        onChangeActiveId={mockOnChangeActiveId}
         handlePressWithDouble={mockHandlePressWithDouble}
       />
     );
@@ -147,41 +157,47 @@ describe('ParameterWheel Component', () => {
     expect(mockOnPress).toHaveBeenCalled();
   });
 
-  it('handles external changes of activeParameter to scroll the wheel', () => {
+  it('handles external changes of activeId to scroll the wheel', () => {
     const { rerender } = render(
-      <ParameterWheel
-        items={mockItems}
-        activeParameter="focus"
-        setActiveParameter={mockSetActiveParameter}
-        handlePressWithDouble={mockHandlePressWithDouble}
-      />
+      <InteractionContext.Provider value={{ isInteractable: true }}>
+        <WheelSelector
+          items={mockItems}
+          activeId="focus"
+          onChangeActiveId={mockOnChangeActiveId}
+          handlePressWithDouble={mockHandlePressWithDouble}
+        />
+      </InteractionContext.Provider>
     );
 
     rerender(
-      <ParameterWheel
-        items={mockItems}
-        activeParameter="iso"
-        setActiveParameter={mockSetActiveParameter}
-        handlePressWithDouble={mockHandlePressWithDouble}
-      />
+      <InteractionContext.Provider value={{ isInteractable: true }}>
+        <WheelSelector
+          items={mockItems}
+          activeId="iso"
+          onChangeActiveId={mockOnChangeActiveId}
+          handlePressWithDouble={mockHandlePressWithDouble}
+        />
+      </InteractionContext.Provider>
     );
 
     rerender(
-      <ParameterWheel
-        items={mockItems}
-        activeParameter="none"
-        setActiveParameter={mockSetActiveParameter}
-        handlePressWithDouble={mockHandlePressWithDouble}
-      />
+      <InteractionContext.Provider value={{ isInteractable: true }}>
+        <WheelSelector
+          items={mockItems}
+          activeId="none"
+          onChangeActiveId={mockOnChangeActiveId}
+          handlePressWithDouble={mockHandlePressWithDouble}
+        />
+      </InteractionContext.Provider>
     );
   });
 
   it('handles pan gestures and adjusts dragX target', () => {
-    render(
-      <ParameterWheel
+    renderWithContext(
+      <WheelSelector
         items={mockItems}
-        activeParameter="focus"
-        setActiveParameter={mockSetActiveParameter}
+        activeId="focus"
+        onChangeActiveId={mockOnChangeActiveId}
         handlePressWithDouble={mockHandlePressWithDouble}
       />
     );
@@ -210,11 +226,11 @@ describe('ParameterWheel Component', () => {
   });
 
   it('updates state via animated reaction', () => {
-    render(
-      <ParameterWheel
+    renderWithContext(
+      <WheelSelector
         items={mockItems}
-        activeParameter="focus"
-        setActiveParameter={mockSetActiveParameter}
+        activeId="focus"
+        onChangeActiveId={mockOnChangeActiveId}
         handlePressWithDouble={mockHandlePressWithDouble}
       />
     );
@@ -228,16 +244,16 @@ describe('ParameterWheel Component', () => {
     act(() => {
       reactionReact!(1, 0);
     });
-    expect(mockSetActiveParameter).toHaveBeenCalledWith('iso');
+    expect(mockOnChangeActiveId).toHaveBeenCalledWith('iso');
   });
 
   it('handles items list of length 1 (no virtualization and return early on gesture)', () => {
-    const singleItem: WheelItem[] = [{ id: 'focus', component: <View testID="focus-comp" /> }];
-    render(
-      <ParameterWheel
+    const singleItem: GenericWheelItem<string>[] = [{ id: 'focus', component: <View testID="focus-comp" /> }];
+    renderWithContext(
+      <WheelSelector
         items={singleItem}
-        activeParameter="focus"
-        setActiveParameter={mockSetActiveParameter}
+        activeId="focus"
+        onChangeActiveId={mockOnChangeActiveId}
         handlePressWithDouble={mockHandlePressWithDouble}
       />
     );
@@ -249,7 +265,7 @@ describe('ParameterWheel Component', () => {
   });
 
   it('covers wrap-around calculations for larger item list', () => {
-    const largeItems: WheelItem[] = [
+    const largeItems: GenericWheelItem<string>[] = [
       { id: 'focus', component: <View /> },
       { id: 'iso', component: <View /> },
       { id: 'shutter_speed', component: <View /> },
@@ -259,35 +275,41 @@ describe('ParameterWheel Component', () => {
     ];
 
     const { rerender } = render(
-      <ParameterWheel
-        items={largeItems}
-        activeParameter="focus"
-        setActiveParameter={mockSetActiveParameter}
-        handlePressWithDouble={mockHandlePressWithDouble}
-      />
+      <InteractionContext.Provider value={{ isInteractable: true }}>
+        <WheelSelector
+          items={largeItems}
+          activeId="focus"
+          onChangeActiveId={mockOnChangeActiveId}
+          handlePressWithDouble={mockHandlePressWithDouble}
+        />
+      </InteractionContext.Provider>
     );
 
     rerender(
-      <ParameterWheel
-        items={largeItems}
-        activeParameter="saturation"
-        setActiveParameter={mockSetActiveParameter}
-        handlePressWithDouble={mockHandlePressWithDouble}
-      />
+      <InteractionContext.Provider value={{ isInteractable: true }}>
+        <WheelSelector
+          items={largeItems}
+          activeId="saturation"
+          onChangeActiveId={mockOnChangeActiveId}
+          handlePressWithDouble={mockHandlePressWithDouble}
+        />
+      </InteractionContext.Provider>
     );
 
     rerender(
-      <ParameterWheel
-        items={largeItems}
-        activeParameter="focus"
-        setActiveParameter={mockSetActiveParameter}
-        handlePressWithDouble={mockHandlePressWithDouble}
-      />
+      <InteractionContext.Provider value={{ isInteractable: true }}>
+        <WheelSelector
+          items={largeItems}
+          activeId="focus"
+          onChangeActiveId={mockOnChangeActiveId}
+          handlePressWithDouble={mockHandlePressWithDouble}
+        />
+      </InteractionContext.Provider>
     );
   });
 
   it('covers tap wrap-around calculations in WheelItemComponent', () => {
-    const largeItems: WheelItem[] = [
+    const largeItems: GenericWheelItem<string>[] = [
       { id: 'focus', component: <View testID="focus-comp" /> },
       { id: 'iso', component: <View /> },
       { id: 'shutter_speed', component: <View /> },
@@ -296,17 +318,15 @@ describe('ParameterWheel Component', () => {
       { id: 'saturation', component: <View testID="saturation-comp" /> },
     ];
 
-    const { getAllByTestId } = render(
-      <ParameterWheel
+    const { getAllByTestId } = renderWithContext(
+      <WheelSelector
         items={largeItems}
-        activeParameter="saturation"
-        setActiveParameter={mockSetActiveParameter}
+        activeId="saturation"
+        onChangeActiveId={mockOnChangeActiveId}
         handlePressWithDouble={mockHandlePressWithDouble}
       />
     );
 
-    // Tapping focus-comp at index 0 when centered at saturation (index 5)
-    // index = 0, normalizedCurrent = 5. diff = -5 < -3. diff += 6.
     fireEvent.press(getAllByTestId('focus-comp')[0]);
   });
 });

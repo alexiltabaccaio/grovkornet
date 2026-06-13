@@ -3,7 +3,7 @@ import { render, fireEvent } from '@testing-library/react-native';
 import { CameraFlipButton } from './CameraFlipButton';
 import { useFilmStore } from '@entities/film';
 import { useBodyStore } from '@entities/body';
-import { useSystemStore } from '@entities/system';
+import { useSystemStore, useControlPanelStore } from '@entities/system';
 import * as Haptics from 'expo-haptics';
 
 describe('CameraFlipButton Unit Tests', () => {
@@ -11,7 +11,7 @@ describe('CameraFlipButton Unit Tests', () => {
     jest.clearAllMocks();
     useFilmStore.getState().isSelfieCamera.value = false;
     useBodyStore.getState().setTorchState(1);
-    useSystemStore.getState().activeSection = 'none';
+    useControlPanelStore.getState().activeSection = 'none';
   });
 
   it('renders correctly', () => {
@@ -30,7 +30,7 @@ describe('CameraFlipButton Unit Tests', () => {
   });
 
   it('leaves the torch and activeSection untouched when switching to selfie mode', () => {
-    useSystemStore.getState().activeSection = 'lens';
+    useControlPanelStore.getState().activeSection = 'lens';
     
     const { getByTestId } = render(<CameraFlipButton />);
     const button = getByTestId('camera-flip-button');
@@ -40,6 +40,6 @@ describe('CameraFlipButton Unit Tests', () => {
     // Switch to selfie is true, but torch should remain 1 (untouched)
     expect(useBodyStore.getState().torchState.value).toBe(1);
     // Active section should remain 'lens'
-    expect(useSystemStore.getState().activeSection).toBe('lens');
+    expect(useControlPanelStore.getState().activeSection).toBe('lens');
   });
 });

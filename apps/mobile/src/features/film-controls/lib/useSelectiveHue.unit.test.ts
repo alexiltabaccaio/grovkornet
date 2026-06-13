@@ -1,7 +1,7 @@
 import { renderHook, act } from '@testing-library/react-native';
 import { useSelectiveHue } from './useSelectiveHue';
 import { useFilmStore } from '@entities/film';
-import { useSystemStore } from '@entities/system';
+import { useSystemStore, useControlPanelStore } from '@entities/system';
 import { DEFAULT_SELECTIVE_HUE } from '@grovkornet/shared';
 
 // Mock double press to execute double tap callback immediately
@@ -28,7 +28,9 @@ describe('useSelectiveHue', () => {
       huePurple: { value: 70 } as any,
       hueMagenta: { value: 80 } as any,
     });
-    useSystemStore.setState({ activeParameter: 'hue' });
+    useControlPanelStore.setState({
+      activeParameter: 'hue',
+    });
   });
 
   const colors = [
@@ -74,7 +76,9 @@ describe('useSelectiveHue', () => {
   });
 
   it('resets color index to 0 when activeParameter changes to hue', () => {
-    useSystemStore.setState({ activeParameter: 'saturation' });
+    useControlPanelStore.setState({
+      activeParameter: 'saturation',
+    });
     const { result, rerender } = renderHook(() => useSelectiveHue());
 
     act(() => {
@@ -83,7 +87,9 @@ describe('useSelectiveHue', () => {
     expect(result.current.activeColorIndex).toBe(3);
 
     act(() => {
-      useSystemStore.setState({ activeParameter: 'hue' });
+      useControlPanelStore.setState({
+      activeParameter: 'hue',
+    });
     });
     rerender({});
 

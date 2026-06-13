@@ -3,7 +3,7 @@ import { StyleSheet, View, ImageSourcePropType } from 'react-native';
 import { ScrollView, TouchableOpacity } from 'react-native-gesture-handler';
 import { useShallow } from 'zustand/shallow';
 import { usePresetStore, Preset, PresetStore } from '@entities/preset';
-import { useSystemStore } from '@entities/system';
+import { useControlPanelStore } from '@entities/system';
 import { useTranslation } from 'react-i18next';
 import { ParameterThumbView } from '@shared/ui/parameter-thumb';
 
@@ -57,7 +57,7 @@ export const PresetsModule = () => {
     }))
   );
 
-  const { setActiveParameter } = useSystemStore(
+  const { setActiveParameter } = useControlPanelStore(
     useShallow((s) => ({
       setActiveParameter: s.setActiveParameter,
     }))

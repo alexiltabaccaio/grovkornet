@@ -1,7 +1,7 @@
 import { renderHook, act } from '@testing-library/react-native';
 import { useSelectiveColor } from './useSelectiveColor';
 import { useFilmStore } from '@entities/film';
-import { useSystemStore } from '@entities/system';
+import { useSystemStore, useControlPanelStore } from '@entities/system';
 import { DEFAULT_SELECTIVE_SATURATION, DEFAULT_SELECTIVE_HUE } from '@grovkornet/shared';
 
 // Mock double press to execute double tap callback immediately
@@ -18,7 +18,9 @@ jest.mock('@shared/lib/hooks/useDoublePress', () => ({
 describe('useSelectiveColor', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    useSystemStore.setState({ selectedColorIndex: 0 });
+    useControlPanelStore.setState({
+      selectedColorIndex: 0,
+    });
     useFilmStore.setState({
       satRed: { value: 10 } as any,
       satOrange: { value: 20 } as any,

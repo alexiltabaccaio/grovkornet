@@ -2,7 +2,7 @@ import React from 'react';
 import { render, fireEvent } from '@testing-library/react-native';
 import { QuickPresetSelector } from './QuickPresetSelector';
 import { usePresetStore } from '@entities/preset';
-import { useSystemStore } from '@entities/system';
+import { useSystemStore, useControlPanelStore } from '@entities/system';
 import * as Haptics from 'expo-haptics';
 
 import { nextQuickPreset, prevQuickPreset, generateQuickSelectList } from '../../lib/presetActions';
@@ -21,7 +21,7 @@ describe('QuickPresetSelector', () => {
       activePresetId: 'default',
     });
 
-    useSystemStore.setState({
+    useControlPanelStore.setState({
       activeParameter: 'none',
     });
   });

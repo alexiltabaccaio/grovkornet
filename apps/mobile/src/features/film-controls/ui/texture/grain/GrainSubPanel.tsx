@@ -33,7 +33,9 @@ interface GrainSubPanelProps {
 
 export const GrainSubPanel = React.memo(({ parameterDetailPanelAnimatedStyle: _parameterDetailPanelAnimatedStyle, animatedStyle: _animatedStyle }: GrainSubPanelProps) => {
   const { t } = useTranslation();
-  const isLayoutOverlayEnabled = useSystemStore((s) => s.isLayoutOverlayEnabled);
+  const isLayoutOverlayEnabled = useSystemStore(
+    (s) => s.isLayoutOverlayEnabled
+  );
   const { 
     grainChroma, setGrainChroma, 
     grainSize, setGrainSize, 

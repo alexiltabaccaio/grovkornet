@@ -2,7 +2,7 @@ import React from 'react';
 import { renderHook, act } from '@testing-library/react-native';
 import * as reanimated from 'react-native-reanimated';
 import { useControlPanelGestures } from './useControlPanelGestures';
-import { useSystemStore } from '@entities/system';
+import { useSystemStore, useControlPanelStore } from '@entities/system';
 import { Gesture } from 'react-native-gesture-handler';
 
 describe('useControlPanelGestures', () => {
@@ -58,7 +58,7 @@ describe('useControlPanelGestures', () => {
     };
 
     // Reset store state
-    useSystemStore.setState({
+    useControlPanelStore.setState({
       activeSection: 'none',
       activeModule: 'none',
       activeParameter: 'none',
@@ -78,7 +78,9 @@ describe('useControlPanelGestures', () => {
 
     // Open drawer
     act(() => {
-      useSystemStore.setState({ activeSection: 'film' });
+      useControlPanelStore.setState({
+      activeSection: 'film',
+    });
     });
     rerender({});
 
@@ -88,7 +90,9 @@ describe('useControlPanelGestures', () => {
 
     // Close drawer
     act(() => {
-      useSystemStore.setState({ activeSection: 'none' });
+      useControlPanelStore.setState({
+      activeSection: 'none',
+    });
     });
     rerender({});
 

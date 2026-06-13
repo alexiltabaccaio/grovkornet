@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import Animated, { useAnimatedStyle, SharedValue } from 'react-native-reanimated';
 import { useShallow } from 'zustand/shallow';
-import { useSystemStore } from '@entities/system';
+import { useSystemStore, useControlPanelStore } from '@entities/system';
 
 // We will import the new SubPanels here once they are ready.
 import { GrainSubPanel, ContrastSubPanel, SelectiveColorSubPanel, ChromaShiftSubPanel, ChromaticAberrationSubPanel, ScanlinesSubPanel } from '@features/film-controls';
@@ -15,10 +15,8 @@ interface SubPanelsProps {
 }
 
 export const SubPanels = React.memo(({ translateY }: SubPanelsProps) => {
-  const { activeParameter, isLayoutOverlayEnabled } = useSystemStore(useShallow(state => ({
-    activeParameter: state.activeParameter,
-    isLayoutOverlayEnabled: state.isLayoutOverlayEnabled,
-  })));
+  const activeParameter = useControlPanelStore(state => state.activeParameter);
+  const isLayoutOverlayEnabled = useSystemStore(state => state.isLayoutOverlayEnabled);
 
   const parentAnimatedStyle = useAnimatedStyle(() => {
     if (!translateY) return {};

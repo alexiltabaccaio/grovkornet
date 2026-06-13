@@ -2,7 +2,7 @@
 import React from 'react';
 import { render, act, fireEvent } from '@testing-library/react-native';
 import { Parameters } from './Parameters';
-import { useSystemStore } from '@entities/system';
+import { useSystemStore, useControlPanelStore } from '@entities/system';
 import { useFilmStore } from '@entities/film';
 import * as filmControls from '@features/film-controls';
 import { useBodyStore } from '@entities/body';
@@ -175,7 +175,7 @@ describe('Parameters', () => {
 
   it('renders nothing inside if activeModule is none', () => {
     act(() => {
-      useSystemStore.getState().setActiveModule('none');
+      useControlPanelStore.getState().setActiveModule('none');
     });
     const { toJSON } = render(<Parameters />);
     expect((toJSON() as { children?: unknown } | null)?.children).toBeNull();
@@ -183,7 +183,7 @@ describe('Parameters', () => {
 
   it('renders TextureModule and resets grain effect', () => {
     act(() => {
-      useSystemStore.getState().setActiveModule('texture');
+      useControlPanelStore.getState().setActiveModule('texture');
     });
     const { getByTestId } = render(<Parameters />);
     const button = getByTestId('btn-grain');
@@ -195,7 +195,7 @@ describe('Parameters', () => {
 
   it('renders ColorModule and resets temperature', () => {
     act(() => {
-      useSystemStore.getState().setActiveModule('color');
+      useControlPanelStore.getState().setActiveModule('color');
     });
     const { getByTestId } = render(<Parameters />);
     const button = getByTestId('btn-temp');
@@ -206,7 +206,7 @@ describe('Parameters', () => {
 
   it('renders ToneModule and resets contrast', () => {
     act(() => {
-      useSystemStore.getState().setActiveModule('tone');
+      useControlPanelStore.getState().setActiveModule('tone');
     });
     const { getByTestId } = render(<Parameters />);
     const button = getByTestId('btn-contrast');
@@ -217,7 +217,9 @@ describe('Parameters', () => {
 
   it('renders ArtifactsModule and resets chroma_shift effect', () => {
     act(() => {
-      useSystemStore.setState({ activeSection: 'film', activeModule: 'artifacts' });
+      useControlPanelStore.setState({
+      activeSection: 'film', activeModule: 'artifacts',
+    });
     });
     const { getByTestId } = render(<Parameters />);
     const button = getByTestId('btn-film-artifacts');
@@ -228,7 +230,9 @@ describe('Parameters', () => {
 
   it('renders DetailsModule and resets sharpening effect', () => {
     act(() => {
-      useSystemStore.setState({ activeSection: 'film', activeModule: 'details' });
+      useControlPanelStore.setState({
+      activeSection: 'film', activeModule: 'details',
+    });
     });
     const { getByTestId } = render(<Parameters />);
     const button = getByTestId('btn-sharpening');
@@ -239,7 +243,9 @@ describe('Parameters', () => {
 
   it('renders ProcessingModule and resets noise_reduction effect', () => {
     act(() => {
-      useSystemStore.setState({ activeSection: 'body', activeModule: 'processing' });
+      useControlPanelStore.setState({
+      activeSection: 'body', activeModule: 'processing',
+    });
     });
     const { getByTestId } = render(<Parameters />);
     const button = getByTestId('btn-processing');
@@ -250,7 +256,7 @@ describe('Parameters', () => {
 
   it('renders OpticsModule and resets focus / camera_selection', () => {
     act(() => {
-      useSystemStore.getState().setActiveModule('optics');
+      useControlPanelStore.getState().setActiveModule('optics');
     });
     const { getByTestId } = render(<Parameters />);
     const button = getByTestId('btn-optics');
@@ -262,7 +268,7 @@ describe('Parameters', () => {
 
   it('renders ExposureModule and resets ev, iso, shutter_speed', () => {
     act(() => {
-      useSystemStore.getState().setActiveModule('exposure');
+      useControlPanelStore.getState().setActiveModule('exposure');
     });
     const { getByTestId } = render(<Parameters />);
     const button = getByTestId('btn-exposure');
@@ -275,7 +281,7 @@ describe('Parameters', () => {
 
   it('renders LightingModule and resets torchState', () => {
     act(() => {
-      useSystemStore.getState().setActiveModule('lighting');
+      useControlPanelStore.getState().setActiveModule('lighting');
     });
     const { getByTestId } = render(<Parameters />);
     const button = getByTestId('btn-lighting');
@@ -287,7 +293,7 @@ describe('Parameters', () => {
 
   it('renders CaptureModule and resets fps_setting (fps >= 60 case)', () => {
     act(() => {
-      useSystemStore.getState().setActiveModule('capture');
+      useControlPanelStore.getState().setActiveModule('capture');
       useBodyStore.getState().capabilities.maxFps = 60;
     });
     const { getByTestId } = render(<Parameters />);
@@ -299,7 +305,7 @@ describe('Parameters', () => {
 
   it('renders CaptureModule and resets fps_setting (fps < 60 case)', () => {
     act(() => {
-      useSystemStore.getState().setActiveModule('capture');
+      useControlPanelStore.getState().setActiveModule('capture');
       useBodyStore.getState().capabilities.maxFps = 30;
     });
     const { getByTestId } = render(<Parameters />);
@@ -311,7 +317,7 @@ describe('Parameters', () => {
 
   it('renders CaptureModule and resets fps_setting when maxFps is undefined', () => {
     act(() => {
-      useSystemStore.getState().setActiveModule('capture');
+      useControlPanelStore.getState().setActiveModule('capture');
       useBodyStore.getState().capabilities.maxFps = undefined;
     });
     const { getByTestId } = render(<Parameters />);
@@ -323,7 +329,7 @@ describe('Parameters', () => {
 
   it('renders PreferencesModule', () => {
     act(() => {
-      useSystemStore.getState().setActiveModule('preferences');
+      useControlPanelStore.getState().setActiveModule('preferences');
     });
     const { getByText } = render(<Parameters />);
     expect(getByText('PreferencesModule')).toBeDefined();
@@ -331,7 +337,7 @@ describe('Parameters', () => {
 
   it('renders ThemeModule', () => {
     act(() => {
-      useSystemStore.getState().setActiveModule('theme');
+      useControlPanelStore.getState().setActiveModule('theme');
     });
     const { getByText } = render(<Parameters />);
     expect(getByText('ThemeModule')).toBeDefined();
@@ -339,7 +345,7 @@ describe('Parameters', () => {
 
   it('renders coming soon for unknown module', () => {
     act(() => {
-      useSystemStore.getState().setActiveModule('unknown' as any);
+      useControlPanelStore.getState().setActiveModule('unknown' as any);
     });
     const { getByText } = render(<Parameters />);
     expect(getByText('footer.coming_soon')).toBeDefined();
@@ -347,13 +353,13 @@ describe('Parameters', () => {
 
   it('updates lastActive module when activeModule changes between non-none values', () => {
     act(() => {
-      useSystemStore.getState().setActiveModule('texture');
+      useControlPanelStore.getState().setActiveModule('texture');
     });
     const { getByTestId, rerender } = render(<Parameters />);
     expect(getByTestId('btn-grain')).toBeDefined();
 
     act(() => {
-      useSystemStore.getState().setActiveModule('color');
+      useControlPanelStore.getState().setActiveModule('color');
     });
     rerender(<Parameters />);
     expect(getByTestId('btn-temp')).toBeDefined();

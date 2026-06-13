@@ -4,6 +4,7 @@ import * as reanimatedModule from 'react-native-reanimated';
 
 const capturedPanCallbacks: any = {};
 const mockPanGesture = {
+  enabled: jest.fn().mockImplementation(() => mockPanGesture),
   onStart: jest.fn().mockImplementation((cb) => {
     capturedPanCallbacks.onStart = cb;
     return mockPanGesture;
@@ -16,6 +17,7 @@ const mockPanGesture = {
 
 const capturedTapCallbacks: any = {};
 const mockTapGesture = {
+  enabled: jest.fn().mockImplementation(() => mockTapGesture),
   numberOfTaps: jest.fn().mockReturnThis(),
   maxDistance: jest.fn().mockReturnThis(),
   onEnd: jest.fn().mockImplementation((cb) => {

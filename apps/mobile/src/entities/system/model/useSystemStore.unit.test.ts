@@ -4,75 +4,17 @@ import { logger } from '@shared/lib/logger';
 describe('useSystemStore', () => {
   beforeEach(() => {
     useSystemStore.setState({
-      activeSection: 'none',
-      activeModule: 'none',
-      activeParameter: 'none',
-      activeDetailPanel: 'none',
       isFpsOverlayEnabled: false,
       isLayoutOverlayEnabled: false,
       isLogsEnabled: false,
-      lastActiveModules: {
-        none: 'none',
-        system: 'preferences',
-        lens: 'optics',
-        body: 'exposure',
-        film: 'tone',
-      },
-      lastActiveParameters: {
-        none: 'none',
-        preferences: 'language',
-        presets: 'presets',
-        optics: 'camera_selection',
-        artifacts: 'chromatic_aberration',
-        exposure: 'iso',
-        lighting: 'torch',
-        processing: 'noise_reduction',
-        tone: 'contrast',
-        color: 'temperature',
-        texture: 'grain',
-        details: 'sharpening',
-        capture: 'aspect_ratio',
-        theme: 'none',
-        debug: 'ui_overlay',
-      },
     });
   });
 
   it('initializes with default values', () => {
     const state = useSystemStore.getState();
-    expect(state.activeSection).toBe('none');
-    expect(state.activeModule).toBe('none');
-    expect(state.activeParameter).toBe('none');
-    expect(state.activeDetailPanel).toBe('none');
-  });
-
-  it('sets active section correctly', () => {
-    const { setActiveSection } = useSystemStore.getState();
-    setActiveSection('body');
-    expect(useSystemStore.getState().activeSection).toBe('body');
-  });
-
-  it('sets active module and restores last active parameter', () => {
-    const { setActiveModule, setActiveParameter } = useSystemStore.getState();
-    
-    // Set color module (which has 'temperature' as default in lastActiveParameters)
-    setActiveModule('color');
-    let state = useSystemStore.getState();
-    expect(state.activeModule).toBe('color');
-    expect(state.activeParameter).toBe('temperature');
-
-    // Change parameter
-    setActiveParameter('saturation');
-    expect(useSystemStore.getState().activeParameter).toBe('saturation');
-
-    // Switch to another module and back
-    setActiveModule('texture');
-    expect(useSystemStore.getState().activeModule).toBe('texture');
-    expect(useSystemStore.getState().activeParameter).toBe('grain');
-
-    setActiveModule('color');
-    expect(useSystemStore.getState().activeModule).toBe('color');
-    expect(useSystemStore.getState().activeParameter).toBe('saturation'); // Should be restored
+    expect(state.isFpsOverlayEnabled).toBe(false);
+    expect(state.isLayoutOverlayEnabled).toBe(false);
+    expect(state.isLogsEnabled).toBe(false);
   });
 
   it('updates layout overlay mode correctly', () => {
@@ -93,104 +35,19 @@ describe('useSystemStore', () => {
     expect(useSystemStore.getState().isLogsEnabled).toBe(true);
   });
 
-  it('sets active sub parameter and resets correctly', () => {
-    const { setActiveDetailPanel, setActiveParameter, setActiveModule } = useSystemStore.getState();
-    
-    setActiveDetailPanel('grain_chroma');
-    expect(useSystemStore.getState().activeDetailPanel).toBe('grain_chroma');
-
-    // Reset on parameter change
-    setActiveParameter('grain');
-    expect(useSystemStore.getState().activeDetailPanel).toBe('none');
-
-    setActiveDetailPanel('grain_size');
-    expect(useSystemStore.getState().activeDetailPanel).toBe('grain_size');
-
-    // Reset on module change
-    setActiveModule('none');
-    expect(useSystemStore.getState().activeDetailPanel).toBe('none');
-  });
-
-  it('sets latest captured uri correctly', () => {
-    const { setLatestCapturedUri } = useSystemStore.getState();
-    setLatestCapturedUri('file:///test/image.jpg');
-    expect(useSystemStore.getState().latestCapturedUri).toBe('file:///test/image.jpg');
-
-    setLatestCapturedUri(null);
-    expect(useSystemStore.getState().latestCapturedUri).toBeNull();
-  });
-
-  it('memorizes last active module and parameter across section changes', () => {
-    const { setActiveSection, setActiveModule, setActiveParameter } = useSystemStore.getState();
-
-    // 1. Go to film section
-    setActiveSection('film');
-    expect(useSystemStore.getState().activeSection).toBe('film');
-    expect(useSystemStore.getState().activeModule).toBe('tone');
-    expect(useSystemStore.getState().activeParameter).toBe('contrast');
-
-    // 2. Change module to texture and parameter to sharpening
-    setActiveModule('texture');
-    setActiveParameter('sharpening');
-    expect(useSystemStore.getState().activeModule).toBe('texture');
-    expect(useSystemStore.getState().activeParameter).toBe('sharpening');
-
-    // 3. Switch to body section
-    setActiveSection('body');
-    expect(useSystemStore.getState().activeSection).toBe('body');
-    expect(useSystemStore.getState().activeModule).toBe('exposure');
-
-    // 4. Switch back to film section
-    setActiveSection('film');
-    expect(useSystemStore.getState().activeSection).toBe('film');
-    expect(useSystemStore.getState().activeModule).toBe('texture');
-    expect(useSystemStore.getState().activeParameter).toBe('sharpening');
-  });
-
-  it('updates isDetailPanelOpen correctly', () => {
-    const { setIsDetailPanelOpen } = useSystemStore.getState();
-    setIsDetailPanelOpen(true);
-    expect(useSystemStore.getState().isDetailPanelOpen).toBe(true);
-  });
-
-  it('triggers capture and resets after timeout', () => {
-    jest.useFakeTimers();
-    const { triggerCapture } = useSystemStore.getState();
-    
-    triggerCapture();
-    expect(useSystemStore.getState().isCapturing).toBe(true);
-
-    jest.advanceTimersByTime(400);
-    expect(useSystemStore.getState().isCapturing).toBe(false);
-    jest.useRealTimers();
-  });
-
-  it('handles fallback values when unknown section or module is provided', () => {
-    const { setActiveSection, setActiveModule } = useSystemStore.getState();
-    setActiveSection('unknown_section' as any);
-    expect(useSystemStore.getState().activeModule).toBe('none');
-    expect(useSystemStore.getState().activeParameter).toBe('none');
-
-    setActiveModule('unknown_module' as any);
-    expect(useSystemStore.getState().activeParameter).toBe('none');
-  });
-
   describe('Zustand Persist Configuration', () => {
     it('partializes only necessary system storage state keys', () => {
       const persistOptions = (useSystemStore as any).persist?.getOptions();
       expect(persistOptions).toBeDefined();
       
       const mockState = {
-        latestCapturedUri: 'file:///captured.jpg',
         isLogsEnabled: true,
-        selectedColorIndex: 3,
-        activeParameter: 'contrast',
-        activeSection: 'film',
+        isFpsOverlayEnabled: true,
+        isLayoutOverlayEnabled: true,
       };
       
       const partialized = persistOptions.partialize(mockState);
       expect(partialized).toEqual({
-        latestCapturedUri: 'file:///captured.jpg',
         isLogsEnabled: true,
       });
     });
@@ -222,30 +79,6 @@ describe('useSystemStore', () => {
       (global as any).__DEV__ = originalDev;
       spyLogger.mockRestore();
       spyStore.mockRestore();
-    });
-  });
-
-  describe('Device Health States', () => {
-    it('initializes with default thermalState and isLowRam', () => {
-      const state = useSystemStore.getState();
-      expect(state.thermalState).toBe('normal');
-      expect(state.isLowRam).toBe(false);
-    });
-
-    it('updates thermalState and isLowRam correctly via setters', () => {
-      const { setThermalState, setIsLowRam } = useSystemStore.getState();
-      
-      setThermalState('warning');
-      expect(useSystemStore.getState().thermalState).toBe('warning');
-
-      setIsLowRam(true);
-      expect(useSystemStore.getState().isLowRam).toBe(true);
-    });
-
-    it('updates selectedColorIndex correctly via setter', () => {
-      const { setSelectedColorIndex } = useSystemStore.getState();
-      setSelectedColorIndex(4);
-      expect(useSystemStore.getState().selectedColorIndex).toBe(4);
     });
   });
 });

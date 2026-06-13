@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { AppState, AppStateStatus } from 'react-native';
 import { useSharedValue, SharedValue, withTiming } from 'react-native-reanimated';
-import { useSystemStore } from '@entities/system';
+import { useControlPanelStore } from '@entities/system';
 
 interface UseCameraAppStateProps {
   shouldRenderGallery: boolean;
@@ -12,7 +12,7 @@ export const useCameraAppState = ({
   shouldRenderGallery,
   galleryTransition,
 }: UseCameraAppStateProps) => {
-  const initialActiveSection = useSystemStore.getState().activeSection;
+  const initialActiveSection = useControlPanelStore.getState().activeSection;
   const [cameraKey, setCameraKey] = useState(0);
   const drawerAnimation = useSharedValue(initialActiveSection === 'none' ? 250 : 0);
   const footerTranslateY = useSharedValue(initialActiveSection === 'none' ? 0 : -50);
@@ -30,7 +30,7 @@ export const useCameraAppState = ({
         // instruction is executed before the context is ready and gets lost.
         setTimeout(() => {
           // Restore basic layout state that could be lost
-          const isActiveSectionNone = useSystemStore.getState().activeSection === 'none';
+          const isActiveSectionNone = useControlPanelStore.getState().activeSection === 'none';
           if (isActiveSectionNone) {
             drawerAnimation.value = 249.9;
             footerTranslateY.value = 0.1;

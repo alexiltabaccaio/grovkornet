@@ -2,7 +2,7 @@
 import React from 'react';
 import { render, act } from '@testing-library/react-native';
 import { SubPanels } from './SubPanels';
-import { useSystemStore } from '@entities/system';
+import { useSystemStore, useControlPanelStore } from '@entities/system';
 
 // Mock Reanimated to execute useAnimatedReaction callback immediately to cover the sync effects
 jest.mock('react-native-reanimated', () => {
@@ -66,7 +66,7 @@ describe('SubPanels', () => {
 
   it('renders nothing when activeParameter is none', () => {
     act(() => {
-      useSystemStore.getState().setActiveParameter('none');
+      useControlPanelStore.getState().setActiveParameter('none');
     });
     const { toJSON } = render(<SubPanels translateY={mockTranslateY} />);
     expect(toJSON()).toBeNull();
@@ -74,7 +74,7 @@ describe('SubPanels', () => {
 
   it('renders grain sub-panel when activeParameter is grain', () => {
     act(() => {
-      useSystemStore.getState().setActiveParameter('grain');
+      useControlPanelStore.getState().setActiveParameter('grain');
     });
     const { toJSON } = render(<SubPanels translateY={mockTranslateY} />);
     expect(toJSON()).toBeDefined();
@@ -82,7 +82,7 @@ describe('SubPanels', () => {
 
   it('renders contrast sub-panel when activeParameter is contrast', () => {
     act(() => {
-      useSystemStore.getState().setActiveParameter('contrast');
+      useControlPanelStore.getState().setActiveParameter('contrast');
     });
     const { toJSON } = render(<SubPanels translateY={mockTranslateY} />);
     expect(toJSON()).toBeDefined();
@@ -90,7 +90,7 @@ describe('SubPanels', () => {
 
   it('renders saturation sub-panel when activeParameter is saturation', () => {
     act(() => {
-      useSystemStore.getState().setActiveParameter('saturation');
+      useControlPanelStore.getState().setActiveParameter('saturation');
     });
     const { toJSON } = render(<SubPanels translateY={mockTranslateY} />);
     expect(toJSON()).toBeDefined();
@@ -98,7 +98,7 @@ describe('SubPanels', () => {
 
   it('renders hue sub-panel when activeParameter is hue', () => {
     act(() => {
-      useSystemStore.getState().setActiveParameter('hue');
+      useControlPanelStore.getState().setActiveParameter('hue');
     });
     const { toJSON } = render(<SubPanels translateY={mockTranslateY} />);
     expect(toJSON()).toBeDefined();
@@ -106,7 +106,7 @@ describe('SubPanels', () => {
 
   it('applies debugWrapper style when isLayoutOverlayEnabled is true', () => {
     act(() => {
-      useSystemStore.getState().setActiveParameter('saturation');
+      useControlPanelStore.getState().setActiveParameter('saturation');
       useSystemStore.getState().setIsLayoutOverlayEnabled(true);
     });
     const { toJSON } = render(<SubPanels translateY={mockTranslateY} />);

@@ -23,7 +23,8 @@ const mockSetActiveDetailPanel = jest.fn();
 let mockActiveDetailPanel = 'lang_en';
 
 jest.mock('@entities/system', () => ({
-  useSystemStore: jest.fn((fn?: (state: any) => any) => {
+  useSystemStore: jest.fn(),
+  useControlPanelStore: jest.fn((fn?: (state: any) => any) => {
     const state = {
       activeDetailPanel: mockActiveDetailPanel,
       setActiveDetailPanel: mockSetActiveDetailPanel,

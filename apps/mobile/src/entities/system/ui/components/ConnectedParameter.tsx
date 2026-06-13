@@ -1,6 +1,6 @@
 import React, { memo, useCallback } from 'react';
 import { useShallow } from 'zustand/shallow';
-import { useSystemStore } from '../../model/useSystemStore';
+import { useControlPanelStore } from '../../model/useControlPanelStore';
 import { ParameterType } from '../../model/types';
 import { ParameterControl } from './ParameterControl';
 import { Ionicons } from '@expo/vector-icons';
@@ -46,7 +46,7 @@ export const ConnectedParameter = memo(({
   onPress,
   ...rest
 }: ConnectedParameterProps) => {
-  const { isActiveSelected, setActiveParameter } = useSystemStore(
+  const { isActiveSelected, setActiveParameter } = useControlPanelStore(
     useShallow(s => ({
       isActiveSelected: s.activeParameter === id,
       setActiveParameter: s.setActiveParameter,

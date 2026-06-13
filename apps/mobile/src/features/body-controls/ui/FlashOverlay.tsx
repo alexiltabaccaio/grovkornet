@@ -7,10 +7,10 @@ import Animated, {
   withSequence,
   cancelAnimation,
 } from 'react-native-reanimated';
-import { useSystemStore } from '@entities/system';
+import { useCameraStore } from '@entities/camera';
 
 export const FlashOverlay = () => {
-  const isCapturing = useSystemStore(state => state.isCapturing);
+  const isCapturing = useCameraStore(state => state.isCapturing);
   const opacity = useSharedValue(0);
 
   useEffect(() => {

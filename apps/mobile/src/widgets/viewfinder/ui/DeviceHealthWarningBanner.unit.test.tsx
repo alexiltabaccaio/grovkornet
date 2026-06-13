@@ -1,13 +1,13 @@
 import React from 'react';
 import { render, fireEvent, act } from '@testing-library/react-native';
 import { DeviceHealthWarningBanner } from './DeviceHealthWarningBanner';
-import { useSystemStore } from '@entities/system';
+import { useCameraStore } from '@entities/camera';
 import { usePreferencesStore } from '@entities/preferences';
 
 describe('DeviceHealthWarningBanner', () => {
   beforeEach(() => {
     // Reset stores to default safe state
-    useSystemStore.setState({ thermalState: 'normal' });
+    useCameraStore.setState({ thermalState: 'normal' });
     usePreferencesStore.setState({ fpsSetting: 60 });
     jest.useFakeTimers();
   });
@@ -23,7 +23,7 @@ describe('DeviceHealthWarningBanner', () => {
   });
 
   it('renders warning circle but not text warning initially, then toggles when clicked', () => {
-    useSystemStore.setState({ thermalState: 'warning' });
+    useCameraStore.setState({ thermalState: 'warning' });
     usePreferencesStore.setState({ fpsSetting: 60 });
 
     const { getByTestId, queryByTestId, queryByText } = render(<DeviceHealthWarningBanner />);
@@ -45,7 +45,7 @@ describe('DeviceHealthWarningBanner', () => {
   });
 
   it('renders critical circle and toggles showing critical text warning', () => {
-    useSystemStore.setState({ thermalState: 'critical' });
+    useCameraStore.setState({ thermalState: 'critical' });
     usePreferencesStore.setState({ fpsSetting: 30 });
 
     const { getByTestId, queryByTestId, queryByText } = render(<DeviceHealthWarningBanner />);
@@ -64,7 +64,7 @@ describe('DeviceHealthWarningBanner', () => {
   });
 
   it('hides text warning automatically after 5 seconds', () => {
-    useSystemStore.setState({ thermalState: 'warning' });
+    useCameraStore.setState({ thermalState: 'warning' });
     usePreferencesStore.setState({ fpsSetting: 60 });
 
     const { getByTestId, queryByTestId } = render(<DeviceHealthWarningBanner />);
@@ -88,7 +88,7 @@ describe('DeviceHealthWarningBanner', () => {
   });
 
   it('hides warning circle when preferred FPS is equal to or lower than the warning threshold (30 FPS)', () => {
-    useSystemStore.setState({ thermalState: 'warning' });
+    useCameraStore.setState({ thermalState: 'warning' });
     usePreferencesStore.setState({ fpsSetting: 30 });
 
     const { queryByTestId } = render(<DeviceHealthWarningBanner />);
@@ -96,7 +96,7 @@ describe('DeviceHealthWarningBanner', () => {
   });
 
   it('hides critical circle if preferred FPS is lower than safety limit (e.g. 15 FPS option)', () => {
-    useSystemStore.setState({ thermalState: 'critical' });
+    useCameraStore.setState({ thermalState: 'critical' });
     usePreferencesStore.setState({ fpsSetting: 15 });
 
     const { queryByTestId } = render(<DeviceHealthWarningBanner />);
@@ -104,7 +104,7 @@ describe('DeviceHealthWarningBanner', () => {
   });
 
   it('automatically closes open warning text if the warning conditions become false', () => {
-    useSystemStore.setState({ thermalState: 'warning' });
+    useCameraStore.setState({ thermalState: 'warning' });
     usePreferencesStore.setState({ fpsSetting: 60 });
 
     const { getByTestId, queryByTestId, rerender } = render(<DeviceHealthWarningBanner />);
@@ -116,7 +116,7 @@ describe('DeviceHealthWarningBanner', () => {
 
     // Rerender after thermalState goes to normal
     act(() => {
-      useSystemStore.setState({ thermalState: 'normal' });
+      useCameraStore.setState({ thermalState: 'normal' });
     });
     rerender(<DeviceHealthWarningBanner />);
 
@@ -124,4 +124,3 @@ describe('DeviceHealthWarningBanner', () => {
     expect(queryByTestId('device-health-warning-banner')).toBeNull();
   });
 });
-

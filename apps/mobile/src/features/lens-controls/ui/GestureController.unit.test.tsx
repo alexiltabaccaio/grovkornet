@@ -3,13 +3,14 @@ import { render, act } from '@testing-library/react-native';
 import { View, Dimensions } from 'react-native';
 import * as reanimated from 'react-native-reanimated';
 import { GestureController } from './GestureController';
-import { useSystemStore } from '@entities/system';
+import { useSystemStore, useControlPanelStore } from '@entities/system';
 import { Gesture } from 'react-native-gesture-handler';
 import { useBodyStore } from '@entities/body';
 
 // Mock the stores
 jest.mock('@entities/system', () => ({
   useSystemStore: jest.fn(),
+  useControlPanelStore: jest.fn(),
 }));
 
 describe('GestureController', () => {
@@ -85,7 +86,7 @@ describe('GestureController', () => {
     capturedFooterReaction = null;
     reactionCount = 0;
 
-    (useSystemStore as unknown as jest.Mock).mockImplementation((selector?: (state: any) => any) => {
+    (useControlPanelStore as unknown as jest.Mock).mockImplementation((selector?: (state: any) => any) => {
       const state = {
         activeSection: currentActiveSection,
         setActiveSection: mockSetActiveSection,

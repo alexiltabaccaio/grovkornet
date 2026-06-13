@@ -25,7 +25,9 @@ interface ScanlinesSubPanelProps {
 
 export const ScanlinesSubPanel = React.memo(({ animatedStyle: _animatedStyle }: ScanlinesSubPanelProps) => {
   const { t } = useTranslation();
-  const isLayoutOverlayEnabled = useSystemStore((s) => s.isLayoutOverlayEnabled);
+  const isLayoutOverlayEnabled = useSystemStore(
+    (s) => s.isLayoutOverlayEnabled
+  );
   const { 
     scanlinesMode, setScanlinesMode, 
     scanlinesDensity, setScanlinesDensity,

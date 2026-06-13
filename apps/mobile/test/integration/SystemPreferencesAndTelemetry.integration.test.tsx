@@ -2,7 +2,7 @@ import React from 'react';
 import { render, fireEvent, waitFor, act } from '@testing-library/react-native';
 import { CameraScreen } from '@screens/camera';
 import { useBodyStore } from '@entities/body';
-import { useSystemStore } from '@entities/system';
+import { useSystemStore, useControlPanelStore } from '@entities/system';
 
 jest.mock('@entities/lens/ui/NativeRenderer', () => {
   const ReactActual = jest.requireActual('react');
@@ -20,8 +20,8 @@ jest.mock('@entities/lens/ui/NativeRenderer', () => {
 describe('SystemPreferencesAndTelemetry Integration', () => {
   beforeEach(() => {
     act(() => {
-      useSystemStore.getState().setActiveSection('none');
-      useSystemStore.getState().setActiveModule('none');
+      useControlPanelStore.getState().setActiveSection('none');
+      useControlPanelStore.getState().setActiveModule('none');
       useSystemStore.getState().setIsFpsOverlayEnabled(false);
       useBodyStore.getState().setDebugInfo(0, '1080p', 0);
     });
@@ -65,7 +65,7 @@ describe('SystemPreferencesAndTelemetry Integration', () => {
 
   it('handles preview quality integration correctly (optimized)', () => {
     act(() => {
-      useSystemStore.getState().setActiveParameter('resolution_setting');
+      useControlPanelStore.getState().setActiveParameter('resolution_setting');
       useBodyStore.getState().resolutionSetting.value = 1; // 1080p
       useBodyStore.getState().previewQuality.value = 1; // Optimized
     });
@@ -81,7 +81,7 @@ describe('SystemPreferencesAndTelemetry Integration', () => {
 
   it('handles preview quality warning correctly (maximum on 4K)', () => {
     act(() => {
-      useSystemStore.getState().setActiveParameter('resolution_setting');
+      useControlPanelStore.getState().setActiveParameter('resolution_setting');
       useBodyStore.getState().resolutionSetting.value = 0; // 4K
       useBodyStore.getState().previewQuality.value = 0; // Maximum
     });

@@ -5,8 +5,8 @@ import { ConnectedParameter } from './ConnectedParameter';
 
 const mockSetActiveParameter = jest.fn();
 
-jest.mock('../../model/useSystemStore', () => ({
-  useSystemStore: jest.fn((fn?: (state: any) => unknown) => {
+jest.mock('../../model/useControlPanelStore', () => ({
+  useControlPanelStore: jest.fn((fn?: (state: any) => unknown) => {
     const state = {
       activeParameter: 'contrast',
       setActiveParameter: mockSetActiveParameter,

@@ -3,6 +3,7 @@ import { StyleSheet, StyleProp, ViewStyle } from 'react-native';
 import { useShallow } from 'zustand/shallow';
 import { ParameterPanelWrapper } from '@entities/system';
 import { useSystemStore } from '@entities/system';
+import { useCameraStore } from '@entities/camera';
 import { PillButton } from '@shared/ui';
 
 interface TemperatureTestPanelProps {
@@ -13,12 +14,11 @@ export const TemperatureTestPanel = ({ animatedStyle }: TemperatureTestPanelProp
   const {
     thermalState,
     setThermalState,
-    isLayoutOverlayEnabled,
-  } = useSystemStore(useShallow(state => ({
+  } = useCameraStore(useShallow(state => ({
     thermalState: state.thermalState,
     setThermalState: state.setThermalState,
-    isLayoutOverlayEnabled: state.isLayoutOverlayEnabled,
   })));
+  const isLayoutOverlayEnabled = useSystemStore(state => state.isLayoutOverlayEnabled);
 
   return (
     <ParameterPanelWrapper animatedStyle={animatedStyle} gap={16} paddingHorizontal={32} scrollable={true}>

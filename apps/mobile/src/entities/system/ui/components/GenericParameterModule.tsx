@@ -2,10 +2,10 @@ import React, { useMemo, useCallback, useEffect } from 'react';
 import { StyleSheet } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { useShallow } from 'zustand/shallow';
-import { useSystemStore } from '../../model/useSystemStore';
+import { useControlPanelStore } from '../../model/useControlPanelStore';
 import { ParameterType } from '../../model/types';
 import { ConnectedParameter } from './ConnectedParameter';
-import { ParameterWheel, WheelItem } from './ParameterWheel';
+import { SystemParameterWheel, WheelItem } from '@features/system-controls';
 import { useTranslation } from 'react-i18next';
 
 export interface ParameterConfig {
@@ -24,7 +24,7 @@ export const GenericParameterModule = React.memo(({
   handlePressWithDouble,
 }: GenericParameterModuleProps) => {
   const { t } = useTranslation();
-  const { activeParameter, setActiveParameter } = useSystemStore(
+  const { activeParameter, setActiveParameter } = useControlPanelStore(
     useShallow((s) => ({
       activeParameter: s.activeParameter,
       setActiveParameter: s.setActiveParameter,
@@ -38,9 +38,9 @@ export const GenericParameterModule = React.memo(({
   const pressHandler = handlePressWithDouble || defaultHandlePressWithDouble;
 
   const items = useMemo(() => {
-    const list: WheelItem[] = [];
+    const list: WheelItem<ParameterType>[] = [];
     for (const item of parameters) {
-      const config: ParameterConfig = typeof item === 'string' ? { id: item } : item;
+      const config: ParameterConfig = typeof item === 'string' ? { id: item as ParameterType } : item;
       if (config.visible === false) {
         continue;
       }
@@ -74,10 +74,8 @@ export const GenericParameterModule = React.memo(({
 
   return (
     <Animated.View style={styles.tabContent}>
-      <ParameterWheel
+      <SystemParameterWheel
         items={items}
-        activeParameter={activeParameter}
-        setActiveParameter={setActiveParameter}
         handlePressWithDouble={pressHandler}
       />
     </Animated.View>
@@ -97,4 +95,3 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
 });
-
