@@ -81,7 +81,10 @@ export const CameraScreen = () => {
     flex: 1, 
     width: '100%' as const, 
     marginTop: statusBarHeight, 
-    marginBottom: 80 + insets.bottom 
+    // Subtracted 4 pixels to create an intentional overlap under the footer.
+    // This hides the SurfaceView hole gap during Android layout recalculations on resume,
+    // preventing the Android OS wallpaper from showing through as a "thin line".
+    marginBottom: (80 + insets.bottom) - 4 
   }), [statusBarHeight, insets.bottom]);
 
   const bottomControlsStyle = useMemo(() => [
