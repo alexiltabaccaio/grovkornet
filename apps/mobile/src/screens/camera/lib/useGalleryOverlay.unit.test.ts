@@ -108,7 +108,7 @@ describe('useGalleryOverlay', () => {
       rerender({});
     });
 
-    // Check if transition went 0.99 -> 1
+    // Check if transition went 0.9999 -> 1
     expect(result.current.galleryTransition.value).toBe(1);
   });
 

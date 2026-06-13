@@ -52,7 +52,7 @@ export const useCameraAppState = ({
             // Modify the value on the JS thread to ensure Reanimated's JS proxy
             // correctly re-binds and notifies all child components (like GalleryViewer).
             // runOnUI bypasses this, causing cross-component useAnimatedStyle to stay stuck.
-            galleryTransition.value = 0.99;
+            galleryTransition.value = 0.9999;
             requestAnimationFrame(() => {
               galleryTransition.value = 1;
             });
