@@ -503,3 +503,51 @@ body {
   opacity: 0.8;
 }
 
+/* Discord CTA Styles */
+.coming-soon-cta {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.8rem;
+  margin-top: 1.5rem;
+}
+
+.coming-soon-cta-label {
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  max-width: 340px;
+}
+
+.discord-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background-color: #5865f2;
+  color: #ffffff;
+  padding: 0.8rem 1.6rem;
+  border-radius: 12px;
+  font-weight: 600;
+  text-decoration: none;
+  font-size: 0.95rem;
+  transition: transform 0.2s, background-color 0.2s, box-shadow 0.2s;
+  box-shadow: 0 4px 15px rgba(88, 101, 242, 0.25);
+}
+
+.discord-btn:hover {
+  background-color: #4752c4;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(88, 101, 242, 0.35);
+}
+
+.discord-btn:active {
+  transform: translateY(0);
+}
+
+.discord-icon {
+  fill: currentColor;
+}
+
+

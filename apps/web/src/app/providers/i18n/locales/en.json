@@ -2,7 +2,9 @@
   "home": {
     "subtitle": "Cinematic Analog Film Emulation",
     "coming_soon_badge": "Coming Soon to Android",
-    "description": "Capture professional cinema footage with a custom C++/Kotlin native rendering engine for real-time analog film look.",
+    "description": "Capture professional cinematic photos with a custom C++/Kotlin native rendering engine for real-time analog film look.",
+    "discord_cta_label": "Want to become a tester?",
+    "join_discord": "Join our Discord",
     "footer": {
       "rights": "All rights reserved.",
       "privacy_policy": "Privacy Policy"

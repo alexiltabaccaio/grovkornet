@@ -2,7 +2,9 @@
   "home": {
     "subtitle": "Emulazione Cinematografica di Pellicola Analogica",
     "coming_soon_badge": "In arrivo su Android",
-    "description": "Cattura riprese cinematografiche professionali con un motore di rendering nativo C++/Kotlin personalizzato per un look da pellicola analogica in tempo reale.",
+    "description": "Cattura foto cinematografiche professionali con un motore di rendering nativo C++/Kotlin personalizzato per un look da pellicola analogica in tempo reale.",
+    "discord_cta_label": "Vuoi diventare un tester?",
+    "join_discord": "Entra nel Canale Discord",
     "footer": {
       "rights": "Tutti i diritti riservati.",
       "privacy_policy": "Informativa sulla Privacy"
