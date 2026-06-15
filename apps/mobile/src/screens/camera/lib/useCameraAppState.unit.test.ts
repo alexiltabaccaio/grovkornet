@@ -22,7 +22,6 @@ jest.mock('@entities/system', () => {
 });
 
 describe('useCameraAppState', () => {
-  let galleryTransitionMock: { value: number };
   let appStateCallback: ((state: string) => void) | null = null;
   const mockRemoveSubscription = jest.fn();
   let originalUseSharedValue: any;
@@ -44,13 +43,11 @@ describe('useCameraAppState', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    jest.useFakeTimers();
 
     (useControlPanelStore.getState as jest.Mock).mockReturnValue({
       activeSection: 'none',
     });
 
-    galleryTransitionMock = { value: 0 };
     appStateCallback = null;
 
     addEventListenerSpy = jest.spyOn(AppState, 'addEventListener').mockImplementation(
@@ -59,26 +56,14 @@ describe('useCameraAppState', () => {
         return { remove: mockRemoveSubscription };
       }
     );
-
-    // Mock requestAnimationFrame to call the callback immediately
-    jest.spyOn(global, 'requestAnimationFrame').mockImplementation((cb: any) => {
-      cb();
-      return 1;
-    });
   });
 
   afterEach(() => {
-    jest.useRealTimers();
     jest.restoreAllMocks();
   });
 
   it('sets up the AppState listener and tears it down on unmount', () => {
-    const { unmount } = renderHook(() =>
-      useCameraAppState({
-        shouldRenderGallery: false,
-        galleryTransition: galleryTransitionMock as any,
-      })
-    );
+    const { unmount } = renderHook(() => useCameraAppState());
 
     expect(addEventListenerSpy).toHaveBeenCalledWith('change', expect.any(Function));
 
@@ -86,13 +71,8 @@ describe('useCameraAppState', () => {
     expect(mockRemoveSubscription).toHaveBeenCalled();
   });
 
-  it('increments cameraKey and recovers animation state when app becomes active and activeSection is none', () => {
-    const { result } = renderHook(() =>
-      useCameraAppState({
-        shouldRenderGallery: false,
-        galleryTransition: galleryTransitionMock as any,
-      })
-    );
+  it('increments cameraKey when app becomes active', () => {
+    const { result } = renderHook(() => useCameraAppState());
 
     expect(result.current.cameraKey).toBe(0);
 
@@ -105,79 +85,10 @@ describe('useCameraAppState', () => {
 
     // cameraKey should increment immediately
     expect(result.current.cameraKey).toBe(1);
-
-    // Shared values should not be updated yet (before timeout)
-    expect(result.current.drawerAnimation.value).toBe(0);
-    expect(result.current.footerTranslateY.value).toBe(0);
-
-    // Run the timers to trigger the setTimeout callback (150ms)
-    act(() => {
-      jest.advanceTimersByTime(150);
-    });
-
-    // Active section is 'none', so it should restore to 0 and 0
-    expect(result.current.drawerAnimation.value).toBe(0);
-    expect(result.current.footerTranslateY.value).toBe(0);
-    expect(galleryTransitionMock.value).toBe(0); // shouldn't change as shouldRenderGallery is false
   });
 
-  it('recovers state correctly when activeSection is not none', () => {
-    // Override activeSection to not be 'none'
-    (useControlPanelStore.getState as jest.Mock).mockReturnValue({
-      activeSection: 'filters',
-    });
-
-    const { result, unmount } = renderHook(() =>
-      useCameraAppState({
-        shouldRenderGallery: false,
-        galleryTransition: galleryTransitionMock as any,
-      })
-    );
-
-    act(() => {
-      if (appStateCallback) {
-        appStateCallback('active');
-      }
-    });
-
-    act(() => {
-      jest.advanceTimersByTime(150);
-    });
-
-    expect(result.current.drawerAnimation.value).toBe(-250);
-    expect(result.current.footerTranslateY.value).toBe(-50);
-    unmount();
-  });
-
-  it('restores galleryTransition when app goes active and shouldRenderGallery is true', () => {
-    const { unmount } = renderHook(() =>
-      useCameraAppState({
-        shouldRenderGallery: true,
-        galleryTransition: galleryTransitionMock as any,
-      })
-    );
-
-    act(() => {
-      if (appStateCallback) {
-        appStateCallback('active');
-      }
-    });
-
-    act(() => {
-      jest.advanceTimersByTime(150);
-    });
-
-    expect(galleryTransitionMock.value).toBe(1);
-    unmount();
-  });
-
-  it('does not increment cameraKey or recover values for non-active AppState transitions', () => {
-    const { result, unmount } = renderHook(() =>
-      useCameraAppState({
-        shouldRenderGallery: false,
-        galleryTransition: galleryTransitionMock as any,
-      })
-    );
+  it('does not increment cameraKey for non-active AppState transitions', () => {
+    const { result } = renderHook(() => useCameraAppState());
 
     act(() => {
       if (appStateCallback) {
@@ -186,13 +97,16 @@ describe('useCameraAppState', () => {
     });
 
     expect(result.current.cameraKey).toBe(0);
-
-    act(() => {
-      jest.advanceTimersByTime(150);
+  });
+  
+  it('initializes shared values correctly based on activeSection', () => {
+    (useControlPanelStore.getState as jest.Mock).mockReturnValue({
+      activeSection: 'filters',
     });
 
-    expect(result.current.drawerAnimation.value).toBe(0);
-    expect(result.current.footerTranslateY.value).toBe(0);
-    unmount();
+    const { result } = renderHook(() => useCameraAppState());
+    
+    expect(result.current.drawerAnimation.value).toBe(-250);
+    expect(result.current.footerTranslateY.value).toBe(-50);
   });
 });

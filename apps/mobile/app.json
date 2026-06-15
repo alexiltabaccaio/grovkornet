@@ -2,7 +2,7 @@
   "expo": {
     "name": "Grovkornet",
     "slug": "Grovkornet",
-    "version": "0.11.0",
+    "version": "0.11.1",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -29,7 +29,7 @@
         "android.permission.READ_MEDIA_VISUAL_USER_SELECTED"
       ],
       "package": "com.grovkornet.app",
-      "versionCode": 7
+      "versionCode": 8
     },
     "web": {
       "favicon": "./assets/favicon.png"

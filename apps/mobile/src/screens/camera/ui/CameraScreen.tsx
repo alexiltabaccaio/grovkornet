@@ -1,8 +1,9 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { StyleSheet, View, Platform, StatusBar } from 'react-native';
 import Animated, { useAnimatedStyle, interpolate, Extrapolation } from 'react-native-reanimated';
 import { useCameraPermissions } from '../lib/useCameraPermissions';
 import { useCameraAppState } from '../lib/useCameraAppState';
+import { useForceLayoutSync } from '../lib/useForceLayoutSync';
 import { useGalleryOverlay } from '../lib/useGalleryOverlay';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -20,7 +21,7 @@ import { GestureController } from '@features/lens-controls';
 import { DebugOverlay, AddPresetModal, DeletePresetModal, QuickPresetSelector } from '@features/system-settings';
 import { CaptureThumbnail, useGalleryPrefetch } from '@features/gallery';
 import { GalleryViewer } from '@widgets/gallery-viewer';
-import { logger } from '@shared/lib/logger';
+
 
 export const CameraScreen = () => {
   const insets = useSafeAreaInsets();
@@ -44,9 +45,12 @@ export const CameraScreen = () => {
 
   const { hasPermission } = useCameraPermissions();
   const { shouldRenderGallery, galleryTransition, openGallery, closeGallery } = useGalleryOverlay();
-  const { cameraKey, drawerAnimation, footerTranslateY } = useCameraAppState({
+  const { cameraKey, drawerAnimation, footerTranslateY } = useCameraAppState();
+
+  useForceLayoutSync({
     shouldRenderGallery,
-    galleryTransition,
+    drawerAnimation,
+    footerTranslateY,
   });
 
   const animatedBottomControlsStyle = useAnimatedStyle(() => {
@@ -120,28 +124,30 @@ export const CameraScreen = () => {
 
         {isFpsOverlayEnabled && <DebugOverlay />}
         
-        <Animated.View 
-          style={[
-            bottomControlsStyle,
-            animatedBottomControlsStyle
-          ]} 
-          pointerEvents="box-none"
-        >
-          <View style={styles.controlsRow} pointerEvents="box-none">
-            <View style={styles.sideControl} pointerEvents="box-none">
-              <CaptureThumbnail onPress={openGallery} />
+        <React.Fragment key={cameraKey}>
+          <Animated.View 
+            style={[
+              bottomControlsStyle,
+              animatedBottomControlsStyle
+            ]} 
+            pointerEvents="box-none"
+          >
+            <View style={styles.controlsRow} pointerEvents="box-none">
+              <View style={styles.sideControl} pointerEvents="box-none">
+                <CaptureThumbnail onPress={openGallery} />
+              </View>
+              <ShutterButton onPress={triggerCapture} translateY={footerTranslateY} />
+              <View style={styles.sideControl} pointerEvents="box-none">
+                <CameraFlipButton />
+              </View>
             </View>
-            <ShutterButton onPress={triggerCapture} translateY={footerTranslateY} />
-            <View style={styles.sideControl} pointerEvents="box-none">
-              <CameraFlipButton />
+            <View style={styles.presetSelectorContainer} pointerEvents="box-none">
+              <QuickPresetSelector />
             </View>
-          </View>
-          <View style={styles.presetSelectorContainer} pointerEvents="box-none">
-            <QuickPresetSelector />
-          </View>
-        </Animated.View>
+          </Animated.View>
 
-        <ControlPanel key={cameraKey} translateY={footerTranslateY} drawerAnimation={drawerAnimation} galleryTransition={galleryTransition} />
+          <ControlPanel translateY={footerTranslateY} drawerAnimation={drawerAnimation} galleryTransition={galleryTransition} />
+        </React.Fragment>
 
         <AddPresetModal />
         <DeletePresetModal />
