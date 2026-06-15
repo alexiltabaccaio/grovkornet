@@ -141,7 +141,7 @@ export const CameraScreen = () => {
           </View>
         </Animated.View>
 
-        <ControlPanel translateY={footerTranslateY} drawerAnimation={drawerAnimation} galleryTransition={galleryTransition} />
+        <ControlPanel key={cameraKey} translateY={footerTranslateY} drawerAnimation={drawerAnimation} galleryTransition={galleryTransition} />
 
         <AddPresetModal />
         <DeletePresetModal />
