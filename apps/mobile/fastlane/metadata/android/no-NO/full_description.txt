@@ -1,0 +1,38 @@
+Fang sjelen til analog fotografering på din mobile enhet.
+
+Grovkornet (norsk/svensk for "grovkornet") er et høytytende kamera designet for fotografer, innholdsprodusenter og analog-entusiaster. I motsetning til vanlige filter-apper som legger på flate overlegg, har Grovkornet en tilpasset, maskinvareakselerert renderingsmotor bygget på Google Filament. Den simulerer den fysiske lysbanen gjennom vintage optikk, kamerasensorer og kjemisk fremkalling i sanntid, noe som gir en stabil og jevn søkeropplevelse i 60 FPS.
+
+Ta full kontroll over din kreative visjon med vårt fysiske maskinvare-metaforiske grensesnitt, organisert i tre taktiske blokker:
+
+⚙️ SYSTEM
+Administrer raskt dine preferanser, tekniske overlegg og appinnstillinger.
+
+👁️ LENS (Optikksimulering)
+Gjenskap oppførselen til klassisk vintage-glass.
+• Focus: Taktil, presis manuell fokusstyring.
+• Chromatic Aberration: Simuler fysisk lysspredning i glasset.
+• Bloom: Emuler den drømmeaktige lysspredningen (light bleed) fra vintage-objektiver.
+• Lens Selection: Roter eller bytt raskt mellom enhetens fysiske kameraer.
+
+📷 BODY (Sensor og mekanikk)
+Samhandle med kamerahuset akkurat som med en profesjonell rigg.
+• ISO og Shutter Speed: Still inn eksponeringen din manuelt for det perfekte bildet.
+• Aspect Ratio: Velg mellom klassisk 16:9, widescreen 2.39:1 (kinematografisk utseende), kvadratisk eller formater tilpasset sosiale medier.
+• Resolution og Torch: Juster opptaksparametere på sparket.
+
+🎞️ FILM (Kjemisk fremkalling)
+Utvikle din egen stil med en avansert korn- og farge-pipeline.
+• Organic Grain: Tilpass kornstørrelse, intensitet og ruhet for å emulere 8mm, 16mm og 35mm filmruller.
+• Colour Balance: Juster temperatur og fargetone med presis Kelvin-lignende respons.
+• Texture Tuning: Finjuster fargemetning, kontrast og skarphet.
+• Noise Reduction: Bruk maskinvareakselerert støyreduksjon før fremkalling.
+
+---
+HOVEDFUNKSJONER:
+• Sanntids GPU-pipeline i én passering (Uber Shader): Null etterslep i etterbehandlingen – det du ser, er det du fanger.
+• Ren ytelse: Silkemyk 60 FPS-forhåndsvisning som utnytter innfødte C++/Kotlin-optimaliseringer.
+• Eget preset-system: Lagre dine favorittkonfigurasjoner for LENS, BODY og FILM som egne forhåndsinnstillinger, komplett med automatisk genererte visuelle miniatyrbilder.
+• Dynamisk galleri: Forhåndsvis og organiser bildene dine umiddelbart.
+• Personvern først: All behandling skjer helt offline på enheten din.
+
+Tilfør taktil varme, organiske teksturer og kinematografisk dybde til bildene dine. Last ned Grovkornet og start fotografering i dag.

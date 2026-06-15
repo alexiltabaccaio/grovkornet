@@ -1,0 +1,1 @@
+Gerçek zamanlı analog film emülasyonu ve manuel fotoğraf kontrolü.

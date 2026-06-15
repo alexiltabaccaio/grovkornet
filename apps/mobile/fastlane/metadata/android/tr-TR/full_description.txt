@@ -1,0 +1,38 @@
+Mobil cihazınızda analog fotoğrafçılığın ruhunu yakalayın.
+
+Grovkornet (İsveççe "kaba taneli" anlamına gelir), fotoğrafçılar, içerik üreticileri ve analog meraklıları için tasarlanmış yüksek performanslı bir sinematik kameradır. Düz katmanlar uygulayan standart filtre uygulamalarının aksine Grovkornet, Google Filament tabanlı, özel olarak geliştirilmiş donanım hızlandırmalı bir işleme motoruna sahiptir. Vintage optiklerden, kamera sensörlerinden ve kimyasal film banyosundan geçen ışığın fiziksel yolunu gerçek zamanlı olarak simüle ederek 60 FPS'de son derece kararlı bir vizör deneyimi sunar.
+
+Fiziksel donanım tasarımından ilham alan ve üç taktik bloğa ayrılan arayüzümüzle yaratıcı vizyonunuzu tamamen kontrol edin:
+
+⚙️ SYSTEM
+Tercihlerinizi, teknik katmanları ve uygulama ayarlarını hızla yönetin.
+
+👁️ LENS (Optik Simülasyon)
+Klasik vintage lenslerin davranışını yeniden yaratın.
+• Focus: Dokunsal ve hassas manuel odaklama kontrolü.
+• Kromatik Aberasyon: Işığın camdan geçerken gösterdiği fiziksel dağılımı simüle edin.
+• Bloom: Vintage lenslerin karakteristik rüya gibi ışık sızmasını (ışık saçılması) emüle edin.
+• Lens Seçimi: Cihazınızın fiziksel kameraları arasında hızlıca geçiş yapın.
+
+📷 BODY (Sensör ve Mekanik)
+Kamera gövdesiyle tıpkı profesyonel bir ekipman gibi etkileşime girin.
+• ISO ve Shutter Speed: Pozlamanızı mükemmel fotoğraf için manuel olarak ayarlayın.
+• En Boy Oranı: Klasik 16:9, geniş ekran 2.39:1 (Sinematik görünüm), kare veya sosyal medyaya uygun formatlardan birini seçin.
+• Çözünürlük ve Flaş: Çekim parametrelerini anında ayarlayın.
+
+🎞️ FILM (Kimyasal Film Banyosu)
+Gelişmiş kumlanma ve renk hattı ile kendi tarzınızı oluşturun.
+• Organik Kumlanma: 8mm, 16mm veya 35mm film türlerini emüle etmek için kumlanma boyutunu, yoğunluğunu ve pürüzlülüğünü özelleştirin.
+• Renk Dengesi: Hassas Kelvin benzeri tepkiyle Sıcaklık ve Ton ayarlarını yapın.
+• Doku Ayarı: Doygunluk, Kontrast ve Keskinliği ince ayarlarla optimize edin.
+• Gürültü Azaltma: Fotoğraf banyosundan önce donanım hızlandırmalı pürüzsüzleştirme uygulayın.
+
+---
+ANA ÖZELLİKLER:
+• Gerçek Zamanlı Tek Geçişli GPU İşleme Hattı (Uber Shader): Post-proses gecikmesi olmadan, ne görüyorsanız onu kaydedin.
+• Ham Performans: Yerel C++/Kotlin optimizasyonları sayesinde akıcı 60 FPS canlı önizleme.
+• Özel Ön Ayar Sistemi: Favori LENS, BODY ve FILM yapılandırmalarınızı, otomatik oluşturulan görsel küçük resimlerle birlikte özel ön ayarlar olarak kaydedin.
+• Dinamik Galeri: Fotoğraflarınızı anında önizleyin ve düzenleyin.
+• Gizlilik Öncelikli: Tüm işleme süreçleri cihazınızda tamamen çevrimdışı olarak gerçekleştirilir.
+
+Fotoğraflarınıza dokunsal sıcaklık, organik dokular ve sinematik derinlik katın. Grovkornet'i indirin ve bugün çekime başlayın.

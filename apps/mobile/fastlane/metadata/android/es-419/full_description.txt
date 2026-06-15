@@ -1,0 +1,38 @@
+Captura el alma de la fotografía analógica en tu dispositivo móvil.
+
+Grovkornet (en sueco "grano grueso") es una cámara de fotos cinematográfica de alto rendimiento diseñada para fotógrafos, creadores de contenido y entusiastas de lo analógico. A diferencia de las aplicaciones de filtros comunes que aplican capas planas, Grovkornet cuenta con un motor de renderizado personalizado y acelerado por hardware basado en Google Filament. Simula en tiempo real la trayectoria física de la luz a través de ópticas vintage, sensores de cámara y revelado químico, ofreciendo una vista previa estable y fluida a 60 FPS.
+
+Toma el control absoluto de tu estilo con nuestra interfaz inspirada en el hardware físico, organizada en tres bloques tácticos:
+
+⚙️ SYSTEM
+Administra rápidamente tus preferencias, capas técnicas y ajustes de la aplicación.
+
+👁️ LENS (Simulación Óptica)
+Recrea el comportamiento de las lentes vintage clásicas.
+• Focus: Control de enfoque manual táctil y preciso.
+• Aberración Cromática: Simula la dispersión física de la luz a través del cristal.
+• Bloom: Emula la difusión de luz onírica característica de los objetivos vintage.
+• Lens Selection: Cambia rápidamente entre las cámaras físicas de tu dispositivo.
+
+📷 BODY (Sensor y Mecánica)
+Interactúa con el cuerpo de la cámara tal como en un equipo profesional.
+• ISO y Shutter Speed: Ajusta manualmente la exposición para la foto perfecta.
+• Relación de Aspecto: Elige entre el clásico 16:9, formato ancho 2.39:1 (look cinematográfico), formato cuadrado o formatos para redes sociales.
+• Resolución y Linterna: Ajusta los parámetros de captura al instante.
+
+🎞️ FILM (Revelado Químico)
+Desarrolla tu estilo con un procesamiento avanzado de grano y color.
+• Grano Orgánico: Personaliza el tamaño, la intensidad y la rugosidad del grano para emular películas de 8mm, 16mm o 35mm.
+• Balance de Color: Ajusta la temperatura y el tinte con una respuesta precisa basada en la escala Kelvin.
+• Ajuste de Textura: Modifica la saturación, el contraste y la nitidez.
+• Reducción de Ruido: Aplica un suavizado acelerado por hardware antes del revelado de la foto.
+
+---
+CARACTERÍSTICAS PRINCIPALES:
+• Procesamiento en tiempo real en un solo paso en GPU (Uber Shader): Cero retraso de postprocesamiento; lo que ves es lo que capturas.
+• Rendimiento Puro: Vista previa fluida a 60 FPS gracias a optimizaciones nativas en C++/Kotlin.
+• Sistema de Ajustes Preestablecidos: Guarda tus configuraciones favoritas de LENS, BODY y FILM como ajustes preestablecidos, con miniaturas visuales generadas automáticamente.
+• Galería Dinámica: Previsualiza y organiza tus fotos al instante.
+• Privacidad Primero: Todo el procesamiento se realiza de forma local y sin conexión en tu dispositivo.
+
+Lleva calidez táctil, texturas orgánicas y profundidad cinematográfica a tus fotos. Descarga Grovkornet y comienza a fotografiar hoy mismo.

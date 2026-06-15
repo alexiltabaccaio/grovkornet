@@ -1,0 +1,1 @@
+Emulacja kliszy filmowej w czasie rzeczywistym i manualna kontrola zdjęć.

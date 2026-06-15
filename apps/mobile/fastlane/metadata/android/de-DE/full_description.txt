@@ -1,0 +1,38 @@
+Fange die Seele der analogen Fotografie auf deinem Mobilgerät ein.
+
+Grovkornet (schwedisch für „Grobkorn“) ist eine leistungsstarke Fotokamera, die für Fotografen, Content Creator und Analog-Enthusiasten entwickelt wurde. Im Gegensatz zu herkömmlichen Filter-Apps, die flache Overlays anwenden, verfügt Grovkornet über eine maßgeschneiderte, hardwarebeschleunigte Rendering-Engine, die auf Google Filament basiert. Sie simuliert den physikalischen Weg des Lichts durch Vintage-Optiken, Kamerasensoren und die chemische Entwicklung in Echtzeit und bietet ein flüssiges Vorschauerlebnis mit 60 FPS.
+
+Übernimm die volle Kontrolle über deine kreative Vision mit unserer Benutzeroberfläche, die auf einer physischen Hardware-Metapher basiert und in drei taktische Blöcke unterteilt ist:
+
+⚙️ SYSTEM
+Verwalte schnell deine Einstellungen, technischen Overlays und App-Optionen.
+
+👁️ LENS (Optiksimulation)
+Erzeuge das Verhalten klassischer Vintage-Objektive neu.
+• Focus: Haptische, präzise manuelle Fokussteuerung.
+• Chromatic Aberration: Simuliere die physikalische Lichtstreuung von Glas.
+• Bloom: Emuliere den traumhaften Lichthof (Light Bleed) von Vintage-Objektiven.
+• Lens Selection: Wechsle schnell zwischen den physischen Kameras deines Geräts.
+
+📷 BODY (Sensor & Mechanik)
+Interagiere mit dem Kameragehäuse wie mit einem professionellen Rig.
+• ISO & Shutter Speed: Stelle deine Belichtung manuell für das perfekte Foto ein.
+• Aspect Ratio: Wähle zwischen klassischem 16:9, Widescreen 2.39:1 (Cinematic-Look), Quadrat- oder Social-Media-Formaten.
+• Resolution & Torch: Passe die Aufnahmeparameter im Handumdrehen an.
+
+🎞️ FILM (Chemische Entwicklung)
+Entwickle deinen Look mit einer hochentwickelten Korn- und Farbpipeline.
+• Organic Grain: Passe Korngröße, -intensität und -rauheit an, um 8-mm-, 16-mm- oder 35-mm-Filmrollen zu emulieren.
+• Color Balance: Passe Temperatur und Tönung mit präziser Kelvin-ähnlicher Reaktion an.
+• Texture Tuning: Verfeinere Sättigung, Kontrast und Schärfe.
+• Noise Reduction: Wende eine hardwarebeschleunigte Rauschunterdrückung vor der Entwicklung an.
+
+---
+HAUPTMERKMALE:
+• Echtzeit-Single-Pass-GPU-Pipeline (Uber Shader): Keinerlei Post-Processing-Verzögerung – was du siehst, nimmst du auf.
+• Pure Leistung: Butterweiche 60-FPS-Vorschau dank nativer C++/Kotlin-Optimierungen.
+• Eigenes Preset-System: Speichere deine bevorzugten LENS-, BODY- und FILM-Konfigurationen als benutzerdefinierte Presets, komplett mit automatisch generierten visuellen Vorschaubildern.
+• Dynamische Galerie: Sieh dir deine Fotos sofort in der Vorschau an und organisiere sie.
+• Datenschutz an erster Stelle: Die gesamte Verarbeitung erfolgt vollständig offline auf deinem Gerät.
+
+Verleihe deinen Fotos haptische Wärme, organische Texturen und filmische Tiefe. Lade Grovkornet herunter und beginne noch heute mit dem Fotografieren.

@@ -1,0 +1,38 @@
+Capturez l'âme de la photographie argentique sur votre appareil mobile.
+
+Grovkornet (suédois pour "gros grain") est un appareil photo haute performance conçu pour les photographes, les créateurs de contenu et les passionnés d'argentique. Contrairement aux applications de filtres classiques qui appliquent des calques plats, Grovkornet intègre un moteur de rendu personnalisé à accélération matérielle basé sur Google Filament. Il simule en temps réel le parcours physique de la lumière à travers des optiques vintage, des capteurs d'appareil photo et un développement chimique, offrant un aperçu fluide à 60 FPS.
+
+Prenez le contrôle total de votre style grâce à notre interface inspirée du matériel physique, organisée en trois blocs tactiques :
+
+⚙️ SYSTEM
+Gerez rapidement vos préférences, vos incrustations techniques et les paramètres de l'application.
+
+👁️ LENS (Simulation Optique)
+Recréez le comportement des objectifs vintage classiques.
+• Focus : Contrôle manuel de la mise au point tactile et précis.
+• Aberration Chromatique : Simulez la dispersion physique de la lumière du verre.
+• Bloom : Émulez la diffusion de lumière onirique typique des objectifs vintage.
+• Sélection d'Objectif : Basculez rapidement entre les caméras physiques de votre appareil.
+
+📷 BODY (Capteur et Mécanique)
+Interagissez avec le boîtier de l'appareil photo comme avec un équipement professionnel.
+• ISO et Shutter Speed : Réglez manuellement votre exposition pour la photo parfaite.
+• Format d'Image : Choisissez entre le classique 16:9, le cinémascope 2.39:1 (rendu cinématographique), le format carré ou des formats adaptés aux réseaux sociaux.
+• Résolution et Torche : Ajustez les paramètres de capture à la volée.
+
+🎞️ FILM (Développement Chimique)
+Développez votre style grâce à un pipeline avancé pour le grain et la couleur.
+• Grain Organique : Personnalisez la taille, l'intensité et la rugosité du grain pour émuler des pellicules 8mm, 16mm ou 35mm.
+• Balance des Couleurs : Ajustez la température et la teinte avec une réponse précise basée sur la plage Kelvin.
+• Réglage de la Texture : Affinez la saturation, le contraste et la netteté.
+• Réduction du Bruit : Appliquez un lissage à accélération matérielle avant le développement de la photo.
+
+---
+CARACTÉRISTIQUES PRINCIPALES :
+• Pipeline GPU en un seul passage en temps réel (Uber Shader) : Aucun décalage de post-traitement—ce que vous voyez est ce que vous capturez.
+• Performances Pures : Aperçu fluide à 60 FPS grâce à des optimisations natives C++/Kotlin.
+• Système de Préréglages Personnalisés : Enregistrez vos configurations préférées de LENS, BODY et FILM sous forme de préréglages personnalisés, avec des miniatures visuelles générées automatiquement.
+• Galerie Dynamique : Prévisualisez et organisez instantanément vos photos.
+• Priorité à la Confidentialité : Tous les traitements sont effectués entièrement hors ligne sur votre appareil.
+
+Apportez de la chaleur tactile, des textures organiques et de la profondeur cinématographique à vos photos. Téléchargez Grovkornet et commencez à photographier dès aujourd'hui.

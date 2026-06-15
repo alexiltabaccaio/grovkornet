@@ -1,0 +1,1 @@
+Emulación de película en tiempo real y controles de fotos para fotógrafos.

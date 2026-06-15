@@ -1,0 +1,38 @@
+Uchwyć duszę fotografii analogowej na swoim urządzeniu mobilnym.
+
+Grovkornet (po szwedzku „gruboziarnisty”) to wydajny aparat fotograficzny stworzony z myślą o fotografach, twórcach treści i miłośnikach analogowego stylu. W przeciwieństwie do zwykłych aplikacji z filtrami, które nakładają płaskie tekstury, Grovkornet wykorzystuje własny silnik renderowania z akceleracją sprzętową oparty na Google Filament. Symuluje on w czasie rzeczywistym fizyczną drogę światła przez klasyczną optykę, matrycę aparatu i procesy chemicznego wywoływania kliszy, zapewniając płynny podgląd z prędkością 60 FPS.
+
+Przejmij pełną kontrolę nad swoją wizją artystyczną dzięki interfejsowi nawiązującemu do fizycznego sprzętu, podzielonemu na trzy bloki taktyczne:
+
+⚙️ SYSTEM
+Szybko zarządzaj preferencjami, nakładkami technicznymi i ustawieniami aplikacji.
+
+👁️ LENS (Symulacja optyki)
+Odtwórz charakterystykę klasycznych obiektywów vintage.
+• Focus: Precyzyjna i responsywna manualna kontrola ostrości.
+• Aberracja chromatyczna: Symulacja fizycznej dyspersji światła w szkle.
+• Bloom: Emulacja charakterystycznego dla klasycznej optyki miękkiego rozmycia światła.
+• Lens Selection: Szybkie przełączanie między fizycznymi obiektywami Twojego urządzenia.
+
+📷 BODY (Matryca i mechanika)
+Korzystaj z korpusu aparatu tak samo jak z profesjonalnego sprzętu fotograficznego.
+• ISO i Shutter Speed: Ręczna regulacja parametrów ekspozycji dla idealnego ujęcia.
+• Aspect Ratio: Wybieraj między klasycznym 16:9, panoramicznym 2.39:1 (format kinowy), kwadratem lub formatami do mediów społecznościowych.
+• Rozdzielczość i lampa: Błyskawiczna regulacja parametrów robienia zdjęć.
+
+🎞️ FILM (Wywoływanie chemiczne)
+Twórz unikalny styl dzięki zaawansowanym opcjom ziarna i koloru.
+• Organic Grain: Dostosuj rozmiar, intensywność i szorstkość ziarna, aby emulować klisze 8 mm, 16 mm lub 35 mm.
+• Colour Balance: Reguluj temperaturę barwową i odcień z precyzyjną reakcją opartą na skali Kelvina.
+• Texture Tuning: Precyzyjna regulacja nasycenia, kontrastu i ostrości.
+• Noise Reduction: Zastosuj sprzętową redukcję szumów przed wywołaniem zdjęcia.
+
+---
+KLUCZOWE CECHY:
+• Jednoprzebiegowa pipeline GPU w czasie rzeczywistym (Uber Shader): Brak opóźnień przetwarzania końcowego – to, co widzisz na ekranie, jest natychmiast zapisywane.
+• Czysta wydajność: Niezwykle płynny podgląd na żywo 60 FPS dzięki natywnym optymalizacjom w C++/Kotlin.
+• System własnych presetów: Zapisuj ulubione konfiguracje parametrów LENS, BODY i FILM jako presety z automatycznie generowanymi miniaturami.
+• Dynamiczna galeria: Błyskawicznie przeglądaj i porządkuj swoje zdjęcia.
+• Prywatność na pierwszym miejscu: Całe przetwarzanie odbywa się w pełni offline na Twoim urządzeniu.
+
+Dodaj swoim zdjęciom ciepła, organicznych tekstur i głębi retro. Pobierz Grovkornet i zacznij robić zdjęcia już dziś.

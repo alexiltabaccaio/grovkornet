@@ -7,7 +7,7 @@ A high-performance cinematic camera ecosystem built with React Native and a cust
 
 ## 🚀 Overview
 
-Grovkornet (Swedish for "coarse-grained") is designed for filmmakers and enthusiasts who want the look and feel of analog film in a modern mobile workflow. Unlike standard filter apps, Grovkornet uses a single-pass GPU rendering pipeline that simulates the physical path of light through a cinema setup, ensuring a stable 60 FPS experience.
+Grovkornet (Swedish for "coarse-grained") is designed for photographers, content creators, and enthusiasts who want the look and feel of analog film in a modern mobile workflow. Unlike standard filter apps, Grovkornet uses a single-pass GPU rendering pipeline that simulates the physical path of light through a camera setup, ensuring a stable 60 FPS experience.
 
 ## 🏗️ Architecture
 
@@ -26,7 +26,7 @@ To enforce these rules and prevent architectural degradation (like circular depe
 
 ## 🎛️ The Analog Metaphor (UX Hierarchy)
 
-The interface is organized into four main physical sections, designed for run-and-gun filmmaking:
+The interface is organized into four main physical sections, designed for run-and-gun cinematic photography:
 
 1.  **⚙️ SYSTEM**: Technical settings, debug overlays, and presets profiles.
 2.  **👁️ LENS**: Physical glass settings (Camera selection, Focus).

@@ -1,0 +1,38 @@
+Capture the soul of analog photography on your mobile device.
+
+Grovkornet (Swedish for "coarse-grained") is a high-performance camera designed for photographers, content creators, and analog enthusiasts. Unlike standard filter apps that apply flat overlays, Grovkornet features a custom, hardware-accelerated rendering engine built on Google Filament. It simulates the physical path of light through vintage optics, camera sensors, and chemical development in real-time, delivering a stable, silky-smooth 60 FPS viewfinder experience.
+
+Take complete control over your creative vision with our physical-hardware metaphor interface, organized into three tactical blocks:
+
+⚙️ SYSTEM
+Quickly manage your preferences, technical overlays, and application settings.
+
+👁️ LENS (Optics Simulation)
+Recreate the behavior of classic vintage glass.
+• Focus: Tactile, precise manual focus control.
+• Chromatic Aberration: Simulate physical glass light dispersion.
+• Bloom: Emulate the dreamlike light bleed of vintage lenses.
+• Lens Selection: Quickly switch between your device's physical cameras.
+
+📷 BODY (Sensor & Mechanics)
+Interact with the camera body just like a professional rig.
+• ISO & Shutter Speed: Dial in your exposure manually for the perfect photo.
+• Aspect Ratio: Choose from classic 16:9, widescreen 2.39:1 (Cinematic look), square, or social-ready formats.
+• Resolution & Torch: Adjust capturing parameters on the fly.
+
+🎞️ FILM (Chemical Development)
+Develop your look with an advanced grain and color pipeline.
+• Organic Grain: Customize grain size, intensity, and roughness to emulate 8mm, 16mm, or 35mm stocks.
+• Color Balance: Adjust Temperature and Tint with precise Kelvin-like response.
+• Texture Tuning: Refine Saturation, Contrast, and Sharpening.
+• Noise Reduction: Apply hardware-accelerated smoothing before development.
+
+---
+KEY FEATURES:
+• Real-time Single-pass GPU Pipeline (Uber Shader): Zero post-processing lag—what you see is what you capture.
+• Raw Performance: Silky-smooth 60 FPS live preview utilizing native C++/Kotlin optimizations.
+• Custom Presets System: Save your favorite LENS, BODY, and FILM configurations as custom presets, complete with auto-generated visual thumbnails.
+• Dynamic Gallery: Instantly preview and organize your custom shots.
+• Privacy First: All processing happens entirely offline on your device.
+
+Bring tactile warmth, organic textures, and cinematic depth to your photos. Download Grovkornet and start shooting today.

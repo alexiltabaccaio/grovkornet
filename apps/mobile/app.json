@@ -10,8 +10,7 @@
     "ios": {
       "supportsTablet": true,
       "infoPlist": {
-        "NSCameraUsageDescription": "Grovkornet needs camera access to capture cinematic footage with real-time analog film emulation.",
-        "NSMicrophoneUsageDescription": "Grovkornet needs microphone access to record high-quality audio for your cinematic videos."
+        "NSCameraUsageDescription": "Grovkornet needs camera access to capture cinematic photos with real-time analog film emulation."
       }
     },
     "android": {
@@ -21,7 +20,6 @@
       },
       "permissions": [
         "android.permission.CAMERA",
-        "android.permission.RECORD_AUDIO",
         "android.permission.READ_EXTERNAL_STORAGE",
         "android.permission.WRITE_EXTERNAL_STORAGE",
         "android.permission.READ_MEDIA_IMAGES",
@@ -51,8 +49,8 @@
       [
         "expo-media-library",
         {
-          "photosPermission": "Allow Grovkornet to access your photos to save and view cinematic clips.",
-          "savePhotosPermission": "Allow Grovkornet to save cinematic clips to your photos."
+          "photosPermission": "Allow Grovkornet to access your photos to save and view cinematic photos.",
+          "savePhotosPermission": "Allow Grovkornet to save cinematic photos to your photos."
         }
       ],
       [
