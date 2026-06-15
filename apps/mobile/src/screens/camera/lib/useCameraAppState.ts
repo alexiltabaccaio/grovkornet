@@ -43,6 +43,10 @@ export const useCameraAppState = ({
             const currentY = footerTranslateY.value;
             const targetY = isNaN(currentY) ? -50 : (currentY < 0 ? currentY : -50);
             
+            // Artificially change the value before withTiming to force Reanimated
+            // to register a change and push the update to the UI thread.
+            footerTranslateY.value = targetY + 0.1;
+            
             // Force Reanimated to update the UI thread by using an animation
             drawerAnimation.value = withTiming(-250, { duration: 50 });
             footerTranslateY.value = withTiming(targetY, { duration: 50 });
