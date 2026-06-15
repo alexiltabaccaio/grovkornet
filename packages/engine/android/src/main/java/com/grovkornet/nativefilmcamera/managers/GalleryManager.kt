@@ -60,7 +60,7 @@ class GalleryManager(private val context: Context) {
             try {
                 resolver.openOutputStream(it).use { outputStream ->
                     if (outputStream != null) {
-                        bitmap.compress(Bitmap.CompressFormat.JPEG, 95, outputStream)
+                        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
                     }
                 }
             } catch (e: Exception) {

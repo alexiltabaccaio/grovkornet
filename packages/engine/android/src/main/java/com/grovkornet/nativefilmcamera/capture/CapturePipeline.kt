@@ -141,7 +141,7 @@ class CapturePipeline(
 
                 // 2. Compress directly to MediaStore
                 context.contentResolver.openOutputStream(uri)?.use { os ->
-                    watermarked.compress(Bitmap.CompressFormat.JPEG, 95, os)
+                    watermarked.compress(Bitmap.CompressFormat.JPEG, 100, os)
                 }
                 watermarked.recycle()
 
