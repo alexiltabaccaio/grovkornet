@@ -50,12 +50,12 @@ export const CameraScreen = () => {
   });
 
   const animatedBottomControlsStyle = useAnimatedStyle(() => {
-    // drawerAnimation goes from 250 (closed) to 0 (open)
+    // drawerAnimation goes from 0 (closed) to -250 (open)
     // footerTranslateY goes from 0 (open) to -250 (pulled up)
-    // Total goes from 250 (closed) to 0 (open) to -250 (pulled up)
-    // We want to fade out the controls as the drawer opens (total goes 250 -> 150)
+    // Total goes from 0 (closed) to -250 (open) to -500 (pulled up)
+    // We want to fade out the controls as the drawer opens (totalOffset goes from 250 -> 150)
     // galleryTransition.value * 100 reduces totalOffset to 150, which triggers the fade out
-    const totalOffset = drawerAnimation.value + footerTranslateY.value - (galleryTransition.value * 100);
+    const totalOffset = drawerAnimation.value + 250 + footerTranslateY.value - (galleryTransition.value * 100);
     const opacity = interpolate(
       totalOffset,
       [150, 250],

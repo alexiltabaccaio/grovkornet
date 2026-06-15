@@ -74,7 +74,7 @@ describe('useControlPanelGestures', () => {
 
     expect(result.current.activeSection).toBe('none');
     expect(result.current.translateY.value).toBe(0);
-    expect(result.current.drawerAnimation.value).toBe(250);
+    expect(result.current.drawerAnimation.value).toBe(0);
 
     // Open drawer
     act(() => {
@@ -86,7 +86,7 @@ describe('useControlPanelGestures', () => {
 
     expect(result.current.activeSection).toBe('film');
     expect(result.current.translateY.value).toBe(-50);
-    expect(result.current.drawerAnimation.value).toBe(0);
+    expect(result.current.drawerAnimation.value).toBe(-250);
 
     // Close drawer
     act(() => {
@@ -98,7 +98,7 @@ describe('useControlPanelGestures', () => {
 
     expect(result.current.activeSection).toBe('none');
     expect(result.current.translateY.value).toBe(0);
-    expect(result.current.drawerAnimation.value).toBe(250);
+    expect(result.current.drawerAnimation.value).toBe(0);
   });
 
   it('handles Pan gesture start, update and end correctly', () => {

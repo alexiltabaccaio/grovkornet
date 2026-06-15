@@ -21,7 +21,7 @@ export const useControlPanelGestures = ({
   const localTranslateY = useSharedValue(activeSection === 'none' ? 0 : -50);
   const translateY = externalTranslateY || localTranslateY;
   const startY = useSharedValue(0);
-  const localDrawerAnimation = useSharedValue(activeSection === 'none' ? 250 : 0);
+  const localDrawerAnimation = useSharedValue(activeSection === 'none' ? 0 : -250);
   const drawerAnimation = externalDrawerAnimation || localDrawerAnimation;
 
   const wasClosed = useRef(activeSection === 'none');
@@ -30,13 +30,13 @@ export const useControlPanelGestures = ({
     if (activeSection === 'none') {
       // Close the drawer
       translateY.value = withTiming(0, { duration: 300 }); // reset the pan gesture with animation
-      drawerAnimation.value = withTiming(250, { duration: 300 }); // push it down to hide
+      drawerAnimation.value = withTiming(0, { duration: 300 }); // push it down to hide
       wasClosed.current = true;
     } else {
       // Open the drawer
       if (wasClosed.current) {
         translateY.value = withTiming(-50, { duration: 300 }); // Set target base height to -50px with smooth animation
-        drawerAnimation.value = withTiming(0, { duration: 300 });
+        drawerAnimation.value = withTiming(-250, { duration: 300 });
         wasClosed.current = false;
       }
     }

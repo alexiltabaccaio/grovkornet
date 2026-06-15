@@ -58,7 +58,7 @@ export const ControlPanel = React.memo(({ translateY: externalTranslateY, drawer
       <Animated.View 
         style={[
           styles.topFooterContainer, 
-          { bottom: -323 + insets.bottom },
+          { bottom: -573 + insets.bottom },
           animatedTopFooterStyle
         ]} 
         pointerEvents={isSheetVisible ? "box-none" : "none"}
@@ -112,7 +112,7 @@ const styles = StyleSheet.create({
   topFooterContainer: {
     width: '100%',
     position: 'absolute',
-    bottom: -323, // Mathematically calculated to align perfectly with the red sections
+    bottom: -573, // Mathematically calculated to align perfectly with the red sections (shifted 250px down)
     zIndex: 5,
     backgroundColor: 'rgba(18, 18, 18, 0.75)', // Restored translucent glass effect
   },

@@ -68,7 +68,7 @@ export const GestureController = ({ children, footerTranslateY, drawerAnimation 
   const getDynamicLimit = () => {
     'worklet';
     const ft = footerTranslateY ? footerTranslateY.value : 0;
-    const da = drawerAnimation ? drawerAnimation.value : 0;
+    const da = drawerAnimation ? drawerAnimation.value + 250 : 0;
     if (!footerTranslateY) return 0;
 
     const aspectValue = aspectRatio.value;
@@ -101,7 +101,7 @@ export const GestureController = ({ children, footerTranslateY, drawerAnimation 
     () => {
       // Direct access to ensure Reanimated auto-subscribes to changes
       const ftVal = footerTranslateY ? footerTranslateY.value : 0;
-      const daVal = drawerAnimation ? drawerAnimation.value : 0;
+      const daVal = drawerAnimation ? drawerAnimation.value + 250 : 0;
       const aspectVal = aspectRatio.value;
       
       return getDynamicLimit();

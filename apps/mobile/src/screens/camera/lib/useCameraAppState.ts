@@ -14,7 +14,7 @@ export const useCameraAppState = ({
 }: UseCameraAppStateProps) => {
   const initialActiveSection = useControlPanelStore.getState().activeSection;
   const [cameraKey, setCameraKey] = useState(0);
-  const drawerAnimation = useSharedValue(initialActiveSection === 'none' ? 250 : 0);
+  const drawerAnimation = useSharedValue(initialActiveSection === 'none' ? 0 : -250);
   const footerTranslateY = useSharedValue(initialActiveSection === 'none' ? 0 : -50);
 
   useEffect(() => {
@@ -32,19 +32,19 @@ export const useCameraAppState = ({
           // Restore basic layout state that could be lost
           const isActiveSectionNone = useControlPanelStore.getState().activeSection === 'none';
           if (isActiveSectionNone) {
-            drawerAnimation.value = 249.9;
+            drawerAnimation.value = -0.1;
             footerTranslateY.value = 0.1;
             requestAnimationFrame(() => {
-              drawerAnimation.value = 250;
+              drawerAnimation.value = 0;
               footerTranslateY.value = 0;
             });
           } else {
-            drawerAnimation.value = 0.1;
+            drawerAnimation.value = -249.9;
             const currentY = footerTranslateY.value;
             const targetY = isNaN(currentY) ? -50 : (currentY < 0 ? currentY : -50);
             
             // Force Reanimated to update the UI thread by using an animation
-            drawerAnimation.value = withTiming(0, { duration: 50 });
+            drawerAnimation.value = withTiming(-250, { duration: 50 });
             footerTranslateY.value = withTiming(targetY, { duration: 50 });
           }
 
@@ -81,15 +81,15 @@ export const useCameraAppState = ({
       const timer = setTimeout(() => {
         const activeSection = useControlPanelStore.getState().activeSection;
         if (activeSection === 'none') {
-          drawerAnimation.value = withTiming(249.9, { duration: 0 }, () => {
-            drawerAnimation.value = withTiming(250, { duration: 0 });
+          drawerAnimation.value = withTiming(-0.1, { duration: 0 }, () => {
+            drawerAnimation.value = withTiming(0, { duration: 0 });
           });
           footerTranslateY.value = withTiming(0.1, { duration: 0 }, () => {
             footerTranslateY.value = withTiming(0, { duration: 0 });
           });
         } else {
-          drawerAnimation.value = withTiming(0.1, { duration: 0 }, () => {
-            drawerAnimation.value = withTiming(0, { duration: 0 });
+          drawerAnimation.value = withTiming(-249.9, { duration: 0 }, () => {
+            drawerAnimation.value = withTiming(-250, { duration: 0 });
           });
           const currentY = footerTranslateY.value;
           const targetY = isNaN(currentY) ? -50 : (currentY < 0 ? currentY : -50);

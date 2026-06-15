@@ -107,7 +107,7 @@ describe('useCameraAppState', () => {
     expect(result.current.cameraKey).toBe(1);
 
     // Shared values should not be updated yet (before timeout)
-    expect(result.current.drawerAnimation.value).toBe(250);
+    expect(result.current.drawerAnimation.value).toBe(0);
     expect(result.current.footerTranslateY.value).toBe(0);
 
     // Run the timers to trigger the setTimeout callback (150ms)
@@ -115,8 +115,8 @@ describe('useCameraAppState', () => {
       jest.advanceTimersByTime(150);
     });
 
-    // Active section is 'none', so it should restore to 250 and 0
-    expect(result.current.drawerAnimation.value).toBe(250);
+    // Active section is 'none', so it should restore to 0 and 0
+    expect(result.current.drawerAnimation.value).toBe(0);
     expect(result.current.footerTranslateY.value).toBe(0);
     expect(galleryTransitionMock.value).toBe(0); // shouldn't change as shouldRenderGallery is false
   });
@@ -144,7 +144,7 @@ describe('useCameraAppState', () => {
       jest.advanceTimersByTime(150);
     });
 
-    expect(result.current.drawerAnimation.value).toBe(0);
+    expect(result.current.drawerAnimation.value).toBe(-250);
     expect(result.current.footerTranslateY.value).toBe(-50);
     unmount();
   });
@@ -191,7 +191,7 @@ describe('useCameraAppState', () => {
       jest.advanceTimersByTime(150);
     });
 
-    expect(result.current.drawerAnimation.value).toBe(250);
+    expect(result.current.drawerAnimation.value).toBe(0);
     expect(result.current.footerTranslateY.value).toBe(0);
     unmount();
   });
