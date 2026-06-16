@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { StyleSheet, View, Platform, StatusBar } from 'react-native';
 import Animated, { useAnimatedStyle, interpolate, Extrapolation } from 'react-native-reanimated';
 import { useCameraPermissions } from '../lib/useCameraPermissions';
@@ -56,6 +56,20 @@ export const CameraScreen = () => {
     drawerAnimation,
     footerTranslateY,
   });
+
+  const [isCameraPaused, setIsCameraPaused] = useState(false);
+
+  useEffect(() => {
+    if (isOpen) {
+      // Turn off the video signal (unmount Viewfinder) after 10 seconds of inactivity
+      const timer = setTimeout(() => {
+        setIsCameraPaused(true);
+      }, 10000);
+      return () => clearTimeout(timer);
+    } else {
+      setIsCameraPaused(false);
+    }
+  }, [isOpen]);
 
   const animatedBottomControlsStyle = useAnimatedStyle(() => {
     // drawerAnimation goes from 0 (closed) to -250 (open)
@@ -124,7 +138,7 @@ export const CameraScreen = () => {
       <InteractionContext.Provider value={{ isInteractable: !isOpen }}>
         <GestureController footerTranslateY={footerTranslateY} drawerAnimation={drawerAnimation} galleryTransition={galleryTransition}>
           <View style={viewfinderContainerStyle}>
-            <Viewfinder cameraKey={cameraKey} />
+            {!isCameraPaused && <Viewfinder cameraKey={cameraKey} />}
           </View>
         </GestureController>
         <Header />
