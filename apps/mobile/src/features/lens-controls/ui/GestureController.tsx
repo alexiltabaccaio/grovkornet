@@ -12,9 +12,10 @@ interface GestureControllerProps {
   children?: ReactNode;
   footerTranslateY?: SharedValue<number>;
   drawerAnimation?: SharedValue<number>;
+  galleryTransition?: SharedValue<number>;
 }
 
-export const GestureController = ({ children, footerTranslateY, drawerAnimation }: GestureControllerProps) => {
+export const GestureController = ({ children, footerTranslateY, drawerAnimation, galleryTransition }: GestureControllerProps) => {
   const { activeSection, setActiveSection } = useControlPanelStore(useShallow((s) => ({
     activeSection: s.activeSection,
     setActiveSection: s.setActiveSection,
@@ -36,6 +37,9 @@ export const GestureController = ({ children, footerTranslateY, drawerAnimation 
   const hasMoved = useSharedValue(false);
   const hasWarnedPanNaN = useSharedValue(false);
 
+  const isClosing = useSharedValue(false);
+  const isPanning = useSharedValue(false);
+
   const lastTapTime = React.useRef<number>(0);
   const tapTimeout = React.useRef<NodeJS.Timeout | null>(null);
 
@@ -49,9 +53,14 @@ export const GestureController = ({ children, footerTranslateY, drawerAnimation 
 
   React.useEffect(() => {
     if (activeSection === 'none') {
-      translateY.value = withTiming(0, { duration: 300 });
+      isClosing.value = true;
+      translateY.value = withTiming(0, { duration: 300 }, () => {
+        isClosing.value = false;
+      });
+    } else {
+      isClosing.value = false;
     }
-  }, [activeSection, translateY]);
+  }, [activeSection, translateY, isClosing]);
 
   const { aspectRatio } = useBodyStore.getState();
 
@@ -61,7 +70,7 @@ export const GestureController = ({ children, footerTranslateY, drawerAnimation 
     },
     (currentValue, previousValue) => {
       if (previousValue !== undefined && previousValue !== null && currentValue !== previousValue) {
-        translateY.value = 0;
+        translateY.value = withTiming(0, { duration: 300 });
       }
     }
   );
@@ -108,7 +117,7 @@ export const GestureController = ({ children, footerTranslateY, drawerAnimation 
       return getDynamicLimit();
     },
     (currentLimit) => {
-      if (footerTranslateY && translateY.value < currentLimit) {
+      if (!isClosing.value && !isPanning.value && footerTranslateY && translateY.value < currentLimit) {
         translateY.value = currentLimit;
       }
     }
@@ -164,6 +173,7 @@ export const GestureController = ({ children, footerTranslateY, drawerAnimation 
       .enabled(isInteractable)
       .maxPointers(1)
       .onStart(() => {
+        isPanning.value = true;
         startY.value = translateY.value;
         hasMoved.value = false;
       })
@@ -193,14 +203,22 @@ export const GestureController = ({ children, footerTranslateY, drawerAnimation 
       .onEnd(() => {
         // The viewfinder remains in its dragged position.
         // No closing of active section, no snap-back here.
+      })
+      .onFinalize(() => {
+        isPanning.value = false;
       });
 
     return Gesture.Simultaneous(tap, pan);
   }, [activeSection, setActiveSection, translateY, startY, hasMoved, footerTranslateY, drawerAnimation, viewportWidth, viewportHeight, isInteractable]);
 
   const animatedStyle = useAnimatedStyle(() => {
+    // By interpolating a microscopic fraction of galleryTransition, we force the UI thread
+    // to push fresh transform updates to the native view every frame while the gallery is animating.
+    // This perfectly bypasses the Reanimated Android bug where the native view's transform
+    // gets completely stuck at its maximum offset (-394) if it was animating to 0 while obscured.
+    const syncOffset = galleryTransition ? galleryTransition.value * 0.001 : 0;
     return {
-      transform: [{ translateY: translateY.value }],
+      transform: [{ translateY: translateY.value + syncOffset }],
     };
   });
 

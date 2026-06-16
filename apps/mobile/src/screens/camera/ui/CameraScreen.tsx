@@ -76,9 +76,12 @@ export const CameraScreen = () => {
       [30, 0],
       Extrapolation.CLAMP
     );
+    // Add microscopic offset to force native UI thread updates and prevent Android freeze
+    const syncOffset = galleryTransition ? galleryTransition.value * 0.001 : 0;
+
     return {
       opacity,
-      transform: [{ translateY }],
+      transform: [{ translateY: translateY + syncOffset }],
     };
   });
   const statusBarHeight = Platform.OS === 'android' 
@@ -119,7 +122,7 @@ export const CameraScreen = () => {
   return (
     <View style={styles.container}>
       <InteractionContext.Provider value={{ isInteractable: !isOpen }}>
-        <GestureController footerTranslateY={footerTranslateY} drawerAnimation={drawerAnimation}>
+        <GestureController footerTranslateY={footerTranslateY} drawerAnimation={drawerAnimation} galleryTransition={galleryTransition}>
           <View style={viewfinderContainerStyle}>
             <Viewfinder cameraKey={cameraKey} />
           </View>
@@ -134,7 +137,7 @@ export const CameraScreen = () => {
               bottomControlsStyle,
               animatedBottomControlsStyle
             ]} 
-            pointerEvents={activeSection === 'none' ? "box-none" : "none"}
+            pointerEvents="box-none"
           >
             <View style={styles.controlsRow} pointerEvents="box-none">
               <View style={styles.sideControl} pointerEvents="box-none">

@@ -107,7 +107,7 @@ for (const file of allFiles) {
     
     fileExports.set(relPath, exports);
   } catch (err) {
-    console.warn(`⚠️ Error parsing exports for ${relPath}:`, err.message);
+    console.warn(`⚠️ Error parsing exports for ${relPath}:`, err.stack);
   }
 }
 
@@ -186,7 +186,7 @@ for (const file of allFiles) {
       }
     }
   } catch (err) {
-    console.warn(`⚠️ Error processing imports for ${relPath}:`, err.message);
+    console.warn(`⚠️ Error processing imports for ${relPath}:`, err.stack);
   }
 }
 

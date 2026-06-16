@@ -42,8 +42,15 @@ export const Sections = React.memo(({ galleryTransition }: SectionsProps) => {
   const animatedStyle = useAnimatedStyle(() => {
     if (!galleryTransition) return {};
     const translateX = interpolate(galleryTransition.value, [0, 1], [0, width]);
+    
+    // Add microscopic offset to force native UI thread updates and prevent Android freeze
+    const syncOffset = galleryTransition.value * 0.001;
+    
     return {
-      transform: [{ translateX }],
+      transform: [
+        { translateX },
+        { translateY: syncOffset }
+      ],
     };
   });
 

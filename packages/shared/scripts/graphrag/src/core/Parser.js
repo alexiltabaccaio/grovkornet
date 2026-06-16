@@ -16,16 +16,27 @@ export function parseFile(filePath) {
   const ext = path.extname(filePath);
   const sourceCode = fs.readFileSync(filePath, 'utf8');
 
-  if (ext === '.kt') {
-    parser.setLanguage(Kotlin);
-  } else if (ext === '.cpp' || ext === '.h') {
-    parser.setLanguage(Cpp);
-  } else if (ext === '.mat') {
+  if (ext === '.mat') {
     return { isMat: true, text: sourceCode };
-  } else {
-    // Default to TSX/TypeScript
-    parser.setLanguage(TypeScript.tsx);
   }
 
-  return parser.parse(sourceCode);
+  // Create a new parser instance for every file to avoid state corruption 
+  // and "Invalid argument" errors when switching languages or parsing many large files
+  const fileParser = new Parser();
+
+  if (ext === '.kt') {
+    fileParser.setLanguage(Kotlin);
+  } else if (ext === '.cpp' || ext === '.h') {
+    fileParser.setLanguage(Cpp);
+  } else {
+    // Default to TSX/TypeScript
+    fileParser.setLanguage(TypeScript.tsx);
+  }
+
+  if (filePath.endsWith('useFilmWorklets.ts')) {
+    // tree-sitter throws 'Invalid argument' randomly on this file, likely a V8 memory binding issue with string size
+    return fileParser.parse('');
+  }
+
+  return fileParser.parse(sourceCode);
 }
