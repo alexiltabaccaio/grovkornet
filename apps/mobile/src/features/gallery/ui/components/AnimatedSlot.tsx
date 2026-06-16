@@ -37,11 +37,19 @@ export const AnimatedSlot = memo(({
 
   // Keep track of the previous URI to use it as a placeholder when migrating from preview to final URI
   const previousUriRef = React.useRef<string>(photo.uri);
+  const previousIdRef = React.useRef<string>(photo.id);
   const placeholderUriRef = React.useRef<string | undefined>(undefined);
 
   if (photo.uri !== previousUriRef.current) {
-    placeholderUriRef.current = previousUriRef.current;
+    // Only use the previous URI as a placeholder if it's the SAME photo (e.g., thumbnail -> high-res).
+    // If it's a completely different photo (teleport), clear the placeholder so we don't flash the wrong image.
+    if (photo.id === previousIdRef.current) {
+      placeholderUriRef.current = previousUriRef.current;
+    } else {
+      placeholderUriRef.current = undefined;
+    }
     previousUriRef.current = photo.uri;
+    previousIdRef.current = photo.id;
   }
 
   const outerStyle = useAnimatedStyle(() => {

@@ -86,6 +86,7 @@ describe('usePhotoPreviewTransition', () => {
   });
 
   it('handles programmatic jump to distant photo (teleport)', () => {
+    jest.useFakeTimers();
     const { result, rerender } = renderHook(
       (props: { selectedPhoto: GalleryItem | null }) =>
         usePhotoPreviewTransition({
@@ -102,6 +103,12 @@ describe('usePhotoPreviewTransition', () => {
     act(() => {
       rerender({ selectedPhoto: mockPhotos[2] });
     });
+
+    // Advance the timers used to delay the teleport animation
+    act(() => {
+      jest.runAllTimers();
+    });
+    jest.useRealTimers();
 
     // Since the mocked withTiming animation completes synchronously in this test environment,
     // the teleport has already completed and slotOverrides is cleared.

@@ -1,5 +1,5 @@
 import { Gesture } from 'react-native-gesture-handler';
-import { cancelAnimation, withTiming, withDecay, runOnJS, SharedValue, useSharedValue } from 'react-native-reanimated';
+import { cancelAnimation, withTiming, withDecay, runOnJS, SharedValue, useSharedValue, withSpring } from 'react-native-reanimated';
 
 interface UsePanGestureProps {
   width: number;
@@ -139,8 +139,8 @@ export const usePanGesture = ({
           if (finished) isDecaying.value = 0;
         });
       } else {
-        const dragThreshold = width / 2;
-        const velocityThreshold = 500;
+        const dragThreshold = width / 3;
+        const velocityThreshold = 300;
         
         const startVirtualIndex = Math.round(-dragOffset.value / slotWidth);
         const startIdx = Math.max(0, Math.min(photosLength - 1, startVirtualIndex));
@@ -163,9 +163,15 @@ export const usePanGesture = ({
 
         if (Math.abs(translateX.value - targetTranslateX) > 0.1) {
           isTransitioning.value = true;
-          translateX.value = withTiming(
+          translateX.value = withSpring(
             targetTranslateX,
-            { duration: 150 },
+            { 
+              velocity: event.velocityX,
+              damping: 20,
+              stiffness: 150,
+              mass: 0.6,
+              overshootClamping: true,
+            },
             (finished) => {
               if (finished) {
                 isTransitioning.value = false;

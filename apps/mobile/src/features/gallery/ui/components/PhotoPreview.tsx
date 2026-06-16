@@ -86,7 +86,7 @@ export const PhotoPreview = React.memo(({ selectedPhoto, photos, onPhotoVisible,
             if (!photo) return null;
             return (
               <AnimatedSlot
-                key={index}
+                key={`${index}-${photo.id}`}
                 photo={photo}
                 index={index}
                 translateX={translateX}
