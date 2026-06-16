@@ -30,7 +30,7 @@
     "intro": "Welcome to <strong>Grovkornet</strong>. Transparency and the protection of your privacy are fundamental to us. Below we provide information on how this website works in relation to the processing of personal data.",
     "section1": {
       "title": "1. Data Controller",
-      "content": "The Data Controller is:<br /><strong>Alex Giustizieri</strong><br />Contact email: <strong>alexgiustizieri@gmail.com</strong>"
+      "content": "The Data Controller is:<br /><strong><a href=\"https://www.linkedin.com/in/alexgiustizieri/\" target=\"_blank\" rel=\"noopener noreferrer\" style=\"color: var(--accent-secondary, #ff8b38); text-decoration: underline;\">Alex Giustizieri</a></strong><br />Contact email: <strong><a href=\"mailto:alexgiustizieri@gmail.com\" style=\"color: var(--accent-secondary, #ff8b38); text-decoration: underline;\">alexgiustizieri@gmail.com</a></strong>"
     },
     "section2": {
       "title": "2. Absence of Personal Data Collection",

@@ -5,11 +5,13 @@ import Image from "next/image";
 import { useTranslation } from "react-i18next";
 import { LanguageSwitcher } from "@shared/ui/LanguageSwitcher";
 
-export default function ComingSoonScreen() {
+export default function HomeScreen() {
   const { t } = useTranslation();
   const [shouldAnimate, setShouldAnimate] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
+    setIsMounted(true);
     const hasAnimatedBefore = sessionStorage.getItem("grovkornet-animated") === "true";
     if (!hasAnimatedBefore) {
       setShouldAnimate(true);
@@ -18,29 +20,30 @@ export default function ComingSoonScreen() {
   }, []);
 
   return (
-    <div className="coming-soon-wrapper">
+    <div className="home-wrapper">
       {/* Background Glows */}
-      <div className="coming-soon-glow-1"></div>
-      <div className="coming-soon-glow-2"></div>
+      <div className="home-glow-1"></div>
+      <div className="home-glow-2"></div>
 
       {/* Main Centered Layout Container */}
       <div 
-        className={`coming-soon-content ${shouldAnimate ? "animate-first" : ""}`}
+        className={`home-content ${shouldAnimate ? "animate-first" : ""}`}
+        style={{ opacity: isMounted ? '' : 0 }}
       >        {/* Brand Information Section */}
-        <div className="coming-soon-brand">
+        <div className="home-brand">
           {/* Logo Font Row */}
-          <div className="coming-soon-logo-container">
+          <div className="home-logo-container">
             <Image
               src="/font-transparent.png"
               alt="Grovkornet Logo"
               width={500}
               height={100}
               priority
-              className="coming-soon-logo-image"
+              className="home-logo-image"
             />
           </div>
           
-          <h2 className="coming-soon-subtitle">
+          <h2 className="home-subtitle">
             {t("home.subtitle")}
           </h2>
         </div>
@@ -51,13 +54,13 @@ export default function ComingSoonScreen() {
         </div>
 
         {/* Description */}
-        <p className="coming-soon-desc">
+        <p className="home-desc">
           {t("home.description")}
         </p>
 
         {/* Discord Call to Action */}
-        <div className="coming-soon-cta">
-          <p className="coming-soon-cta-label">
+        <div className="home-cta">
+          <p className="home-cta-label">
             {t("home.discord_cta_label")}
           </p>
           <a 
@@ -81,12 +84,12 @@ export default function ComingSoonScreen() {
       </div>
 
       {/* Footer Info (Pushed to the very bottom of the page) */}
-      <div className="coming-soon-footer">
+      <div className="home-footer">
         <div suppressHydrationWarning>
           © {new Date().getFullYear()} Grovkornet. {t("home.footer.rights")}
         </div>
-        <div className="coming-soon-footer-links">
-          <a href="/privacy-policy" className="coming-soon-footer-link">
+        <div className="home-footer-links">
+          <a href="/privacy-policy" className="home-footer-link">
             {t("home.footer.privacy_policy")}
           </a>
           <span>•</span>
@@ -96,3 +99,4 @@ export default function ComingSoonScreen() {
     </div>
   );
 }
+

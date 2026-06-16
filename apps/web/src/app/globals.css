@@ -371,7 +371,7 @@ body {
 }
 
 /* Coming Soon Page Styles */
-.coming-soon-wrapper {
+.home-wrapper {
   position: fixed;
   top: 0;
   left: 0;
@@ -385,7 +385,7 @@ body {
   overflow: hidden;
 }
 
-.coming-soon-glow-1 {
+.home-glow-1 {
   position: absolute;
   top: 50%;
   left: 50%;
@@ -398,7 +398,7 @@ body {
   pointer-events: none;
 }
 
-.coming-soon-glow-2 {
+.home-glow-2 {
   position: absolute;
   top: 50%;
   left: 50%;
@@ -411,7 +411,7 @@ body {
   pointer-events: none;
 }
 
-.coming-soon-content {
+.home-content {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -422,32 +422,32 @@ body {
   width: 90%;
 }
 
-.coming-soon-content.animate-first {
+.home-content.animate-first {
   animation: fadeIn 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 
-.coming-soon-brand {
+.home-brand {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 1rem;
 }
 
-.coming-soon-logo-container {
+.home-logo-container {
   display: flex;
   justify-content: center;
   padding-bottom: 0.5rem;
 }
 
-.coming-soon-logo-image {
+.home-logo-image {
   object-fit: contain;
   max-width: 100%;
   height: auto;
   filter: drop-shadow(0 8px 24px rgba(255, 82, 56, 0.3));
 }
 
-.coming-soon-subtitle {
+.home-subtitle {
   color: var(--text-primary);
   opacity: 0.9;
   font-size: clamp(1.1rem, 2.8vw, 1.45rem);
@@ -457,7 +457,7 @@ body {
   margin: 0;
 }
 
-.coming-soon-desc {
+.home-desc {
   color: var(--text-primary);
   opacity: 0.8;
   font-size: clamp(0.95rem, 2vw, 1.1rem);
@@ -467,7 +467,7 @@ body {
   max-width: 460px;
 }
 
-.coming-soon-footer {
+.home-footer {
   position: absolute;
   bottom: 2.5rem;
   left: 50%;
@@ -486,25 +486,25 @@ body {
   padding-top: 1.5rem;
 }
 
-.coming-soon-footer-links {
+.home-footer-links {
   display: flex;
   gap: 1rem;
   justify-content: center;
 }
 
-.coming-soon-footer-link {
+.home-footer-link {
   color: var(--text-primary);
   text-decoration: none;
   transition: opacity 0.2s;
 }
 
-.coming-soon-footer-link:hover {
+.home-footer-link:hover {
   text-decoration: underline;
   opacity: 0.8;
 }
 
 /* Discord CTA Styles */
-.coming-soon-cta {
+.home-cta {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -512,7 +512,7 @@ body {
   margin-top: 1.5rem;
 }
 
-.coming-soon-cta-label {
+.home-cta-label {
   color: var(--text-muted);
   font-size: 0.8rem;
   font-weight: 600;
@@ -549,5 +549,6 @@ body {
 .discord-icon {
   fill: currentColor;
 }
+
 
 

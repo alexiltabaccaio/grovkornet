@@ -1,5 +1,5 @@
-import ComingSoonScreen from "@screens/coming-soon";
+import HomeScreen from "@screens/home";
 
 export default function Page() {
-  return <ComingSoonScreen />;
+  return <HomeScreen />;
 }

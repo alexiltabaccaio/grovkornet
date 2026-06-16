@@ -30,7 +30,7 @@
     "intro": "Benvenuto su <strong>Grovkornet</strong>. La trasparenza e la tutela della tua privacy sono fondamentali per noi. Di seguito ti forniamo le informazioni sul funzionamento di questo sito web in relazione al trattamento dei dati personali.",
     "section1": {
       "title": "1. Titolare del Trattamento dei Dati",
-      "content": "Il Titolare del Trattamento è:<br /><strong>Alex Giustizieri</strong><br />Contatto email: <strong>alexgiustizieri@gmail.com</strong>"
+      "content": "Il Titolare del Trattamento è:<br /><strong><a href=\"https://www.linkedin.com/in/alexgiustizieri/\" target=\"_blank\" rel=\"noopener noreferrer\" style=\"color: var(--accent-secondary, #ff8b38); text-decoration: underline;\">Alex Giustizieri</a></strong><br />Contatto email: <strong><a href=\"mailto:alexgiustizieri@gmail.com\" style=\"color: var(--accent-secondary, #ff8b38); text-decoration: underline;\">alexgiustizieri@gmail.com</a></strong>"
     },
     "section2": {
       "title": "2. Assenza di Raccolta Dati Personali",
