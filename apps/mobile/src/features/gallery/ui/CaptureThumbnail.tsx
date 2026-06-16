@@ -1,6 +1,5 @@
 import React, { useEffect } from 'react';
-import { StyleSheet, View, Pressable } from 'react-native';
-import { Image } from 'expo-image';
+import { StyleSheet, View, Pressable, Image } from 'react-native';
 import Animated, { useSharedValue, useAnimatedStyle, withTiming, Easing, withSpring } from 'react-native-reanimated';
 import { useState } from 'react';
 import { useCameraStore } from '@entities/camera';
@@ -23,6 +22,7 @@ export const CaptureThumbnail = React.memo(({ onPress }: CaptureThumbnailProps) 
   useRecentMediaThumbnail();
 
   const [prevUri, setPrevUri] = useState<string | null>(null);
+  const [placeholderUri, setPlaceholderUri] = useState<string | null>(null);
   const [currentUri, setCurrentUri] = useState<string | null>(latestPreviewUri ?? latestCapturedUri ?? null);
   const animationProgress = useSharedValue(1);
   const lastSourceRef = React.useRef<'preview' | 'captured' | null>(
@@ -38,19 +38,29 @@ export const CaptureThumbnail = React.memo(({ onPress }: CaptureThumbnailProps) 
     if (newUri && newUri !== currentUri) {
       if (lastSourceRef.current === 'preview' && currentSource === 'captured') {
         // Transition from preview to final capture: same photo, don't animate twice
+        setPlaceholderUri(currentUri);
         setCurrentUri(newUri);
-      } else {
-        // New photo preview or first image: animate!
+      } else if (currentSource === 'preview') {
+        // New photo preview: animate!
+        setPlaceholderUri(null); // No placeholder needed during sliding
         setPrevUri(currentUri);
         setCurrentUri(newUri);
         animationProgress.value = 0;
         animationProgress.value = withTiming(1, { duration: 300, easing: Easing.out(Easing.quad) });
+      } else {
+        // Transition from 'captured' to 'captured' (e.g. app wake up / init load sync)
+        // or null to 'captured'
+        // Just set the new URI without animating
+        setPlaceholderUri(currentUri);
+        setCurrentUri(newUri);
       }
     } else if (newUri && !currentUri) {
+      setPlaceholderUri(null);
       setCurrentUri(newUri);
     } else if (!newUri && currentUri) {
       setCurrentUri(null);
       setPrevUri(null);
+      setPlaceholderUri(null);
     }
 
     lastSourceRef.current = currentSource;
@@ -96,25 +106,28 @@ export const CaptureThumbnail = React.memo(({ onPress }: CaptureThumbnailProps) 
         <View style={styles.placeholder} />
       ) : (
         <Animated.View style={[styles.container, animatedContainerStyle]}>
+          {placeholderUri && (
+            <View style={[StyleSheet.absoluteFill, { zIndex: 0 }]}>
+              <Image source={{ uri: placeholderUri }} style={styles.image} resizeMode="cover" fadeDuration={0} />
+            </View>
+          )}
           {prevUri && (
             <Animated.View style={oldImageStyle}>
               <Image
                 source={{ uri: prevUri }}
                 style={styles.image}
-                contentFit="cover"
-                transition={0}
-                cachePolicy="memory-disk"
+                resizeMode="cover"
+                fadeDuration={0}
               />
             </Animated.View>
           )}
           {currentUri && (
-            <Animated.View style={newImageStyle}>
+            <Animated.View style={[newImageStyle, { zIndex: 1 }]}>
               <Image
                 source={{ uri: currentUri }}
                 style={styles.image}
-                contentFit="cover"
-                transition={0}
-                cachePolicy="memory-disk"
+                resizeMode="cover"
+                fadeDuration={0}
               />
             </Animated.View>
           )}

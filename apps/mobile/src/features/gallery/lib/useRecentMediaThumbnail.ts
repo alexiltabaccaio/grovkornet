@@ -19,6 +19,8 @@ export const useRecentMediaThumbnail = () => {
           const grovkornetAlbums = allAlbums.filter(a => a.title.toLowerCase() === 'grovkornet');
 
           let foundUri: string | null = null;
+          let foundFilename: string | null = null;
+          let foundId: string | null = null;
 
           if (grovkornetAlbums.length > 0) {
             const fetchPromises = grovkornetAlbums.map(album => 
@@ -36,6 +38,8 @@ export const useRecentMediaThumbnail = () => {
             
             if (combinedAssets.length > 0) {
               foundUri = combinedAssets[0].uri;
+              foundFilename = combinedAssets[0].filename;
+              foundId = combinedAssets[0].id;
             }
           }
           
@@ -55,10 +59,19 @@ export const useRecentMediaThumbnail = () => {
             
             if (latestGrovkornet) {
               foundUri = latestGrovkornet.uri;
+              foundFilename = latestGrovkornet.filename;
+              foundId = latestGrovkornet.id;
             }
           }
 
           if (foundUri) {
+            const currentUri = useGalleryStore.getState().latestCapturedUri;
+            
+            // Prevent state updates and UI flickers if it's the exact same file
+            if (currentUri === foundUri) return;
+            if (currentUri && foundFilename && currentUri.includes(foundFilename)) return;
+            if (currentUri && foundId && currentUri.endsWith(foundId)) return;
+
             setLatestCapturedUri(foundUri);
           }
         }
