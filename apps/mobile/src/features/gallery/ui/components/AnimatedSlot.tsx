@@ -35,6 +35,15 @@ export const AnimatedSlot = memo(({
 }: AnimatedSlotProps) => {
   const { width: screenW, height: screenH } = useWindowDimensions();
 
+  // Keep track of the previous URI to use it as a placeholder when migrating from preview to final URI
+  const previousUriRef = React.useRef<string>(photo.uri);
+  const placeholderUriRef = React.useRef<string | undefined>(undefined);
+
+  if (photo.uri !== previousUriRef.current) {
+    placeholderUriRef.current = previousUriRef.current;
+    previousUriRef.current = photo.uri;
+  }
+
   const outerStyle = useAnimatedStyle(() => {
     const currentX = index * slotWidth + translateX.value;
     const isFocused = Math.abs(currentX) < slotWidth / 2;
@@ -98,6 +107,7 @@ export const AnimatedSlot = memo(({
         <Animated.View style={innerStyle}>
           <Image
             source={photo.uri}
+            placeholder={placeholderUriRef.current}
             style={styles.previewImage}
             contentFit="contain"
             transition={0}

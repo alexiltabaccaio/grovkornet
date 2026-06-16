@@ -2,6 +2,7 @@ import { renderHook, act } from '@testing-library/react-native';
 import { useGalleryViewer } from './useGalleryViewer';
 import { useGalleryPhotos } from './useGalleryPhotos';
 import { useImageVerification } from './useImageVerification';
+import { useVerificationStore } from '@entities/verification';
 
 jest.mock('./useGalleryPhotos');
 jest.mock('./useImageVerification');
@@ -19,6 +20,7 @@ describe('useGalleryViewer', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+    useVerificationStore.setState({ verifiedMap: {}, verifyingUris: {} });
     mockUseGalleryPhotos.mockReturnValue({
       photos: mockPhotos,
       setPhotos: mockSetPhotos,
@@ -77,6 +79,18 @@ describe('useGalleryViewer', () => {
     expect(mockVerifyPhoto).toHaveBeenCalledWith(mockPhotos[1]);
   });
 
+  it('migrates verified state when auto-selecting photo matching initialUri by filename/id with different full uri', () => {
+    const initialUri = 'file:///other-path/photo2.jpg';
+    const finalUri = 'file:///images/photo2.jpg';
+    
+    useVerificationStore.getState().setVerified(initialUri, true);
+    
+    renderHook(() => useGalleryViewer(initialUri));
+
+    expect(mockVerifyPhoto).toHaveBeenCalledWith(mockPhotos[1]);
+    expect(useVerificationStore.getState().verifiedMap[finalUri]).toBe(true);
+  });
+
   it('verifies a temporary initial photo if initialUri is not found in photos list', () => {
     const initialUri = 'file:///other-path/new-photo.jpg';
     renderHook(() => useGalleryViewer(initialUri));
@@ -125,6 +139,45 @@ describe('useGalleryViewer', () => {
         uri: finalUri,
       })
     );
+  });
+
+  it('removes temp preview entirely if the final capture is already present in the photos list', () => {
+    const tempUri = 'file:///data/preview-123.jpg';
+    const finalUri = 'file:///storage/GVK-123.jpg';
+
+    // Initial render with temp URI
+    mockUseGalleryPhotos.mockReturnValue({
+      photos: [
+        { id: 'preview-temp', uri: tempUri, filename: 'preview-123.jpg' },
+        { id: 'GVK-123.jpg', uri: finalUri, filename: 'GVK-123.jpg' }
+      ],
+      setPhotos: mockSetPhotos,
+      loading: false,
+      permissionGranted: true,
+    });
+    mockUseImageVerification.mockReturnValue({
+      selectedPhoto: { id: 'preview-temp', uri: tempUri, filename: 'preview-123.jpg' },
+      verifyPhoto: mockVerifyPhoto,
+    });
+
+    const { rerender } = renderHook(
+      (props: { initialUri: string }) => useGalleryViewer(props.initialUri),
+      { initialProps: { initialUri: tempUri } }
+    );
+
+    // Re-render hook with final URI (simulate store/prop update)
+    rerender({ initialUri: finalUri });
+
+    // Verify it updated the photos array immediately removing the temp one
+    expect(mockSetPhotos).toHaveBeenCalled();
+    const updateFn = mockSetPhotos.mock.calls[0][0];
+    const originalPhotos = [
+      { id: 'preview-temp', uri: tempUri, filename: 'preview-123.jpg' },
+      { id: 'GVK-123.jpg', uri: finalUri, filename: 'GVK-123.jpg' }
+    ];
+    const updatedPhotos = updateFn(originalPhotos);
+    expect(updatedPhotos).toHaveLength(1);
+    expect(updatedPhotos[0].uri).toBe(finalUri);
   });
 
   it('updates selection when onPhotoVisible is called with a new photo', () => {

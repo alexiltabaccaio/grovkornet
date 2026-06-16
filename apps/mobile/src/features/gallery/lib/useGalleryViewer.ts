@@ -3,6 +3,7 @@ import { logger } from '@shared/lib/logger';
 import { useGalleryPhotos } from './useGalleryPhotos';
 import { useImageVerification } from './useImageVerification';
 import { GalleryItem } from './types';
+import { useVerificationStore } from '@entities/verification';
 
 /**
  * Orchestration hook for GalleryViewer.
@@ -31,6 +32,15 @@ export const useGalleryViewer = (initialUri?: string | null) => {
         );
         logger.debug('useGalleryViewer', `Auto-select: initialUri=${initialUri}, found=${found?.uri}`);
         if (found) {
+          // If the found photo has a different URI (e.g. file:/// vs content://),
+          // migrate the verified status to avoid redundant heavy C++ checks.
+          if (found.uri !== initialUri) {
+            const { verifiedMap, setVerified } = useVerificationStore.getState();
+            if (verifiedMap[initialUri] !== undefined) {
+              logger.debug('useGalleryViewer', `Auto-select: migrating verified state from ${initialUri} to ${found.uri}`);
+              setVerified(found.uri, verifiedMap[initialUri]);
+            }
+          }
           void verifyPhoto(found);
         } else {
           logger.debug('useGalleryViewer', `Auto-select: initialUri not found in list, selecting temp fallback`);
@@ -45,43 +55,67 @@ export const useGalleryViewer = (initialUri?: string | null) => {
 
   // Synchronously migrate selection and photos array when initialUri updates from preview to processed
   useEffect(() => {
-    const isTempSelected = 
-      selectedPhoto && (
-        selectedPhoto.id === 'preview-temp' || 
-        selectedPhoto.id === 'initial' || 
-        selectedPhoto.uri.startsWith('file:///data/') || 
-        selectedPhoto.uri.includes('preview')
-      );
+    if (!initialUri) return;
 
-    if (initialUri && isTempSelected && selectedPhoto.uri !== initialUri) {
-      logger.debug('useGalleryViewer', `Synchronous migration of temp preview to final capture: ${selectedPhoto.uri} -> ${initialUri}`);
-      
+    const isFinalUri = !(
+      initialUri.startsWith('file:///data/') || 
+      initialUri.includes('preview') ||
+      initialUri.includes('temp')
+    );
+
+    if (isFinalUri) {
       const newPhotoItem: GalleryItem = {
         id: initialUri.split('/').pop() || 'processed',
         uri: initialUri,
         filename: initialUri.split('/').pop()
       };
-      
-      // Update photos list in state immediately to replace the temp preview
+
       setPhotos(prevPhotos => {
-        // If the processed photo is already in the list (from MediaLibrary fetch), just remove the temp preview
-        const alreadyExists = prevPhotos.some(p => p.id === newPhotoItem.id);
-        
-        const index = prevPhotos.findIndex(p => p.uri === selectedPhoto.uri);
-        if (index !== -1) {
-          const updated = [...prevPhotos];
-          if (alreadyExists) {
-            updated.splice(index, 1); // Remove temp preview entirely to avoid duplicates
-          } else {
-            updated[index] = newPhotoItem; // Replace temp preview with processed one
-          }
-          return updated;
+        // Find if there is a temp preview in the list
+        const tempIndex = prevPhotos.findIndex(p => 
+          p.id === 'preview-temp' || 
+          p.id === 'initial' || 
+          p.uri.startsWith('file:///data/') || 
+          p.uri.includes('preview')
+        );
+
+        if (tempIndex === -1) return prevPhotos;
+
+        // Check if the final photo already exists in the rest of the list
+        const alreadyExists = prevPhotos.some((p, idx) => 
+          idx !== tempIndex && (
+            p.id === newPhotoItem.id ||
+            p.uri === newPhotoItem.uri ||
+            (p.filename && newPhotoItem.filename && p.filename === newPhotoItem.filename)
+          )
+        );
+
+        const updated = [...prevPhotos];
+        if (alreadyExists) {
+          logger.debug('useGalleryViewer', `Migration: removing temp preview since final photo already exists in list`);
+          updated.splice(tempIndex, 1);
+        } else {
+          logger.debug('useGalleryViewer', `Migration: replacing temp preview with final photo`);
+          newPhotoItem.fallbackUri = prevPhotos[tempIndex].uri;
+          newPhotoItem.key = prevPhotos[tempIndex].key || prevPhotos[tempIndex].id;
+          updated[tempIndex] = newPhotoItem;
         }
-        return prevPhotos;
+        return updated;
       });
-      
-      // Update selected photo selection immediately
-      void verifyPhoto(newPhotoItem);
+
+      // Also migrate the selectedPhoto selection if it is currently pointing to a temp preview
+      const isTempSelected = 
+        selectedPhoto && (
+          selectedPhoto.id === 'preview-temp' || 
+          selectedPhoto.id === 'initial' || 
+          selectedPhoto.uri.startsWith('file:///data/') || 
+          selectedPhoto.uri.includes('preview')
+        );
+
+      if (isTempSelected && selectedPhoto.uri !== initialUri) {
+        logger.debug('useGalleryViewer', `Migration: updating selection from temp preview to final URI: ${selectedPhoto.uri} -> ${initialUri}`);
+        void verifyPhoto(newPhotoItem);
+      }
     }
   }, [initialUri, selectedPhoto, verifyPhoto, setPhotos]);
 
@@ -103,6 +137,14 @@ export const useGalleryViewer = (initialUri?: string | null) => {
         );
         logger.debug('useGalleryViewer', `Re-sync: searching selectedPhoto uri/filename/initialUri, found=${found?.uri}`);
         if (found) {
+          // Prevent verification flicker when switching from content:// (MediaStore) to file:/// (MediaLibrary)
+          if (found.uri !== selectedPhoto.uri) {
+            const { verifiedMap, setVerified } = useVerificationStore.getState();
+            if (verifiedMap[selectedPhoto.uri] !== undefined) {
+              logger.debug('useGalleryViewer', `Re-sync: migrating verified state from ${selectedPhoto.uri} to ${found.uri}`);
+              setVerified(found.uri, verifiedMap[selectedPhoto.uri]);
+            }
+          }
           void verifyPhoto(found);
         } else {
           logger.debug('useGalleryViewer', `Re-sync: selectedPhoto not found in photos! selection might be lost.`);

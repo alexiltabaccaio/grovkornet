@@ -15,6 +15,15 @@ interface GalleryStripItemProps {
 export const GalleryStripItem = React.memo(({ item, isSelected, onSelect }: GalleryStripItemProps) => {
   const isVerified = useVerificationStore(state => state.verifiedMap[item.uri]);
 
+  // Keep track of the previous URI to use it as a placeholder when migrating from preview to final URI
+  const previousUriRef = React.useRef<string>(item.uri);
+  const placeholderUriRef = React.useRef<string | undefined>(undefined);
+
+  if (item.uri !== previousUriRef.current) {
+    placeholderUriRef.current = previousUriRef.current;
+    previousUriRef.current = item.uri;
+  }
+
   const badgeStyle = useAnimatedStyle(() => {
     const show = isVerified === true;
     return {
@@ -37,9 +46,12 @@ export const GalleryStripItem = React.memo(({ item, isSelected, onSelect }: Gall
     >
       <Image
         source={{ uri: item.uri }}
+        placeholder={placeholderUriRef.current || item.fallbackUri}
+        placeholderContentFit="cover"
         style={styles.thumbnailImage}
         contentFit="cover"
         recyclingKey={item.uri}
+        transition={0}
       />
       <Animated.View style={[styles.miniBadge, { backgroundColor: 'transparent' }, badgeStyle]}>
         {/* eslint-disable-next-line @typescript-eslint/no-require-imports, @typescript-eslint/no-unsafe-assignment */}

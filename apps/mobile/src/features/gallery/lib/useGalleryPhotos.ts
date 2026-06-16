@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { AppState } from 'react-native';
 import * as MediaLibrary from 'expo-media-library/legacy';
 import { logger } from '@shared/lib/logger';
@@ -9,12 +9,17 @@ export const useGalleryPhotos = (initialUri?: string | null) => {
   const [loading, setLoading] = useState(true);
   const [permissionGranted, setPermissionGranted] = useState(false);
 
+  const initialUriRef = useRef(initialUri);
+  initialUriRef.current = initialUri;
+
   useEffect(() => {
     let active = true;
-    logger.debug('useGalleryPhotos', `Effect started: initialUri=${initialUri}`);
+    const currentInitialUri = initialUriRef.current;
+    logger.debug('useGalleryPhotos', `Effect started: initialUri=${currentInitialUri}`);
 
     const loadPhotos = async () => {
-      logger.debug('useGalleryPhotos', `loadPhotos started: initialUri=${initialUri}`);
+      const currentInitialUriLocal = initialUriRef.current;
+      logger.debug('useGalleryPhotos', `loadPhotos started: initialUri=${currentInitialUriLocal}`);
       try {
         logger.debug('Gallery', 'Checking MediaLibrary permissions...');
         const checkPerms = async () => {
@@ -50,9 +55,9 @@ export const useGalleryPhotos = (initialUri?: string | null) => {
           logger.warn('Gallery', 'MediaLibrary permissions not granted or timed out');
           setPermissionGranted(false);
           setLoading(false);
-          if (initialUri) {
-            logger.debug('useGalleryPhotos', `Permissions not granted: setting photos to single fallback item: ${initialUri}`);
-            setPhotos([{ id: 'initial', uri: initialUri }]);
+          if (currentInitialUriLocal) {
+            logger.debug('useGalleryPhotos', `Permissions not granted: setting photos to single fallback item: ${currentInitialUriLocal}`);
+            setPhotos([{ id: 'initial', uri: currentInitialUriLocal }]);
           }
           return;
         }
@@ -148,17 +153,17 @@ export const useGalleryPhotos = (initialUri?: string | null) => {
           filename: asset.filename
         }));
 
-        if (initialUri) {
-          const initialFilenameOrId = initialUri.split('/').pop();
+        if (currentInitialUriLocal) {
+          const initialFilenameOrId = currentInitialUriLocal.split('/').pop();
           const alreadyExists = items.some(item =>
-            item.uri === initialUri ||
+            item.uri === currentInitialUriLocal ||
             (initialFilenameOrId && (item.filename === initialFilenameOrId || item.id === initialFilenameOrId))
           );
 
-          logger.debug('useGalleryPhotos', `loadPhotos check: initialUri=${initialUri}, alreadyExists=${alreadyExists}`);
+          logger.debug('useGalleryPhotos', `loadPhotos check: initialUri=${currentInitialUriLocal}, alreadyExists=${alreadyExists}`);
           if (!alreadyExists) {
-            logger.debug('useGalleryPhotos', `loadPhotos: unshifting temp preview: ${initialUri}`);
-            items.unshift({ id: 'preview-temp', uri: initialUri, filename: initialFilenameOrId });
+            logger.debug('useGalleryPhotos', `loadPhotos: unshifting temp preview: ${currentInitialUriLocal}`);
+            items.unshift({ id: 'preview-temp', key: 'preview-temp', uri: currentInitialUriLocal, filename: initialFilenameOrId });
           }
         }
 
@@ -180,8 +185,8 @@ export const useGalleryPhotos = (initialUri?: string | null) => {
         if (active) {
           setLoading(false);
           setPermissionGranted(false);
-          if (initialUri) {
-            setPhotos([{ id: 'initial', uri: initialUri }]);
+          if (currentInitialUriLocal) {
+            setPhotos([{ id: 'initial', uri: currentInitialUriLocal }]);
           }
         }
       }
@@ -197,11 +202,11 @@ export const useGalleryPhotos = (initialUri?: string | null) => {
     });
 
     return () => {
-      logger.debug('useGalleryPhotos', `Effect cleanup running for initialUri=${initialUri}`);
+      logger.debug('useGalleryPhotos', `Effect cleanup running for initialUri=${initialUriRef.current}`);
       active = false;
       subscription.remove();
     };
-  }, [initialUri]);
+  }, []);
 
   return {
     photos,

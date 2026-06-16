@@ -110,7 +110,7 @@ export const GalleryStrip = React.memo(({ photos, selectedPhoto, onSelectPhoto, 
         <FlatList
           horizontal
           data={photos}
-          keyExtractor={item => item.id}
+          keyExtractor={item => item.key || item.id}
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.gridContent}
           renderItem={renderItem}

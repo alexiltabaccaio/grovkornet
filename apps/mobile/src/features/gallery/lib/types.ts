@@ -3,4 +3,6 @@ export interface GalleryItem {
   uri: string;
   filename?: string;
   isVerified?: boolean;
+  fallbackUri?: string;
+  key?: string;
 }
