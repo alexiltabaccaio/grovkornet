@@ -34,6 +34,7 @@ export const GestureController = ({ children, footerTranslateY, drawerAnimation 
   const translateY = useSharedValue(0);
   const startY = useSharedValue(0);
   const hasMoved = useSharedValue(false);
+  const hasWarnedPanNaN = useSharedValue(false);
 
   const lastTapTime = React.useRef<number>(0);
   const tapTimeout = React.useRef<NodeJS.Timeout | null>(null);
@@ -167,6 +168,14 @@ export const GestureController = ({ children, footerTranslateY, drawerAnimation 
         hasMoved.value = false;
       })
       .onChange((event) => {
+        const ty = event.translationY ?? 0;
+        if (isNaN(ty) || isNaN(startY.value)) {
+          if (__DEV__ && !hasWarnedPanNaN.value) {
+            hasWarnedPanNaN.value = true;
+            console.warn(`[Gesture Warning]: translationY or startY is NaN in GestureController`);
+          }
+          return;
+        }
         if (activeSection !== 'none') {
           let newY = startY.value + event.translationY;
           if (newY > 0) newY = 0;

@@ -130,6 +130,7 @@ export const WheelSelector = memo(<T,>({
   
   const dragX = useSharedValue(-initialIndex * ITEM_WIDTH);
   const startX = useSharedValue(0);
+  const hasWarnedWheelNaN = useSharedValue(false);
 
   const lastActiveRef = useRef(activeId);
   
@@ -180,7 +181,15 @@ export const WheelSelector = memo(<T,>({
     })
     .onUpdate((event) => {
       if (itemsLength < 2) return;
-      dragX.value = startX.value + event.translationX;
+      const tx = event.translationX ?? 0;
+      if (isNaN(tx) || isNaN(startX.value)) {
+        if (__DEV__ && !hasWarnedWheelNaN.value) {
+          hasWarnedWheelNaN.value = true;
+          console.warn(`[Gesture Warning]: translationX or startX is NaN in WheelSelector`);
+        }
+        return;
+      }
+      dragX.value = startX.value + tx;
     })
     .onEnd((event) => {
       if (itemsLength < 2) return;

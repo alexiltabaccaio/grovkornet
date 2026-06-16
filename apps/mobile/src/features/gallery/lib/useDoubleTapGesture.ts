@@ -1,5 +1,5 @@
 import { Gesture } from 'react-native-gesture-handler';
-import { withTiming, SharedValue } from 'react-native-reanimated';
+import { withTiming, SharedValue, useSharedValue } from 'react-native-reanimated';
 
 interface UseDoubleTapGestureProps {
   width: number;
@@ -24,6 +24,8 @@ export const useDoubleTapGesture = ({
   isTransitioning,
   recentlyStoppedDecay,
 }: UseDoubleTapGestureProps) => {
+  const hasWarnedDoubleTapNaN = useSharedValue(false);
+
   return Gesture.Tap()
     .numberOfTaps(2)
     .maxDelay(200)
@@ -31,6 +33,15 @@ export const useDoubleTapGesture = ({
     .maxDistance(20)
     .onEnd((event) => {
       'worklet';
+      const ex = event.x ?? 0;
+      const ey = event.y ?? 0;
+      if (isNaN(ex) || isNaN(ey)) {
+        if (__DEV__ && !hasWarnedDoubleTapNaN.value) {
+          hasWarnedDoubleTapNaN.value = true;
+          console.warn(`[Gesture Warning]: event.x or event.y is NaN in useDoubleTapGesture`);
+        }
+        return;
+      }
       if (isTransitioning.value) {
         return;
       }

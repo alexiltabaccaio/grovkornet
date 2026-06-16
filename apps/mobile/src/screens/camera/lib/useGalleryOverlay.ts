@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef } from 'react';
 import { useSharedValue, withTiming, runOnJS } from 'react-native-reanimated';
 import { useGalleryStore } from '@entities/gallery';
+import { useControlPanelStore } from '@entities/system';
 import { useShallow } from 'zustand/shallow';
 
 export const useGalleryOverlay = () => {
@@ -14,6 +15,7 @@ export const useGalleryOverlay = () => {
   const galleryTransition = useSharedValue(0);
 
   const openGallery = useCallback(() => {
+    useControlPanelStore.getState().setActiveSection('none');
     setIsOpen(true);
     galleryTransition.value = withTiming(1, { duration: 300 });
   }, [galleryTransition, setIsOpen]);

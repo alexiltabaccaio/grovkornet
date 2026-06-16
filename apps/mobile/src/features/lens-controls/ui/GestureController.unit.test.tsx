@@ -488,5 +488,26 @@ describe('GestureController', () => {
 
     dimensionsSpy.mockRestore();
   });
+
+  it('ignores translationY if translationY is NaN in onChange', () => {
+    currentActiveSection = 'lens';
+    render(<GestureController />);
+
+    act(() => {
+      capturedPanGesture._onStart();
+    });
+
+    act(() => {
+      capturedPanGesture._onChange({ translationY: -100 });
+    });
+    expect(mockTranslateY.value).toBe(-100);
+
+    act(() => {
+      // Send NaN, should be ignored
+      capturedPanGesture._onChange({ translationY: NaN });
+    });
+    // Should stay at -100
+    expect(mockTranslateY.value).toBe(-100);
+  });
 });
 

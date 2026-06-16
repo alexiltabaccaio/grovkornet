@@ -172,4 +172,22 @@ describe('useControlPanelGestures', () => {
     });
     expect(result.current.translateY.value).toBe(-150);
   });
+
+  it('ignores translationY if translationY or startY is NaN', () => {
+    const { result } = renderHook(() => useControlPanelGestures());
+    expect(capturedPanGesture).toBeDefined();
+
+    act(() => {
+      result.current.translateY.value = -75;
+    });
+
+    act(() => {
+      capturedPanGesture._onStart();
+    });
+
+    act(() => {
+      capturedPanGesture._onUpdate({ translationY: NaN });
+    });
+    expect(result.current.translateY.value).toBe(-75);
+  });
 });

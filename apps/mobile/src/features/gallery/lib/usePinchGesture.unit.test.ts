@@ -76,4 +76,32 @@ describe('usePinchGesture', () => {
     expect(capturedPinchCallbacks.onUpdate).toBeDefined();
     expect(capturedPinchCallbacks.onEnd).toBeDefined();
   });
+
+  it('ignores onUpdate if scale is NaN', () => {
+    const savedZoomScale = { value: 1.5 };
+
+    renderHook(() =>
+      usePinchGesture({
+        width: 400,
+        height: 800,
+        zoomScale: mockZoomScale as any,
+        zoomTranslateX: mockZoomTranslateX as any,
+        zoomTranslateY: mockZoomTranslateY as any,
+        savedZoomScale: savedZoomScale as any,
+        savedZoomTranslateX: { value: 0 } as any,
+        savedZoomTranslateY: { value: 0 } as any,
+        isZoomed: mockIsZoomed as any,
+        isDecaying: mockIsDecaying as any,
+      })
+    );
+
+    // Initial value
+    mockZoomScale.value = 1.5;
+
+    // Simulate update with scale: NaN
+    capturedPinchCallbacks.onUpdate({ scale: NaN });
+
+    // Should remain 1.5
+    expect(mockZoomScale.value).toBe(1.5);
+  });
 });

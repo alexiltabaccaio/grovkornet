@@ -1,5 +1,5 @@
 import { Gesture } from 'react-native-gesture-handler';
-import { cancelAnimation, withTiming, withDecay, runOnJS, SharedValue } from 'react-native-reanimated';
+import { cancelAnimation, withTiming, withDecay, runOnJS, SharedValue, useSharedValue } from 'react-native-reanimated';
 
 interface UsePanGestureProps {
   width: number;
@@ -46,6 +46,8 @@ export const usePanGesture = ({
   finalizeTransition,
   isTransitioning,
 }: UsePanGestureProps) => {
+  const hasWarnedPanNaN = useSharedValue(false);
+
   return Gesture.Pan()
     .maxPointers(1)
     .onBegin(() => {
@@ -75,6 +77,16 @@ export const usePanGesture = ({
     })
     .onUpdate((event) => {
       'worklet';
+      const tx = event.translationX ?? 0;
+      const ty = event.translationY ?? 0;
+      if (isNaN(tx) || isNaN(ty)) {
+        if (__DEV__ && !hasWarnedPanNaN.value) {
+          hasWarnedPanNaN.value = true;
+          console.warn(`[Gesture Warning]: translationX or translationY is NaN in usePanGesture`);
+        }
+        return;
+      }
+
       if (panMode.value === 'pan') {
         const angle = rotationY ? rotationY.value : 0;
         const rad = (angle * Math.PI) / 180;

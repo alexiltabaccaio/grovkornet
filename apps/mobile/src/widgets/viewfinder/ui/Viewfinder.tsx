@@ -111,6 +111,7 @@ export const Viewfinder = React.memo(({ cameraKey }: ViewfinderProps) => {
   });
 
   const startZoom = useSharedValue(1.0);
+  const hasWarnedPinchNaN = useSharedValue(false);
   const bodyWorklets = useBodyWorklets();
 
   const gestures = React.useMemo(() => {
@@ -120,9 +121,17 @@ export const Viewfinder = React.memo(({ cameraKey }: ViewfinderProps) => {
         startZoom.value = zoom.value;
       })
       .onChange((event) => {
-        bodyWorklets.updateZoom(startZoom.value * event.scale);
+        const scale = event.scale ?? 1;
+        if (isNaN(scale) || isNaN(startZoom.value)) {
+          if (__DEV__ && !hasWarnedPinchNaN.value) {
+            hasWarnedPinchNaN.value = true;
+            console.warn(`[Gesture Warning]: scale or startZoom is NaN in Viewfinder (Pinch)`);
+          }
+          return;
+        }
+        bodyWorklets.updateZoom(startZoom.value * scale);
       });
-  }, [zoom, bodyWorklets, startZoom, isInteractable]);
+  }, [zoom, bodyWorklets, startZoom, isInteractable, hasWarnedPinchNaN]);
 
   const rotationY = useDeviceRotation();
   const { scanlinesMode } = useFilmStore.getState();

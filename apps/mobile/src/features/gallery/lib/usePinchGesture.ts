@@ -1,5 +1,5 @@
 import { Gesture } from 'react-native-gesture-handler';
-import { cancelAnimation, withTiming, SharedValue } from 'react-native-reanimated';
+import { cancelAnimation, withTiming, SharedValue, useSharedValue } from 'react-native-reanimated';
 
 interface UsePinchGestureProps {
   width: number;
@@ -28,6 +28,8 @@ export const usePinchGesture = ({
   isZoomed,
   isDecaying,
 }: UsePinchGestureProps) => {
+  const hasWarnedPinchNaN = useSharedValue(false);
+
   return Gesture.Pinch()
     .onBegin(() => {
       'worklet';
@@ -44,7 +46,16 @@ export const usePinchGesture = ({
     })
     .onUpdate((event) => {
       'worklet';
-      let nextScale = savedZoomScale.value * event.scale;
+      const scale = event.scale ?? 1;
+      if (isNaN(scale) || isNaN(savedZoomScale.value)) {
+        if (__DEV__ && !hasWarnedPinchNaN.value) {
+          hasWarnedPinchNaN.value = true;
+          console.warn(`[Gesture Warning]: scale or savedZoomScale is NaN in usePinchGesture`);
+        }
+        return;
+      }
+
+      let nextScale = savedZoomScale.value * scale;
       if (nextScale < 1) {
         nextScale = 1;
       } else if (nextScale > 4) {

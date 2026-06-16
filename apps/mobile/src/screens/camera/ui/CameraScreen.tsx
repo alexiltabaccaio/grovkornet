@@ -8,7 +8,7 @@ import { useGalleryOverlay } from '../lib/useGalleryOverlay';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useShallow } from 'zustand/shallow';
-import { useSystemStore } from '@entities/system';
+import { useSystemStore, useControlPanelStore } from '@entities/system';
 import { useGalleryStore } from '@entities/gallery';
 import { useCameraStore } from '@entities/camera';
 import { InteractionContext } from '@shared/lib';
@@ -28,6 +28,10 @@ export const CameraScreen = () => {
   
   const { isFpsOverlayEnabled } = useSystemStore(useShallow(state => ({
     isFpsOverlayEnabled: state.isFpsOverlayEnabled,
+  })));
+
+  const { activeSection } = useControlPanelStore(useShallow(state => ({
+    activeSection: state.activeSection,
   })));
 
   const { triggerCapture } = useCameraStore(useShallow(state => ({
@@ -130,7 +134,7 @@ export const CameraScreen = () => {
               bottomControlsStyle,
               animatedBottomControlsStyle
             ]} 
-            pointerEvents="box-none"
+            pointerEvents={activeSection === 'none' ? "box-none" : "none"}
           >
             <View style={styles.controlsRow} pointerEvents="box-none">
               <View style={styles.sideControl} pointerEvents="box-none">

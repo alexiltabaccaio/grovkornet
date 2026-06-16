@@ -11,6 +11,7 @@ export const useDeviceRotation = () => {
     Accelerometer.setUpdateInterval(150);
 
     const subscription = Accelerometer.addListener(({ x, y }) => {
+      if (isNaN(x) || isNaN(y)) return;
       let targetAngle = currentTargetAngle.current;
 
       // Threshold of 0.5 to trigger orientation change, avoiding jitter near the edges
@@ -30,7 +31,7 @@ export const useDeviceRotation = () => {
 
       if (targetAngle !== currentTargetAngle.current) {
         // Calculate shortest angular path to prevent 360° spinning
-        const currentAngle = rotationY.value;
+        const currentAngle = isNaN(rotationY.value) ? 0 : rotationY.value;
         const angleDiff = ((targetAngle - currentAngle + 540) % 360) - 180;
         
         currentTargetAngle.current = targetAngle;

@@ -41,7 +41,7 @@ export const xToAngle = (
   trackWidth: number
 ): number => {
   'worklet';
-  if (trackWidth === 0) return minAngle;
+  if (trackWidth <= 12) return minAngle;
   const totalRange = maxAngle - minAngle;
   const pct = Math.min(Math.max((x - 6) / (trackWidth - 12), 0), 1);
   return minAngle + pct * totalRange;

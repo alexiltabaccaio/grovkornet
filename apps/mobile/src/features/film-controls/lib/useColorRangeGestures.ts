@@ -32,6 +32,7 @@ export const useColorRangeGestures = ({
   const startXLeft = useSharedValue(0);
   const startXRight = useSharedValue(0);
   const activeThumb = useSharedValue(0); // 0 = left, 1 = right
+  const hasWarnedColorNaN = useSharedValue(false);
 
   const getMinAngle = () => {
     'worklet';
@@ -79,6 +80,14 @@ export const useColorRangeGestures = ({
         const newX = startXLeft.value + event.translationX;
         const newAngleUnwrapped = xToAngleLocal(newX);
         
+        if (isNaN(newAngleUnwrapped)) {
+          if (__DEV__ && !hasWarnedColorNaN.value) {
+            hasWarnedColorNaN.value = true;
+            console.warn(`[Gesture Warning]: newAngleUnwrapped is NaN in useColorRangeGestures`);
+          }
+          return;
+        }
+
         const minVal = dragRefAngle.value;
         const maxVal = unwrap(rightShared.value, dragRefAngle.value);
         
@@ -91,6 +100,14 @@ export const useColorRangeGestures = ({
         const newX = startXRight.value + event.translationX;
         const newAngleUnwrapped = xToAngleLocal(newX);
         
+        if (isNaN(newAngleUnwrapped)) {
+          if (__DEV__ && !hasWarnedColorNaN.value) {
+            hasWarnedColorNaN.value = true;
+            console.warn(`[Gesture Warning]: newAngleUnwrapped is NaN in useColorRangeGestures`);
+          }
+          return;
+        }
+
         const minVal = unwrap(leftShared.value, dragRefAngle.value);
         const maxVal = unwrap(limitRightShared.value, dragRefAngle.value);
         

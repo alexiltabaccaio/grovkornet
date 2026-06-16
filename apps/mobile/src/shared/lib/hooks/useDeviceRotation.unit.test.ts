@@ -77,4 +77,34 @@ describe('useDeviceRotation', () => {
     });
     expect(Math.abs(result.current.value)).toBe(180);
   });
+
+  it('ignores NaN accelerometer readings and recovers if current value is NaN', () => {
+    const { result } = renderHook(() => useDeviceRotation());
+    
+    expect(accelerometerCallback).not.toBeNull();
+    
+    // Rotate to Landscape Left (90)
+    act(() => {
+      accelerometerCallback!({ x: 0.8, y: -0.1, z: 0 });
+    });
+    expect(result.current.value).toBe(90);
+
+    // Send NaN reading -> should be ignored
+    act(() => {
+      accelerometerCallback!({ x: NaN, y: -0.1, z: 0 });
+    });
+    expect(result.current.value).toBe(90);
+
+    // Force rotationY to NaN to simulate severe corruption
+    act(() => {
+      result.current.value = NaN;
+    });
+
+    // Send valid reading -> should fall back to 0 and calculate diff safely without crash
+    act(() => {
+      accelerometerCallback!({ x: -0.8, y: 0.1, z: 0 }); // Target: -90
+    });
+    // targetAngle = -90, currentAngle fallback = 0, angleDiff = -90 -> rotationY = -90
+    expect(result.current.value).toBe(-90);
+  });
 });

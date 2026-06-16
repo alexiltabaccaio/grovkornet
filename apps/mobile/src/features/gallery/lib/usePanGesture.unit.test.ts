@@ -108,4 +108,47 @@ describe('usePanGesture', () => {
     expect(capturedPanCallbacks.onUpdate).toBeDefined();
     expect(capturedPanCallbacks.onEnd).toBeDefined();
   });
+
+  it('ignores onUpdate if translationX or translationY is NaN', () => {
+    mockZoomScale.value = 2.5; // zoomed in -> pan mode
+    mockIsZoomed.value = true;
+    mockPanMode.value = 'pan';
+
+    const savedZoomTranslateX = { value: -50 };
+    const savedZoomTranslateY = { value: -50 };
+
+    renderHook(() =>
+      usePanGesture({
+        width: 400,
+        height: 800,
+        photosLength: 3,
+        slotWidth: 400,
+        translateX: mockTranslateX as any,
+        dragOffset: mockDragOffset as any,
+        zoomScale: mockZoomScale as any,
+        zoomTranslateX: mockZoomTranslateX as any,
+        zoomTranslateY: mockZoomTranslateY as any,
+        savedZoomTranslateX: savedZoomTranslateX as any,
+        savedZoomTranslateY: savedZoomTranslateY as any,
+        isZoomed: mockIsZoomed as any,
+        panStartTranslationX: mockPanStartTranslationX as any,
+        panMode: mockPanMode as any,
+        isDecaying: mockIsDecaying as any,
+        recentlyStoppedDecay: mockRecentlyStoppedDecay as any,
+        prepareTransition: mockPrepareTransition,
+        finalizeTransition: mockFinalizeTransition,
+        isTransitioning: mockIsTransitioning as any,
+      })
+    );
+
+    mockZoomTranslateX.value = -50;
+    mockZoomTranslateY.value = -50;
+
+    // Trigger update with NaN values
+    capturedPanCallbacks.onUpdate({ translationX: NaN, translationY: NaN });
+
+    // Should remain unchanged
+    expect(mockZoomTranslateX.value).toBe(-50);
+    expect(mockZoomTranslateY.value).toBe(-50);
+  });
 });

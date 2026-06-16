@@ -69,4 +69,29 @@ describe('useDoubleTapGesture', () => {
     expect(mockDoubleTapGesture.maxDistance).toHaveBeenCalledWith(20);
     expect(capturedDoubleTapCallbacks.onEnd).toBeDefined();
   });
+
+  it('ignores double tap if event.x or event.y is NaN', () => {
+    renderHook(() =>
+      useDoubleTapGesture({
+        width: 400,
+        height: 800,
+        zoomScale: mockZoomScale as any,
+        zoomTranslateX: mockZoomTranslateX as any,
+        zoomTranslateY: mockZoomTranslateY as any,
+        isZoomed: mockIsZoomed as any,
+        isTransitioning: mockIsTransitioning as any,
+        recentlyStoppedDecay: mockRecentlyStoppedDecay as any,
+      })
+    );
+
+    mockIsZoomed.value = false;
+    mockZoomScale.value = 1;
+
+    // Trigger double tap with x/y: NaN
+    capturedDoubleTapCallbacks.onEnd({ x: NaN, y: NaN });
+
+    // Should remain zoomed out (scale = 1, isZoomed = false)
+    expect(mockZoomScale.value).toBe(1);
+    expect(mockIsZoomed.value).toBe(false);
+  });
 });
