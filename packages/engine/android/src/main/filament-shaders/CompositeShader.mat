@@ -4,38 +4,46 @@ material {
     parameters : [
         { type : sampler2d, name : u_Texture },
         { type : sampler2d, name : u_BloomTexture },
-        { type : float, name : u_GrainIntensity },
-        { type : float, name : u_GrainChroma },
-        { type : float, name : u_GrainSize },
-        { type : float, name : u_GrainSpeed },
-        { type : float, name : u_GrainRoughness },
-        { type : float, name : u_VignetteIntensity },
-        { type : float, name : u_ChromaShift },
-        { type : float, name : u_ChromaShiftDirection },
-        { type : float, name : u_ChromaShiftInvert },
-        { type : float, name : u_TapeJitter },
-        { type : float, name : u_Scanlines },
-        { type : float, name : u_ScanlinesHorizontal },
-        { type : float, name : u_ScanlinesDensity },
-        { type : float, name : u_Time },
-        { type : float, name : u_BloomIntensity },
-        { type : float, name : u_ChromaticAberration },
-        { type : float, name : u_InvertYShift },
-        { type : float, name : u_AberrationInvert },
         { type : sampler2d, name : u_OverlayTexture },
-        { type : float, name : u_OverlayEnabled },
-        { type : float, name : u_DrsScale },
-        { type : float, name : u_Sharpening },
-        { type : float2, name : u_TexelSize },
-        { type : float, name : u_TargetResolution },
         { type : sampler2d, name : u_GlassTexture },
-        { type : float, name : u_PixelationFactor },
-        { type : float, name : u_PanelY }
+        { type : float4, name : u_RenderData0 },
+        { type : float4, name : u_RenderData1 },
+        { type : float4, name : u_RenderData2 },
+        { type : float4, name : u_RenderData3 },
+        { type : float4, name : u_RenderData4 },
+        { type : float4, name : u_RenderData5 },
+        { type : float4, name : u_RenderData6 }
     ],
     requires : [ uv0 ]
 }
 
 fragment {
+    #define u_GrainIntensity u_RenderData0.x
+    #define u_GrainChroma u_RenderData0.y
+    #define u_GrainSize u_RenderData0.z
+    #define u_GrainSpeed u_RenderData0.w
+    #define u_GrainRoughness u_RenderData1.x
+    #define u_VignetteIntensity u_RenderData1.y
+    #define u_ChromaShift u_RenderData1.z
+    #define u_ChromaShiftDirection u_RenderData1.w
+    #define u_ChromaShiftInvert u_RenderData2.x
+    #define u_TapeJitter u_RenderData2.y
+    #define u_Scanlines u_RenderData2.z
+    #define u_ScanlinesHorizontal u_RenderData2.w
+    #define u_ScanlinesDensity u_RenderData3.x
+    #define u_Time u_RenderData3.y
+    #define u_BloomIntensity u_RenderData3.z
+    #define u_ChromaticAberration u_RenderData3.w
+    #define u_InvertYShift u_RenderData4.x
+    #define u_AberrationInvert u_RenderData4.y
+    #define u_OverlayEnabled u_RenderData4.z
+    #define u_DrsScale u_RenderData4.w
+    #define u_Sharpening u_RenderData5.x
+    #define u_TexelSize u_RenderData5.yz
+    #define u_TargetResolution u_RenderData5.w
+    #define u_PixelationFactor u_RenderData6.x
+    #define u_PanelY u_RenderData6.y
+
     #include "includes/Pixelation.glsl"
     #include "includes/ChromaEffects.glsl"
     #include "includes/Sharpening.glsl"

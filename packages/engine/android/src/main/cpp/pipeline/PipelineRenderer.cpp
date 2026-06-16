@@ -181,10 +181,5 @@ void PipelineRenderer::setStaticParameters(int width, int height, ShaderManager&
     shaderManager.getMaterialInstanceComposite()->setParameter("u_Texture", gradedTexture, samplerLinear);
     shaderManager.getMaterialInstanceComposite()->setParameter("u_BloomTexture", bloomTexUp, samplerLinear);
     shaderManager.getMaterialInstanceComposite()->setParameter("u_OverlayTexture", dummyBlackTexture, samplerLinear);
-    shaderManager.getMaterialInstanceComposite()->setParameter("u_Time", 0.0f);
-    shaderManager.getMaterialInstanceComposite()->setParameter("u_Sharpening", 0.0f);
-    shaderManager.getMaterialInstanceComposite()->setParameter("u_TexelSize", filament::math::float2(1.0f / width, 1.0f / height));
-
     shaderManager.getMaterialInstanceComposite()->setParameter("u_GlassTexture", bloomTexUp, samplerLinear);
-    shaderManager.getMaterialInstanceComposite()->setParameter("u_PanelY", 1.0f); // Default value: panel closed
 }

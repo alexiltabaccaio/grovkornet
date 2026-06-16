@@ -362,32 +362,50 @@ void GrovkornetEngine::applyShaderParameters(const RenderParams& params, filamen
 
     // 3. Set parameters on materialInstanceComposite
     filament::MaterialInstance* composite = shaderManager.getMaterialInstanceComposite();
-    composite->setParameter("u_GrainIntensity", params.grainIntensity);
-    composite->setParameter("u_GrainChroma", params.grainChroma);
-    composite->setParameter("u_GrainSize", params.grainSize);
-    composite->setParameter("u_GrainSpeed", params.grainSpeed);
-    composite->setParameter("u_GrainRoughness", params.grainRoughness);
-    composite->setParameter("u_VignetteIntensity", params.vignetteIntensity);
-    composite->setParameter("u_ChromaShift", params.chromaShift);
-    composite->setParameter("u_ChromaShiftDirection", params.chromaShiftDirection);
-    composite->setParameter("u_ChromaShiftInvert", params.chromaShiftInvert);
-    composite->setParameter("u_TapeJitter", params.tapeJitter);
-    composite->setParameter("u_Scanlines", params.scanlines);
-    composite->setParameter("u_ScanlinesHorizontal", params.scanlinesHorizontal);
-    composite->setParameter("u_ScanlinesDensity", params.scanlinesDensity);
-    composite->setParameter("u_Time", params.time);
-    composite->setParameter("u_BloomIntensity", params.bloomIntensity);
-    composite->setParameter("u_ChromaticAberration", params.chromaticAberration);
-    composite->setParameter("u_InvertYShift", params.invertYShift);
-    composite->setParameter("u_AberrationInvert", params.aberrationInvert);
-    composite->setParameter("u_OverlayEnabled", overlayCompositor.isOverlayEnabled() ? 1.0f : 0.0f);
-    composite->setParameter("u_PanelY", params.panelY);
+    
+    filament::math::float4 uboData[7];
+    uboData[0].x = params.grainIntensity;
+    uboData[0].y = params.grainChroma;
+    uboData[0].z = params.grainSize;
+    uboData[0].w = params.grainSpeed;
 
-    filament::math::float2 texelSize{1.0f / width, 1.0f / height};
-    composite->setParameter("u_TexelSize", texelSize);
-    composite->setParameter("u_Sharpening", params.sharpening);
-    composite->setParameter("u_TargetResolution", params.targetResolution);
-    composite->setParameter("u_PixelationFactor", params.pixelationFactor);
+    uboData[1].x = params.grainRoughness;
+    uboData[1].y = params.vignetteIntensity;
+    uboData[1].z = params.chromaShift;
+    uboData[1].w = params.chromaShiftDirection;
+
+    uboData[2].x = params.chromaShiftInvert;
+    uboData[2].y = params.tapeJitter;
+    uboData[2].z = params.scanlines;
+    uboData[2].w = params.scanlinesHorizontal;
+
+    uboData[3].x = params.scanlinesDensity;
+    uboData[3].y = params.time;
+    uboData[3].z = params.bloomIntensity;
+    uboData[3].w = params.chromaticAberration;
+
+    uboData[4].x = params.invertYShift;
+    uboData[4].y = params.aberrationInvert;
+    uboData[4].z = overlayCompositor.isOverlayEnabled() ? 1.0f : 0.0f;
+    uboData[4].w = drsManager.getScale(); // u_DrsScale
+
+    uboData[5].x = params.sharpening;
+    uboData[5].y = 1.0f / width;  // texelSize.x
+    uboData[5].z = 1.0f / height; // texelSize.y
+    uboData[5].w = params.targetResolution;
+
+    uboData[6].x = params.pixelationFactor;
+    uboData[6].y = params.panelY;
+    uboData[6].z = 0.0f;
+    uboData[6].w = 0.0f;
+
+    composite->setParameter("u_RenderData0", uboData[0]);
+    composite->setParameter("u_RenderData1", uboData[1]);
+    composite->setParameter("u_RenderData2", uboData[2]);
+    composite->setParameter("u_RenderData3", uboData[3]);
+    composite->setParameter("u_RenderData4", uboData[4]);
+    composite->setParameter("u_RenderData5", uboData[5]);
+    composite->setParameter("u_RenderData6", uboData[6]);
 
     // 4. Update DRS and viewports
     updateDrsAndViewport();
@@ -424,7 +442,6 @@ void GrovkornetEngine::updateDrsAndViewport() {
     shaderManager.getMaterialInstanceDownsample()->setParameter("u_DrsScale", scale);
     shaderManager.getMaterialInstanceBlurDown()->setParameter("u_DrsScale", scale);
     shaderManager.getMaterialInstanceBlurUp()->setParameter("u_DrsScale", scale);
-    shaderManager.getMaterialInstanceComposite()->setParameter("u_DrsScale", scale);
 }
 
 void GrovkornetEngine::recordFrameTimeAndEvaluate(float frameTimeMs) {
