@@ -119,16 +119,16 @@ export const usePhotoPreviewTransition = ({
         }
       });
     } else {
-      const mockAdjacentIndex = diff > 0 ? currentIndex.value + 1 : currentIndex.value - 1;
+      const mockAdjacentIndex = diff > 0 ? baseIndex + 1 : baseIndex - 1;
       
       /* eslint-disable react-hooks/set-state-in-effect */
       isTeleportingRef.current = true;
       setSlotOverrides({ [mockAdjacentIndex]: photos[idx] });
       setRenderIndices(prev => Array.from(new Set([
         ...prev,
-        currentIndex.value - 1, 
-        currentIndex.value, 
-        currentIndex.value + 1, 
+        baseIndex - 1, 
+        baseIndex, 
+        baseIndex + 1, 
         mockAdjacentIndex,
         idx - 1,
         idx,
