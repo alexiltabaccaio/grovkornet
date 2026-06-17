@@ -62,10 +62,6 @@ describe('useGalleryOverlay', () => {
     mockLatestCapturedUri = null;
     mockLatestPreviewUri = null;
     jest.clearAllMocks();
-    jest.spyOn(global, 'requestAnimationFrame').mockImplementation((cb: any) => {
-      cb();
-      return 1;
-    });
   });
 
   it('initializes with default values', () => {
@@ -90,39 +86,6 @@ describe('useGalleryOverlay', () => {
     });
 
     expect(result.current.shouldRenderGallery).toBe(false);
-    expect(result.current.galleryTransition.value).toBe(0);
-  });
-
-  it('performs Reanimated proxy jiggle when URIs change and gallery is open', () => {
-    const { result, rerender } = renderHook(() => useGalleryOverlay());
-
-    // Open first
-    act(() => {
-      result.current.openGallery();
-    });
-    expect(result.current.galleryTransition.value).toBe(1);
-
-    // Simulate URI change
-    mockLatestCapturedUri = 'file:///new-photo.jpg';
-    act(() => {
-      rerender({});
-    });
-
-    // Check if transition went 0.9999 -> 1
-    expect(result.current.galleryTransition.value).toBe(1);
-  });
-
-  it('does not perform jiggle if URIs change but gallery is closed', () => {
-    const { result, rerender } = renderHook(() => useGalleryOverlay());
-
-    expect(result.current.galleryTransition.value).toBe(0);
-
-    mockLatestCapturedUri = 'file:///new-photo.jpg';
-    act(() => {
-      rerender({});
-    });
-
-    // Value should still be 0
     expect(result.current.galleryTransition.value).toBe(0);
   });
 });

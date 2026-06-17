@@ -3,7 +3,6 @@ import { StyleSheet, View, Platform, StatusBar } from 'react-native';
 import Animated, { useAnimatedStyle, interpolate, Extrapolation } from 'react-native-reanimated';
 import { useCameraPermissions } from '../lib/useCameraPermissions';
 import { useCameraAppState } from '../lib/useCameraAppState';
-import { useForceLayoutSync } from '../lib/useForceLayoutSync';
 import { useGalleryOverlay } from '../lib/useGalleryOverlay';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -51,12 +50,6 @@ export const CameraScreen = () => {
   const { shouldRenderGallery, galleryTransition, openGallery, closeGallery } = useGalleryOverlay();
   const { cameraKey, drawerAnimation, footerTranslateY } = useCameraAppState();
 
-  useForceLayoutSync({
-    shouldRenderGallery,
-    drawerAnimation,
-    footerTranslateY,
-  });
-
   const [isCameraPaused, setIsCameraPaused] = useState(false);
 
   useEffect(() => {
@@ -90,12 +83,10 @@ export const CameraScreen = () => {
       [30, 0],
       Extrapolation.CLAMP
     );
-    // Add microscopic offset to force native UI thread updates and prevent Android freeze
-    const syncOffset = galleryTransition ? galleryTransition.value * 0.001 : 0;
 
     return {
       opacity,
-      transform: [{ translateY: translateY + syncOffset }],
+      transform: [{ translateY }],
     };
   });
   const statusBarHeight = Platform.OS === 'android' 
@@ -136,7 +127,7 @@ export const CameraScreen = () => {
   return (
     <View style={styles.container}>
       <InteractionContext.Provider value={{ isInteractable: !isOpen }}>
-        <GestureController footerTranslateY={footerTranslateY} drawerAnimation={drawerAnimation} galleryTransition={galleryTransition}>
+        <GestureController footerTranslateY={footerTranslateY} drawerAnimation={drawerAnimation}>
           <View style={viewfinderContainerStyle}>
             {!isCameraPaused && <Viewfinder cameraKey={cameraKey} />}
           </View>

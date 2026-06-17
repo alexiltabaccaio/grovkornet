@@ -43,20 +43,16 @@ export const Sections = React.memo(({ galleryTransition }: SectionsProps) => {
     if (!galleryTransition) return {};
     const translateX = interpolate(galleryTransition.value, [0, 1], [0, width]);
     
-    // Add microscopic offset to force native UI thread updates and prevent Android freeze
-    const syncOffset = galleryTransition.value * 0.001;
-    
     return {
       transform: [
-        { translateX },
-        { translateY: syncOffset }
+        { translateX }
       ],
     };
   });
 
   return (
-    <BottomFooter style={styles.bottomFooterPosition}>
-      <Animated.View style={[styles.tabContainer, animatedStyle]}>
+    <BottomFooter style={[styles.bottomFooterPosition, animatedStyle]}>
+      <View style={styles.tabContainer}>
         {sections.map((section) => {
           const isActive = activeSection === section.id;
           return (
@@ -86,7 +82,7 @@ export const Sections = React.memo(({ galleryTransition }: SectionsProps) => {
             </View>
           );
         })}
-      </Animated.View>
+      </View>
     </BottomFooter>
   );
 

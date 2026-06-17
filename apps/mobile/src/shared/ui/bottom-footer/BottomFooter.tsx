@@ -1,17 +1,18 @@
 import React from 'react';
-import { StyleSheet, View, ViewStyle, StyleProp } from 'react-native';
+import { StyleSheet, ViewStyle, StyleProp } from 'react-native';
+import Animated, { AnimatedStyle } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 interface BottomFooterProps {
   children: React.ReactNode;
-  style?: StyleProp<ViewStyle>;
+  style?: StyleProp<AnimatedStyle<ViewStyle>>;
 }
 
 export const BottomFooter = ({ children, style }: BottomFooterProps) => {
   const insets = useSafeAreaInsets();
 
   return (
-    <View style={[
+    <Animated.View style={[
       styles.bottomFooterWrapper, 
       { 
         height: 80 + insets.bottom, 
@@ -20,7 +21,7 @@ export const BottomFooter = ({ children, style }: BottomFooterProps) => {
       style
     ]}>
       {children}
-    </View>
+    </Animated.View>
   );
 };
 

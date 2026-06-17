@@ -139,16 +139,12 @@ export const usePhotoPreviewTransition = ({
       const targetVal = -mockAdjacentIndex * slotWidth;
       isTransitioning.value = true;
       
-      requestAnimationFrame(() => {
-        setTimeout(() => {
-          translateX.value = withSpring(targetVal, { damping: 20, stiffness: 150, mass: 0.6, overshootClamping: true }, (finished) => {
-            if (finished) {
-              translateX.value = -idx * slotWidth;
-              runOnJS(finalizeTeleport)(idx);
-              isTransitioning.value = false;
-            }
-          });
-        }, 16);
+      translateX.value = withSpring(targetVal, { damping: 20, stiffness: 150, mass: 0.6, overshootClamping: true }, (finished) => {
+        if (finished) {
+          translateX.value = -idx * slotWidth;
+          runOnJS(finalizeTeleport)(idx);
+          isTransitioning.value = false;
+        }
       });
     }
   }, [selectedPhoto, photos, slotWidth, currentIndex, translateX, finalizeTransition, finalizeTeleport]);

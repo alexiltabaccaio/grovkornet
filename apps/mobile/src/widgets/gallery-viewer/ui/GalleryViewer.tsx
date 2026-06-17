@@ -99,9 +99,6 @@ export const GalleryViewer = React.memo(({ onClose, initialUri, galleryTransitio
     if (!galleryTransition) return {};
     return {
       opacity: galleryTransition.value,
-      // Move off-screen when virtually invisible to prevent touch interception
-      // if JS thread is congested and unmount is delayed.
-      transform: [{ translateY: galleryTransition.value <= 0.01 ? 9999 : 0 }]
     };
   }, [galleryTransition]);
 

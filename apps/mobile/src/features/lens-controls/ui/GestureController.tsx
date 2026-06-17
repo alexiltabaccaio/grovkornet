@@ -12,10 +12,9 @@ interface GestureControllerProps {
   children?: ReactNode;
   footerTranslateY?: SharedValue<number>;
   drawerAnimation?: SharedValue<number>;
-  galleryTransition?: SharedValue<number>;
 }
 
-export const GestureController = ({ children, footerTranslateY, drawerAnimation, galleryTransition }: GestureControllerProps) => {
+export const GestureController = ({ children, footerTranslateY, drawerAnimation }: GestureControllerProps) => {
   const { activeSection, setActiveSection } = useControlPanelStore(useShallow((s) => ({
     activeSection: s.activeSection,
     setActiveSection: s.setActiveSection,
@@ -212,13 +211,8 @@ export const GestureController = ({ children, footerTranslateY, drawerAnimation,
   }, [activeSection, setActiveSection, translateY, startY, hasMoved, footerTranslateY, drawerAnimation, viewportWidth, viewportHeight, isInteractable]);
 
   const animatedStyle = useAnimatedStyle(() => {
-    // By interpolating a microscopic fraction of galleryTransition, we force the UI thread
-    // to push fresh transform updates to the native view every frame while the gallery is animating.
-    // This perfectly bypasses the Reanimated Android bug where the native view's transform
-    // gets completely stuck at its maximum offset (-394) if it was animating to 0 while obscured.
-    const syncOffset = galleryTransition ? galleryTransition.value * 0.001 : 0;
     return {
-      transform: [{ translateY: translateY.value + syncOffset }],
+      transform: [{ translateY: translateY.value }],
     };
   });
 
