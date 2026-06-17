@@ -3,6 +3,7 @@ import { useFilmStore } from '../model/useFilmStore';
 import { getNitroConfig } from '../model/getNitroConfig';
 import { updateSharedValue } from '@shared/lib/reanimated/safeUpdate';
 import { useSharedValue } from 'react-native-reanimated';
+import { BYPASS_JS_SANITIZATION } from '@shared/lib/debug/bypassFlags';
 
 export const useFilmWorklets = () => {
   const config = getNitroConfig();
@@ -76,7 +77,7 @@ export const useFilmWorklets = () => {
             hasWarnedNaN_noiseReductionMode.value = true;
             console.warn(`[Camera Codegen Warning]: NaN value intercepted for parameter 'noiseReductionMode'`);
           }
-          return;
+          if (!BYPASS_JS_SANITIZATION) return;
         }
         updateSharedValue(film.noiseReductionMode, value);
         };
@@ -103,11 +104,17 @@ export const useFilmWorklets = () => {
             hasWarnedNaN_saturation.value = true;
             console.warn(`[Camera Codegen Warning]: NaN value intercepted for parameter 'saturation'`);
           }
-          return;
+          if (!BYPASS_JS_SANITIZATION) return;
         }
-        const safeValue = Math.min(Math.max(value, 0.0), 2.0);
-        updateSharedValue(film.saturation, safeValue);
-        config.saturation = safeValue;
+        if (BYPASS_JS_SANITIZATION) {
+          config.saturation = value;
+          const clampedValue = config.saturation;
+          updateSharedValue(film.saturation, clampedValue);
+        } else {
+          const safeValue = Math.min(Math.max(value, 0.0), 2.0);
+          updateSharedValue(film.saturation, safeValue);
+          config.saturation = safeValue;
+        }
         };
 
         const updateContrast = (value: number) => {
@@ -117,13 +124,21 @@ export const useFilmWorklets = () => {
             hasWarnedNaN_contrast.value = true;
             console.warn(`[Camera Codegen Warning]: NaN value intercepted for parameter 'contrast'`);
           }
-          return;
+          if (!BYPASS_JS_SANITIZATION) return;
         }
-        const safeValue = Math.min(Math.max(value, 0.0), 2.0);
-        updateSharedValue(film.contrast, safeValue);
-        config.contrast = safeValue;
-        updateSharedValue(film.contrastAuto, false);
-        config.contrastAuto = false;
+        if (BYPASS_JS_SANITIZATION) {
+          config.contrast = value;
+          const clampedValue = config.contrast;
+          updateSharedValue(film.contrast, clampedValue);
+          updateSharedValue(film.contrastAuto, false);
+          config.contrastAuto = false;
+        } else {
+          const safeValue = Math.min(Math.max(value, 0.0), 2.0);
+          updateSharedValue(film.contrast, safeValue);
+          config.contrast = safeValue;
+          updateSharedValue(film.contrastAuto, false);
+          config.contrastAuto = false;
+        }
         };
 
         const updateGrainIntensity = (value: number) => {
@@ -133,13 +148,21 @@ export const useFilmWorklets = () => {
             hasWarnedNaN_grainIntensity.value = true;
             console.warn(`[Camera Codegen Warning]: NaN value intercepted for parameter 'grainIntensity'`);
           }
-          return;
+          if (!BYPASS_JS_SANITIZATION) return;
         }
-        const safeValue = Math.min(Math.max(value, 0.0), 2.0);
-        updateSharedValue(film.grainIntensity, safeValue);
-        config.grainIntensity = safeValue;
-        updateSharedValue(film.grainEnabled, safeValue > 0);
-        config.grainEnabled = safeValue > 0;
+        if (BYPASS_JS_SANITIZATION) {
+          config.grainIntensity = value;
+          const clampedValue = config.grainIntensity;
+          updateSharedValue(film.grainIntensity, clampedValue);
+          updateSharedValue(film.grainEnabled, clampedValue > 0);
+          config.grainEnabled = clampedValue > 0;
+        } else {
+          const safeValue = Math.min(Math.max(value, 0.0), 2.0);
+          updateSharedValue(film.grainIntensity, safeValue);
+          config.grainIntensity = safeValue;
+          updateSharedValue(film.grainEnabled, safeValue > 0);
+          config.grainEnabled = safeValue > 0;
+        }
         };
 
         const updateGrainChroma = (value: number) => {
@@ -149,7 +172,7 @@ export const useFilmWorklets = () => {
             hasWarnedNaN_grainChroma.value = true;
             console.warn(`[Camera Codegen Warning]: NaN value intercepted for parameter 'grainChroma'`);
           }
-          return;
+          if (!BYPASS_JS_SANITIZATION) return;
         }
         updateSharedValue(film.grainChroma, value);
         config.grainChroma = value;
@@ -162,7 +185,7 @@ export const useFilmWorklets = () => {
             hasWarnedNaN_grainSize.value = true;
             console.warn(`[Camera Codegen Warning]: NaN value intercepted for parameter 'grainSize'`);
           }
-          return;
+          if (!BYPASS_JS_SANITIZATION) return;
         }
         updateSharedValue(film.grainSize, value);
         config.grainSize = value;
@@ -175,7 +198,7 @@ export const useFilmWorklets = () => {
             hasWarnedNaN_grainSpeed.value = true;
             console.warn(`[Camera Codegen Warning]: NaN value intercepted for parameter 'grainSpeed'`);
           }
-          return;
+          if (!BYPASS_JS_SANITIZATION) return;
         }
         updateSharedValue(film.grainSpeed, value);
         config.grainSpeed = value;
@@ -188,11 +211,17 @@ export const useFilmWorklets = () => {
             hasWarnedNaN_vignetteIntensity.value = true;
             console.warn(`[Camera Codegen Warning]: NaN value intercepted for parameter 'vignetteIntensity'`);
           }
-          return;
+          if (!BYPASS_JS_SANITIZATION) return;
         }
-        const safeValue = Math.min(Math.max(value, 0.0), 1.0);
-        updateSharedValue(film.vignetteIntensity, safeValue);
-        config.vignetteIntensity = safeValue;
+        if (BYPASS_JS_SANITIZATION) {
+          config.vignetteIntensity = value;
+          const clampedValue = config.vignetteIntensity;
+          updateSharedValue(film.vignetteIntensity, clampedValue);
+        } else {
+          const safeValue = Math.min(Math.max(value, 0.0), 1.0);
+          updateSharedValue(film.vignetteIntensity, safeValue);
+          config.vignetteIntensity = safeValue;
+        }
         };
 
         const updateChromaShift = (value: number) => {
@@ -202,11 +231,17 @@ export const useFilmWorklets = () => {
             hasWarnedNaN_chromaShift.value = true;
             console.warn(`[Camera Codegen Warning]: NaN value intercepted for parameter 'chromaShift'`);
           }
-          return;
+          if (!BYPASS_JS_SANITIZATION) return;
         }
-        const safeValue = Math.min(Math.max(value, 0.0), 2.0);
-        updateSharedValue(film.chromaShift, safeValue);
-        config.chromaShift = safeValue;
+        if (BYPASS_JS_SANITIZATION) {
+          config.chromaShift = value;
+          const clampedValue = config.chromaShift;
+          updateSharedValue(film.chromaShift, clampedValue);
+        } else {
+          const safeValue = Math.min(Math.max(value, 0.0), 2.0);
+          updateSharedValue(film.chromaShift, safeValue);
+          config.chromaShift = safeValue;
+        }
         };
 
         const updateTemperature = (value: number) => {
@@ -216,12 +251,19 @@ export const useFilmWorklets = () => {
             hasWarnedNaN_temperature.value = true;
             console.warn(`[Camera Codegen Warning]: NaN value intercepted for parameter 'temperature'`);
           }
-          return;
+          if (!BYPASS_JS_SANITIZATION) return;
         }
-        const safeValue = Math.min(Math.max(value, 2000.0), 10000.0);
-        updateSharedValue(film.temperature, safeValue);
-        config.whiteBalance = safeValue;
-        updateSharedValue(film.temperatureAuto, false);
+        if (BYPASS_JS_SANITIZATION) {
+          config.whiteBalance = value;
+          const clampedValue = config.whiteBalance;
+          updateSharedValue(film.temperature, clampedValue);
+          updateSharedValue(film.temperatureAuto, false);
+        } else {
+          const safeValue = Math.min(Math.max(value, 2000.0), 10000.0);
+          updateSharedValue(film.temperature, safeValue);
+          config.whiteBalance = safeValue;
+          updateSharedValue(film.temperatureAuto, false);
+        }
         };
 
         const updateTint = (value: number) => {
@@ -231,12 +273,19 @@ export const useFilmWorklets = () => {
             hasWarnedNaN_tint.value = true;
             console.warn(`[Camera Codegen Warning]: NaN value intercepted for parameter 'tint'`);
           }
-          return;
+          if (!BYPASS_JS_SANITIZATION) return;
         }
-        const safeValue = Math.min(Math.max(value, -100.0), 100.0);
-        updateSharedValue(film.tint, safeValue);
-        config.tint = safeValue;
-        updateSharedValue(film.temperatureAuto, false);
+        if (BYPASS_JS_SANITIZATION) {
+          config.tint = value;
+          const clampedValue = config.tint;
+          updateSharedValue(film.tint, clampedValue);
+          updateSharedValue(film.temperatureAuto, false);
+        } else {
+          const safeValue = Math.min(Math.max(value, -100.0), 100.0);
+          updateSharedValue(film.tint, safeValue);
+          config.tint = safeValue;
+          updateSharedValue(film.temperatureAuto, false);
+        }
         };
 
         const updateBloomIntensity = (value: number) => {
@@ -246,13 +295,21 @@ export const useFilmWorklets = () => {
             hasWarnedNaN_bloomIntensity.value = true;
             console.warn(`[Camera Codegen Warning]: NaN value intercepted for parameter 'bloomIntensity'`);
           }
-          return;
+          if (!BYPASS_JS_SANITIZATION) return;
         }
-        const safeValue = Math.min(Math.max(value, 0.0), 9999.0);
-        updateSharedValue(film.bloomIntensity, safeValue);
-        config.bloomIntensity = safeValue;
-        updateSharedValue(film.bloomEnabled, safeValue > 0);
-        config.bloomEnabled = safeValue > 0;
+        if (BYPASS_JS_SANITIZATION) {
+          config.bloomIntensity = value;
+          const clampedValue = config.bloomIntensity;
+          updateSharedValue(film.bloomIntensity, clampedValue);
+          updateSharedValue(film.bloomEnabled, clampedValue > 0);
+          config.bloomEnabled = clampedValue > 0;
+        } else {
+          const safeValue = Math.min(Math.max(value, 0.0), 9999.0);
+          updateSharedValue(film.bloomIntensity, safeValue);
+          config.bloomIntensity = safeValue;
+          updateSharedValue(film.bloomEnabled, safeValue > 0);
+          config.bloomEnabled = safeValue > 0;
+        }
         };
 
         const updateChromaticAberration = (value: number) => {
@@ -262,11 +319,17 @@ export const useFilmWorklets = () => {
             hasWarnedNaN_chromaticAberration.value = true;
             console.warn(`[Camera Codegen Warning]: NaN value intercepted for parameter 'chromaticAberration'`);
           }
-          return;
+          if (!BYPASS_JS_SANITIZATION) return;
         }
-        const safeValue = Math.min(Math.max(value, 0.0), 2.0);
-        updateSharedValue(film.chromaticAberration, safeValue);
-        config.chromaticAberration = safeValue;
+        if (BYPASS_JS_SANITIZATION) {
+          config.chromaticAberration = value;
+          const clampedValue = config.chromaticAberration;
+          updateSharedValue(film.chromaticAberration, clampedValue);
+        } else {
+          const safeValue = Math.min(Math.max(value, 0.0), 2.0);
+          updateSharedValue(film.chromaticAberration, safeValue);
+          config.chromaticAberration = safeValue;
+        }
         };
 
         const updateChromaShiftDirection = (value: number) => {
@@ -276,7 +339,7 @@ export const useFilmWorklets = () => {
             hasWarnedNaN_chromaShiftDirection.value = true;
             console.warn(`[Camera Codegen Warning]: NaN value intercepted for parameter 'chromaShiftDirection'`);
           }
-          return;
+          if (!BYPASS_JS_SANITIZATION) return;
         }
         updateSharedValue(film.chromaShiftDirection, value);
         config.chromaShiftDirection = value;
@@ -289,11 +352,17 @@ export const useFilmWorklets = () => {
             hasWarnedNaN_sharpening.value = true;
             console.warn(`[Camera Codegen Warning]: NaN value intercepted for parameter 'sharpening'`);
           }
-          return;
+          if (!BYPASS_JS_SANITIZATION) return;
         }
-        const safeValue = Math.min(Math.max(value, 0.0), 1.0);
-        updateSharedValue(film.sharpening, safeValue);
-        config.sharpening = safeValue;
+        if (BYPASS_JS_SANITIZATION) {
+          config.sharpening = value;
+          const clampedValue = config.sharpening;
+          updateSharedValue(film.sharpening, clampedValue);
+        } else {
+          const safeValue = Math.min(Math.max(value, 0.0), 1.0);
+          updateSharedValue(film.sharpening, safeValue);
+          config.sharpening = safeValue;
+        }
         };
 
         const updateSatRed = (value: number) => {
@@ -303,7 +372,7 @@ export const useFilmWorklets = () => {
             hasWarnedNaN_satRed.value = true;
             console.warn(`[Camera Codegen Warning]: NaN value intercepted for parameter 'satRed'`);
           }
-          return;
+          if (!BYPASS_JS_SANITIZATION) return;
         }
         updateSharedValue(film.satRed, value);
         config.satRed = value;
@@ -316,7 +385,7 @@ export const useFilmWorklets = () => {
             hasWarnedNaN_satOrange.value = true;
             console.warn(`[Camera Codegen Warning]: NaN value intercepted for parameter 'satOrange'`);
           }
-          return;
+          if (!BYPASS_JS_SANITIZATION) return;
         }
         updateSharedValue(film.satOrange, value);
         config.satOrange = value;
@@ -329,7 +398,7 @@ export const useFilmWorklets = () => {
             hasWarnedNaN_satYellow.value = true;
             console.warn(`[Camera Codegen Warning]: NaN value intercepted for parameter 'satYellow'`);
           }
-          return;
+          if (!BYPASS_JS_SANITIZATION) return;
         }
         updateSharedValue(film.satYellow, value);
         config.satYellow = value;
@@ -342,7 +411,7 @@ export const useFilmWorklets = () => {
             hasWarnedNaN_satGreen.value = true;
             console.warn(`[Camera Codegen Warning]: NaN value intercepted for parameter 'satGreen'`);
           }
-          return;
+          if (!BYPASS_JS_SANITIZATION) return;
         }
         updateSharedValue(film.satGreen, value);
         config.satGreen = value;
@@ -355,7 +424,7 @@ export const useFilmWorklets = () => {
             hasWarnedNaN_satCyan.value = true;
             console.warn(`[Camera Codegen Warning]: NaN value intercepted for parameter 'satCyan'`);
           }
-          return;
+          if (!BYPASS_JS_SANITIZATION) return;
         }
         updateSharedValue(film.satCyan, value);
         config.satCyan = value;
@@ -368,7 +437,7 @@ export const useFilmWorklets = () => {
             hasWarnedNaN_satBlue.value = true;
             console.warn(`[Camera Codegen Warning]: NaN value intercepted for parameter 'satBlue'`);
           }
-          return;
+          if (!BYPASS_JS_SANITIZATION) return;
         }
         updateSharedValue(film.satBlue, value);
         config.satBlue = value;
@@ -381,7 +450,7 @@ export const useFilmWorklets = () => {
             hasWarnedNaN_satPurple.value = true;
             console.warn(`[Camera Codegen Warning]: NaN value intercepted for parameter 'satPurple'`);
           }
-          return;
+          if (!BYPASS_JS_SANITIZATION) return;
         }
         updateSharedValue(film.satPurple, value);
         config.satPurple = value;
@@ -394,7 +463,7 @@ export const useFilmWorklets = () => {
             hasWarnedNaN_satMagenta.value = true;
             console.warn(`[Camera Codegen Warning]: NaN value intercepted for parameter 'satMagenta'`);
           }
-          return;
+          if (!BYPASS_JS_SANITIZATION) return;
         }
         updateSharedValue(film.satMagenta, value);
         config.satMagenta = value;
@@ -413,7 +482,7 @@ export const useFilmWorklets = () => {
             hasWarnedNaN_boundMagentaRed.value = true;
             console.warn(`[Camera Codegen Warning]: NaN value intercepted for parameter 'boundMagentaRed'`);
           }
-          return;
+          if (!BYPASS_JS_SANITIZATION) return;
         }
         updateSharedValue(film.boundMagentaRed, value);
         config.boundMagentaRed = value;
@@ -426,7 +495,7 @@ export const useFilmWorklets = () => {
             hasWarnedNaN_boundRedOrange.value = true;
             console.warn(`[Camera Codegen Warning]: NaN value intercepted for parameter 'boundRedOrange'`);
           }
-          return;
+          if (!BYPASS_JS_SANITIZATION) return;
         }
         updateSharedValue(film.boundRedOrange, value);
         config.boundRedOrange = value;
@@ -439,7 +508,7 @@ export const useFilmWorklets = () => {
             hasWarnedNaN_boundOrangeYellow.value = true;
             console.warn(`[Camera Codegen Warning]: NaN value intercepted for parameter 'boundOrangeYellow'`);
           }
-          return;
+          if (!BYPASS_JS_SANITIZATION) return;
         }
         updateSharedValue(film.boundOrangeYellow, value);
         config.boundOrangeYellow = value;
@@ -452,7 +521,7 @@ export const useFilmWorklets = () => {
             hasWarnedNaN_boundYellowGreen.value = true;
             console.warn(`[Camera Codegen Warning]: NaN value intercepted for parameter 'boundYellowGreen'`);
           }
-          return;
+          if (!BYPASS_JS_SANITIZATION) return;
         }
         updateSharedValue(film.boundYellowGreen, value);
         config.boundYellowGreen = value;
@@ -465,7 +534,7 @@ export const useFilmWorklets = () => {
             hasWarnedNaN_boundGreenCyan.value = true;
             console.warn(`[Camera Codegen Warning]: NaN value intercepted for parameter 'boundGreenCyan'`);
           }
-          return;
+          if (!BYPASS_JS_SANITIZATION) return;
         }
         updateSharedValue(film.boundGreenCyan, value);
         config.boundGreenCyan = value;
@@ -478,7 +547,7 @@ export const useFilmWorklets = () => {
             hasWarnedNaN_boundCyanBlue.value = true;
             console.warn(`[Camera Codegen Warning]: NaN value intercepted for parameter 'boundCyanBlue'`);
           }
-          return;
+          if (!BYPASS_JS_SANITIZATION) return;
         }
         updateSharedValue(film.boundCyanBlue, value);
         config.boundCyanBlue = value;
@@ -491,7 +560,7 @@ export const useFilmWorklets = () => {
             hasWarnedNaN_boundBluePurple.value = true;
             console.warn(`[Camera Codegen Warning]: NaN value intercepted for parameter 'boundBluePurple'`);
           }
-          return;
+          if (!BYPASS_JS_SANITIZATION) return;
         }
         updateSharedValue(film.boundBluePurple, value);
         config.boundBluePurple = value;
@@ -504,7 +573,7 @@ export const useFilmWorklets = () => {
             hasWarnedNaN_boundPurpleMagenta.value = true;
             console.warn(`[Camera Codegen Warning]: NaN value intercepted for parameter 'boundPurpleMagenta'`);
           }
-          return;
+          if (!BYPASS_JS_SANITIZATION) return;
         }
         updateSharedValue(film.boundPurpleMagenta, value);
         config.boundPurpleMagenta = value;
@@ -517,7 +586,7 @@ export const useFilmWorklets = () => {
             hasWarnedNaN_grainRoughness.value = true;
             console.warn(`[Camera Codegen Warning]: NaN value intercepted for parameter 'grainRoughness'`);
           }
-          return;
+          if (!BYPASS_JS_SANITIZATION) return;
         }
         updateSharedValue(film.grainRoughness, value);
         config.grainRoughness = value;
@@ -542,13 +611,21 @@ export const useFilmWorklets = () => {
             hasWarnedNaN_blackLevel.value = true;
             console.warn(`[Camera Codegen Warning]: NaN value intercepted for parameter 'blackLevel'`);
           }
-          return;
+          if (!BYPASS_JS_SANITIZATION) return;
         }
-        const safeValue = Math.min(Math.max(value, -0.5), 0.5);
-        updateSharedValue(film.blackLevel, safeValue);
-        config.blackLevel = safeValue;
-        updateSharedValue(film.blackLevelAuto, false);
-        config.blackLevelAuto = false;
+        if (BYPASS_JS_SANITIZATION) {
+          config.blackLevel = value;
+          const clampedValue = config.blackLevel;
+          updateSharedValue(film.blackLevel, clampedValue);
+          updateSharedValue(film.blackLevelAuto, false);
+          config.blackLevelAuto = false;
+        } else {
+          const safeValue = Math.min(Math.max(value, -0.5), 0.5);
+          updateSharedValue(film.blackLevel, safeValue);
+          config.blackLevel = safeValue;
+          updateSharedValue(film.blackLevelAuto, false);
+          config.blackLevelAuto = false;
+        }
         };
 
         const updateHighlights = (value: number) => {
@@ -558,13 +635,21 @@ export const useFilmWorklets = () => {
             hasWarnedNaN_highlights.value = true;
             console.warn(`[Camera Codegen Warning]: NaN value intercepted for parameter 'highlights'`);
           }
-          return;
+          if (!BYPASS_JS_SANITIZATION) return;
         }
-        const safeValue = Math.min(Math.max(value, 0.0), 2.0);
-        updateSharedValue(film.highlights, safeValue);
-        config.highlights = safeValue;
-        updateSharedValue(film.highlightsAuto, false);
-        config.highlightsAuto = false;
+        if (BYPASS_JS_SANITIZATION) {
+          config.highlights = value;
+          const clampedValue = config.highlights;
+          updateSharedValue(film.highlights, clampedValue);
+          updateSharedValue(film.highlightsAuto, false);
+          config.highlightsAuto = false;
+        } else {
+          const safeValue = Math.min(Math.max(value, 0.0), 2.0);
+          updateSharedValue(film.highlights, safeValue);
+          config.highlights = safeValue;
+          updateSharedValue(film.highlightsAuto, false);
+          config.highlightsAuto = false;
+        }
         };
 
         const updatePivot = (value: number) => {
@@ -574,13 +659,21 @@ export const useFilmWorklets = () => {
             hasWarnedNaN_pivot.value = true;
             console.warn(`[Camera Codegen Warning]: NaN value intercepted for parameter 'pivot'`);
           }
-          return;
+          if (!BYPASS_JS_SANITIZATION) return;
         }
-        const safeValue = Math.min(Math.max(value, 0.0), 1.0);
-        updateSharedValue(film.pivot, safeValue);
-        config.pivot = safeValue;
-        updateSharedValue(film.pivotAuto, false);
-        config.pivotAuto = false;
+        if (BYPASS_JS_SANITIZATION) {
+          config.pivot = value;
+          const clampedValue = config.pivot;
+          updateSharedValue(film.pivot, clampedValue);
+          updateSharedValue(film.pivotAuto, false);
+          config.pivotAuto = false;
+        } else {
+          const safeValue = Math.min(Math.max(value, 0.0), 1.0);
+          updateSharedValue(film.pivot, safeValue);
+          config.pivot = safeValue;
+          updateSharedValue(film.pivotAuto, false);
+          config.pivotAuto = false;
+        }
         };
 
         const updateContrastAuto = (value: boolean) => {
@@ -614,11 +707,17 @@ export const useFilmWorklets = () => {
             hasWarnedNaN_pixelationFactor.value = true;
             console.warn(`[Camera Codegen Warning]: NaN value intercepted for parameter 'pixelationFactor'`);
           }
-          return;
+          if (!BYPASS_JS_SANITIZATION) return;
         }
-        const safeValue = Math.min(Math.max(value, 1.0), 16.0);
-        updateSharedValue(film.pixelationFactor, safeValue);
-        config.pixelationFactor = safeValue;
+        if (BYPASS_JS_SANITIZATION) {
+          config.pixelationFactor = value;
+          const clampedValue = config.pixelationFactor;
+          updateSharedValue(film.pixelationFactor, clampedValue);
+        } else {
+          const safeValue = Math.min(Math.max(value, 1.0), 16.0);
+          updateSharedValue(film.pixelationFactor, safeValue);
+          config.pixelationFactor = safeValue;
+        }
         };
 
         const updateTapeJitter = (value: number) => {
@@ -628,11 +727,17 @@ export const useFilmWorklets = () => {
             hasWarnedNaN_tapeJitter.value = true;
             console.warn(`[Camera Codegen Warning]: NaN value intercepted for parameter 'tapeJitter'`);
           }
-          return;
+          if (!BYPASS_JS_SANITIZATION) return;
         }
-        const safeValue = Math.min(Math.max(value, 0.0), 1.0);
-        updateSharedValue(film.tapeJitter, safeValue);
-        config.tapeJitter = safeValue;
+        if (BYPASS_JS_SANITIZATION) {
+          config.tapeJitter = value;
+          const clampedValue = config.tapeJitter;
+          updateSharedValue(film.tapeJitter, clampedValue);
+        } else {
+          const safeValue = Math.min(Math.max(value, 0.0), 1.0);
+          updateSharedValue(film.tapeJitter, safeValue);
+          config.tapeJitter = safeValue;
+        }
         };
 
         const updateScanlines = (value: number) => {
@@ -642,11 +747,17 @@ export const useFilmWorklets = () => {
             hasWarnedNaN_scanlines.value = true;
             console.warn(`[Camera Codegen Warning]: NaN value intercepted for parameter 'scanlines'`);
           }
-          return;
+          if (!BYPASS_JS_SANITIZATION) return;
         }
-        const safeValue = Math.min(Math.max(value, 0.0), 1.0);
-        updateSharedValue(film.scanlines, safeValue);
-        config.scanlines = safeValue;
+        if (BYPASS_JS_SANITIZATION) {
+          config.scanlines = value;
+          const clampedValue = config.scanlines;
+          updateSharedValue(film.scanlines, clampedValue);
+        } else {
+          const safeValue = Math.min(Math.max(value, 0.0), 1.0);
+          updateSharedValue(film.scanlines, safeValue);
+          config.scanlines = safeValue;
+        }
         };
 
         const updateChromaShiftInvert = (value: boolean) => {
@@ -662,11 +773,17 @@ export const useFilmWorklets = () => {
             hasWarnedNaN_hue.value = true;
             console.warn(`[Camera Codegen Warning]: NaN value intercepted for parameter 'hue'`);
           }
-          return;
+          if (!BYPASS_JS_SANITIZATION) return;
         }
-        const safeValue = Math.min(Math.max(value, -180.0), 180.0);
-        updateSharedValue(film.hue, safeValue);
-        config.hue = safeValue;
+        if (BYPASS_JS_SANITIZATION) {
+          config.hue = value;
+          const clampedValue = config.hue;
+          updateSharedValue(film.hue, clampedValue);
+        } else {
+          const safeValue = Math.min(Math.max(value, -180.0), 180.0);
+          updateSharedValue(film.hue, safeValue);
+          config.hue = safeValue;
+        }
         };
 
         const updateHueRed = (value: number) => {
@@ -676,7 +793,7 @@ export const useFilmWorklets = () => {
             hasWarnedNaN_hueRed.value = true;
             console.warn(`[Camera Codegen Warning]: NaN value intercepted for parameter 'hueRed'`);
           }
-          return;
+          if (!BYPASS_JS_SANITIZATION) return;
         }
         updateSharedValue(film.hueRed, value);
         config.hueRed = value;
@@ -689,7 +806,7 @@ export const useFilmWorklets = () => {
             hasWarnedNaN_hueOrange.value = true;
             console.warn(`[Camera Codegen Warning]: NaN value intercepted for parameter 'hueOrange'`);
           }
-          return;
+          if (!BYPASS_JS_SANITIZATION) return;
         }
         updateSharedValue(film.hueOrange, value);
         config.hueOrange = value;
@@ -702,7 +819,7 @@ export const useFilmWorklets = () => {
             hasWarnedNaN_hueYellow.value = true;
             console.warn(`[Camera Codegen Warning]: NaN value intercepted for parameter 'hueYellow'`);
           }
-          return;
+          if (!BYPASS_JS_SANITIZATION) return;
         }
         updateSharedValue(film.hueYellow, value);
         config.hueYellow = value;
@@ -715,7 +832,7 @@ export const useFilmWorklets = () => {
             hasWarnedNaN_hueGreen.value = true;
             console.warn(`[Camera Codegen Warning]: NaN value intercepted for parameter 'hueGreen'`);
           }
-          return;
+          if (!BYPASS_JS_SANITIZATION) return;
         }
         updateSharedValue(film.hueGreen, value);
         config.hueGreen = value;
@@ -728,7 +845,7 @@ export const useFilmWorklets = () => {
             hasWarnedNaN_hueCyan.value = true;
             console.warn(`[Camera Codegen Warning]: NaN value intercepted for parameter 'hueCyan'`);
           }
-          return;
+          if (!BYPASS_JS_SANITIZATION) return;
         }
         updateSharedValue(film.hueCyan, value);
         config.hueCyan = value;
@@ -741,7 +858,7 @@ export const useFilmWorklets = () => {
             hasWarnedNaN_hueBlue.value = true;
             console.warn(`[Camera Codegen Warning]: NaN value intercepted for parameter 'hueBlue'`);
           }
-          return;
+          if (!BYPASS_JS_SANITIZATION) return;
         }
         updateSharedValue(film.hueBlue, value);
         config.hueBlue = value;
@@ -754,7 +871,7 @@ export const useFilmWorklets = () => {
             hasWarnedNaN_huePurple.value = true;
             console.warn(`[Camera Codegen Warning]: NaN value intercepted for parameter 'huePurple'`);
           }
-          return;
+          if (!BYPASS_JS_SANITIZATION) return;
         }
         updateSharedValue(film.huePurple, value);
         config.huePurple = value;
@@ -767,7 +884,7 @@ export const useFilmWorklets = () => {
             hasWarnedNaN_hueMagenta.value = true;
             console.warn(`[Camera Codegen Warning]: NaN value intercepted for parameter 'hueMagenta'`);
           }
-          return;
+          if (!BYPASS_JS_SANITIZATION) return;
         }
         updateSharedValue(film.hueMagenta, value);
         config.hueMagenta = value;
@@ -786,7 +903,7 @@ export const useFilmWorklets = () => {
             hasWarnedNaN_scanlinesMode.value = true;
             console.warn(`[Camera Codegen Warning]: NaN value intercepted for parameter 'scanlinesMode'`);
           }
-          return;
+          if (!BYPASS_JS_SANITIZATION) return;
         }
         updateSharedValue(film.scanlinesMode, value);
         config.scanlinesMode = value;
@@ -799,7 +916,7 @@ export const useFilmWorklets = () => {
             hasWarnedNaN_scanlinesDensity.value = true;
             console.warn(`[Camera Codegen Warning]: NaN value intercepted for parameter 'scanlinesDensity'`);
           }
-          return;
+          if (!BYPASS_JS_SANITIZATION) return;
         }
         updateSharedValue(film.scanlinesDensity, value);
         config.scanlinesDensity = value;

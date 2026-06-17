@@ -33,10 +33,18 @@
 #endif
 #define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
 
-bool FrameRenderer::renderOffscreenFrame(GrovkornetEngine& gEngine, void* pixelsIn, void* pixelsOut, const RenderParams& params) {
+bool FrameRenderer::renderOffscreenFrame(GrovkornetEngine& gEngine, void* pixelsIn, void* pixelsOut, const RenderState* state) {
     if (!pixelsIn || !pixelsOut) {
         return false;
     }
+
+    std::shared_ptr<const RenderState> sharedState;
+    const RenderState* activeState = state;
+    if (!activeState) {
+        sharedState = CameraStateManager::getInstance().getActiveState();
+        activeState = sharedState.get();
+    }
+    const RenderParams& params = activeState->renderParams;
 
     // Setup or update input texture
     if (!gEngine.inputTexture2D) {
@@ -69,7 +77,7 @@ bool FrameRenderer::renderOffscreenFrame(GrovkornetEngine& gEngine, void* pixels
     gEngine.shaderManager.getMaterialInstance2D()->setParameter("u_Texture", gEngine.inputTexture2D, sampler2d);
 
     // Apply unified parameters (waitForLut = true)
-    gEngine.applyShaderParameters(params, gEngine.shaderManager.getMaterialInstance2D(), true);
+    gEngine.applyShaderParameters(activeState, gEngine.shaderManager.getMaterialInstance2D(), true);
 
     auto start = std::chrono::high_resolution_clock::now();
 
@@ -121,10 +129,18 @@ bool FrameRenderer::renderOffscreenFrame(GrovkornetEngine& gEngine, void* pixels
     return true;
 }
 
-bool FrameRenderer::renderHardwareBufferFrame(GrovkornetEngine& gEngine, AHardwareBuffer* ahb, const RenderParams& params) {
+bool FrameRenderer::renderHardwareBufferFrame(GrovkornetEngine& gEngine, AHardwareBuffer* ahb, const RenderState* state) {
     if (!ahb) {
         return false;
     }
+
+    std::shared_ptr<const RenderState> sharedState;
+    const RenderState* activeState = state;
+    if (!activeState) {
+        sharedState = CameraStateManager::getInstance().getActiveState();
+        activeState = sharedState.get();
+    }
+    const RenderParams& params = activeState->renderParams;
 
     AHardwareBuffer_Desc desc;
     AHardwareBuffer_describe(ahb, &desc);
@@ -158,7 +174,7 @@ bool FrameRenderer::renderHardwareBufferFrame(GrovkornetEngine& gEngine, AHardwa
     gEngine.shaderManager.getMaterialInstanceExternal()->setParameter("u_UvMatrix", identityMatrix);
 
     // Apply unified parameters (waitForLut = true)
-    gEngine.applyShaderParameters(params, gEngine.shaderManager.getMaterialInstanceExternal(), true);
+    gEngine.applyShaderParameters(activeState, gEngine.shaderManager.getMaterialInstanceExternal(), true);
 
     auto start = std::chrono::high_resolution_clock::now();
 
@@ -184,7 +200,7 @@ bool FrameRenderer::renderHardwareBufferFrame(GrovkornetEngine& gEngine, AHardwa
     return true;
 }
 
-bool FrameRenderer::renderLiveFrame(GrovkornetEngine& gEngine, const RenderParams& params, const float* uvMatrixIn,
+bool FrameRenderer::renderLiveFrame(GrovkornetEngine& gEngine, const RenderState* state, const float* uvMatrixIn,
                                      int cameraWidth, int cameraHeight, int vpW, int vpH,
                                      bool skipScreenRender, bool isNewFrame,
                                      int& actualFps, int& stampedFps, bool& fpsUpdated) {
@@ -192,8 +208,16 @@ bool FrameRenderer::renderLiveFrame(GrovkornetEngine& gEngine, const RenderParam
         return false;
     }
 
-    int targetFps          = static_cast<int>(params.targetFps);
-    int aspectRatioSetting = static_cast<int>(params.aspectRatio);
+    std::shared_ptr<const RenderState> sharedState;
+    const RenderState* activeState = state;
+    if (!activeState) {
+        sharedState = CameraStateManager::getInstance().getActiveState();
+        activeState = sharedState.get();
+    }
+    const RenderParams& params = activeState->renderParams;
+
+    int targetFps          = activeState->targetFps;
+    int aspectRatioSetting = activeState->aspectRatio;
 
     // 1. Run Frame Timing checks natively
     bool shouldCapture = gEngine.timingController.shouldCaptureFrame(targetFps);
@@ -245,7 +269,7 @@ bool FrameRenderer::renderLiveFrame(GrovkornetEngine& gEngine, const RenderParam
     gEngine.shaderManager.getMaterialInstanceExternal()->setParameter("u_UvMatrix", u_UvMatrix);
     
     // Apply unified parameters (waitForLut = false)
-    gEngine.applyShaderParameters(params, gEngine.shaderManager.getMaterialInstanceExternal(), false);
+    gEngine.applyShaderParameters(activeState, gEngine.shaderManager.getMaterialInstanceExternal(), false);
     
     auto start = std::chrono::high_resolution_clock::now();
     

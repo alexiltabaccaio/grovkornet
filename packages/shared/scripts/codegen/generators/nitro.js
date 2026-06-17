@@ -20,6 +20,8 @@ function generateNitroConfig(parameters) {
   const overrides = nitroParams
     .map(p => {
       const name = p.name;
+      const cppName = p.cpp?.name || p.kotlin?.name || p.name;
+      const capitalized = cppName.charAt(0).toUpperCase() + cppName.slice(1);
       const kotlinName = p.kotlin?.name || p.name;
       const kotlinType = p.kotlin?.type || 'Float';
       
@@ -27,34 +29,46 @@ function generateNitroConfig(parameters) {
       let castExpr = 'value.toFloat()';
       let returnCastExpr = '?.toDouble()';
       let defaultValue = '1.0';
+      let jniGetCall = `CameraStateJNI.get${capitalized}(0L)`;
+      let jniSetCall = `CameraStateJNI.set${capitalized}(0L, ${castExpr})`;
 
       if (p.ts?.type === 'boolean') {
         tsToKotlinType = 'Boolean';
         castExpr = 'value';
         returnCastExpr = '';
         defaultValue = 'false';
+        jniGetCall = `CameraStateJNI.get${capitalized}(0L)`;
+        jniSetCall = `CameraStateJNI.set${capitalized}(0L, value)`;
       } else if (kotlinType === 'Int') {
         tsToKotlinType = 'Double';
         castExpr = 'value.toInt()';
         returnCastExpr = '?.toDouble()';
         defaultValue = '0.0';
+        jniGetCall = `CameraStateJNI.get${capitalized}(0L).toDouble()`;
+        jniSetCall = `CameraStateJNI.set${capitalized}(0L, value.toInt())`;
       } else if (kotlinType === 'Long') {
         tsToKotlinType = 'Double';
         castExpr = 'value.toLong()';
         returnCastExpr = '?.toDouble()';
         defaultValue = '0.0';
+        jniGetCall = `CameraStateJNI.get${capitalized}(0L).toDouble()`;
+        jniSetCall = `CameraStateJNI.set${capitalized}(0L, value.toLong())`;
       } else {
         tsToKotlinType = 'Double';
         castExpr = 'value.toFloat()';
         returnCastExpr = '?.toDouble()';
         defaultValue = p.kotlin?.default ? p.kotlin.default.replace('f', '') : '1.0';
+        jniGetCall = `CameraStateJNI.get${capitalized}(0L).toDouble()`;
+        jniSetCall = `CameraStateJNI.set${capitalized}(0L, value.toFloat())`;
       }
 
       return `override var ${name}: ${tsToKotlinType}
-    get() = NativeFilmCameraView.getFirstValidConfig()?.${kotlinName}${returnCastExpr} ?: ${defaultValue}
+    get() = try { ${jniGetCall} } catch (e: Throwable) { ${defaultValue} }
     set(value) {
-        NativeFilmCameraView.dispatchUpdate {
-            ${kotlinName} = ${castExpr}
+        try {
+            ${jniSetCall}
+        } catch (e: Throwable) {
+            Log.e("HybridNitroCameraConfiguration", "Failed to set ${name}", e)
         }
     }`;
     })

@@ -246,7 +246,7 @@ parameters:
     category: hardware
     kotlin:
       type: String?
-      default: "null"
+      default: null
       propHandler: if (view.config.cameraId != value) view.updateHardware { cameraId =
         value }
     ts:

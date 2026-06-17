@@ -31,13 +31,13 @@ class OffscreenFilmProcessorTest {
         inputBitmap.eraseColor(Color.RED)
         
         // Set camera parameters
-        val params = CameraConfiguration(
-            saturation = 1.0f,
-            contrast = 1.0f,
-            ev = 0.0f,
-            whiteBalance = 5000.0f,
+        val params = CameraConfiguration().apply {
+            saturation = 1.0f
+            contrast = 1.0f
+            ev = 0.0f
+            whiteBalance = 5000.0f
             tint = 0.0f
-        )
+        }
         
         // 3. Process the bitmap
         val outputBitmap = processor.process(inputBitmap, params, context)
@@ -73,37 +73,37 @@ class OffscreenFilmProcessorTest {
         inputBitmap.eraseColor(Color.rgb(128, 128, 128)) // Mid-gray
         
         // Render 1: Identity
-        val identityParams = CameraConfiguration(
-            saturation = 1.0f,
-            contrast = 1.0f,
-            ev = 0.0f,
-            whiteBalance = 5000.0f,
+        val identityParams = CameraConfiguration().apply {
+            saturation = 1.0f
+            contrast = 1.0f
+            ev = 0.0f
+            whiteBalance = 5000.0f
             tint = 0.0f
-        )
+        }
         val outIdentity = processor.process(inputBitmap, identityParams, context)
         val pixelIdentity = outIdentity.getPixel(width / 2, height / 2)
         val rId = Color.red(pixelIdentity)
         
         // Render 2: Darken (EV = -2.0)
-        val darkParams = CameraConfiguration(
-            saturation = 1.0f,
-            contrast = 1.0f,
-            ev = -2.0f,
-            whiteBalance = 5000.0f,
+        val darkParams = CameraConfiguration().apply {
+            saturation = 1.0f
+            contrast = 1.0f
+            ev = -2.0f
+            whiteBalance = 5000.0f
             tint = 0.0f
-        )
+        }
         val outDark = processor.process(inputBitmap, darkParams, context)
         val pixelDark = outDark.getPixel(width / 2, height / 2)
         val rDark = Color.red(pixelDark)
         
         // Render 3: Saturation = 0 (Grayscale conversion)
-        val grayParams = CameraConfiguration(
-            saturation = 0.0f,
-            contrast = 1.0f,
-            ev = 0.0f,
-            whiteBalance = 5000.0f,
+        val grayParams = CameraConfiguration().apply {
+            saturation = 0.0f
+            contrast = 1.0f
+            ev = 0.0f
+            whiteBalance = 5000.0f
             tint = 0.0f
-        )
+        }
         val inputColor = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
         inputColor.eraseColor(Color.RED)
         val outGray = processor.process(inputColor, grayParams, context)
@@ -134,15 +134,15 @@ class OffscreenFilmProcessorTest {
             }
         }
         
-        val params = CameraConfiguration(
-            saturation = 1.0f,
-            contrast = 1.0f,
-            ev = 0.0f,
-            whiteBalance = 5000.0f,
-            tint = 0.0f,
-            bloomEnabled = true,
+        val params = CameraConfiguration().apply {
+            saturation = 1.0f
+            contrast = 1.0f
+            ev = 0.0f
+            whiteBalance = 5000.0f
+            tint = 0.0f
+            bloomEnabled = true
             bloomIntensity = 1.0f
-        )
+        }
         
         val outputBitmap = processor.process(inputBitmap, params, context)
         
@@ -171,30 +171,30 @@ class OffscreenFilmProcessorTest {
         inputBitmap.eraseColor(Color.BLUE) // solid blue input
         
         // 1. Identity Render
-        val identityParams = CameraConfiguration(
-            saturation = 1.0f,
-            contrast = 1.0f,
-            ev = 0.0f,
-            whiteBalance = 5000.0f,
-            tint = 0.0f,
-            grainEnabled = false,
-            vignetteIntensity = 0.0f,
+        val identityParams = CameraConfiguration().apply {
+            saturation = 1.0f
+            contrast = 1.0f
+            ev = 0.0f
+            whiteBalance = 5000.0f
+            tint = 0.0f
+            grainEnabled = false
+            vignetteIntensity = 0.0f
             chromaShift = 0.0f
-        )
+        }
         val outIdentity = processor.process(inputBitmap, identityParams, context)
         val cornerIdentity = outIdentity.getPixel(2, 2)
         
         // 2. Render with vignette (center should be normal, but corners should be darker)
-        val vignetteParams = CameraConfiguration(
-            saturation = 1.0f,
-            contrast = 1.0f,
-            ev = 0.0f,
-            whiteBalance = 5000.0f,
-            tint = 0.0f,
-            grainEnabled = false,
-            vignetteIntensity = 1.0f,
+        val vignetteParams = CameraConfiguration().apply {
+            saturation = 1.0f
+            contrast = 1.0f
+            ev = 0.0f
+            whiteBalance = 5000.0f
+            tint = 0.0f
+            grainEnabled = false
+            vignetteIntensity = 1.0f
             chromaShift = 0.0f
-        )
+        }
         val outVignette = processor.process(inputBitmap, vignetteParams, context)
         val cornerVignette = outVignette.getPixel(2, 2)
         
@@ -202,19 +202,19 @@ class OffscreenFilmProcessorTest {
             Color.blue(cornerVignette) < Color.blue(cornerIdentity))
             
         // 3. Render with high grain intensity
-        val grainParams = CameraConfiguration(
-            saturation = 1.0f,
-            contrast = 1.0f,
-            ev = 0.0f,
-            whiteBalance = 5000.0f,
-            tint = 0.0f,
-            grainEnabled = true,
-            grainIntensity = 0.5f,
-            grainChroma = 0.5f,
-            grainSize = 1.0f,
-            vignetteIntensity = 0.0f,
+        val grainParams = CameraConfiguration().apply {
+            saturation = 1.0f
+            contrast = 1.0f
+            ev = 0.0f
+            whiteBalance = 5000.0f
+            tint = 0.0f
+            grainEnabled = true
+            grainIntensity = 0.5f
+            grainChroma = 0.5f
+            grainSize = 1.0f
+            vignetteIntensity = 0.0f
             chromaShift = 0.0f
-        )
+        }
         val outGrain = processor.process(inputBitmap, grainParams, context)
         
         // Grain is random noise, so nearby pixels in solid area should not be identical anymore
@@ -252,16 +252,16 @@ class OffscreenFilmProcessorTest {
         delay(100)
         
         // Render
-        val params = CameraConfiguration(
-            saturation = 1.0f,
-            contrast = 1.0f,
-            ev = 0.0f,
-            whiteBalance = 5000.0f,
+        val params = CameraConfiguration().apply {
+            saturation = 1.0f
+            contrast = 1.0f
+            ev = 0.0f
+            whiteBalance = 5000.0f
             tint = 0.0f,
-            grainEnabled = false,
-            vignetteIntensity = 0.0f,
+            grainEnabled = false
+            vignetteIntensity = 0.0f
             chromaShift = 0.0f
-        )
+        }
         
         val output = processor.process(inputBitmap, params, context)
         
@@ -328,13 +328,13 @@ class OffscreenFilmProcessorTest {
             usage
         )
         
-        val params = CameraConfiguration(
-            saturation = 1.0f,
-            contrast = 1.0f,
-            ev = 0.0f,
-            whiteBalance = 5000.0f,
+        val params = CameraConfiguration().apply {
+            saturation = 1.0f
+            contrast = 1.0f
+            ev = 0.0f
+            whiteBalance = 5000.0f
             tint = 0.0f
-        )
+        }
         
         // 3. Process
         processor.processHardwareBuffer(hardwareBuffer, params, context)

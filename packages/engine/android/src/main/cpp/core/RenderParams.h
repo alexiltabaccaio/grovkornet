@@ -13,8 +13,6 @@ struct RenderParams {
     float grainSpeed;
     float vignetteIntensity;
     float chromaShift;
-    float time;
-    float ev;
     float whiteBalance;
     float tint;
     float bloomIntensity;
@@ -29,10 +27,6 @@ struct RenderParams {
     float satBlue;
     float satPurple;
     float satMagenta;
-    float targetFps;
-    float aspectRatio;
-    float targetResolution;
-    float invertYShift;
     float aberrationInvert;
     float boundMagentaRed;
     float boundRedOrange;
@@ -44,6 +38,8 @@ struct RenderParams {
     float boundPurpleMagenta;
     float grainRoughness;
     float panelY;
+    float grainEnabled;
+    float bloomEnabled;
     float blackLevel;
     float highlights;
     float pivot;
@@ -65,8 +61,8 @@ struct RenderParams {
     float huePurple;
     float hueMagenta;
     float scanlinesHorizontal;
+    float scanlinesMode;
     float scanlinesDensity;
     // @@GEN_STRUCT_END@@
 };
 
-RenderParams parseRenderParams(const float* params);

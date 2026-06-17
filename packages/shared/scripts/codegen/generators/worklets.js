@@ -22,7 +22,6 @@ function generateWorklets(parameters) {
     const isNumeric = p.ts?.type === 'number' || (p.zustand && p.zustand.type === 'number') || (!p.ts?.type && (!p.zustand || p.zustand.type !== 'boolean'));
 
     let body = "    'worklet';\n";
-    let valVar = 'value';
 
     if (isNumeric) {
       body += `    if (isNaN(value)) {\n`;
@@ -30,40 +29,72 @@ function generateWorklets(parameters) {
       body += `        hasWarnedNaN_${name}.value = true;\n`;
       body += `        console.warn(\`[Camera Codegen Warning]: NaN value intercepted for parameter '${name}'\`);\n`;
       body += `      }\n`;
-      body += `      return;\n`;
+      body += `      if (!BYPASS_JS_SANITIZATION) return;\n`;
       body += `    }\n`;
+    }
 
-      let clampMin = null;
-      let clampMax = null;
-
+    let clampMin = null;
+    let clampMax = null;
+    if (isNumeric) {
       if (wConfig.clamp) {
         [clampMin, clampMax] = wConfig.clamp;
       } else if (p.ui && typeof p.ui.min === 'number' && typeof p.ui.max === 'number') {
         clampMin = p.ui.min;
         clampMax = p.ui.max;
       }
-
-      if (clampMin !== null && clampMax !== null) {
-        body += `    const safeValue = Math.min(Math.max(value, ${clampMin.toFixed(1)}), ${clampMax.toFixed(1)});\n`;
-        valVar = 'safeValue';
-      }
     }
 
-    body += `    updateSharedValue(film.${name}, ${valVar});\n`;
-    if (p.nitro) {
-      body += `    config.${p.name} = ${valVar};\n`;
-    }
-
-    if (wConfig.sideEffects) {
-      wConfig.sideEffects.forEach(se => {
-        const resolvedValue = se.value.replace('value', valVar);
-        body += `    updateSharedValue(film.${se.target}, ${resolvedValue});\n`;
-        
-        const targetParam = parameters.find(pr => pr.name === se.target || (pr.zustand && pr.zustand.name === se.target));
-        if (targetParam && targetParam.nitro) {
-          body += `    config.${targetParam.name} = ${resolvedValue};\n`;
+    if (clampMin !== null && clampMax !== null) {
+      body += `    if (BYPASS_JS_SANITIZATION) {\n`;
+      if (p.nitro) {
+        body += `      config.${p.name} = value;\n`;
+        body += `      const clampedValue = config.${p.name};\n`;
+        body += `      updateSharedValue(film.${name}, clampedValue);\n`;
+        if (wConfig.sideEffects) {
+          wConfig.sideEffects.forEach(se => {
+            const resolvedValue = se.value.replace('value', 'clampedValue');
+            body += `      updateSharedValue(film.${se.target}, ${resolvedValue});\n`;
+            const targetParam = parameters.find(pr => pr.name === se.target || (pr.zustand && pr.zustand.name === se.target));
+            if (targetParam && targetParam.nitro) {
+              body += `      config.${targetParam.name} = ${resolvedValue};\n`;
+            }
+          });
         }
-      });
+      } else {
+        body += `      updateSharedValue(film.${name}, value);\n`;
+      }
+      body += `    } else {\n`;
+      body += `      const safeValue = Math.min(Math.max(value, ${clampMin.toFixed(1)}), ${clampMax.toFixed(1)});\n`;
+      body += `      updateSharedValue(film.${name}, safeValue);\n`;
+      if (p.nitro) {
+        body += `      config.${p.name} = safeValue;\n`;
+      }
+      if (wConfig.sideEffects) {
+        wConfig.sideEffects.forEach(se => {
+          const resolvedValue = se.value.replace('value', 'safeValue');
+          body += `      updateSharedValue(film.${se.target}, ${resolvedValue});\n`;
+          const targetParam = parameters.find(pr => pr.name === se.target || (pr.zustand && pr.zustand.name === se.target));
+          if (targetParam && targetParam.nitro) {
+            body += `      config.${targetParam.name} = ${resolvedValue};\n`;
+          }
+        });
+      }
+      body += `    }\n`;
+    } else {
+      body += `    updateSharedValue(film.${name}, value);\n`;
+      if (p.nitro) {
+        body += `    config.${p.name} = value;\n`;
+      }
+      if (wConfig.sideEffects) {
+        wConfig.sideEffects.forEach(se => {
+          const resolvedValue = se.value.replace('value', 'value');
+          body += `    updateSharedValue(film.${se.target}, ${resolvedValue});\n`;
+          const targetParam = parameters.find(pr => pr.name === se.target || (pr.zustand && pr.zustand.name === se.target));
+          if (targetParam && targetParam.nitro) {
+            body += `    config.${targetParam.name} = ${resolvedValue};\n`;
+          }
+        });
+      }
     }
 
     return `    const update${capitalized} = (value: ${p.ts?.type || 'number'}) => {\n${body}    };`;

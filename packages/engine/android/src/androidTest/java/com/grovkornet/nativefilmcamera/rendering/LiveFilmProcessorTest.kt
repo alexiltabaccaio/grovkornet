@@ -50,13 +50,13 @@ class LiveFilmProcessorTest {
         stOutput.setDefaultBufferSize(width, height)
         val surface = Surface(stOutput)
         
-        val params = CameraConfiguration(
-            saturation = 1.0f,
-            contrast = 1.0f,
-            ev = 0.0f,
-            whiteBalance = 5000.0f,
+        val params = CameraConfiguration().apply {
+            saturation = 1.0f
+            contrast = 1.0f
+            ev = 0.0f
+            whiteBalance = 5000.0f
             tint = 0.0f
-        )
+        }
         
         val dummyMatrix = FloatArray(16) { 0f }
         dummyMatrix[0] = 1f
@@ -118,13 +118,13 @@ class LiveFilmProcessorTest {
             this[15] = 1f
         }
         
-        val params = CameraConfiguration(
-            saturation = 1.0f,
-            contrast = 1.0f,
-            ev = 0.0f,
-            whiteBalance = 5000.0f,
+        val params = CameraConfiguration().apply {
+            saturation = 1.0f
+            contrast = 1.0f
+            ev = 0.0f
+            whiteBalance = 5000.0f
             tint = 0.0f
-        )
+        }
         
         // Stress-test rapid creation/destruction and rendering across different surfaces
         for (i in 1..5) {

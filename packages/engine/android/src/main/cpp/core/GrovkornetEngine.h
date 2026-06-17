@@ -30,6 +30,7 @@
 #include "pipeline/PipelineRenderer.h"
 
 #include "core/RenderParams.h"
+#include "state/CameraStateManager.h"
 
 class GrovkornetEngine {
 public:
@@ -89,7 +90,7 @@ public:
                           float hueRed, float hueOrange, float hueYellow, float hueGreen,
                           float hueCyan, float hueBlue, float huePurple, float hueMagenta);
     void applyLutTextureUpdate();
-    void applyShaderParameters(const RenderParams& params, filament::MaterialInstance* inputMaterial, bool waitForLut);
+    void applyShaderParameters(const RenderState* state, filament::MaterialInstance* inputMaterial, bool waitForLut);
     
     void triggerOverlayUpdate(std::vector<jobject>&& bitmaps, JNIEnv* env);
     void applyOverlayTextureUpdate();
@@ -102,10 +103,10 @@ public:
     void recordFrameTimeAndEvaluate(float frameTimeMs);
     float getDrsScale() const { return drsManager.getScale(); }
     void simulateFrameTime(float frameTimeMs);
-
-    bool renderOffscreenFrame(void* pixelsIn, void* pixelsOut, const RenderParams& params);
-    bool renderHardwareBufferFrame(AHardwareBuffer* ahb, const RenderParams& params);
-    bool renderLiveFrame(const RenderParams& params, const float* uvMatrixIn,
+ 
+    bool renderOffscreenFrame(void* pixelsIn, void* pixelsOut, const RenderState* state);
+    bool renderHardwareBufferFrame(AHardwareBuffer* ahb, const RenderState* state);
+    bool renderLiveFrame(const RenderState* state, const float* uvMatrixIn,
                          int cameraWidth, int cameraHeight, int vpW, int vpH,
                          bool skipScreenRender, bool isNewFrame,
                          int& actualFps, int& stampedFps, bool& fpsUpdated);

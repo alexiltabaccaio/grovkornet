@@ -3,6 +3,24 @@ const { FILE_PATHS, replaceBetweenMarkers } = require('../utils/helpers');
 function generateNativeBridge(parameters, renderParams) {
   console.log('\n--- Generating Native Bridge (Step 2) ---');
 
+  // Helper to convert Kotlin types to Kotlin JNI types
+  function toKotlinJniType(kotlinType) {
+    if (kotlinType === 'Boolean') return 'Boolean';
+    if (kotlinType === 'Int') return 'Int';
+    if (kotlinType === 'Long') return 'Long';
+    if (kotlinType === 'String' || kotlinType === 'String?') return 'String?';
+    return 'Float';
+  }
+
+  // Helper to convert Kotlin types to C++ JNI types
+  function toJniType(kotlinType) {
+    if (kotlinType === 'Boolean') return 'jboolean';
+    if (kotlinType === 'Int') return 'jint';
+    if (kotlinType === 'Long') return 'jlong';
+    if (kotlinType === 'String' || kotlinType === 'String?') return 'jstring';
+    return 'jfloat';
+  }
+
   // 1. Generate index.ts TypeScript Interface Props
   const tsTypesContent = parameters
     .filter(p => p.ts && p.ts.type && !p.nitro)
@@ -76,50 +94,97 @@ function generateNativeBridge(parameters, renderParams) {
     .join('\n\n');
   replaceBetweenMarkers(FILE_PATHS.kotlinModule, '// @@GEN_PROPS_START@@', '// @@GEN_PROPS_END@@', kotlinPropsContent, '      ');
 
+  function toKotlinFallbackDefault(p) {
+    const ktType = p.kotlin?.type;
+    const def = p.kotlin?.default;
+    if (def !== undefined && def !== null) {
+      const defStr = def.toString().trim();
+      if (ktType === 'Boolean') {
+        return defStr === 'true' ? 'true' : 'false';
+      }
+      if (ktType === 'Int') {
+        return defStr;
+      }
+      if (ktType === 'Long') {
+        return defStr.endsWith('L') ? defStr : `${defStr}L`;
+      }
+      if (ktType === 'String' || ktType === 'String?') {
+        return defStr === 'null' ? 'null' : `"${defStr}"`;
+      }
+      // Float
+      return defStr.endsWith('f') ? defStr : `${defStr}f`;
+    }
+    
+    if (ktType === 'Boolean') return 'false';
+    if (ktType === 'Int') return '0';
+    if (ktType === 'Long') return '0L';
+    if (ktType === 'String' || ktType === 'String?') return 'null';
+    return '0.0f';
+  }
+
   // 3. Generate CameraConfiguration.kt Fields
-  const renderFields = parameters
-    .filter(p => p.kotlin && !p.kotlin.transient && p.category === 'render')
-    .map(p => `var ${p.kotlin.name || p.name}: ${p.kotlin.type} = ${p.kotlin.default},`)
+  const renderFieldObjects = parameters.filter(p => p.kotlin && !p.kotlin.transient && p.category === 'render');
+  const hardwareFieldObjects = parameters.filter(p => p.kotlin && !p.kotlin.transient && p.category === 'hardware');
+  const viewportFieldObjects = parameters.filter(p => p.kotlin && !p.kotlin.transient && p.category === 'viewport');
+
+  const renderFields = renderFieldObjects
+    .map(p => {
+      const cppName = p.cpp?.name || p.kotlin?.name || p.name;
+      const capitalized = cppName.charAt(0).toUpperCase() + cppName.slice(1);
+      const ktType = toKotlinJniType(p.kotlin?.type);
+      const fallbackVal = toKotlinFallbackDefault(p);
+      return `var ${p.kotlin.name || p.name}: ${ktType}
+        get() = if (CameraStateJNI.isJniLoaded) CameraStateJNI.get${capitalized}(nativePointer) else (CameraStateJNI.fallbackGet("${p.kotlin.name || p.name}", nativePointer, ${fallbackVal}) as ${ktType})
+        set(value) {
+            if (CameraStateJNI.isJniLoaded) {
+                CameraStateJNI.set${capitalized}(nativePointer, value)
+            } else {
+                CameraStateJNI.fallbackSet("${p.kotlin.name || p.name}", nativePointer, value)
+            }
+        }`;
+    })
     .join('\n');
-  const hardwareFields = parameters
-    .filter(p => p.kotlin && !p.kotlin.transient && p.category === 'hardware')
-    .map(p => `var ${p.kotlin.name || p.name}: ${p.kotlin.type} = ${p.kotlin.default},`)
+
+  const hardwareFields = hardwareFieldObjects
+    .map(p => {
+      const cppName = p.cpp?.name || p.kotlin?.name || p.name;
+      const capitalized = cppName.charAt(0).toUpperCase() + cppName.slice(1);
+      const ktType = toKotlinJniType(p.kotlin?.type);
+      const fallbackVal = toKotlinFallbackDefault(p);
+      return `var ${p.kotlin.name || p.name}: ${ktType}
+        get() = if (CameraStateJNI.isJniLoaded) CameraStateJNI.get${capitalized}(nativePointer) else (CameraStateJNI.fallbackGet("${p.kotlin.name || p.name}", nativePointer, ${fallbackVal}) as ${ktType})
+        set(value) {
+            if (CameraStateJNI.isJniLoaded) {
+                CameraStateJNI.set${capitalized}(nativePointer, value)
+            } else {
+                CameraStateJNI.fallbackSet("${p.kotlin.name || p.name}", nativePointer, value)
+            }
+        }`;
+    })
     .join('\n');
-  const viewportFields = parameters
-    .filter(p => p.kotlin && !p.kotlin.transient && p.category === 'viewport')
-    .map((p, idx, arr) => `var ${p.kotlin.name || p.name}: ${p.kotlin.type} = ${p.kotlin.default}${idx === arr.length - 1 ? '' : ','}`)
+
+  const viewportFields = viewportFieldObjects
+    .map(p => {
+      const cppName = p.cpp?.name || p.kotlin?.name || p.name;
+      const capitalized = cppName.charAt(0).toUpperCase() + cppName.slice(1);
+      const ktType = toKotlinJniType(p.kotlin?.type);
+      const fallbackVal = toKotlinFallbackDefault(p);
+      return `var ${p.kotlin.name || p.name}: ${ktType}
+        get() = if (CameraStateJNI.isJniLoaded) CameraStateJNI.get${capitalized}(nativePointer) else (CameraStateJNI.fallbackGet("${p.kotlin.name || p.name}", nativePointer, ${fallbackVal}) as ${ktType})
+        set(value) {
+            if (CameraStateJNI.isJniLoaded) {
+                CameraStateJNI.set${capitalized}(nativePointer, value)
+            } else {
+                CameraStateJNI.fallbackSet("${p.kotlin.name || p.name}", nativePointer, value)
+            }
+        }`;
+    })
     .join('\n');
+
   const kotlinFieldsContent = `// Rendering / Effect Props\n${renderFields}\n\n// Hardware Props\n${hardwareFields}\n\n// Viewport Props\n${viewportFields}`;
   replaceBetweenMarkers(FILE_PATHS.kotlinConfig, '// @@GEN_FIELDS_START@@', '// @@GEN_FIELDS_END@@', kotlinFieldsContent, '    ');
 
-  // 4. Generate CameraConfiguration.kt toRenderParamsArray mapping
-  const arraySize = renderParams.length > 0 ? renderParams[renderParams.length - 1].arrayIndex + 1 : 0;
-  const arrayMappingsContent = renderParams
-    .map(p => {
-      const idx = p.arrayIndex;
-      const kotlinName = p.kotlin.name || p.name;
-      
-      let expr = '';
-      if (p.kotlin.arrayMapping) {
-        expr = p.kotlin.arrayMapping;
-      } else {
-        if (p.kotlin.transient) {
-          expr = p.kotlin.argumentName;
-        } else if (p.kotlin.type === 'Boolean') {
-          expr = `if (${kotlinName}) 1.0f else 0.0f`;
-        } else if (p.kotlin.type === 'Int' || p.kotlin.type === 'Long') {
-          expr = `${kotlinName}.toFloat()`;
-        } else {
-          expr = kotlinName;
-        }
-      }
-      
-      const idxStr = idx.toString().padEnd(2, ' ');
-      return `this[${idxStr}] = ${expr}`;
-    })
-    .join('\n');
-  const toRenderParamsContent = `FloatArray(${arraySize}).apply {\n${arrayMappingsContent.split('\n').map(line => '    ' + line).join('\n')}\n}`;
-  replaceBetweenMarkers(FILE_PATHS.kotlinConfig, '// @@GEN_ARRAY_START@@', '// @@GEN_ARRAY_END@@', toRenderParamsContent, '');
+
 
   // 4b. Generate CameraConfiguration.kt loadFromMap mapping
   const mapLoaderContent = parameters
@@ -153,7 +218,8 @@ function generateNativeBridge(parameters, renderParams) {
   replaceBetweenMarkers(FILE_PATHS.kotlinConfig, '// @@GEN_MAP_LOADER_START@@', '// @@GEN_MAP_LOADER_END@@', mapLoaderContent, '    ');
 
   // 5. Generate RenderParams.h struct fields
-  const cppFieldsContent = renderParams
+  const allRenderParams = parameters.filter(p => p.category === 'render');
+  const cppFieldsContent = allRenderParams
     .map(p => {
       const cppName = p.cpp?.name || p.name;
       return `float ${cppName};`;
@@ -161,15 +227,144 @@ function generateNativeBridge(parameters, renderParams) {
     .join('\n');
   replaceBetweenMarkers(FILE_PATHS.cppHeader, '// @@GEN_STRUCT_START@@', '// @@GEN_STRUCT_END@@', cppFieldsContent, '    ');
 
-  // 6. Generate GrovkornetEngine.cpp parsing
-  const cppParsingContent = renderParams
+
+
+  // Helper to convert YAML defaults to C++ floats
+  function toCppFloatDefault(def) {
+    if (def === undefined || def === null) return '0.0f';
+    const valStr = def.toString().trim();
+    if (valStr === 'true') return '1.0f';
+    if (valStr === 'false') return '0.0f';
+    if (valStr.endsWith('f')) return valStr;
+    if (valStr.includes('.')) return `${valStr}f`;
+    return `${valStr}.0f`;
+  }
+
+  // 7. Generate CameraStateManager.cpp defaults
+  const cppDefaultsContent = allRenderParams
     .map(p => {
       const cppName = p.cpp?.name || p.name;
-      const idx = p.arrayIndex;
-      return `rp.${cppName} = params[${idx}];`;
+      const defValue = toCppFloatDefault(p.kotlin?.default);
+      return `initial->renderParams.${cppName} = ${defValue};`;
     })
     .join('\n');
-  replaceBetweenMarkers(FILE_PATHS.cppSource, '// @@GEN_PARSING_START@@', '// @@GEN_PARSING_END@@', cppParsingContent, '    ');
+  replaceBetweenMarkers(FILE_PATHS.cppStateManagerSource, '// @@GEN_DEFAULTS_START@@', '// @@GEN_DEFAULTS_END@@', cppDefaultsContent, '    ');
+
+  // 8. Generate CameraStateManager.cpp clamping
+  const cppClampingContent = parameters
+    .map(p => {
+      const isNumeric = p.ts?.type === 'number' || (p.zustand && p.zustand.type === 'number') || (!p.ts?.type && (!p.zustand || p.zustand.type !== 'boolean'));
+      if (!isNumeric) return null;
+
+      let clampMin = null;
+      let clampMax = null;
+      const wConfig = p.worklet || {};
+      if (wConfig.clamp) {
+        [clampMin, clampMax] = wConfig.clamp;
+      } else if (p.ui && typeof p.ui.min === 'number' && typeof p.ui.max === 'number') {
+        clampMin = p.ui.min;
+        clampMax = p.ui.max;
+      }
+
+      if (clampMin === null || clampMax === null) return null;
+
+      const cppFieldName = p.cpp?.name || p.name;
+      const isRender = p.category === 'render';
+      const fieldAccess = isRender ? `state.renderParams.${cppFieldName}` : `state.${cppFieldName}`;
+
+      const isInt = p.kotlin?.type === 'Int';
+      if (isInt) {
+        return `${fieldAccess} = std::isnan(static_cast<float>(${fieldAccess})) ? ${Math.round(p.kotlin?.default || 0)} : std::clamp(${fieldAccess}, ${Math.round(clampMin)}, ${Math.round(clampMax)});`;
+      } else {
+        return `${fieldAccess} = std::isnan(${fieldAccess}) ? ${toCppFloatDefault(p.kotlin?.default)} : std::clamp(${fieldAccess}, ${clampMin.toFixed(4)}f, ${clampMax.toFixed(4)}f);`;
+      }
+    })
+    .filter(Boolean)
+    .join('\n');
+  replaceBetweenMarkers(FILE_PATHS.cppStateManagerSource, '// @@GEN_CLAMPING_START@@', '// @@GEN_CLAMPING_END@@', cppClampingContent, '    ');
+
+  // 9. Generate JNI Bridge declarations in CameraStateJNI.kt
+  const kotlinJniFields = [...renderFieldObjects, ...hardwareFieldObjects, ...viewportFieldObjects];
+  const kotlinJniContent = kotlinJniFields
+    .map(p => {
+      const cppName = p.cpp?.name || p.kotlin?.name || p.name;
+      const capitalized = cppName.charAt(0).toUpperCase() + cppName.slice(1);
+      const ktType = toKotlinJniType(p.kotlin?.type);
+      return `    @JvmStatic external fun get${capitalized}(statePtr: Long): ${ktType}\n    @JvmStatic external fun set${capitalized}(statePtr: Long, value: ${ktType})`;
+    })
+    .join('\n');
+  replaceBetweenMarkers(FILE_PATHS.kotlinJniBridge, '// @@GEN_JNI_METHODS_START@@', '// @@GEN_JNI_METHODS_END@@', kotlinJniContent, '    ');
+
+  // 10. Generate JNI bindings in GrovkornetJni.cpp
+  const cppJniBindingsContent = kotlinJniFields
+    .map(p => {
+      const cppName = p.cpp?.name || p.kotlin?.name || p.name;
+      const cppFieldName = p.cpp?.name || p.name;
+      const capitalized = cppName.charAt(0).toUpperCase() + cppName.slice(1);
+      const jniType = toJniType(p.kotlin?.type);
+      const isString = p.kotlin?.type === 'String' || p.kotlin?.type === 'String?';
+
+      let cppGetBody = '';
+      let cppSetBody = '';
+
+      if (isString) {
+        cppGetBody = `    if (statePtr == 0) {
+        std::string val = CameraStateManager::getInstance().getActiveState()->cameraId;
+        return env->NewStringUTF(val.c_str());
+    } else {
+        auto* state = reinterpret_cast<RenderState*>(statePtr);
+        return env->NewStringUTF(state->cameraId.c_str());
+    }`;
+        cppSetBody = `    const char* nativeString = value ? env->GetStringUTFChars(value, nullptr) : nullptr;
+    std::string cppVal = nativeString ? nativeString : "";
+    if (nativeString) env->ReleaseStringUTFChars(value, nativeString);
+    if (statePtr == 0) {
+        CameraStateManager::getInstance().updateStateField([cppVal](RenderState& state) {
+            state.cameraId = cppVal;
+        });
+    } else {
+        auto* state = reinterpret_cast<RenderState*>(statePtr);
+        state->cameraId = cppVal;
+        CameraStateManager::getInstance().clampState(*state);
+    }`;
+      } else {
+        const isRender = p.category === 'render';
+        const fieldAccess = isRender ? `state.renderParams.${cppFieldName}` : `state.${cppFieldName}`;
+        const valueExpr = p.kotlin?.type === 'Boolean' ? `(value == JNI_TRUE)` : `value`;
+        const stateField = isRender ? `renderParams.${cppFieldName}` : cppFieldName;
+
+        cppGetBody = `    if (statePtr == 0) {
+        return CameraStateManager::getInstance().getActiveState()->${stateField};
+    } else {
+        auto* state = reinterpret_cast<RenderState*>(statePtr);
+        return state->${stateField};
+    }`;
+        cppSetBody = `    if (statePtr == 0) {
+        CameraStateManager::getInstance().updateStateField([value](RenderState& state) {
+            ${fieldAccess} = ${valueExpr};
+        });
+    } else {
+        auto* state = reinterpret_cast<RenderState*>(statePtr);
+        state->${stateField} = ${valueExpr};
+        CameraStateManager::getInstance().clampState(*state);
+    }`;
+      }
+
+      return `JNIEXPORT ${jniType} JNICALL
+Java_com_grovkornet_nativefilmcamera_jni_CameraStateJNI_get${capitalized}(
+        JNIEnv* env, jclass clazz, jlong statePtr) {
+${cppGetBody}
+}
+
+JNIEXPORT void JNICALL
+Java_com_grovkornet_nativefilmcamera_jni_CameraStateJNI_set${capitalized}(
+        JNIEnv* env, jclass clazz, jlong statePtr, ${jniType} value) {
+${cppSetBody}
+}`;
+    })
+    .join('\n\n');
+
+  replaceBetweenMarkers(FILE_PATHS.cppJniSource, '// @@GEN_JNI_BINDINGS_START@@', '// @@GEN_JNI_BINDINGS_END@@', cppJniBindingsContent, '');
 }
 
 module.exports = {

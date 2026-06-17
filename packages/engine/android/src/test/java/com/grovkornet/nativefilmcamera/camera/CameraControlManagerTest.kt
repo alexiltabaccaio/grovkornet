@@ -67,9 +67,9 @@ class CameraControlManagerTest {
 
     @Test
     fun testUpdateControls_appliesZoom() {
-        val config = CameraConfiguration(
+        val config = CameraConfiguration().apply {
             zoom = 2.0f
-        )
+        }
         val listener = mockk<CameraControlManager.Listener>(relaxed = true)
         val manager = CameraControlManager(context, config, listener)
 
@@ -82,9 +82,9 @@ class CameraControlManagerTest {
 
     @Test
     fun testUpdateControls_selectsBestFpsRange() {
-        val config = CameraConfiguration(
+        val config = CameraConfiguration().apply {
             targetFps = 60
-        )
+        }
         val listener = mockk<CameraControlManager.Listener>(relaxed = true)
         val manager = CameraControlManager(context, config, listener)
 
@@ -106,12 +106,12 @@ class CameraControlManagerTest {
 
     @Test
     fun testUpdateControls_configuresManualExposure() {
-        val config = CameraConfiguration(
-            isoAuto = false,
-            iso = 200,
-            shutterSpeedAuto = false,
+        val config = CameraConfiguration().apply {
+            isoAuto = false
+            iso = 200
+            shutterSpeedAuto = false
             exposureTime = 16666666L // 1/60th of a second in nanoseconds
-        )
+        }
         val listener = mockk<CameraControlManager.Listener>(relaxed = true)
         val manager = CameraControlManager(context, config, listener)
 

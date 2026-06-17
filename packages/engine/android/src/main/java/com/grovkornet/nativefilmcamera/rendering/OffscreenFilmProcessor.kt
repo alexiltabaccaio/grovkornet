@@ -6,8 +6,6 @@ import com.grovkornet.nativefilmcamera.BuildConfig
 import com.grovkornet.nativefilmcamera.errors.CameraCodedException
 import com.grovkornet.nativefilmcamera.errors.CameraErrorFactory
 import com.grovkornet.nativefilmcamera.state.CameraConfiguration
-import com.grovkornet.nativefilmcamera.state.getTargetResolutionValue
-import com.grovkornet.nativefilmcamera.state.toRenderParamsArray
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -45,12 +43,14 @@ class OffscreenFilmProcessor {
         nativeEnginePtr: Long,
         input: Bitmap,
         output: Bitmap,
-        params: FloatArray
+        statePtr: Long,
+        invertY: Boolean
     )
     private external fun nativeProcessHardwareBuffer(
         nativeEnginePtr: Long,
         hardwareBuffer: android.hardware.HardwareBuffer,
-        params: FloatArray
+        statePtr: Long,
+        invertY: Boolean
     )
     private external fun nativeUpdateOverlay(
         nativeEnginePtr: Long,
@@ -126,14 +126,14 @@ class OffscreenFilmProcessor {
 
             try {
                 val outputBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
-                val time = ((System.currentTimeMillis() / 1000.0) % (Math.PI * 2.0)).toFloat()
                 
-                // Process pixels in C++
+                // Process pixels in C++ (with C++ flip enabled)
                 nativeProcessBitmap(
                     nativeEnginePtr,
                     input,
                     outputBitmap,
-                    params.toRenderParamsArray(time, params.getTargetResolutionValue(), invertYShift = true)
+                    params.nativePointer,
+                    true
                 )
 
                 if (BuildConfig.DEBUG) {
@@ -174,14 +174,12 @@ class OffscreenFilmProcessor {
             }
 
             val startTime = System.currentTimeMillis()
-            val time = ((System.currentTimeMillis() / 1000.0) % (Math.PI * 2.0)).toFloat()
             try {
-                val floatParams = params.toRenderParamsArray(time, params.getTargetResolutionValue())
-
                 nativeProcessHardwareBuffer(
                     nativeEnginePtr,
                     hardwareBuffer,
-                    floatParams
+                    params.nativePointer,
+                    false
                 )
                 if (BuildConfig.DEBUG) {
                     Log.i(TAG, "HardwareBuffer processed natively (zero-copy) in ${System.currentTimeMillis() - startTime}ms")

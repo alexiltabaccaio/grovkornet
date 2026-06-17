@@ -89,7 +89,7 @@ open class FilmRenderThread(
     }
 
     open fun updateConfig(config: CameraConfiguration) {
-        renderConfig = config.copy()
+        renderConfig = config
     }
 
     open fun updateDimensions(w: Int, h: Int) {

@@ -9,7 +9,6 @@ import com.grovkornet.nativefilmcamera.errors.CameraCodedException
 import com.grovkornet.nativefilmcamera.errors.CameraErrorFactory
 import com.grovkornet.nativefilmcamera.state.CameraConfiguration
 import com.grovkornet.nativefilmcamera.state.getTargetResolutionValue
-import com.grovkornet.nativefilmcamera.state.toRenderParamsArray
 import android.content.res.AssetManager
 
 class LiveFilmProcessor {
@@ -23,8 +22,6 @@ class LiveFilmProcessor {
     private var currentHeight = 0
     private val outFpsStats = IntArray(3)
 
-    private var lastConfigHash: Int = 0
-    private var cachedFloatParams: FloatArray? = null
 
     companion object {
         init {
@@ -48,7 +45,7 @@ class LiveFilmProcessor {
     private external fun nativeUpdateSwapChain(nativeEnginePtr: Long, surface: Surface?)
     private external fun nativeRenderLiveFrame(
         enginePtr: Long,
-        params: FloatArray,
+        statePtr: Long,
         uvMatrixIn: FloatArray,
         cameraWidth: Int,
         cameraHeight: Int,
@@ -120,22 +117,9 @@ class LiveFilmProcessor {
                 lastSurface = surface
             }
 
-            val time = ((System.currentTimeMillis() / 1000.0) % (Math.PI * 2.0)).toFloat()
-            
-            val currentHash = params.hashCode()
-            var floatParams = cachedFloatParams
-            if (floatParams == null || currentHash != lastConfigHash) {
-                floatParams = params.toRenderParamsArray(time, params.getTargetResolutionValue())
-                cachedFloatParams = floatParams
-                lastConfigHash = currentHash
-            } else {
-                // Config hasn't changed, reuse the array and just update the time uniform (index 8)
-                floatParams[8] = time
-            }
-
             val rendered = nativeRenderLiveFrame(
                 nativeEnginePtr,
-                floatParams,
+                params.nativePointer,
                 uvMatrixIn,
                 cameraWidth,
                 cameraHeight,

@@ -33,10 +33,14 @@ export function parseFile(filePath) {
     fileParser.setLanguage(TypeScript.tsx);
   }
 
-  if (filePath.endsWith('useFilmWorklets.ts')) {
-    // tree-sitter throws 'Invalid argument' randomly on this file, likely a V8 memory binding issue with string size
-    return fileParser.parse('');
+  try {
+    return fileParser.parse(sourceCode);
+  } catch (err) {
+    // Fallback to blank tree to avoid breaking the build or logging stack traces on tree-sitter crashes
+    try {
+      return fileParser.parse('');
+    } catch (_) {
+      return null;
+    }
   }
-
-  return fileParser.parse(sourceCode);
 }

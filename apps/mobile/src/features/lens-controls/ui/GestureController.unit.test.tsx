@@ -435,6 +435,16 @@ describe('GestureController', () => {
     // translateY should be clamped to -264
     expect(mockTranslateY.value).toBe(-264);
 
+    // End and finalize the pan gesture so isPanning becomes false and reactions are allowed to update translateY
+    act(() => {
+      if (capturedPanGesture._onEnd) {
+        capturedPanGesture._onEnd({ translationY: -300, velocityY: 0 });
+      }
+      if (capturedPanGesture._onFinalize) {
+        capturedPanGesture._onFinalize();
+      }
+    });
+
     // Now simulate footerTranslateY moving lower (e.g. from -120 to -80)
     act(() => {
       mockFooterTranslateY.value = -80;

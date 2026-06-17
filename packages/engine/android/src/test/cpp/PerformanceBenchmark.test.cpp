@@ -180,8 +180,10 @@ protected:
         // Warmup runs to stabilize GPU caches / pipeline state object (PSO) compilation
         for (int i = 0; i < 5; ++i) {
             // Set dynamic parameters
-            instComposite->setParameter("u_BloomIntensity", bloomIntensity);
-            instComposite->setParameter("u_PanelY", panelY);
+            filament::math::float4 rd3(800.0f, 0.0f, bloomIntensity, 0.0f);
+            filament::math::float4 rd6(1.0f, panelY, 0.0f, 0.0f);
+            instComposite->setParameter("u_RenderData3", rd3);
+            instComposite->setParameter("u_RenderData6", rd6);
             engine->flush();
         }
 
@@ -195,8 +197,10 @@ protected:
             // 1. Grading pass
             // 2. Downsample/Blur passes if bloom is enabled or split panel is active
             // 3. Composite pass
-            instComposite->setParameter("u_BloomIntensity", bloomIntensity);
-            instComposite->setParameter("u_PanelY", panelY);
+            filament::math::float4 rd3(800.0f, 0.0f, bloomIntensity, 0.0f);
+            filament::math::float4 rd6(1.0f, panelY, 0.0f, 0.0f);
+            instComposite->setParameter("u_RenderData3", rd3);
+            instComposite->setParameter("u_RenderData6", rd6);
 
             // Trigger synchronous commands to force actual GPU profiling
             engine->flushAndWait();
