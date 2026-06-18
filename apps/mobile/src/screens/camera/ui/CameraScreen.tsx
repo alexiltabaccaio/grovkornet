@@ -118,6 +118,14 @@ export const CameraScreen = () => {
 
   const headerElement = useMemo(() => <Header />, []);
 
+  const interactionContextValue = useMemo(() => ({ isInteractable: !isOpen }), [isOpen]);
+  
+  const viewfinderElement = useMemo(() => (
+    <View style={viewfinderContainerStyle}>
+      {!isCameraPaused && <Viewfinder cameraKey={cameraKey} />}
+    </View>
+  ), [viewfinderContainerStyle, isCameraPaused, cameraKey]);
+
   if (!hasPermission) {
     return (
       <View style={styles.center} />
@@ -126,11 +134,9 @@ export const CameraScreen = () => {
 
   return (
     <View style={styles.container}>
-      <InteractionContext.Provider value={{ isInteractable: !isOpen }}>
+      <InteractionContext.Provider value={interactionContextValue}>
         <GestureController footerTranslateY={footerTranslateY} drawerAnimation={drawerAnimation}>
-          <View style={viewfinderContainerStyle}>
-            {!isCameraPaused && <Viewfinder cameraKey={cameraKey} />}
-          </View>
+          {viewfinderElement}
         </GestureController>
         <Header />
 

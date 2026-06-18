@@ -14,7 +14,7 @@ interface GestureControllerProps {
   drawerAnimation?: SharedValue<number>;
 }
 
-export const GestureController = ({ children, footerTranslateY, drawerAnimation }: GestureControllerProps) => {
+export const GestureController = React.memo(({ children, footerTranslateY, drawerAnimation }: GestureControllerProps) => {
   const { activeSection, setActiveSection } = useControlPanelStore(useShallow((s) => ({
     activeSection: s.activeSection,
     setActiveSection: s.setActiveSection,
@@ -39,6 +39,12 @@ export const GestureController = ({ children, footerTranslateY, drawerAnimation 
   const isClosing = useSharedValue(false);
   const isPanning = useSharedValue(false);
 
+  const activeSectionSV = useSharedValue(activeSection);
+
+  React.useEffect(() => {
+    activeSectionSV.value = activeSection;
+  }, [activeSection]);
+
   const lastTapTime = React.useRef<number>(0);
   const tapTimeout = React.useRef<NodeJS.Timeout | null>(null);
 
@@ -53,13 +59,16 @@ export const GestureController = ({ children, footerTranslateY, drawerAnimation 
   React.useEffect(() => {
     if (activeSection === 'none') {
       isClosing.value = true;
-      translateY.value = withTiming(0, { duration: 300 }, () => {
+      translateY.value = withTiming(0, { duration: 300 }, (finished) => {
         isClosing.value = false;
+        if (activeSectionSV.value === 'none') {
+          translateY.value = 0;
+        }
       });
     } else {
       isClosing.value = false;
     }
-  }, [activeSection, translateY, isClosing]);
+  }, [activeSection, translateY, isClosing, activeSectionSV]);
 
   const { aspectRatio } = useBodyStore.getState();
 
@@ -122,6 +131,29 @@ export const GestureController = ({ children, footerTranslateY, drawerAnimation 
     }
   );
 
+  useAnimatedReaction(
+    () => {
+      return {
+        active: activeSectionSV.value,
+        closing: isClosing.value,
+      };
+    },
+    (state) => {
+      if (state.active === 'none' && !state.closing && translateY.value !== 0) {
+        translateY.value = 0;
+      }
+    }
+  );
+
+  useAnimatedReaction(
+    () => Math.round(translateY.value),
+    (current, prev) => {
+      if (prev !== null && Math.abs(current - prev) > 10) {
+        console.log(`[GestureController] translateY jumped from ${prev} to ${current}. ActiveSection: ${activeSectionSV.value}, isClosing: ${isClosing.value}`);
+      }
+    }
+  );
+
   const composedGesture = useMemo(() => {
     const { zoom } = useBodyStore.getState();
 
@@ -140,7 +172,7 @@ export const GestureController = ({ children, footerTranslateY, drawerAnimation 
         const isAtOneX = Math.abs(zoomVal - 1.0) < 0.01;
 
         if (isAtOneX) {
-          if (activeSection !== 'none') {
+          if (activeSectionSV.value !== 'none') {
             setActiveSection('none');
           }
           return;
@@ -160,7 +192,7 @@ export const GestureController = ({ children, footerTranslateY, drawerAnimation 
             clearTimeout(tapTimeout.current);
           }
           tapTimeout.current = setTimeout(() => {
-            if (activeSection !== 'none') {
+            if (activeSectionSV.value !== 'none') {
               setActiveSection('none');
             }
             tapTimeout.current = null;
@@ -177,16 +209,16 @@ export const GestureController = ({ children, footerTranslateY, drawerAnimation 
         hasMoved.value = false;
       })
       .onChange((event) => {
-        const ty = event.translationY ?? 0;
-        if (isNaN(ty) || isNaN(startY.value)) {
+        const cy = event.changeY ?? 0;
+        if (isNaN(cy)) {
           if (__DEV__ && !hasWarnedPanNaN.value) {
             hasWarnedPanNaN.value = true;
-            console.warn(`[Gesture Warning]: translationY or startY is NaN in GestureController`);
+            console.warn(`[Gesture Warning]: changeY is NaN in GestureController`);
           }
           return;
         }
-        if (activeSection !== 'none') {
-          let newY = startY.value + event.translationY;
+        if (activeSectionSV.value !== 'none') {
+          let newY = translateY.value + cy;
           if (newY > 0) newY = 0;
           
           if (footerTranslateY) {
@@ -208,7 +240,7 @@ export const GestureController = ({ children, footerTranslateY, drawerAnimation 
       });
 
     return Gesture.Simultaneous(tap, pan);
-  }, [activeSection, setActiveSection, translateY, startY, hasMoved, footerTranslateY, drawerAnimation, viewportWidth, viewportHeight, isInteractable]);
+  }, [setActiveSection, translateY, startY, hasMoved, footerTranslateY, drawerAnimation, viewportWidth, viewportHeight, isInteractable]);
 
   const animatedStyle = useAnimatedStyle(() => {
     return {
@@ -223,7 +255,9 @@ export const GestureController = ({ children, footerTranslateY, drawerAnimation 
       </Animated.View>
     </GestureDetector>
   );
-};
+});
+
+GestureController.displayName = 'GestureController';
 
 const styles = StyleSheet.create({
   container: {
