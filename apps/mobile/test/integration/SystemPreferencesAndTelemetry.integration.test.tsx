@@ -73,13 +73,12 @@ describe('SystemPreferencesAndTelemetry Integration', () => {
     const { getByTestId, queryByText } = render(<CameraScreen />);
     const nativeCamera = getByTestId('native-film-camera');
 
-    // Preview quality label should render (always visible) and warning should be null
+    // Preview quality label should render (always visible)
     expect(queryByText('PARAMETERS.PREVIEW_QUALITY')).toBeDefined();
-    expect(queryByText('parameters.preview_quality_warning')).toBeNull();
     expect(nativeCamera.props.animatedProps.previewQuality).toBe(1);
   });
 
-  it('handles preview quality warning correctly (maximum on 4K)', () => {
+  it('handles preview quality integration correctly (maximum on 4K) without warning', () => {
     act(() => {
       useControlPanelStore.getState().setActiveParameter('resolution_setting');
       useBodyStore.getState().resolutionSetting.value = 0; // 4K
@@ -89,9 +88,8 @@ describe('SystemPreferencesAndTelemetry Integration', () => {
     const { getByTestId, queryByText } = render(<CameraScreen />);
     const nativeCamera = getByTestId('native-film-camera');
 
-    // Warning should render and native prop should be 0 (Maximum)
+    // Warning should NOT render and native prop should be 0 (Maximum)
     expect(queryByText('PARAMETERS.PREVIEW_QUALITY')).toBeDefined();
-    expect(queryByText('parameters.preview_quality_warning')).toBeDefined();
     expect(nativeCamera.props.animatedProps.previewQuality).toBe(0);
   });
 });

@@ -6,7 +6,6 @@ import { useBodyStore } from '@entities/body';
 import { useSystemStore } from '@entities/system';
 import { useAnimatedReaction, runOnJS } from 'react-native-reanimated';
 import { useTranslation } from 'react-i18next';
-import { Ionicons } from '@expo/vector-icons';
 import { logger } from '@shared/lib/logger';
 import { SubPanelContainer } from '@shared/ui';
 import { usePreferencesStore } from '@entities/preferences';
@@ -87,15 +86,6 @@ export const ResolutionSubPanel = ({ animatedStyle }: ResolutionSubPanelProps) =
           ))}
         </View>
       </View>
-        
-      {localPreviewQuality === 0 && localResolutionSetting === 0 && (
-        <View style={styles.warningContainer}>
-          <Ionicons name="warning-outline" size={14} color="#FF453A" style={{ marginRight: 4 }} />
-          <Text style={styles.warningText} allowFontScaling={false}>
-            {t('parameters.preview_quality_warning')}
-          </Text>
-        </View>
-      )}
     </SubPanelContainer>
   );
 };
@@ -152,24 +142,5 @@ const styles = StyleSheet.create({
     padding: 0,
     margin: 0,
     letterSpacing: 0.5,
-  },
-  warningContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: 'rgba(255, 69, 58, 0.1)',
-    borderRadius: 6,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 69, 58, 0.2)',
-    width: '100%',
-  },
-  warningText: {
-    color: '#FF453A',
-    fontSize: 10,
-    fontWeight: '800',
-    letterSpacing: 0.5,
-    flexShrink: 1,
   },
 });
