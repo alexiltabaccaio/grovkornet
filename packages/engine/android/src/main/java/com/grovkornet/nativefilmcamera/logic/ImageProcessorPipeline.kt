@@ -37,16 +37,47 @@ object ImageProcessorPipeline {
         
         val scale = targetRes.toFloat() / minOf(bitmap.width, bitmap.height).toFloat()
         if (scale < 1f) {
-            // scale down without filtering to maintain retro look if small
-            val scaled = Bitmap.createScaledBitmap(
-                bitmap, 
-                (bitmap.width * scale).toInt(), 
-                (bitmap.height * scale).toInt(), 
-                targetRes > 480
-            )
-            if (scaled != bitmap) {
-                bitmap.recycle()
-                return scaled
+            val useFilter = targetRes > 480
+            val targetWidth = (bitmap.width * scale).toInt()
+            val targetHeight = (bitmap.height * scale).toInt()
+
+            if (useFilter) {
+                var currentBitmap = bitmap
+                var currentWidth = bitmap.width
+                var currentHeight = bitmap.height
+
+                // Progressive downscaling by halves for high-quality anti-aliasing
+                while (currentWidth / 2 >= targetWidth && currentHeight / 2 >= targetHeight) {
+                    currentWidth /= 2
+                    currentHeight /= 2
+                    val halfScaled = Bitmap.createScaledBitmap(currentBitmap, currentWidth, currentHeight, true)
+                    if (currentBitmap != bitmap && currentBitmap != halfScaled) {
+                        currentBitmap.recycle()
+                    }
+                    currentBitmap = halfScaled
+                }
+
+                val finalScaled = Bitmap.createScaledBitmap(currentBitmap, targetWidth, targetHeight, true)
+                if (currentBitmap != bitmap && currentBitmap != finalScaled) {
+                    currentBitmap.recycle()
+                }
+
+                if (finalScaled != bitmap) {
+                    bitmap.recycle()
+                }
+                return finalScaled
+            } else {
+                // scale down without filtering to maintain retro look if small
+                val scaled = Bitmap.createScaledBitmap(
+                    bitmap, 
+                    targetWidth, 
+                    targetHeight, 
+                    false
+                )
+                if (scaled != bitmap) {
+                    bitmap.recycle()
+                    return scaled
+                }
             }
         }
         return bitmap

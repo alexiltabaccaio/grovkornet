@@ -95,4 +95,16 @@ void CameraStateManager::clampState(RenderState& state) const {
     state.renderParams.scanlines = std::isnan(state.renderParams.scanlines) ? 0.0f : std::clamp(state.renderParams.scanlines, 0.0000f, 1.0000f);
     state.renderParams.hue = std::isnan(state.renderParams.hue) ? 0.0f : std::clamp(state.renderParams.hue, -180.0000f, 180.0000f);
     // @@GEN_CLAMPING_END@@
+
+    switch (state.resolutionSetting) {
+        case 0: state.targetResolution = 2160.0f; break;
+        case 1: state.targetResolution = 1440.0f; break;
+        case 2: state.targetResolution = 1080.0f; break;
+        case 3: state.targetResolution = 720.0f; break;
+        case 4: state.targetResolution = 480.0f; break;
+        case 5: state.targetResolution = 360.0f; break;
+        case 6: state.targetResolution = 240.0f; break;
+        case 7: state.targetResolution = 144.0f; break;
+        default: state.targetResolution = 1080.0f; break;
+    }
 }
