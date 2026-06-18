@@ -98,6 +98,16 @@ class CameraEngine(
         }
     }
 
+    fun pauseStream() {
+        sessionManager.pause()
+    }
+
+    fun resumeStream() {
+        androidx.core.content.ContextCompat.getMainExecutor(context).execute {
+            sessionManager.resume()
+        }
+    }
+
     fun takePicture() {
         activeImageCapture?.let { capturePipeline.takePicture(it) }
     }

@@ -54,6 +54,14 @@ class NativeFilmCameraModule : Module() {
       com.grovkornet.nativefilmcamera.services.FileSystemService.deleteFile(uriString)
     }
 
+    AsyncFunction("pauseStream") {
+      NativeFilmCameraView.pauseAllStreams()
+    }
+
+    AsyncFunction("resumeStream") {
+      NativeFilmCameraView.resumeAllStreams()
+    }
+
     View(NativeFilmCameraView::class) {
       Events(
         "onDebugUpdate",

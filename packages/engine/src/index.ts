@@ -62,6 +62,16 @@ export async function deleteFile(uri: string): Promise<boolean> {
   return await NativeFilmCameraModule.deleteFile(uri);
 }
 
+export async function pauseStream(): Promise<void> {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access
+  return await NativeFilmCameraModule.pauseStream();
+}
+
+export async function resumeStream(): Promise<void> {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access
+  return await NativeFilmCameraModule.resumeStream();
+}
+
 export const NativeCameraEventEmitter = new EventEmitter<any>(NativeFilmCameraModule);
 
 export * from './errors';

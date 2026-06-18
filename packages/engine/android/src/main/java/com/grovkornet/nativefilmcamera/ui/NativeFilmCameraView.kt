@@ -54,6 +54,22 @@ class NativeFilmCameraView(context: Context) : SurfaceView(context), SurfaceHold
         fun getFirstValidConfig(): CameraConfiguration? {
             return activeInstances.firstOrNull { !it.isReleased }?.config
         }
+
+        fun pauseAllStreams() {
+            activeInstances.forEach {
+                if (!it.isReleased) {
+                    it.pauseStream()
+                }
+            }
+        }
+
+        fun resumeAllStreams() {
+            activeInstances.forEach {
+                if (!it.isReleased) {
+                    it.resumeStream()
+                }
+            }
+        }
     }
 
     fun updateEffect(action: CameraConfiguration.() -> Unit) {
@@ -202,6 +218,14 @@ class NativeFilmCameraView(context: Context) : SurfaceView(context), SurfaceHold
         )
 
         cameraEngine?.takePicture()
+    }
+
+    fun pauseStream() {
+        renderThread?.setPaused(true)
+    }
+
+    fun resumeStream() {
+        renderThread?.setPaused(false)
     }
 
     override fun surfaceCreated(holder: SurfaceHolder) {

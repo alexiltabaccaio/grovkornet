@@ -50,17 +50,17 @@ export const CameraScreen = () => {
   const { shouldRenderGallery, galleryTransition, openGallery, closeGallery } = useGalleryOverlay();
   const { cameraKey, drawerAnimation, footerTranslateY } = useCameraAppState();
 
-  const [isCameraPaused, setIsCameraPaused] = useState(false);
+  const [isCameraDeepSleep, setIsCameraDeepSleep] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
-      // Turn off the video signal (unmount Viewfinder) after 10 seconds of inactivity
+      // Completely shuts down the sensor (unmounts the Viewfinder) after 60 seconds of inactivity in the gallery to preserve battery
       const timer = setTimeout(() => {
-        setIsCameraPaused(true);
-      }, 10000);
+        setIsCameraDeepSleep(true);
+      }, 60000);
       return () => clearTimeout(timer);
     } else {
-      setIsCameraPaused(false);
+      setIsCameraDeepSleep(false);
     }
   }, [isOpen]);
 
@@ -122,9 +122,9 @@ export const CameraScreen = () => {
   
   const viewfinderElement = useMemo(() => (
     <View style={viewfinderContainerStyle}>
-      {!isCameraPaused && <Viewfinder cameraKey={cameraKey} />}
+      {!isCameraDeepSleep && <Viewfinder cameraKey={cameraKey} />}
     </View>
-  ), [viewfinderContainerStyle, isCameraPaused, cameraKey]);
+  ), [viewfinderContainerStyle, isCameraDeepSleep, cameraKey]);
 
   if (!hasPermission) {
     return (

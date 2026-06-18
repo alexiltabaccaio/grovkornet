@@ -235,6 +235,14 @@ class CameraSessionManager(
         return Pair(selectedSelector, targetZoomRatio)
     }
 
+    fun pause() {
+        // No-op: pause is now handled exclusively by FilmRenderThread
+    }
+
+    fun resume() {
+        // No-op: resume is now handled exclusively by FilmRenderThread
+    }
+
     fun release() {
         orientationEventListener.disable()
         cameraProvider?.unbindAll()

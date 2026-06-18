@@ -46,14 +46,17 @@ open class FilmRenderThread(
         lastFrameReceivedTimeMs.set(System.currentTimeMillis())
     }
 
+
+
     private val watchdogRunnable = object : Runnable {
         override fun run() {
             if (isReleased.get()) return
             val now = System.currentTimeMillis()
             val lastFrame = lastFrameReceivedTimeMs.get()
-            if (!isTransitioningCamera && (now - lastFrame > 3000)) {
-                Log.w(TAG, "Camera freeze detected! No frame for ${now - lastFrame}ms")
-                // Reset lastFrameReceivedTimeMs so we don't trigger repeatedly while recovering
+            // The watchdog intervenes ONLY if we are not in hardware transition, not intentionally PAUSED (e.g. gallery),
+            // and if more than 5000ms have passed since the last frame (increased tolerance to avoid false positives).
+            if (!isTransitioningCamera && !isPaused.get() && (now - lastFrame > 5000)) {
+                Log.w(TAG, "Camera freeze detected! No frame for ${now - lastFrame}ms while active")
                 lastFrameReceivedTimeMs.set(now)
                 android.os.Handler(android.os.Looper.getMainLooper()).post {
                     onCameraFreezeDetected()
@@ -65,6 +68,24 @@ open class FilmRenderThread(
 
     private val isFrameAvailable = AtomicBoolean(false)
     private val isReleased = AtomicBoolean(false)
+    private val isPaused = AtomicBoolean(false)
+    
+    fun setPaused(paused: Boolean) {
+        if (BuildConfig.DEBUG) {
+            Log.i(TAG, "FilmRenderThread paused: $paused")
+        }
+        
+        // CRITICAL BUG FIX:
+        // If we are "removing" the pause (e.g. exiting the gallery after 15 seconds),
+        // the last received frame is from 15 seconds ago!
+        // We must reset the watchdog timer to "now", otherwise it will trigger instantly
+        // causing a forced restart of the camera (the famous "tick").
+        if (!paused && isPaused.get()) {
+            lastFrameReceivedTimeMs.set(System.currentTimeMillis())
+        }
+        
+        isPaused.set(paused)
+    }
     
     private var framesProcessed = 0
 
@@ -72,7 +93,9 @@ open class FilmRenderThread(
         override fun doFrame(frameTimeNanos: Long) {
             if (isReleased.get()) return
 
-            drawLiveFrame()
+            if (!isPaused.get()) {
+                drawLiveFrame()
+            }
 
             try {
                 choreographer?.postFrameCallback(this)
