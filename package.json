@@ -24,8 +24,8 @@
     "build:mobile": "npm run codegen && node apps/mobile/scripts/android/build.js --device",
     "codegen": "node packages/shared/scripts/codegen/index.js && node packages/shared/scripts/graphrag/src/cli/build.js",
     "lint": "turbo run lint",
-    "android": "npm run android -w @grovkornet/mobile",
-    "ios": "npm run ios -w @grovkornet/mobile",
+    "android": "npm run codegen && npm run android -w @grovkornet/mobile",
+    "ios": "npm run codegen && npm run ios -w @grovkornet/mobile",
     "release": "commit-and-tag-version",
     "postinstall": "patch-package"
   },

@@ -5,10 +5,10 @@
   "main": "index.ts",
   "scripts": {
     "start": "expo start",
-    "dev": "expo run:android --variant developmentDebug",
-    "android": "expo run:android --variant developmentDebug",
+    "dev": "expo run:android --variant developmentDebug --app-id com.grovkornet.app.dev",
+    "android": "expo run:android --variant developmentDebug --app-id com.grovkornet.app.dev",
     "ios": "expo run:ios",
-    "build": "expo run:android --variant productionRelease",
+    "build": "expo run:android --variant productionRelease --app-id com.grovkornet.app",
     "web": "expo start --web",
     "test": "jest",
     "lint": "npx tsc --noEmit && eslint .",
