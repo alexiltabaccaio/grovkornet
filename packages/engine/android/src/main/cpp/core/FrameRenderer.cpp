@@ -256,54 +256,56 @@ bool FrameRenderer::renderLiveFrame(GrovkornetEngine& gEngine, const RenderState
     gEngine.viewportWidth = vpRect.width;
     gEngine.viewportHeight = vpRect.height;
 
-    // Update geometry to use the External material
-    auto& rcm = gEngine.engine->getRenderableManager();
-    auto instance = rcm.getInstance(gEngine.pipelineRenderer.quadGrading);
-    if (instance) {
-        rcm.setMaterialInstanceAt(instance, 0, gEngine.shaderManager.getMaterialInstanceExternal());
-    }
-    
-    // Set material parameter u_Texture and u_UvMatrix
-    filament::TextureSampler sampler2d(filament::TextureSampler::MinFilter::LINEAR, filament::TextureSampler::MagFilter::LINEAR);
-    gEngine.shaderManager.getMaterialInstanceExternal()->setParameter("u_Texture", gEngine.inputTextureExternal, sampler2d);
-    gEngine.shaderManager.getMaterialInstanceExternal()->setParameter("u_UvMatrix", u_UvMatrix);
-    
-    // Apply unified parameters (waitForLut = false)
-    gEngine.applyShaderParameters(activeState, gEngine.shaderManager.getMaterialInstanceExternal(), false);
-    
     auto start = std::chrono::high_resolution_clock::now();
-    
-    if (skipScreenRender) {
-        // To perfectly freeze the screen on the last frame, we bypass beginFrame/endFrame entirely.
-        // We use renderStandaloneView on an offscreen view (viewGrading) to force Filament to
-        // evaluate the external sampler and consume the garbage frame from the SurfaceTexture,
-        // without advancing the main SwapChain. The screen remains flawlessly frozen.
-        gEngine.renderer->renderStandaloneView(gEngine.pipelineRenderer.viewGrading);
-    } else {
-        // Restore normal viewport if it was modified previously
-        int finalVpX = gEngine.viewportX;
-        int finalVpY = gEngine.viewportY;
-        int finalVpW = gEngine.viewportWidth > 0 ? gEngine.viewportWidth : 1;
-        int finalVpH = gEngine.viewportHeight > 0 ? gEngine.viewportHeight : 1;
-        gEngine.view->setViewport(filament::Viewport(finalVpX, finalVpY, finalVpW, finalVpH));
-        gEngine.view->setVisibleLayers(0xFF, 0xFF);
 
-        if (gEngine.renderer->beginFrame(gEngine.liveSwapChain)) {
-            // Render pipeline
-            gEngine.renderer->render(gEngine.pipelineRenderer.viewGrading);
-            if (params.bloomIntensity > 0.0f || params.panelY < 1.0f) {
-                gEngine.renderer->render(gEngine.pipelineRenderer.viewDownsample);
-                gEngine.renderer->render(gEngine.pipelineRenderer.viewBlurDown);
-                gEngine.renderer->render(gEngine.pipelineRenderer.viewBlurUp);
-            }
-            gEngine.renderer->render(gEngine.view);
-            
-            gEngine.renderer->endFrame();
+    if (!gEngine.skipFilamentRender) {
+        // Update geometry to use the External material
+        auto& rcm = gEngine.engine->getRenderableManager();
+        auto instance = rcm.getInstance(gEngine.pipelineRenderer.quadGrading);
+        if (instance) {
+            rcm.setMaterialInstanceAt(instance, 0, gEngine.shaderManager.getMaterialInstanceExternal());
         }
-    }
-    // Flush UI commands asynchronously (don't block the render thread!)
-    if (!gEngine.skipGlFlush) {
-        gEngine.engine->flush();
+        
+        // Set material parameter u_Texture and u_UvMatrix
+        filament::TextureSampler sampler2d(filament::TextureSampler::MinFilter::LINEAR, filament::TextureSampler::MagFilter::LINEAR);
+        gEngine.shaderManager.getMaterialInstanceExternal()->setParameter("u_Texture", gEngine.inputTextureExternal, sampler2d);
+        gEngine.shaderManager.getMaterialInstanceExternal()->setParameter("u_UvMatrix", u_UvMatrix);
+        
+        // Apply unified parameters (waitForLut = false)
+        gEngine.applyShaderParameters(activeState, gEngine.shaderManager.getMaterialInstanceExternal(), false);
+        
+        if (skipScreenRender) {
+            // To perfectly freeze the screen on the last frame, we bypass beginFrame/endFrame entirely.
+            // We use renderStandaloneView on an offscreen view (viewGrading) to force Filament to
+            // evaluate the external sampler and consume the garbage frame from the SurfaceTexture,
+            // without advancing the main SwapChain. The screen remains flawlessly frozen.
+            gEngine.renderer->renderStandaloneView(gEngine.pipelineRenderer.viewGrading);
+        } else {
+            // Restore normal viewport if it was modified previously
+            int finalVpX = gEngine.viewportX;
+            int finalVpY = gEngine.viewportY;
+            int finalVpW = gEngine.viewportWidth > 0 ? gEngine.viewportWidth : 1;
+            int finalVpH = gEngine.viewportHeight > 0 ? gEngine.viewportHeight : 1;
+            gEngine.view->setViewport(filament::Viewport(finalVpX, finalVpY, finalVpW, finalVpH));
+            gEngine.view->setVisibleLayers(0xFF, 0xFF);
+
+            if (gEngine.renderer->beginFrame(gEngine.liveSwapChain)) {
+                // Render pipeline
+                gEngine.renderer->render(gEngine.pipelineRenderer.viewGrading);
+                if (params.bloomIntensity > 0.0f || params.panelY < 1.0f) {
+                    gEngine.renderer->render(gEngine.pipelineRenderer.viewDownsample);
+                    gEngine.renderer->render(gEngine.pipelineRenderer.viewBlurDown);
+                    gEngine.renderer->render(gEngine.pipelineRenderer.viewBlurUp);
+                }
+                gEngine.renderer->render(gEngine.view);
+                
+                gEngine.renderer->endFrame();
+            }
+        }
+        // Flush UI commands asynchronously (don't block the render thread!)
+        if (!gEngine.skipGlFlush) {
+            gEngine.engine->flush();
+        }
     }
 
     auto end = std::chrono::high_resolution_clock::now();

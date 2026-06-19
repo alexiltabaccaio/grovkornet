@@ -354,6 +354,7 @@ void GrovkornetEngine::applyShaderParameters(const RenderState* state, filament:
 
 
 void GrovkornetEngine::triggerOverlayUpdate(std::vector<jobject>&& bitmaps, JNIEnv* env) {
+    std::lock_guard<std::mutex> lock(m_engineMutex);
     overlayCompositor.triggerOverlayUpdate(std::move(bitmaps), env);
 }
 
@@ -390,11 +391,13 @@ void GrovkornetEngine::recordFrameTimeAndEvaluate(float frameTimeMs) {
 }
 
 void GrovkornetEngine::simulateFrameTime(float frameTimeMs) {
+    std::lock_guard<std::mutex> lock(m_engineMutex);
     drsManager.forceCooldownTrigger();
     drsManager.recordFrameTimeAndEvaluate(frameTimeMs);
 }
 
 void GrovkornetEngine::updateSwapChain(ANativeWindow* window) {
+    std::lock_guard<std::mutex> lock(m_engineMutex);
     if (liveSwapChain) {
         engine->destroy(liveSwapChain);
         liveSwapChain = nullptr;
@@ -405,6 +408,7 @@ void GrovkornetEngine::updateSwapChain(ANativeWindow* window) {
 }
 
 void GrovkornetEngine::updateStream(jobject surfaceTexture, JNIEnv* env) {
+    std::lock_guard<std::mutex> lock(m_engineMutex);
     if (filamentStream) {
         engine->destroy(filamentStream);
         filamentStream = nullptr;
@@ -435,10 +439,12 @@ void GrovkornetEngine::setExternalStream(filament::Stream* stream) {
 }
 
 bool GrovkornetEngine::renderOffscreenFrame(void* pixelsIn, void* pixelsOut, const RenderState* state) {
+    std::lock_guard<std::mutex> lock(m_engineMutex);
     return FrameRenderer::renderOffscreenFrame(*this, pixelsIn, pixelsOut, state);
 }
 
 bool GrovkornetEngine::renderHardwareBufferFrame(AHardwareBuffer* ahb, const RenderState* state) {
+    std::lock_guard<std::mutex> lock(m_engineMutex);
     return FrameRenderer::renderHardwareBufferFrame(*this, ahb, state);
 }
 
@@ -446,6 +452,7 @@ bool GrovkornetEngine::renderLiveFrame(const RenderState* state, const float* uv
                                      int cameraWidth, int cameraHeight, int vpW, int vpH,
                                      bool skipScreenRender, bool isNewFrame,
                                      int& actualFps, int& stampedFps, bool& fpsUpdated) {
+    std::lock_guard<std::mutex> lock(m_engineMutex);
     return FrameRenderer::renderLiveFrame(*this, state, uvMatrixIn, cameraWidth, cameraHeight, vpW, vpH,
                                          skipScreenRender, isNewFrame, actualFps, stampedFps, fpsUpdated);
 }

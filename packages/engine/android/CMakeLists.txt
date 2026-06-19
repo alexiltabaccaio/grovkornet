@@ -114,6 +114,8 @@ if (EXISTS "${ANDROID_NDK}/sources/third_party/googletest")
         src/test/cpp/PipelineRenderer.test.cpp
         src/test/cpp/DrsManager.test.cpp
         src/test/cpp/PerformanceBenchmark.test.cpp
+        src/test/cpp/FrameRendererConcurrency.test.cpp
+        src/test/cpp/JniLifecycleConcurrency.test.cpp
         src/main/cpp/core/GrovkornetEngine.cpp
         src/main/cpp/core/FrameRenderer.cpp
         src/main/cpp/state/CameraStateManager.cpp

@@ -20,6 +20,6 @@ This is our baseline build. It includes the foundation of the NativeFilmCamera e
 🔸 Unexpected crashes when rapidly changing parameters (like grain intensity or bloom).
 🔸 UI elements not scaling correctly on different screen sizes.
 
-Found a bug? Have an idea? Please drop it in #bug-reports 🛠️ or just chat about it in #general 💬!
+Found a bug? Have an idea? Please drop it in #bug-report 🛠️ or just chat about it in #general 💬!
 
 Have fun shooting! 📸

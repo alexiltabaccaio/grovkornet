@@ -1,6 +1,7 @@
 #pragma once
 #include <jni.h>
 #include <vector>
+#include <mutex>
 
 #include <android/native_window.h>
 
@@ -29,7 +30,6 @@
 #include "utils/DrsManager.h"
 #include "pipeline/PipelineRenderer.h"
 
-#include "core/RenderParams.h"
 #include "state/CameraStateManager.h"
 
 class GrovkornetEngine {
@@ -73,6 +73,7 @@ public:
     int viewportWidth = 0;
     int viewportHeight = 0;
     bool skipGlFlush = false;
+    bool skipFilamentRender = false;
 
     GrovkornetEngine(int w, int h);
     ~GrovkornetEngine();
@@ -110,4 +111,6 @@ public:
                          int cameraWidth, int cameraHeight, int vpW, int vpH,
                          bool skipScreenRender, bool isNewFrame,
                          int& actualFps, int& stampedFps, bool& fpsUpdated);
+private:
+    mutable std::mutex m_engineMutex;
 };
