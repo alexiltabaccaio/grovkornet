@@ -1,12 +1,14 @@
 import { renderHook, waitFor } from '@testing-library/react-native';
 import { useGalleryPhotos } from './useGalleryPhotos';
 import * as MediaLibrary from 'expo-media-library/legacy';
+import * as FileSystem from 'expo-file-system';
 
 describe('useGalleryPhotos', () => {
   beforeEach(() => {
     jest.spyOn(global, 'setTimeout').mockImplementation(() => {
       return 1 as any;
     });
+    (FileSystem.getInfoAsync as jest.Mock).mockResolvedValue({ exists: true });
   });
 
   afterEach(() => {
@@ -33,6 +35,19 @@ describe('useGalleryPhotos', () => {
     expect(result.current.photos[0].uri).toBe(initialUri);
   });
 
+  it('does not prepend initialUri if it does not exist on disk', async () => {
+    const initialUri = 'file:///test/new-capture.jpg';
+    (FileSystem.getInfoAsync as jest.Mock).mockResolvedValueOnce({ exists: false });
+
+    const { result } = renderHook(() => useGalleryPhotos(initialUri));
+
+    await waitFor(() => expect(result.current.loading).toBe(false));
+
+    // Should not prepend the non-existing temp preview
+    expect(result.current.photos).toHaveLength(2);
+    expect(result.current.photos.some(p => p.uri === initialUri)).toBe(false);
+  });
+
   it('handles permission denial gracefully by falling back to initialUri only', async () => {
     (MediaLibrary.requestPermissionsAsync as jest.Mock)
       .mockImplementationOnce(() => Promise.resolve({ status: 'denied', granted: false } as any));
@@ -47,6 +62,22 @@ describe('useGalleryPhotos', () => {
     expect(result.current.permissionGranted).toBe(false);
     expect(result.current.photos).toHaveLength(1);
     expect(result.current.photos[0].uri).toBe(initialUri);
+  });
+
+  it('handles permission denial but returns empty array if initialUri does not exist on disk', async () => {
+    (MediaLibrary.requestPermissionsAsync as jest.Mock)
+      .mockImplementationOnce(() => Promise.resolve({ status: 'denied', granted: false } as any));
+    (MediaLibrary.getPermissionsAsync as jest.Mock)
+      .mockImplementationOnce(() => Promise.resolve({ status: 'denied', granted: false, canAskAgain: true } as any));
+    (FileSystem.getInfoAsync as jest.Mock).mockResolvedValueOnce({ exists: false });
+
+    const initialUri = 'file:///test/new-capture.jpg';
+    const { result } = renderHook(() => useGalleryPhotos(initialUri));
+
+    await waitFor(() => expect(result.current.loading).toBe(false));
+
+    expect(result.current.permissionGranted).toBe(false);
+    expect(result.current.photos).toHaveLength(0);
   });
 
   it('handles permission retrieval crash gracefully', async () => {
@@ -98,4 +129,16 @@ describe('useGalleryPhotos', () => {
     expect(result.current.photos).toHaveLength(1);
     expect(result.current.photos[0].uri).toBe('file:///test/initial.jpg');
   });
+
+  it('handles general loading error but returns empty array if initialUri does not exist on disk', async () => {
+    (MediaLibrary.getAlbumsAsync as jest.Mock).mockRejectedValueOnce(new Error('General crash'));
+    (FileSystem.getInfoAsync as jest.Mock).mockResolvedValueOnce({ exists: false });
+
+    const { result } = renderHook(() => useGalleryPhotos('file:///test/initial.jpg'));
+
+    await waitFor(() => expect(result.current.loading).toBe(false));
+    expect(result.current.permissionGranted).toBe(false);
+    expect(result.current.photos).toHaveLength(0);
+  });
 });
+

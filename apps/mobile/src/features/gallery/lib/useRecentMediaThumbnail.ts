@@ -3,6 +3,7 @@ import { AppState } from 'react-native';
 import { useGalleryStore } from '@entities/gallery';
 import { useShallow } from 'zustand/shallow';
 import * as MediaLibrary from 'expo-media-library/legacy';
+import * as FileSystem from 'expo-file-system';
 import { logger } from '@shared/lib/logger';
 
 export const useRecentMediaThumbnail = () => {
@@ -65,14 +66,40 @@ export const useRecentMediaThumbnail = () => {
           }
 
           if (foundUri) {
-            const currentUri = useGalleryStore.getState().latestCapturedUri;
-            
+            try {
+              const info = await FileSystem.getInfoAsync(foundUri);
+              if (!info.exists) {
+                logger.debug('useRecentMediaThumbnail', `Found URI ${foundUri} does not exist on disk, invalidating latest captured URI.`);
+                foundUri = null;
+              }
+            } catch (e) {
+              logger.warn('useRecentMediaThumbnail', `Failed to check existence for foundUri: ${foundUri}`, e);
+              foundUri = null;
+            }
+          }
+
+          const currentUri = useGalleryStore.getState().latestCapturedUri;
+
+          if (foundUri) {
             // Prevent state updates and UI flickers if it's the exact same file
             if (currentUri === foundUri) return;
             if (currentUri && foundFilename && currentUri.includes(foundFilename)) return;
             if (currentUri && foundId && currentUri.endsWith(foundId)) return;
 
             setLatestCapturedUri(foundUri);
+          } else {
+            if (currentUri) {
+              try {
+                const info = await FileSystem.getInfoAsync(currentUri);
+                if (!info.exists) {
+                  logger.debug('useRecentMediaThumbnail', `Current URI ${currentUri} no longer exists, clearing store.`);
+                  setLatestCapturedUri(null);
+                }
+              } catch (e) {
+                logger.warn('useRecentMediaThumbnail', `Failed to check existence for currentUri: ${currentUri}`, e);
+                setLatestCapturedUri(null);
+              }
+            }
           }
         }
       } catch (e) {

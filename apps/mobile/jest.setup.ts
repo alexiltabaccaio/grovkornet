@@ -404,4 +404,9 @@ jest.mock('react-native-safe-area-context', () => {
   };
 });
 
+// Mock expo-file-system
+jest.mock('expo-file-system', () => ({
+  getInfoAsync: jest.fn((uri: string) => Promise.resolve({ exists: true, uri })),
+}));
+
 

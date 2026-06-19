@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { AppState } from 'react-native';
 import * as MediaLibrary from 'expo-media-library/legacy';
+import * as FileSystem from 'expo-file-system';
 import { logger } from '@shared/lib/logger';
 import { GalleryItem } from './types';
 
@@ -58,8 +59,17 @@ export const useGalleryPhotos = (initialUri?: string | null) => {
           setPermissionGranted(false);
           setLoading(false);
           if (currentInitialUriLocal) {
-            logger.debug('useGalleryPhotos', `Permissions not granted: setting photos to single fallback item: ${currentInitialUriLocal}`);
-            setPhotos([{ id: 'initial', uri: currentInitialUriLocal }]);
+            try {
+              const info = await FileSystem.getInfoAsync(currentInitialUriLocal);
+              if (info.exists) {
+                logger.debug('useGalleryPhotos', `Permissions not granted: setting photos to single fallback item: ${currentInitialUriLocal}`);
+                setPhotos([{ id: 'initial', uri: currentInitialUriLocal }]);
+              } else {
+                setPhotos([]);
+              }
+            } catch (e) {
+              setPhotos([]);
+            }
           }
           return;
         }
@@ -163,8 +173,17 @@ export const useGalleryPhotos = (initialUri?: string | null) => {
 
           logger.debug('useGalleryPhotos', `loadPhotos check: initialUri=${currentInitialUriLocal}, alreadyExists=${alreadyExists}`);
           if (!alreadyExists) {
-            logger.debug('useGalleryPhotos', `loadPhotos: unshifting temp preview: ${currentInitialUriLocal}`);
-            items.unshift({ id: 'preview-temp', key: 'preview-temp', uri: currentInitialUriLocal, filename: initialFilenameOrId });
+            try {
+              const info = await FileSystem.getInfoAsync(currentInitialUriLocal);
+              if (info.exists) {
+                logger.debug('useGalleryPhotos', `loadPhotos: unshifting temp preview: ${currentInitialUriLocal}`);
+                items.unshift({ id: 'preview-temp', key: 'preview-temp', uri: currentInitialUriLocal, filename: initialFilenameOrId });
+              } else {
+                logger.debug('useGalleryPhotos', `loadPhotos: temp preview ${currentInitialUriLocal} does not exist on disk, skipping.`);
+              }
+            } catch (e) {
+              logger.warn('useGalleryPhotos', `Failed to check existence of temp preview: ${currentInitialUriLocal}`, e);
+            }
           }
         }
 
@@ -187,7 +206,16 @@ export const useGalleryPhotos = (initialUri?: string | null) => {
           setLoading(false);
           setPermissionGranted(false);
           if (currentInitialUriLocal) {
-            setPhotos([{ id: 'initial', uri: currentInitialUriLocal }]);
+            try {
+              const info = await FileSystem.getInfoAsync(currentInitialUriLocal);
+              if (info.exists) {
+                setPhotos([{ id: 'initial', uri: currentInitialUriLocal }]);
+              } else {
+                setPhotos([]);
+              }
+            } catch (e) {
+              setPhotos([]);
+            }
           }
         }
       }
