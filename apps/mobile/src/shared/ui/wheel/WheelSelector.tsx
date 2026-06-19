@@ -37,12 +37,12 @@ const WheelItemComponent = memo(({
   onChangeActiveId,
   updateState,
 }: {
-  item: GenericWheelItem<any>;
+  item: GenericWheelItem<unknown>;
   index: number;
   dragX: SharedValue<number>;
   virtualItemsLength: number;
-  handlePressWithDouble?: (id: any, action: () => void) => void;
-  onChangeActiveId: (id: any) => void;
+  handlePressWithDouble?: (id: unknown, action: () => void) => void;
+  onChangeActiveId: (id: unknown) => void;
   updateState: (newIndex: number) => void;
 }) => {
   const totalWidth = virtualItemsLength * ITEM_WIDTH;
@@ -105,15 +105,22 @@ const WheelItemComponent = memo(({
   );
 });
 
+WheelItemComponent.displayName = 'WheelItemComponent';
+
 // We cast the memo function to properly support generics in TypeScript
-export const WheelSelector = memo(<T,>({
+const WheelSelectorComponent = memo(<T,>({
   items,
   activeId,
   onChangeActiveId,
   handlePressWithDouble,
 }: WheelSelectorProps<T>) => {
   const itemsLength = items.length;
+  const itemsLengthSV = useSharedValue(itemsLength);
   const { isInteractable } = useInteractionContext();
+
+  React.useEffect(() => {
+    itemsLengthSV.value = itemsLength;
+  }, [itemsLength, itemsLengthSV]);
   
   const virtualItems = useMemo(() => {
     if (items.length < 2) return items;
@@ -169,46 +176,49 @@ export const WheelSelector = memo(<T,>({
       if (previousIndex !== null && currentIndex !== previousIndex) {
         runOnJS(updateState)(currentIndex);
       }
-    }
+    },
+    [updateState]
   );
 
-  const panGesture = Gesture.Pan()
-    .enabled(isInteractable)
-    .activeOffsetX([-10, 10])
-    .failOffsetY([-10, 10])
-    .onStart(() => {
-      startX.value = dragX.value;
-    })
-    .onUpdate((event) => {
-      if (itemsLength < 2) return;
-      const tx = event.translationX ?? 0;
-      if (isNaN(tx) || isNaN(startX.value)) {
-        if (__DEV__ && !hasWarnedWheelNaN.value) {
-          hasWarnedWheelNaN.value = true;
-          console.warn(`[Gesture Warning]: translationX or startX is NaN in WheelSelector`);
+  const panGesture = useMemo(() => {
+    return Gesture.Pan()
+      .enabled(isInteractable)
+      .activeOffsetX([-10, 10])
+      .failOffsetY([-10, 10])
+      .onStart(() => {
+        startX.value = dragX.value;
+      })
+      .onUpdate((event) => {
+        if (itemsLengthSV.value < 2) return;
+        const tx = event.translationX ?? 0;
+        if (isNaN(tx) || isNaN(startX.value)) {
+          if (__DEV__ && !hasWarnedWheelNaN.value) {
+            hasWarnedWheelNaN.value = true;
+            console.warn(`[Gesture Warning]: translationX or startX is NaN in WheelSelector`);
+          }
+          return;
         }
-        return;
-      }
-      dragX.value = startX.value + tx;
-    })
-    .onEnd((event) => {
-      if (itemsLength < 2) return;
-      const velocity = event.velocityX;
-      const dx = dragX.value - startX.value;
-      
-      const startIndex = Math.round(-startX.value / ITEM_WIDTH);
-      let targetIndex = startIndex;
+        dragX.value = startX.value + tx;
+      })
+      .onEnd((event) => {
+        if (itemsLengthSV.value < 2) return;
+        const velocity = event.velocityX;
+        const dx = dragX.value - startX.value;
+        
+        const startIndex = Math.round(-startX.value / ITEM_WIDTH);
+        let targetIndex = startIndex;
 
-      // If there is intentional movement or velocity, shift exactly by 1 parameter
-      if (dx < -30 || velocity < -400) {
-        targetIndex = startIndex + 1;
-      } else if (dx > 30 || velocity > 400) {
-        targetIndex = startIndex - 1;
-      }
+        // If there is intentional movement or velocity, shift exactly by 1 parameter
+        if (dx < -30 || velocity < -400) {
+          targetIndex = startIndex + 1;
+        } else if (dx > 30 || velocity > 400) {
+          targetIndex = startIndex - 1;
+        }
 
-      const targetX = -targetIndex * ITEM_WIDTH;
-      dragX.value = withTiming(targetX, { duration: 250 });
-    });
+        const targetX = -targetIndex * ITEM_WIDTH;
+        dragX.value = withTiming(targetX, { duration: 250 });
+      });
+  }, [isInteractable, dragX, startX, hasWarnedWheelNaN, itemsLengthSV]);
 
   if (itemsLength === 0) return null;
 
@@ -218,19 +228,23 @@ export const WheelSelector = memo(<T,>({
         {virtualItems.map((item, i) => (
           <WheelItemComponent
             key={`${String(item.id)}-${i}`}
-            item={item}
+            item={item as GenericWheelItem<unknown>}
             index={i}
             dragX={dragX}
             virtualItemsLength={virtualItemsLength}
-            handlePressWithDouble={handlePressWithDouble}
-            onChangeActiveId={onChangeActiveId}
+            handlePressWithDouble={handlePressWithDouble as ((id: unknown, action: () => void) => void) | undefined}
+            onChangeActiveId={onChangeActiveId as (id: unknown) => void}
             updateState={updateState}
           />
         ))}
       </View>
     </GestureDetector>
   );
-}) as <T>(props: WheelSelectorProps<T>) => React.ReactElement | null;
+});
+
+WheelSelectorComponent.displayName = 'WheelSelector';
+
+export const WheelSelector = WheelSelectorComponent as <T>(props: WheelSelectorProps<T>) => React.ReactElement | null;
 
 const styles = StyleSheet.create({
   container: {
