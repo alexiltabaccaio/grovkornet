@@ -32,7 +32,7 @@ describe('GalleryViewer', () => {
     });
   });
 
-  it('renders loading state with spinner when initialUri is null', () => {
+  it('renders loading state without spinner or text when initialUri is null', () => {
     mockUseGalleryViewer.mockReturnValue({
       photos: [],
       selectedPhoto: null,
@@ -41,12 +41,13 @@ describe('GalleryViewer', () => {
       onSelectPhoto: jest.fn(),
     });
 
-    const { toJSON, getByText } = render(
+    const { toJSON, queryByText, queryByTestId } = render(
       <GalleryViewer onClose={jest.fn()} initialUri={null} />
     );
 
     expect(toJSON()).toBeDefined();
-    expect(getByText('gallery.loading')).toBeTruthy();
+    expect(queryByText('gallery.loading')).toBeNull();
+    expect(queryByTestId('gallery-placeholder-image')).toBeNull();
   });
 
   it('renders loading state with preview image and no spinner when initialUri is provided', () => {

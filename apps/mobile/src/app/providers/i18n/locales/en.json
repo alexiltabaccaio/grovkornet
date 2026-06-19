@@ -114,6 +114,10 @@
     "device_health": {
       "warning": "Overheating: Max 30 FPS",
       "critical": "Critical Temp: Max 15 FPS"
+    },
+    "gallery": {
+      "no_photos": "No photos found",
+      "loading": "Loading gallery..."
     }
   }
 }

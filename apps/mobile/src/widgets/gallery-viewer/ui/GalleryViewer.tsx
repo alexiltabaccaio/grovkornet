@@ -55,14 +55,8 @@ export const GalleryViewer = React.memo(({ onClose, initialUri, galleryTransitio
   }, []);
 
   useEffect(() => {
-    if (!loading && photos.length === 0) {
-      onClose();
-    }
-  }, [loading, photos.length, onClose]);
-
-  useEffect(() => {
-    if (!loading && isHighResLoaded && isReadyToFade) {
-      // Both the 300ms opening transition is complete AND the high-res image has finished decoding.
+    if (!loading && isReadyToFade && (photos.length === 0 || isHighResLoaded)) {
+      // Both the 300ms opening transition is complete AND the high-res image has finished decoding (or no photos exist).
       // Now we can safely fade out the placeholder.
       placeholderOpacity.value = withTiming(0, { duration: 250 }, (finished) => {
         if (finished) {
@@ -74,7 +68,7 @@ export const GalleryViewer = React.memo(({ onClose, initialUri, galleryTransitio
       setShowPlaceholder(true);
       setIsHighResLoaded(false); // reset if loading state re-triggers
     }
-  }, [loading, isHighResLoaded, isReadyToFade, placeholderOpacity]);
+  }, [loading, isHighResLoaded, isReadyToFade, placeholderOpacity, photos.length]);
 
   const onCloseRef = React.useRef(onClose);
   useEffect(() => {
@@ -189,11 +183,6 @@ export const GalleryViewer = React.memo(({ onClose, initialUri, galleryTransitio
                       testID="gallery-placeholder-image"
                     />
                   </Animated.View>
-                ) : loading ? (
-                  <>
-                    <ActivityIndicator size="large" color="#FF5722" />
-                    <Text style={styles.loadingText}>{t('gallery.loading', 'Loading gallery...')}</Text>
-                  </>
                 ) : null}
               </Animated.View>
             )}

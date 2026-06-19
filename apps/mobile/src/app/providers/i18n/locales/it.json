@@ -114,6 +114,10 @@
     "device_health": {
       "warning": "Surriscaldamento: Max 30 FPS",
       "critical": "Temp. Critica: Max 15 FPS"
+    },
+    "gallery": {
+      "no_photos": "Nessuna foto trovata",
+      "loading": "Caricamento galleria..."
     }
   }
 }
