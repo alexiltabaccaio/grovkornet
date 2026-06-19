@@ -65,19 +65,6 @@ export const useRecentMediaThumbnail = () => {
             }
           }
 
-          if (foundUri) {
-            try {
-              const info = await FileSystem.getInfoAsync(foundUri);
-              if (!info.exists) {
-                logger.debug('useRecentMediaThumbnail', `Found URI ${foundUri} does not exist on disk, invalidating latest captured URI.`);
-                foundUri = null;
-              }
-            } catch (e) {
-              logger.warn('useRecentMediaThumbnail', `Failed to check existence for foundUri: ${foundUri}`, e);
-              foundUri = null;
-            }
-          }
-
           const currentUri = useGalleryStore.getState().latestCapturedUri;
 
           if (foundUri) {
@@ -89,16 +76,8 @@ export const useRecentMediaThumbnail = () => {
             setLatestCapturedUri(foundUri);
           } else {
             if (currentUri) {
-              try {
-                const info = await FileSystem.getInfoAsync(currentUri);
-                if (!info.exists) {
-                  logger.debug('useRecentMediaThumbnail', `Current URI ${currentUri} no longer exists, clearing store.`);
-                  setLatestCapturedUri(null);
-                }
-              } catch (e) {
-                logger.warn('useRecentMediaThumbnail', `Failed to check existence for currentUri: ${currentUri}`, e);
-                setLatestCapturedUri(null);
-              }
+              logger.debug('useRecentMediaThumbnail', `No photos found in MediaLibrary, clearing store.`);
+              setLatestCapturedUri(null);
             }
           }
         }
