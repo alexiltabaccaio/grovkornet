@@ -20,3 +20,4 @@ export const TextureModule = React.memo(({ handlePressWithDouble }: TextureModul
 
 // TextureModule.whyDidYouRender = true;
 
+TextureModule.displayName = 'TextureModule';

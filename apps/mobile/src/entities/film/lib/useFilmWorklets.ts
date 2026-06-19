@@ -991,5 +991,6 @@ export const useFilmWorklets = () => {
             updateScanlinesDensity,
       // @@GEN_WORKLET_EXPORTS_END@@
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 };

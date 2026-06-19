@@ -14,7 +14,7 @@ export const useRecentMediaThumbnail = () => {
     const loadInitialThumbnail = async () => {
       try {
         const perms = await MediaLibrary.getPermissionsAsync();
-        if (perms.granted || perms.status === ('limited' as any)) {
+        if (perms.granted || perms.status === ('limited' as unknown as typeof perms.status)) {
           const allAlbums = await MediaLibrary.getAlbumsAsync();
           const grovkornetAlbums = allAlbums.filter(a => a.title.toLowerCase() === 'grovkornet');
 

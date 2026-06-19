@@ -31,7 +31,7 @@ export const AnimatedSlot = memo(({
   zoomTranslateY,
   currentIndex,
   onLoad,
-  initialUri,
+  initialUri: _initialUri,
 }: AnimatedSlotProps) => {
   const { width: screenW, height: screenH } = useWindowDimensions();
 
@@ -136,6 +136,8 @@ export const AnimatedSlot = memo(({
     prevProps.onLoad === nextProps.onLoad
   );
 });
+
+AnimatedSlot.displayName = 'AnimatedSlot';
 
 const styles = StyleSheet.create({
   slotContainer: {

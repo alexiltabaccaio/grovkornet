@@ -326,7 +326,8 @@ jest.mock('expo-image', () => {
     return React.createElement(View, { ref, source, ...props });
   });
 
-  (MockImage as any).prefetch = jest.fn().mockImplementation(() => Promise.resolve(true));
+  MockImage.prefetch = jest.fn().mockImplementation(() => Promise.resolve(true));
+  MockImage.displayName = 'MockImage';
 
   return {
     ...actualExpoImage,

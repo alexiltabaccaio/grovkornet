@@ -1,5 +1,4 @@
 import { SharedValue } from 'react-native-reanimated';
-import { ParameterType } from '@entities/system';
 
 export interface BodyCapabilities {
   hasTorch?: boolean;

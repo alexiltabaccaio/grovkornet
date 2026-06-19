@@ -1,9 +1,9 @@
 import React from 'react';
 import Animated from 'react-native-reanimated';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, StyleProp, ViewStyle } from 'react-native';
 
 interface ColorRangeThumbProps {
-  style: any;
+  style: StyleProp<ViewStyle>;
   activeColorHex: string;
 }
 

@@ -69,6 +69,8 @@ export const ResolutionPanel = React.memo(({ animatedStyle }: ResolutionPanelPro
   );
 });
 
+ResolutionPanel.displayName = 'ResolutionPanel';
+
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'column',

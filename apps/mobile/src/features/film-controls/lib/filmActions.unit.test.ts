@@ -2,9 +2,7 @@ import { useFilmStore } from '@entities/film';
 import { resetFilmParameter, resetFilmEffect } from './filmActions';
 import { 
   DEFAULT_GRAIN_INTENSITY, 
-  DEFAULT_SATURATION, 
-  DEFAULT_CONTRAST, 
-  DEFAULT_CHROMATIC_ABERRATION 
+  DEFAULT_SATURATION 
 } from '@grovkornet/shared';
 
 describe('filmActions', () => {

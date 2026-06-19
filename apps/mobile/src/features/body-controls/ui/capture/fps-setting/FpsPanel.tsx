@@ -37,3 +37,5 @@ export const FpsPanel = React.memo(({ animatedStyle }: FpsPanelProps) => {
     />
   );
 });
+
+FpsPanel.displayName = 'FpsPanel';

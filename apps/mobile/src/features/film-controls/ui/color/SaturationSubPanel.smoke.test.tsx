@@ -114,7 +114,6 @@ jest.mock('@entities/film', () => ({
 
 describe('SaturationSubPanel', () => {
   beforeEach(() => {
-    const { useSystemStore } = require('@entities/system');
     useControlPanelStore.setState({
       activeParameter: 'saturation',
       activeDetailPanel: 'master' as any,

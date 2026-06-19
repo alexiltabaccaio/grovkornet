@@ -3,7 +3,7 @@ import React from 'react';
 import { render, act, fireEvent } from '@testing-library/react-native';
 import { Image } from 'expo-image';
 import { Panels } from './Panels';
-import { useSystemStore, useControlPanelStore } from '@entities/system';
+import { useControlPanelStore } from '@entities/system';
 import { useBodyStore } from '@entities/body';
 
 // Mock Reanimated to execute useAnimatedReaction callback immediately to cover the sync effects

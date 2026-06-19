@@ -78,6 +78,8 @@ export const ZoomSubPanel = React.memo(({ animatedStyle }: ZoomSubPanelProps) =>
   );
 });
 
+ZoomSubPanel.displayName = 'ZoomSubPanel';
+
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',

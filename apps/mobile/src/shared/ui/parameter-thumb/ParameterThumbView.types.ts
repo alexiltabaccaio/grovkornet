@@ -1,6 +1,7 @@
 import { ImageSourcePropType } from 'react-native';
 import { SharedValue } from 'react-native-reanimated';
 import { Ionicons } from '@expo/vector-icons';
+import { GestureType, ComposedGesture } from 'react-native-gesture-handler';
 
 type ThumbVariant = 'text' | 'slider' | 'preset';
 
@@ -31,6 +32,7 @@ export interface ParameterThumbViewProps {
   sliderColor?: string;
   parameterId?: string;
   isMainSlider?: boolean;
-  labelGesture?: any;
-  trackGesture?: any;
+  labelGesture?: ComposedGesture | GestureType;
+  trackGesture?: ComposedGesture | GestureType;
 }
+

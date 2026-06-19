@@ -15,12 +15,11 @@ export const ContrastSubPanel = React.memo(({ animatedStyle }: ContrastSubPanelP
   const { t } = useTranslation();
   const isLayoutOverlayEnabled = useSystemStore(state => state.isLayoutOverlayEnabled);
   const { 
-    pivot, setPivot, pivotAuto, setPivotAuto 
+    pivot, setPivot, setPivotAuto 
   } = useFilmStore(
     useShallow(state => ({
       pivot: state.pivot,
       setPivot: state.setPivot,
-      pivotAuto: state.pivotAuto,
       setPivotAuto: state.setPivotAuto,
     }))
   );
@@ -52,6 +51,8 @@ export const ContrastSubPanel = React.memo(({ animatedStyle }: ContrastSubPanelP
     </SubPanelContainer>
   );
 });
+
+ContrastSubPanel.displayName = 'ContrastSubPanel';
 
 const styles = StyleSheet.create({
   container: {

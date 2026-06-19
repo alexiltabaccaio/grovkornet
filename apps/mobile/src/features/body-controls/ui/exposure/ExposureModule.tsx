@@ -20,3 +20,4 @@ export const ExposureModule = React.memo(({ handlePressWithDouble }: ExposureMod
 
 // ExposureModule.whyDidYouRender = true;
 
+ExposureModule.displayName = 'ExposureModule';

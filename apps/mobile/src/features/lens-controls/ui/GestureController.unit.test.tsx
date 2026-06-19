@@ -3,7 +3,7 @@ import { render, act } from '@testing-library/react-native';
 import { View, Dimensions } from 'react-native';
 import * as reanimated from 'react-native-reanimated';
 import { GestureController } from './GestureController';
-import { useSystemStore, useControlPanelStore } from '@entities/system';
+import { useControlPanelStore } from '@entities/system';
 import { Gesture } from 'react-native-gesture-handler';
 import { useBodyStore } from '@entities/body';
 
@@ -28,7 +28,7 @@ describe('GestureController', () => {
   let capturedFooterReaction: any;
   let reactionCount = 0;
   let mockTranslateY: any;
-  let mockStartY: any;
+  let _mockStartY: any;
   let sharedValuesArray: any[] = [];
   let dateNowSpy: any;
 
@@ -53,7 +53,7 @@ describe('GestureController', () => {
         if (sharedValuesArray.length === 1) {
           mockTranslateY = ref.current;
         } else if (sharedValuesArray.length === 2) {
-          mockStartY = ref.current;
+          _mockStartY = ref.current;
         }
       }
       return ref.current;
@@ -81,7 +81,7 @@ describe('GestureController', () => {
     currentActiveSection = 'none';
     sharedValuesArray = [];
     mockTranslateY = null;
-    mockStartY = null;
+    _mockStartY = null;
     capturedAspectReaction = null;
     capturedFooterReaction = null;
     reactionCount = 0;
@@ -336,7 +336,11 @@ describe('GestureController', () => {
 
   it('resets translateY when activeSection becomes none', () => {
     currentActiveSection = 'lens';
-    const { rerender } = render(<GestureController children={<View />} />);
+    const { rerender } = render(
+      <GestureController>
+        <View />
+      </GestureController>
+    );
 
     act(() => {
       capturedPanGesture._onStart();
@@ -351,7 +355,11 @@ describe('GestureController', () => {
     // Simulate closing active section
     act(() => {
       currentActiveSection = 'none';
-      rerender(<GestureController children={<View key="changed" />} />);
+      rerender(
+        <GestureController>
+          <View key="changed" />
+        </GestureController>
+      );
     });
 
     expect(mockTranslateY.value).toBe(0);

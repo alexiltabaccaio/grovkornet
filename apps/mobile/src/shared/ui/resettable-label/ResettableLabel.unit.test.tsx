@@ -41,7 +41,7 @@ describe('ResettableLabel', () => {
   });
 
   it('renders text label when onReset is not provided', () => {
-    const { getByText, queryByTestId } = render(
+    const { getByText } = render(
       <ResettableLabel label="My Label" />
     );
 

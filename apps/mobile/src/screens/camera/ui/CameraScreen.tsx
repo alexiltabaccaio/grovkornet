@@ -7,7 +7,7 @@ import { useGalleryOverlay } from '../lib/useGalleryOverlay';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useShallow } from 'zustand/shallow';
-import { useSystemStore, useControlPanelStore } from '@entities/system';
+import { useSystemStore } from '@entities/system';
 import { useGalleryStore } from '@entities/gallery';
 import { useCameraStore } from '@entities/camera';
 import { InteractionContext } from '@shared/lib';
@@ -29,9 +29,6 @@ export const CameraScreen = () => {
     isFpsOverlayEnabled: state.isFpsOverlayEnabled,
   })));
 
-  const { activeSection } = useControlPanelStore(useShallow(state => ({
-    activeSection: state.activeSection,
-  })));
 
   const { triggerCapture } = useCameraStore(useShallow(state => ({
     triggerCapture: state.triggerCapture,
@@ -51,17 +48,23 @@ export const CameraScreen = () => {
   const { cameraKey, drawerAnimation, footerTranslateY, viewfinderTranslateY } = useCameraAppState();
 
   const [isCameraDeepSleep, setIsCameraDeepSleep] = useState(false);
+  const [prevIsOpen, setPrevIsOpen] = useState(isOpen);
 
-  useEffect(() => {
-    if (isOpen) {
-      // Completely shuts down the sensor (unmounts the Viewfinder) after 60 seconds of inactivity in the gallery to preserve battery
-      const timer = setTimeout(() => {
-        setIsCameraDeepSleep(true);
-      }, 60000);
-      return () => clearTimeout(timer);
-    } else {
+  if (isOpen !== prevIsOpen) {
+    setPrevIsOpen(isOpen);
+    if (!isOpen) {
       setIsCameraDeepSleep(false);
     }
+  }
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    // Completely shuts down the sensor (unmounts the Viewfinder) after 60 seconds of inactivity in the gallery to preserve battery
+    const timer = setTimeout(() => {
+      setIsCameraDeepSleep(true);
+    }, 60000);
+    return () => clearTimeout(timer);
   }, [isOpen]);
 
   const animatedBottomControlsStyle = useAnimatedStyle(() => {

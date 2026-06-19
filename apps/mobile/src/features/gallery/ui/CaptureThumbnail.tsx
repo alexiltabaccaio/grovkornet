@@ -29,7 +29,7 @@ export const CaptureThumbnail = React.memo(({ onPress }: CaptureThumbnailProps) 
     latestPreviewUri ? 'preview' : (latestCapturedUri ? 'captured' : null)
   );
 
-  /* eslint-disable react-hooks/set-state-in-effect */
+   
   useEffect(() => {
     const isPreview = latestPreviewUri !== null;
     const newUri = latestPreviewUri ?? latestCapturedUri ?? null;
@@ -65,7 +65,7 @@ export const CaptureThumbnail = React.memo(({ onPress }: CaptureThumbnailProps) 
 
     lastSourceRef.current = currentSource;
   }, [latestPreviewUri, latestCapturedUri, currentUri, animationProgress]);
-  /* eslint-enable react-hooks/set-state-in-effect */
+   
 
   const scale = useSharedValue(1);
 
@@ -136,6 +136,8 @@ export const CaptureThumbnail = React.memo(({ onPress }: CaptureThumbnailProps) 
     </Pressable>
   );
 });
+
+CaptureThumbnail.displayName = 'CaptureThumbnail';
 
 const styles = StyleSheet.create({
   wrapper: {

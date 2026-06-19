@@ -18,27 +18,14 @@ export const ResolutionSubPanel = ({ animatedStyle }: ResolutionSubPanelProps) =
   const { t } = useTranslation();
   const isLayoutOverlayEnabled = useSystemStore(state => state.isLayoutOverlayEnabled);
   const {
-    resolutionSetting,
     previewQuality,
     setPreviewQuality,
   } = useBodyStore(useShallow(state => ({
-    resolutionSetting: state.resolutionSetting,
     previewQuality: state.previewQuality,
     setPreviewQuality: state.setPreviewQuality,
   })));
 
-  const [localResolutionSetting, setLocalResolutionSetting] = React.useState(() => resolutionSetting.value);
   const [localPreviewQuality, setLocalPreviewQuality] = React.useState(() => previewQuality.value);
-
-  useAnimatedReaction(
-    () => resolutionSetting.value,
-    (currentValue, previousValue) => {
-      if (currentValue !== previousValue) {
-        runOnJS(setLocalResolutionSetting)(currentValue);
-      }
-    },
-    [resolutionSetting]
-  );
 
   useAnimatedReaction(
     () => previewQuality.value,

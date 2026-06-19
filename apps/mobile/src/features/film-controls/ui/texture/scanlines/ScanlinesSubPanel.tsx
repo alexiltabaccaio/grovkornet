@@ -107,6 +107,8 @@ export const ScanlinesSubPanel = React.memo(({ animatedStyle: _animatedStyle }: 
   );
 });
 
+ScanlinesSubPanel.displayName = 'ScanlinesSubPanel';
+
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'column',

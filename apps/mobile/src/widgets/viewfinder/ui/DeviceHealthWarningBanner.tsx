@@ -55,10 +55,16 @@ export const DeviceHealthWarningBanner = () => {
     };
   }, []);
 
-  // Hide text if the warning conditions are no longer met
-  useEffect(() => {
+  const [prevShouldShow, setPrevShouldShow] = useState(shouldShow);
+  if (shouldShow !== prevShouldShow) {
+    setPrevShouldShow(shouldShow);
     if (!shouldShow) {
       setIsTextVisible(false);
+    }
+  }
+
+  useEffect(() => {
+    if (!shouldShow) {
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current);
         timeoutRef.current = null;

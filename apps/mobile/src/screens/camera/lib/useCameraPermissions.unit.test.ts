@@ -62,7 +62,8 @@ describe('useCameraPermissions', () => {
   it('handles permission request rejection and logs error', async () => {
     Platform.OS = 'android';
     const requestSpy = jest.spyOn(PermissionsAndroid, 'request').mockRejectedValue(new Error('Permission system crash'));
-    const mockLoggerError = logger.error as jest.Mock;
+    // eslint-disable-next-line @typescript-eslint/unbound-method
+    const mockLoggerError = jest.mocked(logger.error);
 
     const { result } = renderHook(() => useCameraPermissions());
 

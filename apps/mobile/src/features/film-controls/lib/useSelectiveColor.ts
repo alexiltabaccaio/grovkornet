@@ -224,7 +224,7 @@ export const useSelectiveColor = (type: 'saturation' | 'hue') => {
 
   const handleColorPress = useCallback((key: string, index: number) => {
     handlePressWithDouble(key, () => setActiveColorIndex(index));
-  }, [handlePressWithDouble]);
+  }, [handlePressWithDouble, setActiveColorIndex]);
 
   const worklets = useFilmWorklets();
 

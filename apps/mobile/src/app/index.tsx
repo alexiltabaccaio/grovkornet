@@ -18,7 +18,6 @@ import i18n from 'i18next';
 import { useBodyStore } from '@entities/body';
 import { useLensStore } from '@entities/lens';
 import { usePreferencesStore } from '@entities/preferences';
-import { useSystemStore } from '@entities/system';
 import { applyPreset, initPreferenceSync } from '@features/system-settings';
 import { initNativeSync } from '@features/camera-controls';
 import { setHapticsEnabledChecker } from '@shared/lib/haptics';
@@ -100,7 +99,7 @@ export function App() {
     initPreferenceSync();
 
     // Subscribe to device health updates
-    let sub: any = null;
+    let sub: ReturnType<typeof NativeCameraEventEmitter.addListener> | null = null;
     try {
       sub = NativeCameraEventEmitter.addListener('onDeviceHealthUpdate', (event: { thermalState: 'normal' | 'warning' | 'critical'; isLowRam: boolean }) => {
         logger.info('DeviceHealth', `Received thermalState: ${event.thermalState}, isLowRam: ${event.isLowRam}`);

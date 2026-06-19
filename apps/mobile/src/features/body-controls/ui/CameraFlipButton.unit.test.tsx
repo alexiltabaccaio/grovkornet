@@ -3,7 +3,7 @@ import { render, fireEvent } from '@testing-library/react-native';
 import { CameraFlipButton } from './CameraFlipButton';
 import { useFilmStore } from '@entities/film';
 import { useBodyStore } from '@entities/body';
-import { useSystemStore, useControlPanelStore } from '@entities/system';
+import { useControlPanelStore } from '@entities/system';
 import * as Haptics from 'expo-haptics';
 
 describe('CameraFlipButton Unit Tests', () => {

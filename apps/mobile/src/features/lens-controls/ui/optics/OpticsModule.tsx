@@ -42,3 +42,4 @@ export const OpticsModule = React.memo(({ handlePressWithDouble }: OpticsModuleP
 
 // OpticsModule.whyDidYouRender = true;
 
+OpticsModule.displayName = 'OpticsModule';

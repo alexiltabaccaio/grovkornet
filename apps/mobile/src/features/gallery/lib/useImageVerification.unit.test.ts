@@ -118,7 +118,6 @@ describe('useImageVerification', () => {
     // so B does not know verification is happening. This is the assertion that will FAIL.
     expect(resultB.current.verifying).toBe(true);
 
-    // Resolve the verification
     await act(async () => {
       resolveVerification(true);
     });

@@ -2,7 +2,6 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import { createZustandMMKVStorage } from '@shared/lib/storage/mmkv';
-import i18n from 'i18next';
 import {
   // @@GEN_IMPORTS_START@@
   // ⚠️ AI & MANUAL WARNING: DO NOT EDIT THIS SECTION!

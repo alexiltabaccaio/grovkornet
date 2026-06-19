@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet, TextInput, Text, Dimensions } from 'react-native';
+import { View, StyleSheet, TextInput, Text, StyleProp, ViewStyle } from 'react-native';
 import Animated, {
   useAnimatedStyle,
   useAnimatedProps,
@@ -22,9 +22,6 @@ import {
   DEFAULT_BOUND_PURPLE_MAGENTA,
   DEFAULT_BOUND_MAGENTA_RED,
 } from '@grovkornet/shared';
-
-const SCREEN_WIDTH = Dimensions.get('window').width;
-const INITIAL_TRACK_WIDTH = SCREEN_WIDTH - 188;
 
 const COLOR_MAPPING = [
   { key: 'red', color: '#FF453A' },
@@ -193,10 +190,10 @@ export const ColorRangeSlider = ({ activeColorIndex }: ColorRangeSliderProps) =>
           />
   
           {/* Left Thumb */}
-          <ColorRangeThumb style={leftThumbStyle} activeColorHex={activeColorHex} />
+          <ColorRangeThumb style={leftThumbStyle as unknown as StyleProp<ViewStyle>} activeColorHex={activeColorHex} />
   
           {/* Right Thumb */}
-          <ColorRangeThumb style={rightThumbStyle} activeColorHex={activeColorHex} />
+          <ColorRangeThumb style={rightThumbStyle as unknown as StyleProp<ViewStyle>} activeColorHex={activeColorHex} />
         </View>
       </GestureDetector>
 

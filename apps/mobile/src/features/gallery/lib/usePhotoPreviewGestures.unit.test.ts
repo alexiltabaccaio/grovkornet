@@ -230,7 +230,7 @@ describe('usePhotoPreviewGestures', () => {
   });
 
   it('handles pan gesture (swipe mode) when not zoomed', () => {
-    const { result } = getHookResult();
+    getHookResult();
 
     expect(capturedPanCallbacks.onStart).toBeDefined();
     expect(capturedPanCallbacks.onUpdate).toBeDefined();

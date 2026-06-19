@@ -1,7 +1,7 @@
 import { renderHook, act } from '@testing-library/react-native';
 import { useSelectiveHue } from './useSelectiveHue';
 import { useFilmStore } from '@entities/film';
-import { useSystemStore, useControlPanelStore } from '@entities/system';
+import { useControlPanelStore } from '@entities/system';
 import { DEFAULT_SELECTIVE_HUE } from '@grovkornet/shared';
 
 // Mock double press to execute double tap callback immediately

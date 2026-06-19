@@ -1,7 +1,6 @@
 import { useMemo } from 'react';
 import { useShallow } from 'zustand/shallow';
 import { useBodyStore } from '@entities/body';
-import { useLensStore } from '@entities/lens';
 import { useFilmStore } from '@entities/film';
 import { SectionType, ModuleType, SECTION_MODULES } from '@entities/system';
 

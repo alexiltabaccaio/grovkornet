@@ -58,6 +58,8 @@ export const TorchSubPanel = React.memo(({ animatedStyle: _animatedStyle }: Torc
   );
 });
 
+TorchSubPanel.displayName = 'TorchSubPanel';
+
 const styles = StyleSheet.create({
   childSubContainer: {
     flexDirection: 'row',

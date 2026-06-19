@@ -2,7 +2,7 @@ import React, { forwardRef, memo } from 'react';
 import { View, Text, ImageSourcePropType } from 'react-native';
 import { Image } from 'expo-image';
 import Animated from 'react-native-reanimated';
-import { GestureDetector } from 'react-native-gesture-handler';
+import { GestureDetector, GestureType, ComposedGesture } from 'react-native-gesture-handler';
 import { ParameterThumbViewProps } from './ParameterThumbView.types';
 import { styles } from './ParameterThumbView.styles';
 import { TextThumb } from './TextThumb';
@@ -14,7 +14,7 @@ import { SliderThumb } from './SliderThumb';
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const defaultMonoscope = require('../../../../assets/monoscope.jpg') as ImageSourcePropType;
 
-const OptionalGesture = ({ gesture, children }: { gesture?: any; children: React.ReactNode }) => {
+const OptionalGesture = ({ gesture, children }: { gesture?: ComposedGesture | GestureType; children: React.ReactNode }) => {
   if (gesture) {
     return <GestureDetector gesture={gesture}>{children as React.ReactElement}</GestureDetector>;
   }
@@ -34,7 +34,6 @@ const ParameterThumbViewBase = forwardRef<View, ParameterThumbViewProps>((props,
     onPress,
     renderValue,
     isToggle,
-    parameterId,
     labelGesture,
     trackGesture,
   } = props;

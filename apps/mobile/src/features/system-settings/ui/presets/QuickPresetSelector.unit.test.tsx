@@ -2,7 +2,7 @@ import React from 'react';
 import { render, fireEvent } from '@testing-library/react-native';
 import { QuickPresetSelector } from './QuickPresetSelector';
 import { usePresetStore } from '@entities/preset';
-import { useSystemStore, useControlPanelStore } from '@entities/system';
+import { useControlPanelStore } from '@entities/system';
 import * as Haptics from 'expo-haptics';
 
 import { nextQuickPreset, prevQuickPreset, generateQuickSelectList } from '../../lib/presetActions';

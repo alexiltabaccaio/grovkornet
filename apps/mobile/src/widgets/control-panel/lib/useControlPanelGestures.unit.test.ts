@@ -2,7 +2,7 @@ import React from 'react';
 import { renderHook, act } from '@testing-library/react-native';
 import * as reanimated from 'react-native-reanimated';
 import { useControlPanelGestures } from './useControlPanelGestures';
-import { useSystemStore, useControlPanelStore } from '@entities/system';
+import { useControlPanelStore } from '@entities/system';
 import { Gesture } from 'react-native-gesture-handler';
 
 describe('useControlPanelGestures', () => {

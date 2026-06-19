@@ -110,6 +110,7 @@ export const AddPresetModal = () => {
         void deleteFile(localTempUri);
       }
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isAddModalVisible, customizedPayload]);
 
   if (!isAddModalVisible) return null;

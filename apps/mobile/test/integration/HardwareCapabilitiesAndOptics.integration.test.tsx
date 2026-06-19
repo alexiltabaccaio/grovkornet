@@ -3,7 +3,7 @@ import { render, fireEvent, waitFor, act } from '@testing-library/react-native';
 import { CameraScreen } from '@screens/camera';
 import { useBodyStore } from '@entities/body';
 import { useLensStore } from '@entities/lens';
-import { useSystemStore, useControlPanelStore } from '@entities/system';
+import { useControlPanelStore } from '@entities/system';
 
 jest.mock('@entities/lens/ui/NativeRenderer', () => {
   const ReactActual = jest.requireActual('react');

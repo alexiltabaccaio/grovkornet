@@ -1,6 +1,6 @@
 // ⚠️ AI WARNING: Before modifying this cross-platform sync logic, query the dependency graph: node packages/shared/scripts/graphrag/query.js <query>
 import { useFilmStore, setFilmStoreListener, getNitroConfig } from '@entities/film';
-import { useBodyStore, setBodyStoreListener } from '@entities/body';
+import { setBodyStoreListener } from '@entities/body';
 import { usePresetStore, DEFAULT_FILM_PAYLOAD, DEFAULT_BODY_PAYLOAD } from '@entities/preset';
 import { markAsCustomized } from '@features/system-settings';
 
@@ -80,14 +80,17 @@ export const initNativeSync = () => {
         const nitro = getNitroConfig();
         const state = useFilmStore.getState();
         
+        const stateRecord = state as unknown as Record<string, unknown>;
+        const nitroRecord = nitro as unknown as Record<string, unknown>;
+
         Object.keys(SYNC_MAP).forEach((storeKey) => {
           const nitroKey = SYNC_MAP[storeKey];
-          const sharedValue = (state as any)[storeKey];
+          const sharedValue = stateRecord[storeKey];
           
           if (sharedValue && typeof sharedValue === 'object' && 'value' in sharedValue) {
             const currentValue = sharedValue.value;
-            if ((nitro as any)[nitroKey] !== currentValue) {
-              (nitro as any)[nitroKey] = currentValue;
+            if (nitroRecord[nitroKey] !== currentValue) {
+              nitroRecord[nitroKey] = currentValue;
             }
           }
         });

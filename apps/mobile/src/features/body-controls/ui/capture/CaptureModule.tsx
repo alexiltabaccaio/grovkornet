@@ -20,3 +20,4 @@ export const CaptureModule = React.memo(({ handlePressWithDouble }: CaptureModul
 
 // CaptureModule.whyDidYouRender = true;
 
+CaptureModule.displayName = 'CaptureModule';

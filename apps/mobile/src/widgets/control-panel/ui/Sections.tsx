@@ -5,7 +5,7 @@ import { SectionType, useSystemStore, useControlPanelStore } from '@entities/sys
 import { Ionicons } from '@expo/vector-icons';
 import { BottomFooter } from '@shared/ui';
 import * as Haptics from '@shared/lib/haptics';
-import Animated, { useAnimatedStyle, interpolate, SharedValue } from 'react-native-reanimated';
+import { useAnimatedStyle, interpolate, SharedValue } from 'react-native-reanimated';
 
 import { useShallow } from 'zustand/shallow';
 

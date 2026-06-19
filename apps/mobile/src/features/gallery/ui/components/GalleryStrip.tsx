@@ -132,6 +132,8 @@ export const GalleryStrip = React.memo(({ photos, selectedPhoto, onSelectPhoto, 
   );
 });
 
+GalleryStrip.displayName = 'GalleryStrip';
+
 const styles = StyleSheet.create({
   footerContainer: {
     paddingHorizontal: 0,

@@ -2,7 +2,7 @@
 import React from 'react';
 import { render, act, fireEvent } from '@testing-library/react-native';
 import { Parameters } from './Parameters';
-import { useSystemStore, useControlPanelStore } from '@entities/system';
+import { useControlPanelStore } from '@entities/system';
 import { useFilmStore } from '@entities/film';
 import * as filmControls from '@features/film-controls';
 import { useBodyStore } from '@entities/body';

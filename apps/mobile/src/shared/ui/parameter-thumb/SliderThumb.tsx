@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet, TextInput } from 'react-native';
+import { View, StyleSheet, TextInput, AppState } from 'react-native';
 import Animated, {
   useAnimatedStyle,
   useAnimatedProps,
@@ -48,7 +48,6 @@ export const SliderThumb = React.memo(({
   const [resumeKey, setResumeKey] = React.useState(0);
 
   React.useEffect(() => {
-    const { AppState } = require('react-native');
     const subscription = AppState.addEventListener('change', (nextAppState: string) => {
       if (nextAppState === 'active') {
         // Increment key to force remount on resume, ensuring track width onLayout is recalculated

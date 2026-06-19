@@ -114,6 +114,8 @@ export const ShareButton = React.memo(({ id, uri, isVerified }: ShareButtonProps
   );
 });
 
+ShareButton.displayName = 'ShareButton';
+
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',

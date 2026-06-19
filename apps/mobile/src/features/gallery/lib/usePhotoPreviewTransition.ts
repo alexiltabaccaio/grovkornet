@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
-import { useSharedValue, withTiming, runOnJS, withSpring, cancelAnimation } from 'react-native-reanimated';
+import { useSharedValue, runOnJS, withSpring, cancelAnimation } from 'react-native-reanimated';
 import { GalleryItem } from './types';
 
 interface UsePhotoPreviewTransitionProps {
@@ -15,13 +15,11 @@ export const usePhotoPreviewTransition = ({
   onPhotoVisible,
   slotWidth,
 }: UsePhotoPreviewTransitionProps) => {
-  const initialIndexRef = useRef<number | null>(null);
-  if (initialIndexRef.current === null) {
-    initialIndexRef.current = photos.length > 0 && selectedPhoto
+  const [initialIndex] = useState(() => {
+    return photos.length > 0 && selectedPhoto
       ? Math.max(0, photos.findIndex(p => p.uri === selectedPhoto.uri))
       : 0;
-  }
-  const initialIndex = initialIndexRef.current;
+  });
 
   const currentIndex = useSharedValue(initialIndex);
   const isTransitioning = useSharedValue(false);
@@ -40,7 +38,7 @@ export const usePhotoPreviewTransition = ({
   const translateX = useSharedValue(-initialIndex * slotWidth);
   const dragOffset = useSharedValue(0);
 
-  const finalizeTransition = useCallback((newIndex: number, isManualSwipe: boolean) => {
+  const finalizeTransition = useCallback((newIndex: number, _isManualSwipe: boolean) => {
     currentIndex.value = newIndex;
     animatingToIndexRef.current = null;
     setRenderIndices([newIndex - 1, newIndex, newIndex + 1]);
@@ -121,7 +119,7 @@ export const usePhotoPreviewTransition = ({
     } else {
       const mockAdjacentIndex = diff > 0 ? baseIndex + 1 : baseIndex - 1;
       
-      /* eslint-disable react-hooks/set-state-in-effect */
+       
       isTeleportingRef.current = true;
       setSlotOverrides({ [mockAdjacentIndex]: photos[idx] });
       setRenderIndices(prev => Array.from(new Set([
@@ -134,7 +132,7 @@ export const usePhotoPreviewTransition = ({
         idx,
         idx + 1
       ])));
-      /* eslint-enable react-hooks/set-state-in-effect */
+       
 
       const targetVal = -mockAdjacentIndex * slotWidth;
       isTransitioning.value = true;
@@ -147,7 +145,7 @@ export const usePhotoPreviewTransition = ({
         }
       });
     }
-  }, [selectedPhoto, photos, slotWidth, currentIndex, translateX, finalizeTransition, finalizeTeleport]);
+  }, [selectedPhoto, photos, slotWidth, currentIndex, translateX, finalizeTransition, finalizeTeleport, isTransitioning]);
 
   return {
     currentIndex,

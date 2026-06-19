@@ -16,7 +16,7 @@ export const useGalleryPrefetch = () => {
         void (async () => {
           try {
             const currentPerm = await MediaLibrary.getPermissionsAsync();
-            if (!active || (!currentPerm.granted && currentPerm.status !== ('limited' as any))) return;
+            if (!active || (!currentPerm.granted && currentPerm.status !== ('limited' as unknown as typeof currentPerm.status))) return;
 
             logger.debug('GalleryPrefetch', 'Startup pre-fetch: permissions granted. Fetching recent photos...');
 

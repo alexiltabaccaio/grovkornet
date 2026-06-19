@@ -1,7 +1,7 @@
 import { renderHook, act } from '@testing-library/react-native';
 import { useSelectiveSaturation } from './useSelectiveSaturation';
 import { useFilmStore } from '@entities/film';
-import { useSystemStore, useControlPanelStore } from '@entities/system';
+import { useControlPanelStore } from '@entities/system';
 import { DEFAULT_SELECTIVE_SATURATION } from '@grovkornet/shared';
 
 // Mock double press to execute double tap callback immediately

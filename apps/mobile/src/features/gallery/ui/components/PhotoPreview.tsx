@@ -108,6 +108,8 @@ export const PhotoPreview = React.memo(({ selectedPhoto, photos, onPhotoVisible,
   );
 });
 
+PhotoPreview.displayName = 'PhotoPreview';
+
 const styles = StyleSheet.create({
   center: {
     flex: 1,

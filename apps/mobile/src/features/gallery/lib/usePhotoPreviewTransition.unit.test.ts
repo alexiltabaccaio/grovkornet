@@ -31,7 +31,7 @@ describe('usePhotoPreviewTransition', () => {
 
     const useMockSharedValue = (initialVal: any) => {
       // Use useRef to preserve the shared value object across re-renders
-      // eslint-disable-next-line react-hooks/rules-of-hooks
+       
       return React.useRef({ value: initialVal }).current;
     };
 

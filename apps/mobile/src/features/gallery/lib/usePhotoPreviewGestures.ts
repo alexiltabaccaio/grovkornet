@@ -31,7 +31,7 @@ export const usePhotoPreviewGestures = ({
   slotWidth,
   translateX,
   dragOffset,
-  currentIndex,
+  currentIndex: _currentIndex,
   rotationY,
   selectedPhoto,
   prepareTransition,
@@ -66,7 +66,7 @@ export const usePhotoPreviewGestures = ({
     savedZoomTranslateX.value = 0;
     savedZoomTranslateY.value = 0;
     isZoomed.value = false;
-  }, [selectedPhoto]);
+  }, [selectedPhoto, zoomScale, zoomTranslateX, zoomTranslateY, savedZoomScale, savedZoomTranslateX, savedZoomTranslateY, isZoomed]);
 
   const panGesture = usePanGesture({
     width,

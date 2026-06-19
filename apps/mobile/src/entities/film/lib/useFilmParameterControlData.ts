@@ -3,21 +3,14 @@ import { useShallow } from 'zustand/shallow';
 import { useFilmStore } from '../model/useFilmStore';
 import { useFilmWorklets } from './useFilmWorklets';
 import { ParameterControlData } from '@shared/lib/parameter/types';
-import { FilmStore } from '../model/types';
 import { 
   DEFAULT_SATURATION,
-  DEFAULT_CONTRAST,
   DEFAULT_GRAIN_INTENSITY,
   DEFAULT_VIGNETTE_INTENSITY,
   DEFAULT_CHROMA_SHIFT,
-  DEFAULT_TEMPERATURE,
-  DEFAULT_TINT,
   DEFAULT_BLOOM_INTENSITY,
   DEFAULT_CHROMATIC_ABERRATION,
   DEFAULT_SHARPENING,
-  DEFAULT_BLACK_LEVEL,
-  DEFAULT_HIGHLIGHTS,
-  DEFAULT_PIVOT,
   DEFAULT_PIXELATION_FACTOR,
   DEFAULT_TAPE_JITTER,
   DEFAULT_SCANLINES,
@@ -49,7 +42,7 @@ export type FilmParameterType =
 // @@GEN_PARAMETER_TYPES_END@@
   ;
 
-type SelectedFilmState = any;
+type SelectedFilmState = ReturnType<typeof useFilmStore.getState>;
 
 export const useFilmParameterControlData = (
   parameter: FilmParameterType
@@ -460,7 +453,7 @@ export const useFilmParameterControlData = (
               };
       // @@GEN_CONTROL_CASES_END@@
       default:
-        throw new Error(`Unhandled parameter type: ${parameter}`);
+        throw new Error(`Unhandled parameter type: ${parameter as string}`);
     }
   }, [parameter, film, filmWorklets]);
 };

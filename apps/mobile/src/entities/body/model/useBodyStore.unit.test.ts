@@ -1,5 +1,5 @@
 import { useBodyStore } from './useBodyStore';
-import { DEFAULT_ISO, DEFAULT_EV, DEFAULT_SHUTTER_SPEED, DEFAULT_ZOOM, DEFAULT_TORCH_STRENGTH } from '@grovkornet/shared';
+import { DEFAULT_ISO, DEFAULT_EV, DEFAULT_SHUTTER_SPEED, DEFAULT_ZOOM } from '@grovkornet/shared';
 
 describe('useBodyStore', () => {
   beforeEach(() => {

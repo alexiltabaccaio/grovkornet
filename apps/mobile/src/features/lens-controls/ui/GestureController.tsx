@@ -45,7 +45,7 @@ export const GestureController = React.memo(({ children, footerTranslateY, drawe
 
   React.useEffect(() => {
     activeSectionSV.value = activeSection;
-  }, [activeSection]);
+  }, [activeSection, activeSectionSV]);
 
   const lastTapTime = React.useRef<number>(0);
   const tapTimeout = React.useRef<NodeJS.Timeout | null>(null);
@@ -61,7 +61,7 @@ export const GestureController = React.memo(({ children, footerTranslateY, drawe
   React.useEffect(() => {
     if (activeSection === 'none') {
       isClosing.value = true;
-      translateY.value = withTiming(0, { duration: 300 }, (finished) => {
+      translateY.value = withTiming(0, { duration: 300 }, (_finished) => {
         isClosing.value = false;
         if (activeSectionSV.value === 'none') {
           translateY.value = 0;
@@ -85,7 +85,7 @@ export const GestureController = React.memo(({ children, footerTranslateY, drawe
     }
   );
 
-  const getDynamicLimit = () => {
+  const getDynamicLimit = React.useCallback(() => {
     'worklet';
     const ft = footerTranslateY ? footerTranslateY.value : 0;
     const da = drawerAnimation ? drawerAnimation.value + 250 : 0;
@@ -115,14 +115,14 @@ export const GestureController = React.memo(({ children, footerTranslateY, drawe
 
     const limit = ft + da - 144 + lBottom;
     return limit > 0 ? 0 : limit;
-  };
+  }, [footerTranslateY, drawerAnimation, aspectRatio, viewportHeight, viewportWidth]);
 
   useAnimatedReaction(
     () => {
       // Direct access to ensure Reanimated auto-subscribes to changes
-      const ftVal = footerTranslateY ? footerTranslateY.value : 0;
-      const daVal = drawerAnimation ? drawerAnimation.value + 250 : 0;
-      const aspectVal = aspectRatio.value;
+      const _ftVal = footerTranslateY ? footerTranslateY.value : 0;
+      const _daVal = drawerAnimation ? drawerAnimation.value + 250 : 0;
+      const _aspectVal = aspectRatio.value;
       
       return getDynamicLimit();
     },
@@ -151,6 +151,7 @@ export const GestureController = React.memo(({ children, footerTranslateY, drawe
     () => Math.round(translateY.value),
     (current, prev) => {
       if (prev !== null && Math.abs(current - prev) > 10) {
+        // eslint-disable-next-line no-console
         console.log(`[GestureController] translateY jumped from ${prev} to ${current}. ActiveSection: ${activeSectionSV.value}, isClosing: ${isClosing.value}`);
       }
     }
@@ -242,7 +243,7 @@ export const GestureController = React.memo(({ children, footerTranslateY, drawe
       });
 
     return Gesture.Simultaneous(tap, pan);
-  }, [setActiveSection, translateY, startY, hasMoved, footerTranslateY, drawerAnimation, viewportWidth, viewportHeight, isInteractable]);
+  }, [setActiveSection, translateY, startY, hasMoved, footerTranslateY, isInteractable, activeSectionSV, getDynamicLimit, hasWarnedPanNaN, isPanning]);
 
   const animatedStyle = useAnimatedStyle(() => {
     return {

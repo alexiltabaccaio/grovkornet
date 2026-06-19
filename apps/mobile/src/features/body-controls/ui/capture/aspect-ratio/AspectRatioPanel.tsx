@@ -41,6 +41,8 @@ export const AspectRatioPanel = React.memo(({ animatedStyle }: AspectRatioPanelP
   );
 });
 
+AspectRatioPanel.displayName = 'AspectRatioPanel';
+
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'column',

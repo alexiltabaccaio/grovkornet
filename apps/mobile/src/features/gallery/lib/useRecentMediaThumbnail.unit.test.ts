@@ -2,7 +2,6 @@ import { useGalleryStore } from '@entities/gallery';
 import { renderHook, act } from '@testing-library/react-native';
 import { useRecentMediaThumbnail } from './useRecentMediaThumbnail';
 import * as MediaLibrary from 'expo-media-library/legacy';
-import { useSystemStore } from '@entities/system';
 
 describe('useRecentMediaThumbnail', () => {
   beforeEach(() => {

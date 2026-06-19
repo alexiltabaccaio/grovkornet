@@ -1,5 +1,3 @@
-import { useCameraStore } from '@entities/camera';
-import { useGalleryStore } from '@entities/gallery';
 /* eslint-disable @typescript-eslint/no-require-imports */
 import React from 'react';
 import { render, fireEvent, act } from '@testing-library/react-native';
@@ -62,7 +60,7 @@ jest.mock('@entities/camera', () => {
 jest.mock('@entities/gallery', () => {
   const ReactActual = jest.requireActual('react');
   const mockGalleryStoreFn = jest.fn((fn?: (state: any) => unknown) => {
-    // eslint-disable-next-line react-hooks/rules-of-hooks
+     
     const [galleryOpen, setGalleryOpen] = ReactActual.useState(false);
     const state = {
       latestCapturedUri: 'file:///test.jpg',

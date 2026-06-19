@@ -37,3 +37,4 @@ export const LightingModule = React.memo(({ handlePressWithDouble }: LightingMod
 
 // LightingModule.whyDidYouRender = true;
 
+LightingModule.displayName = 'LightingModule';

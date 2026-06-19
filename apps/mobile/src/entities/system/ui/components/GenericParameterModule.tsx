@@ -40,7 +40,7 @@ export const GenericParameterModule = React.memo(({
   const items = useMemo(() => {
     const list: WheelItem<ParameterType>[] = [];
     for (const item of parameters) {
-      const config: ParameterConfig = typeof item === 'string' ? { id: item as ParameterType } : item;
+      const config: ParameterConfig = typeof item === 'string' ? { id: item } : item;
       if (config.visible === false) {
         continue;
       }

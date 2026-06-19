@@ -54,3 +54,5 @@ export const NoiseReductionPanel = React.memo(({ animatedStyle }: NoiseReduction
     />
   );
 });
+
+NoiseReductionPanel.displayName = 'NoiseReductionPanel';

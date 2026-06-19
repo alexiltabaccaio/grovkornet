@@ -161,6 +161,8 @@ export const GrainSubPanel = React.memo(({ parameterDetailPanelAnimatedStyle: _p
   );
 });
 
+GrainSubPanel.displayName = 'GrainSubPanel';
+
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'column',

@@ -13,6 +13,7 @@ jest.mock('expo-modules-core', () => {
   return {
     ...actual,
     requireNativeViewManager: jest.fn(() => {
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
       const { View } = require('react-native');
       return View;
     }),
@@ -26,8 +27,7 @@ jest.mock('@grovkornet/engine', () => {
   const actual = jest.requireActual('@grovkornet/engine');
   return {
     ...actual,
-    verifyGrovkornetAuthenticity: jest.fn((uri) => {
-      console.log(`--- MOCKED verifyGrovkornetAuthenticity CALLED FOR ${uri} ---`);
+    verifyGrovkornetAuthenticity: jest.fn(() => {
       return Promise.resolve(mockVerificationResult);
     }),
   };

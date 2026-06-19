@@ -10,7 +10,9 @@ export const useGalleryPhotos = (initialUri?: string | null) => {
   const [permissionGranted, setPermissionGranted] = useState(false);
 
   const initialUriRef = useRef(initialUri);
-  initialUriRef.current = initialUri;
+  useEffect(() => {
+    initialUriRef.current = initialUri;
+  }, [initialUri]);
 
   useEffect(() => {
     let active = true;
@@ -24,7 +26,7 @@ export const useGalleryPhotos = (initialUri?: string | null) => {
         logger.debug('Gallery', 'Checking MediaLibrary permissions...');
         const checkPerms = async () => {
           const current = await MediaLibrary.getPermissionsAsync();
-          if (current.granted || current.status === ('limited' as any)) return current.status;
+          if (current.granted || current.status === ('limited' as unknown as typeof current.status)) return current.status;
 
           logger.debug('Gallery', 'Requesting MediaLibrary permissions (ignoring canAskAgain)...');
           const req = await MediaLibrary.requestPermissionsAsync();
@@ -51,7 +53,7 @@ export const useGalleryPhotos = (initialUri?: string | null) => {
           return;
         }
 
-        if (status !== 'granted' && status !== ('limited' as any)) {
+        if (status !== 'granted' && status !== ('limited' as unknown as typeof status)) {
           logger.warn('Gallery', 'MediaLibrary permissions not granted or timed out');
           setPermissionGranted(false);
           setLoading(false);
@@ -86,7 +88,6 @@ export const useGalleryPhotos = (initialUri?: string | null) => {
         const grovkornetAlbums = allAlbums.filter(a => a.title.toLowerCase() === 'grovkornet');
 
         let media: MediaLibrary.Asset[] = [];
-        let assetsTimer: NodeJS.Timeout;
 
         if (grovkornetAlbums.length > 0) {
           logger.debug('Gallery', `Found ${grovkornetAlbums.length} Grovkornet albums, fetching from all...`);

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-require-imports */
 import React from 'react';
 import { render } from '@testing-library/react-native';
 import { TorchSubPanel } from './TorchSubPanel';
@@ -29,12 +30,12 @@ jest.mock('@entities/system', () => {
       };
       return typeof fn === 'function' ? fn(state) : state;
     },
-    ParameterControl: (props: any) => {
+    ParameterControl: ({ valueFormatter }: any) => {
       React.useEffect(() => {
-        if (props.valueFormatter) {
-          props.valueFormatter(0.5);
+        if (valueFormatter) {
+          valueFormatter(0.5);
         }
-      }, [props.valueFormatter]);
+      }, [valueFormatter]);
       return <View testID="ParameterControl" />;
     },
   };

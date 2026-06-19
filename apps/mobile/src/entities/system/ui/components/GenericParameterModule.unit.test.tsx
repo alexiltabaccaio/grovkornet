@@ -18,6 +18,7 @@ jest.mock('../../model/useControlPanelStore', () => ({
 
 // Mock ConnectedParameter to easily find it in rendered output
 jest.mock('./ConnectedParameter', () => {
+// eslint-disable-next-line @typescript-eslint/no-require-imports
   const { Text } = require('react-native');
   return {
     ConnectedParameter: (props: any) => (

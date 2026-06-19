@@ -61,7 +61,7 @@ export const usePreferencesStore = create<PreferencesState & PreferencesActions>
     {
       name: 'grovkornet-preferences-storage',
       storage: createJSONStorage(() => createZustandMMKVStorage('grovkornet-global-preferences')),
-      merge: (persistedState: any, currentState: PreferencesState & PreferencesActions) => {
+      merge: (persistedState: unknown, currentState: PreferencesState & PreferencesActions) => {
         // Startup State Hygiene (Rehydration)
         // Local storage is not reliable, so we sanitize the persisted data
         // before merging it into the initial in-memory state.

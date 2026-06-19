@@ -19,12 +19,10 @@ export const AspectRatioSubPanel = ({ animatedStyle }: AspectRatioSubPanelProps)
   const { t } = useTranslation();
   const isLayoutOverlayEnabled = useSystemStore(state => state.isLayoutOverlayEnabled);
   const { 
-    aspectRatio, 
     resolutionSetting,
     force60fpsCrop,
     setForce60fpsCrop
   } = useBodyStore(useShallow(state => ({
-    aspectRatio: state.aspectRatio,
     resolutionSetting: state.resolutionSetting,
     force60fpsCrop: state.force60fpsCrop,
     setForce60fpsCrop: state.setForce60fpsCrop,
@@ -32,17 +30,6 @@ export const AspectRatioSubPanel = ({ animatedStyle }: AspectRatioSubPanelProps)
 
   const [localResolutionSetting, setLocalResolutionSetting] = React.useState(() => resolutionSetting.value);
   const [localForce60fpsCrop, setLocalForce60fpsCrop] = React.useState(() => force60fpsCrop.value);
-  const [localAspectRatio, setLocalAspectRatio] = React.useState(() => aspectRatio.value);
-
-  useAnimatedReaction(
-    () => aspectRatio.value,
-    (currentValue, previousValue) => {
-      if (currentValue !== previousValue) {
-        runOnJS(setLocalAspectRatio)(currentValue);
-      }
-    },
-    [aspectRatio]
-  );
 
   useAnimatedReaction(
     () => resolutionSetting.value,
