@@ -2,30 +2,30 @@ import React from 'react';
 import { render } from '@testing-library/react-native';
 import { GenericParameterModule } from './GenericParameterModule';
 
-// Mock the system store
+// Mock the system store and components
 const mockSetActiveParameter = jest.fn();
 let mockCurrentActiveParameter = 'none';
 
-jest.mock('../../model/useControlPanelStore', () => ({
-  useControlPanelStore: jest.fn((fn?: (state: any) => unknown) => {
-    const state = {
-      activeParameter: mockCurrentActiveParameter,
-      setActiveParameter: mockSetActiveParameter,
-    };
-    return fn ? fn(state) : state;
-  }),
-}));
-
-// Mock ConnectedParameter to easily find it in rendered output
-jest.mock('./ConnectedParameter', () => {
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-  const { Text } = require('react-native');
+jest.mock('@entities/system', () => {
+  const actual = jest.requireActual('@entities/system');
   return {
-    ConnectedParameter: (props: any) => (
-      <Text testID={`mock-param-${props.id}`} accessibilityLabel={props.label}>
-        {props.id}
-      </Text>
-    ),
+    ...actual,
+    useControlPanelStore: jest.fn((fn?: (state: any) => unknown) => {
+      const state = {
+        activeParameter: mockCurrentActiveParameter,
+        setActiveParameter: mockSetActiveParameter,
+      };
+      return fn ? fn(state) : state;
+    }),
+    ConnectedParameter: (props: any) => {
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      const { Text } = require('react-native');
+      return (
+        <Text testID={`mock-param-${props.id}`} accessibilityLabel={props.label}>
+          {props.id}
+        </Text>
+      );
+    },
   };
 });
 

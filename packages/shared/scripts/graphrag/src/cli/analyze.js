@@ -42,3 +42,11 @@ const orphanedFiles = detectOrphanedFiles(allNodes, nodeTypes, adjListIn);
 // Format and output report
 const report = formatAnalysisReport(violations, cycles, orphanedFiles);
 console.log(report);
+
+if (violations.length > 0 || cycles.length > 0) {
+  console.error("❌ GraphRAG Architectural Validation: Failed with violations or cycles.");
+  process.exit(1);
+} else {
+  console.log("✅ GraphRAG Architectural Validation: All checks passed!");
+  process.exit(0);
+}

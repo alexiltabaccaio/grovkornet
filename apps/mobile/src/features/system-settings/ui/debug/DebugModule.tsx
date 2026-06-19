@@ -1,5 +1,5 @@
 import React from 'react';
-import { GenericParameterModule } from '@entities/system';
+import { GenericParameterModule } from '@features/system-controls';
 import { ParameterType } from '@entities/system';
 
 const DEBUG_PARAMETERS: (ParameterType | { id: ParameterType; labelKey: string })[] = [

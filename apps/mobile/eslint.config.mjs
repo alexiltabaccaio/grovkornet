@@ -16,6 +16,29 @@ const fsdDeepImportRestrictions = {
   message: 'Import from the slice public API (e.g. "@entities/lens") instead of deep paths, or use relative paths for internal files.',
 };
 
+const fsdLayerRestrictions = {
+  shared: {
+    group: ['@app/**', '@screens/**', '@widgets/**', '@features/**', '@entities/**'],
+    message: 'The "shared" layer cannot import from higher layers.',
+  },
+  entities: {
+    group: ['@app/**', '@screens/**', '@widgets/**', '@features/**'],
+    message: 'The "entities" layer cannot import from higher layers.',
+  },
+  features: {
+    group: ['@app/**', '@screens/**', '@widgets/**'],
+    message: 'The "features" layer cannot import from higher layers.',
+  },
+  widgets: {
+    group: ['@app/**', '@screens/**'],
+    message: 'The "widgets" layer cannot import from higher layers.',
+  },
+  screens: {
+    group: ['@app/**'],
+    message: 'The "screens" layer cannot import from higher layers.',
+  }
+};
+
 export default [
   {
     ignores: ['dist/**', 'node_modules/**', 'coverage/**', '.expo/**', 'android/**', 'ios/**'],
@@ -184,6 +207,8 @@ export default [
     rules: {
       'no-restricted-imports': ['error', {
         patterns: [
+          fsdLayerRestrictions.features,
+
           {
             group: ['@features/body-controls/**', '@features/film-controls/**', '@features/system-settings/**', '@features/gallery/**'],
             message: 'Cross-imports between features are not allowed.'
@@ -198,6 +223,8 @@ export default [
     rules: {
       'no-restricted-imports': ['error', {
         patterns: [
+          fsdLayerRestrictions.features,
+
           {
             group: ['@features/lens-controls/**', '@features/film-controls/**', '@features/system-settings/**', '@features/gallery/**'],
             message: 'Cross-imports between features are not allowed.'
@@ -212,6 +239,8 @@ export default [
     rules: {
       'no-restricted-imports': ['error', {
         patterns: [
+          fsdLayerRestrictions.features,
+
           {
             group: ['@features/lens-controls/**', '@features/body-controls/**', '@features/system-settings/**', '@features/gallery/**'],
             message: 'Cross-imports between features are not allowed.'
@@ -226,6 +255,8 @@ export default [
     rules: {
       'no-restricted-imports': ['error', {
         patterns: [
+          fsdLayerRestrictions.features,
+
           {
             group: ['@features/lens-controls/**', '@features/body-controls/**', '@features/film-controls/**', '@features/gallery/**'],
             message: 'Cross-imports between features are not allowed.'
@@ -240,6 +271,8 @@ export default [
     rules: {
       'no-restricted-imports': ['error', {
         patterns: [
+          fsdLayerRestrictions.features,
+
           {
             group: ['@features/lens-controls/**', '@features/body-controls/**', '@features/film-controls/**', '@features/system-settings/**'],
             message: 'Cross-imports between features are not allowed.'
@@ -254,6 +287,8 @@ export default [
     rules: {
       'no-restricted-imports': ['error', {
         patterns: [
+          fsdLayerRestrictions.entities,
+
           {
             group: ['@entities/body/**', '@entities/film/**', '@entities/system/**', '@entities/camera/**'],
             message: 'Cross-imports between entities are not allowed.'
@@ -268,6 +303,8 @@ export default [
     rules: {
       'no-restricted-imports': ['error', {
         patterns: [
+          fsdLayerRestrictions.entities,
+
           {
             group: ['@entities/lens/**', '@entities/film/**', '@entities/system/**', '@entities/camera/**'],
             message: 'Cross-imports between entities are not allowed.'
@@ -282,6 +319,8 @@ export default [
     rules: {
       'no-restricted-imports': ['error', {
         patterns: [
+          fsdLayerRestrictions.entities,
+
           {
             group: ['@entities/lens/**', '@entities/body/**', '@entities/system/**', '@entities/camera/**'],
             message: 'Cross-imports between entities are not allowed.'
@@ -296,6 +335,8 @@ export default [
     rules: {
       'no-restricted-imports': ['error', {
         patterns: [
+          fsdLayerRestrictions.entities,
+
           {
             group: ['@entities/lens/**', '@entities/body/**', '@entities/film/**', '@entities/camera/**'],
             message: 'Cross-imports between entities are not allowed.'
@@ -310,6 +351,8 @@ export default [
     rules: {
       'no-restricted-imports': ['error', {
         patterns: [
+          fsdLayerRestrictions.entities,
+
           {
             group: ['@entities/lens/**', '@entities/body/**', '@entities/film/**', '@entities/system/**'],
             message: 'Cross-imports between entities are not allowed.'

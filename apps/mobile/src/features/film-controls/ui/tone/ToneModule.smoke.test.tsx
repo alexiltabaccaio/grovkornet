@@ -2,8 +2,7 @@ import React from 'react';
 import { render } from '@testing-library/react-native';
 import { ToneModule } from './ToneModule';
 
-jest.mock('@entities/system', () => ({
-  ...jest.requireActual('@entities/system'),
+jest.mock('@features/system-controls', () => ({
   GenericParameterModule: 'GenericParameterModule',
 }));
 

@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { useShallow } from 'zustand/shallow';
 import { useFilmStore } from '@entities/film';
 import { ParameterType } from '@entities/system';
-import { GenericParameterModule, ParameterConfig } from '@entities/system';
+import { GenericParameterModule, ParameterConfig } from '@features/system-controls';
 
 export const PROCESSING_PARAMETERS: ParameterType[] = ['noise_reduction'];
 

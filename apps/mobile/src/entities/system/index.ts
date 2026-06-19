@@ -2,7 +2,6 @@ export * from './model/useSystemStore';
 export * from './model/useControlPanelStore';
 export * from './model/types';
 export * from './model/constants';
-export * from './ui/components/GenericParameterModule';
 export * from './ui/components/GenericPillPanel';
 export * from './ui/components/ParameterControl';
 export * from './ui/components/ParameterPanelWrapper';

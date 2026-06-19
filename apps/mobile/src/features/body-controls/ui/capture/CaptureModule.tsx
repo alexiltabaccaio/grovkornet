@@ -1,6 +1,6 @@
 import React from 'react';
 import { ParameterType } from '@entities/system';
-import { GenericParameterModule } from '@entities/system';
+import { GenericParameterModule } from '@features/system-controls';
 
 
 interface CaptureModuleProps {

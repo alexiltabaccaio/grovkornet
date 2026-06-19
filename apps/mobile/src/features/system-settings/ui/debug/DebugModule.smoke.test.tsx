@@ -23,8 +23,12 @@ jest.mock('@entities/system', () => ({
     };
     return fn ? fn(state) : state;
   }),
-  GenericParameterModule: 'GenericParameterModule',
+  
   ParameterPanelWrapper: ({ children }: any) => children,
+}));
+
+jest.mock('@features/system-controls', () => ({
+  GenericParameterModule: 'GenericParameterModule',
 }));
 
 describe('Debug module panels', () => {

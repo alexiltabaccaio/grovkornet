@@ -2,10 +2,8 @@ import React, { useMemo, useCallback, useEffect } from 'react';
 import { StyleSheet } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { useShallow } from 'zustand/shallow';
-import { useControlPanelStore } from '../../model/useControlPanelStore';
-import { ParameterType } from '../../model/types';
-import { ConnectedParameter } from './ConnectedParameter';
-import { SystemParameterWheel, WheelItem } from '@features/system-controls';
+import { useControlPanelStore, ParameterType, ConnectedParameter } from '@entities/system';
+import { SystemParameterWheel, WheelItem } from './SystemParameterWheel';
 import { useTranslation } from 'react-i18next';
 
 export interface ParameterConfig {

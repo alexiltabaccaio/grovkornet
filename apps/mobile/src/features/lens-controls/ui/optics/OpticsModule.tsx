@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { useShallow } from 'zustand/shallow';
 import { useLensStore } from '@entities/lens';
 import { ParameterType } from '@entities/system';
-import { GenericParameterModule, ParameterConfig } from '@entities/system';
+import { GenericParameterModule, ParameterConfig } from '@features/system-controls';
 
 
 export const OPTICS_PARAMETERS: ParameterType[] = ['camera_selection', 'focus'];
