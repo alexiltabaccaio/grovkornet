@@ -164,7 +164,7 @@ parameters:
       name: chroma_shift
       control: slider
       min: 0.0
-      max: 2.0
+      max: 1.0
       formatter: percentage
       formatterScale: 100
   - name: whiteBalance
@@ -279,7 +279,7 @@ parameters:
       name: chromatic_aberration
       control: slider
       min: 0.0
-      max: 2.0
+      max: 1.0
       formatter: percentage
       formatterScale: 100
   - name: chromaShiftDirection

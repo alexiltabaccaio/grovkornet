@@ -240,7 +240,7 @@ export const useFilmParameterControlData = (
               return {
                 value: film.chromaShift,
                 minValue: 0.0,
-                maxValue: 2.0,
+                maxValue: 1.0,
                 onChange: film.setChromaShift,
                 onUpdateWorklet: filmWorklets.updateChromaShift,
                 hideValueInAuto: false,
@@ -306,7 +306,7 @@ export const useFilmParameterControlData = (
               return {
                 value: film.chromaticAberration,
                 minValue: 0.0,
-                maxValue: 2.0,
+                maxValue: 1.0,
                 onChange: film.setChromaticAberration,
                 onUpdateWorklet: filmWorklets.updateChromaticAberration,
                 hideValueInAuto: false,

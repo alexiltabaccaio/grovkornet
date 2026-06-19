@@ -81,11 +81,11 @@ void CameraStateManager::clampState(RenderState& state) const {
     state.renderParams.contrast = std::isnan(state.renderParams.contrast) ? 1.0f : std::clamp(state.renderParams.contrast, 0.0000f, 2.0000f);
     state.renderParams.grainIntensity = std::isnan(state.renderParams.grainIntensity) ? 0.0f : std::clamp(state.renderParams.grainIntensity, 0.0000f, 2.0000f);
     state.renderParams.vignetteIntensity = std::isnan(state.renderParams.vignetteIntensity) ? 0.0f : std::clamp(state.renderParams.vignetteIntensity, 0.0000f, 1.0000f);
-    state.renderParams.chromaShift = std::isnan(state.renderParams.chromaShift) ? 0.0f : std::clamp(state.renderParams.chromaShift, 0.0000f, 2.0000f);
+    state.renderParams.chromaShift = std::isnan(state.renderParams.chromaShift) ? 0.0f : std::clamp(state.renderParams.chromaShift, 0.0000f, 1.0000f);
     state.renderParams.whiteBalance = std::isnan(state.renderParams.whiteBalance) ? 5000.0f : std::clamp(state.renderParams.whiteBalance, 2000.0000f, 10000.0000f);
     state.renderParams.tint = std::isnan(state.renderParams.tint) ? 0.0f : std::clamp(state.renderParams.tint, -100.0000f, 100.0000f);
     state.renderParams.bloomIntensity = std::isnan(state.renderParams.bloomIntensity) ? 0.0f : std::clamp(state.renderParams.bloomIntensity, 0.0000f, 9999.0000f);
-    state.renderParams.chromaticAberration = std::isnan(state.renderParams.chromaticAberration) ? 0.0f : std::clamp(state.renderParams.chromaticAberration, 0.0000f, 2.0000f);
+    state.renderParams.chromaticAberration = std::isnan(state.renderParams.chromaticAberration) ? 0.0f : std::clamp(state.renderParams.chromaticAberration, 0.0000f, 1.0000f);
     state.renderParams.sharpening = std::isnan(state.renderParams.sharpening) ? 0.0f : std::clamp(state.renderParams.sharpening, 0.0000f, 1.0000f);
     state.renderParams.blackLevel = std::isnan(state.renderParams.blackLevel) ? 0.0f : std::clamp(state.renderParams.blackLevel, -0.5000f, 0.5000f);
     state.renderParams.highlights = std::isnan(state.renderParams.highlights) ? 1.0f : std::clamp(state.renderParams.highlights, 0.0000f, 2.0000f);

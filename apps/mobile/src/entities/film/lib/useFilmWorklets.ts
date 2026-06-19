@@ -238,7 +238,7 @@ export const useFilmWorklets = () => {
           const clampedValue = config.chromaShift;
           updateSharedValue(film.chromaShift, clampedValue);
         } else {
-          const safeValue = Math.min(Math.max(value, 0.0), 2.0);
+          const safeValue = Math.min(Math.max(value, 0.0), 1.0);
           updateSharedValue(film.chromaShift, safeValue);
           config.chromaShift = safeValue;
         }
@@ -326,7 +326,7 @@ export const useFilmWorklets = () => {
           const clampedValue = config.chromaticAberration;
           updateSharedValue(film.chromaticAberration, clampedValue);
         } else {
-          const safeValue = Math.min(Math.max(value, 0.0), 2.0);
+          const safeValue = Math.min(Math.max(value, 0.0), 1.0);
           updateSharedValue(film.chromaticAberration, safeValue);
           config.chromaticAberration = safeValue;
         }
