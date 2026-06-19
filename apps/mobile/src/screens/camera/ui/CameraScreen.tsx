@@ -48,7 +48,7 @@ export const CameraScreen = () => {
 
   const { hasPermission } = useCameraPermissions();
   const { shouldRenderGallery, galleryTransition, openGallery, closeGallery } = useGalleryOverlay();
-  const { cameraKey, drawerAnimation, footerTranslateY } = useCameraAppState();
+  const { cameraKey, drawerAnimation, footerTranslateY, viewfinderTranslateY } = useCameraAppState();
 
   const [isCameraDeepSleep, setIsCameraDeepSleep] = useState(false);
 
@@ -135,9 +135,15 @@ export const CameraScreen = () => {
   return (
     <View style={styles.container}>
       <InteractionContext.Provider value={interactionContextValue}>
-        <GestureController footerTranslateY={footerTranslateY} drawerAnimation={drawerAnimation}>
-          {viewfinderElement}
-        </GestureController>
+        <React.Fragment key={`viewfinder-${cameraKey}`}>
+          <GestureController 
+            footerTranslateY={footerTranslateY} 
+            drawerAnimation={drawerAnimation}
+            viewfinderTranslateY={viewfinderTranslateY}
+          >
+            {viewfinderElement}
+          </GestureController>
+        </React.Fragment>
         <Header />
 
         {isFpsOverlayEnabled && <DebugOverlay />}

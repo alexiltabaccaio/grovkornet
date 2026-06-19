@@ -12,9 +12,10 @@ interface GestureControllerProps {
   children?: ReactNode;
   footerTranslateY?: SharedValue<number>;
   drawerAnimation?: SharedValue<number>;
+  viewfinderTranslateY?: SharedValue<number>;
 }
 
-export const GestureController = React.memo(({ children, footerTranslateY, drawerAnimation }: GestureControllerProps) => {
+export const GestureController = React.memo(({ children, footerTranslateY, drawerAnimation, viewfinderTranslateY }: GestureControllerProps) => {
   const { activeSection, setActiveSection } = useControlPanelStore(useShallow((s) => ({
     activeSection: s.activeSection,
     setActiveSection: s.setActiveSection,
@@ -31,7 +32,8 @@ export const GestureController = React.memo(({ children, footerTranslateY, drawe
   const viewportWidth = screenWidth;
   const viewportHeight = screenHeight - statusBarHeight - 80 - insets.bottom;
 
-  const translateY = useSharedValue(0);
+  const localTranslateY = useSharedValue(0);
+  const translateY = viewfinderTranslateY ?? localTranslateY;
   const startY = useSharedValue(0);
   const hasMoved = useSharedValue(false);
   const hasWarnedPanNaN = useSharedValue(false);

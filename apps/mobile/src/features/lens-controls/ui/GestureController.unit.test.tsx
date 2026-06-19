@@ -107,7 +107,23 @@ describe('GestureController', () => {
 
     Gesture.Pan = (...args: any[]) => {
       const gesture = originalPan(...args);
-      capturedPanGesture = gesture;
+      capturedPanGesture = new Proxy(gesture, {
+        get(target, prop) {
+          if (prop === '_onChange') {
+            const originalOnChange = target[prop];
+            if (typeof originalOnChange === 'function') {
+              return (event: any) => {
+                const eventWithChangeY = {
+                  changeY: event && event.changeY !== undefined ? event.changeY : (event ? event.translationY : undefined),
+                  ...event,
+                };
+                return originalOnChange(eventWithChangeY);
+              };
+            }
+          }
+          return target[prop];
+        }
+      });
       return gesture;
     };
   });
@@ -320,7 +336,7 @@ describe('GestureController', () => {
 
   it('resets translateY when activeSection becomes none', () => {
     currentActiveSection = 'lens';
-    const { rerender } = render(<GestureController />);
+    const { rerender } = render(<GestureController children={<View />} />);
 
     act(() => {
       capturedPanGesture._onStart();
@@ -333,8 +349,10 @@ describe('GestureController', () => {
     expect(mockTranslateY.value).toBe(-100);
 
     // Simulate closing active section
-    currentActiveSection = 'none';
-    rerender(<GestureController />);
+    act(() => {
+      currentActiveSection = 'none';
+      rerender(<GestureController children={<View key="changed" />} />);
+    });
 
     expect(mockTranslateY.value).toBe(0);
   });
@@ -518,6 +536,22 @@ describe('GestureController', () => {
     });
     // Should stay at -100
     expect(mockTranslateY.value).toBe(-100);
+  });
+
+  it('uses viewfinderTranslateY from props when provided', () => {
+    currentActiveSection = 'lens';
+    const mockViewfinderTranslateY = { value: 0 };
+    render(<GestureController viewfinderTranslateY={mockViewfinderTranslateY as any} />);
+
+    act(() => {
+      capturedPanGesture._onStart();
+    });
+
+    act(() => {
+      capturedPanGesture._onChange({ translationY: -150 });
+    });
+
+    expect(mockViewfinderTranslateY.value).toBe(-150);
   });
 });
 

@@ -13,6 +13,7 @@ export const useCameraAppState = () => {
   // read these current JS values, guaranteeing perfect synchronization without the need for timeout hacks.
   const drawerAnimation = useSharedValue(initialActiveSection === 'none' ? 0 : -250);
   const footerTranslateY = useSharedValue(initialActiveSection === 'none' ? 0 : -50);
+  const viewfinderTranslateY = useSharedValue(0);
 
   useEffect(() => {
     const subscription = AppState.addEventListener('change', (nextAppState: AppStateStatus) => {
@@ -34,5 +35,6 @@ export const useCameraAppState = () => {
     cameraKey,
     drawerAnimation,
     footerTranslateY,
+    viewfinderTranslateY,
   };
 };

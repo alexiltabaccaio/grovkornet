@@ -135,6 +135,10 @@ jest.mock('expo-modules-core', () => {
     }),
     requireNativeModule: jest.fn(() => ({
       verifyGrovkornetAuthenticity: jest.fn(() => Promise.resolve(true)),
+      generatePresetPreview: jest.fn(() => Promise.resolve('')),
+      deleteFile: jest.fn(() => Promise.resolve(true)),
+      pauseStream: jest.fn(() => Promise.resolve()),
+      resumeStream: jest.fn(() => Promise.resolve()),
     })),
   };
 });

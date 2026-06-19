@@ -108,5 +108,29 @@ describe('useCameraAppState', () => {
     
     expect(result.current.drawerAnimation.value).toBe(-250);
     expect(result.current.footerTranslateY.value).toBe(-50);
+    expect(result.current.viewfinderTranslateY.value).toBe(0);
+  });
+
+  it('persists viewfinderTranslateY value when app state changes to active and key increments', () => {
+    const { result } = renderHook(() => useCameraAppState());
+
+    act(() => {
+      result.current.viewfinderTranslateY.value = -150;
+    });
+
+    act(() => {
+      if (appStateCallback) {
+        appStateCallback('background');
+      }
+    });
+
+    act(() => {
+      if (appStateCallback) {
+        appStateCallback('active');
+      }
+    });
+
+    expect(result.current.cameraKey).toBe(1);
+    expect(result.current.viewfinderTranslateY.value).toBe(-150);
   });
 });
