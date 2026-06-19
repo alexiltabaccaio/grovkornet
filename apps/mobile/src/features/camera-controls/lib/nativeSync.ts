@@ -1,3 +1,4 @@
+// ⚠️ AI WARNING: Before modifying this cross-platform sync logic, query the dependency graph: node packages/shared/scripts/graphrag/query.js <query>
 import { useFilmStore, setFilmStoreListener, getNitroConfig } from '@entities/film';
 import { useBodyStore, setBodyStoreListener } from '@entities/body';
 import { usePresetStore, DEFAULT_FILM_PAYLOAD, DEFAULT_BODY_PAYLOAD } from '@entities/preset';

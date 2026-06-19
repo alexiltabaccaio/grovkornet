@@ -1,3 +1,4 @@
+// ⚠️ AI WARNING: Before modifying this complex/cross-platform module, query the dependency graph: node packages/shared/scripts/graphrag/query.js <query>
 import { type HybridObject } from 'react-native-nitro-modules';
 
 export interface NitroCameraConfiguration extends HybridObject<{ ios: 'c++'; android: 'kotlin' }> {

@@ -1,3 +1,4 @@
+// ⚠️ AI WARNING: Before modifying this core native engine file, query the dependency graph: node packages/shared/scripts/graphrag/query.js <query>
 #include "GrovkornetEngine.h"
 #include "FrameRenderer.h"
 #include <android/log.h>

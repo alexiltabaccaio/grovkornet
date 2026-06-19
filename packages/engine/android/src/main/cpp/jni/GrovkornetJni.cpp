@@ -1,3 +1,4 @@
+// ⚠️ AI WARNING: Before modifying this core native JNI bridge, query the dependency graph: node packages/shared/scripts/graphrag/query.js <query>
 #include <jni.h>
 #include <android/log.h>
 #include <android/bitmap.h>

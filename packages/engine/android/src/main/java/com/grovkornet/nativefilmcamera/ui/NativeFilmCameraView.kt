@@ -1,5 +1,6 @@
 package com.grovkornet.nativefilmcamera.ui
 
+// ⚠️ AI WARNING: Before modifying this complex/cross-platform module, query the dependency graph: node packages/shared/scripts/graphrag/query.js <query>
 import android.content.Context
 import android.util.Log
 import com.grovkornet.nativefilmcamera.events.CameraEvents

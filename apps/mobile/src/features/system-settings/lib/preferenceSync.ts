@@ -1,3 +1,4 @@
+// ⚠️ AI WARNING: Before modifying this cross-platform sync logic, query the dependency graph: node packages/shared/scripts/graphrag/query.js <query>
 import { useLensStore, setLensStoreListener } from '@entities/lens';
 import { usePreferencesStore } from '@entities/preferences';
 

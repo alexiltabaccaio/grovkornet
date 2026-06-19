@@ -1,3 +1,4 @@
+// ⚠️ AI WARNING: Before modifying codegen, ensure you understand the architecture by querying: node packages/shared/scripts/graphrag/query.js <query>
 const runParameters = require('./parameters');
 const runErrors = require('./errors');
 const runHardware = require('./hardware');

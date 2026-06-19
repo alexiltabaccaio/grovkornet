@@ -1,5 +1,6 @@
 package com.grovkornet.nativefilmcamera
 
+// ⚠️ AI WARNING: Before modifying this complex/cross-platform module, query the dependency graph: node packages/shared/scripts/graphrag/query.js <query>
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import com.grovkornet.nativefilmcamera.errors.CameraErrorFactory

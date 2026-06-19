@@ -1,3 +1,4 @@
+// ⚠️ AI WARNING: Before modifying the app root, query the dependency graph: node packages/shared/scripts/graphrag/query.js <query>
 import { useCameraStore } from '@entities/camera';
 import React, { useEffect } from 'react';
 import { StatusBar } from 'expo-status-bar';

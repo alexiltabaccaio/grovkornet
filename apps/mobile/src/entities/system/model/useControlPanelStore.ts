@@ -1,3 +1,4 @@
+// ⚠️ AI WARNING: Before modifying this global state store, query the dependency graph: node packages/shared/scripts/graphrag/query.js <query>
 import { create } from 'zustand';
 import { logger } from '@shared/lib/logger';
 import { SectionType, ModuleType, ParameterType, ParameterDetailPanelType } from './types';

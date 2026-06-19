@@ -1,3 +1,4 @@
+// ⚠️ AI WARNING: Before modifying this complex/cross-platform module, query the dependency graph: node packages/shared/scripts/graphrag/query.js <query>
 import { requireNativeViewManager, requireNativeModule, EventEmitter } from 'expo-modules-core';
 import * as React from 'react';
 import { ViewProps } from 'react-native';
