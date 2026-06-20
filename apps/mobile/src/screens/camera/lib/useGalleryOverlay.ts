@@ -46,8 +46,11 @@ export const useGalleryOverlay = () => {
   useEffect(() => {
     if (!isOpen) {
       void resumeStream();
+      if (galleryTransition.value > 0) {
+        galleryTransition.value = withTiming(0, { duration: 300 });
+      }
     }
-  }, [isOpen]);
+  }, [isOpen, galleryTransition]);
 
   return {
     shouldRenderGallery: isOpen,
