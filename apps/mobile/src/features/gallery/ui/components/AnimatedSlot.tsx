@@ -3,7 +3,7 @@ import { StyleSheet, useWindowDimensions } from 'react-native';
 import Animated, { useAnimatedStyle, SharedValue } from 'react-native-reanimated';
 import { Image } from 'expo-image';
 import { GalleryItem } from '../../lib/types';
-
+import { AppState } from 'react-native';
 interface AnimatedSlotProps {
   photo: GalleryItem;
   index: number;
@@ -39,6 +39,16 @@ export const AnimatedSlot = memo(({
   const previousUriRef = React.useRef<string>(photo.uri);
   const previousIdRef = React.useRef<string>(photo.id);
   const placeholderUriRef = React.useRef<string | undefined>(undefined);
+
+  const [appStateKey, setAppStateKey] = React.useState(0);
+  React.useEffect(() => {
+    const subscription = AppState.addEventListener('change', nextAppState => {
+      if (nextAppState === 'active') {
+        setAppStateKey(prev => prev + 1);
+      }
+    });
+    return () => subscription.remove();
+  }, []);
 
   if (photo.uri !== previousUriRef.current) {
     // Only use the previous URI as a placeholder if it's the SAME photo (e.g., thumbnail -> high-res).
@@ -114,6 +124,7 @@ export const AnimatedSlot = memo(({
       <Animated.View style={zoomStyle}>
         <Animated.View style={innerStyle}>
           <Image
+            key={`${photo.id}-${appStateKey}`}
             source={photo.uri}
             placeholder={placeholderUriRef.current}
             style={styles.previewImage}
