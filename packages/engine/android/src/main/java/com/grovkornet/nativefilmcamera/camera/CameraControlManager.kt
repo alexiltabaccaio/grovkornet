@@ -107,7 +107,7 @@ class CameraControlManager(
             }
             builder.setCaptureRequestOption(CaptureRequest.EDGE_MODE, CaptureRequest.EDGE_MODE_OFF)
 
-            builder.setCaptureRequestOption(CaptureRequest.CONTROL_AWB_MODE, if (config.whiteBalanceAuto) CaptureRequest.CONTROL_AWB_MODE_AUTO else CaptureRequest.CONTROL_AWB_MODE_OFF)
+            builder.setCaptureRequestOption(CaptureRequest.CONTROL_AWB_MODE, if (config.temperatureAuto) CaptureRequest.CONTROL_AWB_MODE_AUTO else CaptureRequest.CONTROL_AWB_MODE_OFF)
 
             if (config.autoFocus) {
                 builder.setCaptureRequestOption(CaptureRequest.CONTROL_AF_MODE, CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_VIDEO)

@@ -30,8 +30,8 @@ namespace margelo::nitro::grovkornet {
       prototype.registerHybridSetter("vignetteIntensity", &HybridNitroCameraConfigurationSpec::setVignetteIntensity);
       prototype.registerHybridGetter("chromaShift", &HybridNitroCameraConfigurationSpec::getChromaShift);
       prototype.registerHybridSetter("chromaShift", &HybridNitroCameraConfigurationSpec::setChromaShift);
-      prototype.registerHybridGetter("whiteBalance", &HybridNitroCameraConfigurationSpec::getWhiteBalance);
-      prototype.registerHybridSetter("whiteBalance", &HybridNitroCameraConfigurationSpec::setWhiteBalance);
+      prototype.registerHybridGetter("temperature", &HybridNitroCameraConfigurationSpec::getTemperature);
+      prototype.registerHybridSetter("temperature", &HybridNitroCameraConfigurationSpec::setTemperature);
       prototype.registerHybridGetter("tint", &HybridNitroCameraConfigurationSpec::getTint);
       prototype.registerHybridSetter("tint", &HybridNitroCameraConfigurationSpec::setTint);
       prototype.registerHybridGetter("bloomIntensity", &HybridNitroCameraConfigurationSpec::getBloomIntensity);

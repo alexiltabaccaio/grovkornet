@@ -197,7 +197,7 @@ export const Viewfinder = React.memo(({ cameraKey }: ViewfinderProps) => {
       noiseReductionAuto: noiseReductionAuto.value,
       isoAuto: isoAuto.value,
       shutterSpeedAuto: shutterSpeedAuto.value,
-      whiteBalanceAuto: temperatureAuto.value,
+      temperatureAuto: temperatureAuto.value,
       autoFocus: focusAuto.value,
       iso: resolvedIso.value,
       exposureTime: resolvedShutterSpeed.value,

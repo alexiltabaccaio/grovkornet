@@ -246,7 +246,7 @@ GrovkornetEngine::~GrovkornetEngine() {
     LOGI("Filament Engine resources destroyed.");
 }
 
-void GrovkornetEngine::triggerLutUpdate(float saturation, float contrast, float ev, float whiteBalance, float tint,
+void GrovkornetEngine::triggerLutUpdate(float saturation, float contrast, float ev, float temperature, float tint,
                                         float satRed, float satOrange, float satYellow, float satGreen,
                                         float satCyan, float satBlue, float satPurple, float satMagenta,
                                         float boundMagentaRed, float boundRedOrange, float boundOrangeYellow, float boundYellowGreen,
@@ -256,7 +256,7 @@ void GrovkornetEngine::triggerLutUpdate(float saturation, float contrast, float 
                                         float hue,
                                         float hueRed, float hueOrange, float hueYellow, float hueGreen,
                                         float hueCyan, float hueBlue, float huePurple, float hueMagenta) {
-    lutGenerator.triggerLutUpdate(saturation, contrast, ev, whiteBalance, tint,
+    lutGenerator.triggerLutUpdate(saturation, contrast, ev, temperature, tint,
                                   satRed, satOrange, satYellow, satGreen,
                                   satCyan, satBlue, satPurple, satMagenta,
                                   boundMagentaRed, boundRedOrange, boundOrangeYellow, boundYellowGreen,
@@ -277,7 +277,7 @@ void GrovkornetEngine::applyShaderParameters(const RenderState* state, filament:
     const RenderParams& params = state->renderParams;
     
     // 1. Trigger LUT calculation on CPU and apply it to GPU texture
-    triggerLutUpdate(params.saturation, params.contrast, state->ev, params.whiteBalance, params.tint,
+    triggerLutUpdate(params.saturation, params.contrast, state->ev, params.temperature, params.tint,
                      params.satRed, params.satOrange, params.satYellow, params.satGreen,
                      params.satCyan, params.satBlue, params.satPurple, params.satMagenta,
                      params.boundMagentaRed, params.boundRedOrange, params.boundOrangeYellow, params.boundYellowGreen,

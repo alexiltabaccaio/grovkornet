@@ -17,7 +17,7 @@ public:
     void start();
     void stop();
 
-    void triggerLutUpdate(float saturation, float contrast, float ev, float whiteBalance, float tint,
+    void triggerLutUpdate(float saturation, float contrast, float ev, float temperature, float tint,
                           float satRed, float satOrange, float satYellow, float satGreen,
                           float satCyan, float satBlue, float satPurple, float satMagenta,
                           float boundMagentaRed, float boundRedOrange, float boundOrangeYellow, float boundYellowGreen,
@@ -49,7 +49,7 @@ private:
     float currentSaturation = 1.0f;
     float currentContrast = 1.0f;
     float currentEv = 0.0f;
-    float currentWhiteBalance = 5000.0f;
+    float currentTemperature = 5000.0f;
     float currentTint = 0.0f;
     float currentSatRed = 50.0f;
     float currentSatOrange = 50.0f;
@@ -88,7 +88,7 @@ private:
     float activeSaturation = -1.0f;
     float activeContrast = -1.0f;
     float activeEv = -1.0f;
-    float activeWhiteBalance = -1.0f;
+    float activeTemperature = -1.0f;
     float activeTint = -1.0f;
     float activeSatRed = -1.0f;
     float activeSatOrange = -1.0f;

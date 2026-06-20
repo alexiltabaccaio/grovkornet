@@ -55,8 +55,8 @@ object CameraStateJNI {
         @JvmStatic external fun setVignetteIntensity(statePtr: Long, value: Float)
         @JvmStatic external fun getChromaShift(statePtr: Long): Float
         @JvmStatic external fun setChromaShift(statePtr: Long, value: Float)
-        @JvmStatic external fun getWhiteBalance(statePtr: Long): Float
-        @JvmStatic external fun setWhiteBalance(statePtr: Long, value: Float)
+        @JvmStatic external fun getTemperature(statePtr: Long): Float
+        @JvmStatic external fun setTemperature(statePtr: Long, value: Float)
         @JvmStatic external fun getTint(statePtr: Long): Float
         @JvmStatic external fun setTint(statePtr: Long, value: Float)
         @JvmStatic external fun getBloomIntensity(statePtr: Long): Float
@@ -169,8 +169,8 @@ object CameraStateJNI {
         @JvmStatic external fun setIsoAuto(statePtr: Long, value: Boolean)
         @JvmStatic external fun getShutterSpeedAuto(statePtr: Long): Boolean
         @JvmStatic external fun setShutterSpeedAuto(statePtr: Long, value: Boolean)
-        @JvmStatic external fun getWhiteBalanceAuto(statePtr: Long): Boolean
-        @JvmStatic external fun setWhiteBalanceAuto(statePtr: Long, value: Boolean)
+        @JvmStatic external fun getTemperatureAuto(statePtr: Long): Boolean
+        @JvmStatic external fun setTemperatureAuto(statePtr: Long, value: Boolean)
         @JvmStatic external fun getAutoFocus(statePtr: Long): Boolean
         @JvmStatic external fun setAutoFocus(statePtr: Long, value: Boolean)
         @JvmStatic external fun getIso(statePtr: Long): Int

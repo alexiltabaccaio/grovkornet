@@ -111,17 +111,16 @@ parameters:
       setSideEffects:
         - target: isoAuto
           value: value
-  - name: whiteBalanceAuto
+  - name: temperatureAuto
     category: hardware
     kotlin:
       type: Boolean
       default: "true"
-      propHandler: if (view.config.whiteBalanceAuto != value) view.updateBoth {
-        whiteBalanceAuto = value }
+      propHandler: if (view.config.temperatureAuto != value) view.updateBoth {
+        temperatureAuto = value }
     ts:
       type: boolean
     zustand:
-      name: temperatureAuto
       default: DEFAULT_TEMPERATURE_AUTO
       type: boolean
       resetGroup: temperature

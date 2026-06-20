@@ -618,26 +618,26 @@ Java_com_grovkornet_nativefilmcamera_jni_CameraStateJNI_setChromaShift(
 }
 
 JNIEXPORT jfloat JNICALL
-Java_com_grovkornet_nativefilmcamera_jni_CameraStateJNI_getWhiteBalance(
+Java_com_grovkornet_nativefilmcamera_jni_CameraStateJNI_getTemperature(
         JNIEnv* env, jclass clazz, jlong statePtr) {
     if (statePtr == 0) {
-        return CameraStateManager::getInstance().getActiveState()->renderParams.whiteBalance;
+        return CameraStateManager::getInstance().getActiveState()->renderParams.temperature;
     } else {
         auto* state = reinterpret_cast<RenderState*>(statePtr);
-        return state->renderParams.whiteBalance;
+        return state->renderParams.temperature;
     }
 }
 
 JNIEXPORT void JNICALL
-Java_com_grovkornet_nativefilmcamera_jni_CameraStateJNI_setWhiteBalance(
+Java_com_grovkornet_nativefilmcamera_jni_CameraStateJNI_setTemperature(
         JNIEnv* env, jclass clazz, jlong statePtr, jfloat value) {
     if (statePtr == 0) {
         CameraStateManager::getInstance().updateStateField([value](RenderState& state) {
-            state.renderParams.whiteBalance = value;
+            state.renderParams.temperature = value;
         });
     } else {
         auto* state = reinterpret_cast<RenderState*>(statePtr);
-        state->renderParams.whiteBalance = value;
+        state->renderParams.temperature = value;
         CameraStateManager::getInstance().clampState(*state);
     }
 }
@@ -2043,26 +2043,26 @@ Java_com_grovkornet_nativefilmcamera_jni_CameraStateJNI_setShutterSpeedAuto(
 }
 
 JNIEXPORT jboolean JNICALL
-Java_com_grovkornet_nativefilmcamera_jni_CameraStateJNI_getWhiteBalanceAuto(
+Java_com_grovkornet_nativefilmcamera_jni_CameraStateJNI_getTemperatureAuto(
         JNIEnv* env, jclass clazz, jlong statePtr) {
     if (statePtr == 0) {
-        return CameraStateManager::getInstance().getActiveState()->whiteBalanceAuto;
+        return CameraStateManager::getInstance().getActiveState()->temperatureAuto;
     } else {
         auto* state = reinterpret_cast<RenderState*>(statePtr);
-        return state->whiteBalanceAuto;
+        return state->temperatureAuto;
     }
 }
 
 JNIEXPORT void JNICALL
-Java_com_grovkornet_nativefilmcamera_jni_CameraStateJNI_setWhiteBalanceAuto(
+Java_com_grovkornet_nativefilmcamera_jni_CameraStateJNI_setTemperatureAuto(
         JNIEnv* env, jclass clazz, jlong statePtr, jboolean value) {
     if (statePtr == 0) {
         CameraStateManager::getInstance().updateStateField([value](RenderState& state) {
-            state.whiteBalanceAuto = (value == JNI_TRUE);
+            state.temperatureAuto = (value == JNI_TRUE);
         });
     } else {
         auto* state = reinterpret_cast<RenderState*>(statePtr);
-        state->whiteBalanceAuto = (value == JNI_TRUE);
+        state->temperatureAuto = (value == JNI_TRUE);
         CameraStateManager::getInstance().clampState(*state);
     }
 }

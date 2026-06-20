@@ -167,7 +167,7 @@ parameters:
       max: 1.0
       formatter: percentage
       formatterScale: 100
-  - name: whiteBalance
+  - name: temperature
     category: render
     arrayIndex: 10
     kotlin:
@@ -176,7 +176,6 @@ parameters:
     ts:
       type: number
     zustand:
-      name: temperature
       default: DEFAULT_TEMPERATURE
       type: number
       resetGroup: temperature

@@ -16,7 +16,7 @@ export interface NativeFilmCameraViewProps extends ViewProps, GeneratedCameraVie
   noiseReductionAuto?: boolean;
   isoAuto?: boolean;
   shutterSpeedAuto?: boolean;
-  whiteBalanceAuto?: boolean;
+  temperatureAuto?: boolean;
   autoFocus?: boolean;
   iso?: number;
   exposureTime?: number;

@@ -66,8 +66,8 @@ namespace margelo::nitro::grovkornet {
     void setVignetteIntensity(double vignetteIntensity) override;
     double getChromaShift() override;
     void setChromaShift(double chromaShift) override;
-    double getWhiteBalance() override;
-    void setWhiteBalance(double whiteBalance) override;
+    double getTemperature() override;
+    void setTemperature(double temperature) override;
     double getTint() override;
     void setTint(double tint) override;
     double getBloomIntensity() override;

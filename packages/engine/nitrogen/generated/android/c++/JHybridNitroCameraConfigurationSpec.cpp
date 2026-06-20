@@ -113,14 +113,14 @@ namespace margelo::nitro::grovkornet {
     static const auto method = _javaPart->javaClassStatic()->getMethod<void(double /* chromaShift */)>("setChromaShift");
     method(_javaPart, chromaShift);
   }
-  double JHybridNitroCameraConfigurationSpec::getWhiteBalance() {
-    static const auto method = _javaPart->javaClassStatic()->getMethod<double()>("getWhiteBalance");
+  double JHybridNitroCameraConfigurationSpec::getTemperature() {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<double()>("getTemperature");
     auto __result = method(_javaPart);
     return __result;
   }
-  void JHybridNitroCameraConfigurationSpec::setWhiteBalance(double whiteBalance) {
-    static const auto method = _javaPart->javaClassStatic()->getMethod<void(double /* whiteBalance */)>("setWhiteBalance");
-    method(_javaPart, whiteBalance);
+  void JHybridNitroCameraConfigurationSpec::setTemperature(double temperature) {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<void(double /* temperature */)>("setTemperature");
+    method(_javaPart, temperature);
   }
   double JHybridNitroCameraConfigurationSpec::getTint() {
     static const auto method = _javaPart->javaClassStatic()->getMethod<double()>("getTint");

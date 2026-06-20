@@ -13,7 +13,7 @@ struct RenderParams {
     float grainSpeed;
     float vignetteIntensity;
     float chromaShift;
-    float whiteBalance;
+    float temperature;
     float tint;
     float bloomIntensity;
     float chromaticAberration;

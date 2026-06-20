@@ -2,9 +2,9 @@ import React from 'react';
 import { StyleProp, ViewStyle } from 'react-native';
 import { useShallow } from 'zustand/shallow';
 import { useControlPanelStore, ParameterType, ParameterControl, ParameterPanelWrapper } from '@entities/system';
-import { useFilmParameterControlData, FilmParameterType } from '@entities/film';
-import { useBodyParameterControlData, BodyParameterType } from '@entities/body';
-import { useLensParameterControlData, LensParameterType } from '@entities/lens';
+import { useFilmParameterControlData, FilmParameterType, FILM_PARAMETERS } from '@entities/film';
+import { useBodyParameterControlData, BodyParameterType, BODY_PARAMETERS } from '@entities/body';
+import { useLensParameterControlData, LensParameterType, LENS_PARAMETERS } from '@entities/lens';
 
 interface SliderPanelProps {
   parameter: ParameterType;
@@ -13,34 +13,15 @@ interface SliderPanelProps {
 }
 
 const isFilmParameter = (p: ParameterType): p is FilmParameterType => {
-  return [
-    'grain',
-    'sharpening',
-    'saturation',
-    'hue',
-    'contrast',
-    'blackLevel',
-    'highlights',
-    'pivot',
-    'chromatic_aberration',
-    'bloom',
-    'temperature',
-    'tint',
-    'pixelation',
-    'vignette',
-    'chroma_shift',
-    'tape_jitter',
-    'scanlines',
-    'lens_distortion',
-  ].includes(p);
+  return (FILM_PARAMETERS as readonly string[]).includes(p);
 };
 
 const isBodyParameter = (p: ParameterType): p is BodyParameterType => {
-  return ['ev', 'iso', 'shutter_speed', 'zoom'].includes(p);
+  return (BODY_PARAMETERS as readonly string[]).includes(p);
 };
 
 const isLensParameter = (p: ParameterType): p is LensParameterType => {
-  return p === 'focus';
+  return (LENS_PARAMETERS as readonly string[]).includes(p);
 };
 
 const NOOP = () => {};

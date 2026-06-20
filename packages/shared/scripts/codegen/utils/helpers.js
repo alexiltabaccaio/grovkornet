@@ -25,7 +25,8 @@ const FILE_PATHS = {
   filmActions: 'apps/mobile/src/features/film-controls/lib/filmActions.ts',
   cppStateManagerSource: 'packages/engine/android/src/main/cpp/state/CameraStateManager.cpp',
   kotlinJniBridge: 'packages/engine/android/src/main/java/com/grovkornet/nativefilmcamera/jni/CameraStateJNI.kt',
-  cppJniSource: 'packages/engine/android/src/main/cpp/jni/GrovkornetJni.cpp'
+  cppJniSource: 'packages/engine/android/src/main/cpp/jni/GrovkornetJni.cpp',
+  nativeSync: 'apps/mobile/src/features/camera-controls/lib/nativeSync.ts'
 };
 
 function replaceBetweenMarkers(filePath, startMarker, endMarker, newContent, indent = '') {

@@ -3,7 +3,6 @@
 #include <memory>
 #include <atomic>
 #include <string>
-#include <algorithm>
 #include "core/RenderParams.h"
 
 struct RenderState {
@@ -16,7 +15,7 @@ struct RenderState {
     int noiseReduction = 1;
     bool isoAuto = true;
     bool shutterSpeedAuto = true;
-    bool whiteBalanceAuto = true;
+    bool temperatureAuto = true;
     bool autoFocus = false;
     int iso = 400;
     long long exposureTime = 1000000000LL / 60;

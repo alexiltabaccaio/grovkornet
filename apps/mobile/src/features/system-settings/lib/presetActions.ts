@@ -148,9 +148,7 @@ export const applyPreset = (id: string): void => {
   const nitroConfig = getNitroConfig();
   Object.keys(targetFilm).forEach((key) => {
     const k = key as keyof FilmPresetPayload;
-    if (k === 'temperature') {
-      nitroConfig.whiteBalance = targetFilm[k];
-    } else if (k in nitroConfig) {
+    if (k in nitroConfig) {
       try {
         (nitroConfig as unknown as Record<string, unknown>)[k] = targetFilm[k];
       } catch {
@@ -186,9 +184,7 @@ export const syncRuntimeToNative = (): void => {
     const storeItem = filmStore[k] as unknown;
     if (storeItem && typeof storeItem === 'object' && 'value' in storeItem) {
       const val = (storeItem as Record<string, unknown>).value;
-      if (k === 'temperature') {
-        nitroConfig.whiteBalance = val as number;
-      } else if (k in nitroConfig) {
+      if (k in nitroConfig) {
         try {
           (nitroConfig as unknown as Record<string, unknown>)[k] = val;
         } catch {

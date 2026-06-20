@@ -89,13 +89,13 @@ class HybridNitroCameraConfiguration : HybridNitroCameraConfigurationSpec() {
             }
         }
 
-    override var whiteBalance: Double
-        get() = try { CameraStateJNI.getWhiteBalance(0L).toDouble() } catch (e: Throwable) { 5000.0 }
+    override var temperature: Double
+        get() = try { CameraStateJNI.getTemperature(0L).toDouble() } catch (e: Throwable) { 5000.0 }
         set(value) {
             try {
-                CameraStateJNI.setWhiteBalance(0L, value.toFloat())
+                CameraStateJNI.setTemperature(0L, value.toFloat())
             } catch (e: Throwable) {
-                Log.e("HybridNitroCameraConfiguration", "Failed to set whiteBalance", e)
+                Log.e("HybridNitroCameraConfiguration", "Failed to set temperature", e)
             }
         }
 

@@ -115,9 +115,9 @@ class NativeFilmCameraModule : Module() {
               }
       }
 
-      Prop("whiteBalanceAuto") { view: NativeFilmCameraView, value: Boolean? ->
+      Prop("temperatureAuto") { view: NativeFilmCameraView, value: Boolean? ->
         value?.let { value ->
-                if (view.config.whiteBalanceAuto != value) view.updateBoth { whiteBalanceAuto = value }
+                if (view.config.temperatureAuto != value) view.updateBoth { temperatureAuto = value }
               }
       }
 

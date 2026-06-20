@@ -30,11 +30,28 @@ function generateZustandTypesForStore(parameters, storeName, filePath) {
   replaceBetweenMarkers(filePath, '  // @@GEN_ACTIONS_START@@', '  // @@GEN_ACTIONS_END@@', actionsContent, '  ');
 }
 
+function generateTypesParametersList(parameters, storeName, filePath, constantName, manualList = null) {
+  console.log(`Generating UI parameter constant: ${constantName} in ${filePath}`);
+  let names;
+  if (manualList) {
+    names = manualList;
+  } else {
+    // Only parameters in the store that have ui configuration
+    const storeParams = parameters.filter(p => p.zustand && (p.zustand.store || 'film') === storeName && p.ui);
+    names = storeParams.map(p => p.ui.name);
+  }
+  const content = `export const ${constantName} = [\n  ${names.map(name => `'${name}'`).join(',\n  ')}\n] as const;`;
+  replaceBetweenMarkers(filePath, '// @@GEN_PARAMETERS_START@@', '// @@GEN_PARAMETERS_END@@', content, '');
+}
+
 function generateZustandTypes(parameters) {
   console.log('\n--- Generating Zustand Types (Step 3) ---');
   generateZustandTypesForStore(parameters, 'film', FILE_PATHS.zustandTypes);
+  generateTypesParametersList(parameters, 'film', FILE_PATHS.zustandTypes, 'FILM_PARAMETERS');
   generateZustandTypesForStore(parameters, 'body', FILE_PATHS.bodyTypes);
+  generateTypesParametersList(parameters, 'body', FILE_PATHS.bodyTypes, 'BODY_PARAMETERS', ['ev', 'iso', 'shutter_speed', 'zoom']);
   generateZustandTypesForStore(parameters, 'lens', FILE_PATHS.lensTypes);
+  generateTypesParametersList(parameters, 'lens', FILE_PATHS.lensTypes, 'LENS_PARAMETERS', ['focus']);
 }
 
 function isSharedValue(parameters, paramName) {
@@ -188,7 +205,7 @@ function generateZustandStore(parameters) {
       assignments.push(`store.set${capitalized}(${p.zustand.default});`);
     }
     
-    if (params.some(p => p.name === 'whiteBalance' || p.name === 'tint')) {
+    if (params.some(p => p.name === 'temperature' || p.name === 'tint')) {
       if (!assignments.some(a => a.includes('setTemperatureAuto'))) {
         assignments.push(`store.setTemperatureAuto(true);`);
       }
@@ -202,6 +219,17 @@ function generateZustandStore(parameters) {
   // Populate the reset cases in filmActions.ts
   replaceBetweenMarkers(FILE_PATHS.filmActions, '    // @@GEN_RESET_START@@', '    // @@GEN_RESET_END@@', resetContent, '    ');
 
+  // 5. Generate SYNC_MAP in nativeSync.ts
+  console.log(`Generating SYNC_MAP in: ${FILE_PATHS.nativeSync}`);
+  const syncParams = parameters.filter(p => p.nitro && (p.zustand?.store || 'film') === 'film');
+  const syncMapContent = syncParams
+    .map(p => {
+      const storeName = p.zustand?.name || p.name;
+      const nativeName = p.name;
+      return `${storeName}: '${nativeName}',`;
+    })
+    .join('\n');
+  replaceBetweenMarkers(FILE_PATHS.nativeSync, '  // @@GEN_SYNC_MAP_START@@', '  // @@GEN_SYNC_MAP_END@@', syncMapContent, '  ');
 }
 
 module.exports = {

@@ -48,7 +48,7 @@ void LutGenerator::stop() {
 }
 
 void LutGenerator::triggerLutUpdate(float saturation, float contrast, float ev,
-                                    float whiteBalance, float tint,
+                                    float temperature, float tint,
                                     float satRed, float satOrange,
                                     float satYellow, float satGreen,
                                     float satCyan, float satBlue,
@@ -64,7 +64,7 @@ void LutGenerator::triggerLutUpdate(float saturation, float contrast, float ev,
 
   // Check if parameters actually changed
   if (saturation == currentSaturation && contrast == currentContrast &&
-      ev == currentEv && whiteBalance == currentWhiteBalance &&
+      ev == currentEv && temperature == currentTemperature &&
       tint == currentTint && satRed == currentSatRed &&
       satOrange == currentSatOrange && satYellow == currentSatYellow &&
       satGreen == currentSatGreen && satCyan == currentSatCyan &&
@@ -100,7 +100,7 @@ void LutGenerator::triggerLutUpdate(float saturation, float contrast, float ev,
   currentSaturation = saturation;
   currentContrast = contrast;
   currentEv = ev;
-  currentWhiteBalance = whiteBalance;
+  currentTemperature = temperature;
   currentTint = tint;
   currentSatRed = satRed;
   currentSatOrange = satOrange;
@@ -159,7 +159,7 @@ void LutGenerator::applyLutTextureUpdate(filament::Engine &engine,
       activeSaturation = currentSaturation;
       activeContrast = currentContrast;
       activeEv = currentEv;
-      activeWhiteBalance = currentWhiteBalance;
+      activeTemperature = currentTemperature;
       activeTint = currentTint;
       activeSatRed = currentSatRed;
       activeSatOrange = currentSatOrange;
@@ -413,7 +413,7 @@ void LutGenerator::lutGenerationLoop() {
     float saturation = 1.0f;
     float contrast = 1.0f;
     float ev = 0.0f;
-    float whiteBalance = 5000.0f;
+    float temperature = 5000.0f;
     float tint = 0.0f;
     float satRed = 50.0f;
     float satOrange = 50.0f;
@@ -460,7 +460,7 @@ void LutGenerator::lutGenerationLoop() {
       saturation = currentSaturation;
       contrast = currentContrast;
       ev = currentEv;
-      whiteBalance = currentWhiteBalance;
+      temperature = currentTemperature;
       tint = currentTint;
       satRed = currentSatRed;
       satOrange = currentSatOrange;
@@ -515,7 +515,7 @@ void LutGenerator::lutGenerationLoop() {
 
     // Compute EV multiplier and White Balance factors outside the loops
     float evMultiplier = std::pow(2.0f, ev);
-    float temp = whiteBalance / 5000.0f;
+    float temp = temperature / 5000.0f;
     float tintOffset = tint / 100.0f;
     float wb_r = temp * (1.0f + tintOffset * 0.2f);
     float wb_g = 1.0f - tintOffset * 0.2f;

@@ -118,7 +118,7 @@ class CameraConfigurationTest {
         assertEquals(1.1f, config.contrast, 0.001f)
         assertTrue(config.grainEnabled)
         assertEquals(0.7f, config.grainIntensity, 0.001f)
-        assertEquals(4200.0f, config.whiteBalance, 0.001f) // mapped from "temperature"
+        assertEquals(4200.0f, config.temperature, 0.001f)
         assertEquals(-3.0f, config.tint, 0.001f)
         assertEquals(2, config.aspectRatio) // mapped from "aspectRatio"
         assertTrue(config.aberrationInvert)

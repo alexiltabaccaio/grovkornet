@@ -77,7 +77,7 @@ abstract class HybridNitroCameraConfigurationSpec: HybridObject() {
   @get:Keep
   @set:DoNotStrip
   @set:Keep
-  abstract var whiteBalance: Double
+  abstract var temperature: Double
   
   @get:DoNotStrip
   @get:Keep

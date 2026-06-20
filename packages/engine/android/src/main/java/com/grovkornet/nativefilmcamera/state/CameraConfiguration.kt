@@ -83,13 +83,13 @@ class CameraConfiguration(val nativePointer: Long = 0L) {
                     CameraStateJNI.fallbackSet("chromaShift", nativePointer, value)
                 }
             }
-    var whiteBalance: Float
-            get() = if (CameraStateJNI.isJniLoaded) CameraStateJNI.getWhiteBalance(nativePointer) else (CameraStateJNI.fallbackGet("whiteBalance", nativePointer, 5000.0f) as Float)
+    var temperature: Float
+            get() = if (CameraStateJNI.isJniLoaded) CameraStateJNI.getTemperature(nativePointer) else (CameraStateJNI.fallbackGet("temperature", nativePointer, 5000.0f) as Float)
             set(value) {
                 if (CameraStateJNI.isJniLoaded) {
-                    CameraStateJNI.setWhiteBalance(nativePointer, value)
+                    CameraStateJNI.setTemperature(nativePointer, value)
                 } else {
-                    CameraStateJNI.fallbackSet("whiteBalance", nativePointer, value)
+                    CameraStateJNI.fallbackSet("temperature", nativePointer, value)
                 }
             }
     var tint: Float
@@ -598,13 +598,13 @@ class CameraConfiguration(val nativePointer: Long = 0L) {
                     CameraStateJNI.fallbackSet("shutterSpeedAuto", nativePointer, value)
                 }
             }
-    var whiteBalanceAuto: Boolean
-            get() = if (CameraStateJNI.isJniLoaded) CameraStateJNI.getWhiteBalanceAuto(nativePointer) else (CameraStateJNI.fallbackGet("whiteBalanceAuto", nativePointer, true) as Boolean)
+    var temperatureAuto: Boolean
+            get() = if (CameraStateJNI.isJniLoaded) CameraStateJNI.getTemperatureAuto(nativePointer) else (CameraStateJNI.fallbackGet("temperatureAuto", nativePointer, true) as Boolean)
             set(value) {
                 if (CameraStateJNI.isJniLoaded) {
-                    CameraStateJNI.setWhiteBalanceAuto(nativePointer, value)
+                    CameraStateJNI.setTemperatureAuto(nativePointer, value)
                 } else {
-                    CameraStateJNI.fallbackSet("whiteBalanceAuto", nativePointer, value)
+                    CameraStateJNI.fallbackSet("temperatureAuto", nativePointer, value)
                 }
             }
     var autoFocus: Boolean
@@ -789,9 +789,8 @@ fun CameraConfiguration.loadFromMap(payload: Map<String, Any>) {
     payload["shutterSpeedAuto"]?.let { rawValue ->
         (rawValue as? Boolean)?.let { shutterSpeedAuto = it }
     }
-    val raw_whiteBalanceAuto = payload["temperatureAuto"] ?: payload["whiteBalanceAuto"]
-    raw_whiteBalanceAuto?.let { rawValue ->
-        (rawValue as? Boolean)?.let { whiteBalanceAuto = it }
+    payload["temperatureAuto"]?.let { rawValue ->
+        (rawValue as? Boolean)?.let { temperatureAuto = it }
     }
     val raw_autoFocus = payload["focusAuto"] ?: payload["autoFocus"]
     raw_autoFocus?.let { rawValue ->
@@ -859,9 +858,8 @@ fun CameraConfiguration.loadFromMap(payload: Map<String, Any>) {
     payload["chromaShift"]?.let { rawValue ->
         (rawValue as? Number)?.toFloat()?.let { chromaShift = it }
     }
-    val raw_whiteBalance = payload["temperature"] ?: payload["whiteBalance"]
-    raw_whiteBalance?.let { rawValue ->
-        (rawValue as? Number)?.toFloat()?.let { whiteBalance = it }
+    payload["temperature"]?.let { rawValue ->
+        (rawValue as? Number)?.toFloat()?.let { temperature = it }
     }
     payload["tint"]?.let { rawValue ->
         (rawValue as? Number)?.toFloat()?.let { tint = it }

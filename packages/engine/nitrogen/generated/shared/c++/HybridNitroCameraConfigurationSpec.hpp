@@ -60,8 +60,8 @@ namespace margelo::nitro::grovkornet {
       virtual void setVignetteIntensity(double vignetteIntensity) = 0;
       virtual double getChromaShift() = 0;
       virtual void setChromaShift(double chromaShift) = 0;
-      virtual double getWhiteBalance() = 0;
-      virtual void setWhiteBalance(double whiteBalance) = 0;
+      virtual double getTemperature() = 0;
+      virtual void setTemperature(double temperature) = 0;
       virtual double getTint() = 0;
       virtual void setTint(double tint) = 0;
       virtual double getBloomIntensity() = 0;

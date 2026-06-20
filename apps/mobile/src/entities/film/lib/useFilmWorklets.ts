@@ -255,14 +255,14 @@ export const useFilmWorklets = () => {
           if (!BYPASS_JS_SANITIZATION) return;
         }
         if (BYPASS_JS_SANITIZATION) {
-          config.whiteBalance = value;
-          const clampedValue = config.whiteBalance;
+          config.temperature = value;
+          const clampedValue = config.temperature;
           updateSharedValue(film.temperature, clampedValue);
           updateSharedValue(film.temperatureAuto, false);
         } else {
           const safeValue = Math.min(Math.max(value, 2000.0), 10000.0);
           updateSharedValue(film.temperature, safeValue);
-          config.whiteBalance = safeValue;
+          config.temperature = safeValue;
           updateSharedValue(film.temperatureAuto, false);
         }
         };

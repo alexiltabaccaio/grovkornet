@@ -14,7 +14,7 @@ export interface NitroCameraConfiguration extends HybridObject<{ ios: 'c++'; and
   grainSpeed: number;
   vignetteIntensity: number;
   chromaShift: number;
-  whiteBalance: number;
+  temperature: number;
   tint: number;
   bloomIntensity: number;
   chromaticAberration: number;

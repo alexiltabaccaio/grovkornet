@@ -5,8 +5,8 @@ function generateViewfinderProps(parameters) {
   
   const VIEWFINDER_PROP_EXPRESSIONS = {
     exposureTime: 'resolvedShutterSpeed as unknown as SharedValue<number | undefined>',
-    whiteBalance: 'temperature as unknown as SharedValue<number | undefined>',
-    whiteBalanceAuto: 'temperatureAuto as unknown as SharedValue<boolean | undefined>',
+    temperature: 'temperature as unknown as SharedValue<number | undefined>',
+    temperatureAuto: 'temperatureAuto as unknown as SharedValue<boolean | undefined>',
     torchStrength: 'resolvedTorchStrength as unknown as SharedValue<number | undefined>',
     noiseReduction: 'resolvedNoiseReduction as unknown as SharedValue<number | undefined>',
     previewQuality: 'previewQuality as unknown as SharedValue<number | undefined>',
