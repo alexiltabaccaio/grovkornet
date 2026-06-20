@@ -45,6 +45,8 @@ export const usePhotoPreviewTransition = ({
   }, [currentIndex]);
 
   const prepareTransition = useCallback((targetIndex: number, isManualSwipe?: boolean) => {
+    const currentTarget = animatingToIndexRef.current !== null ? animatingToIndexRef.current : currentIndex.value;
+
     if (isManualSwipe) {
       animatingToIndexRef.current = targetIndex;
     }
@@ -53,7 +55,7 @@ export const usePhotoPreviewTransition = ({
       return Array.from(newIndices);
     });
     
-    if (isManualSwipe && onPhotoVisible && photos[targetIndex] && targetIndex !== currentIndex.value) {
+    if (isManualSwipe && onPhotoVisible && photos[targetIndex] && targetIndex !== currentTarget) {
       const uri = photos[targetIndex].uri;
       expectedEchoesRef.current.push(uri);
       if (expectedEchoesRef.current.length > 10) {
