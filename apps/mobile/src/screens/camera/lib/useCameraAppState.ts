@@ -16,19 +16,11 @@ export const useCameraAppState = () => {
   const viewfinderTranslateY = useSharedValue(0);
 
   useEffect(() => {
-    const subscription = AppState.addEventListener('change', (nextAppState: AppStateStatus) => {
-      const nextIsActive = nextAppState === 'active';
-      if (nextIsActive) {
-        // Incrementing the cameraKey causes the UI overlays (wrapped in a React.Fragment in CameraScreen) 
-        // to cleanly unmount and remount. This is a robust React pattern to handle Android's Activity 
-        // recreation and layout shifts, avoiding complex imperative Reanimated sync hacks.
-        setCameraKey((prev) => prev + 1);
-      }
-    });
-
-    return () => {
-      subscription.remove();
-    };
+    // The AppState listener and cameraKey remount pattern was causing Reanimated 
+    // native views to lose their transform sync when the notification shade was pulled down 
+    // and pushed back up (triggering inactive -> active), resetting the bottom sheet 
+    // and capture controls to their default positions until touched.
+    // Modern Reanimated 3 handles Activity resume and layout recreation internally.
   }, []);
 
   return {
