@@ -1,13 +1,12 @@
 {
   "name": "@grovkornet/mobile",
-  "version": "0.11.1",
+  "version": "0.11.2",
   "description": "A high-performance cinematic camera application for Android built with React Native and a custom C++/Kotlin native rendering engine (Uber Shader) for real-time analog film emulation.",
   "main": "index.ts",
   "scripts": {
     "start": "expo start",
     "dev": "expo run:android --variant developmentDebug --app-id com.grovkornet.app.dev",
     "android": "expo run:android --variant developmentDebug --app-id com.grovkornet.app.dev",
-    "ios": "expo run:ios",
     "build": "expo run:android --variant productionRelease --app-id com.grovkornet.app",
     "web": "expo start --web",
     "test": "jest",

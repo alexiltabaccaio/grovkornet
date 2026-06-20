@@ -1,13 +1,7 @@
 {
   "platforms": [
-    "ios",
     "android"
   ],
-  "ios": {
-    "modules": [
-      "NativeFilmCameraModule"
-    ]
-  },
   "android": {
     "modules": [
       "com.grovkornet.nativefilmcamera.NativeFilmCameraModule"
