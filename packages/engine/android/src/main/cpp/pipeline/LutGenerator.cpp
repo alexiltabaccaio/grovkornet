@@ -523,7 +523,8 @@ void LutGenerator::lutGenerationLoop() {
 
     // S-Curve parameters setup
     // Invert parameters so positive slider (+100) = brighter, negative (-100) = darker
-    float actualBlackLevel = -blackLevel;
+    // Use cubic mapping to provide finer control near 0
+    float actualBlackLevel = -(blackLevel * blackLevel * blackLevel * 4.0f);
     float actualWhitePoint = std::max(actualBlackLevel + 0.001f, 2.0f - highlights);
 
     float safeP = std::max(0.01f, std::min(0.99f, pivot));
