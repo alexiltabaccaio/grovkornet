@@ -63,6 +63,7 @@ struct RenderParams {
     float scanlinesHorizontal;
     float scanlinesMode;
     float scanlinesDensity;
+    float lensDistortion;
     // @@GEN_STRUCT_END@@
 };
 

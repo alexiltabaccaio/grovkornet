@@ -61,6 +61,7 @@ export const useFilmWorklets = () => {
   const hasWarnedNaN_hueMagenta = useSharedValue(false);
   const hasWarnedNaN_scanlinesMode = useSharedValue(false);
   const hasWarnedNaN_scanlinesDensity = useSharedValue(false);
+  const hasWarnedNaN_lensDistortion = useSharedValue(false);
   // @@GEN_WORKLET_FLAGS_END@@
 
   return useMemo(() => {
@@ -921,6 +922,26 @@ export const useFilmWorklets = () => {
         updateSharedValue(film.scanlinesDensity, value);
         config.scanlinesDensity = value;
         };
+
+        const updateLensDistortion = (value: number) => {
+        'worklet';
+        if (isNaN(value)) {
+          if (__DEV__ && !hasWarnedNaN_lensDistortion.value) {
+            hasWarnedNaN_lensDistortion.value = true;
+            console.warn(`[Camera Codegen Warning]: NaN value intercepted for parameter 'lensDistortion'`);
+          }
+          if (!BYPASS_JS_SANITIZATION) return;
+        }
+        if (BYPASS_JS_SANITIZATION) {
+          config.lensDistortion = value;
+          const clampedValue = config.lensDistortion;
+          updateSharedValue(film.lensDistortion, clampedValue);
+        } else {
+          const safeValue = Math.min(Math.max(value, -1.0), 1.0);
+          updateSharedValue(film.lensDistortion, safeValue);
+          config.lensDistortion = safeValue;
+        }
+        };
     // @@GEN_WORKLETS_END@@
 
     return {
@@ -989,6 +1010,7 @@ export const useFilmWorklets = () => {
             updateScanlinesHorizontal,
             updateScanlinesMode,
             updateScanlinesDensity,
+            updateLensDistortion,
       // @@GEN_WORKLET_EXPORTS_END@@
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps

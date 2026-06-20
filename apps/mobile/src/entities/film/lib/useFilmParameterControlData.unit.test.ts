@@ -1,7 +1,7 @@
 import { renderHook } from '@testing-library/react-native';
 import { useFilmParameterControlData } from './useFilmParameterControlData';
 import { useFilmStore } from '../model/useFilmStore';
-import { DEFAULT_TINT } from '@grovkornet/shared';
+import { DEFAULT_TINT, DEFAULT_LENS_DISTORTION } from '@grovkornet/shared';
 
 describe('useFilmParameterControlData', () => {
   beforeEach(() => {
@@ -19,6 +19,7 @@ describe('useFilmParameterControlData', () => {
     film.setVignetteIntensity(0);
     film.setTemperatureAuto(true);
     film.setHue(0);
+    film.setLensDistortion(0);
   });
 
   it('maps "grain" parameter correctly', () => {
@@ -163,7 +164,7 @@ describe('useFilmParameterControlData', () => {
     const { result } = renderHook(() => useFilmParameterControlData('chromatic_aberration'));
 
     expect(result.current.minValue).toBe(0);
-    expect(result.current.maxValue).toBe(2.0);
+    expect(result.current.maxValue).toBe(1.0);
 
     result.current.onChange(0.5);
     expect(useFilmStore.getState().chromaticAberration.value).toBe(0.5);
@@ -264,5 +265,22 @@ describe('useFilmParameterControlData', () => {
 
     result.current.onReset?.();
     expect(useFilmStore.getState().hue.value).toBe(0.0);
+  });
+
+  it('maps "lens_distortion" parameter correctly', () => {
+    const { result } = renderHook(() => useFilmParameterControlData('lens_distortion'));
+
+    expect(result.current.minValue).toBe(-1.0);
+    expect(result.current.maxValue).toBe(1.0);
+    expect(result.current.centerValue).toBe(0.0);
+
+    result.current.onChange(0.3);
+    expect(useFilmStore.getState().lensDistortion.value).toBe(0.3);
+
+    expect(result.current.valueFormatter(0.3)).toBe('30');
+    expect(result.current.valueFormatter(-0.25)).toBe('-25');
+
+    result.current.onReset?.();
+    expect(useFilmStore.getState().lensDistortion.value).toBe(DEFAULT_LENS_DISTORTION);
   });
 });

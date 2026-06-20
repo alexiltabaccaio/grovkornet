@@ -66,6 +66,7 @@ export interface FilmPresetPayload {
   hueMagenta: number;
   scanlinesMode: number;
   scanlinesDensity: number;
+  lensDistortion: number;
   // @@GEN_FILM_PAYLOAD_END@@
 }
 

@@ -43,6 +43,7 @@ fragment {
     #define u_TargetResolution u_RenderData5.w
     #define u_PixelationFactor u_RenderData6.x
     #define u_PanelY u_RenderData6.y
+    #define u_LensDistortion u_RenderData6.z
 
     #include "includes/Pixelation.glsl"
     #include "includes/ChromaEffects.glsl"
@@ -51,10 +52,12 @@ fragment {
     #include "includes/Vignette.glsl"
     #include "includes/FilmGrain.glsl"
     #include "includes/Glassmorphism.glsl"
+    #include "includes/LensDistortion.glsl"
 
     void material(inout MaterialInputs material) {
         prepareMaterial(material);
         vec2 uv = getUV0();
+        uv = applyLensDistortion(uv);
         vec2 res = 1.0 / materialParams.u_TexelSize;
         float minDim = min(res.x, res.y);
         

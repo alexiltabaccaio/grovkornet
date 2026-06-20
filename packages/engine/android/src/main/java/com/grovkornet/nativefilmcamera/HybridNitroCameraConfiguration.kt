@@ -588,5 +588,15 @@ class HybridNitroCameraConfiguration : HybridNitroCameraConfigurationSpec() {
                 Log.e("HybridNitroCameraConfiguration", "Failed to set scanlinesDensity", e)
             }
         }
+
+    override var lensDistortion: Double
+        get() = try { CameraStateJNI.getLensDistortion(0L).toDouble() } catch (e: Throwable) { 0.0 }
+        set(value) {
+            try {
+                CameraStateJNI.setLensDistortion(0L, value.toFloat())
+            } catch (e: Throwable) {
+                Log.e("HybridNitroCameraConfiguration", "Failed to set lensDistortion", e)
+            }
+        }
     // @@GEN_OVERRIDES_END@@
 }

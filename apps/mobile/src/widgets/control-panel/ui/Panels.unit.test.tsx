@@ -139,6 +139,14 @@ describe('Panels', () => {
     expect(toJSON()).toBeDefined();
   });
 
+  it('renders lens distortion parameter when activeParameter is lens_distortion', () => {
+    act(() => {
+      useControlPanelStore.getState().setActiveParameter('lens_distortion');
+    });
+    const { toJSON } = render(<Panels translateY={mockTranslateY} />);
+    expect(toJSON()).toBeDefined();
+  });
+
   it('re-uses the same container root element when switching between different parameters', () => {
     act(() => {
       useControlPanelStore.getState().setActiveParameter('contrast');

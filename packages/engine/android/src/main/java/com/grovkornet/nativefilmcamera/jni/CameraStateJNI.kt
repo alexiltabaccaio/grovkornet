@@ -155,6 +155,8 @@ object CameraStateJNI {
         @JvmStatic external fun setScanlinesMode(statePtr: Long, value: Int)
         @JvmStatic external fun getScanlinesDensity(statePtr: Long): Float
         @JvmStatic external fun setScanlinesDensity(statePtr: Long, value: Float)
+        @JvmStatic external fun getLensDistortion(statePtr: Long): Float
+        @JvmStatic external fun setLensDistortion(statePtr: Long, value: Float)
         @JvmStatic external fun getEv(statePtr: Long): Float
         @JvmStatic external fun setEv(statePtr: Long, value: Float)
         @JvmStatic external fun getTargetFps(statePtr: Long): Int

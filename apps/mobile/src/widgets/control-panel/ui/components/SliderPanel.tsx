@@ -31,6 +31,7 @@ const isFilmParameter = (p: ParameterType): p is FilmParameterType => {
     'chroma_shift',
     'tape_jitter',
     'scanlines',
+    'lens_distortion',
   ].includes(p);
 };
 

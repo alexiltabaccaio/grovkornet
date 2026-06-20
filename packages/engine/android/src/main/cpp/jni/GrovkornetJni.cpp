@@ -1868,6 +1868,31 @@ Java_com_grovkornet_nativefilmcamera_jni_CameraStateJNI_setScanlinesDensity(
 }
 
 JNIEXPORT jfloat JNICALL
+Java_com_grovkornet_nativefilmcamera_jni_CameraStateJNI_getLensDistortion(
+        JNIEnv* env, jclass clazz, jlong statePtr) {
+    if (statePtr == 0) {
+        return CameraStateManager::getInstance().getActiveState()->renderParams.lensDistortion;
+    } else {
+        auto* state = reinterpret_cast<RenderState*>(statePtr);
+        return state->renderParams.lensDistortion;
+    }
+}
+
+JNIEXPORT void JNICALL
+Java_com_grovkornet_nativefilmcamera_jni_CameraStateJNI_setLensDistortion(
+        JNIEnv* env, jclass clazz, jlong statePtr, jfloat value) {
+    if (statePtr == 0) {
+        CameraStateManager::getInstance().updateStateField([value](RenderState& state) {
+            state.renderParams.lensDistortion = value;
+        });
+    } else {
+        auto* state = reinterpret_cast<RenderState*>(statePtr);
+        state->renderParams.lensDistortion = value;
+        CameraStateManager::getInstance().clampState(*state);
+    }
+}
+
+JNIEXPORT jfloat JNICALL
 Java_com_grovkornet_nativefilmcamera_jni_CameraStateJNI_getEv(
         JNIEnv* env, jclass clazz, jlong statePtr) {
     if (statePtr == 0) {

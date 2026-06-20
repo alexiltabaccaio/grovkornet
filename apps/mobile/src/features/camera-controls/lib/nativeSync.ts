@@ -65,6 +65,7 @@ const SYNC_MAP: Record<string, string> = {
   hueBlue: 'hueBlue',
   huePurple: 'huePurple',
   hueMagenta: 'hueMagenta',
+  lensDistortion: 'lensDistortion',
 };
 
 export const initNativeSync = () => {

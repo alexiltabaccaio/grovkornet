@@ -563,6 +563,15 @@ namespace margelo::nitro::grovkornet {
     static const auto method = _javaPart->javaClassStatic()->getMethod<void(double /* scanlinesDensity */)>("setScanlinesDensity");
     method(_javaPart, scanlinesDensity);
   }
+  double JHybridNitroCameraConfigurationSpec::getLensDistortion() {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<double()>("getLensDistortion");
+    auto __result = method(_javaPart);
+    return __result;
+  }
+  void JHybridNitroCameraConfigurationSpec::setLensDistortion(double lensDistortion) {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<void(double /* lensDistortion */)>("setLensDistortion");
+    method(_javaPart, lensDistortion);
+  }
 
   // Methods
   

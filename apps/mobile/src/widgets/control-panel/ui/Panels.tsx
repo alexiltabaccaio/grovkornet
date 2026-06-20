@@ -32,6 +32,7 @@ const SLIDER_PARAMETERS = [
   'chroma_shift',
   'tape_jitter',
   'scanlines',
+  'lens_distortion',
 ];
 
 interface PanelsProps {

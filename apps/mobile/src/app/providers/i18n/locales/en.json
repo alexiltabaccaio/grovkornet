@@ -79,7 +79,8 @@
       "vignette": "VIGNETTE",
       "chroma_shift": "SHIFT",
       "tape_jitter": "JITTER",
-      "scanlines": "SCANLINES"
+      "scanlines": "SCANLINES",
+      "lens_distortion": "LENS DISTORTION"
     },
     "footer": {
       "coming_soon": "COMING SOON"

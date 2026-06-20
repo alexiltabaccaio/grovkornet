@@ -1023,3 +1023,26 @@ parameters:
       resetGroup: scanlines
       store: film
     nitro: true
+  - name: lensDistortion
+    category: render
+    arrayIndex: 61
+    kotlin:
+      type: Float
+      default: 0.0f
+    ts:
+      type: number
+    zustand:
+      default: DEFAULT_LENS_DISTORTION
+      type: number
+      resetGroup: lens_distortion
+      store: film
+    nitro: true
+    ui:
+      name: lens_distortion
+      control: slider
+      min: -1.0
+      max: 1.0
+      center: 0.0
+      formatter: percentage
+      formatterScale: 100
+

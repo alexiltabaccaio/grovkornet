@@ -48,6 +48,7 @@ import {
   DEFAULT_SCANLINES_DENSITY,
   DEFAULT_HUE,
   DEFAULT_SELECTIVE_HUE,
+  DEFAULT_LENS_DISTORTION,
 } from '@grovkornet/shared';
 
 export const resetFilmParameter = (param: ParameterType): boolean => {
@@ -71,23 +72,14 @@ export const resetFilmParameter = (param: ParameterType): boolean => {
       store.setPivotAuto(true);
       return true;
     default: {
-      const handledEffects = [
-        'saturation', 'contrast', 'grain', 'vignette', 'chroma_shift',
-        'temperature', 'tint', 'bloom', 'chromatic_aberration', 'sharpening',
-        'noise_reduction', 'camera_facing', 'tone', 'pixelation', 'tape_jitter',
-        'scanlines', 'hue'
-      ];
-      if (handledEffects.includes(param)) {
-        resetFilmEffect(param);
-        return true;
-      }
-      return false;
+      return resetFilmEffect(param);
     }
   }
 };
 
-export const resetFilmEffect = (effect: string): void => {
+export const resetFilmEffect = (effect: string): boolean => {
   const store = useFilmStore.getState();
+  let handled = true;
   switch (effect) {
     // @@GEN_RESET_START@@
     // ⚠️ AI & MANUAL WARNING: DO NOT EDIT THIS SECTION!
@@ -187,6 +179,12 @@ export const resetFilmEffect = (effect: string): void => {
       store.setHuePurple(DEFAULT_SELECTIVE_HUE);
       store.setHueMagenta(DEFAULT_SELECTIVE_HUE);
       break;
+    case 'lens_distortion':
+      store.setLensDistortion(DEFAULT_LENS_DISTORTION);
+      break;
     // @@GEN_RESET_END@@
+    default:
+      handled = false;
   }
+  return handled;
 };

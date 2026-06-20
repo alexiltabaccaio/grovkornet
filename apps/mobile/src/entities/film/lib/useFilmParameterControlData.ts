@@ -14,7 +14,8 @@ import {
   DEFAULT_PIXELATION_FACTOR,
   DEFAULT_TAPE_JITTER,
   DEFAULT_SCANLINES,
-  DEFAULT_HUE
+  DEFAULT_HUE,
+  DEFAULT_LENS_DISTORTION,
 } from '@grovkornet/shared';
 
 export type FilmParameterType =
@@ -39,6 +40,7 @@ export type FilmParameterType =
   | 'tape_jitter'
   | 'scanlines'
   | 'hue'
+  | 'lens_distortion'
 // @@GEN_PARAMETER_TYPES_END@@
   ;
 
@@ -151,6 +153,11 @@ export const useFilmParameterControlData = (
                   return {
                     hue: s.hue,
                     setHue: s.setHue
+                  };
+                case 'lens_distortion':
+                  return {
+                    lensDistortion: s.lensDistortion,
+                    setLensDistortion: s.setLensDistortion
                   };
         // @@GEN_STORE_SELECTION_END@@
         default:
@@ -449,6 +456,22 @@ export const useFilmParameterControlData = (
                   'worklet';
                   const rounded = Math.round(v);
                   return rounded > 0 ? `+${rounded}°` : `${rounded}°`;
+                }
+              };
+            case 'lens_distortion':
+              return {
+                value: film.lensDistortion,
+                minValue: -1.0,
+                maxValue: 1.0,
+                centerValue: 0.0,
+                onChange: film.setLensDistortion,
+                onUpdateWorklet: filmWorklets.updateLensDistortion,
+                hideValueInAuto: false,
+                autoValueText: 'AUTO',
+                onReset: () => film.setLensDistortion(DEFAULT_LENS_DISTORTION),
+                valueFormatter: (v: number) => {
+                  'worklet';
+                  return `${Math.round((v * 100))}`;
                 }
               };
       // @@GEN_CONTROL_CASES_END@@

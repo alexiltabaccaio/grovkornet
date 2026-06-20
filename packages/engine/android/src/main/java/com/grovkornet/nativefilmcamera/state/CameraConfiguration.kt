@@ -533,6 +533,15 @@ class CameraConfiguration(val nativePointer: Long = 0L) {
                     CameraStateJNI.fallbackSet("scanlinesDensity", nativePointer, value)
                 }
             }
+    var lensDistortion: Float
+            get() = if (CameraStateJNI.isJniLoaded) CameraStateJNI.getLensDistortion(nativePointer) else (CameraStateJNI.fallbackGet("lensDistortion", nativePointer, 0.0f) as Float)
+            set(value) {
+                if (CameraStateJNI.isJniLoaded) {
+                    CameraStateJNI.setLensDistortion(nativePointer, value)
+                } else {
+                    CameraStateJNI.fallbackSet("lensDistortion", nativePointer, value)
+                }
+            }
 
     // Hardware Props
     var ev: Float
@@ -1000,6 +1009,9 @@ fun CameraConfiguration.loadFromMap(payload: Map<String, Any>) {
     }
     payload["scanlinesDensity"]?.let { rawValue ->
         (rawValue as? Number)?.toFloat()?.let { scanlinesDensity = it }
+    }
+    payload["lensDistortion"]?.let { rawValue ->
+        (rawValue as? Number)?.toFloat()?.let { lensDistortion = it }
     }
     payload["viewportWidth"]?.let { rawValue ->
         (rawValue as? Number)?.toFloat()?.let { viewportWidth = it }

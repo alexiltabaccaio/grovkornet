@@ -337,7 +337,7 @@ void GrovkornetEngine::applyShaderParameters(const RenderState* state, filament:
 
     uboData[6].x = params.pixelationFactor;
     uboData[6].y = params.panelY;
-    uboData[6].z = 0.0f;
+    uboData[6].z = params.lensDistortion;
     uboData[6].w = 0.0f;
 
     composite->setParameter("u_RenderData0", uboData[0]);

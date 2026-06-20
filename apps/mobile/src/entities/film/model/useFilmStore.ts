@@ -51,6 +51,7 @@ import {
   DEFAULT_CHROMA_SHIFT_INVERT,
   DEFAULT_HUE,
   DEFAULT_SELECTIVE_HUE,
+  DEFAULT_LENS_DISTORTION,
 } from '@grovkornet/shared';
 
 export const useFilmStore = create<FilmStore>((set, get) => ({
@@ -119,6 +120,7 @@ export const useFilmStore = create<FilmStore>((set, get) => ({
   scanlinesHorizontal: makeMutable(DEFAULT_SCANLINES_HORIZONTAL),
   scanlinesMode: makeMutable(DEFAULT_SCANLINES_MODE),
   scanlinesDensity: makeMutable(DEFAULT_SCANLINES_DENSITY),
+  lensDistortion: makeMutable(DEFAULT_LENS_DISTORTION),
   // @@GEN_INIT_END@@
   capabilities: {
     availableNoiseReductionModes: [],
@@ -422,6 +424,10 @@ export const useFilmStore = create<FilmStore>((set, get) => ({
   setScanlinesDensity: (value) => {
     get().scanlinesDensity.value = value;
     notifyFilmStoreListener('scanlinesDensity');
+  },
+  setLensDistortion: (value) => {
+    get().lensDistortion.value = value;
+    notifyFilmStoreListener('lensDistortion');
   },
   // @@GEN_SETTERS_END@@
   setCapabilities: (caps) => {

@@ -372,6 +372,12 @@ abstract class HybridNitroCameraConfigurationSpec: HybridObject() {
   @set:DoNotStrip
   @set:Keep
   abstract var scanlinesDensity: Double
+  
+  @get:DoNotStrip
+  @get:Keep
+  @set:DoNotStrip
+  @set:Keep
+  abstract var lensDistortion: Double
 
   // Methods
   

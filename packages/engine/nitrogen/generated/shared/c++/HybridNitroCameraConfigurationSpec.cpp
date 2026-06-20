@@ -130,6 +130,8 @@ namespace margelo::nitro::grovkornet {
       prototype.registerHybridSetter("scanlinesMode", &HybridNitroCameraConfigurationSpec::setScanlinesMode);
       prototype.registerHybridGetter("scanlinesDensity", &HybridNitroCameraConfigurationSpec::getScanlinesDensity);
       prototype.registerHybridSetter("scanlinesDensity", &HybridNitroCameraConfigurationSpec::setScanlinesDensity);
+      prototype.registerHybridGetter("lensDistortion", &HybridNitroCameraConfigurationSpec::getLensDistortion);
+      prototype.registerHybridSetter("lensDistortion", &HybridNitroCameraConfigurationSpec::setLensDistortion);
     });
   }
 

@@ -160,6 +160,8 @@ namespace margelo::nitro::grovkornet {
       virtual void setScanlinesMode(double scanlinesMode) = 0;
       virtual double getScanlinesDensity() = 0;
       virtual void setScanlinesDensity(double scanlinesDensity) = 0;
+      virtual double getLensDistortion() = 0;
+      virtual void setLensDistortion(double lensDistortion) = 0;
 
     public:
       // Methods

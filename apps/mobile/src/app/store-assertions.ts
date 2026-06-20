@@ -70,7 +70,8 @@ type FilmActionsKeys =
   | 'setHueCyan'
   | 'setHueBlue'
   | 'setHuePurple'
-  | 'setHueMagenta';
+  | 'setHueMagenta'
+  | 'setLensDistortion';
 
 type FilmExcludedKeys = 'capabilities' | GeneratedFilmExcludedKeys;
 

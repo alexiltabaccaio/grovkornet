@@ -166,6 +166,8 @@ namespace margelo::nitro::grovkornet {
     void setScanlinesMode(double scanlinesMode) override;
     double getScanlinesDensity() override;
     void setScanlinesDensity(double scanlinesDensity) override;
+    double getLensDistortion() override;
+    void setLensDistortion(double lensDistortion) override;
 
   public:
     // Methods

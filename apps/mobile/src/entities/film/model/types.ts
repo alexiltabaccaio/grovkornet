@@ -71,6 +71,7 @@ interface FilmState {
   scanlinesHorizontal: SharedValue<boolean>;
   scanlinesMode: SharedValue<number>;
   scanlinesDensity: SharedValue<number>;
+  lensDistortion: SharedValue<number>;
   // @@GEN_STATE_END@@
   capabilities?: FilmCapabilities;
 }
@@ -141,6 +142,7 @@ interface FilmActions {
   setScanlinesHorizontal: (value: boolean) => void;
   setScanlinesMode: (value: number) => void;
   setScanlinesDensity: (value: number) => void;
+  setLensDistortion: (value: number) => void;
   // @@GEN_ACTIONS_END@@
   setCapabilities?: (capabilities: FilmCapabilities) => void;
 }
