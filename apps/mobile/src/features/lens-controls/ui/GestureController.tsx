@@ -58,19 +58,8 @@ export const GestureController = React.memo(({ children, footerTranslateY, drawe
     };
   }, []);
 
-  React.useEffect(() => {
-    if (activeSection === 'none') {
-      isClosing.value = true;
-      translateY.value = withTiming(0, { duration: 300 }, (_finished) => {
-        isClosing.value = false;
-        if (activeSectionSV.value === 'none') {
-          translateY.value = 0;
-        }
-      });
-    } else {
-      isClosing.value = false;
-    }
-  }, [activeSection, translateY, isClosing, activeSectionSV]);
+  // The `activeSectionSV` tracks the Zustand state.
+  // The logic for animating to 0 when closed is handled directly in the useAnimatedReaction below.
 
   const { aspectRatio } = useBodyStore.getState();
 
@@ -134,14 +123,21 @@ export const GestureController = React.memo(({ children, footerTranslateY, drawe
   );
 
   useAnimatedReaction(
-    () => {
-      return {
-        active: activeSectionSV.value,
-        closing: isClosing.value,
-      };
-    },
-    (state) => {
-      if (state.active === 'none' && !state.closing && translateY.value !== 0) {
+    () => activeSectionSV.value,
+    (current, previous) => {
+      if (previous === null) return;
+      
+      if (current === 'none' && previous !== 'none') {
+        isClosing.value = true;
+        translateY.value = withTiming(0, { duration: 300 }, () => {
+          isClosing.value = false;
+        });
+      } else if (current !== 'none' && previous === 'none') {
+        isClosing.value = false;
+      }
+      
+      // Fallback: If we somehow end up in 'none' state but translateY isn't 0, force it.
+      if (current === 'none' && !isClosing.value && translateY.value !== 0) {
         translateY.value = 0;
       }
     }

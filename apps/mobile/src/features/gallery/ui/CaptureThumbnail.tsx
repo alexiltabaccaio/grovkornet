@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { StyleSheet, View, Pressable, Image } from 'react-native';
-import Animated, { useSharedValue, useAnimatedStyle, withTiming, Easing, withSpring } from 'react-native-reanimated';
+import Animated, { useSharedValue, useAnimatedStyle, withTiming, Easing, withSpring, useAnimatedReaction } from 'react-native-reanimated';
 import { useState } from 'react';
 import { useCameraStore } from '@entities/camera';
 import { useGalleryStore } from '@entities/gallery';
@@ -68,14 +68,24 @@ export const CaptureThumbnail = React.memo(({ onPress }: CaptureThumbnailProps) 
    
 
   const scale = useSharedValue(1);
+  const isCapturingSV = useSharedValue(isCapturing);
 
   useEffect(() => {
-    if (isCapturing) {
-      scale.value = withSpring(0.95);
-    } else {
-      scale.value = withSpring(1);
+    isCapturingSV.value = isCapturing;
+  }, [isCapturing, isCapturingSV]);
+
+  useAnimatedReaction(
+    () => isCapturingSV.value,
+    (current, previous) => {
+      if (current !== previous) {
+        if (current) {
+          scale.value = withSpring(0.95);
+        } else {
+          scale.value = withSpring(1);
+        }
+      }
     }
-  }, [isCapturing, scale]);
+  );
 
   const animatedContainerStyle = useAnimatedStyle(() => ({
     transform: [{ scale: scale.value }],

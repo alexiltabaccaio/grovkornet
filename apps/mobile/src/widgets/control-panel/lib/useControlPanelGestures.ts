@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef } from 'react';
 import { useControlPanelStore } from '@entities/system';
 import { Gesture } from 'react-native-gesture-handler';
-import { useSharedValue, withTiming, withSpring, SharedValue } from 'react-native-reanimated';
+import { useSharedValue, withTiming, withSpring, SharedValue, useAnimatedReaction, runOnJS } from 'react-native-reanimated';
 import { useInteractionContext } from '@shared/lib';
 
 interface UseControlPanelGesturesProps {
@@ -24,23 +24,28 @@ export const useControlPanelGestures = ({
   const localDrawerAnimation = useSharedValue(activeSection === 'none' ? 0 : -250);
   const drawerAnimation = externalDrawerAnimation || localDrawerAnimation;
 
-  const wasClosed = useRef(activeSection === 'none');
+  const activeSectionSV = useSharedValue(activeSection);
 
   useEffect(() => {
-    if (activeSection === 'none') {
-      // Close the drawer
-      translateY.value = withTiming(0, { duration: 300 }); // reset the pan gesture with animation
-      drawerAnimation.value = withTiming(0, { duration: 300 }); // push it down to hide
-      wasClosed.current = true;
-    } else {
-      // Open the drawer
-      if (wasClosed.current) {
-        translateY.value = withTiming(-50, { duration: 300 }); // Set target base height to -50px with smooth animation
+    activeSectionSV.value = activeSection;
+  }, [activeSection, activeSectionSV]);
+
+  useAnimatedReaction(
+    () => activeSectionSV.value,
+    (current, previous) => {
+      if (previous === null) return; // Ignore initial mount if not changing
+
+      if (current === 'none' && previous !== 'none') {
+        // Close the drawer
+        translateY.value = withTiming(0, { duration: 300 }); 
+        drawerAnimation.value = withTiming(0, { duration: 300 }); 
+      } else if (current !== 'none' && previous === 'none') {
+        // Open the drawer
+        translateY.value = withTiming(-50, { duration: 300 }); 
         drawerAnimation.value = withTiming(-250, { duration: 300 });
-        wasClosed.current = false;
       }
     }
-  }, [activeSection, translateY, drawerAnimation]);
+  );
 
   const panGesture = useMemo(() => {
     return Gesture.Pan()
