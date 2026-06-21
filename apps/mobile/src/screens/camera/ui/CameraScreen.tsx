@@ -1,10 +1,14 @@
-import React, { useMemo, useState, useEffect } from 'react';
+import React, { useMemo } from 'react';
 import { StyleSheet, View, Platform, StatusBar } from 'react-native';
 import Animated, { useAnimatedStyle, interpolate, Extrapolation } from 'react-native-reanimated';
 import { useCameraPermissions } from '../lib/useCameraPermissions';
 import { useCameraAppState } from '../lib/useCameraAppState';
+import { useCameraUIAnimations } from '../lib/useCameraUIAnimations';
+import { useCameraDeepSleep } from '../lib/useCameraDeepSleep';
 import { useGalleryOverlay } from '../lib/useGalleryOverlay';
+import { useGalleryStreamSync } from '../lib/useGalleryStreamSync';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
 
 import { useShallow } from 'zustand/shallow';
 import { useSystemStore } from '@entities/system';
@@ -44,28 +48,14 @@ export const CameraScreen = () => {
   useGalleryPrefetch();
 
   const { hasPermission } = useCameraPermissions();
-  const { cameraKey, drawerAnimation, footerTranslateY, viewfinderTranslateY } = useCameraAppState();
-  const { shouldRenderGallery, galleryTransition, openGallery, closeGallery } = useGalleryOverlay(cameraKey);
+  const { cameraKey } = useCameraAppState();
+  const { drawerAnimation, footerTranslateY, viewfinderTranslateY } = useCameraUIAnimations();
+  const { shouldRenderGallery, galleryTransition, openGallery, closeGallery } = useGalleryOverlay();
 
-  const [isCameraDeepSleep, setIsCameraDeepSleep] = useState(false);
-  const [prevIsOpen, setPrevIsOpen] = useState(isOpen);
+  useGalleryStreamSync(isOpen, galleryTransition, cameraKey);
 
-  if (isOpen !== prevIsOpen) {
-    setPrevIsOpen(isOpen);
-    if (!isOpen) {
-      setIsCameraDeepSleep(false);
-    }
-  }
+  const { isCameraDeepSleep } = useCameraDeepSleep(isOpen);
 
-  useEffect(() => {
-    if (!isOpen) return;
-
-    // Completely shuts down the sensor (unmounts the Viewfinder) after 60 seconds of inactivity in the gallery to preserve battery
-    const timer = setTimeout(() => {
-      setIsCameraDeepSleep(true);
-    }, 60000);
-    return () => clearTimeout(timer);
-  }, [isOpen]);
 
   const animatedBottomControlsStyle = useAnimatedStyle(() => {
     // drawerAnimation goes from 0 (closed) to -250 (open)

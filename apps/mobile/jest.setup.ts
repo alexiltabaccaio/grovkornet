@@ -81,7 +81,17 @@ jest.mock('react-native-reanimated', () => {
     useAnimatedProps: jest.fn((cb: any) => cb()),
     createAnimatedComponent: jest.fn((comp: any) => comp),
     interpolate: jest.fn((v, i, o) => v),
-    useAnimatedReaction: jest.fn(),
+    useAnimatedReaction: jest.fn((prepare: any, react: any) => {
+      const React = require('react');
+      const prevRef = React.useRef(prepare());
+      React.useEffect(() => {
+        const val = prepare();
+        if (val !== prevRef.current) {
+          react(val, prevRef.current);
+          prevRef.current = val;
+        }
+      });
+    }),
     Extrapolation: {
       CLAMP: 'clamp',
     },

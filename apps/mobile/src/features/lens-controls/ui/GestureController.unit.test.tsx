@@ -59,13 +59,28 @@ describe('GestureController', () => {
       return ref.current;
     };
 
+    const prevValues = new Map<number, any>();
     (reanimated as any).useAnimatedReaction = (prepare: any, react: any) => {
-      if (reactionCount === 0) {
-        capturedAspectReaction = react;
-      } else if (reactionCount === 1) {
-        capturedFooterReaction = react;
+      const indexRef = React.useRef<number | null>(null);
+      if (indexRef.current === null) {
+        indexRef.current = reactionCount;
+        if (reactionCount === 0) {
+          capturedAspectReaction = react;
+        } else if (reactionCount === 1) {
+          capturedFooterReaction = react;
+        }
+        reactionCount++;
       }
-      reactionCount++;
+      const index = indexRef.current;
+
+      React.useEffect(() => {
+        const val = prepare();
+        const prev = prevValues.has(index) ? prevValues.get(index) : null;
+        if (val !== prev) {
+          react(val, prev);
+          prevValues.set(index, val);
+        }
+      });
     };
   });
 

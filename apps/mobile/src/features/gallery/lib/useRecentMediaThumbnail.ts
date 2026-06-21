@@ -73,11 +73,25 @@ export const useRecentMediaThumbnail = () => {
             if (currentUri && foundFilename && currentUri.includes(foundFilename)) return;
             if (currentUri && foundId && currentUri.endsWith(foundId)) return;
 
+            // Check if the file exists on disk
+            const fileInfo = await FileSystem.getInfoAsync(foundUri);
+            if (!fileInfo.exists) {
+              if (currentUri) {
+                logger.debug('useRecentMediaThumbnail', `Found photo does not exist on disk, clearing store.`);
+                setLatestCapturedUri(null);
+              }
+              return;
+            }
+
             setLatestCapturedUri(foundUri);
           } else {
             if (currentUri) {
-              logger.debug('useRecentMediaThumbnail', `No photos found in MediaLibrary, clearing store.`);
-              setLatestCapturedUri(null);
+              // Check if the local file still exists
+              const fileInfo = await FileSystem.getInfoAsync(currentUri);
+              if (!fileInfo.exists) {
+                logger.debug('useRecentMediaThumbnail', `No photos found in MediaLibrary and local file does not exist, clearing store.`);
+                setLatestCapturedUri(null);
+              }
             }
           }
         }

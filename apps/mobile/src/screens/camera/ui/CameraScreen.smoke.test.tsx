@@ -140,6 +140,7 @@ jest.mock('react-native-reanimated', () => {
       return target;
     }),
     runOnJS: jest.fn((f: any) => f),
+    useAnimatedReaction: jest.fn(),
     interpolate: jest.fn((v, _i, _o) => v),
     Extrapolation: {
       CLAMP: 'clamp',

@@ -3,15 +3,6 @@ import { renderHook, act } from '@testing-library/react-native';
 import { useGalleryOverlay } from './useGalleryOverlay';
 import * as reanimatedModule from 'react-native-reanimated';
 
-// Mock native camera stream functions
-const mockPauseStream = jest.fn().mockResolvedValue(undefined);
-const mockResumeStream = jest.fn().mockResolvedValue(undefined);
-
-jest.mock('@grovkornet/engine', () => ({
-  pauseStream: () => mockPauseStream(),
-  resumeStream: () => mockResumeStream(),
-}));
-
 // Mock gallery store
 let mockLatestCapturedUri: string | null = null;
 let mockLatestPreviewUri: string | null = null;
@@ -69,8 +60,6 @@ describe('useGalleryOverlay', () => {
   beforeEach(() => {
     mockLatestCapturedUri = null;
     mockLatestPreviewUri = null;
-    mockPauseStream.mockClear();
-    mockResumeStream.mockClear();
     jest.clearAllMocks();
   });
 
@@ -90,7 +79,6 @@ describe('useGalleryOverlay', () => {
 
     expect(result.current.shouldRenderGallery).toBe(true);
     expect(result.current.galleryTransition.value).toBe(1);
-    expect(mockPauseStream).toHaveBeenCalled();
 
     act(() => {
       result.current.closeGallery();
@@ -98,28 +86,6 @@ describe('useGalleryOverlay', () => {
 
     expect(result.current.shouldRenderGallery).toBe(false);
     expect(result.current.galleryTransition.value).toBe(0);
-    expect(mockResumeStream).toHaveBeenCalled();
-  });
-
-  it('pauses stream immediately upon cameraKey change if gallery is already open', () => {
-    const { result, rerender } = renderHook(
-      (props: { cameraKey: number }) => useGalleryOverlay(props.cameraKey),
-      { initialProps: { cameraKey: 0 } }
-    );
-
-    // Open gallery so isOpen becomes true and galleryTransition.value becomes 1
-    act(() => {
-      result.current.openGallery();
-    });
-
-    expect(mockPauseStream).toHaveBeenCalledTimes(2);
-
-    mockPauseStream.mockClear();
-
-    // Trigger app resume / cameraKey update
-    rerender({ cameraKey: 1 });
-
-    // Since gallery is open and transition.value === 1, pauseStream must be invoked again immediately
-    expect(mockPauseStream).toHaveBeenCalledTimes(1);
   });
 });
+
