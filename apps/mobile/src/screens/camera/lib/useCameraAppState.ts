@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { AppState, AppStateStatus } from 'react-native';
 import { useSharedValue } from 'react-native-reanimated';
 import { useControlPanelStore } from '@entities/system';
@@ -15,12 +15,22 @@ export const useCameraAppState = () => {
   const footerTranslateY = useSharedValue(initialActiveSection === 'none' ? 0 : -50);
   const viewfinderTranslateY = useSharedValue(0);
 
+  const appState = useRef(AppState.currentState);
+
   useEffect(() => {
-    // The AppState listener and cameraKey remount pattern was causing Reanimated 
-    // native views to lose their transform sync when the notification shade was pulled down 
-    // and pushed back up (triggering inactive -> active), resetting the bottom sheet 
-    // and capture controls to their default positions until touched.
-    // Modern Reanimated 3 handles Activity resume and layout recreation internally.
+    const subscription = AppState.addEventListener('change', (nextAppState: AppStateStatus) => {
+      // We only want to increment cameraKey and remount native views when coming back
+      // from the background. We ignore transitions from 'inactive' (like pulling down 
+      // the notification shade) to prevent unwanted position resets.
+      if (appState.current.match(/background/) && nextAppState === 'active') {
+        setCameraKey((prev) => prev + 1);
+      }
+      appState.current = nextAppState;
+    });
+
+    return () => {
+      subscription.remove();
+    };
   }, []);
 
   return {

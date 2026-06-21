@@ -22,7 +22,11 @@ jest.mock('@entities/system', () => {
 });
 
 describe('useCameraAppState', () => {
+  let appStateCallback: ((state: string) => void) | null = null;
+  const mockRemoveSubscription = jest.fn();
   let originalUseSharedValue: any;
+  let addEventListenerSpy: jest.SpyInstance;
+  let mockCurrentAppState: string = 'active';
 
   beforeAll(() => {
     originalUseSharedValue = reanimatedModule.useSharedValue;
@@ -31,6 +35,11 @@ describe('useCameraAppState', () => {
     };
     const reanimated = reanimatedModule as unknown as { useSharedValue: any };
     reanimated.useSharedValue = useMockSharedValue;
+    
+    Object.defineProperty(AppState, 'currentState', {
+      get: () => mockCurrentAppState,
+      configurable: true
+    });
   });
 
   afterAll(() => {
@@ -41,15 +50,69 @@ describe('useCameraAppState', () => {
   beforeEach(() => {
     jest.clearAllMocks();
 
+    mockCurrentAppState = 'active';
+
     (useControlPanelStore.getState as jest.Mock).mockReturnValue({
       activeSection: 'none',
     });
+
+    appStateCallback = null;
+
+    addEventListenerSpy = jest.spyOn(AppState, 'addEventListener').mockImplementation(
+      (event, cb: any) => {
+        appStateCallback = cb;
+        return { remove: mockRemoveSubscription };
+      }
+    );
   });
 
   afterEach(() => {
     jest.restoreAllMocks();
   });
-  
+
+  it('sets up the AppState listener and tears it down on unmount', () => {
+    const { unmount } = renderHook(() => useCameraAppState());
+
+    expect(addEventListenerSpy).toHaveBeenCalledWith('change', expect.any(Function));
+
+    unmount();
+    expect(mockRemoveSubscription).toHaveBeenCalled();
+  });
+
+  it('increments cameraKey when app transitions from background to active', () => {
+    mockCurrentAppState = 'background';
+    const { result } = renderHook(() => useCameraAppState());
+
+    expect(result.current.cameraKey).toBe(0);
+
+    act(() => {
+      if (appStateCallback) {
+        appStateCallback('active');
+      }
+    });
+
+    expect(result.current.cameraKey).toBe(1);
+  });
+
+  it('does not increment cameraKey when app transitions from inactive to active', () => {
+    mockCurrentAppState = 'active';
+    const { result } = renderHook(() => useCameraAppState());
+
+    act(() => {
+      if (appStateCallback) {
+        appStateCallback('inactive'); // pull down notification shade
+      }
+    });
+    
+    act(() => {
+      if (appStateCallback) {
+        appStateCallback('active'); // push up notification shade
+      }
+    });
+
+    expect(result.current.cameraKey).toBe(0);
+  });
+
   it('initializes shared values correctly based on activeSection', () => {
     (useControlPanelStore.getState as jest.Mock).mockReturnValue({
       activeSection: 'filters',
@@ -62,14 +125,27 @@ describe('useCameraAppState', () => {
     expect(result.current.viewfinderTranslateY.value).toBe(0);
   });
 
-  it('persists viewfinderTranslateY value', () => {
+  it('persists viewfinderTranslateY value when app state changes and key increments', () => {
+    mockCurrentAppState = 'active';
     const { result } = renderHook(() => useCameraAppState());
 
     act(() => {
       result.current.viewfinderTranslateY.value = -150;
     });
 
-    expect(result.current.cameraKey).toBe(0);
+    act(() => {
+      if (appStateCallback) {
+        appStateCallback('background');
+      }
+    });
+
+    act(() => {
+      if (appStateCallback) {
+        appStateCallback('active');
+      }
+    });
+
+    expect(result.current.cameraKey).toBe(1);
     expect(result.current.viewfinderTranslateY.value).toBe(-150);
   });
 });
