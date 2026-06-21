@@ -44,8 +44,8 @@ export const CameraScreen = () => {
   useGalleryPrefetch();
 
   const { hasPermission } = useCameraPermissions();
-  const { shouldRenderGallery, galleryTransition, openGallery, closeGallery } = useGalleryOverlay();
   const { cameraKey, drawerAnimation, footerTranslateY, viewfinderTranslateY } = useCameraAppState();
+  const { shouldRenderGallery, galleryTransition, openGallery, closeGallery } = useGalleryOverlay(cameraKey);
 
   const [isCameraDeepSleep, setIsCameraDeepSleep] = useState(false);
   const [prevIsOpen, setPrevIsOpen] = useState(isOpen);

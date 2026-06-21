@@ -5,7 +5,7 @@ import { useControlPanelStore } from '@entities/system';
 import { useShallow } from 'zustand/shallow';
 import { pauseStream, resumeStream } from '@grovkornet/engine';
 
-export const useGalleryOverlay = () => {
+export const useGalleryOverlay = (cameraKey?: number) => {
   const { isOpen, setIsOpen } = useGalleryStore(useShallow(state => ({
     isOpen: state.isOpen,
     setIsOpen: state.setIsOpen,
@@ -42,10 +42,25 @@ export const useGalleryOverlay = () => {
     });
   }, [galleryTransition, setIsOpen]);
 
+  // Sync native stream state (e.g. on camera remount when returning from background)
+  useEffect(() => {
+    if (isOpen) {
+      // If the gallery is already open and stable (e.g. after remounting from background),
+      // pause immediately to save resources.
+      // If it is opening right now (transition.value < 1), let the animation callback
+      // pause it at the end of the transition.
+      if (galleryTransition.value === 1) {
+        void pauseStream();
+      }
+    } else {
+      // Restore stream when the gallery closes.
+      void resumeStream();
+    }
+  }, [cameraKey, isOpen, galleryTransition]);
+
   // Safety net: if the overlay is closed via store or hardware back button bypassing closeGallery
   useEffect(() => {
     if (!isOpen) {
-      void resumeStream();
       if (galleryTransition.value > 0) {
         galleryTransition.value = withTiming(0, { duration: 300 });
       }

@@ -22,7 +22,7 @@ export const useCameraAppState = () => {
       // We only want to increment cameraKey and remount native views when coming back
       // from the background. We ignore transitions from 'inactive' (like pulling down 
       // the notification shade) to prevent unwanted position resets.
-      if (appState.current.match(/background/) && nextAppState === 'active') {
+      if (appState.current?.match?.(/background/) && nextAppState === 'active') {
         setCameraKey((prev) => prev + 1);
       }
       appState.current = nextAppState;
