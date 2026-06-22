@@ -30,7 +30,7 @@ export const GestureController = React.memo(({ children, footerTranslateY, drawe
     : 47;
 
   const viewportWidth = screenWidth;
-  const viewportHeight = screenHeight - statusBarHeight - 80 - insets.bottom;
+  const viewportHeight = screenHeight - statusBarHeight - 80 - (insets.bottom ?? 0);
 
   const localTranslateY = useSharedValue(0);
   const translateY = viewfinderTranslateY ?? localTranslateY;

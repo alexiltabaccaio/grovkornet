@@ -10,13 +10,14 @@ interface BottomFooterProps {
 
 export const BottomFooter = ({ children, style }: BottomFooterProps) => {
   const insets = useSafeAreaInsets();
+  const bottomInset = insets.bottom ?? 0;
 
   return (
     <Animated.View style={[
       styles.bottomFooterWrapper, 
       { 
-        height: 80 + insets.bottom, 
-        paddingBottom: insets.bottom 
+        height: 80 + bottomInset, 
+        paddingBottom: bottomInset 
       }, 
       style
     ]}>

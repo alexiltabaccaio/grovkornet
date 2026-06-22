@@ -94,12 +94,12 @@ export const CameraScreen = () => {
     // Subtracted 4 pixels to create an intentional overlap under the footer.
     // This hides the SurfaceView hole gap during Android layout recalculations on resume,
     // preventing the Android OS wallpaper from showing through as a "thin line".
-    marginBottom: (80 + insets.bottom) - 4 
+    marginBottom: (80 + (insets.bottom ?? 0)) - 4 
   }), [statusBarHeight, insets.bottom]);
 
   const bottomControlsStyle = useMemo(() => [
     styles.bottomControlsContainer,
-    { bottom: 96 + insets.bottom }
+    { bottom: 96 + (insets.bottom ?? 0) }
   ], [insets.bottom]);
 
   const bannerContainerStyle = useMemo(() => ({

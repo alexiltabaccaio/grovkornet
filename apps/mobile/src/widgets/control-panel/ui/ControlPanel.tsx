@@ -63,7 +63,7 @@ export const ControlPanel = React.memo(({ translateY: externalTranslateY, drawer
       <Animated.View 
         style={[
           styles.topFooterContainer, 
-          { bottom: -573 + insets.bottom },
+          { bottom: -573 + (insets.bottom ?? 0) },
           animatedTopFooterStyle
         ]} 
         pointerEvents={isSheetVisible ? "box-none" : "none"}
