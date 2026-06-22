@@ -1,7 +1,6 @@
 // ⚠️ AI WARNING: Before modifying this cross-platform sync logic, query the dependency graph: node packages/shared/scripts/graphrag/query.js <query>
 import { useFilmStore, setFilmStoreListener, getNitroConfig } from '@entities/film';
-import { setBodyStoreListener } from '@entities/body';
-import { usePresetStore, DEFAULT_FILM_PAYLOAD, DEFAULT_BODY_PAYLOAD } from '@entities/preset';
+import { usePresetStore, DEFAULT_FILM_PAYLOAD } from '@entities/preset';
 import { markAsCustomized } from '@features/system-settings';
 
 let syncTimeout: NodeJS.Timeout | null = null;
@@ -108,21 +107,6 @@ export const initNativeSync = () => {
 
     // 2. Debounce marking as customized
     if (paramName && !(paramName in DEFAULT_FILM_PAYLOAD)) {
-      return;
-    }
-
-    if (customizeTimeout) clearTimeout(customizeTimeout);
-    customizeTimeout = setTimeout(() => {
-      markAsCustomized();
-    }, 50);
-  });
-
-  // Listen to body store changes to mark preset as customized (e.g. EV, shutter speed changes)
-  setBodyStoreListener((paramName) => {
-    const presetStore = usePresetStore.getState();
-    if (presetStore.isApplyingPreset) return;
-
-    if (paramName && !(paramName in DEFAULT_BODY_PAYLOAD)) {
       return;
     }
 

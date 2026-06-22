@@ -21,6 +21,7 @@ parameters:
       center: 1.0
       formatter: percentage
       formatterScale: 100
+    includeInPreset: true
   - name: contrast
     category: render
     arrayIndex: 1
@@ -52,6 +53,7 @@ parameters:
         - target: contrastAuto
           value: "false"
           type: boolean
+    includeInPreset: true
   - name: grainIntensity
     category: render
     arrayIndex: 2
@@ -78,11 +80,12 @@ parameters:
       formatter: percentage
       formatterScale: 100
     worklet:
-      clamp: [0.0, 2.0]
+      clamp: [ 0.0, 2.0 ]
       sideEffects:
         - target: grainEnabled
           value: "value > 0"
           type: boolean
+    includeInPreset: true
   - name: grainChroma
     category: render
     arrayIndex: 3
@@ -97,6 +100,7 @@ parameters:
       resetGroup: grain
       store: film
     nitro: true
+    includeInPreset: true
   - name: grainSize
     category: render
     arrayIndex: 4
@@ -111,6 +115,7 @@ parameters:
       resetGroup: grain
       store: film
     nitro: true
+    includeInPreset: true
   - name: grainSpeed
     category: render
     arrayIndex: 5
@@ -125,6 +130,7 @@ parameters:
       resetGroup: grain
       store: film
     nitro: true
+    includeInPreset: true
   - name: vignetteIntensity
     category: render
     arrayIndex: 6
@@ -146,6 +152,7 @@ parameters:
       max: 1.0
       formatter: percentage
       formatterScale: 100
+    includeInPreset: true
   - name: chromaShift
     category: render
     arrayIndex: 7
@@ -167,6 +174,7 @@ parameters:
       max: 1.0
       formatter: percentage
       formatterScale: 100
+    includeInPreset: true
   - name: temperature
     category: render
     arrayIndex: 10
@@ -197,6 +205,7 @@ parameters:
         - target: temperatureAuto
           value: "false"
           type: boolean
+    includeInPreset: true
   - name: tint
     category: render
     arrayIndex: 11
@@ -228,6 +237,7 @@ parameters:
         - target: temperatureAuto
           value: "false"
           type: boolean
+    includeInPreset: true
   - name: bloomIntensity
     category: render
     arrayIndex: 12
@@ -254,11 +264,12 @@ parameters:
       formatter: percentage
       formatterScale: 100
     worklet:
-      clamp: [0.0, 9999.0]
+      clamp: [ 0.0, 9999.0 ]
       sideEffects:
         - target: bloomEnabled
           value: "value > 0"
           type: boolean
+    includeInPreset: true
   - name: chromaticAberration
     category: render
     arrayIndex: 13
@@ -281,6 +292,7 @@ parameters:
       max: 1.0
       formatter: percentage
       formatterScale: 100
+    includeInPreset: true
   - name: chromaShiftDirection
     category: render
     arrayIndex: 14
@@ -296,6 +308,7 @@ parameters:
       resetGroup: chroma_shift
       store: film
     nitro: true
+    includeInPreset: true
   - name: sharpening
     category: render
     arrayIndex: 15
@@ -317,6 +330,7 @@ parameters:
       max: 1.0
       formatter: percentage
       formatterScale: 100
+    includeInPreset: true
   - name: satRed
     category: render
     arrayIndex: 16
@@ -331,6 +345,7 @@ parameters:
       resetGroup: saturation
       store: film
     nitro: true
+    includeInPreset: true
   - name: satOrange
     category: render
     arrayIndex: 17
@@ -345,6 +360,7 @@ parameters:
       resetGroup: saturation
       store: film
     nitro: true
+    includeInPreset: true
   - name: satYellow
     category: render
     arrayIndex: 18
@@ -359,6 +375,7 @@ parameters:
       resetGroup: saturation
       store: film
     nitro: true
+    includeInPreset: true
   - name: satGreen
     category: render
     arrayIndex: 19
@@ -373,6 +390,7 @@ parameters:
       resetGroup: saturation
       store: film
     nitro: true
+    includeInPreset: true
   - name: satCyan
     category: render
     arrayIndex: 20
@@ -387,6 +405,7 @@ parameters:
       resetGroup: saturation
       store: film
     nitro: true
+    includeInPreset: true
   - name: satBlue
     category: render
     arrayIndex: 21
@@ -401,6 +420,7 @@ parameters:
       resetGroup: saturation
       store: film
     nitro: true
+    includeInPreset: true
   - name: satPurple
     category: render
     arrayIndex: 22
@@ -415,6 +435,7 @@ parameters:
       resetGroup: saturation
       store: film
     nitro: true
+    includeInPreset: true
   - name: satMagenta
     category: render
     arrayIndex: 23
@@ -429,6 +450,7 @@ parameters:
       resetGroup: saturation
       store: film
     nitro: true
+    includeInPreset: true
   - name: aberrationInvert
     category: render
     arrayIndex: 28
@@ -444,6 +466,7 @@ parameters:
       resetGroup: chromatic_aberration
       store: film
     nitro: true
+    includeInPreset: true
   - name: boundMagentaRed
     category: render
     arrayIndex: 29
@@ -458,6 +481,7 @@ parameters:
       resetGroup: saturation
       store: film
     nitro: true
+    includeInPreset: true
   - name: boundRedOrange
     category: render
     arrayIndex: 30
@@ -472,6 +496,7 @@ parameters:
       resetGroup: saturation
       store: film
     nitro: true
+    includeInPreset: true
   - name: boundOrangeYellow
     category: render
     arrayIndex: 31
@@ -486,6 +511,7 @@ parameters:
       resetGroup: saturation
       store: film
     nitro: true
+    includeInPreset: true
   - name: boundYellowGreen
     category: render
     arrayIndex: 32
@@ -500,6 +526,7 @@ parameters:
       resetGroup: saturation
       store: film
     nitro: true
+    includeInPreset: true
   - name: boundGreenCyan
     category: render
     arrayIndex: 33
@@ -514,6 +541,7 @@ parameters:
       resetGroup: saturation
       store: film
     nitro: true
+    includeInPreset: true
   - name: boundCyanBlue
     category: render
     arrayIndex: 34
@@ -528,6 +556,7 @@ parameters:
       resetGroup: saturation
       store: film
     nitro: true
+    includeInPreset: true
   - name: boundBluePurple
     category: render
     arrayIndex: 35
@@ -542,6 +571,7 @@ parameters:
       resetGroup: saturation
       store: film
     nitro: true
+    includeInPreset: true
   - name: boundPurpleMagenta
     category: render
     arrayIndex: 36
@@ -556,6 +586,7 @@ parameters:
       resetGroup: saturation
       store: film
     nitro: true
+    includeInPreset: true
   - name: grainRoughness
     category: render
     arrayIndex: 37
@@ -570,6 +601,7 @@ parameters:
       resetGroup: grain
       store: film
     nitro: true
+    includeInPreset: true
   - name: panelY
     category: render
     arrayIndex: 38
@@ -579,6 +611,7 @@ parameters:
     ts:
       type: number
     nitro: true
+    includeInPreset: false
   - name: grainEnabled
     category: render
     kotlin:
@@ -592,6 +625,7 @@ parameters:
       resetGroup: grain
       store: film
     nitro: true
+    includeInPreset: true
   - name: bloomEnabled
     category: render
     kotlin:
@@ -605,6 +639,7 @@ parameters:
       resetGroup: bloom
       store: film
     nitro: true
+    includeInPreset: true
   - name: blackLevel
     category: render
     arrayIndex: 39
@@ -635,6 +670,7 @@ parameters:
         - target: blackLevelAuto
           value: "false"
           type: boolean
+    includeInPreset: true
   - name: highlights
     category: render
     arrayIndex: 40
@@ -666,6 +702,7 @@ parameters:
         - target: highlightsAuto
           value: "false"
           type: boolean
+    includeInPreset: true
   - name: pivot
     category: render
     arrayIndex: 41
@@ -697,6 +734,7 @@ parameters:
         - target: pivotAuto
           value: "false"
           type: boolean
+    includeInPreset: true
   - name: contrastAuto
     category: render
     arrayIndex: 42
@@ -715,6 +753,7 @@ parameters:
           condition: value
       store: film
     nitro: true
+    includeInPreset: true
   - name: blackLevelAuto
     category: render
     arrayIndex: 43
@@ -733,6 +772,7 @@ parameters:
           condition: value
       store: film
     nitro: true
+    includeInPreset: true
   - name: highlightsAuto
     category: render
     arrayIndex: 44
@@ -751,6 +791,7 @@ parameters:
           condition: value
       store: film
     nitro: true
+    includeInPreset: true
   - name: pivotAuto
     category: render
     arrayIndex: 45
@@ -769,6 +810,7 @@ parameters:
           condition: value
       store: film
     nitro: true
+    includeInPreset: true
   - name: pixelationFactor
     category: render
     arrayIndex: 46
@@ -789,6 +831,7 @@ parameters:
       min: 1.0
       max: 16.0
       formatter: multiplier
+    includeInPreset: true
   - name: tapeJitter
     category: render
     arrayIndex: 47
@@ -810,6 +853,7 @@ parameters:
       max: 1.0
       formatter: percentage
       formatterScale: 100
+    includeInPreset: true
   - name: scanlines
     category: render
     arrayIndex: 48
@@ -831,6 +875,7 @@ parameters:
       max: 1.0
       formatter: percentage
       formatterScale: 100
+    includeInPreset: true
   - name: chromaShiftInvert
     category: render
     arrayIndex: 49
@@ -846,6 +891,7 @@ parameters:
       resetGroup: chroma_shift
       store: film
     nitro: true
+    includeInPreset: true
   - name: hue
     category: render
     arrayIndex: 50
@@ -867,6 +913,7 @@ parameters:
       max: 180.0
       center: 0.0
       formatter: degree
+    includeInPreset: true
   - name: hueRed
     category: render
     arrayIndex: 51
@@ -881,6 +928,7 @@ parameters:
       resetGroup: hue
       store: film
     nitro: true
+    includeInPreset: true
   - name: hueOrange
     category: render
     arrayIndex: 52
@@ -895,6 +943,7 @@ parameters:
       resetGroup: hue
       store: film
     nitro: true
+    includeInPreset: true
   - name: hueYellow
     category: render
     arrayIndex: 53
@@ -909,6 +958,7 @@ parameters:
       resetGroup: hue
       store: film
     nitro: true
+    includeInPreset: true
   - name: hueGreen
     category: render
     arrayIndex: 54
@@ -923,6 +973,7 @@ parameters:
       resetGroup: hue
       store: film
     nitro: true
+    includeInPreset: true
   - name: hueCyan
     category: render
     arrayIndex: 55
@@ -937,6 +988,7 @@ parameters:
       resetGroup: hue
       store: film
     nitro: true
+    includeInPreset: true
   - name: hueBlue
     category: render
     arrayIndex: 56
@@ -951,6 +1003,7 @@ parameters:
       resetGroup: hue
       store: film
     nitro: true
+    includeInPreset: true
   - name: huePurple
     category: render
     arrayIndex: 57
@@ -965,6 +1018,7 @@ parameters:
       resetGroup: hue
       store: film
     nitro: true
+    includeInPreset: true
   - name: hueMagenta
     category: render
     arrayIndex: 58
@@ -979,6 +1033,7 @@ parameters:
       resetGroup: hue
       store: film
     nitro: true
+    includeInPreset: true
   - name: scanlinesHorizontal
     category: render
     arrayIndex: 59
@@ -994,7 +1049,7 @@ parameters:
       resetGroup: scanlines
       store: film
     nitro: true
-    excludeFromPreset: true
+    includeInPreset: false
   - name: scanlinesMode
     category: render
     kotlin:
@@ -1008,6 +1063,7 @@ parameters:
       resetGroup: scanlines
       store: film
     nitro: true
+    includeInPreset: true
   - name: scanlinesDensity
     category: render
     arrayIndex: 60
@@ -1022,6 +1078,7 @@ parameters:
       resetGroup: scanlines
       store: film
     nitro: true
+    includeInPreset: true
   - name: lensDistortion
     category: render
     arrayIndex: 61
@@ -1044,4 +1101,4 @@ parameters:
       center: 0.0
       formatter: percentage
       formatterScale: 100
-
+    includeInPreset: true

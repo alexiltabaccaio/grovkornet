@@ -1,6 +1,6 @@
 import { usePresetStore, DEFAULT_FILM_PAYLOAD, DEFAULT_BODY_PAYLOAD } from '@entities/preset';
-import { useFilmStore, setFilmStoreListener } from '@entities/film';
-import { useBodyStore, setBodyStoreListener } from '@entities/body';
+import { useFilmStore } from '@entities/film';
+import { useBodyStore } from '@entities/body';
 import { addPreset, applyPreset, markAsCustomized, removePreset, nextQuickPreset, prevQuickPreset, arePayloadsEqual } from './presetActions';
 
 jest.mock('@grovkornet/engine', () => ({
@@ -44,12 +44,8 @@ describe('presetActions', () => {
 
     // Reset body store values
     const bodyStore = useBodyStore.getState();
-    Object.keys(DEFAULT_BODY_PAYLOAD).forEach((key) => {
-      const k = key as keyof typeof DEFAULT_BODY_PAYLOAD;
-      if (bodyStore[k] && typeof bodyStore[k] === 'object' && 'value' in bodyStore[k]) {
-        (bodyStore[k] as any).value = DEFAULT_BODY_PAYLOAD[k];
-      }
-    });
+    (bodyStore.iso as any).value = 400;
+    (bodyStore.ev as any).value = 0.0;
   });
 
   afterEach(() => {
@@ -59,7 +55,7 @@ describe('presetActions', () => {
   describe('addPreset', () => {
     it('adds a preset snapshotting active values when customizedPayload is null', () => {
       (useFilmStore.getState().saturation as any).value = 1.5;
-      (useBodyStore.getState().iso as any).value = 800;
+      (useBodyStore.getState().iso as any).value = 800; // This should not be snapshotted
 
       addPreset('Custom Retro', 'file:///custom_thumb.jpg');
 
@@ -68,7 +64,7 @@ describe('presetActions', () => {
       expect(updatedStore.userPresets[0].name).toBe('Custom Retro');
       expect(updatedStore.userPresets[0].thumbnailUri).toBe('file:///custom_thumb.jpg');
       expect(updatedStore.userPresets[0].payload.film.saturation).toBe(1.5);
-      expect(updatedStore.userPresets[0].payload.body.iso).toBe(800);
+      expect(updatedStore.userPresets[0].payload.body).toEqual({}); // Empty because body has no preset parameters
       expect(updatedStore.activePresetId).toBe(updatedStore.userPresets[0].id);
     });
 
@@ -76,7 +72,8 @@ describe('presetActions', () => {
       usePresetStore.setState({
         customizedPayload: {
           film: { ...DEFAULT_FILM_PAYLOAD, saturation: 0.2 },
-          body: { ...DEFAULT_BODY_PAYLOAD, iso: 3200 },
+          body: {},
+          lens: {},
         },
       });
 
@@ -85,7 +82,7 @@ describe('presetActions', () => {
       const updatedStore = usePresetStore.getState();
       expect(updatedStore.userPresets).toHaveLength(1);
       expect(updatedStore.userPresets[0].payload.film.saturation).toBe(0.2);
-      expect(updatedStore.userPresets[0].payload.body.iso).toBe(3200);
+      expect(updatedStore.userPresets[0].payload.body).toEqual({});
       expect(updatedStore.customizedPayload).toBeNull();
     });
   });
@@ -95,7 +92,7 @@ describe('presetActions', () => {
       const mockPreset = {
         id: '123',
         name: 'Retro',
-        payload: { film: DEFAULT_FILM_PAYLOAD, body: DEFAULT_BODY_PAYLOAD },
+        payload: { film: DEFAULT_FILM_PAYLOAD, body: {}, lens: {} },
         isFavorite: false,
         inQuickSelect: false,
         createdAt: Date.now(),
@@ -114,30 +111,34 @@ describe('presetActions', () => {
   });
 
   describe('applyPreset', () => {
-    it('applies default preset and updates film and body stores', () => {
+    it('applies default preset and updates film but leaves body stores untouched', () => {
       (useFilmStore.getState().saturation as any).value = 2.0;
-      (useBodyStore.getState().iso as any).value = 1600;
+      (useBodyStore.getState().iso as any).value = 1600; // Change exposure
 
       applyPreset('default');
 
       expect(useFilmStore.getState().saturation.value).toBe(DEFAULT_FILM_PAYLOAD.saturation);
-      expect(useBodyStore.getState().iso.value).toBe(DEFAULT_BODY_PAYLOAD.iso);
+      expect(useBodyStore.getState().iso.value).toBe(1600); // Exposure remains untouched!
       expect(usePresetStore.getState().activePresetId).toBe('default');
     });
 
     it('applies customized preset if active', () => {
       const customPayload = {
         film: { ...DEFAULT_FILM_PAYLOAD, contrast: 1.8 },
-        body: { ...DEFAULT_BODY_PAYLOAD, ev: 1.0 },
+        body: {},
+        lens: {},
       };
       usePresetStore.setState({
         customizedPayload: customPayload,
       });
 
+      // Set initial values
+      (useBodyStore.getState().ev as any).value = 1.5;
+
       applyPreset('customized');
 
       expect(useFilmStore.getState().contrast.value).toBe(1.8);
-      expect(useBodyStore.getState().ev.value).toBe(1.0);
+      expect(useBodyStore.getState().ev.value).toBe(1.5); // EV unchanged because it is excluded
       expect(usePresetStore.getState().activePresetId).toBe('customized');
     });
 
@@ -147,7 +148,8 @@ describe('presetActions', () => {
         name: 'Special',
         payload: {
           film: { saturation: 0.5 } as any,
-          body: { iso: 400 } as any,
+          body: {},
+          lens: {},
         },
         isFavorite: false,
         inQuickSelect: false,
@@ -155,18 +157,21 @@ describe('presetActions', () => {
       };
       usePresetStore.setState({ userPresets: [userPreset] });
 
+      (useBodyStore.getState().iso as any).value = 800;
+
       applyPreset('user-1');
 
       expect(useFilmStore.getState().saturation.value).toBe(0.5);
       expect(useFilmStore.getState().contrast.value).toBe(DEFAULT_FILM_PAYLOAD.contrast);
-      expect(useBodyStore.getState().iso.value).toBe(400);
+      expect(useBodyStore.getState().iso.value).toBe(800); // Intact
       expect(usePresetStore.getState().activePresetId).toBe('user-1');
     });
 
     it('preserves customized state when applying a non-customized preset', () => {
       const customPayload = {
         film: { ...DEFAULT_FILM_PAYLOAD, contrast: 1.8 },
-        body: { ...DEFAULT_BODY_PAYLOAD, ev: 1.0 },
+        body: {},
+        lens: {},
       };
       usePresetStore.setState({
         customizedPayload: customPayload,
@@ -182,16 +187,16 @@ describe('presetActions', () => {
   });
 
   describe('markAsCustomized', () => {
-    it('marks preset as customized snapshotting current film and body stores', () => {
+    it('marks preset as customized snapshotting current film store parameters', () => {
       (useFilmStore.getState().saturation as any).value = 1.8;
-      (useBodyStore.getState().iso as any).value = 1200;
+      (useBodyStore.getState().iso as any).value = 1200; // Should not trigger customization on its own
 
       markAsCustomized();
 
       const store = usePresetStore.getState();
       expect(store.activePresetId).toBe('customized');
       expect(store.customizedPayload?.film.saturation).toBe(1.8);
-      expect(store.customizedPayload?.body.iso).toBe(1200);
+      expect(store.customizedPayload?.body).toEqual({});
     });
 
     it('switches back to default if manual changes match the default parameters', () => {
@@ -199,12 +204,12 @@ describe('presetActions', () => {
         activePresetId: 'customized',
         customizedPayload: {
           film: { ...DEFAULT_FILM_PAYLOAD, saturation: 1.8 },
-          body: { ...DEFAULT_BODY_PAYLOAD, iso: 1200 },
+          body: {},
+          lens: {},
         },
       });
 
       (useFilmStore.getState().saturation as any).value = DEFAULT_FILM_PAYLOAD.saturation;
-      (useBodyStore.getState().iso as any).value = DEFAULT_BODY_PAYLOAD.iso;
 
       markAsCustomized();
 
@@ -217,7 +222,8 @@ describe('presetActions', () => {
     it('switches to matching user preset if manual changes match a user preset', () => {
       const targetPayload = {
         film: { ...DEFAULT_FILM_PAYLOAD, saturation: 0.7 },
-        body: { ...DEFAULT_BODY_PAYLOAD, iso: 400 },
+        body: {},
+        lens: {},
       };
       const userPreset = {
         id: 'user-matched',
@@ -232,12 +238,12 @@ describe('presetActions', () => {
         activePresetId: 'customized',
         customizedPayload: {
           film: { ...DEFAULT_FILM_PAYLOAD, saturation: 1.8 },
-          body: { ...DEFAULT_BODY_PAYLOAD, iso: 1200 },
+          body: {},
+          lens: {},
         },
       });
 
       (useFilmStore.getState().saturation as any).value = 0.7;
-      (useBodyStore.getState().iso as any).value = 400;
 
       markAsCustomized();
 
@@ -269,7 +275,7 @@ describe('presetActions', () => {
   describe('Quick Selector List and Navigation', () => {
     it('navigates next and previous preset correctly', () => {
       const presets = [
-        { id: '1', name: 'P1', payload: { film: DEFAULT_FILM_PAYLOAD, body: DEFAULT_BODY_PAYLOAD }, isFavorite: false, inQuickSelect: true, createdAt: Date.now() },
+        { id: '1', name: 'P1', payload: { film: DEFAULT_FILM_PAYLOAD, body: {}, lens: {} }, isFavorite: false, inQuickSelect: true, createdAt: Date.now() },
       ];
       usePresetStore.setState({
         userPresets: presets,
@@ -290,18 +296,10 @@ describe('presetActions', () => {
 
   describe('Non-preset parameters changes', () => {
     it('should not mark preset as customized or clear customized payload on changing non-preset parameters', () => {
-      setFilmStoreListener((paramName) => {
-        if (paramName && !(paramName in DEFAULT_FILM_PAYLOAD)) return;
-        markAsCustomized();
-      });
-      setBodyStoreListener((paramName) => {
-        if (paramName && !(paramName in DEFAULT_BODY_PAYLOAD)) return;
-        markAsCustomized();
-      });
-
       const customizedPayload = {
         film: { ...DEFAULT_FILM_PAYLOAD, saturation: 1.8 },
-        body: { ...DEFAULT_BODY_PAYLOAD, iso: 1200 },
+        body: {},
+        lens: {},
       };
       usePresetStore.setState({
         activePresetId: 'default',
@@ -326,15 +324,6 @@ describe('presetActions', () => {
       expect(usePresetStore.getState().activePresetId).toBe('default');
       expect(usePresetStore.getState().customizedPayload).toEqual(customizedPayload);
       expect(usePresetStore.getState().customizedThumbnailUri).toBe('file:///custom.jpg');
-
-      // Change a dynamic/excluded film parameter: scanlinesHorizontal
-      useFilmStore.getState().setScanlinesHorizontal(true);
-
-      jest.runAllTimers();
-
-      expect(usePresetStore.getState().activePresetId).toBe('default');
-      expect(usePresetStore.getState().customizedPayload).toEqual(customizedPayload);
-      expect(usePresetStore.getState().customizedThumbnailUri).toBe('file:///custom.jpg');
     });
   });
 
@@ -342,11 +331,13 @@ describe('presetActions', () => {
     it('ignores scanlinesHorizontal when comparing preset payloads', () => {
       const p1 = {
         film: { ...DEFAULT_FILM_PAYLOAD, scanlinesHorizontal: true } as any,
-        body: DEFAULT_BODY_PAYLOAD,
+        body: {},
+        lens: {},
       };
       const p2 = {
         film: { ...DEFAULT_FILM_PAYLOAD, scanlinesHorizontal: false } as any,
-        body: DEFAULT_BODY_PAYLOAD,
+        body: {},
+        lens: {},
       };
 
       expect(arePayloadsEqual(p1, p2)).toBe(true);

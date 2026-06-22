@@ -4,8 +4,10 @@ parameters:
     kotlin:
       type: Float
       default: 1080f
+    includeInPreset: false
   - name: viewportHeight
     category: viewport
     kotlin:
       type: Float
       default: 1920f
+    includeInPreset: false

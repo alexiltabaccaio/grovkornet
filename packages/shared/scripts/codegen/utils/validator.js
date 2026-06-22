@@ -51,6 +51,10 @@ function validateAndLoadParameters(configPath) {
   // Validate that all defaults defined as DEFAULT_ in JSON/YAML exist in the constants section
   const constants = data.constants || {};
   parameters.forEach(p => {
+    if (p.includeInPreset === undefined || typeof p.includeInPreset !== 'boolean') {
+      throw new Error(`ValidationError: Parameter '${p.name}' must explicitly define 'includeInPreset' as a boolean (true or false).`);
+    }
+
     if (p.zustand && p.zustand.default && p.zustand.default.startsWith('DEFAULT_')) {
       const def = p.zustand.default;
       if (!(def in constants)) {

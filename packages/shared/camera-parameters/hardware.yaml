@@ -19,6 +19,7 @@ parameters:
           value: "true"
         - target: shutterSpeedAuto
           value: "true"
+    includeInPreset: false
   - name: targetFps
     category: hardware
     arrayIndex: 24
@@ -34,6 +35,7 @@ parameters:
       store: body
       default: DEFAULT_FPS_SETTING
       type: number
+    includeInPreset: false
   - name: cameraAspectRatio
     category: hardware
     arrayIndex: 25
@@ -56,6 +58,7 @@ parameters:
       store: body
       default: DEFAULT_ASPECT_RATIO
       type: number
+    includeInPreset: false
   - name: noiseReduction
     category: hardware
     kotlin:
@@ -71,6 +74,7 @@ parameters:
       type: number
       resetGroup: noise_reduction
       store: film
+    includeInPreset: true
   - name: noiseReductionAuto
     category: hardware
     ts:
@@ -80,6 +84,7 @@ parameters:
       type: boolean
       resetGroup: noise_reduction
       store: film
+    includeInPreset: true
   - name: isoAuto
     category: hardware
     kotlin:
@@ -95,6 +100,7 @@ parameters:
       setSideEffects:
         - target: shutterSpeedAuto
           value: value
+    includeInPreset: false
   - name: shutterSpeedAuto
     category: hardware
     kotlin:
@@ -111,6 +117,7 @@ parameters:
       setSideEffects:
         - target: isoAuto
           value: value
+    includeInPreset: false
   - name: temperatureAuto
     category: hardware
     kotlin:
@@ -132,6 +139,7 @@ parameters:
           value: DEFAULT_TINT
           condition: value
       store: film
+    includeInPreset: true
   - name: autoFocus
     category: hardware
     kotlin:
@@ -146,6 +154,7 @@ parameters:
       store: lens
       default: DEFAULT_FOCUS_AUTO
       type: boolean
+    includeInPreset: false
 
   - name: iso
     category: hardware
@@ -168,6 +177,7 @@ parameters:
           value: "true"
         - target: ev
           value: DEFAULT_EV
+    includeInPreset: false
   - name: exposureTime
     category: hardware
     kotlin:
@@ -194,6 +204,7 @@ parameters:
           value: "true"
         - target: ev
           value: DEFAULT_EV
+    includeInPreset: false
   - name: focusDistance
     category: hardware
     kotlin:
@@ -210,6 +221,7 @@ parameters:
       setSideEffects:
         - target: focusAuto
           value: "false"
+    includeInPreset: false
   - name: torchEnabled
     category: hardware
     kotlin:
@@ -227,6 +239,7 @@ parameters:
       store: body
       default: DEFAULT_TORCH_STATE
       type: number
+    includeInPreset: false
   - name: torchStrength
     category: hardware
     kotlin:
@@ -241,6 +254,7 @@ parameters:
       store: body
       default: DEFAULT_TORCH_STRENGTH
       type: number
+    includeInPreset: false
   - name: cameraId
     category: hardware
     kotlin:
@@ -254,6 +268,7 @@ parameters:
       store: lens
       default: DEFAULT_CAMERA_ID
       type: string
+    includeInPreset: false
 
   - name: resolutionSetting
     category: hardware
@@ -270,6 +285,7 @@ parameters:
       store: body
       default: DEFAULT_RESOLUTION_SETTING
       type: number
+    includeInPreset: false
   - name: previewQuality
     category: hardware
     kotlin:
@@ -285,6 +301,7 @@ parameters:
       store: body
       default: DEFAULT_PREVIEW_QUALITY
       type: number
+    includeInPreset: false
   - name: force60fpsCrop
     category: hardware
     kotlin:
@@ -300,6 +317,7 @@ parameters:
       store: body
       default: DEFAULT_FORCE_60FPS_CROP
       type: number
+    includeInPreset: false
   - name: secureViewEnabled
     category: hardware
     kotlin:
@@ -308,6 +326,7 @@ parameters:
       propHandler: view.setSecureMode(value)
     ts:
       type: boolean
+    includeInPreset: false
   - name: isSelfieCamera
     category: hardware
     kotlin:
@@ -322,7 +341,7 @@ parameters:
       type: boolean
       resetGroup: camera_facing
       store: film
-    excludeFromPreset: true
+    includeInPreset: false
   - name: zoom
     category: hardware
     kotlin:
@@ -335,3 +354,4 @@ parameters:
       store: body
       default: DEFAULT_ZOOM
       type: number
+    includeInPreset: false

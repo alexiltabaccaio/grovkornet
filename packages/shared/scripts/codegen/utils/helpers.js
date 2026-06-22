@@ -23,6 +23,7 @@ const FILE_PATHS = {
   worklets: 'apps/mobile/src/entities/film/lib/useFilmWorklets.ts',
   controlData: 'apps/mobile/src/entities/film/lib/useFilmParameterControlData.ts',
   filmActions: 'apps/mobile/src/features/film-controls/lib/filmActions.ts',
+  presetActions: 'apps/mobile/src/features/system-settings/lib/presetActions.ts',
   cppStateManagerSource: 'packages/engine/android/src/main/cpp/state/CameraStateManager.cpp',
   kotlinJniBridge: 'packages/engine/android/src/main/java/com/grovkornet/nativefilmcamera/jni/CameraStateJNI.kt',
   cppJniSource: 'packages/engine/android/src/main/cpp/jni/GrovkornetJni.cpp',

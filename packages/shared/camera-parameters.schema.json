@@ -14,13 +14,13 @@
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["name", "category"],
+        "required": ["name", "category", "includeInPreset"],
         "properties": {
           "name": { "type": "string" },
           "category": { "type": "string", "enum": ["render", "hardware", "transient", "viewport"] },
           "arrayIndex": { "type": "integer" },
           "nitro": { "type": "boolean" },
-          "excludeFromPreset": { "type": "boolean" },
+          "includeInPreset": { "type": "boolean" },
           "kotlin": {
             "type": "object",
             "required": ["type"],
