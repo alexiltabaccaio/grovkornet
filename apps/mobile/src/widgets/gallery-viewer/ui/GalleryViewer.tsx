@@ -105,12 +105,12 @@ export const GalleryViewer = React.memo(({ onClose, initialUri, galleryTransitio
   const animatedPlaceholderStyle = useAnimatedStyle(() => {
     if (!galleryTransition) return {};
     const t = galleryTransition.value;
-    
+
     // Animate from thumbnail approximate position (bottom left) to center screen
     const translateX = interpolate(t, [0, 1], [-80, 0]);
     const translateY = interpolate(t, [0, 1], [height / 2 - 120, 0]);
     const scale = interpolate(t, [0, 1], [50 / width, 1]);
-    
+
     return {
       transform: [
         { translateX },
@@ -126,21 +126,21 @@ export const GalleryViewer = React.memo(({ onClose, initialUri, galleryTransitio
   }, [width, height, galleryTransition, zoomScale, zoomTranslateX, zoomTranslateY]);
 
   return (
-    <Animated.View 
-      style={[styles.absoluteContainer, animatedContainerStyle]} 
+    <Animated.View
+      style={[styles.absoluteContainer, animatedContainerStyle]}
       pointerEvents="auto"
     >
       <View style={styles.topArea} pointerEvents="box-none">
         {header}
       </View>
       <View style={styles.safeArea} pointerEvents="box-none">
-        
+
         {/* Main Content (Always rendered so layout is stable from frame 1) */}
         <View style={styles.content}>
-          
+
           {/* Main Preview Area */}
           <View style={styles.previewContainer}>
-            
+
             {/* Real Gallery Image (mounted underneath) */}
             {!loading && (
               <>
@@ -155,7 +155,7 @@ export const GalleryViewer = React.memo(({ onClose, initialUri, galleryTransitio
                   zoomTranslateX={zoomTranslateX}
                   zoomTranslateY={zoomTranslateY}
                 />
-                
+
                 {/* Share Instagram Action */}
                 {selectedPhoto && (
                   <View style={styles.shareContainer}>
@@ -214,6 +214,7 @@ const styles = StyleSheet.create({
     right: 0,
     backgroundColor: 'transparent',
     zIndex: 999,
+    elevation: 999,
   },
   topArea: {
     backgroundColor: '#0e0e0e',

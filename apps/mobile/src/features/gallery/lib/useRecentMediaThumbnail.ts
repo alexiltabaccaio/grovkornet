@@ -73,23 +73,17 @@ export const useRecentMediaThumbnail = () => {
             if (currentUri && foundFilename && currentUri.includes(foundFilename)) return;
             if (currentUri && foundId && currentUri.endsWith(foundId)) return;
 
-            // Check if the file exists on disk
-            const fileInfo = await FileSystem.getInfoAsync(foundUri);
-            if (!fileInfo.exists) {
-              if (currentUri) {
-                logger.debug('useRecentMediaThumbnail', `Found photo does not exist on disk, clearing store.`);
-                setLatestCapturedUri(null);
-              }
-              return;
-            }
-
+            // Trust MediaStore, avoid FileSystem.getInfoAsync on external URIs (Scoped Storage)
             setLatestCapturedUri(foundUri);
           } else {
             if (currentUri) {
-              // Check if the local file still exists
-              const fileInfo = await FileSystem.getInfoAsync(currentUri);
-              if (!fileInfo.exists) {
-                logger.debug('useRecentMediaThumbnail', `No photos found in MediaLibrary and local file does not exist, clearing store.`);
+              if (currentUri.startsWith('file://') && !currentUri.includes('external')) {
+                const fileInfo = await FileSystem.getInfoAsync(currentUri);
+                if (!fileInfo.exists) {
+                  logger.debug('useRecentMediaThumbnail', `No photos found in MediaLibrary and local file does not exist, clearing store.`);
+                  setLatestCapturedUri(null);
+                }
+              } else {
                 setLatestCapturedUri(null);
               }
             }

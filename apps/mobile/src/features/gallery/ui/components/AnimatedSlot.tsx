@@ -4,6 +4,7 @@ import Animated, { useAnimatedStyle, SharedValue } from 'react-native-reanimated
 import { Image } from 'expo-image';
 import { GalleryItem } from '../../lib/types';
 import { AppState } from 'react-native';
+
 interface AnimatedSlotProps {
   photo: GalleryItem;
   index: number;
@@ -35,11 +36,24 @@ export const AnimatedSlot = memo(({
 }: AnimatedSlotProps) => {
   const { width: screenW, height: screenH } = useWindowDimensions();
 
-  // Keep track of the previous URI to use it as a placeholder when migrating from preview to final URI
+  // Track previous URI as placeholder for resolution upgrades
   const previousUriRef = React.useRef<string>(photo.uri);
   const previousIdRef = React.useRef<string>(photo.id);
   const placeholderUriRef = React.useRef<string | undefined>(undefined);
 
+  if (photo.uri !== previousUriRef.current) {
+    // Keep placeholder only for same photo (thumbnail -> high-res)
+    if (photo.id === previousIdRef.current) {
+      placeholderUriRef.current = previousUriRef.current;
+    } else {
+      placeholderUriRef.current = undefined;
+    }
+    previousUriRef.current = photo.uri;
+    previousIdRef.current = photo.id;
+  }
+
+  // Fix expo-image blank issue after heavy intents (e.g. IG Share)
+  // Dummy header forces seamless re-fetch without unmounting (avoids flash)
   const [appStateKey, setAppStateKey] = React.useState(0);
   React.useEffect(() => {
     const subscription = AppState.addEventListener('change', nextAppState => {
@@ -49,18 +63,6 @@ export const AnimatedSlot = memo(({
     });
     return () => subscription.remove();
   }, []);
-
-  if (photo.uri !== previousUriRef.current) {
-    // Only use the previous URI as a placeholder if it's the SAME photo (e.g., thumbnail -> high-res).
-    // If it's a completely different photo (teleport), clear the placeholder so we don't flash the wrong image.
-    if (photo.id === previousIdRef.current) {
-      placeholderUriRef.current = previousUriRef.current;
-    } else {
-      placeholderUriRef.current = undefined;
-    }
-    previousUriRef.current = photo.uri;
-    previousIdRef.current = photo.id;
-  }
 
   const outerStyle = useAnimatedStyle(() => {
     const currentX = index * slotWidth + translateX.value;
@@ -124,8 +126,11 @@ export const AnimatedSlot = memo(({
       <Animated.View style={zoomStyle}>
         <Animated.View style={innerStyle}>
           <Image
-            key={`${photo.id}-${appStateKey}`}
-            source={photo.uri}
+            key={photo.id}
+            source={{ 
+              uri: photo.uri, 
+              headers: { 'x-app-state': appStateKey.toString() } 
+            }}
             placeholder={placeholderUriRef.current}
             style={styles.previewImage}
             contentFit="contain"

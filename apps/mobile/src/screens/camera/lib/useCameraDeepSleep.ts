@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { AppState, AppStateStatus } from 'react-native';
 
 export const useCameraDeepSleep = (isOpen: boolean) => {
   const [isCameraDeepSleep, setIsCameraDeepSleep] = useState(false);
@@ -18,7 +19,17 @@ export const useCameraDeepSleep = (isOpen: boolean) => {
     const timer = setTimeout(() => {
       setIsCameraDeepSleep(true);
     }, 60000);
-    return () => clearTimeout(timer);
+
+    const subscription = AppState.addEventListener('change', (nextAppState: AppStateStatus) => {
+      if (nextAppState.match(/background/)) {
+        setIsCameraDeepSleep(true);
+      }
+    });
+
+    return () => {
+      clearTimeout(timer);
+      subscription.remove();
+    };
   }, [isOpen]);
 
   return { isCameraDeepSleep };

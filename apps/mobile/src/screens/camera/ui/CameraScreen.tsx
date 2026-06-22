@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
-import { StyleSheet, View, Platform, StatusBar } from 'react-native';
+import { StyleSheet, View, Platform, StatusBar, Modal } from 'react-native';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import Animated, { useAnimatedStyle, interpolate, Extrapolation } from 'react-native-reanimated';
 import { useCameraPermissions } from '../lib/useCameraPermissions';
 import { useCameraAppState } from '../lib/useCameraAppState';
@@ -106,7 +107,8 @@ export const CameraScreen = () => {
     top: statusBarHeight, 
     left: 0, 
     right: 0, 
-    zIndex: 90 
+    zIndex: 90,
+    elevation: 90
   }), [statusBarHeight]);
 
   const headerElement = useMemo(() => <Header />, []);
@@ -128,43 +130,45 @@ export const CameraScreen = () => {
   return (
     <View style={styles.container}>
       <InteractionContext.Provider value={interactionContextValue}>
-        <React.Fragment key={`viewfinder-${cameraKey}`}>
-          <GestureController 
-            footerTranslateY={footerTranslateY} 
-            drawerAnimation={drawerAnimation}
-            viewfinderTranslateY={viewfinderTranslateY}
-          >
-            {viewfinderElement}
-          </GestureController>
-        </React.Fragment>
+        <View style={[StyleSheet.absoluteFill, { zIndex: 0 }]} pointerEvents="box-none">
+          <React.Fragment key={`viewfinder-${cameraKey}`}>
+            <GestureController 
+              footerTranslateY={footerTranslateY} 
+              drawerAnimation={drawerAnimation}
+              viewfinderTranslateY={viewfinderTranslateY}
+            >
+              {viewfinderElement}
+            </GestureController>
+          </React.Fragment>
+        </View>
         <Header />
 
         {isFpsOverlayEnabled && <DebugOverlay />}
         
-        <React.Fragment key={cameraKey}>
-          <Animated.View 
-            style={[
-              bottomControlsStyle,
-              animatedBottomControlsStyle
-            ]} 
-            pointerEvents="box-none"
-          >
-            <View style={styles.controlsRow} pointerEvents="box-none">
-              <View style={styles.sideControl} pointerEvents="box-none">
-                <CaptureThumbnail onPress={openGallery} />
+        <View style={[StyleSheet.absoluteFill, { zIndex: 10 }]} pointerEvents="box-none">
+            <Animated.View 
+              style={[
+                bottomControlsStyle,
+                animatedBottomControlsStyle
+              ]} 
+              pointerEvents="box-none"
+            >
+              <View style={styles.controlsRow} pointerEvents="box-none">
+                <View style={styles.sideControl} pointerEvents="box-none">
+                  <CaptureThumbnail onPress={openGallery} />
+                </View>
+                <ShutterButton onPress={triggerCapture} translateY={footerTranslateY} />
+                <View style={styles.sideControl} pointerEvents="box-none">
+                  <CameraFlipButton />
+                </View>
               </View>
-              <ShutterButton onPress={triggerCapture} translateY={footerTranslateY} />
-              <View style={styles.sideControl} pointerEvents="box-none">
-                <CameraFlipButton />
+              <View style={styles.presetSelectorContainer} pointerEvents="box-none">
+                <QuickPresetSelector />
               </View>
-            </View>
-            <View style={styles.presetSelectorContainer} pointerEvents="box-none">
-              <QuickPresetSelector />
-            </View>
-          </Animated.View>
+            </Animated.View>
 
-          <ControlPanel translateY={footerTranslateY} drawerAnimation={drawerAnimation} galleryTransition={galleryTransition} />
-        </React.Fragment>
+            <ControlPanel translateY={footerTranslateY} drawerAnimation={drawerAnimation} galleryTransition={galleryTransition} />
+        </View>
 
         <AddPresetModal />
         <DeletePresetModal />
@@ -178,12 +182,22 @@ export const CameraScreen = () => {
       </InteractionContext.Provider>
 
       {shouldRenderGallery && (
-        <GalleryViewer 
-          onClose={closeGallery} 
-          initialUri={latestPreviewUri ?? latestCapturedUri} 
-          galleryTransition={galleryTransition} 
-          header={headerElement}
-        />
+        <Modal
+          visible={true}
+          transparent={true}
+          animationType="none"
+          statusBarTranslucent={true}
+          onRequestClose={closeGallery}
+        >
+          <GestureHandlerRootView style={{ flex: 1 }}>
+            <GalleryViewer 
+              onClose={closeGallery} 
+              initialUri={latestPreviewUri ?? latestCapturedUri} 
+              galleryTransition={galleryTransition} 
+              header={headerElement}
+            />
+          </GestureHandlerRootView>
+        </Modal>
       )}
     </View>
   );
@@ -203,6 +217,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     zIndex: 50,
+    elevation: 50,
   },
   controlsRow: {
     flexDirection: 'row',

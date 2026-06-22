@@ -30,7 +30,7 @@ describe('useRecentMediaThumbnail', () => {
     expect(useGalleryStore.getState().latestCapturedUri).toBe('file:///test/1.jpg');
   });
 
-  it('invalidates latestCapturedUri if the file does not exist on disk', async () => {
+  it('trusts MediaStore and sets latestCapturedUri even if FileSystem says it does not exist', async () => {
     // MediaLibrary will return file:///test/1.jpg
     // Let's mock FileSystem to say it does not exist
     (FileSystem.getInfoAsync as jest.Mock).mockResolvedValue({ exists: false });
@@ -41,8 +41,8 @@ describe('useRecentMediaThumbnail', () => {
       await Promise.resolve();
     });
 
-    // Should not set the latestCapturedUri since it doesn't exist
-    expect(useGalleryStore.getState().latestCapturedUri).toBeNull();
+    // Should still set the latestCapturedUri since we trust MediaStore/Scoped Storage
+    expect(useGalleryStore.getState().latestCapturedUri).toBe('file:///test/1.jpg');
   });
 
   it('clears state if MediaLibrary returns nothing and currentCapturedUri does not exist', async () => {
