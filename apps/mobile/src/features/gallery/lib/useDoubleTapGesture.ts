@@ -42,9 +42,6 @@ export const useDoubleTapGesture = ({
         }
         return;
       }
-      if (isTransitioning.value) {
-        return;
-      }
       if (isZoomed.value) {
         if (recentlyStoppedDecay.value > 0) {
           recentlyStoppedDecay.value = 0;

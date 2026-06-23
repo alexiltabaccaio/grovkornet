@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, Text, View, useWindowDimensions } from 'react-native';
-import Animated, { SharedValue } from 'react-native-reanimated';
+import Animated, { SharedValue, useSharedValue } from 'react-native-reanimated';
 import { GestureDetector } from 'react-native-gesture-handler';
 
 import { useTranslation } from 'react-i18next';
@@ -27,6 +27,7 @@ export const PhotoPreview = React.memo(({ selectedPhoto, photos, onPhotoVisible,
   const { width, height } = useWindowDimensions();
   const GAP = 20;
   const slotWidth = width + GAP;
+  const resetZoomSignal = useSharedValue(0);
 
   const {
     currentIndex,
@@ -42,6 +43,7 @@ export const PhotoPreview = React.memo(({ selectedPhoto, photos, onPhotoVisible,
     photos,
     onPhotoVisible,
     slotWidth,
+    resetZoomSignal,
   });
 
   const {
@@ -65,6 +67,7 @@ export const PhotoPreview = React.memo(({ selectedPhoto, photos, onPhotoVisible,
     zoomScaleRef,
     zoomTranslateXRef,
     zoomTranslateYRef,
+    resetZoomSignal,
   });
 
   if (!selectedPhoto || photos.length === 0) {

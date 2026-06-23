@@ -80,11 +80,12 @@ export const AnimatedSlot = memo(({
   });
 
   const zoomStyle = useAnimatedStyle(() => {
-    if (!zoomScale || !zoomTranslateX || !zoomTranslateY || !currentIndex) {
+    if (!zoomScale || !zoomTranslateX || !zoomTranslateY) {
       return {};
     }
-    const isActive = index === currentIndex.value;
-    if (!isActive) {
+    const currentX = index * slotWidth + translateX.value;
+    const isFocused = Math.abs(currentX) < slotWidth / 2;
+    if (!isFocused) {
       return {};
     }
     return {

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
-import { useSharedValue, runOnJS, withSpring, cancelAnimation } from 'react-native-reanimated';
+import { useSharedValue, runOnJS, withSpring, cancelAnimation, SharedValue } from 'react-native-reanimated';
 import { GalleryItem } from './types';
 
 interface UsePhotoPreviewTransitionProps {
@@ -7,6 +7,7 @@ interface UsePhotoPreviewTransitionProps {
   photos: GalleryItem[];
   onPhotoVisible?: (photo: GalleryItem) => void;
   slotWidth: number;
+  resetZoomSignal?: SharedValue<number>;
 }
 
 export const usePhotoPreviewTransition = ({
@@ -14,6 +15,7 @@ export const usePhotoPreviewTransition = ({
   photos,
   onPhotoVisible,
   slotWidth,
+  resetZoomSignal,
 }: UsePhotoPreviewTransitionProps) => {
   const [initialIndex] = useState(() => {
     return photos.length > 0 && selectedPhoto
@@ -82,6 +84,10 @@ export const usePhotoPreviewTransition = ({
       // Ignore this update as it is an echo of our manual swipes
       expectedEchoesRef.current.splice(0, expectedIndex + 1);
       return;
+    }
+
+    if (resetZoomSignal) {
+      resetZoomSignal.value += 1;
     }
 
     const idx = photos.findIndex(p => p.uri === uri);

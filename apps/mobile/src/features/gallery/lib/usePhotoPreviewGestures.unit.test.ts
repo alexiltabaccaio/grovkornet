@@ -173,7 +173,7 @@ describe('usePhotoPreviewGestures', () => {
     expect(result.current.zoomTranslateY.value).toBe(150);
   });
 
-  it('does not zoom on double tap if transition is in progress', () => {
+  it('zooms on double tap even if transition is in progress', () => {
     const { result } = getHookResult();
     mockIsTransitioning.value = true;
 
@@ -181,8 +181,8 @@ describe('usePhotoPreviewGestures', () => {
       capturedDoubleTapCallbacks.onEnd({ x: 150, y: 300 });
     });
 
-    expect(result.current.isZoomed.value).toBe(false);
-    expect(result.current.zoomScale.value).toBe(1);
+    expect(result.current.isZoomed.value).toBe(true);
+    expect(result.current.zoomScale.value).toBe(2.5);
   });
 
   it('handles double tap to zoom out when already zoomed', () => {

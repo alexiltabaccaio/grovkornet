@@ -1,5 +1,4 @@
-import { useEffect } from 'react';
-import { useSharedValue, SharedValue } from 'react-native-reanimated';
+import { useSharedValue, SharedValue, useAnimatedReaction } from 'react-native-reanimated';
 import { Gesture } from 'react-native-gesture-handler';
 import { GalleryItem } from './types';
 import { usePanGesture } from './usePanGesture';
@@ -22,6 +21,7 @@ interface UsePhotoPreviewGesturesProps {
   zoomScaleRef?: SharedValue<number>;
   zoomTranslateXRef?: SharedValue<number>;
   zoomTranslateYRef?: SharedValue<number>;
+  resetZoomSignal?: SharedValue<number>;
 }
 
 export const usePhotoPreviewGestures = ({
@@ -33,13 +33,14 @@ export const usePhotoPreviewGestures = ({
   dragOffset,
   currentIndex: _currentIndex,
   rotationY,
-  selectedPhoto,
+  selectedPhoto: _selectedPhoto,
   prepareTransition,
   finalizeTransition,
   isTransitioning,
   zoomScaleRef,
   zoomTranslateXRef,
   zoomTranslateYRef,
+  resetZoomSignal,
 }: UsePhotoPreviewGesturesProps) => {
   const localZoomScale = useSharedValue(1);
   const localZoomTranslateX = useSharedValue(0);
@@ -58,15 +59,20 @@ export const usePhotoPreviewGestures = ({
   const isDecaying = useSharedValue(0);
   const recentlyStoppedDecay = useSharedValue(0);
 
-  useEffect(() => {
-    zoomScale.value = 1;
-    zoomTranslateX.value = 0;
-    zoomTranslateY.value = 0;
-    savedZoomScale.value = 1;
-    savedZoomTranslateX.value = 0;
-    savedZoomTranslateY.value = 0;
-    isZoomed.value = false;
-  }, [selectedPhoto, zoomScale, zoomTranslateX, zoomTranslateY, savedZoomScale, savedZoomTranslateX, savedZoomTranslateY, isZoomed]);
+  useAnimatedReaction(
+    () => resetZoomSignal?.value,
+    (nextVal, prevVal) => {
+      if (nextVal !== prevVal && nextVal !== undefined) {
+        zoomScale.value = 1;
+        zoomTranslateX.value = 0;
+        zoomTranslateY.value = 0;
+        savedZoomScale.value = 1;
+        savedZoomTranslateX.value = 0;
+        savedZoomTranslateY.value = 0;
+        isZoomed.value = false;
+      }
+    }
+  );
 
   const panGesture = usePanGesture({
     width,
