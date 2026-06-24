@@ -130,4 +130,90 @@ class CameraTorchManagerTest {
         manager.torchCallback.onTorchModeChanged("camera_1", false)
         assertNull("Should ignore callbacks for non-target camera", reportedState)
     }
+
+    @Test
+    fun initialize_handlesException() {
+        // Assert that register callback exception does not crash the manager
+        val manager = CameraTorchManager(
+            getTargetCameraId = { "0" },
+            isTorchLogicalEnabled = { false },
+            onTorchStateChanged = {},
+            setTorchModeAction = { _, _ -> },
+            registerTorchCallbackAction = { throw Exception("Mock JNI registration failure") },
+            unregisterTorchCallbackAction = { }
+        )
+        try {
+            manager.initialize()
+        } catch (e: Exception) {
+            fail("initialize should catch and log exceptions instead of throwing them")
+        }
+    }
+
+    @Test
+    fun unregister_handlesException() {
+        // Assert that unregister callback exception does not crash the manager
+        val manager = CameraTorchManager(
+            getTargetCameraId = { "0" },
+            isTorchLogicalEnabled = { false },
+            onTorchStateChanged = {},
+            setTorchModeAction = { _, _ -> },
+            registerTorchCallbackAction = { },
+            unregisterTorchCallbackAction = { throw Exception("Mock JNI unregistration failure") }
+        )
+        try {
+            manager.unregister()
+        } catch (e: Exception) {
+            fail("unregister should catch and log exceptions instead of throwing them")
+        }
+    }
+
+    @Test
+    fun restoreTorchIfLogicalEnabled_handlesException() {
+        // Assert that setTorchMode exception does not crash the manager
+        val manager = CameraTorchManager(
+            getTargetCameraId = { "0" },
+            isTorchLogicalEnabled = { true },
+            onTorchStateChanged = {},
+            setTorchModeAction = { _, _ -> throw Exception("Mock hardware write failure") },
+            registerTorchCallbackAction = { },
+            unregisterTorchCallbackAction = { }
+        )
+        try {
+            manager.restoreTorchIfLogicalEnabled()
+        } catch (e: Exception) {
+            fail("restoreTorchIfLogicalEnabled should catch and log exceptions instead of throwing them")
+        }
+    }
+
+    @Test
+    fun restoreTorchIfLogicalEnabled_handlesNullCameraId() {
+        var setTorchCalled = false
+        val manager = CameraTorchManager(
+            getTargetCameraId = { null },
+            isTorchLogicalEnabled = { true },
+            onTorchStateChanged = {},
+            setTorchModeAction = { _, _ -> setTorchCalled = true },
+            registerTorchCallbackAction = { },
+            unregisterTorchCallbackAction = { }
+        )
+        manager.restoreTorchIfLogicalEnabled()
+        assertFalse("Should not call setTorchMode if target camera ID is null", setTorchCalled)
+    }
+
+    @Test
+    fun callback_onTorchModeUnavailable_doesNotThrow() {
+        val manager = CameraTorchManager(
+            getTargetCameraId = { "0" },
+            isTorchLogicalEnabled = { false },
+            onTorchStateChanged = {},
+            setTorchModeAction = { _, _ -> },
+            registerTorchCallbackAction = { },
+            unregisterTorchCallbackAction = { }
+        )
+        try {
+            manager.torchCallback.onTorchModeUnavailable("0")
+        } catch (e: Exception) {
+            fail("onTorchModeUnavailable callback should run without throwing exceptions")
+        }
+    }
 }
