@@ -3,7 +3,7 @@ import { useDoubleTapGesture } from './useDoubleTapGesture';
 import * as reanimatedModule from 'react-native-reanimated';
 
 const capturedDoubleTapCallbacks: any = {};
-const mockDoubleTapGesture = {
+const mockDoubleTapGesture: any = {
   numberOfTaps: jest.fn().mockReturnThis(),
   maxDelay: jest.fn().mockReturnThis(),
   maxDuration: jest.fn().mockReturnThis(),

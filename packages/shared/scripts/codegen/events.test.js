@@ -6,13 +6,18 @@ const eventsCodegen = require('./events');
 const { PROJECT_ROOT } = require('./utils/config-loader');
 
 test('Camera Events Codegen generates expected outputs', (t) => {
-  // Run generator
-  eventsCodegen.main();
-
   // Define paths
   const tsPath = path.resolve(PROJECT_ROOT, 'packages/engine/src/events.ts');
   const kotlinPath = path.resolve(PROJECT_ROOT, 'packages/engine/android/src/main/java/com/grovkornet/nativefilmcamera/events/CameraEvents.kt');
   const cppPath = path.resolve(PROJECT_ROOT, 'packages/engine/android/src/main/cpp/core/CameraEvents.h');
+
+  // Clean up existing files if they exist to avoid stale test results
+  if (fs.existsSync(tsPath)) fs.unlinkSync(tsPath);
+  if (fs.existsSync(kotlinPath)) fs.unlinkSync(kotlinPath);
+  if (fs.existsSync(cppPath)) fs.unlinkSync(cppPath);
+
+  // Run generator
+  eventsCodegen.main();
 
   // Verify files exist
   assert.ok(fs.existsSync(tsPath), 'TS events file should be created');

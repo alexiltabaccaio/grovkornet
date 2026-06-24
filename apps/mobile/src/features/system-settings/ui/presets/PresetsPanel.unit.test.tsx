@@ -2,7 +2,7 @@ import React from 'react';
 import { render, fireEvent } from '@testing-library/react-native';
 import { PresetsPanel } from './PresetsPanel';
 import { DeletePresetModal } from './DeletePresetModal';
-import { usePresetStore, DEFAULT_FILM_PAYLOAD, DEFAULT_BODY_PAYLOAD } from '@entities/preset';
+import { usePresetStore, DEFAULT_FILM_PAYLOAD, DEFAULT_BODY_PAYLOAD, DEFAULT_LENS_PAYLOAD } from '@entities/preset';
 import { useControlPanelStore } from '@entities/system';
 
 jest.mock('react-native', () => {
@@ -62,7 +62,7 @@ describe('PresetsPanel', () => {
     const activeUserPreset = {
       id: 'user-123',
       name: 'Retro123',
-      payload: { film: DEFAULT_FILM_PAYLOAD, body: DEFAULT_BODY_PAYLOAD },
+      payload: { film: DEFAULT_FILM_PAYLOAD, body: DEFAULT_BODY_PAYLOAD, lens: DEFAULT_LENS_PAYLOAD },
       isFavorite: false,
       inQuickSelect: false,
       createdAt: Date.now(),
@@ -92,7 +92,7 @@ describe('PresetsPanel', () => {
     const activeUserPreset = {
       id: 'user-123',
       name: 'Retro123',
-      payload: { film: DEFAULT_FILM_PAYLOAD, body: DEFAULT_BODY_PAYLOAD },
+      payload: { film: DEFAULT_FILM_PAYLOAD, body: DEFAULT_BODY_PAYLOAD, lens: DEFAULT_LENS_PAYLOAD },
       isFavorite: false,
       inQuickSelect: false,
       createdAt: Date.now(),

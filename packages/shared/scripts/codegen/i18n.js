@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const PROJECT_ROOT = path.resolve(__dirname, '../../../..');
+const { PROJECT_ROOT } = require('./utils/config-loader');
 
 const EN_JSON_PATH = path.resolve(PROJECT_ROOT, 'apps/mobile/src/app/providers/i18n/locales/en.json');
 const IT_JSON_PATH = path.resolve(PROJECT_ROOT, 'apps/mobile/src/app/providers/i18n/locales/it.json');

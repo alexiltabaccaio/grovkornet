@@ -1,0 +1,19 @@
+{
+  "$schema": "./node_modules/@stryker-mutator/core/schema/stryker-schema.json",
+  "mutate": [
+    "scripts/codegen/errors.js",
+    "scripts/codegen/events.js",
+    "scripts/codegen/hardware.js",
+    "scripts/codegen/i18n.js"
+  ],
+  "testRunner": "command",
+  "commandRunner": {
+    "command": "node --test scripts/codegen/errors.test.js scripts/codegen/events.test.js scripts/codegen/hardware.test.js scripts/codegen/i18n.test.js"
+  },
+  "reporters": [
+    "progress",
+    "clear-text",
+    "html"
+  ],
+  "coverageAnalysis": "off"
+}

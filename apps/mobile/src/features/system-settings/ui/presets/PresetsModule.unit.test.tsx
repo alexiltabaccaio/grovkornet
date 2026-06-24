@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, fireEvent } from '@testing-library/react-native';
 import { PresetsModule } from './PresetsModule';
-import { usePresetStore, DEFAULT_FILM_PAYLOAD, DEFAULT_BODY_PAYLOAD } from '@entities/preset';
+import { usePresetStore, DEFAULT_FILM_PAYLOAD, DEFAULT_BODY_PAYLOAD, DEFAULT_LENS_PAYLOAD } from '@entities/preset';
 import { useControlPanelStore } from '@entities/system';
 
 import { applyPreset } from '../../lib/presetActions';
@@ -30,7 +30,7 @@ describe('PresetsModule', () => {
       {
         id: 'user-1',
         name: 'MyPreset',
-        payload: { film: DEFAULT_FILM_PAYLOAD, body: DEFAULT_BODY_PAYLOAD },
+        payload: { film: DEFAULT_FILM_PAYLOAD, body: DEFAULT_BODY_PAYLOAD, lens: DEFAULT_LENS_PAYLOAD },
         isFavorite: false,
         inQuickSelect: false,
         createdAt: Date.now(),
@@ -59,7 +59,7 @@ describe('PresetsModule', () => {
   it('renders Personalizzato button if customizedPayload is not null', () => {
     usePresetStore.setState({
       activePresetId: 'customized',
-      customizedPayload: { film: DEFAULT_FILM_PAYLOAD, body: DEFAULT_BODY_PAYLOAD },
+      customizedPayload: { film: DEFAULT_FILM_PAYLOAD, body: DEFAULT_BODY_PAYLOAD, lens: DEFAULT_LENS_PAYLOAD },
     });
 
     const { getByText } = render(<PresetsModule />);

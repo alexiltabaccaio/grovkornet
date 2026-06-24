@@ -1,6 +1,6 @@
 import { FilmStore } from '@entities/film';
 import { BodyStore } from '@entities/body';
-import { FilmPresetPayload, BodyPresetPayload, GeneratedFilmExcludedKeys } from '@entities/preset';
+import { FilmPresetPayload, BodyPresetPayload, GeneratedFilmExcludedKeys, GeneratedBodyExcludedKeys } from '@entities/preset';
 
 // ============================================================================
 // TypeScript Exhaustiveness Guards
@@ -107,15 +107,9 @@ type BodyExcludedKeys =
   | 'fps'
   | 'hwFps'
   | 'resolution'
-  | 'torchState'
-  | 'torchStrength'
-  | 'aspectRatio'
-  | 'resolutionSetting'
-  | 'fpsSetting'
-  | 'previewQuality'
-  | 'force60fpsCrop'
+  | 'evAuto'
   | 'capabilities'
-  | 'zoom';
+  | GeneratedBodyExcludedKeys;
 
 type IsBodyStoreFullyCategorized = Exclude<
   keyof BodyStore,

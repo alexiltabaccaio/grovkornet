@@ -6,9 +6,11 @@
   "types": "./src/index.ts",
   "private": true,
   "scripts": {
-    "test": "node --test scripts/codegen/*.test.js"
+    "test": "node --test scripts/codegen/*.test.js scripts/codegen/generators/*.test.js",
+    "stryker": "stryker run"
   },
   "devDependencies": {
+    "@stryker-mutator/core": "^9.6.1",
     "yaml": "^2.4.5"
   }
 }

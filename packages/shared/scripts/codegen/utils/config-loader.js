@@ -2,10 +2,45 @@ const fs = require('fs');
 const path = require('path');
 const YAML = require('yaml');
 
-const PROJECT_ROOT = path.resolve(__dirname, '../../../../../');
+// Detect if we are running inside a Stryker sandbox
+const isStryker = __dirname.includes('.stryker-tmp');
+
+// Find the project root by searching upwards for the root package.json
+let currentDir = __dirname;
+let projectRoot = path.resolve(__dirname, '../../../../../'); // fallback
+let isSandboxRoot = false;
+
+while (currentDir && currentDir !== path.dirname(currentDir)) {
+  const pkgPath = path.join(currentDir, 'package.json');
+  if (fs.existsSync(pkgPath)) {
+    try {
+      const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
+      if (isStryker && pkg.name === '@grovkornet/shared') {
+        projectRoot = currentDir;
+        isSandboxRoot = true;
+        break;
+      }
+      if (pkg.name === 'grovkornet-monorepo') {
+        projectRoot = currentDir;
+        break;
+      }
+    } catch (e) {
+      // ignore
+    }
+  }
+  currentDir = path.dirname(currentDir);
+}
+
+const PROJECT_ROOT = projectRoot;
 
 function loadYamlConfig(relativeFilePath) {
-  const absolutePath = path.resolve(PROJECT_ROOT, relativeFilePath);
+  let resolvedPath = relativeFilePath;
+  if (isStryker && isSandboxRoot && relativeFilePath.startsWith('packages/shared/')) {
+    // In Stryker sandbox, packages/shared files are located at the root of the sandbox
+    resolvedPath = relativeFilePath.substring('packages/shared/'.length);
+  }
+  
+  const absolutePath = path.resolve(PROJECT_ROOT, resolvedPath);
   if (!fs.existsSync(absolutePath)) {
     throw new Error(`Config file or directory not found at ${absolutePath}`);
   }

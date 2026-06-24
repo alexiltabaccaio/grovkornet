@@ -3,7 +3,7 @@ import { usePanGesture } from './usePanGesture';
 import * as reanimatedModule from 'react-native-reanimated';
 
 const capturedPanCallbacks: any = {};
-const mockPanGesture = {
+const mockPanGesture: any = {
   maxPointers: jest.fn().mockReturnThis(),
   onBegin: jest.fn().mockImplementation((cb) => {
     capturedPanCallbacks.onBegin = cb;

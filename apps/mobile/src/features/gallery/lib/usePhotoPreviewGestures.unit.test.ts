@@ -13,7 +13,7 @@ const capturedPanCallbacks: any = {};
 const capturedPinchCallbacks: any = {};
 const capturedDoubleTapCallbacks: any = {};
 
-const mockPanGesture = {
+const mockPanGesture: any = {
   maxPointers: jest.fn().mockReturnThis(),
   onBegin: jest.fn().mockImplementation((cb) => {
     capturedPanCallbacks.onBegin = cb;
@@ -33,7 +33,7 @@ const mockPanGesture = {
   }),
 };
 
-const mockPinchGesture = {
+const mockPinchGesture: any = {
   onBegin: jest.fn().mockImplementation((cb) => {
     capturedPinchCallbacks.onBegin = cb;
     return mockPinchGesture;
@@ -52,7 +52,7 @@ const mockPinchGesture = {
   }),
 };
 
-const mockDoubleTapGesture = {
+const mockDoubleTapGesture: any = {
   numberOfTaps: jest.fn().mockReturnThis(),
   maxDelay: jest.fn().mockReturnThis(),
   maxDuration: jest.fn().mockReturnThis(),

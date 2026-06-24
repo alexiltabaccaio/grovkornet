@@ -89,6 +89,8 @@ targets.cmake
 
 # Testing / Build
 coverage/
+reports/
+.stryker-tmp/
 web-build/
 .next/
 out/

@@ -1,4 +1,4 @@
-import { usePresetStore, DEFAULT_FILM_PAYLOAD, DEFAULT_BODY_PAYLOAD } from './usePresetStore';
+import { usePresetStore, DEFAULT_FILM_PAYLOAD, DEFAULT_BODY_PAYLOAD, DEFAULT_LENS_PAYLOAD } from './usePresetStore';
 
 describe('usePresetStore', () => {
 
@@ -19,7 +19,7 @@ describe('usePresetStore', () => {
       const mockPreset = {
         id: '123',
         name: 'Retro',
-        payload: { film: DEFAULT_FILM_PAYLOAD, body: DEFAULT_BODY_PAYLOAD },
+        payload: { film: DEFAULT_FILM_PAYLOAD, body: DEFAULT_BODY_PAYLOAD, lens: DEFAULT_LENS_PAYLOAD },
         isFavorite: false,
         inQuickSelect: false,
         createdAt: Date.now(),
@@ -38,7 +38,7 @@ describe('usePresetStore', () => {
       const mockPreset = {
         id: '123',
         name: 'Retro',
-        payload: { film: DEFAULT_FILM_PAYLOAD, body: DEFAULT_BODY_PAYLOAD },
+        payload: { film: DEFAULT_FILM_PAYLOAD, body: DEFAULT_BODY_PAYLOAD, lens: DEFAULT_LENS_PAYLOAD },
         isFavorite: false,
         inQuickSelect: false,
         createdAt: Date.now(),
@@ -55,8 +55,8 @@ describe('usePresetStore', () => {
 
     it('sets favorite preset correctly', () => {
       const presets = [
-        { id: '1', name: 'P1', payload: { film: DEFAULT_FILM_PAYLOAD, body: DEFAULT_BODY_PAYLOAD }, isFavorite: false, inQuickSelect: false, createdAt: Date.now() },
-        { id: '2', name: 'P2', payload: { film: DEFAULT_FILM_PAYLOAD, body: DEFAULT_BODY_PAYLOAD }, isFavorite: false, inQuickSelect: false, createdAt: Date.now() },
+        { id: '1', name: 'P1', payload: { film: DEFAULT_FILM_PAYLOAD, body: DEFAULT_BODY_PAYLOAD, lens: DEFAULT_LENS_PAYLOAD }, isFavorite: false, inQuickSelect: false, createdAt: Date.now() },
+        { id: '2', name: 'P2', payload: { film: DEFAULT_FILM_PAYLOAD, body: DEFAULT_BODY_PAYLOAD, lens: DEFAULT_LENS_PAYLOAD }, isFavorite: false, inQuickSelect: false, createdAt: Date.now() },
       ];
       usePresetStore.setState({ userPresets: presets });
 
@@ -69,7 +69,7 @@ describe('usePresetStore', () => {
 
     it('toggles quick select state', () => {
       const presets = [
-        { id: '1', name: 'P1', payload: { film: DEFAULT_FILM_PAYLOAD, body: DEFAULT_BODY_PAYLOAD }, isFavorite: false, inQuickSelect: false, createdAt: Date.now() },
+        { id: '1', name: 'P1', payload: { film: DEFAULT_FILM_PAYLOAD, body: DEFAULT_BODY_PAYLOAD, lens: DEFAULT_LENS_PAYLOAD }, isFavorite: false, inQuickSelect: false, createdAt: Date.now() },
       ];
       usePresetStore.setState({ userPresets: presets });
 
@@ -101,7 +101,7 @@ describe('usePresetStore', () => {
       const mockState = {
         userPresets: [{ id: '1', name: 'Preset 1' }],
         activePresetId: '1',
-        customizedPayload: { film: DEFAULT_FILM_PAYLOAD, body: DEFAULT_BODY_PAYLOAD },
+        customizedPayload: { film: DEFAULT_FILM_PAYLOAD, body: DEFAULT_BODY_PAYLOAD, lens: DEFAULT_LENS_PAYLOAD },
         isApplyingPreset: true,
         isAddModalVisible: true,
         customizedThumbnailUri: 'file:///cached.jpg',
@@ -111,7 +111,7 @@ describe('usePresetStore', () => {
       expect(partialized).toEqual({
         userPresets: [{ id: '1', name: 'Preset 1' }],
         activePresetId: '1',
-        customizedPayload: { film: DEFAULT_FILM_PAYLOAD, body: DEFAULT_BODY_PAYLOAD },
+        customizedPayload: { film: DEFAULT_FILM_PAYLOAD, body: DEFAULT_BODY_PAYLOAD, lens: DEFAULT_LENS_PAYLOAD },
       });
     });
   });

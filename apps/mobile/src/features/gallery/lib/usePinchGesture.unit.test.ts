@@ -3,7 +3,7 @@ import { usePinchGesture } from './usePinchGesture';
 import * as reanimatedModule from 'react-native-reanimated';
 
 const capturedPinchCallbacks: any = {};
-const mockPinchGesture = {
+const mockPinchGesture: any = {
   onBegin: jest.fn().mockImplementation((cb) => {
     capturedPinchCallbacks.onBegin = cb;
     return mockPinchGesture;

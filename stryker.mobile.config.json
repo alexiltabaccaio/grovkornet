@@ -1,0 +1,41 @@
+{
+  "$schema": "./node_modules/@stryker-mutator/core/schema/stryker-schema.json",
+  "mutate": [
+    "apps/mobile/src/entities/gallery/model/useGalleryStore.ts",
+    "apps/mobile/src/entities/verification/model/useVerificationStore.ts",
+    "apps/mobile/src/entities/system/model/useSystemStore.ts",
+    "apps/mobile/src/entities/system/lib/useParameterGesture.ts",
+    "apps/mobile/src/shared/lib/storage/mmkv.ts",
+    "apps/mobile/src/shared/lib/logger.ts",
+    "apps/mobile/src/shared/lib/hooks/useDoublePress.ts",
+    "apps/mobile/src/shared/lib/hooks/useDeviceRotation.ts",
+    "apps/mobile/src/features/system-settings/lib/presetPersistence.ts",
+    "apps/mobile/src/features/film-controls/lib/colorMath.ts",
+    "apps/mobile/src/features/preset-thumbnails/lib/initThumbnailGenerator.ts"
+  ],
+  "testRunner": "jest",
+  "jest": {
+    "projectType": "custom",
+    "configFile": "apps/mobile/package.json",
+    "config": {
+      "moduleNameMapper": {
+        "^@app/(.*)$": "<rootDir>/src/app/$1",
+        "^@screens/(.*)$": "<rootDir>/src/screens/$1",
+        "^@widgets/(.*)$": "<rootDir>/src/widgets/$1",
+        "^@features/(.*)$": "<rootDir>/src/features/$1",
+        "^@entities/(.*)$": "<rootDir>/src/entities/$1",
+        "^@shared/(.*)$": "<rootDir>/src/shared/$1",
+        "^@/(.*)$": "<rootDir>/src/$1"
+      }
+    }
+  },
+  "reporters": [
+    "progress",
+    "clear-text",
+    "html"
+  ],
+  "concurrency": 2,
+  "coverageAnalysis": "off",
+  "checkers": ["typescript"],
+  "tsconfigFile": "apps/mobile/tsconfig.json"
+}

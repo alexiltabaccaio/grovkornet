@@ -6,12 +6,16 @@ const hardwareCodegen = require('./hardware');
 const { PROJECT_ROOT } = require('./utils/config-loader');
 
 test('Hardware Configuration Codegen generates expected outputs', (t) => {
-  // Run generator
-  hardwareCodegen.main();
-
   // Define paths
   const cppPath = path.resolve(PROJECT_ROOT, 'packages/engine/android/src/main/cpp/core/HardwareConfig.h');
   const tsPath = path.resolve(PROJECT_ROOT, 'packages/shared/src/hardwareConfig.ts');
+
+  // Clean up existing files if they exist to avoid stale test results
+  if (fs.existsSync(cppPath)) fs.unlinkSync(cppPath);
+  if (fs.existsSync(tsPath)) fs.unlinkSync(tsPath);
+
+  // Run generator
+  hardwareCodegen.main();
 
   // Verify files exist
   assert.ok(fs.existsSync(cppPath), 'C++ hardware config file should be created');

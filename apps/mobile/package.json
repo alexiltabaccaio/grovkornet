@@ -10,6 +10,7 @@
     "build": "expo run:android --variant productionRelease --app-id com.grovkornet.app",
     "web": "expo start --web",
     "test": "jest",
+    "test:mutation": "stryker run",
     "lint": "npx tsc --noEmit && eslint .",
     "lint:fix": "eslint . --fix"
   },
@@ -17,6 +18,9 @@
     "preset": "jest-expo",
     "setupFilesAfterEnv": [
       "./jest.setup.ts"
+    ],
+    "testPathIgnorePatterns": [
+      "<rootDir>/.stryker-tmp/"
     ],
     "transformIgnorePatterns": [
       "node_modules/(?!((jest-)?react-native|@react-native(-community)?)|expo(nent)?|@expo(nent)?/.*|@expo-google-fonts/.*|react-navigation|@react-navigation/.*|@unimodules/.*|unimodules|sentry-expo|native-base|react-native-svg|expo-image|expo-sensors)"
@@ -54,6 +58,9 @@
   },
   "devDependencies": {
     "@react-native/jest-preset": "^0.85.3",
+    "@stryker-mutator/core": "^9.6.1",
+    "@stryker-mutator/jest-runner": "^9.6.1",
+    "@stryker-mutator/typescript-checker": "^9.6.1",
     "@testing-library/react-native": "^13.3.3",
     "@types/jest": "^29.5.14",
     "@types/node": "^25.9.1",

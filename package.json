@@ -26,6 +26,8 @@
     "lint:graphrag": "node packages/shared/scripts/graphrag/src/cli/build.js && node packages/shared/scripts/graphrag/src/cli/analyze.js",
     "lint": "turbo run lint && npm run lint:graphrag && node scripts/check-worklet-captures.js",
     "lint:worklets": "node scripts/check-worklet-captures.js",
+    "test:mutation:codegen": "npm run stryker -w @grovkornet/shared",
+    "test:mutation:mobile": "stryker run stryker.mobile.config.json",
     "android": "npm run codegen && npm run android -w @grovkornet/mobile",
     "release": "commit-and-tag-version",
     "postinstall": "patch-package"

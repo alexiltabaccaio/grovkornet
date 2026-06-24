@@ -13,7 +13,7 @@ jest.mock('@shared/lib/haptics', () => ({
 
 // Mock Gesture.Tap fluent chain
 let capturedOnEndCallback: any = null;
-const mockTapGesture = {
+const mockTapGesture: any = {
   enabled: jest.fn().mockImplementation(() => mockTapGesture),
   numberOfTaps: jest.fn().mockReturnThis(),
   maxDistance: jest.fn().mockReturnThis(),

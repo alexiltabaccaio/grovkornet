@@ -3,7 +3,7 @@ import { useColorRangeGestures } from './useColorRangeGestures';
 import * as reanimatedModule from 'react-native-reanimated';
 
 const capturedPanCallbacks: any = {};
-const mockPanGesture = {
+const mockPanGesture: any = {
   enabled: jest.fn().mockImplementation(() => mockPanGesture),
   onStart: jest.fn().mockImplementation((cb) => {
     capturedPanCallbacks.onStart = cb;
@@ -16,7 +16,7 @@ const mockPanGesture = {
 };
 
 const capturedTapCallbacks: any = {};
-const mockTapGesture = {
+const mockTapGesture: any = {
   enabled: jest.fn().mockImplementation(() => mockTapGesture),
   numberOfTaps: jest.fn().mockReturnThis(),
   maxDistance: jest.fn().mockReturnThis(),

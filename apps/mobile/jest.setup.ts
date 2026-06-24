@@ -8,7 +8,7 @@ global.Headers = globalThis.Headers || global.Headers;
 global.fetch = globalThis.fetch || global.fetch;
 
 // Mock Expo's winter fetch native module
-jest.mock('../../node_modules/expo/src/winter/fetch/ExpoFetchModule', () => {
+jest.mock('expo/src/winter/fetch/ExpoFetchModule', () => {
   class StubNativeResponse {
     addListener = jest.fn();
     removeListener = jest.fn();
