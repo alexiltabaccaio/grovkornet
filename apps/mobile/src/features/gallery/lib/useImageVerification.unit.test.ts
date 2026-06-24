@@ -120,6 +120,7 @@ describe('useImageVerification', () => {
 
     await act(async () => {
       resolveVerification(true);
+      await Promise.resolve();
     });
 
     // Both should finish verifying and set verifying to false

@@ -57,9 +57,9 @@ function generatePresetSettings(parameters) {
   replaceBetweenMarkers(FILE_PATHS.presetTypes, '// @@GEN_PAYLOAD_EXCLUDED_START@@', '// @@GEN_PAYLOAD_EXCLUDED_END@@', excludedContent, '');
 
   // 2. Generate @grovkornet/shared imports in usePresetStore.ts
-  const defaults = new Set(['DEFAULT_ISO', 'DEFAULT_EV', 'DEFAULT_SHUTTER_SPEED']);
+  const defaults = new Set();
   parameters.forEach(p => {
-    if (p.zustand && p.zustand.default && p.zustand.default.startsWith('DEFAULT_')) {
+    if (p.zustand && p.zustand.default && p.zustand.default.startsWith('DEFAULT_') && p.includeInPreset === true) {
       defaults.add(p.zustand.default);
     }
   });

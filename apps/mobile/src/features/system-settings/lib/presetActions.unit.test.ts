@@ -1,4 +1,4 @@
-import { usePresetStore, DEFAULT_FILM_PAYLOAD, DEFAULT_BODY_PAYLOAD } from '@entities/preset';
+import { usePresetStore, DEFAULT_FILM_PAYLOAD } from '@entities/preset';
 import { useFilmStore } from '@entities/film';
 import { useBodyStore } from '@entities/body';
 import { addPreset, applyPreset, markAsCustomized, removePreset, nextQuickPreset, prevQuickPreset, arePayloadsEqual } from './presetActions';

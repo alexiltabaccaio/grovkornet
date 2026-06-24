@@ -1,7 +1,7 @@
-import { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useControlPanelStore } from '@entities/system';
 import { Gesture } from 'react-native-gesture-handler';
-import { useSharedValue, withTiming, withSpring, SharedValue, useAnimatedReaction, runOnJS } from 'react-native-reanimated';
+import { useSharedValue, withTiming, withSpring, SharedValue, useAnimatedReaction } from 'react-native-reanimated';
 import { useInteractionContext } from '@shared/lib';
 
 interface UseControlPanelGesturesProps {

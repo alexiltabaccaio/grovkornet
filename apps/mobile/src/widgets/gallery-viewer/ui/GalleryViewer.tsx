@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { StyleSheet, Text, View, ActivityIndicator, Platform, useWindowDimensions, BackHandler } from 'react-native';
+import { StyleSheet, View, Platform, useWindowDimensions, BackHandler } from 'react-native';
 import { Image } from 'expo-image';
 import Animated, { useAnimatedStyle, SharedValue, interpolate, useSharedValue, withTiming, runOnJS } from 'react-native-reanimated';
 import { useTranslation } from 'react-i18next';

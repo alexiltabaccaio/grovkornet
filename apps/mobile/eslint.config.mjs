@@ -71,6 +71,19 @@ export default [
       ...reactHooksPlugin.configs.recommended.rules,
       'react-hooks/immutability': 'off',
       '@typescript-eslint/no-explicit-any': 'error',
+      'require-await': 'off',
+      '@typescript-eslint/require-await': 'error',
+      '@typescript-eslint/no-floating-promises': ['error', {
+        ignoreVoid: true,
+        ignoreIIFE: false,
+      }],
+      '@typescript-eslint/no-misused-promises': [
+        'error',
+        {
+          checksVoidReturn: true,
+          checksConditionals: true,
+        },
+      ],
       '@typescript-eslint/no-unused-vars': 'off',
       'unused-imports/no-unused-imports': 'error',
       'unused-imports/no-unused-vars': [
