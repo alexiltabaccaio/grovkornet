@@ -28,6 +28,7 @@
     "lint:worklets": "node scripts/check-worklet-captures.js",
     "test:mutation:codegen": "npm run stryker -w @grovkornet/shared",
     "test:mutation:mobile": "stryker run stryker.mobile.config.json",
+    "test:mutation:mobile:file": "stryker run stryker.mobile.config.json --mutate",
     "android": "npm run codegen && npm run android -w @grovkornet/mobile",
     "release": "commit-and-tag-version",
     "postinstall": "patch-package"

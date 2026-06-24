@@ -11,7 +11,8 @@
     "apps/mobile/src/shared/lib/hooks/useDeviceRotation.ts",
     "apps/mobile/src/features/system-settings/lib/presetPersistence.ts",
     "apps/mobile/src/features/film-controls/lib/colorMath.ts",
-    "apps/mobile/src/features/preset-thumbnails/lib/initThumbnailGenerator.ts"
+    "apps/mobile/src/features/preset-thumbnails/lib/initThumbnailGenerator.ts",
+    "apps/mobile/src/entities/film/lib/useFilmWorklets.ts"
   ],
   "testRunner": "jest",
   "jest": {

@@ -1,197 +1,407 @@
 import { renderHook } from '@testing-library/react-native';
 import { useFilmWorklets } from './useFilmWorklets';
 import { useFilmStore } from '../model/useFilmStore';
-import { 
-  DEFAULT_GRAIN_INTENSITY, 
-  DEFAULT_SATURATION, 
-  DEFAULT_CONTRAST, 
-  DEFAULT_CHROMATIC_ABERRATION,
-  DEFAULT_GRAIN_SPEED,
-} from '@grovkornet/shared';
+import { getNitroConfig } from '../model/getNitroConfig';
 
-describe('useFilmWorklets', () => {
+let mockBypass = false;
+jest.mock('@shared/lib/debug/bypassFlags', () => ({
+  get BYPASS_JS_SANITIZATION() {
+    return mockBypass;
+  }
+}));
+
+const booleanFunctions = new Set([
+  'updateNoiseReductionAuto',
+  'updateTemperatureAuto',
+  'updateIsSelfieCamera',
+  'updateAberrationInvert',
+  'updateGrainEnabled',
+  'updateBloomEnabled',
+  'updateContrastAuto',
+  'updateBlackLevelAuto',
+  'updateHighlightsAuto',
+  'updatePivotAuto',
+  'updateChromaShiftInvert',
+  'updateScanlinesHorizontal'
+]);
+
+const clampedLimits: Record<string, { min: number; max: number; mid: number }> = {
+  updateSaturation: { min: 0.0, max: 2.0, mid: 1.0 },
+  updateContrast: { min: 0.0, max: 2.0, mid: 1.0 },
+  updateGrainIntensity: { min: 0.0, max: 2.0, mid: 1.0 },
+  updateVignetteIntensity: { min: 0.0, max: 1.0, mid: 0.5 },
+  updateChromaShift: { min: 0.0, max: 1.0, mid: 0.5 },
+  updateTemperature: { min: 2000.0, max: 10000.0, mid: 5000.0 },
+  updateTint: { min: -100.0, max: 100.0, mid: 0.0 },
+  updateBloomIntensity: { min: 0.0, max: 9999.0, mid: 10.0 },
+  updateChromaticAberration: { min: 0.0, max: 1.0, mid: 0.5 },
+  updateSharpening: { min: 0.0, max: 1.0, mid: 0.5 },
+  updateBlackLevel: { min: -0.5, max: 0.5, mid: 0.0 },
+  updateHighlights: { min: 0.0, max: 2.0, mid: 1.0 },
+  updatePivot: { min: 0.0, max: 1.0, mid: 0.5 },
+  updatePixelationFactor: { min: 1.0, max: 16.0, mid: 4.0 },
+  updateTapeJitter: { min: 0.0, max: 1.0, mid: 0.5 },
+  updateScanlines: { min: 0.0, max: 1.0, mid: 0.5 },
+  updateHue: { min: -180.0, max: 180.0, mid: 0.0 },
+  updateLensDistortion: { min: -1.0, max: 1.0, mid: 0.0 },
+};
+
+describe('useFilmWorklets - Standard Mode', () => {
   beforeEach(() => {
-    // Reset film store values
+    mockBypass = false;
+    // Reset state values in useFilmStore
     const film = useFilmStore.getState();
-    film.setGrainIntensity(DEFAULT_GRAIN_INTENSITY);
-    film.setGrainChroma(0);
-    film.setGrainSize(1);
-    film.setGrainSpeed(DEFAULT_GRAIN_SPEED);
-    film.setGrainRoughness(0.0);
-    film.setSaturation(DEFAULT_SATURATION);
-    film.setContrast(DEFAULT_CONTRAST);
-    film.setChromaticAberration(DEFAULT_CHROMATIC_ABERRATION);
-    film.setChromaShiftDirection(0);
-    film.setChromaShiftInvert(false);
-    film.setSharpening(0);
-    film.setBloomIntensity(0);
-    film.setVignetteIntensity(0);
-    film.setTemperatureAuto(true);
-    film.setSaturation(DEFAULT_SATURATION);
+    Object.keys(film).forEach((key) => {
+      const stateProp = (film as any)[key];
+      if (stateProp && typeof stateProp === 'object' && 'value' in stateProp) {
+        if (typeof stateProp.value === 'number') {
+          stateProp.value = 0;
+        } else if (typeof stateProp.value === 'boolean') {
+          stateProp.value = false;
+        }
+      }
+    });
+
+    // Clear config object
+    const config = getNitroConfig();
+    Object.keys(config).forEach((key) => {
+      delete (config as any)[key];
+    });
   });
 
-  it('correctly updates grain parameters in worklets', () => {
+  it('correctly updates all parameters (happy path, clamping, and nan logic)', () => {
     const { result } = renderHook(() => useFilmWorklets());
-    const worklets = result.current;
+    const worklets = result.current as Record<string, any>;
+    const filmStore = useFilmStore.getState() as any;
+    const config = getNitroConfig() as any;
 
-    // Test updateGrainIntensity
+    const functions = Object.keys(worklets).filter((key) => key.startsWith('update'));
+    expect(functions.length).toBeGreaterThan(0);
+
+    const originalWarn = console.warn;
+    console.warn = jest.fn();
+
+    const clearConfig = () => {
+      Object.keys(config).forEach((key) => {
+        delete config[key];
+      });
+    };
+
+    functions.forEach((fnName) => {
+      const fn = worklets[fnName];
+      const storeKey = fnName.substring(6).charAt(0).toLowerCase() + fnName.substring(7);
+
+      clearConfig();
+
+      if (booleanFunctions.has(fnName)) {
+        // Test boolean happy paths
+        fn(true);
+        expect(filmStore[storeKey].value).toBe(true);
+        if (storeKey in config) {
+          expect(config[storeKey]).toBe(true);
+        }
+
+        clearConfig();
+        fn(false);
+        expect(filmStore[storeKey].value).toBe(false);
+        if (storeKey in config) {
+          expect(config[storeKey]).toBe(false);
+        }
+      } else {
+        // Numeric parameters
+        if (fnName in clampedLimits) {
+          const limits = clampedLimits[fnName];
+
+          // Test midpoint (within range)
+          fn(limits.mid);
+          expect(filmStore[storeKey].value).toBe(limits.mid);
+          if (storeKey in config) {
+            expect(config[storeKey]).toBe(limits.mid);
+          }
+
+          // Test min clamp
+          clearConfig();
+          fn(limits.min - 10);
+          expect(filmStore[storeKey].value).toBe(limits.min);
+          if (storeKey in config) {
+            expect(config[storeKey]).toBe(limits.min);
+          }
+
+          // Test max clamp
+          clearConfig();
+          fn(limits.max + 10);
+          expect(filmStore[storeKey].value).toBe(limits.max);
+          if (storeKey in config) {
+            expect(config[storeKey]).toBe(limits.max);
+          }
+        } else {
+          // Unclamped numeric parameters
+          fn(0.7);
+          expect(filmStore[storeKey].value).toBe(0.7);
+          if (storeKey in config) {
+            expect(config[storeKey]).toBe(0.7);
+          }
+        }
+
+        // Test NaN handling (two subsequent calls to trigger console.warn branch coverage)
+        const warnMock = console.warn as jest.Mock;
+        warnMock.mockClear();
+
+        const valueBeforeNaN = filmStore[storeKey].value;
+
+        // 1st NaN call: triggers warning
+        fn(NaN);
+        expect(warnMock).toHaveBeenCalledTimes(1);
+        expect(warnMock).toHaveBeenLastCalledWith(
+          expect.stringContaining(`NaN value intercepted for parameter '${storeKey}'`)
+        );
+        expect(filmStore[storeKey].value).toBe(valueBeforeNaN);
+        if (storeKey in config) {
+          expect(config[storeKey]).toBe(valueBeforeNaN);
+        }
+
+        // 2nd NaN call: suppresses warning
+        fn(NaN);
+        expect(warnMock).toHaveBeenCalledTimes(1);
+        expect(filmStore[storeKey].value).toBe(valueBeforeNaN);
+        if (storeKey in config) {
+          expect(config[storeKey]).toBe(valueBeforeNaN);
+        }
+      }
+    });
+
+    console.warn = originalWarn;
+  });
+
+  it('correctly manages side-effects of parameter updates', () => {
+    const { result } = renderHook(() => useFilmWorklets());
+    const worklets = result.current as Record<string, any>;
+    const filmStore = useFilmStore.getState() as any;
+    const config = getNitroConfig() as any;
+
+    const clearConfig = () => {
+      Object.keys(config).forEach((key) => {
+        delete config[key];
+      });
+    };
+
+    // grainIntensity -> grainEnabled
+    clearConfig();
     worklets.updateGrainIntensity(1.5);
-    expect(useFilmStore.getState().grainIntensity.value).toBe(1.5);
-    expect(useFilmStore.getState().grainEnabled.value).toBe(true);
+    expect(filmStore.grainEnabled.value).toBe(true);
+    expect(config.grainEnabled).toBe(true);
 
-    // Test clamping in updateGrainIntensity
-    worklets.updateGrainIntensity(3.0);
-    expect(useFilmStore.getState().grainIntensity.value).toBe(2.0);
+    clearConfig();
+    worklets.updateGrainIntensity(0.0);
+    expect(filmStore.grainEnabled.value).toBe(false);
+    expect(config.grainEnabled).toBe(false);
 
+    clearConfig();
     worklets.updateGrainIntensity(-0.5);
-    expect(useFilmStore.getState().grainIntensity.value).toBe(0.0);
-    expect(useFilmStore.getState().grainEnabled.value).toBe(false);
+    expect(filmStore.grainEnabled.value).toBe(false);
+    expect(config.grainEnabled).toBe(false);
 
-    // Test chroma, size, speed
-    worklets.updateGrainChroma(0.5);
-    expect(useFilmStore.getState().grainChroma.value).toBe(0.5);
+    // bloomIntensity -> bloomEnabled
+    clearConfig();
+    worklets.updateBloomIntensity(10.0);
+    expect(filmStore.bloomEnabled.value).toBe(true);
+    expect(config.bloomEnabled).toBe(true);
 
-    worklets.updateGrainSize(1.2);
-    expect(useFilmStore.getState().grainSize.value).toBe(1.2);
+    clearConfig();
+    worklets.updateBloomIntensity(0.0);
+    expect(filmStore.bloomEnabled.value).toBe(false);
+    expect(config.bloomEnabled).toBe(false);
 
-    worklets.updateGrainSpeed(0.8);
-    expect(useFilmStore.getState().grainSpeed.value).toBe(0.8);
+    clearConfig();
+    worklets.updateBloomIntensity(-5.0);
+    expect(filmStore.bloomEnabled.value).toBe(false);
+    expect(config.bloomEnabled).toBe(false);
 
-    worklets.updateGrainRoughness(0.7);
-    expect(useFilmStore.getState().grainRoughness.value).toBe(0.7);
-  });
+    // temperature -> temperatureAuto = false
+    filmStore.temperatureAuto.value = true;
+    clearConfig();
+    worklets.updateTemperature(4500);
+    expect(filmStore.temperatureAuto.value).toBe(false);
 
-  it('correctly updates color and contrast parameters in worklets', () => {
-    const { result } = renderHook(() => useFilmWorklets());
-    const worklets = result.current;
+    // tint -> temperatureAuto = false
+    filmStore.temperatureAuto.value = true;
+    clearConfig();
+    worklets.updateTint(10);
+    expect(filmStore.temperatureAuto.value).toBe(false);
 
-    worklets.updateSaturation(1.4);
-    expect(useFilmStore.getState().saturation.value).toBe(1.4);
-
+    // contrast -> contrastAuto = false
+    filmStore.contrastAuto.value = true;
+    clearConfig();
     worklets.updateContrast(1.2);
-    expect(useFilmStore.getState().contrast.value).toBe(1.2);
+    expect(filmStore.contrastAuto.value).toBe(false);
+    expect(config.contrastAuto).toBe(false);
+
+    // blackLevel -> blackLevelAuto = false
+    filmStore.blackLevelAuto.value = true;
+    clearConfig();
+    worklets.updateBlackLevel(0.1);
+    expect(filmStore.blackLevelAuto.value).toBe(false);
+    expect(config.blackLevelAuto).toBe(false);
+
+    // highlights -> highlightsAuto = false
+    filmStore.highlightsAuto.value = true;
+    clearConfig();
+    worklets.updateHighlights(1.2);
+    expect(filmStore.highlightsAuto.value).toBe(false);
+    expect(config.highlightsAuto).toBe(false);
+
+    // pivot -> pivotAuto = false
+    filmStore.pivotAuto.value = true;
+    clearConfig();
+    worklets.updatePivot(0.4);
+    expect(filmStore.pivotAuto.value).toBe(false);
+    expect(config.pivotAuto).toBe(false);
+  });
+});
+
+describe('useFilmWorklets - Bypass Sanitization Mode', () => {
+  beforeEach(() => {
+    mockBypass = true;
+    // Reset config object
+    const config = getNitroConfig();
+    Object.keys(config).forEach((key) => {
+      delete (config as any)[key];
+    });
   });
 
-  it('correctly updates selective saturation parameters in worklets', () => {
+  it('bypasses sanitization and permits NaN through update functions', () => {
     const { result } = renderHook(() => useFilmWorklets());
-    const worklets = result.current;
+    const worklets = result.current as Record<string, any>;
+    const filmStore = useFilmStore.getState() as any;
+    const config = getNitroConfig() as any;
 
-    worklets.updateSatRed(12.3);
-    worklets.updateSatOrange(45.6);
-    worklets.updateSatYellow(78.9);
-    worklets.updateSatGreen(10.0);
-    worklets.updateSatCyan(20.0);
-    worklets.updateSatBlue(30.0);
-    worklets.updateSatPurple(40.0);
-    worklets.updateSatMagenta(50.0);
+    const functions = Object.keys(worklets).filter((key) => key.startsWith('update'));
+    const originalWarn = console.warn;
+    console.warn = jest.fn();
 
-    expect(useFilmStore.getState().satRed.value).toBe(12.3);
-    expect(useFilmStore.getState().satOrange.value).toBe(45.6);
-    expect(useFilmStore.getState().satYellow.value).toBe(78.9);
-    expect(useFilmStore.getState().satGreen.value).toBe(10.0);
-    expect(useFilmStore.getState().satCyan.value).toBe(20.0);
-    expect(useFilmStore.getState().satBlue.value).toBe(30.0);
-    expect(useFilmStore.getState().satPurple.value).toBe(40.0);
-    expect(useFilmStore.getState().satMagenta.value).toBe(50.0);
+    const clearConfig = () => {
+      Object.keys(config).forEach((key) => {
+        delete config[key];
+      });
+    };
+
+    functions.forEach((fnName) => {
+      const fn = worklets[fnName];
+      const storeKey = fnName.substring(6).charAt(0).toLowerCase() + fnName.substring(7);
+
+      clearConfig();
+      if (booleanFunctions.has(fnName)) {
+        fn(true);
+        expect(filmStore[storeKey].value).toBe(true);
+        if (storeKey in config) {
+          expect(config[storeKey]).toBe(true);
+        }
+      } else {
+        // Set standard out-of-bounds value (bypass allows it to pass through unclamped)
+        const outOfBoundsValue = fnName in clampedLimits 
+          ? clampedLimits[fnName].max + 100 
+          : 9.9;
+        
+        fn(outOfBoundsValue);
+        expect(filmStore[storeKey].value).toBe(outOfBoundsValue);
+        if (storeKey in config) {
+          expect(config[storeKey]).toBe(outOfBoundsValue);
+        }
+
+        // Also test NaN when bypass is true (should not return or be blocked)
+        fn(NaN);
+        expect(filmStore[storeKey].value).toBeNaN();
+        if (storeKey in config) {
+          expect(config[storeKey]).toBeNaN();
+        }
+      }
+    });
+
+    console.warn = originalWarn;
   });
 
-  it('correctly updates selective saturation boundaries in worklets', () => {
+  it('bypasses sanitization and manages side-effects of parameter updates', () => {
     const { result } = renderHook(() => useFilmWorklets());
-    const worklets = result.current;
+    const worklets = result.current as Record<string, any>;
+    const filmStore = useFilmStore.getState() as any;
+    const config = getNitroConfig() as any;
 
-    worklets.updateBoundMagentaRed(340.5);
-    worklets.updateBoundRedOrange(50.5);
-    worklets.updateBoundOrangeYellow(85.5);
-    worklets.updateBoundYellowGreen(120.5);
-    worklets.updateBoundGreenCyan(175.5);
-    worklets.updateBoundCyanBlue(225.5);
-    worklets.updateBoundBluePurple(285.5);
-    worklets.updateBoundPurpleMagenta(310.5);
+    const clearConfig = () => {
+      Object.keys(config).forEach((key) => {
+        delete config[key];
+      });
+    };
 
-    expect(useFilmStore.getState().boundMagentaRed.value).toBe(340.5);
-    expect(useFilmStore.getState().boundRedOrange.value).toBe(50.5);
-    expect(useFilmStore.getState().boundOrangeYellow.value).toBe(85.5);
-    expect(useFilmStore.getState().boundYellowGreen.value).toBe(120.5);
-    expect(useFilmStore.getState().boundGreenCyan.value).toBe(175.5);
-    expect(useFilmStore.getState().boundCyanBlue.value).toBe(225.5);
-    expect(useFilmStore.getState().boundBluePurple.value).toBe(285.5);
-    expect(useFilmStore.getState().boundPurpleMagenta.value).toBe(310.5);
-  });
+    // grainIntensity -> grainEnabled side effect in bypass mode
+    clearConfig();
+    worklets.updateGrainIntensity(1.5);
+    expect(filmStore.grainEnabled.value).toBe(true);
+    expect(config.grainEnabled).toBe(true);
 
-  it('correctly updates chromatic aberration parameters in worklets', () => {
-    const { result } = renderHook(() => useFilmWorklets());
-    const worklets = result.current;
+    clearConfig();
+    worklets.updateGrainIntensity(0.0);
+    expect(filmStore.grainEnabled.value).toBe(false);
+    expect(config.grainEnabled).toBe(false);
 
-    worklets.updateChromaticAberration(0.15);
-    expect(useFilmStore.getState().chromaticAberration.value).toBe(0.15);
-  });
+    clearConfig();
+    worklets.updateGrainIntensity(-0.5);
+    expect(filmStore.grainEnabled.value).toBe(false);
+    expect(config.grainEnabled).toBe(false);
 
-  it('correctly updates chroma shift parameters in worklets', () => {
-    const { result } = renderHook(() => useFilmWorklets());
-    const worklets = result.current;
+    // bloomIntensity -> bloomEnabled side effect in bypass mode
+    clearConfig();
+    worklets.updateBloomIntensity(10.0);
+    expect(filmStore.bloomEnabled.value).toBe(true);
+    expect(config.bloomEnabled).toBe(true);
 
-    worklets.updateChromaShift(0.85);
-    expect(useFilmStore.getState().chromaShift.value).toBe(0.85);
+    clearConfig();
+    worklets.updateBloomIntensity(0.0);
+    expect(filmStore.bloomEnabled.value).toBe(false);
+    expect(config.bloomEnabled).toBe(false);
 
-    worklets.updateChromaShiftDirection(1);
-    expect(useFilmStore.getState().chromaShiftDirection.value).toBe(1);
+    clearConfig();
+    worklets.updateBloomIntensity(-5.0);
+    expect(filmStore.bloomEnabled.value).toBe(false);
+    expect(config.bloomEnabled).toBe(false);
 
-    worklets.updateChromaShiftInvert(true);
-    expect(useFilmStore.getState().chromaShiftInvert.value).toBe(true);
-  });
+    // temperature -> temperatureAuto = false
+    filmStore.temperatureAuto.value = true;
+    clearConfig();
+    worklets.updateTemperature(4500);
+    expect(filmStore.temperatureAuto.value).toBe(false);
 
-  it('correctly updates temperature and tint parameters, disabling auto mode', () => {
-    const { result } = renderHook(() => useFilmWorklets());
-    const worklets = result.current;
+    // tint -> temperatureAuto = false
+    filmStore.temperatureAuto.value = true;
+    clearConfig();
+    worklets.updateTint(10);
+    expect(filmStore.temperatureAuto.value).toBe(false);
 
-    worklets.updateTemperature(5500);
-    expect(useFilmStore.getState().temperature.value).toBe(5500);
-    expect(useFilmStore.getState().temperatureAuto.value).toBe(false);
+    // contrast -> contrastAuto = false
+    filmStore.contrastAuto.value = true;
+    clearConfig();
+    worklets.updateContrast(1.2);
+    expect(filmStore.contrastAuto.value).toBe(false);
+    expect(config.contrastAuto).toBe(false);
 
-    // reset auto for tint test
-    useFilmStore.getState().setTemperatureAuto(true);
-    worklets.updateTint(15);
-    expect(useFilmStore.getState().tint.value).toBe(15);
-    expect(useFilmStore.getState().temperatureAuto.value).toBe(false);
-  });
+    // blackLevel -> blackLevelAuto = false
+    filmStore.blackLevelAuto.value = true;
+    clearConfig();
+    worklets.updateBlackLevel(0.1);
+    expect(filmStore.blackLevelAuto.value).toBe(false);
+    expect(config.blackLevelAuto).toBe(false);
 
-  it('correctly updates sharpening in worklets', () => {
-    const { result } = renderHook(() => useFilmWorklets());
-    const worklets = result.current;
+    // highlights -> highlightsAuto = false
+    filmStore.highlightsAuto.value = true;
+    clearConfig();
+    worklets.updateHighlights(1.2);
+    expect(filmStore.highlightsAuto.value).toBe(false);
+    expect(config.highlightsAuto).toBe(false);
 
-    worklets.updateSharpening(0.4);
-    expect(useFilmStore.getState().sharpening.value).toBe(0.4);
-  });
-
-  it('correctly updates bloom intensity and related state', () => {
-    const { result } = renderHook(() => useFilmWorklets());
-    const worklets = result.current;
-
-    worklets.updateBloomIntensity(0.7);
-    expect(useFilmStore.getState().bloomIntensity.value).toBe(0.7);
-    expect(useFilmStore.getState().bloomEnabled.value).toBe(true);
-
-    worklets.updateBloomIntensity(-0.2);
-    expect(useFilmStore.getState().bloomIntensity.value).toBe(0.0);
-    expect(useFilmStore.getState().bloomEnabled.value).toBe(false);
-  });
-
-  it('correctly updates vignette intensity in worklets', () => {
-    const { result } = renderHook(() => useFilmWorklets());
-    const worklets = result.current;
-
-    worklets.updateVignetteIntensity(0.75);
-    expect(useFilmStore.getState().vignetteIntensity.value).toBe(0.75);
-  });
-
-  it('correctly updates scanline parameters in worklets', () => {
-    const { result } = renderHook(() => useFilmWorklets());
-    const worklets = result.current;
-
-    worklets.updateScanlinesMode(1);
-    expect(useFilmStore.getState().scanlinesMode.value).toBe(1);
-
-    worklets.updateScanlinesDensity(950);
-    expect(useFilmStore.getState().scanlinesDensity.value).toBe(950);
+    // pivot -> pivotAuto = false
+    filmStore.pivotAuto.value = true;
+    clearConfig();
+    worklets.updatePivot(0.4);
+    expect(filmStore.pivotAuto.value).toBe(false);
+    expect(config.pivotAuto).toBe(false);
   });
 });
