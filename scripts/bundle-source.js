@@ -79,6 +79,8 @@ const EXCLUDED_DIRS = new Set([
   '.eas',
   '.metro',
   '.metro-cache',
+  '.stryker-tmp',
+  'reports',
   'code' // Exclude output directory
 ]);
 

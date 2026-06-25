@@ -1,5 +1,4 @@
 {
-  "$schema": "./node_modules/@stryker-mutator/core/schema/stryker-schema.json",
   "mutate": [
     "apps/mobile/src/entities/gallery/model/useGalleryStore.ts",
     "apps/mobile/src/entities/verification/model/useVerificationStore.ts",
@@ -40,5 +39,16 @@
   "concurrency": 2,
   "coverageAnalysis": "off",
   "checkers": ["typescript"],
-  "tsconfigFile": "apps/mobile/tsconfig.json"
+  "tsconfigFile": "apps/mobile/tsconfig.json",
+  "cleanTempDir": true,
+  "ignorePatterns": [
+    "**/node_modules/**",
+    ".stryker-tmp/**",
+    "coverage/**",
+    "reports/**",
+    "**/android/build/**",
+    "**/android/.cxx/**",
+    "**/build/**",
+    "**/.cxx/**"
+  ]
 }
