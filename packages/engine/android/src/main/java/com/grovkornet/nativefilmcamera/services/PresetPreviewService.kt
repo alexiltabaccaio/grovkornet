@@ -15,7 +15,8 @@ object PresetPreviewService {
 
     val inputBitmap = ImageIOService.loadBitmapFromUri(context, inputUriString)
     
-    val config = CameraConfiguration().apply {
+    val statePtr = com.grovkornet.nativefilmcamera.jni.CameraStateJNI.nativeCopyActiveState()
+    val config = CameraConfiguration(statePtr).apply {
         loadFromMap(payload)
     }
     
@@ -23,10 +24,15 @@ object PresetPreviewService {
         android.util.Log.i("PresetPreviewService", "Parsed Configuration: saturation=${config.saturation}, contrast=${config.contrast}, grainEnabled=${config.grainEnabled}, tint=${config.tint}")
     }
 
+    val outputBitmap: android.graphics.Bitmap
     val processor = OffscreenFilmProcessor()
-    processor.prepare(inputBitmap.width, inputBitmap.height, context.assets)
-    val outputBitmap = processor.process(inputBitmap, config, context)
-    processor.release()
+    try {
+        processor.prepare(inputBitmap.width, inputBitmap.height, context.assets)
+        outputBitmap = processor.process(inputBitmap, config, context)
+    } finally {
+        processor.release()
+        com.grovkornet.nativefilmcamera.jni.CameraStateJNI.nativeFreeState(statePtr)
+    }
     
     val outputUriString = ImageIOService.saveBitmapToCache(context, outputBitmap, 90)
     

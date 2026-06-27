@@ -33,6 +33,7 @@ object CameraStateJNI {
     }
 
     @JvmStatic external fun nativeCreateState(): Long
+    @JvmStatic external fun nativeCopyActiveState(): Long
     @JvmStatic external fun nativeFreeState(statePtr: Long)
 
     // @@GEN_JNI_METHODS_START@@

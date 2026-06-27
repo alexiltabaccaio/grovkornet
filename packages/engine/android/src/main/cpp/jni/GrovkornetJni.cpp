@@ -406,6 +406,11 @@ Java_com_grovkornet_nativefilmcamera_jni_CameraStateJNI_nativeCreateState(JNIEnv
     return reinterpret_cast<jlong>(new RenderState());
 }
 
+JNIEXPORT jlong JNICALL
+Java_com_grovkornet_nativefilmcamera_jni_CameraStateJNI_nativeCopyActiveState(JNIEnv* env, jclass clazz) {
+    return reinterpret_cast<jlong>(new RenderState(*CameraStateManager::getInstance().getActiveState()));
+}
+
 JNIEXPORT void JNICALL
 Java_com_grovkornet_nativefilmcamera_jni_CameraStateJNI_nativeFreeState(JNIEnv* env, jclass clazz, jlong statePtr) {
     if (statePtr != 0) {
