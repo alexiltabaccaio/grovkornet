@@ -112,6 +112,7 @@ const styles = StyleSheet.create({
     height: 500,
     backgroundColor: 'transparent',
     zIndex: 100,
+    elevation: 100,
   },
 
   topFooterContainer: {

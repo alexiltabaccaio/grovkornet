@@ -3,18 +3,18 @@ import { StyleSheet, ViewStyle, StyleProp } from 'react-native';
 import Animated, { AnimatedStyle } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-interface BottomFooterProps {
+interface FooterProps {
   children: React.ReactNode;
   style?: StyleProp<AnimatedStyle<ViewStyle>>;
 }
 
-export const BottomFooter = ({ children, style }: BottomFooterProps) => {
+export const Footer = ({ children, style }: FooterProps) => {
   const insets = useSafeAreaInsets();
   const bottomInset = insets.bottom ?? 0;
 
   return (
     <Animated.View style={[
-      styles.bottomFooterWrapper, 
+      styles.footerWrapper, 
       { 
         height: 80 + bottomInset, 
         paddingBottom: bottomInset 
@@ -27,7 +27,7 @@ export const BottomFooter = ({ children, style }: BottomFooterProps) => {
 };
 
 const styles = StyleSheet.create({
-  bottomFooterWrapper: {
+  footerWrapper: {
     height: 80,
     // NOTE: Solid background. Only the sliding ControlPanel has the frosted glass effect.
     backgroundColor: '#0e0e0e',

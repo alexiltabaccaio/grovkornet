@@ -3,9 +3,9 @@ import { StyleSheet, View, TouchableOpacity, Dimensions } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { SectionType, useSystemStore, useControlPanelStore } from '@entities/system';
 import { Ionicons } from '@expo/vector-icons';
-import { BottomFooter } from '@shared/ui';
+import { Footer } from '@shared/ui';
 import * as Haptics from '@shared/lib/haptics';
-import { useAnimatedStyle, interpolate, SharedValue } from 'react-native-reanimated';
+import Animated, { useAnimatedStyle, interpolate, SharedValue } from 'react-native-reanimated';
 
 import { useShallow } from 'zustand/shallow';
 
@@ -51,8 +51,8 @@ export const Sections = React.memo(({ galleryTransition }: SectionsProps) => {
   });
 
   return (
-    <BottomFooter style={[styles.bottomFooterPosition, animatedStyle]}>
-      <View style={styles.tabContainer}>
+    <Footer style={styles.footerPosition}>
+      <Animated.View style={[styles.tabContainer, animatedStyle]}>
         {sections.map((section) => {
           const isActive = activeSection === section.id;
           return (
@@ -82,8 +82,8 @@ export const Sections = React.memo(({ galleryTransition }: SectionsProps) => {
             </View>
           );
         })}
-      </View>
-    </BottomFooter>
+      </Animated.View>
+    </Footer>
   );
 
 });
@@ -91,7 +91,7 @@ export const Sections = React.memo(({ galleryTransition }: SectionsProps) => {
 Sections.displayName = 'Sections';
 
 const styles = StyleSheet.create({
-  bottomFooterPosition: {
+  footerPosition: {
     position: 'absolute',
     bottom: 0,
     left: 0,

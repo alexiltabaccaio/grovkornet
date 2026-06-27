@@ -2,7 +2,7 @@ import React, { useCallback, useRef, useEffect } from 'react';
 import { StyleSheet, View, FlatList, Pressable, Dimensions } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { GalleryItem } from '../../lib/types';
-import { BottomFooter } from '@shared/ui';
+import { Footer } from '@shared/ui';
 import * as Haptics from '@shared/lib/haptics';
 import Animated, { useAnimatedStyle, interpolate, SharedValue } from 'react-native-reanimated';
 import { useImageVerification } from '../../lib/useImageVerification';
@@ -88,7 +88,7 @@ export const GalleryStrip = React.memo(({ photos, selectedPhoto, onSelectPhoto, 
   ), [selectedPhoto?.uri, onSelectPhoto]);
 
   return (
-    <BottomFooter style={styles.footerContainer}>
+    <Footer style={styles.footerContainer}>
       <Animated.View style={[styles.innerAnimatedContainer, animatedStyle]}>
         <Pressable 
           onPress={() => {
@@ -128,7 +128,7 @@ export const GalleryStrip = React.memo(({ photos, selectedPhoto, onSelectPhoto, 
         />
       </View>
       </Animated.View>
-    </BottomFooter>
+    </Footer>
   );
 });
 

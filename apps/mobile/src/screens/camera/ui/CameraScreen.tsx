@@ -145,7 +145,7 @@ export const CameraScreen = () => {
 
         {isFpsOverlayEnabled && <DebugOverlay />}
         
-        <View key={`ui-overlay-${cameraKey}`} style={[StyleSheet.absoluteFill, { zIndex: 10 }]} pointerEvents="box-none">
+        <View key={`ui-overlay-${cameraKey}`} style={[StyleSheet.absoluteFill, { zIndex: 10, elevation: 10 }]} pointerEvents="box-none">
             <Animated.View 
               style={[
                 bottomControlsStyle,
