@@ -19,52 +19,60 @@ export const clearPresetSubscriptionTimeout = () => {
   }
 };
 
+const scheduleThumbnailGeneration = (filmPayload: NonNullable<ReturnType<typeof usePresetStore.getState>['customizedPayload']>['film']) => {
+  if (customizedThumbTimeout) clearTimeout(customizedThumbTimeout);
+  
+  customizedThumbTimeout = setTimeout(() => {
+    void (async () => {
+      /* eslint-disable @typescript-eslint/no-require-imports, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call */
+      try {
+        const { Asset } = require('expo-asset');
+        const { generatePresetPreview, deleteFile } = require('@grovkornet/engine');
+        const monoscopeAssetSource = require('../../../../assets/monoscope.jpg') as number;
+        
+        const asset = Asset.fromModule(monoscopeAssetSource);
+        await asset.downloadAsync();
+        const inputUri = (asset.localUri || asset.uri) as string | undefined;
+        if (!inputUri) return;
+
+        const uri = (await generatePresetPreview(inputUri, filmPayload)) as string;
+        
+        const currentUri = usePresetStore.getState().customizedThumbnailUri;
+        if (currentUri && currentUri !== lastGenerationUri) {
+          void deleteFile(currentUri);
+        }
+        
+        lastGenerationUri = uri;
+        usePresetStore.setState({ customizedThumbnailUri: uri });
+
+      } catch (err: unknown) {
+        const error = err as { code?: string; message?: string };
+        console.error('Failed to generate customized thumbnail:', error);
+        if (error?.code) {
+          const { CameraErrorCode, CAMERA_ERROR_DETAILS } = require('@grovkornet/engine') as {
+            CameraErrorCode: Record<string, string>;
+            CAMERA_ERROR_DETAILS: Record<string, { description: string }>;
+          };
+          if (Object.values(CameraErrorCode).includes(error.code)) {
+            console.warn('Camera Error:', CAMERA_ERROR_DETAILS[error.code].description);
+          }
+        }
+      }
+      /* eslint-enable @typescript-eslint/no-require-imports, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call */
+    })();
+  }, 500); // 500ms debounce
+};
+
 export const initThumbnailGenerator = () => {
+  const initialState = usePresetStore.getState();
+  if (isSubscriptionEnabled && initialState.customizedPayload && !initialState.customizedThumbnailUri) {
+    scheduleThumbnailGeneration(initialState.customizedPayload.film);
+  }
+
   return usePresetStore.subscribe((state, prevState) => {
     if (!isSubscriptionEnabled) return;
     if (state.customizedPayload && state.customizedPayload !== prevState.customizedPayload) {
-      if (customizedThumbTimeout) clearTimeout(customizedThumbTimeout);
-      
-      customizedThumbTimeout = setTimeout(() => {
-        void (async () => {
-          /* eslint-disable @typescript-eslint/no-require-imports, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call */
-          try {
-            const { Asset } = require('expo-asset');
-            const { generatePresetPreview, deleteFile } = require('@grovkornet/engine');
-            const monoscopeAssetSource = require('../../../../assets/monoscope.jpg') as number;
-            
-            const asset = Asset.fromModule(monoscopeAssetSource);
-            await asset.downloadAsync();
-            const inputUri = (asset.localUri || asset.uri) as string | undefined;
-            if (!inputUri) return;
-
-            const filmPayload = state.customizedPayload!.film;
-            const uri = (await generatePresetPreview(inputUri, filmPayload)) as string;
-            
-            const currentUri = usePresetStore.getState().customizedThumbnailUri;
-            if (currentUri && currentUri !== lastGenerationUri) {
-              void deleteFile(currentUri);
-            }
-            
-            lastGenerationUri = uri;
-            usePresetStore.setState({ customizedThumbnailUri: uri });
-
-          } catch (err: unknown) {
-            const error = err as { code?: string; message?: string };
-            console.error('Failed to generate customized thumbnail:', error);
-            if (error?.code) {
-              const { CameraErrorCode, CAMERA_ERROR_DETAILS } = require('@grovkornet/engine') as {
-                CameraErrorCode: Record<string, string>;
-                CAMERA_ERROR_DETAILS: Record<string, { description: string }>;
-              };
-              if (Object.values(CameraErrorCode).includes(error.code)) {
-                console.warn('Camera Error:', CAMERA_ERROR_DETAILS[error.code].description);
-              }
-            }
-          }
-          /* eslint-enable @typescript-eslint/no-require-imports, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call */
-        })();
-      }, 500); // 500ms debounce
+      scheduleThumbnailGeneration(state.customizedPayload.film);
     } else if (!state.customizedPayload && prevState.customizedPayload) {
       // cleanup when customized payload is reset
       if (customizedThumbTimeout) clearTimeout(customizedThumbTimeout);
