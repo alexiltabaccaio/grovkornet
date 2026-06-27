@@ -93,4 +93,12 @@ object CameraEvents {
         )
     }
 
+    fun createOnSessionReady(
+
+    ): Map<String, Any> {
+        return mapOf(
+
+        )
+    }
+
 }

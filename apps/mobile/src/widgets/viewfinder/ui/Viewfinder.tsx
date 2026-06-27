@@ -86,6 +86,12 @@ export const Viewfinder = React.memo(({ cameraKey }: ViewfinderProps) => {
     }
   }, [setLatestPreviewUri, setLatestCapturedUri]);
 
+  const sessionReadyHandler = React.useCallback(() => {
+    import('@features/system-settings')
+      .then(({ syncRuntimeToNative }) => syncRuntimeToNative())
+      .catch(err => console.warn('Failed to sync native runtime', err));
+  }, []);
+
   const resolvedNoiseReduction = useDerivedValue(() => {
     return noiseReductionAuto.value ? -1 : noiseReductionMode.value;
   });
@@ -154,16 +160,7 @@ export const Viewfinder = React.memo(({ cameraKey }: ViewfinderProps) => {
     [syncScanlinesOrientation]
   );
 
-  React.useEffect(() => {
-    // When the NativeRenderer remounts (e.g. returning from background), the native view gets default parameters.
-    // We push the current JS film state to the new Nitro module instance.
-    const t = setTimeout(() => {
-      import('@features/system-settings')
-        .then(({ syncRuntimeToNative }) => syncRuntimeToNative())
-        .catch(err => console.warn('Failed to sync native runtime', err));
-    }, 150);
-    return () => clearTimeout(t);
-  }, [cameraKey, isCameraSecure]);
+
 
   const effectiveFps = useDerivedValue(() => {
     let fps = fpsSetting.value;
@@ -234,6 +231,7 @@ export const Viewfinder = React.memo(({ cameraKey }: ViewfinderProps) => {
           onExposureUpdate={exposureHandler}
           onPhotoCaptured={photoHandler}
           onTorchStateChanged={torchStateHandler}
+          onSessionReady={sessionReadyHandler}
           />
         </Animated.View>
       </GestureDetector>

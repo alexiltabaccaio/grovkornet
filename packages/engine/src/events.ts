@@ -50,10 +50,14 @@ export interface OnDeviceHealthUpdateEvent {
   isLowRam: boolean;
 }
 
+export interface OnSessionReadyEvent {
+}
+
 export interface GeneratedCameraViewEvents {
   onDebugUpdate?: (event: { nativeEvent: OnDebugUpdateEvent }) => void;
   onExposureUpdate?: (event: { nativeEvent: OnExposureUpdateEvent }) => void;
   onCapabilitiesUpdate?: (event: { nativeEvent: OnCapabilitiesUpdateEvent }) => void;
   onPhotoCaptured?: (event: { nativeEvent: OnPhotoCapturedEvent }) => void;
   onTorchStateChanged?: (event: { nativeEvent: OnTorchStateChangedEvent }) => void;
+  onSessionReady?: (event: { nativeEvent: OnSessionReadyEvent }) => void;
 }

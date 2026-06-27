@@ -74,6 +74,9 @@ struct OnDeviceHealthUpdateEvent {
     bool isLowRam;
 };
 
+struct OnSessionReadyEvent {
+};
+
 // JNI Helper functions for serialization to Java Map (jobject)
 inline jobject createJavaHashMap(JNIEnv* env) {
     jclass hashMapClass = env->FindClass("java/util/HashMap");
@@ -218,6 +221,11 @@ inline jobject toJNI(JNIEnv* env, const OnDeviceHealthUpdateEvent& event) {
     jobject j_isLowRam = toJavaBoolean(env, event.isLowRam);
         putInJavaMap(env, map, "isLowRam", j_isLowRam);
         env->DeleteLocalRef(j_isLowRam);
+    return map;
+}
+
+inline jobject toJNI(JNIEnv* env, const OnSessionReadyEvent& event) {
+    jobject map = createJavaHashMap(env);
     return map;
 }
 

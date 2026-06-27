@@ -111,8 +111,8 @@ describe('usePhotoPreviewTransition', () => {
     jest.useRealTimers();
 
     // Since the mocked withTiming animation completes synchronously in this test environment,
-    // the teleport has already completed and slotOverrides is cleared.
-    expect(result.current.slotOverrides).toEqual({});
+    // the teleport has already completed and isTeleporting is cleared.
+    expect(result.current.isTeleporting.value).toBe(false);
     expect(result.current.currentIndex.value).toBe(2);
   });
 });

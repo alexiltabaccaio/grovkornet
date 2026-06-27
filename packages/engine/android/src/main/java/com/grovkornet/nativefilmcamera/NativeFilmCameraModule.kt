@@ -69,7 +69,8 @@ class NativeFilmCameraModule : Module() {
         "onExposureUpdate",
         "onCapabilitiesUpdate",
         "onPhotoCaptured",
-        "onTorchStateChanged"
+        "onTorchStateChanged",
+        "onSessionReady"
       )
 
       // @@GEN_PROPS_START@@

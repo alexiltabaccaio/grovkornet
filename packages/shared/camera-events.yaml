@@ -80,3 +80,8 @@ events:
           - critical
       - name: isLowRam
         type: boolean
+
+  - name: onSessionReady
+    scope: view
+    frequency: low
+    properties: []

@@ -37,7 +37,7 @@ class NativeFilmCameraView(context: Context) : SurfaceView(context), SurfaceHold
     val onCapabilitiesUpdate by EventDispatcher()
     val onPhotoCaptured by EventDispatcher()
     val onTorchStateChanged by EventDispatcher()
-
+    val onSessionReady by EventDispatcher()
     private val cameraTorchManager: CameraTorchManager
 
 
@@ -257,6 +257,8 @@ class NativeFilmCameraView(context: Context) : SurfaceView(context), SurfaceHold
             looper
             updateDimensions(surfaceWidth, surfaceHeight)
         }
+        
+        onSessionReady(CameraEvents.createOnSessionReady())
     }
 
     override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {
