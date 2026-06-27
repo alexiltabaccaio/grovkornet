@@ -83,30 +83,13 @@ export const usePhotoPreviewGestures = ({
   );
 
   const panGesture = usePanGesture({
-    width,
-    height,
-    photosLength,
-    slotWidth,
-    translateX,
-    dragOffset,
+    dimensions: { width, height, photosLength, slotWidth },
+    zoomState: { zoomScale, zoomTranslateX, zoomTranslateY, savedZoomTranslateX, savedZoomTranslateY, isZoomed },
+    swipeState: { translateX, dragOffset, panStartTranslationX, panMode, isTransitioning },
+    teleportState: { isTeleporting, teleportMockIndex, teleportRealIndex },
+    decayState: { isDecaying, recentlyStoppedDecay },
+    callbacks: { prepareTransition, finalizeTransition, finalizeTeleport },
     rotationY,
-    zoomScale,
-    zoomTranslateX,
-    zoomTranslateY,
-    savedZoomTranslateX,
-    savedZoomTranslateY,
-    isZoomed,
-    panStartTranslationX,
-    panMode,
-    isDecaying,
-    recentlyStoppedDecay,
-    prepareTransition,
-    finalizeTransition,
-    isTransitioning,
-    isTeleporting,
-    teleportMockIndex,
-    teleportRealIndex,
-    finalizeTeleport,
   });
 
   const pinchGesture = usePinchGesture({

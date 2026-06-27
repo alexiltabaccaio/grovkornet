@@ -57,6 +57,10 @@ describe('usePanGesture', () => {
       if (typeof callback === 'function') callback(true);
       return 100;
     };
+    (reanimatedModule as any).withSpring = (value: any, config: any, callback: any) => {
+      if (typeof callback === 'function') callback(true);
+      return value;
+    };
     (reanimatedModule as any).useSharedValue = (val: any) => {
       return { value: val };
     };
@@ -77,34 +81,46 @@ describe('usePanGesture', () => {
     mockIsTransitioning = { value: false };
   });
 
+  const getBaseProps = () => ({
+    dimensions: {
+      width: 400,
+      height: 800,
+      photosLength: 3,
+      slotWidth: 400,
+    },
+    zoomState: {
+      zoomScale: mockZoomScale as any,
+      zoomTranslateX: mockZoomTranslateX as any,
+      zoomTranslateY: mockZoomTranslateY as any,
+      savedZoomTranslateX: { value: 0 } as any,
+      savedZoomTranslateY: { value: 0 } as any,
+      isZoomed: mockIsZoomed as any,
+    },
+    swipeState: {
+      translateX: mockTranslateX as any,
+      dragOffset: mockDragOffset as any,
+      panStartTranslationX: mockPanStartTranslationX as any,
+      panMode: mockPanMode as any,
+      isTransitioning: mockIsTransitioning as any,
+    },
+    teleportState: {
+      isTeleporting: { value: false } as any,
+      teleportMockIndex: { value: -1 } as any,
+      teleportRealIndex: { value: -1 } as any,
+    },
+    decayState: {
+      isDecaying: mockIsDecaying as any,
+      recentlyStoppedDecay: mockRecentlyStoppedDecay as any,
+    },
+    callbacks: {
+      prepareTransition: mockPrepareTransition,
+      finalizeTransition: mockFinalizeTransition,
+      finalizeTeleport: jest.fn(),
+    },
+  });
+
   it('configures pan gesture correctly', () => {
-    renderHook(() =>
-      usePanGesture({
-        width: 400,
-        height: 800,
-        photosLength: 3,
-        slotWidth: 400,
-        translateX: mockTranslateX as any,
-        dragOffset: mockDragOffset as any,
-        zoomScale: mockZoomScale as any,
-        zoomTranslateX: mockZoomTranslateX as any,
-        zoomTranslateY: mockZoomTranslateY as any,
-        savedZoomTranslateX: { value: 0 } as any,
-        savedZoomTranslateY: { value: 0 } as any,
-        isZoomed: mockIsZoomed as any,
-        panStartTranslationX: mockPanStartTranslationX as any,
-        panMode: mockPanMode as any,
-        isDecaying: mockIsDecaying as any,
-        recentlyStoppedDecay: mockRecentlyStoppedDecay as any,
-        prepareTransition: mockPrepareTransition,
-        finalizeTransition: mockFinalizeTransition,
-        isTransitioning: mockIsTransitioning as any,
-        isTeleporting: { value: false } as any,
-        teleportMockIndex: { value: -1 } as any,
-        teleportRealIndex: { value: -1 } as any,
-        finalizeTeleport: jest.fn(),
-      })
-    );
+    renderHook(() => usePanGesture(getBaseProps()));
 
     expect(mockPanGesture.maxPointers).toHaveBeenCalledWith(1);
     expect(capturedPanCallbacks.onBegin).toBeDefined();
@@ -114,49 +130,71 @@ describe('usePanGesture', () => {
   });
 
   it('ignores onUpdate if translationX or translationY is NaN', () => {
-    mockZoomScale.value = 2.5; // zoomed in -> pan mode
-    mockIsZoomed.value = true;
-    mockPanMode.value = 'pan';
+    const props = getBaseProps();
+    props.zoomState.zoomScale.value = 2.5; // zoomed in -> pan mode
+    props.zoomState.isZoomed.value = true;
+    props.swipeState.panMode.value = 'pan';
+    
+    props.zoomState.savedZoomTranslateX = { value: -50 } as any;
+    props.zoomState.savedZoomTranslateY = { value: -50 } as any;
 
-    const savedZoomTranslateX = { value: -50 };
-    const savedZoomTranslateY = { value: -50 };
+    renderHook(() => usePanGesture(props));
 
-    renderHook(() =>
-      usePanGesture({
-        width: 400,
-        height: 800,
-        photosLength: 3,
-        slotWidth: 400,
-        translateX: mockTranslateX as any,
-        dragOffset: mockDragOffset as any,
-        zoomScale: mockZoomScale as any,
-        zoomTranslateX: mockZoomTranslateX as any,
-        zoomTranslateY: mockZoomTranslateY as any,
-        savedZoomTranslateX: savedZoomTranslateX as any,
-        savedZoomTranslateY: savedZoomTranslateY as any,
-        isZoomed: mockIsZoomed as any,
-        panStartTranslationX: mockPanStartTranslationX as any,
-        panMode: mockPanMode as any,
-        isDecaying: mockIsDecaying as any,
-        recentlyStoppedDecay: mockRecentlyStoppedDecay as any,
-        prepareTransition: mockPrepareTransition,
-        finalizeTransition: mockFinalizeTransition,
-        isTransitioning: mockIsTransitioning as any,
-        isTeleporting: { value: false } as any,
-        teleportMockIndex: { value: -1 } as any,
-        teleportRealIndex: { value: -1 } as any,
-        finalizeTeleport: jest.fn(),
-      })
-    );
-
-    mockZoomTranslateX.value = -50;
-    mockZoomTranslateY.value = -50;
+    props.zoomState.zoomTranslateX.value = -50;
+    props.zoomState.zoomTranslateY.value = -50;
 
     // Trigger update with NaN values
     capturedPanCallbacks.onUpdate({ translationX: NaN, translationY: NaN });
 
     // Should remain unchanged
-    expect(mockZoomTranslateX.value).toBe(-50);
-    expect(mockZoomTranslateY.value).toBe(-50);
+    expect(props.zoomState.zoomTranslateX.value).toBe(-50);
+    expect(props.zoomState.zoomTranslateY.value).toBe(-50);
+  });
+
+  it('handles swipe correctly and triggers transitions', () => {
+    const props = getBaseProps();
+    renderHook(() => usePanGesture(props));
+
+    // Simulate start
+    capturedPanCallbacks.onStart({ translationX: 0 });
+    expect(props.swipeState.panMode.value).toBe('swipe');
+
+    // Simulate swipe to left (next photo)
+    capturedPanCallbacks.onUpdate({ translationX: -200, translationY: 0 });
+    // width is 400, so dragThreshold is 133.33. -200 should trigger transition to next index (1).
+    expect(props.swipeState.translateX.value).toBe(-200); // 0 + (-200)
+    
+    // Simulate end with sufficient velocity
+    capturedPanCallbacks.onEnd({ velocityX: -400, velocityY: 0 });
+    
+    // Target index should be 1, so translateX should be -400
+    expect(mockPrepareTransition).toHaveBeenCalledWith(1, true);
+    expect(mockFinalizeTransition).toHaveBeenCalledWith(1, true);
+    // Because we mock withSpring to immediately invoke callback and return target value
+    expect(props.swipeState.translateX.value).toBe(-400); 
+  });
+
+  it('respects pan bounds when zoomed', () => {
+    const props = getBaseProps();
+    props.zoomState.zoomScale.value = 2; // Zoomed 2x
+    props.zoomState.isZoomed.value = true;
+    
+    renderHook(() => usePanGesture(props));
+
+    // Width = 400. ZoomScale = 2.
+    // Bounds maxTx = (400 * 1) / 2 = 200. minTx = -200.
+    // Height = 800. ZoomScale = 2.
+    // Bounds maxTy = (800 * 1) / 2 = 400. minTy = -400.
+
+    capturedPanCallbacks.onStart({ translationX: 0, translationY: 0 });
+    expect(props.swipeState.panMode.value).toBe('pan');
+
+    // Try to pan beyond maxTx (200)
+    capturedPanCallbacks.onUpdate({ translationX: 300, translationY: 0 });
+    expect(props.zoomState.zoomTranslateX.value).toBe(200); // Clamped
+
+    // Try to pan beyond minTy (-400)
+    capturedPanCallbacks.onUpdate({ translationX: 0, translationY: -500 });
+    expect(props.zoomState.zoomTranslateY.value).toBe(-400); // Clamped
   });
 });
