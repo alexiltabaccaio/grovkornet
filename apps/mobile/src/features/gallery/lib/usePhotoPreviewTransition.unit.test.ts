@@ -115,4 +115,94 @@ describe('usePhotoPreviewTransition', () => {
     expect(result.current.isTeleporting.value).toBe(false);
     expect(result.current.currentIndex.value).toBe(2);
   });
+
+  it('preserves zoom state when photos list updates but index is unchanged', () => {
+    const resetZoomSignalMock = { value: 0 };
+    const { result, rerender } = renderHook(
+      (props: { selectedPhoto: GalleryItem | null; photos: GalleryItem[] }) =>
+        usePhotoPreviewTransition({
+          selectedPhoto: props.selectedPhoto,
+          photos: props.photos,
+          onPhotoVisible: jest.fn(),
+          slotWidth: 400,
+          resetZoomSignal: resetZoomSignalMock as any,
+        }),
+      {
+        initialProps: {
+          selectedPhoto: mockPhotos[1],
+          photos: mockPhotos,
+        },
+      }
+    );
+
+    expect(resetZoomSignalMock.value).toBe(0);
+
+    // Rerender with a shallow copy of photos (same item, different array ref)
+    act(() => {
+      rerender({
+        selectedPhoto: { ...mockPhotos[1] },
+        photos: [...mockPhotos],
+      });
+    });
+
+    // resetZoomSignal should NOT have changed because index remained 1
+    expect(resetZoomSignalMock.value).toBe(0);
+
+    // Rerender with a different selected photo
+    act(() => {
+      rerender({
+        selectedPhoto: mockPhotos[0],
+        photos: mockPhotos,
+      });
+    });
+
+    // resetZoomSignal SHOULD increment because index changed
+    expect(resetZoomSignalMock.value).toBe(1);
+  });
+
+  it('locks and unlocks screen state on AppState change to active', () => {
+    const { AppState } = require('react-native');
+    let appStateCallback: ((state: string) => void) | null = null;
+    const addEventListenerSpy = jest.spyOn(AppState, 'addEventListener').mockImplementation(
+      (event, cb: any) => {
+        appStateCallback = cb;
+        return { remove: jest.fn() };
+      }
+    );
+
+    jest.useFakeTimers();
+
+    const { result } = renderHook(() =>
+      usePhotoPreviewTransition({
+        selectedPhoto: mockPhotos[1],
+        photos: mockPhotos,
+        onPhotoVisible: jest.fn(),
+        slotWidth: 400,
+      })
+    );
+
+    // Initial state is unlocked (-1)
+    expect(result.current.teleportMockIndex.value).toBe(-1);
+
+    // Trigger AppState change to active
+    act(() => {
+      if (appStateCallback) {
+        appStateCallback('active');
+      }
+    });
+
+    // Should immediately lock screen state: mock=-2, real=1
+    expect(result.current.teleportMockIndex.value).toBe(-2);
+    expect(result.current.teleportRealIndex.value).toBe(1);
+
+    // Run all timers to trigger the deferred unlock
+    act(() => {
+      jest.runAllTimers();
+    });
+    expect(result.current.teleportMockIndex.value).toBe(-1);
+
+    addEventListenerSpy.mockRestore();
+    jest.useRealTimers();
+  });
 });
+

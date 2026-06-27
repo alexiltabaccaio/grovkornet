@@ -60,12 +60,20 @@ export const AnimatedSlot = memo(({
   // Dummy header forces seamless re-fetch without unmounting (avoids flash)
   const [appStateKey, setAppStateKey] = React.useState(0);
   React.useEffect(() => {
+    let rafId: number;
     const subscription = AppState.addEventListener('change', nextAppState => {
       if (nextAppState === 'active') {
-        setAppStateKey(prev => prev + 1);
+        // Use requestAnimationFrame to sync the JS state update with the Reanimated
+        // UI thread rendering, avoiding layout tearing / showing the wrong index on resume.
+        rafId = requestAnimationFrame(() => {
+          setAppStateKey(prev => prev + 1);
+        });
       }
     });
-    return () => subscription.remove();
+    return () => {
+      subscription.remove();
+      if (rafId) cancelAnimationFrame(rafId);
+    };
   }, []);
 
   const outerStyle = useAnimatedStyle(() => {

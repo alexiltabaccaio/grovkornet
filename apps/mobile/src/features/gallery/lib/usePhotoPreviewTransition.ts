@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
+import { AppState } from 'react-native';
 import { useSharedValue, runOnJS, withSpring, cancelAnimation, SharedValue } from 'react-native-reanimated';
 import { GalleryItem } from './types';
 
@@ -87,12 +88,12 @@ export const usePhotoPreviewTransition = ({
       return;
     }
 
+    const idx = photos.findIndex(p => p.uri === uri);
+    if (idx === -1 || idx === (animatingToIndexRef.current ?? currentIndex.value)) return;
+
     if (resetZoomSignal) {
       resetZoomSignal.value += 1;
     }
-
-    const idx = photos.findIndex(p => p.uri === uri);
-    if (idx === -1 || idx === (animatingToIndexRef.current ?? currentIndex.value)) return;
 
     if (isTransitioning.value && isTeleporting.value) {
       cancelAnimation(translateX);
@@ -172,6 +173,31 @@ export const usePhotoPreviewTransition = ({
 
     return () => cancelAnimationFrame(rafId);
   }, [pendingTeleport, isTeleporting, teleportRealIndex, slotWidth, translateX, finalizeTeleport, isTransitioning]);
+
+  useEffect(() => {
+    let rafId1: number;
+    let rafId2: number;
+    const subscription = AppState.addEventListener('change', nextAppState => {
+      if (nextAppState === 'active') {
+        // Lock the screen state to prevent Reanimated tearing / flashing wrong indices
+        // on resume by locking rendering to just the current active slot.
+        teleportMockIndex.value = -2;
+        teleportRealIndex.value = currentIndex.value;
+
+        rafId1 = requestAnimationFrame(() => {
+          rafId2 = requestAnimationFrame(() => {
+            teleportMockIndex.value = -1;
+          });
+        });
+      }
+    });
+
+    return () => {
+      subscription.remove();
+      if (rafId1) cancelAnimationFrame(rafId1);
+      if (rafId2) cancelAnimationFrame(rafId2);
+    };
+  }, [currentIndex, teleportMockIndex, teleportRealIndex]);
 
   return {
     currentIndex,

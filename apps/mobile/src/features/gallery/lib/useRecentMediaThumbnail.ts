@@ -96,14 +96,18 @@ export const useRecentMediaThumbnail = () => {
 
     void loadInitialThumbnail();
 
+    let rafId: number;
     const subscription = AppState.addEventListener('change', nextAppState => {
       if (nextAppState === 'active') {
-        void loadInitialThumbnail();
+        rafId = requestAnimationFrame(() => {
+          void loadInitialThumbnail();
+        });
       }
     });
 
     return () => {
       subscription.remove();
+      if (rafId) cancelAnimationFrame(rafId);
     };
   }, [setLatestCapturedUri]);
 };

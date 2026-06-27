@@ -223,10 +223,13 @@ export const useGalleryPhotos = (initialUri?: string | null) => {
 
     void loadPhotos();
 
+    let rafId: number;
     const subscription = AppState.addEventListener('change', nextAppState => {
       logger.debug('useGalleryPhotos', `AppState change: status=${nextAppState}, active=${active}`);
       if (nextAppState === 'active' && active) {
-        void loadPhotos();
+        rafId = requestAnimationFrame(() => {
+          void loadPhotos();
+        });
       }
     });
 
@@ -234,6 +237,7 @@ export const useGalleryPhotos = (initialUri?: string | null) => {
       logger.debug('useGalleryPhotos', `Effect cleanup running for initialUri=${initialUriRef.current}`);
       active = false;
       subscription.remove();
+      if (rafId) cancelAnimationFrame(rafId);
     };
   }, []);
 
