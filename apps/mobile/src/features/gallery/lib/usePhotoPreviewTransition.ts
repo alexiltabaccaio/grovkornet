@@ -30,14 +30,13 @@ export const usePhotoPreviewTransition = ({
   const isTeleporting = useSharedValue(false);
   const teleportMockIndex = useSharedValue(-1);
   const teleportRealIndex = useSharedValue(-1);
+  const [pendingTeleport, setPendingTeleport] = useState<{ mockIdx: number, idx: number, timestamp: number } | null>(null);
 
   const [renderIndices, setRenderIndices] = useState<number[]>([
     initialIndex - 1,
     initialIndex,
     initialIndex + 1,
   ]);
-
-  const [slotOverrides, setSlotOverrides] = useState<Record<number, GalleryItem>>({});
 
   const translateX = useSharedValue(-initialIndex * slotWidth);
   const dragOffset = useSharedValue(0);
@@ -58,7 +57,7 @@ export const usePhotoPreviewTransition = ({
       const newIndices = new Set([...prev, targetIndex - 1, targetIndex, targetIndex + 1]);
       return Array.from(newIndices);
     });
-    
+
     if (isManualSwipe && onPhotoVisible && photos[targetIndex] && targetIndex !== currentTarget) {
       const uri = photos[targetIndex].uri;
       expectedEchoesRef.current.push(uri);
@@ -73,7 +72,7 @@ export const usePhotoPreviewTransition = ({
     currentIndex.value = targetIndex;
     animatingToIndexRef.current = null;
     isTeleporting.value = false;
-    setSlotOverrides({});
+    setPendingTeleport(null);
     setRenderIndices([targetIndex - 1, targetIndex, targetIndex + 1]);
   }, [currentIndex, isTeleporting]);
 
@@ -102,10 +101,10 @@ export const usePhotoPreviewTransition = ({
         currentIndex.value = animatingToIndexRef.current;
       }
       isTeleporting.value = false;
-      setSlotOverrides({});
+      setPendingTeleport(null);
     }
 
-    const baseIndex = (isTransitioning.value && animatingToIndexRef.current !== null && !isTeleporting.value)
+    const baseIndex = animatingToIndexRef.current !== null
       ? animatingToIndexRef.current
       : currentIndex.value;
 
@@ -115,7 +114,7 @@ export const usePhotoPreviewTransition = ({
     if (Math.abs(diff) === 1) {
       const targetVal = -idx * slotWidth;
       isTransitioning.value = true;
-      
+
       setRenderIndices(prev => Array.from(new Set([...prev, idx - 1, idx, idx + 1])));
 
       translateX.value = withSpring(targetVal, { damping: 20, stiffness: 150, mass: 0.6, overshootClamping: true }, (finished) => {
@@ -126,42 +125,57 @@ export const usePhotoPreviewTransition = ({
       });
     } else {
       const mockAdjacentIndex = diff > 0 ? baseIndex + 1 : baseIndex - 1;
-      
-       
+
       isTeleporting.value = true;
       teleportMockIndex.value = mockAdjacentIndex;
       teleportRealIndex.value = idx;
-      
-      setSlotOverrides({ [mockAdjacentIndex]: photos[idx] });
+
       setRenderIndices(prev => Array.from(new Set([
         ...prev,
-        baseIndex - 1, 
-        baseIndex, 
-        baseIndex + 1, 
+        baseIndex - 1,
+        baseIndex,
+        baseIndex + 1,
         mockAdjacentIndex,
         idx - 1,
         idx,
         idx + 1
       ])));
-       
 
-      const targetVal = -mockAdjacentIndex * slotWidth;
+      setPendingTeleport({ mockIdx: mockAdjacentIndex, idx, timestamp: Date.now() });
+    }
+  }, [selectedPhoto, photos, slotWidth, currentIndex, translateX, finalizeTransition, finalizeTeleport, isTransitioning]);
+
+  useEffect(() => {
+    if (!pendingTeleport) return;
+    const { mockIdx, idx } = pendingTeleport;
+
+    const rafId = requestAnimationFrame(() => {
+      if (!isTeleporting.value || teleportRealIndex.value !== idx) return;
+
+      const targetVal = -mockIdx * slotWidth;
       isTransitioning.value = true;
-      
+
       translateX.value = withSpring(targetVal, { damping: 20, stiffness: 150, mass: 0.6, overshootClamping: true }, (finished) => {
         if (finished) {
+          teleportMockIndex.value = -2; // Lock screen state to prevent Reanimated tearing
+
+          isTeleporting.value = false;
           translateX.value = -idx * slotWidth;
+
+          teleportMockIndex.value = -1; // Unlock state
+
           runOnJS(finalizeTeleport)(idx);
           isTransitioning.value = false;
         }
       });
-    }
-  }, [selectedPhoto, photos, slotWidth, currentIndex, translateX, finalizeTransition, finalizeTeleport, isTransitioning]);
+    });
+
+    return () => cancelAnimationFrame(rafId);
+  }, [pendingTeleport, isTeleporting, teleportRealIndex, slotWidth, translateX, finalizeTeleport, isTransitioning]);
 
   return {
     currentIndex,
     renderIndices,
-    slotOverrides,
     translateX,
     dragOffset,
     prepareTransition,

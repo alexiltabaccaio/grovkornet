@@ -16,8 +16,10 @@ interface AnimatedSlotProps {
   zoomTranslateX?: SharedValue<number>;
   zoomTranslateY?: SharedValue<number>;
   currentIndex?: SharedValue<number>;
+  isTeleporting?: SharedValue<boolean>;
+  teleportMockIndex?: SharedValue<number>;
+  teleportRealIndex?: SharedValue<number>;
   onLoad?: () => void;
-  initialUri?: string | null;
 }
 
 export const AnimatedSlot = memo(({
@@ -31,8 +33,10 @@ export const AnimatedSlot = memo(({
   zoomTranslateX,
   zoomTranslateY,
   currentIndex,
+  isTeleporting,
+  teleportMockIndex,
+  teleportRealIndex,
   onLoad,
-  initialUri: _initialUri,
 }: AnimatedSlotProps) => {
   const { width: screenW, height: screenH } = useWindowDimensions();
 
@@ -65,17 +69,35 @@ export const AnimatedSlot = memo(({
   }, []);
 
   const outerStyle = useAnimatedStyle(() => {
-    const currentX = index * slotWidth + translateX.value;
-    const isFocused = Math.abs(currentX) < slotWidth / 2;
+    let effectiveIndex = index;
+    if (isTeleporting?.value && index === teleportRealIndex?.value) {
+      effectiveIndex = teleportMockIndex?.value ?? index;
+    }
+
+    const isTearing = teleportMockIndex?.value === -2;
+    const targetIdx = teleportRealIndex?.value;
+
+    let currentX = effectiveIndex * slotWidth + translateX.value;
     
+    if (isTearing) {
+      currentX = (index === targetIdx) ? 0 : -9999;
+    }
+
+    const isFocused = Math.abs(currentX) < slotWidth / 2;
+
     const angle = rotationY ? rotationY.value : 0;
     const normalizedAngle = Math.abs(angle % 90);
     const isRotating = normalizedAngle > 1 && normalizedAngle < 89;
 
+    let opacity = (!isFocused && isRotating) ? 0 : 1;
+    if (isTeleporting?.value && index === teleportMockIndex?.value && index !== teleportRealIndex?.value) {
+      opacity = 0;
+    }
+
     return {
       transform: [{ translateX: currentX }],
       zIndex: isFocused ? 10 : 0,
-      opacity: (!isFocused && isRotating) ? 0 : 1,
+      opacity,
     };
   });
 
@@ -83,7 +105,21 @@ export const AnimatedSlot = memo(({
     if (!zoomScale || !zoomTranslateX || !zoomTranslateY) {
       return {};
     }
-    const currentX = index * slotWidth + translateX.value;
+
+    let effectiveIndex = index;
+    if (isTeleporting?.value && index === teleportRealIndex?.value) {
+      effectiveIndex = teleportMockIndex?.value ?? index;
+    }
+
+    const isTearing = teleportMockIndex?.value === -2;
+    const targetIdx = teleportRealIndex?.value;
+
+    let currentX = effectiveIndex * slotWidth + translateX.value;
+    
+    if (isTearing) {
+      currentX = (index === targetIdx) ? 0 : -9999;
+    }
+
     const isFocused = Math.abs(currentX) < slotWidth / 2;
     if (!isFocused) {
       return {};
@@ -99,7 +135,7 @@ export const AnimatedSlot = memo(({
 
   const innerStyle = useAnimatedStyle(() => {
     const angle = rotationY ? rotationY.value : 0;
-    
+
     // Convert angle to radians for smooth width/height interpolation
     const rad = (angle * Math.PI) / 180;
     const sinSq = Math.sin(rad) * Math.sin(rad);
@@ -128,9 +164,9 @@ export const AnimatedSlot = memo(({
         <Animated.View style={innerStyle}>
           <Image
             key={photo.id}
-            source={{ 
-              uri: photo.uri, 
-              headers: { 'x-app-state': appStateKey.toString() } 
+            source={{
+              uri: photo.uri,
+              headers: { 'x-app-state': appStateKey.toString() }
             }}
             placeholder={placeholderUriRef.current}
             style={styles.previewImage}
@@ -147,10 +183,8 @@ export const AnimatedSlot = memo(({
     prevProps.index === nextProps.index &&
     prevProps.slotWidth === nextProps.slotWidth &&
     prevProps.gap === nextProps.gap &&
-    prevProps.initialUri === nextProps.initialUri &&
     prevProps.photo.id === nextProps.photo.id &&
-    prevProps.photo.uri === nextProps.photo.uri &&
-    prevProps.onLoad === nextProps.onLoad
+    prevProps.photo.uri === nextProps.photo.uri
   );
 });
 

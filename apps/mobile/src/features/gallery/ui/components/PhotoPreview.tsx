@@ -32,7 +32,6 @@ export const PhotoPreview = React.memo(({ selectedPhoto, photos, onPhotoVisible,
   const {
     currentIndex,
     renderIndices,
-    slotOverrides,
     translateX,
     dragOffset,
     prepareTransition,
@@ -86,14 +85,16 @@ export const PhotoPreview = React.memo(({ selectedPhoto, photos, onPhotoVisible,
     );
   }
 
-  const uniqueIndices = Array.from(new Set(renderIndices)).filter(i => i >= 0 && i < photos.length);
+  const uniqueIndices = Array.from(new Set(renderIndices))
+    .filter(i => i >= 0 && i < photos.length)
+    .sort((a, b) => a - b);
 
   return (
     <View style={styles.previewWrapper}>
       <GestureDetector gesture={composedGesture}>
         <Animated.View style={StyleSheet.absoluteFill}>
           {uniqueIndices.map(index => {
-            const photo = slotOverrides[index] || photos[index];
+            const photo = photos[index];
             if (!photo) return null;
             return (
               <AnimatedSlot
@@ -108,8 +109,10 @@ export const PhotoPreview = React.memo(({ selectedPhoto, photos, onPhotoVisible,
                 zoomTranslateX={zoomTranslateX}
                 zoomTranslateY={zoomTranslateY}
                 currentIndex={currentIndex}
-                onLoad={photo.uri === selectedPhoto?.uri ? onInitialImageLoad : undefined}
-                initialUri={photo.uri === selectedPhoto?.uri ? initialUri : undefined}
+                isTeleporting={isTeleporting}
+                teleportMockIndex={teleportMockIndex}
+                teleportRealIndex={teleportRealIndex}
+                onLoad={onInitialImageLoad}
               />
             );
           })}
