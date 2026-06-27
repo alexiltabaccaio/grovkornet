@@ -99,6 +99,10 @@ describe('usePanGesture', () => {
         prepareTransition: mockPrepareTransition,
         finalizeTransition: mockFinalizeTransition,
         isTransitioning: mockIsTransitioning as any,
+        isTeleporting: { value: false } as any,
+        teleportMockIndex: { value: -1 } as any,
+        teleportRealIndex: { value: -1 } as any,
+        finalizeTeleport: jest.fn(),
       })
     );
 
@@ -138,6 +142,10 @@ describe('usePanGesture', () => {
         prepareTransition: mockPrepareTransition,
         finalizeTransition: mockFinalizeTransition,
         isTransitioning: mockIsTransitioning as any,
+        isTeleporting: { value: false } as any,
+        teleportMockIndex: { value: -1 } as any,
+        teleportRealIndex: { value: -1 } as any,
+        finalizeTeleport: jest.fn(),
       })
     );
 

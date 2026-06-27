@@ -18,6 +18,10 @@ interface UsePhotoPreviewGesturesProps {
   prepareTransition: (newIndex: number, isManualSwipe?: boolean) => void;
   finalizeTransition: (newIndex: number, isManualSwipe: boolean) => void;
   isTransitioning: SharedValue<boolean>;
+  isTeleporting: SharedValue<boolean>;
+  teleportMockIndex: SharedValue<number>;
+  teleportRealIndex: SharedValue<number>;
+  finalizeTeleport: (targetIndex: number) => void;
   zoomScaleRef?: SharedValue<number>;
   zoomTranslateXRef?: SharedValue<number>;
   zoomTranslateYRef?: SharedValue<number>;
@@ -37,6 +41,10 @@ export const usePhotoPreviewGestures = ({
   prepareTransition,
   finalizeTransition,
   isTransitioning,
+  isTeleporting,
+  teleportMockIndex,
+  teleportRealIndex,
+  finalizeTeleport,
   zoomScaleRef,
   zoomTranslateXRef,
   zoomTranslateYRef,
@@ -95,6 +103,10 @@ export const usePhotoPreviewGestures = ({
     prepareTransition,
     finalizeTransition,
     isTransitioning,
+    isTeleporting,
+    teleportMockIndex,
+    teleportRealIndex,
+    finalizeTeleport,
   });
 
   const pinchGesture = usePinchGesture({

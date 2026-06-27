@@ -22,6 +22,10 @@ interface UsePanGestureProps {
   prepareTransition: (newIndex: number, isManualSwipe?: boolean) => void;
   finalizeTransition: (newIndex: number, isManualSwipe: boolean) => void;
   isTransitioning: SharedValue<boolean>;
+  isTeleporting: SharedValue<boolean>;
+  teleportMockIndex: SharedValue<number>;
+  teleportRealIndex: SharedValue<number>;
+  finalizeTeleport: (targetIndex: number) => void;
 }
 
 export const usePanGesture = ({
@@ -45,6 +49,10 @@ export const usePanGesture = ({
   prepareTransition,
   finalizeTransition,
   isTransitioning,
+  isTeleporting,
+  teleportMockIndex,
+  teleportRealIndex,
+  finalizeTeleport,
 }: UsePanGestureProps) => {
   const hasWarnedPanNaN = useSharedValue(false);
 
@@ -70,6 +78,12 @@ export const usePanGesture = ({
         savedZoomTranslateY.value = zoomTranslateY.value;
       } else {
         cancelAnimation(translateX);
+        if (isTeleporting.value) {
+          const shift = (teleportMockIndex.value - teleportRealIndex.value) * slotWidth;
+          translateX.value = translateX.value + shift;
+          isTeleporting.value = false;
+          runOnJS(finalizeTeleport)(teleportRealIndex.value);
+        }
         panMode.value = 'swipe';
         dragOffset.value = translateX.value;
         panStartTranslationX.value = event?.translationX ?? 0;

@@ -27,7 +27,9 @@ export const usePhotoPreviewTransition = ({
   const isTransitioning = useSharedValue(false);
   const animatingToIndexRef = useRef<number | null>(null);
   const expectedEchoesRef = useRef<string[]>([]);
-  const isTeleportingRef = useRef(false);
+  const isTeleporting = useSharedValue(false);
+  const teleportMockIndex = useSharedValue(-1);
+  const teleportRealIndex = useSharedValue(-1);
 
   const [renderIndices, setRenderIndices] = useState<number[]>([
     initialIndex - 1,
@@ -70,10 +72,10 @@ export const usePhotoPreviewTransition = ({
   const finalizeTeleport = useCallback((targetIndex: number) => {
     currentIndex.value = targetIndex;
     animatingToIndexRef.current = null;
-    isTeleportingRef.current = false;
+    isTeleporting.value = false;
     setSlotOverrides({});
     setRenderIndices([targetIndex - 1, targetIndex, targetIndex + 1]);
-  }, [currentIndex]);
+  }, [currentIndex, isTeleporting]);
 
   useEffect(() => {
     if (!selectedPhoto || photos.length === 0) return;
@@ -93,19 +95,17 @@ export const usePhotoPreviewTransition = ({
     const idx = photos.findIndex(p => p.uri === uri);
     if (idx === -1 || idx === (animatingToIndexRef.current ?? currentIndex.value)) return;
 
-    const isTeleporting = isTeleportingRef.current;
-
-    if (isTransitioning.value && isTeleporting) {
+    if (isTransitioning.value && isTeleporting.value) {
       cancelAnimation(translateX);
       if (animatingToIndexRef.current !== null) {
         translateX.value = -animatingToIndexRef.current * slotWidth;
         currentIndex.value = animatingToIndexRef.current;
       }
-      isTeleportingRef.current = false;
+      isTeleporting.value = false;
       setSlotOverrides({});
     }
 
-    const baseIndex = (isTransitioning.value && animatingToIndexRef.current !== null && !isTeleporting)
+    const baseIndex = (isTransitioning.value && animatingToIndexRef.current !== null && !isTeleporting.value)
       ? animatingToIndexRef.current
       : currentIndex.value;
 
@@ -128,7 +128,10 @@ export const usePhotoPreviewTransition = ({
       const mockAdjacentIndex = diff > 0 ? baseIndex + 1 : baseIndex - 1;
       
        
-      isTeleportingRef.current = true;
+      isTeleporting.value = true;
+      teleportMockIndex.value = mockAdjacentIndex;
+      teleportRealIndex.value = idx;
+      
       setSlotOverrides({ [mockAdjacentIndex]: photos[idx] });
       setRenderIndices(prev => Array.from(new Set([
         ...prev,
@@ -164,5 +167,9 @@ export const usePhotoPreviewTransition = ({
     prepareTransition,
     finalizeTransition,
     isTransitioning,
+    isTeleporting,
+    teleportMockIndex,
+    teleportRealIndex,
+    finalizeTeleport,
   };
 };
