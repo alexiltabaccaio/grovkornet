@@ -3,6 +3,7 @@ build/
 android/build/
 android/.gradle/
 android/.cxx/
+android/.externalNativeBuild/
 ios/build/
 
 # Dependencies

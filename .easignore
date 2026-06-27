@@ -41,6 +41,7 @@ firebase-export-*
 **/android/app/build/
 **/android/app/.cxx/
 **/android/.cxx/
+**/android/.externalNativeBuild/
 **/android/local.properties
 *.iml
 .idea/
@@ -78,6 +79,9 @@ Thumbs.db
 [Dd]esktop.ini
 *.sw?
 *~
+*.bak
+*.tmp
+*.temp
 compile_commands.json
 
 # C++ / CMake / Clangd Tooling
@@ -101,8 +105,12 @@ Makefile
 targets.cmake
 
 # Testing / Build
+build/
+**/build/
 coverage/
 **/coverage/
+eslint-errors.json
+**/eslint-errors.json
 web-build/
 .next/
 **/.next/
