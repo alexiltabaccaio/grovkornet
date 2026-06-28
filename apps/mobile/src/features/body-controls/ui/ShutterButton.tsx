@@ -11,10 +11,9 @@ import * as Haptics from '@shared/lib/haptics';
 interface ShutterButtonProps {
   onPress: () => void;
   disabled?: boolean;
-  translateY?: SharedValue<number>;
 }
 
-export const ShutterButton = ({ onPress, disabled, translateY }: ShutterButtonProps) => {
+export const ShutterButton = ({ onPress, disabled }: ShutterButtonProps) => {
   const scale = useSharedValue(1);
 
   const animatedStyle = useAnimatedStyle(() => ({
@@ -22,19 +21,18 @@ export const ShutterButton = ({ onPress, disabled, translateY }: ShutterButtonPr
   }));
 
   const handlePressIn = () => {
-    if (disabled || (translateY && translateY.value < -50)) return;
+    if (disabled) return;
      
     scale.value = withSpring(0.9, { damping: 10, stiffness: 300 });
     void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
   };
 
   const handlePressOut = () => {
-     
     scale.value = withSpring(1, { damping: 10, stiffness: 300 });
   };
 
   const handlePress = () => {
-    if (disabled || (translateY && translateY.value < -50)) return;
+    if (disabled) return;
     // Stronger tactile feedback at the moment of actual shutter release
     void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     onPress();

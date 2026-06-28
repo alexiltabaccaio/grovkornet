@@ -46,13 +46,8 @@ export const ControlPanel = React.memo(({ translateY: externalTranslateY, drawer
   });
 
   const animatedTopFooterStyle = useAnimatedStyle(() => {
-    // If gallery is open (transition > 0), force the panel off-screen completely.
-    // By interpolating this during the 300ms gallery transition, we force the UI thread
-    // to push fresh transform updates to the native view every frame. This successfully bypasses 
-    // the Reanimated Android bug where the native view's transform gets stuck at -250 when obscured.
-    const hideOffset = (galleryTransition?.value ?? 0) * 1000;
     return {
-      transform: [{ translateY: translateY.value + drawerAnimation.value + hideOffset }],
+      transform: [{ translateY: translateY.value + drawerAnimation.value }],
     };
   });
 

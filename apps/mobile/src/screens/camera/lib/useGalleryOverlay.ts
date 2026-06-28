@@ -30,12 +30,12 @@ export const useGalleryOverlay = () => {
     });
   }, [galleryTransition, setIsOpen]);
 
-  // Safety net: if the overlay is closed via store or hardware back button bypassing closeGallery
+  // Safety net: if the overlay is closed via store or hardware back button bypassing closeGallery,
+  // or if the animation callback was lost during a remount (e.g. background resume race condition).
+  // We reset immediately (no animation) to guarantee state consistency.
   useEffect(() => {
-    if (!isOpen) {
-      if (galleryTransition.value > 0) {
-        galleryTransition.value = withTiming(0, { duration: 300 });
-      }
+    if (!isOpen && galleryTransition.value > 0) {
+      galleryTransition.value = 0;
     }
   }, [isOpen, galleryTransition]);
 

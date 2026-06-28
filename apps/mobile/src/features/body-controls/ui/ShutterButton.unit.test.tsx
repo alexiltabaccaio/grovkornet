@@ -46,17 +46,4 @@ describe('ShutterButton Unit Tests', () => {
     expect(onPressMock).not.toHaveBeenCalled();
   });
 
-  it('does not trigger actions when translateY indicates bottom sheet is open', () => {
-    const onPressMock = jest.fn();
-    const translateY = { value: -60 } as any; // < -50
-    const { getByTestId } = render(<ShutterButton onPress={onPressMock} translateY={translateY} />);
-    const button = getByTestId('shutter-button');
-
-    fireEvent(button, 'pressIn');
-    fireEvent.press(button);
-
-    expect(Haptics.impactAsync).not.toHaveBeenCalled();
-    expect(Haptics.notificationAsync).not.toHaveBeenCalled();
-    expect(onPressMock).not.toHaveBeenCalled();
-  });
 });

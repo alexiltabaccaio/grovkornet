@@ -57,19 +57,51 @@ jest.mock('@entities/camera', () => {
   };
 });
 
+const mockDrawerAnimation = { value: 0 };
+const mockFooterTranslateY = { value: 0 };
+const mockViewfinderTranslateY = { value: 0 };
+
+jest.mock('../lib/useCameraUIAnimations', () => ({
+  useCameraUIAnimations: () => ({
+    drawerAnimation: mockDrawerAnimation,
+    footerTranslateY: mockFooterTranslateY,
+    viewfinderTranslateY: mockViewfinderTranslateY,
+  }),
+}));
+
 jest.mock('@entities/gallery', () => {
   const ReactActual = jest.requireActual('react');
-  const mockGalleryStoreFn = jest.fn((fn?: (state: any) => unknown) => {
-     
-    const [galleryOpen, setGalleryOpen] = ReactActual.useState(false);
-    const state = {
-      latestCapturedUri: 'file:///test.jpg',
-      latestPreviewUri: null,
-      isOpen: galleryOpen,
-      setIsOpen: setGalleryOpen,
-    };
-    return fn ? fn(state) : state;
-  });
+  let mockIsOpen = false;
+  const mockGalleryStoreFn = Object.assign(
+    jest.fn((fn?: (state: any) => unknown) => {
+      const [galleryOpen, setGalleryOpen] = ReactActual.useState(mockIsOpen);
+      
+      const customSetIsOpen = (val: boolean) => {
+        mockIsOpen = val;
+        setGalleryOpen(val);
+      };
+
+      const state = {
+        latestCapturedUri: 'file:///test.jpg',
+        latestPreviewUri: null,
+        isOpen: galleryOpen,
+        setIsOpen: customSetIsOpen,
+      };
+      return fn ? fn(state) : state;
+    }),
+    {
+      getState: jest.fn(() => ({
+        isOpen: mockIsOpen,
+        latestCapturedUri: 'file:///test.jpg',
+        latestPreviewUri: null,
+      })),
+      setState: jest.fn((patch: any) => {
+        if (patch && patch.isOpen !== undefined) {
+          mockIsOpen = patch.isOpen;
+        }
+      }),
+    }
+  );
   return {
     useGalleryStore: mockGalleryStoreFn,
   };
@@ -159,6 +191,9 @@ describe('CameraScreen Component', () => {
     Platform.OS = 'android';
     StatusBar.currentHeight = 30;
     jest.useFakeTimers();
+    mockDrawerAnimation.value = 0;
+    mockFooterTranslateY.value = 0;
+    mockViewfinderTranslateY.value = 0;
   });
 
   afterEach(() => {
@@ -252,5 +287,66 @@ describe('CameraScreen Component', () => {
 
     // Verify GalleryViewer is closed
     expect(queryByTestId('GalleryViewer')).toBeNull();
+  });
+
+  it('resets animation values when cameraKey changes (appState goes to active) if activeSection is none', () => {
+    mockDrawerAnimation.value = -250;
+    mockFooterTranslateY.value = -50;
+    mockViewfinderTranslateY.value = -100;
+
+    let appStateCallback!: (state: string) => void;
+    jest.spyOn(AppState, 'addEventListener').mockImplementation((event, cb: any) => {
+      appStateCallback = cb;
+      return { remove: jest.fn() };
+    });
+
+    render(<CameraScreen />);
+
+    // Simulate app returning to foreground
+    act(() => {
+      appStateCallback('background');
+    });
+    act(() => {
+      appStateCallback('active');
+    });
+
+    // Since activeSection is mocked as 'none', values should reset to 0
+    expect(mockDrawerAnimation.value).toBe(0);
+    expect(mockFooterTranslateY.value).toBe(0);
+    expect(mockViewfinderTranslateY.value).toBe(0);
+  });
+
+  it('triggers the safety net to animate values to 0 when activeSection becomes none', () => {
+    const mockControlPanelStore = require('@entities/system').useControlPanelStore;
+    
+    // Start with activeSection !== 'none'
+    const activeState = {
+      activeSection: 'lens',
+    };
+    mockControlPanelStore.mockReturnValue(activeState);
+
+    const { rerender } = render(<CameraScreen />);
+
+    // Set non-zero values to simulate an open control panel
+    mockDrawerAnimation.value = -250;
+    mockFooterTranslateY.value = -50;
+    mockViewfinderTranslateY.value = -100;
+
+    // Change activeSection to 'none'
+    const closedState = {
+      activeSection: 'none',
+    };
+    mockControlPanelStore.mockReturnValue(closedState);
+
+    act(() => {
+      rerender(<CameraScreen />);
+    });
+
+    // Should call withTiming to reset them to 0
+    const reanimated = require('react-native-reanimated');
+    expect(reanimated.withTiming).toHaveBeenCalledWith(0, { duration: 300 });
+    expect(mockDrawerAnimation.value).toBe(0);
+    expect(mockFooterTranslateY.value).toBe(0);
+    expect(mockViewfinderTranslateY.value).toBe(0);
   });
 });

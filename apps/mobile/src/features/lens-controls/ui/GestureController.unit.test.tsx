@@ -31,6 +31,7 @@ describe('GestureController', () => {
   let _mockStartY: any;
   let sharedValuesArray: any[] = [];
   let dateNowSpy: any;
+  const prevValues = new Map<number, any>();
 
   beforeAll(() => {
     originalSpring = reanimated.withSpring;
@@ -59,8 +60,8 @@ describe('GestureController', () => {
       return ref.current;
     };
 
-    const prevValues = new Map<number, any>();
     (reanimated as any).useAnimatedReaction = (prepare: any, react: any) => {
+      // eslint-disable-next-line react-hooks/rules-of-hooks
       const indexRef = React.useRef<number | null>(null);
       if (indexRef.current === null) {
         indexRef.current = reactionCount;
@@ -73,6 +74,7 @@ describe('GestureController', () => {
       }
       const index = indexRef.current;
 
+      // eslint-disable-next-line react-hooks/rules-of-hooks
       React.useEffect(() => {
         const val = prepare();
         const prev = prevValues.has(index) ? prevValues.get(index) : null;
@@ -100,6 +102,7 @@ describe('GestureController', () => {
     capturedAspectReaction = null;
     capturedFooterReaction = null;
     reactionCount = 0;
+    prevValues.clear();
 
     (useControlPanelStore as unknown as jest.Mock).mockImplementation((selector?: (state: any) => any) => {
       const state = {

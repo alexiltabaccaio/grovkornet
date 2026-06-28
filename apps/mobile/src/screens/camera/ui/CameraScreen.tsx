@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { StyleSheet, View, Platform, StatusBar, Modal } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import Animated, { useAnimatedStyle, interpolate, Extrapolation } from 'react-native-reanimated';
+import Animated, { useAnimatedStyle, interpolate, Extrapolation, withTiming } from 'react-native-reanimated';
 import { useCameraPermissions } from '../lib/useCameraPermissions';
 import { useCameraAppState } from '../lib/useCameraAppState';
 import { useCameraUIAnimations } from '../lib/useCameraUIAnimations';
@@ -12,7 +12,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 
 import { useShallow } from 'zustand/shallow';
-import { useSystemStore } from '@entities/system';
+import { useSystemStore, useControlPanelStore } from '@entities/system';
 import { useGalleryStore } from '@entities/gallery';
 import { useCameraStore } from '@entities/camera';
 import { InteractionContext } from '@shared/lib';
@@ -34,6 +34,10 @@ export const CameraScreen = () => {
     isFpsOverlayEnabled: state.isFpsOverlayEnabled,
   })));
 
+  const { activeSection } = useControlPanelStore(useShallow(state => ({
+    activeSection: state.activeSection,
+  })));
+
 
   const { triggerCapture } = useCameraStore(useShallow(state => ({
     triggerCapture: state.triggerCapture,
@@ -52,6 +56,25 @@ export const CameraScreen = () => {
   const { cameraKey } = useCameraAppState();
   const { drawerAnimation, footerTranslateY, viewfinderTranslateY } = useCameraUIAnimations();
   const { shouldRenderGallery, galleryTransition, openGallery, closeGallery } = useGalleryOverlay();
+
+  // Reset SharedValues on cameraKey change (background resume) to prevent stale state bugs.
+  // activeSection is read imperatively via getState() so it doesn't trigger on every sheet open/close.
+  // All SharedValues are only reset when the sheet is closed. When open, positions are preserved
+  // so the user returns to the exact same state after a background resume.
+  // viewfinderTranslateY is reset to 0 when the sheet closes via GestureController's useAnimatedReaction.
+  // galleryTransition is snapped to match the actual isOpen state (1 if open, 0 if closed),
+  // correcting any mid-transition race condition without hiding a legitimately open gallery.
+  React.useEffect(() => {
+    const currentActiveSection = useControlPanelStore.getState().activeSection;
+    if (currentActiveSection === 'none') {
+      drawerAnimation.value = 0;
+      footerTranslateY.value = 0;
+      viewfinderTranslateY.value = 0;
+    }
+    const isGalleryOpen = useGalleryStore.getState().isOpen;
+    galleryTransition.value = isGalleryOpen ? 1 : 0;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cameraKey]);
 
   useGalleryStreamSync(isOpen, galleryTransition, cameraKey);
 
@@ -112,6 +135,16 @@ export const CameraScreen = () => {
   }), [statusBarHeight]);
 
   const headerElement = useMemo(() => <Header />, []);
+  React.useEffect(() => {
+    // Safety net: whenever activeSection becomes 'none' (e.g. opening gallery),
+    // we guarantee the drawer animates to 0. This prevents the drawer from getting stuck open
+    // if the heavy Modal mount blocks the JS thread and interrupts the gesture reactions.
+    if (activeSection === 'none') {
+      drawerAnimation.value = withTiming(0, { duration: 300 });
+      footerTranslateY.value = withTiming(0, { duration: 300 });
+      viewfinderTranslateY.value = withTiming(0, { duration: 300 });
+    }
+  }, [activeSection, drawerAnimation, footerTranslateY, viewfinderTranslateY]);
 
   const interactionContextValue = useMemo(() => ({ isInteractable: !isOpen }), [isOpen]);
   
@@ -157,7 +190,7 @@ export const CameraScreen = () => {
                 <View style={styles.sideControl} pointerEvents="box-none">
                   <CaptureThumbnail onPress={openGallery} />
                 </View>
-                <ShutterButton onPress={triggerCapture} translateY={footerTranslateY} />
+                <ShutterButton onPress={triggerCapture} disabled={activeSection !== 'none'} />
                 <View style={styles.sideControl} pointerEvents="box-none">
                   <CameraFlipButton />
                 </View>
@@ -183,6 +216,7 @@ export const CameraScreen = () => {
 
       {shouldRenderGallery && (
         <Modal
+          key={`gallery-modal-${cameraKey}`}
           visible={true}
           transparent={true}
           animationType="none"
