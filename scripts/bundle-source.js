@@ -9,7 +9,7 @@ if (!fs.existsSync(CODE_DIR)) {
   fs.mkdirSync(CODE_DIR, { recursive: true });
 }
 
-// Date in format ggmmyyyy
+// Date in format ddmmyyyy
 const now = new Date();
 const dd = String(now.getDate()).padStart(2, '0');
 const mm = String(now.getMonth() + 1).padStart(2, '0');
