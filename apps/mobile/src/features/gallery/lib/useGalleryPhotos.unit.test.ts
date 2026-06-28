@@ -1,4 +1,4 @@
-import { renderHook, waitFor } from '@testing-library/react-native';
+import { renderHook, waitFor, act } from '@testing-library/react-native';
 import { useGalleryPhotos } from './useGalleryPhotos';
 import * as MediaLibrary from 'expo-media-library/legacy';
 import * as FileSystem from 'expo-file-system';
@@ -8,7 +8,12 @@ describe('useGalleryPhotos', () => {
     jest.spyOn(global, 'setTimeout').mockImplementation(() => {
       return 1 as any;
     });
-    (FileSystem.getInfoAsync as jest.Mock).mockResolvedValue({ exists: true });
+    (FileSystem.getInfoAsync as jest.Mock).mockImplementation((uri: string) => {
+      if (uri && uri.startsWith('content://')) {
+        return Promise.reject(new Error('FileSystem should not be called with content:// URIs'));
+      }
+      return Promise.resolve({ exists: true, uri });
+    });
   });
 
   afterEach(() => {
@@ -139,6 +144,165 @@ describe('useGalleryPhotos', () => {
     await waitFor(() => expect(result.current.loading).toBe(false));
     expect(result.current.permissionGranted).toBe(false);
     expect(result.current.photos).toHaveLength(0);
+  });
+
+  it('dynamically injects new initialUri if it changes after loading is complete', async () => {
+    const { result, rerender } = renderHook(({ uri }: { uri: string | null }) => useGalleryPhotos(uri), {
+      initialProps: { uri: null as string | null },
+    });
+
+    await waitFor(() => expect(result.current.loading).toBe(false));
+
+    // Initially should have 2 photos (from mocked MediaLibrary)
+    expect(result.current.photos).toHaveLength(2);
+
+    const newUri = 'file:///test/preview-dynamic-capture.jpg';
+    (FileSystem.getInfoAsync as jest.Mock).mockResolvedValueOnce({ exists: true });
+
+    // Update the hook props with the new uri
+    rerender({ uri: newUri });
+
+    await waitFor(() => {
+      expect(result.current.photos).toHaveLength(3);
+      expect(result.current.photos[0].uri).toBe(newUri);
+      expect(result.current.photos[0].id).toBe('preview-temp');
+    });
+  });
+
+  it('dynamically injects new content:// URI without checking FileSystem existence', async () => {
+    const { result, rerender } = renderHook(({ uri }: { uri: string | null }) => useGalleryPhotos(uri), {
+      initialProps: { uri: null as string | null },
+    });
+
+    await waitFor(() => expect(result.current.loading).toBe(false));
+    expect(result.current.photos).toHaveLength(2);
+
+    const newUri = 'content://media/external/images/media/999';
+    rerender({ uri: newUri });
+
+    await waitFor(() => {
+      expect(result.current.photos).toHaveLength(3);
+      expect(result.current.photos[0].uri).toBe(newUri);
+      expect(result.current.photos[0].id).toBe('999');
+    });
+  });
+
+  it('loads photos when permission is limited', async () => {
+    (MediaLibrary.getPermissionsAsync as jest.Mock).mockResolvedValueOnce({
+      status: 'limited',
+      granted: false,
+      canAskAgain: true,
+    });
+
+    const { result } = renderHook(() => useGalleryPhotos(null));
+
+    await waitFor(() => expect(result.current.loading).toBe(false));
+
+    expect(result.current.permissionGranted).toBe(true);
+    expect(result.current.photos).toHaveLength(2);
+  });
+
+  it('does not prepend initialUri if it already exists in the loaded photos list', async () => {
+    const existingUri = 'file:///test/1.jpg';
+    const { result } = renderHook(() => useGalleryPhotos(existingUri));
+
+    await waitFor(() => expect(result.current.loading).toBe(false));
+
+    expect(result.current.photos).toHaveLength(2);
+  });
+
+  it('does not inject initialUri dynamically if it already exists in the photos list', async () => {
+    const { result, rerender } = renderHook(({ uri }: { uri: string | null }) => useGalleryPhotos(uri), {
+      initialProps: { uri: null as string | null },
+    });
+
+    await waitFor(() => expect(result.current.loading).toBe(false));
+    expect(result.current.photos).toHaveLength(2);
+
+    const existingUri = 'file:///test/1.jpg';
+    const getInfoPromise = Promise.resolve({ exists: true });
+    (FileSystem.getInfoAsync as jest.Mock).mockReturnValueOnce(getInfoPromise);
+
+    await act(async () => {
+      rerender({ uri: existingUri });
+      await getInfoPromise;
+    });
+
+    expect(result.current.photos).toHaveLength(2);
+  });
+
+  it('does not inject initialUri dynamically if the hook is unmounted before FileSystem check completes', async () => {
+    const { result, rerender, unmount } = renderHook(({ uri }: { uri: string | null }) => useGalleryPhotos(uri), {
+      initialProps: { uri: null as string | null },
+    });
+
+    await waitFor(() => expect(result.current.loading).toBe(false));
+
+    let resolveGetInfo!: (val: any) => void;
+    const getInfoPromise = new Promise(resolve => {
+      resolveGetInfo = resolve;
+    });
+    (FileSystem.getInfoAsync as jest.Mock).mockReturnValueOnce(getInfoPromise);
+
+    rerender({ uri: 'file:///test/preview-unmounted.jpg' });
+
+    unmount();
+
+    resolveGetInfo({ exists: true });
+  });
+
+  it('does not dynamically inject initialUri if it does not exist on disk', async () => {
+    const { result, rerender } = renderHook(({ uri }: { uri: string | null }) => useGalleryPhotos(uri), {
+      initialProps: { uri: null as string | null },
+    });
+
+    await waitFor(() => expect(result.current.loading).toBe(false));
+
+    const nonExistentUri = 'file:///test/preview-non-existent.jpg';
+    const getInfoPromise = Promise.resolve({ exists: false });
+    (FileSystem.getInfoAsync as jest.Mock).mockReturnValueOnce(getInfoPromise);
+
+    await act(async () => {
+      rerender({ uri: nonExistentUri });
+      await getInfoPromise;
+    });
+
+    expect(result.current.photos).toHaveLength(2);
+    expect(result.current.photos.some(p => p.uri === nonExistentUri)).toBe(false);
+  });
+
+  it('injects non-temp local URI with filename as ID', async () => {
+    const { result, rerender } = renderHook(({ uri }: { uri: string | null }) => useGalleryPhotos(uri), {
+      initialProps: { uri: null as string | null },
+    });
+
+    await waitFor(() => expect(result.current.loading).toBe(false));
+
+    const nonTempLocalUri = 'file:///test/some-local-photo.jpg';
+    (FileSystem.getInfoAsync as jest.Mock).mockResolvedValueOnce({ exists: true });
+
+    rerender({ uri: nonTempLocalUri });
+
+    await waitFor(() => {
+      expect(result.current.photos).toHaveLength(3);
+      expect(result.current.photos[0].id).toBe('some-local-photo.jpg');
+    });
+  });
+
+  it('aborts loadPhotos if hook is unmounted during permission request', async () => {
+    let resolvePerm!: (val: any) => void;
+    const permPromise = new Promise(resolve => {
+      resolvePerm = resolve;
+    });
+    (MediaLibrary.getPermissionsAsync as jest.Mock).mockReturnValueOnce(permPromise);
+
+    const { unmount, result } = renderHook(() => useGalleryPhotos(null));
+
+    unmount();
+
+    resolvePerm({ status: 'granted', granted: true });
+
+    expect(result.current.loading).toBe(true);
   });
 });
 

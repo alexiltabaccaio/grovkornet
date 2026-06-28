@@ -11,6 +11,7 @@ export const useGalleryPhotos = (initialUri?: string | null) => {
   const [permissionGranted, setPermissionGranted] = useState(false);
 
   const initialUriRef = useRef(initialUri);
+  const lastEvaluatedUriRef = useRef<string | null | undefined>(initialUri);
   useEffect(() => {
     initialUriRef.current = initialUri;
   }, [initialUri]);
@@ -240,6 +241,56 @@ export const useGalleryPhotos = (initialUri?: string | null) => {
       if (rafId) cancelAnimationFrame(rafId);
     };
   }, []);
+
+  // Dynamically inject initialUri if it updates AFTER initial load and is missing from the list.
+  // This fixes the race condition where a photo is captured, the user immediately opens the gallery,
+  // and the new photo is missing because MediaLibrary hasn't indexed it yet or the preview URI
+  // arrived after the initial fetch.
+  useEffect(() => {
+    if (loading || !initialUri) return;
+    if (initialUri === lastEvaluatedUriRef.current) return;
+
+    lastEvaluatedUriRef.current = initialUri;
+
+    let active = true;
+    const injectInitialUri = async () => {
+      try {
+        const initialFilenameOrId = initialUri.split('/').pop();
+        
+        let shouldInject = false;
+        if (initialUri.startsWith('file://') && !initialUri.includes('external')) {
+          const info = await FileSystem.getInfoAsync(initialUri);
+          if (info.exists) shouldInject = true;
+        } else {
+          shouldInject = true; // Trust content:// URIs
+        }
+
+        if (!active || !shouldInject) return;
+
+        setPhotos(prev => {
+          const alreadyExists = prev.some(item =>
+            item.uri === initialUri ||
+            (initialFilenameOrId && (item.filename === initialFilenameOrId || item.id === initialFilenameOrId))
+          );
+          
+          if (alreadyExists) return prev;
+
+          logger.debug('useGalleryPhotos', `Dynamically injecting missing initialUri: ${initialUri}`);
+          const isTemp = initialUri.startsWith('file:///data/') || initialUri.includes('preview');
+          const id = isTemp ? 'preview-temp' : (initialUri.split('/').pop() || 'injected');
+          return [{ id, key: id, uri: initialUri, filename: initialFilenameOrId }, ...prev];
+        });
+      } catch (e) {
+        logger.warn('useGalleryPhotos', 'Failed to inject missing initialUri', e);
+      }
+    };
+
+    void injectInitialUri();
+
+    return () => {
+      active = false;
+    };
+  }, [initialUri, loading]);
 
   return {
     photos,
