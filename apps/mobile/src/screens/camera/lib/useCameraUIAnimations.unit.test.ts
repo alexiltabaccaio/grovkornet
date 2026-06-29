@@ -51,6 +51,7 @@ describe('useCameraUIAnimations', () => {
     expect(result.current.drawerAnimation.value).toBe(0);
     expect(result.current.footerTranslateY.value).toBe(0);
     expect(result.current.viewfinderTranslateY.value).toBe(0);
+    expect(result.current.layoutSyncOffset.value).toBe(0);
   });
 
   it('initializes drawerAnimation and footerTranslateY correctly when activeSection is not none', () => {
@@ -63,5 +64,6 @@ describe('useCameraUIAnimations', () => {
     expect(result.current.drawerAnimation.value).toBe(-250);
     expect(result.current.footerTranslateY.value).toBe(-50);
     expect(result.current.viewfinderTranslateY.value).toBe(0);
+    expect(result.current.layoutSyncOffset.value).toBe(0);
   });
 });

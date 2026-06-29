@@ -10,10 +10,15 @@ export const useCameraUIAnimations = () => {
   const drawerAnimation = useSharedValue(initialActiveSection === 'none' ? 0 : -250);
   const footerTranslateY = useSharedValue(initialActiveSection === 'none' ? 0 : -50);
   const viewfinderTranslateY = useSharedValue(0);
+  
+  // layoutSyncOffset provides a continuous micro-animation when the sheet is open
+  // to force Android HWUI to retain reanimated transform/opacity properties across layout passes.
+  const layoutSyncOffset = useSharedValue(0);
 
   return {
     drawerAnimation,
     footerTranslateY,
     viewfinderTranslateY,
+    layoutSyncOffset,
   };
 };

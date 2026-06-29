@@ -20,9 +20,10 @@ interface ControlPanelProps {
   translateY?: SharedValue<number>;
   drawerAnimation?: SharedValue<number>;
   galleryTransition?: SharedValue<number>;
+  layoutSyncOffset?: SharedValue<number>;
 }
 
-export const ControlPanel = React.memo(({ translateY: externalTranslateY, drawerAnimation: externalDrawerAnimation, galleryTransition }: ControlPanelProps) => {
+export const ControlPanel = React.memo(({ translateY: externalTranslateY, drawerAnimation: externalDrawerAnimation, galleryTransition, layoutSyncOffset }: ControlPanelProps) => {
   const insets = useSafeAreaInsets();
   const { isLayoutOverlayEnabled } = useSystemStore(useShallow(state => ({
     isLayoutOverlayEnabled: state.isLayoutOverlayEnabled,
@@ -47,7 +48,7 @@ export const ControlPanel = React.memo(({ translateY: externalTranslateY, drawer
 
   const animatedTopFooterStyle = useAnimatedStyle(() => {
     return {
-      transform: [{ translateY: translateY.value + drawerAnimation.value }],
+      transform: [{ translateY: translateY.value + drawerAnimation.value + (layoutSyncOffset?.value ?? 0) }],
     };
   });
 

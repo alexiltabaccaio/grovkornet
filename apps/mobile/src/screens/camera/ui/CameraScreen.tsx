@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { StyleSheet, View, Platform, StatusBar, Modal } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import Animated, { useAnimatedStyle, interpolate, Extrapolation, withTiming } from 'react-native-reanimated';
+import Animated, { useAnimatedStyle, interpolate, Extrapolation, withTiming, withRepeat, withSequence, cancelAnimation, useAnimatedReaction } from 'react-native-reanimated';
 import { useCameraPermissions } from '../lib/useCameraPermissions';
 import { useCameraAppState } from '../lib/useCameraAppState';
 import { useCameraUIAnimations } from '../lib/useCameraUIAnimations';
@@ -54,7 +54,7 @@ export const CameraScreen = () => {
 
   const { hasPermission } = useCameraPermissions();
   const { cameraKey } = useCameraAppState();
-  const { drawerAnimation, footerTranslateY, viewfinderTranslateY } = useCameraUIAnimations();
+  const { drawerAnimation, footerTranslateY, viewfinderTranslateY, layoutSyncOffset } = useCameraUIAnimations();
   const { shouldRenderGallery, galleryTransition, openGallery, closeGallery } = useGalleryOverlay();
 
   // Reset SharedValues on cameraKey change (background resume) to prevent stale state bugs.
@@ -80,6 +80,28 @@ export const CameraScreen = () => {
 
   const { isCameraDeepSleep } = useCameraDeepSleep(isOpen);
 
+  // When the bottom sheet is open, we run a continuous microscopic animation (0.001px) on the UI thread.
+  // This ultra-lightweight wiggle forces Reanimated to continuously push fresh transform updates
+  // to the native HWUI layer. This successfully bypasses the Android bug where SurfaceView relayouts 
+  // (caused by changing camera parameters) drop the volatile transform/opacity overrides on absolute sibling views.
+  useAnimatedReaction(
+    () => drawerAnimation.value,
+    (current) => {
+      if (current < -100) {
+        layoutSyncOffset.value = withRepeat(
+          withSequence(
+            withTiming(0.001, { duration: 100 }),
+            withTiming(0, { duration: 100 })
+          ),
+          -1 // Infinite repeat while open
+        );
+      } else {
+        cancelAnimation(layoutSyncOffset);
+        layoutSyncOffset.value = 0;
+      }
+    }
+  );
+
 
   const animatedBottomControlsStyle = useAnimatedStyle(() => {
     // drawerAnimation goes from 0 (closed) to -250 (open)
@@ -87,7 +109,8 @@ export const CameraScreen = () => {
     // Total goes from 0 (closed) to -250 (open) to -500 (pulled up)
     // We want to fade out the controls as the drawer opens (totalOffset goes from 250 -> 150)
     // galleryTransition.value * 100 reduces totalOffset to 150, which triggers the fade out
-    const totalOffset = drawerAnimation.value + 250 + footerTranslateY.value - (galleryTransition.value * 100);
+    // layoutSyncOffset.value guarantees a UI thread update every frame when open.
+    const totalOffset = drawerAnimation.value + 250 + footerTranslateY.value - (galleryTransition.value * 100) + layoutSyncOffset.value;
     const opacity = interpolate(
       totalOffset,
       [150, 250],
@@ -200,7 +223,7 @@ export const CameraScreen = () => {
               </View>
             </Animated.View>
 
-            <ControlPanel translateY={footerTranslateY} drawerAnimation={drawerAnimation} galleryTransition={galleryTransition} />
+            <ControlPanel translateY={footerTranslateY} drawerAnimation={drawerAnimation} galleryTransition={galleryTransition} layoutSyncOffset={layoutSyncOffset} />
         </View>
 
         <AddPresetModal />

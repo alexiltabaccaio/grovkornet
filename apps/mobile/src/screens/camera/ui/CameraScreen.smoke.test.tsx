@@ -60,12 +60,14 @@ jest.mock('@entities/camera', () => {
 const mockDrawerAnimation = { value: 0 };
 const mockFooterTranslateY = { value: 0 };
 const mockViewfinderTranslateY = { value: 0 };
+const mockLayoutSyncOffset = { value: 0 };
 
 jest.mock('../lib/useCameraUIAnimations', () => ({
   useCameraUIAnimations: () => ({
     drawerAnimation: mockDrawerAnimation,
     footerTranslateY: mockFooterTranslateY,
     viewfinderTranslateY: mockViewfinderTranslateY,
+    layoutSyncOffset: mockLayoutSyncOffset,
   }),
 }));
 
