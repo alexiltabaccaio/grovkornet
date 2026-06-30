@@ -72,7 +72,15 @@ export const CameraScreen = () => {
       viewfinderTranslateY.value = 0;
     }
     const isGalleryOpen = useGalleryStore.getState().isOpen;
-    galleryTransition.value = isGalleryOpen ? 1 : 0;
+    if (isGalleryOpen) {
+      // Force Reanimated to push updates to the native HWUI layer after background resume.
+      // Setting value directly to 1 when it was already 1 is optimized away, leaving the native views
+      // invisible due to the Android SurfaceView relayout bug dropping absolute sibling styles.
+      galleryTransition.value = 0.999;
+      galleryTransition.value = withTiming(1, { duration: 50 });
+    } else {
+      galleryTransition.value = 0;
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cameraKey]);
 
@@ -239,7 +247,6 @@ export const CameraScreen = () => {
 
       {shouldRenderGallery && (
         <Modal
-          key={`gallery-modal-${cameraKey}`}
           visible={true}
           transparent={true}
           animationType="none"
