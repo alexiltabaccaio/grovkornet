@@ -572,12 +572,21 @@ class CameraConfiguration(val nativePointer: Long = 0L) {
                 }
             }
     var noiseReduction: Int
-            get() = if (CameraStateJNI.isJniLoaded) CameraStateJNI.getNoiseReduction(nativePointer) else (CameraStateJNI.fallbackGet("noiseReduction", nativePointer, 1) as Int)
+            get() = if (CameraStateJNI.isJniLoaded) CameraStateJNI.getNoiseReduction(nativePointer) else (CameraStateJNI.fallbackGet("noiseReduction", nativePointer, 0) as Int)
             set(value) {
                 if (CameraStateJNI.isJniLoaded) {
                     CameraStateJNI.setNoiseReduction(nativePointer, value)
                 } else {
                     CameraStateJNI.fallbackSet("noiseReduction", nativePointer, value)
+                }
+            }
+    var noiseReductionAuto: Boolean
+            get() = if (CameraStateJNI.isJniLoaded) CameraStateJNI.getNoiseReductionAuto(nativePointer) else (CameraStateJNI.fallbackGet("noiseReductionAuto", nativePointer, false) as Boolean)
+            set(value) {
+                if (CameraStateJNI.isJniLoaded) {
+                    CameraStateJNI.setNoiseReductionAuto(nativePointer, value)
+                } else {
+                    CameraStateJNI.fallbackSet("noiseReductionAuto", nativePointer, value)
                 }
             }
     var isoAuto: Boolean
@@ -782,6 +791,9 @@ fun CameraConfiguration.loadFromMap(payload: Map<String, Any>) {
     val raw_noiseReduction = payload["noiseReductionMode"] ?: payload["noiseReduction"]
     raw_noiseReduction?.let { rawValue ->
         (rawValue as? Number)?.toInt()?.let { noiseReduction = it }
+    }
+    payload["noiseReductionAuto"]?.let { rawValue ->
+        (rawValue as? Boolean)?.let { noiseReductionAuto = it }
     }
     payload["isoAuto"]?.let { rawValue ->
         (rawValue as? Boolean)?.let { isoAuto = it }

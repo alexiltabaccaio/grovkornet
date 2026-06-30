@@ -284,6 +284,8 @@ class CameraConfigurationTest {
         assertTrue(config.isoAuto)
         config.shutterSpeedAuto = true
         assertTrue(config.shutterSpeedAuto)
+        config.noiseReductionAuto = true
+        assertTrue(config.noiseReductionAuto)
         config.temperatureAuto = true
         assertTrue(config.temperatureAuto)
         config.autoFocus = true

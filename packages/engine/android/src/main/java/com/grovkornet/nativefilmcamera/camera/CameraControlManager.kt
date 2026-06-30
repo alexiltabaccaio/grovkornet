@@ -102,7 +102,9 @@ class CameraControlManager(
                 builder.setCaptureRequestOption(CaptureRequest.SENSOR_FRAME_DURATION, frameDuration)
             }
 
-            if (config.noiseReduction != -1) {
+            if (config.noiseReductionAuto) {
+                builder.setCaptureRequestOption(CaptureRequest.NOISE_REDUCTION_MODE, CaptureRequest.NOISE_REDUCTION_MODE_FAST)
+            } else if (config.noiseReduction != -1) {
                 builder.setCaptureRequestOption(CaptureRequest.NOISE_REDUCTION_MODE, config.noiseReduction)
             }
             builder.setCaptureRequestOption(CaptureRequest.EDGE_MODE, CaptureRequest.EDGE_MODE_OFF)

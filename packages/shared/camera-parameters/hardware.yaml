@@ -63,7 +63,7 @@ parameters:
     category: hardware
     kotlin:
       type: Int
-      default: "1"
+      default: "0"
       propHandler: if (view.config.noiseReduction != value) view.updateHardware {
         noiseReduction = value }
     ts:
@@ -77,6 +77,11 @@ parameters:
     includeInPreset: true
   - name: noiseReductionAuto
     category: hardware
+    kotlin:
+      type: Boolean
+      default: "false"
+      propHandler: if (view.config.noiseReductionAuto != value) view.updateBoth {
+        noiseReductionAuto = value }
     ts:
       type: boolean
     zustand:

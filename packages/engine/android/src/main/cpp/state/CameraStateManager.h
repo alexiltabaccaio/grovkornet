@@ -12,11 +12,12 @@ struct RenderState {
     float ev = 0.0f;
     int targetFps = 60;
     int aspectRatio = 1;
-    int noiseReduction = 1;
+    int noiseReduction = 0;
     bool isoAuto = true;
     bool shutterSpeedAuto = true;
     bool temperatureAuto = true;
     bool autoFocus = false;
+    bool noiseReductionAuto = false;
     int iso = 400;
     long long exposureTime = 1000000000LL / 60;
     float focusDistance = 0.0f;

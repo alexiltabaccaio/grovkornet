@@ -9,26 +9,35 @@ interface NoiseReductionPanelProps {
   animatedStyle?: StyleProp<ViewStyle>;
 }
 
-const MODES = [0, 1, 2];
-
 export const NoiseReductionPanel = React.memo(({ animatedStyle }: NoiseReductionPanelProps) => {
-  const { noiseReductionMode, setNoiseReductionMode, noiseReductionAuto, setNoiseReductionAuto } = useFilmStore(useShallow(state => ({
+  const { noiseReductionMode, setNoiseReductionMode, noiseReductionAuto, setNoiseReductionAuto, capabilities } = useFilmStore(useShallow(state => ({
     noiseReductionMode: state.noiseReductionMode,
     setNoiseReductionMode: state.setNoiseReductionMode,
     noiseReductionAuto: state.noiseReductionAuto,
     setNoiseReductionAuto: state.setNoiseReductionAuto,
+    capabilities: state.capabilities,
   })));
   const isLayoutOverlayEnabled = useSystemStore(s => s.isLayoutOverlayEnabled);
+
+  const modes = React.useMemo(() => {
+    const available = capabilities?.availableNoiseReductionModes;
+    if (!available || available.length === 0) {
+      return [0, 1, 2];
+    }
+    return [0, 1, 2, 3].filter(mode => available.includes(mode));
+  }, [capabilities?.availableNoiseReductionModes]);
 
   const getLabel = (opt: number) => {
     if (opt === 0) return 'OFF';
     if (opt === 1) return 'FAST';
-    return 'HQ';
+    if (opt === 2) return 'HQ';
+    if (opt === 3) return 'MINIMAL';
+    return '';
   };
 
   return (
     <GenericPillPanel
-      options={MODES}
+      options={modes}
       onChange={(mode) => {
         setNoiseReductionAuto(false);
         setNoiseReductionMode(mode);

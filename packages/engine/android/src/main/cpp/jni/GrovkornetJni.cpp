@@ -1998,6 +1998,31 @@ Java_com_grovkornet_nativefilmcamera_jni_CameraStateJNI_setNoiseReduction(
 }
 
 JNIEXPORT jboolean JNICALL
+Java_com_grovkornet_nativefilmcamera_jni_CameraStateJNI_getNoiseReductionAuto(
+        JNIEnv* env, jclass clazz, jlong statePtr) {
+    if (statePtr == 0) {
+        return CameraStateManager::getInstance().getActiveState()->noiseReductionAuto;
+    } else {
+        auto* state = reinterpret_cast<RenderState*>(statePtr);
+        return state->noiseReductionAuto;
+    }
+}
+
+JNIEXPORT void JNICALL
+Java_com_grovkornet_nativefilmcamera_jni_CameraStateJNI_setNoiseReductionAuto(
+        JNIEnv* env, jclass clazz, jlong statePtr, jboolean value) {
+    if (statePtr == 0) {
+        CameraStateManager::getInstance().updateStateField([value](RenderState& state) {
+            state.noiseReductionAuto = (value == JNI_TRUE);
+        });
+    } else {
+        auto* state = reinterpret_cast<RenderState*>(statePtr);
+        state->noiseReductionAuto = (value == JNI_TRUE);
+        CameraStateManager::getInstance().clampState(*state);
+    }
+}
+
+JNIEXPORT jboolean JNICALL
 Java_com_grovkornet_nativefilmcamera_jni_CameraStateJNI_getIsoAuto(
         JNIEnv* env, jclass clazz, jlong statePtr) {
     if (statePtr == 0) {

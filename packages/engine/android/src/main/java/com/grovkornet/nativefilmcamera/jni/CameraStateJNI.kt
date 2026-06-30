@@ -166,6 +166,8 @@ object CameraStateJNI {
         @JvmStatic external fun setAspectRatio(statePtr: Long, value: Int)
         @JvmStatic external fun getNoiseReduction(statePtr: Long): Int
         @JvmStatic external fun setNoiseReduction(statePtr: Long, value: Int)
+        @JvmStatic external fun getNoiseReductionAuto(statePtr: Long): Boolean
+        @JvmStatic external fun setNoiseReductionAuto(statePtr: Long, value: Boolean)
         @JvmStatic external fun getIsoAuto(statePtr: Long): Boolean
         @JvmStatic external fun setIsoAuto(statePtr: Long, value: Boolean)
         @JvmStatic external fun getShutterSpeedAuto(statePtr: Long): Boolean

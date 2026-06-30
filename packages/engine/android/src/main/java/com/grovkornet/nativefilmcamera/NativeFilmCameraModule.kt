@@ -104,6 +104,12 @@ class NativeFilmCameraModule : Module() {
               }
       }
 
+      Prop("noiseReductionAuto") { view: NativeFilmCameraView, value: Boolean? ->
+        value?.let { value ->
+                if (view.config.noiseReductionAuto != value) view.updateBoth { noiseReductionAuto = value }
+              }
+      }
+
       Prop("isoAuto") { view: NativeFilmCameraView, value: Boolean? ->
         value?.let { value ->
                 if (view.config.isoAuto != value) view.updateHardware { isoAuto = value }
