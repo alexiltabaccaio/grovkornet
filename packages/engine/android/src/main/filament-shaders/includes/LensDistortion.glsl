@@ -11,9 +11,15 @@ vec2 applyLensDistortion(vec2 uv) {
     // Radial distance squared
     float r2 = dot(coord, coord);
     
-    // Scale factor to keep center/edge scale reasonable
-    // (helps reduce black edges for barrel distortion and compression for pincushion)
-    float scale = 1.0 / (1.0 + distortion * 0.4);
+    // Calculate scale factor
+    float scale;
+    if (distortion > 0.0) {
+        // Pincushion (+): perfect crop to eliminate stretched edge artifacts (r2 = 2.0)
+        scale = 1.0 / (1.0 + distortion * 2.0);
+    } else {
+        // Barrel (-): use original heuristic to avoid infinite shrinking
+        scale = 1.0 / (1.0 + distortion * 0.4);
+    }
     
     // Warp coord
     coord = coord * (1.0 + distortion * r2) * scale;
