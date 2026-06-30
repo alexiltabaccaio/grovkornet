@@ -65,6 +65,7 @@ export const useFilmWorklets = () => {
   const hasWarnedNaN_halationIntensity = useSharedValue(false);
   const hasWarnedNaN_halationThreshold = useSharedValue(false);
   const hasWarnedNaN_bloomThreshold = useSharedValue(false);
+  const hasWarnedNaN_chromaBleed = useSharedValue(false);
   // @@GEN_WORKLET_FLAGS_END@@
 
   return useMemo(() => {
@@ -1015,6 +1016,26 @@ export const useFilmWorklets = () => {
           config.bloomThreshold = safeValue;
         }
         };
+
+        const updateChromaBleed = (value: number) => {
+        'worklet';
+        if (isNaN(value)) {
+          if (__DEV__ && !hasWarnedNaN_chromaBleed.value) {
+            hasWarnedNaN_chromaBleed.value = true;
+            console.warn(`[Camera Codegen Warning]: NaN value intercepted for parameter 'chromaBleed'`);
+          }
+          if (!BYPASS_JS_SANITIZATION) return;
+        }
+        if (BYPASS_JS_SANITIZATION) {
+          config.chromaBleed = value;
+          const clampedValue = config.chromaBleed;
+          updateSharedValue(film.chromaBleed, clampedValue);
+        } else {
+          const safeValue = Math.min(Math.max(value, 0.0), 1.0);
+          updateSharedValue(film.chromaBleed, safeValue);
+          config.chromaBleed = safeValue;
+        }
+        };
     // @@GEN_WORKLETS_END@@
 
     return {
@@ -1088,6 +1109,7 @@ export const useFilmWorklets = () => {
             updateHalationEnabled,
             updateHalationThreshold,
             updateBloomThreshold,
+            updateChromaBleed,
       // @@GEN_WORKLET_EXPORTS_END@@
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps

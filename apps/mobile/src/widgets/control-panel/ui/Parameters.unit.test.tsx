@@ -19,7 +19,7 @@ jest.mock('@features/film-controls', () => {
     ...actual,
     resetFilmEffect: mockResetFilmEffect,
     resetFilmParameter: jest.fn((param) => {
-      if (['grain', 'chroma_shift', 'sharpening', 'noise_reduction', 'scanlines', 'pixelation', 'chromatic_aberration'].includes(param)) {
+      if (['grain', 'chroma_shift', 'chroma_bleed', 'sharpening', 'noise_reduction', 'scanlines', 'pixelation', 'chromatic_aberration'].includes(param)) {
         mockResetFilmEffect(param);
         return true;
       }

@@ -9,6 +9,7 @@ interface ArtifactsModuleProps {
 export const ARTIFACTS_PARAMETERS: ParameterType[] = [
   'chroma_shift',
   'tape_jitter',
+  'chroma_bleed',
 ];
 
 export const ArtifactsModule = React.memo(({ handlePressWithDouble }: ArtifactsModuleProps) => {

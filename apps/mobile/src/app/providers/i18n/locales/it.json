@@ -84,7 +84,8 @@
       "lens_distortion": "DISTORSIONE LENTE",
       "halation": "ALONATURA",
       "bloomThreshold": "SOGLIA",
-      "halationThreshold": "SOGLIA"
+      "halationThreshold": "SOGLIA",
+      "chroma_bleed": "SBAVATURA"
     },
     "footer": {
       "coming_soon": "IN ARRIVO"

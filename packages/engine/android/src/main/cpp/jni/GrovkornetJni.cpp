@@ -1998,6 +1998,31 @@ Java_com_grovkornet_nativefilmcamera_jni_CameraStateJNI_setBloomThreshold(
 }
 
 JNIEXPORT jfloat JNICALL
+Java_com_grovkornet_nativefilmcamera_jni_CameraStateJNI_getChromaBleed(
+        JNIEnv* env, jclass clazz, jlong statePtr) {
+    if (statePtr == 0) {
+        return CameraStateManager::getInstance().getActiveState()->renderParams.chromaBleed;
+    } else {
+        auto* state = reinterpret_cast<RenderState*>(statePtr);
+        return state->renderParams.chromaBleed;
+    }
+}
+
+JNIEXPORT void JNICALL
+Java_com_grovkornet_nativefilmcamera_jni_CameraStateJNI_setChromaBleed(
+        JNIEnv* env, jclass clazz, jlong statePtr, jfloat value) {
+    if (statePtr == 0) {
+        CameraStateManager::getInstance().updateStateField([value](RenderState& state) {
+            state.renderParams.chromaBleed = value;
+        });
+    } else {
+        auto* state = reinterpret_cast<RenderState*>(statePtr);
+        state->renderParams.chromaBleed = value;
+        CameraStateManager::getInstance().clampState(*state);
+    }
+}
+
+JNIEXPORT jfloat JNICALL
 Java_com_grovkornet_nativefilmcamera_jni_CameraStateJNI_getEv(
         JNIEnv* env, jclass clazz, jlong statePtr) {
     if (statePtr == 0) {

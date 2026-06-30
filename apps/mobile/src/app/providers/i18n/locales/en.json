@@ -84,7 +84,8 @@
       "lens_distortion": "LENS DISTORTION",
       "halation": "HALATION",
       "bloomThreshold": "THRESHOLD",
-      "halationThreshold": "THRESHOLD"
+      "halationThreshold": "THRESHOLD",
+      "chroma_bleed": "BLEED"
     },
     "footer": {
       "coming_soon": "COMING SOON"

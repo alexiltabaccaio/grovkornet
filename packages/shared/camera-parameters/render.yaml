@@ -1182,4 +1182,28 @@ parameters:
     worklet:
       clamp: [ 0.0, 1.0 ]
     includeInPreset: true
+  - name: chromaBleed
+    category: render
+    arrayIndex: 65
+    kotlin:
+      type: Float
+      default: 0.0f
+    ts:
+      type: number
+    zustand:
+      default: DEFAULT_CHROMA_BLEED
+      type: number
+      resetGroup: chroma_bleed
+      store: film
+    nitro: true
+    ui:
+      name: chroma_bleed
+      control: slider
+      min: 0.0
+      max: 1.0
+      formatter: percentage
+      formatterScale: 100
+    worklet:
+      clamp: [ 0.0, 1.0 ]
+    includeInPreset: true
 

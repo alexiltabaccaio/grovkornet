@@ -74,6 +74,7 @@ export interface FilmPresetPayload {
   halationEnabled: boolean;
   halationThreshold: number;
   bloomThreshold: number;
+  chromaBleed: number;
 }
 
 export interface LensPresetPayload {

@@ -176,6 +176,8 @@ namespace margelo::nitro::grovkornet {
     void setHalationThreshold(double halationThreshold) override;
     double getBloomThreshold() override;
     void setBloomThreshold(double bloomThreshold) override;
+    double getChromaBleed() override;
+    void setChromaBleed(double chromaBleed) override;
 
   public:
     // Methods

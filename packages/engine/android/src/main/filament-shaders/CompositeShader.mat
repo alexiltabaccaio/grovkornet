@@ -48,6 +48,7 @@ fragment {
     #define u_HalationIntensity u_RenderData6.w
     #define u_BloomThreshold u_RenderData7.x
     #define u_HalationThreshold u_RenderData7.y
+    #define u_ChromaBleed u_RenderData7.z
 
     #include "includes/Pixelation.glsl"
     #include "includes/ChromaEffects.glsl"
@@ -83,6 +84,9 @@ fragment {
         } else {
             baseColor = texture(materialParams_u_Texture, compositeUv);
         }
+
+        // Apply Chroma Bleed
+        baseColor.rgb = applyChromaBleed(baseColor.rgb, compositeUv);
 
         // 4. Sharpening filter
         baseColor.rgb = applySharpening(baseColor.rgb, compositeUv);

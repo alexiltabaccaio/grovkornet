@@ -170,6 +170,8 @@ namespace margelo::nitro::grovkornet {
       virtual void setHalationThreshold(double halationThreshold) = 0;
       virtual double getBloomThreshold() = 0;
       virtual void setBloomThreshold(double bloomThreshold) = 0;
+      virtual double getChromaBleed() = 0;
+      virtual void setChromaBleed(double chromaBleed) = 0;
 
     public:
       // Methods

@@ -638,5 +638,15 @@ class HybridNitroCameraConfiguration : HybridNitroCameraConfigurationSpec() {
                 Log.e("HybridNitroCameraConfiguration", "Failed to set bloomThreshold", e)
             }
         }
+
+    override var chromaBleed: Double
+        get() = try { CameraStateJNI.getChromaBleed(0L).toDouble() } catch (e: Throwable) { 0.0 }
+        set(value) {
+            try {
+                CameraStateJNI.setChromaBleed(0L, value.toFloat())
+            } catch (e: Throwable) {
+                Log.e("HybridNitroCameraConfiguration", "Failed to set chromaBleed", e)
+            }
+        }
     // @@GEN_OVERRIDES_END@@
 }

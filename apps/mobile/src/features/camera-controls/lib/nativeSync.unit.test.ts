@@ -1,4 +1,4 @@
-import { initNativeSync } from './nativeSync';
+import { initNativeSync, SYNC_MAP } from './nativeSync';
 import { setFilmStoreListener, getNitroConfig, useFilmStore } from '@entities/film';
 import { usePresetStore } from '@entities/preset';
 import { markAsCustomized } from '@features/system-settings';
@@ -173,21 +173,7 @@ describe('nativeSync unit tests', () => {
     const mockNitroRecord: Record<string, any> = {};
     const storeState: Record<string, any> = {};
 
-    const allKeys = [
-      'saturation', 'contrast', 'grainIntensity', 'grainChroma', 'grainSize',
-      'grainSpeed', 'vignetteIntensity', 'chromaShift', 'temperature', 'tint',
-      'bloomIntensity', 'chromaticAberration', 'chromaShiftDirection', 'sharpening',
-      'satRed', 'satOrange', 'satYellow', 'satGreen', 'satCyan', 'satBlue',
-      'satPurple', 'satMagenta', 'aberrationInvert', 'boundMagentaRed',
-      'boundRedOrange', 'boundOrangeYellow', 'boundYellowGreen', 'boundGreenCyan',
-      'boundCyanBlue', 'boundBluePurple', 'boundPurpleMagenta', 'grainRoughness',
-      'panelY', 'grainEnabled', 'bloomEnabled', 'blackLevel', 'highlights',
-      'pivot', 'contrastAuto', 'blackLevelAuto', 'highlightsAuto', 'pivotAuto',
-      'pixelationFactor', 'tapeJitter', 'scanlines', 'chromaShiftInvert', 'hue',
-      'hueRed', 'hueOrange', 'hueYellow', 'hueGreen', 'hueCyan', 'hueBlue',
-      'huePurple', 'hueMagenta', 'scanlinesHorizontal', 'scanlinesMode',
-      'scanlinesDensity', 'lensDistortion'
-    ];
+    const allKeys = Object.keys(SYNC_MAP);
 
     allKeys.forEach((key) => {
       mockNitroRecord[key] = 1.0;

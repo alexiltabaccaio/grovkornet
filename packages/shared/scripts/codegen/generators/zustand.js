@@ -230,6 +230,19 @@ function generateZustandStore(parameters) {
     })
     .join('\n');
   replaceBetweenMarkers(FILE_PATHS.nativeSync, '  // @@GEN_SYNC_MAP_START@@', '  // @@GEN_SYNC_MAP_END@@', syncMapContent, '  ');
+
+  // 6. Generate imports
+  console.log('Generating shared constant imports...');
+  const uniqueDefaults = new Set();
+  const filmParamsForImports = parameters.filter(p => p.zustand && (p.zustand.store || 'film') === 'film');
+  for (const p of filmParamsForImports) {
+    if (p.zustand && p.zustand.default && typeof p.zustand.default === 'string' && p.zustand.default.startsWith('DEFAULT_')) {
+      uniqueDefaults.add(p.zustand.default);
+    }
+  }
+  const importsContent = `import {\n  ${Array.from(uniqueDefaults).join(',\n  ')}\n} from '@grovkornet/shared';`;
+  replaceBetweenMarkers(FILE_PATHS.zustandStore, '// @@GEN_IMPORTS_START@@', '// @@GEN_IMPORTS_END@@', importsContent, '');
+  replaceBetweenMarkers(FILE_PATHS.filmActions, '// @@GEN_IMPORTS_START@@', '// @@GEN_IMPORTS_END@@', importsContent, '');
 }
 
 module.exports = {

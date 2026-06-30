@@ -66,3 +66,59 @@ void computeChromaUvs(vec2 uv, vec2 res, out vec2 rUv, out vec2 gUv, out vec2 bU
         bUv -= caShift;
     }
 }
+
+vec3 rgb2yiq(vec3 c) {
+    return vec3(
+        dot(c, vec3(0.299, 0.587, 0.114)),
+        dot(c, vec3(0.5959, -0.2741, -0.3218)),
+        dot(c, vec3(0.2115, -0.5229, 0.3114))
+    );
+}
+
+vec3 yiq2rgb(vec3 c) {
+    return vec3(
+        dot(c, vec3(1.0, 0.956, 0.621)),
+        dot(c, vec3(1.0, -0.272, -0.647)),
+        dot(c, vec3(1.0, -1.106, 1.703))
+    );
+}
+
+vec3 applyChromaBleed(vec3 centerColor, vec2 uv) {
+    if (materialParams.u_ChromaBleed <= 0.0) {
+        return centerColor;
+    }
+    
+    // Scale blur to max ~30 pixels for a pronounced VHS bleed effect
+    float blurRadius = materialParams.u_ChromaBleed * 30.0;
+    float stepX = blurRadius * materialParams.u_TexelSize.x;
+    
+    vec3 centerYiq = rgb2yiq(centerColor);
+    vec3 yiqSum = vec3(0.0);
+    
+    // Trailing blur: sample only pixels to the left (negative offset)
+    // so that the color bleeds to the right.
+    
+    // Sample offset -4
+    vec3 colM4 = texture(materialParams_u_Texture, uv - vec2(4.0 * stepX, 0.0)).rgb;
+    yiqSum += rgb2yiq(colM4) * 0.0625;
+    
+    // Sample offset -3
+    vec3 colM3 = texture(materialParams_u_Texture, uv - vec2(3.0 * stepX, 0.0)).rgb;
+    yiqSum += rgb2yiq(colM3) * 0.125;
+    
+    // Sample offset -2
+    vec3 colM2 = texture(materialParams_u_Texture, uv - vec2(2.0 * stepX, 0.0)).rgb;
+    yiqSum += rgb2yiq(colM2) * 0.25;
+    
+    // Sample offset -1
+    vec3 colM1 = texture(materialParams_u_Texture, uv - vec2(1.0 * stepX, 0.0)).rgb;
+    yiqSum += rgb2yiq(colM1) * 0.25;
+    
+    // Center sample
+    yiqSum += centerYiq * 0.3125;
+    
+    // Combine center Y with blurred I and Q
+    vec3 finalYiq = vec3(centerYiq.r, yiqSum.g, yiqSum.b);
+    
+    return yiq2rgb(finalYiq);
+}

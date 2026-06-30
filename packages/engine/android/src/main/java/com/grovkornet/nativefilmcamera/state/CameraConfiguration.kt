@@ -578,6 +578,15 @@ class CameraConfiguration(val nativePointer: Long = 0L) {
                     CameraStateJNI.fallbackSet("bloomThreshold", nativePointer, value)
                 }
             }
+    var chromaBleed: Float
+            get() = if (CameraStateJNI.isJniLoaded) CameraStateJNI.getChromaBleed(nativePointer) else (CameraStateJNI.fallbackGet("chromaBleed", nativePointer, 0.0f) as Float)
+            set(value) {
+                if (CameraStateJNI.isJniLoaded) {
+                    CameraStateJNI.setChromaBleed(nativePointer, value)
+                } else {
+                    CameraStateJNI.fallbackSet("chromaBleed", nativePointer, value)
+                }
+            }
 
     // Hardware Props
     var ev: Float
@@ -1070,6 +1079,9 @@ fun CameraConfiguration.loadFromMap(payload: Map<String, Any>) {
     }
     payload["bloomThreshold"]?.let { rawValue ->
         (rawValue as? Number)?.toFloat()?.let { bloomThreshold = it }
+    }
+    payload["chromaBleed"]?.let { rawValue ->
+        (rawValue as? Number)?.toFloat()?.let { chromaBleed = it }
     }
     payload["viewportWidth"]?.let { rawValue ->
         (rawValue as? Number)?.toFloat()?.let { viewportWidth = it }

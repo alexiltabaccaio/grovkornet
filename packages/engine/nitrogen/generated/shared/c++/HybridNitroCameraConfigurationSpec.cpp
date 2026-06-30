@@ -140,6 +140,8 @@ namespace margelo::nitro::grovkornet {
       prototype.registerHybridSetter("halationThreshold", &HybridNitroCameraConfigurationSpec::setHalationThreshold);
       prototype.registerHybridGetter("bloomThreshold", &HybridNitroCameraConfigurationSpec::getBloomThreshold);
       prototype.registerHybridSetter("bloomThreshold", &HybridNitroCameraConfigurationSpec::setBloomThreshold);
+      prototype.registerHybridGetter("chromaBleed", &HybridNitroCameraConfigurationSpec::getChromaBleed);
+      prototype.registerHybridSetter("chromaBleed", &HybridNitroCameraConfigurationSpec::setChromaBleed);
     });
   }
 

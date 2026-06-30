@@ -34,6 +34,7 @@ const SLIDER_PARAMETERS = [
   'scanlines',
   'lens_distortion',
   'halation',
+  'chroma_bleed',
 ];
 
 interface PanelsProps {

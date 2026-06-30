@@ -69,5 +69,6 @@ export interface NitroCameraConfiguration extends HybridObject<{ ios: 'c++'; and
   halationEnabled: boolean;
   halationThreshold: number;
   bloomThreshold: number;
+  chromaBleed: number;
   // @@GEN_PROPERTIES_END@@
 }

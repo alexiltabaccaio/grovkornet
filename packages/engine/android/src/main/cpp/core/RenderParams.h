@@ -68,6 +68,7 @@ struct RenderParams {
     float halationEnabled;
     float halationThreshold;
     float bloomThreshold;
+    float chromaBleed;
     // @@GEN_STRUCT_END@@
 };
 

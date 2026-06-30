@@ -76,6 +76,7 @@ interface FilmState {
   halationEnabled: SharedValue<boolean>;
   halationThreshold: SharedValue<number>;
   bloomThreshold: SharedValue<number>;
+  chromaBleed: SharedValue<number>;
   // @@GEN_STATE_END@@
   capabilities?: FilmCapabilities;
 }
@@ -151,6 +152,7 @@ interface FilmActions {
   setHalationEnabled: (value: boolean) => void;
   setHalationThreshold: (value: number) => void;
   setBloomThreshold: (value: number) => void;
+  setChromaBleed: (value: number) => void;
   // @@GEN_ACTIONS_END@@
   setCapabilities?: (capabilities: FilmCapabilities) => void;
 }
@@ -180,6 +182,7 @@ export const FILM_PARAMETERS = [
   'scanlines',
   'hue',
   'lens_distortion',
-  'halation'
+  'halation',
+  'chroma_bleed'
 ] as const;
 // @@GEN_PARAMETERS_END@@

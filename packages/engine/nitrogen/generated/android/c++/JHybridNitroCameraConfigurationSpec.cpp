@@ -608,6 +608,15 @@ namespace margelo::nitro::grovkornet {
     static const auto method = _javaPart->javaClassStatic()->getMethod<void(double /* bloomThreshold */)>("setBloomThreshold");
     method(_javaPart, bloomThreshold);
   }
+  double JHybridNitroCameraConfigurationSpec::getChromaBleed() {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<double()>("getChromaBleed");
+    auto __result = method(_javaPart);
+    return __result;
+  }
+  void JHybridNitroCameraConfigurationSpec::setChromaBleed(double chromaBleed) {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<void(double /* chromaBleed */)>("setChromaBleed");
+    method(_javaPart, chromaBleed);
+  }
 
   // Methods
   

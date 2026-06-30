@@ -342,7 +342,7 @@ void GrovkornetEngine::applyShaderParameters(const RenderState* state, filament:
 
     uboData[7].x = params.bloomThreshold;
     uboData[7].y = params.halationThreshold;
-    uboData[7].z = 0.0f;
+    uboData[7].z = params.chromaBleed;
     uboData[7].w = 0.0f;
 
     composite->setParameter("u_RenderData0", uboData[0]);

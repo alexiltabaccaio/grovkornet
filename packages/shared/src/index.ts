@@ -77,5 +77,6 @@ export const DEFAULT_HALATION_INTENSITY = 0;
 export const DEFAULT_HALATION_ENABLED = false;
 export const DEFAULT_HALATION_THRESHOLD = 0.5;
 export const DEFAULT_BLOOM_THRESHOLD = 0.5;
+export const DEFAULT_CHROMA_BLEED = 0;
 
 export * from './hardwareConfig';
