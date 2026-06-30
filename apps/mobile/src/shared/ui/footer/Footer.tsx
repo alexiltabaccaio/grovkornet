@@ -6,21 +6,25 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 interface FooterProps {
   children: React.ReactNode;
   style?: StyleProp<AnimatedStyle<ViewStyle>>;
+  testID?: string;
 }
 
-export const Footer = ({ children, style }: FooterProps) => {
+export const Footer = ({ children, style, testID = 'footer-container' }: FooterProps) => {
   const insets = useSafeAreaInsets();
   const bottomInset = insets.bottom ?? 0;
 
   return (
-    <Animated.View style={[
-      styles.footerWrapper, 
-      { 
-        height: 80 + bottomInset, 
-        paddingBottom: bottomInset 
-      }, 
-      style
-    ]}>
+    <Animated.View
+      testID={testID}
+      style={[
+        styles.footerWrapper, 
+        { 
+          height: 80 + bottomInset, 
+          paddingBottom: bottomInset 
+        }, 
+        style
+      ]}
+    >
       {children}
     </Animated.View>
   );
