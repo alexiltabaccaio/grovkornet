@@ -38,6 +38,9 @@ void computeChromaUvs(vec2 uv, vec2 res, out vec2 rUv, out vec2 gUv, out vec2 bU
             bUv.x += shift;
         } else {
             float aspect = res.x / res.y;
+            if (materialParams.u_InvertYShift > 0.5) {
+                shift = -shift;
+            }
             rUv.y -= shift * aspect;
             bUv.y += shift * aspect;
         }
@@ -49,19 +52,15 @@ void computeChromaUvs(vec2 uv, vec2 res, out vec2 rUv, out vec2 gUv, out vec2 bU
         
         vec2 dir = normalize(uv - 0.5);
         float dist = length(uv - 0.5);
-        float falloff = dist * dist * 4.0; // Caduta esponenziale per sweet-spot al centro
+        float falloff = dist * dist * 4.0; // Exponential falloff for sweet-spot at the center
         vec2 caShift = dir * falloff * caIntensity;
         caShift.y *= aspect;
         
-        if (materialParams.u_InvertYShift > 0.5) {
-            caShift.y = -caShift.y;
-        }
-
         if (materialParams.u_AberrationInvert > 0.5) {
             caShift = -caShift;
         }
 
-        // Split Magenta/Verde per differenziarsi dallo shift Rosso/Ciano
+        // Magenta/Green split to differentiate from Red/Cyan shift
         gUv += caShift;
         rUv -= caShift;
         bUv -= caShift;
