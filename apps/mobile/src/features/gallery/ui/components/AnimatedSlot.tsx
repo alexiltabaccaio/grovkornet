@@ -3,7 +3,8 @@ import { StyleSheet, useWindowDimensions } from 'react-native';
 import Animated, { useAnimatedStyle, SharedValue } from 'react-native-reanimated';
 import { Image } from 'expo-image';
 import { GalleryItem } from '../../lib/types';
-import { AppState } from 'react-native';
+import { AppState, Platform, StatusBar } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 interface AnimatedSlotProps {
   photo: GalleryItem;
@@ -39,6 +40,12 @@ export const AnimatedSlot = memo(({
   onLoad,
 }: AnimatedSlotProps) => {
   const { width: screenW, height: screenH } = useWindowDimensions();
+  const insets = useSafeAreaInsets();
+
+  const headerHeight = Platform.OS === 'android' ? (StatusBar.currentHeight ?? 24) : 47;
+  const footerHeight = 80 + (insets.bottom ?? 0);
+  const containerWidth = screenW;
+  const containerHeight = screenH - headerHeight - footerHeight;
 
   // Track previous URI as placeholder for resolution upgrades
   const previousUriRef = React.useRef<string>(photo.uri);
@@ -150,8 +157,8 @@ export const AnimatedSlot = memo(({
     const cosSq = Math.cos(rad) * Math.cos(rad);
 
     // Smoothly interpolate width and height based on the angle
-    const currentWidth = screenW * cosSq + screenH * sinSq;
-    const currentHeight = screenH * cosSq + screenW * sinSq;
+    const currentWidth = containerWidth * cosSq + containerHeight * sinSq;
+    const currentHeight = containerHeight * cosSq + containerWidth * sinSq;
 
     return {
       width: currentWidth,
