@@ -61,6 +61,7 @@ const mockDrawerAnimation = { value: 0 };
 const mockFooterTranslateY = { value: 0 };
 const mockViewfinderTranslateY = { value: 0 };
 const mockLayoutSyncOffset = { value: 0 };
+const mockAnimatedBottomControlsStyle = {};
 
 jest.mock('../lib/useCameraUIAnimations', () => ({
   useCameraUIAnimations: () => ({
@@ -68,6 +69,7 @@ jest.mock('../lib/useCameraUIAnimations', () => ({
     footerTranslateY: mockFooterTranslateY,
     viewfinderTranslateY: mockViewfinderTranslateY,
     layoutSyncOffset: mockLayoutSyncOffset,
+    animatedBottomControlsStyle: mockAnimatedBottomControlsStyle,
   }),
 }));
 
@@ -291,64 +293,5 @@ describe('CameraScreen Component', () => {
     expect(queryByTestId('GalleryViewer')).toBeNull();
   });
 
-  it('resets animation values when cameraKey changes (appState goes to active) if activeSection is none', () => {
-    mockDrawerAnimation.value = -250;
-    mockFooterTranslateY.value = -50;
-    mockViewfinderTranslateY.value = -100;
 
-    let appStateCallback!: (state: string) => void;
-    jest.spyOn(AppState, 'addEventListener').mockImplementation((event, cb: any) => {
-      appStateCallback = cb;
-      return { remove: jest.fn() };
-    });
-
-    render(<CameraScreen />);
-
-    // Simulate app returning to foreground
-    act(() => {
-      appStateCallback('background');
-    });
-    act(() => {
-      appStateCallback('active');
-    });
-
-    // Since activeSection is mocked as 'none', values should reset to 0
-    expect(mockDrawerAnimation.value).toBe(0);
-    expect(mockFooterTranslateY.value).toBe(0);
-    expect(mockViewfinderTranslateY.value).toBe(0);
-  });
-
-  it('triggers the safety net to animate values to 0 when activeSection becomes none', () => {
-    const mockControlPanelStore = require('@entities/system').useControlPanelStore;
-    
-    // Start with activeSection !== 'none'
-    const activeState = {
-      activeSection: 'lens',
-    };
-    mockControlPanelStore.mockReturnValue(activeState);
-
-    const { rerender } = render(<CameraScreen />);
-
-    // Set non-zero values to simulate an open control panel
-    mockDrawerAnimation.value = -250;
-    mockFooterTranslateY.value = -50;
-    mockViewfinderTranslateY.value = -100;
-
-    // Change activeSection to 'none'
-    const closedState = {
-      activeSection: 'none',
-    };
-    mockControlPanelStore.mockReturnValue(closedState);
-
-    act(() => {
-      rerender(<CameraScreen />);
-    });
-
-    // Should call withTiming to reset them to 0
-    const reanimated = require('react-native-reanimated');
-    expect(reanimated.withTiming).toHaveBeenCalledWith(0, { duration: 300 });
-    expect(mockDrawerAnimation.value).toBe(0);
-    expect(mockFooterTranslateY.value).toBe(0);
-    expect(mockViewfinderTranslateY.value).toBe(0);
-  });
 });

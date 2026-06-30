@@ -13,7 +13,7 @@ test('generateControlData correctly generates React Native UI control panel bind
   fs.existsSync = (filePath) => true;
 
   const fileTemplates = {
-    'useFilmParameterControlData.ts': '// @@GEN_PARAMETER_TYPES_START@@\n// @@GEN_PARAMETER_TYPES_END@@\n        // @@GEN_STORE_SELECTION_START@@\n        // @@GEN_STORE_SELECTION_END@@\n      // @@GEN_CONTROL_CASES_START@@\n      // @@GEN_CONTROL_CASES_END@@'
+    'useFilmParameterControlData.ts': '// @@GEN_IMPORTS_START@@\n// @@GEN_IMPORTS_END@@\n// @@GEN_PARAMETER_TYPES_START@@\n// @@GEN_PARAMETER_TYPES_END@@\n        // @@GEN_STORE_SELECTION_START@@\n        // @@GEN_STORE_SELECTION_END@@\n      // @@GEN_CONTROL_CASES_START@@\n      // @@GEN_CONTROL_CASES_END@@'
   };
 
   fs.readFileSync = (filePath, options) => {

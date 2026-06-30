@@ -71,7 +71,12 @@ type FilmActionsKeys =
   | 'setHueBlue'
   | 'setHuePurple'
   | 'setHueMagenta'
-  | 'setLensDistortion';
+  | 'setLensDistortion'
+  | 'setHalationIntensity'
+  | 'setHalationEnabled'
+  | 'setHalationThreshold'
+  | 'setBloomThreshold'
+  | 'setChromaBleed';
 
 type FilmExcludedKeys = 'capabilities' | GeneratedFilmExcludedKeys;
 

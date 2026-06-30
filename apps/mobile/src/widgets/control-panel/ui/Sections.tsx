@@ -13,9 +13,10 @@ const { width } = Dimensions.get('window');
 
 interface SectionsProps {
   galleryTransition?: SharedValue<number>;
+  layoutSyncOffset?: SharedValue<number>;
 }
 
-export const Sections = React.memo(({ galleryTransition }: SectionsProps) => {
+export const Sections = React.memo(({ galleryTransition, layoutSyncOffset }: SectionsProps) => {
   const { activeSection, setActiveSection } = useControlPanelStore(useShallow(state => ({
     activeSection: state.activeSection,
     setActiveSection: state.setActiveSection,
@@ -41,7 +42,8 @@ export const Sections = React.memo(({ galleryTransition }: SectionsProps) => {
 
   const animatedStyle = useAnimatedStyle(() => {
     if (!galleryTransition) return {};
-    const translateX = interpolate(galleryTransition.value, [0, 1], [0, width]);
+    const offset = layoutSyncOffset?.value ?? 0;
+    const translateX = interpolate(galleryTransition.value, [0, 1], [0, width]) + offset;
     
     return {
       transform: [
@@ -61,13 +63,14 @@ export const Sections = React.memo(({ galleryTransition }: SectionsProps) => {
               style={[styles.tabButton, isLayoutOverlayEnabled && styles.debugTabButton]}
             >
               {isLayoutOverlayEnabled && (
-                <View style={styles.debugHitbox} pointerEvents="none" />
+                <View testID="debug-hitbox" style={styles.debugHitbox} pointerEvents="none" />
               )}
               <TouchableOpacity
                 onPress={() => handleSectionChange(section.id)}
                 accessibilityLabel={t(`sections.${section.id}`)}
                 accessibilityRole="tab"
                 activeOpacity={0.7}
+                testID={`section-button-${section.id}`}
                 style={[
                   styles.iconWrapper,
                   isActive && styles.iconWrapperActive,
@@ -77,6 +80,7 @@ export const Sections = React.memo(({ galleryTransition }: SectionsProps) => {
                   name={section.icon} 
                   size={24} 
                   color={isActive ? '#FF5722' : '#888'} 
+                  testID={`section-icon-${section.id}`}
                 />
               </TouchableOpacity>
             </View>

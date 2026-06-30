@@ -16,10 +16,10 @@ test('generateZustandTypes and generateZustandStore correctly output Zustand cod
     'entities/film/model/types.ts': '  // @@GEN_STATE_START@@\n  // @@GEN_STATE_END@@\n  // @@GEN_ACTIONS_START@@\n  // @@GEN_ACTIONS_END@@\n// @@GEN_PARAMETERS_START@@\n// @@GEN_PARAMETERS_END@@',
     'entities/body/model/types.ts': '  // @@GEN_STATE_START@@\n  // @@GEN_STATE_END@@\n  // @@GEN_ACTIONS_START@@\n  // @@GEN_ACTIONS_END@@\n// @@GEN_PARAMETERS_START@@\n// @@GEN_PARAMETERS_END@@',
     'entities/lens/model/types.ts': '  // @@GEN_STATE_START@@\n  // @@GEN_STATE_END@@\n  // @@GEN_ACTIONS_START@@\n  // @@GEN_ACTIONS_END@@\n// @@GEN_PARAMETERS_START@@\n// @@GEN_PARAMETERS_END@@',
-    'useFilmStore.ts': '  // @@GEN_INIT_START@@\n  // @@GEN_INIT_END@@\n  // @@GEN_SETTERS_START@@\n  // @@GEN_SETTERS_END@@\n  // @@GEN_STATE_START@@\n  // @@GEN_STATE_END@@',
-    'useBodyStore.ts': '  // @@GEN_INIT_START@@\n  // @@GEN_INIT_END@@\n  // @@GEN_SETTERS_START@@\n  // @@GEN_SETTERS_END@@\n  // @@GEN_STATE_START@@\n  // @@GEN_STATE_END@@',
-    'useLensStore.ts': '  // @@GEN_INIT_START@@\n  // @@GEN_INIT_END@@\n  // @@GEN_SETTERS_START@@\n  // @@GEN_SETTERS_END@@\n  // @@GEN_STATE_START@@\n  // @@GEN_STATE_END@@',
-    'filmActions.ts': '    // @@GEN_RESET_START@@\n    // @@GEN_RESET_END@@',
+    'useFilmStore.ts': '// @@GEN_IMPORTS_START@@\n// @@GEN_IMPORTS_END@@\n  // @@GEN_INIT_START@@\n  // @@GEN_INIT_END@@\n  // @@GEN_SETTERS_START@@\n  // @@GEN_SETTERS_END@@\n  // @@GEN_STATE_START@@\n  // @@GEN_STATE_END@@',
+    'useBodyStore.ts': '// @@GEN_IMPORTS_START@@\n// @@GEN_IMPORTS_END@@\n  // @@GEN_INIT_START@@\n  // @@GEN_INIT_END@@\n  // @@GEN_SETTERS_START@@\n  // @@GEN_SETTERS_END@@\n  // @@GEN_STATE_START@@\n  // @@GEN_STATE_END@@',
+    'useLensStore.ts': '// @@GEN_IMPORTS_START@@\n// @@GEN_IMPORTS_END@@\n  // @@GEN_INIT_START@@\n  // @@GEN_INIT_END@@\n  // @@GEN_SETTERS_START@@\n  // @@GEN_SETTERS_END@@\n  // @@GEN_STATE_START@@\n  // @@GEN_STATE_END@@',
+    'filmActions.ts': '// @@GEN_IMPORTS_START@@\n// @@GEN_IMPORTS_END@@\n    // @@GEN_RESET_START@@\n    // @@GEN_RESET_END@@',
     'nativeSync.ts': '  // @@GEN_SYNC_MAP_START@@\n  // @@GEN_SYNC_MAP_END@@'
   };
 

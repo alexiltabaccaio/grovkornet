@@ -65,7 +65,7 @@ export const ControlPanel = React.memo(({ translateY: externalTranslateY, drawer
         pointerEvents={isSheetVisible ? "box-none" : "none"}
       >
         <GestureDetector gesture={panGesture}>
-          <View>
+          <View pointerEvents="box-none">
             <View style={styles.topFooter}>
               <TopSection />
               <Modules />
@@ -81,7 +81,7 @@ export const ControlPanel = React.memo(({ translateY: externalTranslateY, drawer
               </View>
             )}
             {/* Expanded area that fills the gap underneath when pulled up */}
-            <View style={styles.expandedBackground}>
+            <View style={styles.expandedBackground} pointerEvents="box-none">
               <Panels translateY={translateY} />
               <SubPanels translateY={translateY} />
             </View>
@@ -89,7 +89,7 @@ export const ControlPanel = React.memo(({ translateY: externalTranslateY, drawer
         </GestureDetector>
       </Animated.View>
 
-      <Sections galleryTransition={galleryTransition} />
+      <Sections galleryTransition={galleryTransition} layoutSyncOffset={layoutSyncOffset} />
     </View>
   );
 });
