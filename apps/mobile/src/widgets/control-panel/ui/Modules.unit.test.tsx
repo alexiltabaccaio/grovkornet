@@ -5,10 +5,10 @@ import { useSystemStore, useControlPanelStore } from '@entities/system';
 import { useBodyStore } from '@entities/body';
 import { useLensStore } from '@entities/lens';
 import { useFilmStore } from '@entities/film';
-import * as filmControls from '@features/film-controls';
+import * as filmControls from '@features/sections/film';
 
-jest.mock('@features/film-controls', () => {
-  const actual = jest.requireActual('@features/film-controls');
+jest.mock('@features/sections/film', () => {
+  const actual = jest.requireActual('@features/sections/film');
   const mockResetFilmEffect = jest.fn();
   return {
     ...actual,

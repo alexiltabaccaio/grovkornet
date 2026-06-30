@@ -8,7 +8,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { CameraScreen } from '@screens/camera';
 import { usePresetStore } from '@entities/preset';
 import { Image } from 'expo-image';
-import { initThumbnailGenerator } from '@features/preset-thumbnails';
+import { initThumbnailGenerator } from '@features/presets';
 
 // Initialize i18n
 import './providers';
@@ -18,8 +18,9 @@ import i18n from 'i18next';
 import { useBodyStore } from '@entities/body';
 import { useLensStore } from '@entities/lens';
 import { usePreferencesStore } from '@entities/preferences';
-import { applyPreset, initPreferenceSync } from '@features/system-settings';
-import { initNativeSync } from '@features/camera-controls';
+import { initPreferenceSync } from '@features/sections/system';
+import { applyPreset } from '@features/presets';
+import { initNativeSync } from './lib/nativeSync';
 import { setHapticsEnabledChecker } from '@shared/lib/haptics';
 import { NativeCameraEventEmitter } from '@grovkornet/engine';
 import { logger } from '@shared/lib/logger';

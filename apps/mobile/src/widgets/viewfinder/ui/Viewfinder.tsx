@@ -11,7 +11,7 @@ import Animated, { useDerivedValue, useSharedValue, useAnimatedProps, useAnimate
 import { useDeviceRotation } from '@shared/lib/hooks/useDeviceRotation';
 import { GestureDetector, Gesture } from 'react-native-gesture-handler';
 import { useVerificationStore } from '@entities/verification';
-import { FlashOverlay } from '@features/body-controls';
+import { FlashOverlay } from '@features/camera';
 import { useInteractionContext } from '@shared/lib';
 import { useCameraCapture } from '../lib/useCameraCapture';
 import { useCameraEvents } from '../lib/useCameraEvents';
@@ -87,7 +87,7 @@ export const Viewfinder = React.memo(({ cameraKey }: ViewfinderProps) => {
   }, [setLatestPreviewUri, setLatestCapturedUri]);
 
   const sessionReadyHandler = React.useCallback(() => {
-    import('@features/system-settings')
+    import('@features/presets')
       .then(({ syncRuntimeToNative }) => syncRuntimeToNative())
       .catch(err => console.warn('Failed to sync native runtime', err));
   }, []);

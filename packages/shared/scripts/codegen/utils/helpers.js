@@ -22,12 +22,12 @@ const FILE_PATHS = {
   nitroImpl: 'packages/engine/android/src/main/java/com/grovkornet/nativefilmcamera/HybridNitroCameraConfiguration.kt',
   worklets: 'apps/mobile/src/entities/film/lib/useFilmWorklets.ts',
   controlData: 'apps/mobile/src/entities/film/lib/useFilmParameterControlData.ts',
-  filmActions: 'apps/mobile/src/features/film-controls/lib/filmActions.ts',
-  presetActions: 'apps/mobile/src/features/system-settings/lib/presetActions.ts',
+  filmActions: 'apps/mobile/src/features/sections/film/lib/filmActions.ts',
+  presetActions: 'apps/mobile/src/features/presets/lib/presetActions.ts',
   cppStateManagerSource: 'packages/engine/android/src/main/cpp/state/CameraStateManager.cpp',
   kotlinJniBridge: 'packages/engine/android/src/main/java/com/grovkornet/nativefilmcamera/jni/CameraStateJNI.kt',
   cppJniSource: 'packages/engine/android/src/main/cpp/jni/GrovkornetJni.cpp',
-  nativeSync: 'apps/mobile/src/features/camera-controls/lib/nativeSync.ts'
+  nativeSync: 'apps/mobile/src/app/lib/nativeSync.ts'
 };
 
 function replaceBetweenMarkers(filePath, startMarker, endMarker, newContent, indent = '') {

@@ -5,14 +5,14 @@ import {
   TONE_PARAMETERS,
   ARTIFACTS_PARAMETERS,
   DETAILS_PARAMETERS,
-} from '@features/film-controls';
+  PROCESSING_PARAMETERS,
+} from '@features/sections/film';
 import {
   EXPOSURE_PARAMETERS,
   CAPTURE_PARAMETERS,
   LIGHTING_PARAMETERS,
-  PROCESSING_PARAMETERS,
-} from '@features/body-controls';
-import { OPTICS_PARAMETERS, OPTICAL_EFFECTS_PARAMETERS } from '@features/lens-controls';
+} from '@features/sections/body';
+import { OPTICS_PARAMETERS, OPTICAL_EFFECTS_PARAMETERS } from '@features/sections/lens';
 
 export const MODULE_PARAMETERS: Record<Exclude<ModuleType, 'preferences' | 'presets' | 'theme' | 'debug' | 'none'>, ParameterType[]> = {
   texture: TEXTURE_PARAMETERS,

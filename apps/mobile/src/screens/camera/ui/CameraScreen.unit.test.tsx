@@ -17,17 +17,22 @@ jest.mock('@features/gallery', () => ({
   CaptureThumbnail: () => null,
   useGalleryPrefetch: jest.fn(),
 }));
-jest.mock('@features/system-settings', () => ({
+jest.mock('@features/sections/system', () => ({
   DebugOverlay: () => null,
+}));
+jest.mock('@features/presets', () => ({
   AddPresetModal: () => null,
   DeletePresetModal: () => null,
   QuickPresetSelector: () => null,
+  PresetsPanel: () => null,
 }));
-jest.mock('@features/body-controls', () => ({
+jest.mock('@features/camera', () => ({
   ShutterButton: () => null,
   CameraFlipButton: () => null,
   FlashOverlay: () => null,
+  GestureController: ({ children }: any) => children,
 }));
+
 
 describe('Camera Lifecycle Integration', () => {
   beforeEach(() => {

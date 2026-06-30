@@ -7,7 +7,7 @@ import { useCameraStore } from '@entities/camera';
 import { useGalleryStore } from '@entities/gallery';
 import { useVerificationStore } from '@entities/verification';
 import { useFilmStore, getNitroConfig } from '@entities/film';
-import { initNativeSync } from '@features/camera-controls';
+import { initNativeSync } from '../../src/app/lib/nativeSync';
 
 // Mock NativeRenderer to capture props and trigger events
 jest.mock('@entities/lens/ui/NativeRenderer', () => {

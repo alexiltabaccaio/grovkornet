@@ -4,16 +4,16 @@ import { render, act, fireEvent } from '@testing-library/react-native';
 import { Parameters } from './Parameters';
 import { useControlPanelStore } from '@entities/system';
 import { useFilmStore } from '@entities/film';
-import * as filmControls from '@features/film-controls';
+import * as filmControls from '@features/sections/film';
 import { useBodyStore } from '@entities/body';
 import { useLensStore } from '@entities/lens';
 import { DEFAULT_TORCH_STRENGTH } from '@grovkornet/shared';
 
 // Mock submodules from features to render buttons that invoke handlePressWithDouble
-jest.mock('@features/film-controls', () => {
+jest.mock('@features/sections/film', () => {
   const React = require('react');
   const { Button } = require('react-native');
-  const actual = jest.requireActual('@features/film-controls');
+  const actual = jest.requireActual('@features/sections/film');
   const mockResetFilmEffect = jest.fn();
   return { 
     ...actual,
@@ -55,13 +55,19 @@ jest.mock('@features/film-controls', () => {
         handlePressWithDouble('sharpening', () => {});
       }} />
     ),
+    ProcessingModule: ({ handlePressWithDouble }: any) => (
+      <Button testID="btn-processing" title="Processing" onPress={() => {
+        handlePressWithDouble('noise_reduction', () => {});
+        handlePressWithDouble('noise_reduction', () => {});
+      }} />
+    ),
   };
 });
 
-jest.mock('@features/lens-controls', () => {
+jest.mock('@features/sections/lens', () => {
   const React = require('react');
   const { Button } = require('react-native');
-  const actual = jest.requireActual('@features/lens-controls');
+  const actual = jest.requireActual('@features/sections/lens');
   return {
     ...actual,
     OpticsModule: ({ handlePressWithDouble }: any) => (
@@ -81,10 +87,10 @@ jest.mock('@features/lens-controls', () => {
   };
 });
 
-jest.mock('@features/body-controls', () => {
+jest.mock('@features/sections/body', () => {
   const React = require('react');
   const { Button } = require('react-native');
-  const actual = jest.requireActual('@features/body-controls');
+  const actual = jest.requireActual('@features/sections/body');
   return {
     ...actual,
     ExposureModule: ({ handlePressWithDouble }: any) => (
@@ -109,21 +115,23 @@ jest.mock('@features/body-controls', () => {
         handlePressWithDouble('fps_setting', () => {});
       }} />
     ),
-    ProcessingModule: ({ handlePressWithDouble }: any) => (
-      <Button testID="btn-processing" title="Processing" onPress={() => {
-        handlePressWithDouble('noise_reduction', () => {});
-        handlePressWithDouble('noise_reduction', () => {});
-      }} />
-    ),
   };
 });
 
-jest.mock('@features/system-settings', () => {
+jest.mock('@features/sections/system', () => {
   const React = require('react');
   const { Text } = require('react-native');
   return {
     PreferencesModule: () => <Text>PreferencesModule</Text>,
     ThemeModule: () => <Text>ThemeModule</Text>,
+  };
+});
+
+jest.mock('@features/presets', () => {
+  const React = require('react');
+  const { Text } = require('react-native');
+  return {
+    PresetsModule: () => <Text>PresetsModule</Text>,
   };
 });
 

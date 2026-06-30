@@ -4,7 +4,7 @@ import { render, fireEvent, waitFor, act } from '@testing-library/react-native';
 import { CameraScreen } from '@screens/camera';
 import { useControlPanelStore } from '@entities/system';
 import { useFilmStore } from '@entities/film';
-import { resetFilmEffect } from '@features/film-controls';
+import { resetFilmEffect } from '@features/sections/film';
 import { DEFAULT_GRAIN_INTENSITY } from '@grovkornet/shared';
 
 // Mock Viewfinder to avoid native issues during integration test

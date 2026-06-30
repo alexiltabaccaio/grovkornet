@@ -6,8 +6,9 @@ import { useBodyStore } from '@entities/body';
 import { useLensStore } from '@entities/lens';
 import { useCameraStore } from '@entities/camera';
 import { usePresetStore } from '@entities/preset';
-import { applyPreset, initPreferenceSync } from '@features/system-settings';
-import { initNativeSync } from '@features/camera-controls';
+import { initPreferenceSync } from '@features/sections/system';
+import { applyPreset } from '@features/presets';
+import { initNativeSync } from './src/app/lib/nativeSync';
 import i18n from 'i18next';
 
 // Mock Expo StatusBar
@@ -21,8 +22,7 @@ jest.mock('expo-system-ui', () => ({
 }));
 
 // Mock System Settings features
-jest.mock('@features/system-settings', () => ({
-  applyPreset: jest.fn(),
+jest.mock('@features/sections/system', () => ({
   initPreferenceSync: jest.fn(),
 }));
 
@@ -32,14 +32,15 @@ jest.mock('@screens/camera', () => ({
 }));
 
 // Mock Camera Controls features
-jest.mock('@features/camera-controls', () => ({
+jest.mock('./src/app/lib/nativeSync', () => ({
   initNativeSync: jest.fn(),
 }));
 
 
-// Mock Preset Thumbnails feature
-jest.mock('@features/preset-thumbnails', () => ({
+// Mock Presets feature
+jest.mock('@features/presets', () => ({
   initThumbnailGenerator: jest.fn(() => jest.fn()), // Returns unsubscribe fn
+  applyPreset: jest.fn(),
 }));
 
 // Mock i18next core client

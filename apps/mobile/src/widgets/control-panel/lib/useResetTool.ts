@@ -1,8 +1,8 @@
 import { useCallback } from 'react';
 import { ParameterType } from '@entities/system';
-import { resetFilmParameter } from '@features/film-controls';
-import { resetBodyParameter } from '@features/body-controls';
-import { resetLensParameter } from '@features/lens-controls';
+import { resetFilmParameter } from '@features/sections/film';
+import { resetBodyParameter } from '@features/sections/body';
+import { resetLensParameter } from '@features/sections/lens';
 
 export const useResetTool = () => {
   return useCallback((tool: ParameterType) => {

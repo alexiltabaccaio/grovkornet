@@ -5,10 +5,11 @@ import { useShallow } from 'zustand/shallow';
 import { useControlPanelStore } from '@entities/system';
 
 import { SliderPanel } from './components/SliderPanel';
-import { TorchPanel, FpsPanel, ResolutionPanel, AspectRatioPanel } from '@features/body-controls';
-import { PresetsPanel, LanguagePanel, VibrationPanel, DebugPanels } from '@features/system-settings';
-import { LensSelectionPanel } from '@features/lens-controls';
-import { NoiseReductionPanel } from '@features/body-controls';
+import { TorchPanel, FpsPanel, ResolutionPanel, AspectRatioPanel } from '@features/sections/body';
+import { LanguagePanel, VibrationPanel, DebugPanels } from '@features/sections/system';
+import { PresetsPanel } from '@features/presets';
+import { LensSelectionPanel } from '@features/sections/lens';
+import { NoiseReductionPanel } from '@features/sections/film';
 
 const SLIDER_PARAMETERS = [
   'grain',

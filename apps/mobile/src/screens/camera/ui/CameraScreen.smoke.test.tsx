@@ -143,23 +143,26 @@ jest.mock('@widgets/gallery-viewer', () => {
   };
 });
 
-jest.mock('@features/body-controls', () => ({
-  ShutterButton: 'ShutterButton',
-  CameraFlipButton: 'CameraFlipButton',
-}));
-
-jest.mock('@features/lens-controls', () => {
+jest.mock('@features/camera', () => {
   const ReactActual = require('react');
   return {
+    ShutterButton: 'ShutterButton',
+    CameraFlipButton: 'CameraFlipButton',
+    FlashOverlay: 'FlashOverlay',
     GestureController: ({ children }: any) => <ReactActual.Fragment>{children}</ReactActual.Fragment>,
   };
 });
 
-jest.mock('@features/system-settings', () => ({
+
+jest.mock('@features/sections/system', () => ({
   DebugOverlay: 'DebugOverlay',
+}));
+
+jest.mock('@features/presets', () => ({
   AddPresetModal: 'AddPresetModal',
   DeletePresetModal: 'DeletePresetModal',
   QuickPresetSelector: 'QuickPresetSelector',
+  PresetsPanel: 'PresetsPanel',
 }));
 
 jest.mock('react-native-reanimated', () => {

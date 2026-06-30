@@ -20,9 +20,10 @@ import { InteractionContext } from '@shared/lib';
 import { ControlPanel } from '@widgets/control-panel';
 import { Viewfinder, DeviceHealthWarningBanner } from '@widgets/viewfinder';
 import { Header } from '@widgets/header';
-import { ShutterButton, CameraFlipButton } from '@features/body-controls';
-import { GestureController } from '@features/lens-controls';
-import { DebugOverlay, AddPresetModal, DeletePresetModal, QuickPresetSelector } from '@features/system-settings';
+import { ShutterButton, CameraFlipButton, GestureController } from '@features/camera';
+
+import { DebugOverlay } from '@features/sections/system';
+import { AddPresetModal, DeletePresetModal, QuickPresetSelector } from '@features/presets';
 import { CaptureThumbnail, useGalleryPrefetch } from '@features/gallery';
 import { GalleryViewer } from '@widgets/gallery-viewer';
 

@@ -1,18 +1,18 @@
 import { renderHook, act } from '@testing-library/react-native';
 import { useResetTool } from './useResetTool';
-import { resetFilmParameter } from '@features/film-controls';
-import { resetBodyParameter } from '@features/body-controls';
-import { resetLensParameter } from '@features/lens-controls';
+import { resetFilmParameter } from '@features/sections/film';
+import { resetBodyParameter } from '@features/sections/body';
+import { resetLensParameter } from '@features/sections/lens';
 
-jest.mock('@features/film-controls', () => ({
+jest.mock('@features/sections/film', () => ({
   resetFilmParameter: jest.fn(),
 }));
 
-jest.mock('@features/body-controls', () => ({
+jest.mock('@features/sections/body', () => ({
   resetBodyParameter: jest.fn(),
 }));
 
-jest.mock('@features/lens-controls', () => ({
+jest.mock('@features/sections/lens', () => ({
   resetLensParameter: jest.fn(),
 }));
 

@@ -8,10 +8,11 @@ import { useResetTool } from '../lib/useResetTool';
 import { controlPanelStyles } from './ControlPanel.styles';
 
 // Import modules from feature slices
-import { ColorModule, ToneModule, TextureModule, ArtifactsModule, DetailsModule } from '@features/film-controls';
-import { OpticsModule, OpticalEffectsModule } from '@features/lens-controls';
-import { CaptureModule, ExposureModule, LightingModule, ProcessingModule } from '@features/body-controls';
-import { PreferencesModule, PresetsModule, ThemeModule, DebugModule } from '@features/system-settings';
+import { ColorModule, ToneModule, TextureModule, ArtifactsModule, DetailsModule, ProcessingModule } from '@features/sections/film';
+import { OpticsModule, OpticalEffectsModule } from '@features/sections/lens';
+import { CaptureModule, ExposureModule, LightingModule } from '@features/sections/body';
+import { PreferencesModule, ThemeModule, DebugModule } from '@features/sections/system';
+import { PresetsModule } from '@features/presets';
 
 /**
  * Parameters acts as a router for the different camera control modules.
