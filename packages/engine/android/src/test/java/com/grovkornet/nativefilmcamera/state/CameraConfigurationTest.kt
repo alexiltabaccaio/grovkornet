@@ -152,6 +152,12 @@ class CameraConfigurationTest {
         assertEquals(2.5f, config.tint, 0.001f)
         config.bloomIntensity = 0.8f
         assertEquals(0.8f, config.bloomIntensity, 0.001f)
+        config.halationIntensity = 0.75f
+        assertEquals(0.75f, config.halationIntensity, 0.001f)
+        config.halationThreshold = 0.5f
+        assertEquals(0.5f, config.halationThreshold, 0.001f)
+        config.bloomThreshold = 0.5f
+        assertEquals(0.5f, config.bloomThreshold, 0.001f)
         config.aberration = 0.7f
         assertEquals(0.7f, config.aberration, 0.001f)
         config.sharpening = 0.9f
@@ -268,6 +274,8 @@ class CameraConfigurationTest {
         assertTrue(config.grainEnabled)
         config.bloomEnabled = true
         assertTrue(config.bloomEnabled)
+        config.halationEnabled = true
+        assertTrue(config.halationEnabled)
         config.contrastAuto = true
         assertTrue(config.contrastAuto)
         config.blackLevelAuto = true
@@ -319,6 +327,10 @@ class CameraConfigurationTest {
             "temperature" to 4800f,
             "tint" to 1.5f,
             "bloomIntensity" to 0.7f,
+            "halationIntensity" to 0.45f,
+            "halationThreshold" to 0.65f,
+            "bloomThreshold" to 0.25f,
+            "halationEnabled" to true,
             "chromaticAberration" to 0.35f,
             "chromaShiftDirection" to 2,
             "sharpening" to 0.85f,
@@ -384,6 +396,10 @@ class CameraConfigurationTest {
         assertEquals(4800f, config.temperature, 0.001f)
         assertEquals(1.5f, config.tint, 0.001f)
         assertEquals(0.7f, config.bloomIntensity, 0.001f)
+        assertEquals(0.45f, config.halationIntensity, 0.001f)
+        assertEquals(0.65f, config.halationThreshold, 0.001f)
+        assertEquals(0.25f, config.bloomThreshold, 0.001f)
+        assertTrue(config.halationEnabled)
         assertEquals(0.35f, config.aberration, 0.001f)
         assertEquals(2, config.chromaShiftDirection)
         assertEquals(0.85f, config.sharpening, 0.001f)

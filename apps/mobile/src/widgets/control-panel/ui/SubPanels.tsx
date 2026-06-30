@@ -6,7 +6,7 @@ import { useSystemStore, useControlPanelStore } from '@entities/system';
 // We will import the new SubPanels here once they are ready.
 import { GrainSubPanel, ContrastSubPanel, SelectiveColorSubPanel, ChromaShiftSubPanel, ScanlinesSubPanel } from '@features/film-controls';
 import { ZoomSubPanel, TorchSubPanel, ResolutionSubPanel, AspectRatioSubPanel } from '@features/body-controls';
-import { ChromaticAberrationSubPanel } from '@features/lens-controls';
+import { ChromaticAberrationSubPanel, BloomSubPanel, HalationSubPanel } from '@features/lens-controls';
 
 const DUMMY_STYLE = {};
 
@@ -38,6 +38,10 @@ export const SubPanels = React.memo(({ translateY }: SubPanelsProps) => {
         return <ContrastSubPanel animatedStyle={DUMMY_STYLE} />;
       case 'chromatic_aberration':
         return <ChromaticAberrationSubPanel animatedStyle={DUMMY_STYLE} />;
+      case 'bloom':
+        return <BloomSubPanel animatedStyle={DUMMY_STYLE} />;
+      case 'halation':
+        return <HalationSubPanel animatedStyle={DUMMY_STYLE} />;
       case 'zoom':
         return <ZoomSubPanel animatedStyle={DUMMY_STYLE} />;
       case 'saturation':

@@ -70,6 +70,10 @@ export interface FilmPresetPayload {
   scanlinesMode: number;
   scanlinesDensity: number;
   lensDistortion: number;
+  halationIntensity: number;
+  halationEnabled: boolean;
+  halationThreshold: number;
+  bloomThreshold: number;
 }
 
 export interface LensPresetPayload {

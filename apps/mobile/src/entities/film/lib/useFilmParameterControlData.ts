@@ -41,6 +41,7 @@ export type FilmParameterType =
   | 'scanlines'
   | 'hue'
   | 'lens_distortion'
+  | 'halation'
 // @@GEN_PARAMETER_TYPES_END@@
   ;
 
@@ -158,6 +159,11 @@ export const useFilmParameterControlData = (
                   return {
                     lensDistortion: s.lensDistortion,
                     setLensDistortion: s.setLensDistortion
+                  };
+                case 'halation':
+                  return {
+                    halationIntensity: s.halationIntensity,
+                    setHalationIntensity: s.setHalationIntensity
                   };
         // @@GEN_STORE_SELECTION_END@@
         default:
@@ -469,6 +475,21 @@ export const useFilmParameterControlData = (
                 hideValueInAuto: false,
                 autoValueText: 'AUTO',
                 onReset: () => film.setLensDistortion(DEFAULT_LENS_DISTORTION),
+                valueFormatter: (v: number) => {
+                  'worklet';
+                  return `${Math.round((v * 100))}`;
+                }
+              };
+            case 'halation':
+              return {
+                value: film.halationIntensity,
+                minValue: 0.0,
+                maxValue: 1.0,
+                onChange: film.setHalationIntensity,
+                onUpdateWorklet: filmWorklets.updateHalationIntensity,
+                hideValueInAuto: false,
+                autoValueText: 'AUTO',
+                onReset: () => film.setHalationIntensity(DEFAULT_HALATION_INTENSITY),
                 valueFormatter: (v: number) => {
                   'worklet';
                   return `${Math.round((v * 100))}`;

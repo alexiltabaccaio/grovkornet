@@ -49,6 +49,10 @@ import {
   DEFAULT_HUE,
   DEFAULT_SELECTIVE_HUE,
   DEFAULT_LENS_DISTORTION,
+  DEFAULT_HALATION_INTENSITY,
+  DEFAULT_HALATION_ENABLED,
+  DEFAULT_HALATION_THRESHOLD,
+  DEFAULT_BLOOM_THRESHOLD,
 } from '@grovkornet/shared';
 
 export const resetFilmParameter = (param: ParameterType): boolean => {
@@ -139,6 +143,7 @@ export const resetFilmEffect = (effect: string): boolean => {
     case 'bloom':
       store.setBloomIntensity(DEFAULT_BLOOM_INTENSITY);
       store.setBloomEnabled(DEFAULT_BLOOM_ENABLED);
+      store.setBloomThreshold(DEFAULT_BLOOM_THRESHOLD);
       break;
     case 'chromatic_aberration':
       store.setChromaticAberration(DEFAULT_CHROMATIC_ABERRATION);
@@ -181,6 +186,11 @@ export const resetFilmEffect = (effect: string): boolean => {
       break;
     case 'lens_distortion':
       store.setLensDistortion(DEFAULT_LENS_DISTORTION);
+      break;
+    case 'halation':
+      store.setHalationIntensity(DEFAULT_HALATION_INTENSITY);
+      store.setHalationEnabled(DEFAULT_HALATION_ENABLED);
+      store.setHalationThreshold(DEFAULT_HALATION_THRESHOLD);
       break;
     // @@GEN_RESET_END@@
     default:

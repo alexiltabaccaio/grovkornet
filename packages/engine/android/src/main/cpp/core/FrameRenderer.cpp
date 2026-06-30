@@ -84,7 +84,7 @@ bool FrameRenderer::renderOffscreenFrame(GrovkornetEngine& gEngine, void* pixels
     // Render and readback
     if (gEngine.renderer->beginFrame(gEngine.swapChain)) {
         gEngine.renderer->render(gEngine.pipelineRenderer.viewGrading);
-        if (params.bloomIntensity > 0.0f || params.panelY < 1.0f) {
+        if (params.bloomIntensity > 0.0f || params.halationIntensity > 0.0f || params.panelY < 1.0f) {
             gEngine.renderer->render(gEngine.pipelineRenderer.viewDownsample);
             gEngine.renderer->render(gEngine.pipelineRenderer.viewBlurDown);
             gEngine.renderer->render(gEngine.pipelineRenderer.viewBlurUp);
@@ -181,7 +181,7 @@ bool FrameRenderer::renderHardwareBufferFrame(GrovkornetEngine& gEngine, AHardwa
     // Render
     if (gEngine.renderer->beginFrame(gEngine.swapChain)) {
         gEngine.renderer->render(gEngine.pipelineRenderer.viewGrading);
-        if (params.bloomIntensity > 0.0f || params.panelY < 1.0f) {
+        if (params.bloomIntensity > 0.0f || params.halationIntensity > 0.0f || params.panelY < 1.0f) {
             gEngine.renderer->render(gEngine.pipelineRenderer.viewDownsample);
             gEngine.renderer->render(gEngine.pipelineRenderer.viewBlurDown);
             gEngine.renderer->render(gEngine.pipelineRenderer.viewBlurUp);
@@ -292,7 +292,7 @@ bool FrameRenderer::renderLiveFrame(GrovkornetEngine& gEngine, const RenderState
             if (gEngine.renderer->beginFrame(gEngine.liveSwapChain)) {
                 // Render pipeline
                 gEngine.renderer->render(gEngine.pipelineRenderer.viewGrading);
-                if (params.bloomIntensity > 0.0f || params.panelY < 1.0f) {
+                if (params.bloomIntensity > 0.0f || params.halationIntensity > 0.0f || params.panelY < 1.0f) {
                     gEngine.renderer->render(gEngine.pipelineRenderer.viewDownsample);
                     gEngine.renderer->render(gEngine.pipelineRenderer.viewBlurDown);
                     gEngine.renderer->render(gEngine.pipelineRenderer.viewBlurUp);

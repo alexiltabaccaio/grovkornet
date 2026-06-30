@@ -598,5 +598,45 @@ class HybridNitroCameraConfiguration : HybridNitroCameraConfigurationSpec() {
                 Log.e("HybridNitroCameraConfiguration", "Failed to set lensDistortion", e)
             }
         }
+
+    override var halationIntensity: Double
+        get() = try { CameraStateJNI.getHalationIntensity(0L).toDouble() } catch (e: Throwable) { 0.0 }
+        set(value) {
+            try {
+                CameraStateJNI.setHalationIntensity(0L, value.toFloat())
+            } catch (e: Throwable) {
+                Log.e("HybridNitroCameraConfiguration", "Failed to set halationIntensity", e)
+            }
+        }
+
+    override var halationEnabled: Boolean
+        get() = try { CameraStateJNI.getHalationEnabled(0L) } catch (e: Throwable) { false }
+        set(value) {
+            try {
+                CameraStateJNI.setHalationEnabled(0L, value)
+            } catch (e: Throwable) {
+                Log.e("HybridNitroCameraConfiguration", "Failed to set halationEnabled", e)
+            }
+        }
+
+    override var halationThreshold: Double
+        get() = try { CameraStateJNI.getHalationThreshold(0L).toDouble() } catch (e: Throwable) { 0.5 }
+        set(value) {
+            try {
+                CameraStateJNI.setHalationThreshold(0L, value.toFloat())
+            } catch (e: Throwable) {
+                Log.e("HybridNitroCameraConfiguration", "Failed to set halationThreshold", e)
+            }
+        }
+
+    override var bloomThreshold: Double
+        get() = try { CameraStateJNI.getBloomThreshold(0L).toDouble() } catch (e: Throwable) { 0.5 }
+        set(value) {
+            try {
+                CameraStateJNI.setBloomThreshold(0L, value.toFloat())
+            } catch (e: Throwable) {
+                Log.e("HybridNitroCameraConfiguration", "Failed to set bloomThreshold", e)
+            }
+        }
     // @@GEN_OVERRIDES_END@@
 }

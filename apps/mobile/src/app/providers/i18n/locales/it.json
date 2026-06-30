@@ -81,7 +81,10 @@
       "chroma_shift": "SCOSTAMENTO",
       "tape_jitter": "JITTER",
       "scanlines": "SCANLINES",
-      "lens_distortion": "DISTORSIONE LENTE"
+      "lens_distortion": "DISTORSIONE LENTE",
+      "halation": "ALONATURA",
+      "bloomThreshold": "SOGLIA",
+      "halationThreshold": "SOGLIA"
     },
     "footer": {
       "coming_soon": "IN ARRIVO"

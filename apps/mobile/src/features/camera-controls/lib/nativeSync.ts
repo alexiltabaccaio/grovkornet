@@ -70,6 +70,10 @@ const SYNC_MAP: Record<string, string> = {
   scanlinesMode: 'scanlinesMode',
   scanlinesDensity: 'scanlinesDensity',
   lensDistortion: 'lensDistortion',
+  halationIntensity: 'halationIntensity',
+  halationEnabled: 'halationEnabled',
+  halationThreshold: 'halationThreshold',
+  bloomThreshold: 'bloomThreshold',
   // @@GEN_SYNC_MAP_END@@
 };
 

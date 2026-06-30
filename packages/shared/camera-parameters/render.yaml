@@ -1102,3 +1102,84 @@ parameters:
       formatter: percentage
       formatterScale: 100
     includeInPreset: true
+  - name: halationIntensity
+    category: render
+    arrayIndex: 62
+    kotlin:
+      type: Float
+      default: 0.0f
+      arrayMapping: if (halationEnabled) halationIntensity else 0f
+    ts:
+      type: number
+    zustand:
+      default: DEFAULT_HALATION_INTENSITY
+      type: number
+      resetGroup: halation
+      setSideEffects:
+        - target: halationEnabled
+          value: value > 0
+      store: film
+    nitro: true
+    ui:
+      name: halation
+      control: slider
+      min: 0.0
+      max: 1.0
+      formatter: percentage
+      formatterScale: 100
+    worklet:
+      clamp: [ 0.0, 1.0 ]
+      sideEffects:
+        - target: halationEnabled
+          value: "value > 0"
+          type: boolean
+    includeInPreset: true
+  - name: halationEnabled
+    category: render
+    kotlin:
+      type: Boolean
+      default: "false"
+    ts:
+      type: boolean
+    zustand:
+      default: DEFAULT_HALATION_ENABLED
+      type: boolean
+      resetGroup: halation
+      store: film
+    nitro: true
+    includeInPreset: true
+  - name: halationThreshold
+    category: render
+    arrayIndex: 63
+    kotlin:
+      type: Float
+      default: 0.5f
+    ts:
+      type: number
+    zustand:
+      default: DEFAULT_HALATION_THRESHOLD
+      type: number
+      resetGroup: halation
+      store: film
+    nitro: true
+    worklet:
+      clamp: [ 0.0, 1.0 ]
+    includeInPreset: true
+  - name: bloomThreshold
+    category: render
+    arrayIndex: 64
+    kotlin:
+      type: Float
+      default: 0.5f
+    ts:
+      type: number
+    zustand:
+      default: DEFAULT_BLOOM_THRESHOLD
+      type: number
+      resetGroup: bloom
+      store: film
+    nitro: true
+    worklet:
+      clamp: [ 0.0, 1.0 ]
+    includeInPreset: true
+

@@ -22,7 +22,8 @@ const booleanFunctions = new Set([
   'updateHighlightsAuto',
   'updatePivotAuto',
   'updateChromaShiftInvert',
-  'updateScanlinesHorizontal'
+  'updateScanlinesHorizontal',
+  'updateHalationEnabled'
 ]);
 
 const clampedLimits: Record<string, { min: number; max: number; mid: number }> = {
@@ -44,6 +45,9 @@ const clampedLimits: Record<string, { min: number; max: number; mid: number }> =
   updateScanlines: { min: 0.0, max: 1.0, mid: 0.5 },
   updateHue: { min: -180.0, max: 180.0, mid: 0.0 },
   updateLensDistortion: { min: -1.0, max: 1.0, mid: 0.0 },
+  updateHalationIntensity: { min: 0.0, max: 1.0, mid: 0.5 },
+  updateHalationThreshold: { min: 0.0, max: 1.0, mid: 0.5 },
+  updateBloomThreshold: { min: 0.0, max: 1.0, mid: 0.5 },
 };
 
 describe('useFilmWorklets - Standard Mode', () => {

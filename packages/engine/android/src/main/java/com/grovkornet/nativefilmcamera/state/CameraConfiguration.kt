@@ -542,6 +542,42 @@ class CameraConfiguration(val nativePointer: Long = 0L) {
                     CameraStateJNI.fallbackSet("lensDistortion", nativePointer, value)
                 }
             }
+    var halationIntensity: Float
+            get() = if (CameraStateJNI.isJniLoaded) CameraStateJNI.getHalationIntensity(nativePointer) else (CameraStateJNI.fallbackGet("halationIntensity", nativePointer, 0.0f) as Float)
+            set(value) {
+                if (CameraStateJNI.isJniLoaded) {
+                    CameraStateJNI.setHalationIntensity(nativePointer, value)
+                } else {
+                    CameraStateJNI.fallbackSet("halationIntensity", nativePointer, value)
+                }
+            }
+    var halationEnabled: Boolean
+            get() = if (CameraStateJNI.isJniLoaded) CameraStateJNI.getHalationEnabled(nativePointer) else (CameraStateJNI.fallbackGet("halationEnabled", nativePointer, false) as Boolean)
+            set(value) {
+                if (CameraStateJNI.isJniLoaded) {
+                    CameraStateJNI.setHalationEnabled(nativePointer, value)
+                } else {
+                    CameraStateJNI.fallbackSet("halationEnabled", nativePointer, value)
+                }
+            }
+    var halationThreshold: Float
+            get() = if (CameraStateJNI.isJniLoaded) CameraStateJNI.getHalationThreshold(nativePointer) else (CameraStateJNI.fallbackGet("halationThreshold", nativePointer, 0.5f) as Float)
+            set(value) {
+                if (CameraStateJNI.isJniLoaded) {
+                    CameraStateJNI.setHalationThreshold(nativePointer, value)
+                } else {
+                    CameraStateJNI.fallbackSet("halationThreshold", nativePointer, value)
+                }
+            }
+    var bloomThreshold: Float
+            get() = if (CameraStateJNI.isJniLoaded) CameraStateJNI.getBloomThreshold(nativePointer) else (CameraStateJNI.fallbackGet("bloomThreshold", nativePointer, 0.5f) as Float)
+            set(value) {
+                if (CameraStateJNI.isJniLoaded) {
+                    CameraStateJNI.setBloomThreshold(nativePointer, value)
+                } else {
+                    CameraStateJNI.fallbackSet("bloomThreshold", nativePointer, value)
+                }
+            }
 
     // Hardware Props
     var ev: Float
@@ -1022,6 +1058,18 @@ fun CameraConfiguration.loadFromMap(payload: Map<String, Any>) {
     }
     payload["lensDistortion"]?.let { rawValue ->
         (rawValue as? Number)?.toFloat()?.let { lensDistortion = it }
+    }
+    payload["halationIntensity"]?.let { rawValue ->
+        (rawValue as? Number)?.toFloat()?.let { halationIntensity = it }
+    }
+    payload["halationEnabled"]?.let { rawValue ->
+        (rawValue as? Boolean)?.let { halationEnabled = it }
+    }
+    payload["halationThreshold"]?.let { rawValue ->
+        (rawValue as? Number)?.toFloat()?.let { halationThreshold = it }
+    }
+    payload["bloomThreshold"]?.let { rawValue ->
+        (rawValue as? Number)?.toFloat()?.let { bloomThreshold = it }
     }
     payload["viewportWidth"]?.let { rawValue ->
         (rawValue as? Number)?.toFloat()?.let { viewportWidth = it }

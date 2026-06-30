@@ -52,6 +52,10 @@ import {
   DEFAULT_HUE,
   DEFAULT_SELECTIVE_HUE,
   DEFAULT_LENS_DISTORTION,
+  DEFAULT_HALATION_INTENSITY,
+  DEFAULT_HALATION_ENABLED,
+  DEFAULT_HALATION_THRESHOLD,
+  DEFAULT_BLOOM_THRESHOLD,
 } from '@grovkornet/shared';
 
 export const useFilmStore = create<FilmStore>((set, get) => ({
@@ -121,6 +125,10 @@ export const useFilmStore = create<FilmStore>((set, get) => ({
   scanlinesMode: makeMutable(DEFAULT_SCANLINES_MODE),
   scanlinesDensity: makeMutable(DEFAULT_SCANLINES_DENSITY),
   lensDistortion: makeMutable(DEFAULT_LENS_DISTORTION),
+  halationIntensity: makeMutable(DEFAULT_HALATION_INTENSITY),
+  halationEnabled: makeMutable(DEFAULT_HALATION_ENABLED),
+  halationThreshold: makeMutable(DEFAULT_HALATION_THRESHOLD),
+  bloomThreshold: makeMutable(DEFAULT_BLOOM_THRESHOLD),
   // @@GEN_INIT_END@@
   capabilities: {
     availableNoiseReductionModes: [],
@@ -428,6 +436,25 @@ export const useFilmStore = create<FilmStore>((set, get) => ({
   setLensDistortion: (value) => {
     get().lensDistortion.value = value;
     notifyFilmStoreListener('lensDistortion');
+  },
+  setHalationIntensity: (value) => {
+    const { halationIntensity, halationEnabled } = get();
+    halationIntensity.value = value;
+    halationEnabled.value = value > 0;
+
+    notifyFilmStoreListener('halationIntensity');
+  },
+  setHalationEnabled: (value) => {
+    get().halationEnabled.value = value;
+    notifyFilmStoreListener('halationEnabled');
+  },
+  setHalationThreshold: (value) => {
+    get().halationThreshold.value = value;
+    notifyFilmStoreListener('halationThreshold');
+  },
+  setBloomThreshold: (value) => {
+    get().bloomThreshold.value = value;
+    notifyFilmStoreListener('bloomThreshold');
   },
   // @@GEN_SETTERS_END@@
   setCapabilities: (caps) => {

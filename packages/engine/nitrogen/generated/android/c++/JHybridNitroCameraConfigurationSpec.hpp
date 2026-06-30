@@ -168,6 +168,14 @@ namespace margelo::nitro::grovkornet {
     void setScanlinesDensity(double scanlinesDensity) override;
     double getLensDistortion() override;
     void setLensDistortion(double lensDistortion) override;
+    double getHalationIntensity() override;
+    void setHalationIntensity(double halationIntensity) override;
+    bool getHalationEnabled() override;
+    void setHalationEnabled(bool halationEnabled) override;
+    double getHalationThreshold() override;
+    void setHalationThreshold(double halationThreshold) override;
+    double getBloomThreshold() override;
+    void setBloomThreshold(double bloomThreshold) override;
 
   public:
     // Methods

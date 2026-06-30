@@ -300,7 +300,7 @@ void GrovkornetEngine::applyShaderParameters(const RenderState* state, filament:
     // 3. Set parameters on materialInstanceComposite
     filament::MaterialInstance* composite = shaderManager.getMaterialInstanceComposite();
     
-    filament::math::float4 uboData[7];
+    filament::math::float4 uboData[8];
     uboData[0].x = params.grainIntensity;
     uboData[0].y = params.grainChroma;
     uboData[0].z = params.grainSize;
@@ -338,7 +338,12 @@ void GrovkornetEngine::applyShaderParameters(const RenderState* state, filament:
     uboData[6].x = params.pixelationFactor;
     uboData[6].y = params.panelY;
     uboData[6].z = params.lensDistortion;
-    uboData[6].w = 0.0f;
+    uboData[6].w = params.halationIntensity;
+
+    uboData[7].x = params.bloomThreshold;
+    uboData[7].y = params.halationThreshold;
+    uboData[7].z = 0.0f;
+    uboData[7].w = 0.0f;
 
     composite->setParameter("u_RenderData0", uboData[0]);
     composite->setParameter("u_RenderData1", uboData[1]);
@@ -347,6 +352,7 @@ void GrovkornetEngine::applyShaderParameters(const RenderState* state, filament:
     composite->setParameter("u_RenderData4", uboData[4]);
     composite->setParameter("u_RenderData5", uboData[5]);
     composite->setParameter("u_RenderData6", uboData[6]);
+    composite->setParameter("u_RenderData7", uboData[7]);
 
     // 4. Update DRS and viewports
     updateDrsAndViewport();

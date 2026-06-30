@@ -12,7 +12,8 @@ material {
         { type : float4, name : u_RenderData3 },
         { type : float4, name : u_RenderData4 },
         { type : float4, name : u_RenderData5 },
-        { type : float4, name : u_RenderData6 }
+        { type : float4, name : u_RenderData6 },
+        { type : float4, name : u_RenderData7 }
     ],
     requires : [ uv0 ]
 }
@@ -44,6 +45,9 @@ fragment {
     #define u_PixelationFactor u_RenderData6.x
     #define u_PanelY u_RenderData6.y
     #define u_LensDistortion u_RenderData6.z
+    #define u_HalationIntensity u_RenderData6.w
+    #define u_BloomThreshold u_RenderData7.x
+    #define u_HalationThreshold u_RenderData7.y
 
     #include "includes/Pixelation.glsl"
     #include "includes/ChromaEffects.glsl"
@@ -89,11 +93,21 @@ fragment {
         vec2 flippedBloomUv = vec2(compositeUv.x, materialParams.u_DrsScale - compositeUv.y);
         vec3 finalColor = baseColor.rgb;
 
-        // 6. Bloom composite
+        // 6. Bloom & Halation composite
+        vec3 bloomColor = texture(materialParams_u_BloomTexture, flippedBloomUv).rgb;
         if (materialParams.u_BloomIntensity > 0.0) {
-            vec3 bloomColor = texture(materialParams_u_BloomTexture, flippedBloomUv).rgb;
-            // Soft additive blend in linear space
-            finalColor += bloomColor * materialParams.u_BloomIntensity;
+            float bloomLum = dot(bloomColor, vec3(0.299, 0.587, 0.114));
+            float actualBloomThreshold = 1.0 - materialParams.u_BloomThreshold;
+            float bloomMask = smoothstep(actualBloomThreshold, 1.01, bloomLum);
+            finalColor += bloomColor * bloomMask * materialParams.u_BloomIntensity;
+        }
+
+        if (materialParams.u_HalationIntensity > 0.0) {
+            vec3 halationTint = vec3(1.0, 0.25, 0.05); 
+            float halationLum = dot(bloomColor, vec3(0.299, 0.587, 0.114));
+            float actualHalationThreshold = 1.0 - materialParams.u_HalationThreshold;
+            float halationMask = smoothstep(actualHalationThreshold, 1.01, halationLum);
+            finalColor += bloomColor * halationTint * halationMask * materialParams.u_HalationIntensity;
         }
         
         // 7. Vignette

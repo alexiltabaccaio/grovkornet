@@ -132,6 +132,14 @@ namespace margelo::nitro::grovkornet {
       prototype.registerHybridSetter("scanlinesDensity", &HybridNitroCameraConfigurationSpec::setScanlinesDensity);
       prototype.registerHybridGetter("lensDistortion", &HybridNitroCameraConfigurationSpec::getLensDistortion);
       prototype.registerHybridSetter("lensDistortion", &HybridNitroCameraConfigurationSpec::setLensDistortion);
+      prototype.registerHybridGetter("halationIntensity", &HybridNitroCameraConfigurationSpec::getHalationIntensity);
+      prototype.registerHybridSetter("halationIntensity", &HybridNitroCameraConfigurationSpec::setHalationIntensity);
+      prototype.registerHybridGetter("halationEnabled", &HybridNitroCameraConfigurationSpec::getHalationEnabled);
+      prototype.registerHybridSetter("halationEnabled", &HybridNitroCameraConfigurationSpec::setHalationEnabled);
+      prototype.registerHybridGetter("halationThreshold", &HybridNitroCameraConfigurationSpec::getHalationThreshold);
+      prototype.registerHybridSetter("halationThreshold", &HybridNitroCameraConfigurationSpec::setHalationThreshold);
+      prototype.registerHybridGetter("bloomThreshold", &HybridNitroCameraConfigurationSpec::getBloomThreshold);
+      prototype.registerHybridSetter("bloomThreshold", &HybridNitroCameraConfigurationSpec::setBloomThreshold);
     });
   }
 

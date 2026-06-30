@@ -158,6 +158,14 @@ object CameraStateJNI {
         @JvmStatic external fun setScanlinesDensity(statePtr: Long, value: Float)
         @JvmStatic external fun getLensDistortion(statePtr: Long): Float
         @JvmStatic external fun setLensDistortion(statePtr: Long, value: Float)
+        @JvmStatic external fun getHalationIntensity(statePtr: Long): Float
+        @JvmStatic external fun setHalationIntensity(statePtr: Long, value: Float)
+        @JvmStatic external fun getHalationEnabled(statePtr: Long): Boolean
+        @JvmStatic external fun setHalationEnabled(statePtr: Long, value: Boolean)
+        @JvmStatic external fun getHalationThreshold(statePtr: Long): Float
+        @JvmStatic external fun setHalationThreshold(statePtr: Long, value: Float)
+        @JvmStatic external fun getBloomThreshold(statePtr: Long): Float
+        @JvmStatic external fun setBloomThreshold(statePtr: Long, value: Float)
         @JvmStatic external fun getEv(statePtr: Long): Float
         @JvmStatic external fun setEv(statePtr: Long, value: Float)
         @JvmStatic external fun getTargetFps(statePtr: Long): Int

@@ -162,6 +162,14 @@ namespace margelo::nitro::grovkornet {
       virtual void setScanlinesDensity(double scanlinesDensity) = 0;
       virtual double getLensDistortion() = 0;
       virtual void setLensDistortion(double lensDistortion) = 0;
+      virtual double getHalationIntensity() = 0;
+      virtual void setHalationIntensity(double halationIntensity) = 0;
+      virtual bool getHalationEnabled() = 0;
+      virtual void setHalationEnabled(bool halationEnabled) = 0;
+      virtual double getHalationThreshold() = 0;
+      virtual void setHalationThreshold(double halationThreshold) = 0;
+      virtual double getBloomThreshold() = 0;
+      virtual void setBloomThreshold(double bloomThreshold) = 0;
 
     public:
       // Methods

@@ -73,5 +73,9 @@ export const DEFAULT_FORCE_60FPS_CROP = 1;
 export const DEFAULT_IS_SELFIE_CAMERA = false;
 export const DEFAULT_ZOOM = 1;
 export const DEFAULT_LENS_DISTORTION = 0;
+export const DEFAULT_HALATION_INTENSITY = 0;
+export const DEFAULT_HALATION_ENABLED = false;
+export const DEFAULT_HALATION_THRESHOLD = 0.5;
+export const DEFAULT_BLOOM_THRESHOLD = 0.5;
 
 export * from './hardwareConfig';

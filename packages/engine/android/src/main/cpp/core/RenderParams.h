@@ -64,6 +64,10 @@ struct RenderParams {
     float scanlinesMode;
     float scanlinesDensity;
     float lensDistortion;
+    float halationIntensity;
+    float halationEnabled;
+    float halationThreshold;
+    float bloomThreshold;
     // @@GEN_STRUCT_END@@
 };
 

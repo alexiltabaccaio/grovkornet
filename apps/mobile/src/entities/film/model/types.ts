@@ -72,6 +72,10 @@ interface FilmState {
   scanlinesMode: SharedValue<number>;
   scanlinesDensity: SharedValue<number>;
   lensDistortion: SharedValue<number>;
+  halationIntensity: SharedValue<number>;
+  halationEnabled: SharedValue<boolean>;
+  halationThreshold: SharedValue<number>;
+  bloomThreshold: SharedValue<number>;
   // @@GEN_STATE_END@@
   capabilities?: FilmCapabilities;
 }
@@ -143,6 +147,10 @@ interface FilmActions {
   setScanlinesMode: (value: number) => void;
   setScanlinesDensity: (value: number) => void;
   setLensDistortion: (value: number) => void;
+  setHalationIntensity: (value: number) => void;
+  setHalationEnabled: (value: boolean) => void;
+  setHalationThreshold: (value: number) => void;
+  setBloomThreshold: (value: number) => void;
   // @@GEN_ACTIONS_END@@
   setCapabilities?: (capabilities: FilmCapabilities) => void;
 }
@@ -171,6 +179,7 @@ export const FILM_PARAMETERS = [
   'tape_jitter',
   'scanlines',
   'hue',
-  'lens_distortion'
+  'lens_distortion',
+  'halation'
 ] as const;
 // @@GEN_PARAMETERS_END@@

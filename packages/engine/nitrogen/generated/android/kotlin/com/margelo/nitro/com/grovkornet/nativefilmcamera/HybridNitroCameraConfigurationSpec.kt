@@ -378,6 +378,30 @@ abstract class HybridNitroCameraConfigurationSpec: HybridObject() {
   @set:DoNotStrip
   @set:Keep
   abstract var lensDistortion: Double
+  
+  @get:DoNotStrip
+  @get:Keep
+  @set:DoNotStrip
+  @set:Keep
+  abstract var halationIntensity: Double
+  
+  @get:DoNotStrip
+  @get:Keep
+  @set:DoNotStrip
+  @set:Keep
+  abstract var halationEnabled: Boolean
+  
+  @get:DoNotStrip
+  @get:Keep
+  @set:DoNotStrip
+  @set:Keep
+  abstract var halationThreshold: Double
+  
+  @get:DoNotStrip
+  @get:Keep
+  @set:DoNotStrip
+  @set:Keep
+  abstract var bloomThreshold: Double
 
   // Methods
   

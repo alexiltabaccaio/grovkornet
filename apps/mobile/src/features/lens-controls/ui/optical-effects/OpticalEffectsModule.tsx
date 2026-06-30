@@ -11,6 +11,7 @@ export const OPTICAL_EFFECTS_PARAMETERS: ParameterType[] = [
   'lens_distortion',
   'vignette',
   'bloom',
+  'halation',
 ];
 
 export const OpticalEffectsModule = React.memo(({ handlePressWithDouble }: OpticalEffectsModuleProps) => {

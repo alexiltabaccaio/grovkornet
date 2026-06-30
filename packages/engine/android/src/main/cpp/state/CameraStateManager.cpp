@@ -68,6 +68,10 @@ CameraStateManager::CameraStateManager() {
     initial->renderParams.scanlinesMode = 0.0f;
     initial->renderParams.scanlinesDensity = 800.0f;
     initial->renderParams.lensDistortion = 0.0f;
+    initial->renderParams.halationIntensity = 0.0f;
+    initial->renderParams.halationEnabled = 0.0f;
+    initial->renderParams.halationThreshold = 0.5f;
+    initial->renderParams.bloomThreshold = 0.5f;
     // @@GEN_DEFAULTS_END@@
     
     std::atomic_store(&m_activeState, initial);
@@ -96,6 +100,9 @@ void CameraStateManager::clampState(RenderState& state) const {
     state.renderParams.scanlines = std::isnan(state.renderParams.scanlines) ? 0.0f : std::clamp(state.renderParams.scanlines, 0.0000f, 1.0000f);
     state.renderParams.hue = std::isnan(state.renderParams.hue) ? 0.0f : std::clamp(state.renderParams.hue, -180.0000f, 180.0000f);
     state.renderParams.lensDistortion = std::isnan(state.renderParams.lensDistortion) ? 0.0f : std::clamp(state.renderParams.lensDistortion, -1.0000f, 1.0000f);
+    state.renderParams.halationIntensity = std::isnan(state.renderParams.halationIntensity) ? 0.0f : std::clamp(state.renderParams.halationIntensity, 0.0000f, 1.0000f);
+    state.renderParams.halationThreshold = std::isnan(state.renderParams.halationThreshold) ? 0.5f : std::clamp(state.renderParams.halationThreshold, 0.0000f, 1.0000f);
+    state.renderParams.bloomThreshold = std::isnan(state.renderParams.bloomThreshold) ? 0.5f : std::clamp(state.renderParams.bloomThreshold, 0.0000f, 1.0000f);
     // @@GEN_CLAMPING_END@@
 
     switch (state.resolutionSetting) {

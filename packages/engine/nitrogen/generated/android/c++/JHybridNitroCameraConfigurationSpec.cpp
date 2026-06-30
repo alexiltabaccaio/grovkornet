@@ -572,6 +572,42 @@ namespace margelo::nitro::grovkornet {
     static const auto method = _javaPart->javaClassStatic()->getMethod<void(double /* lensDistortion */)>("setLensDistortion");
     method(_javaPart, lensDistortion);
   }
+  double JHybridNitroCameraConfigurationSpec::getHalationIntensity() {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<double()>("getHalationIntensity");
+    auto __result = method(_javaPart);
+    return __result;
+  }
+  void JHybridNitroCameraConfigurationSpec::setHalationIntensity(double halationIntensity) {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<void(double /* halationIntensity */)>("setHalationIntensity");
+    method(_javaPart, halationIntensity);
+  }
+  bool JHybridNitroCameraConfigurationSpec::getHalationEnabled() {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<jboolean()>("getHalationEnabled");
+    auto __result = method(_javaPart);
+    return static_cast<bool>(__result);
+  }
+  void JHybridNitroCameraConfigurationSpec::setHalationEnabled(bool halationEnabled) {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<void(jboolean /* halationEnabled */)>("setHalationEnabled");
+    method(_javaPart, halationEnabled);
+  }
+  double JHybridNitroCameraConfigurationSpec::getHalationThreshold() {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<double()>("getHalationThreshold");
+    auto __result = method(_javaPart);
+    return __result;
+  }
+  void JHybridNitroCameraConfigurationSpec::setHalationThreshold(double halationThreshold) {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<void(double /* halationThreshold */)>("setHalationThreshold");
+    method(_javaPart, halationThreshold);
+  }
+  double JHybridNitroCameraConfigurationSpec::getBloomThreshold() {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<double()>("getBloomThreshold");
+    auto __result = method(_javaPart);
+    return __result;
+  }
+  void JHybridNitroCameraConfigurationSpec::setBloomThreshold(double bloomThreshold) {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<void(double /* bloomThreshold */)>("setBloomThreshold");
+    method(_javaPart, bloomThreshold);
+  }
 
   // Methods
   

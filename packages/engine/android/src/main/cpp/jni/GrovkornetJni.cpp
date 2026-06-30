@@ -1898,6 +1898,106 @@ Java_com_grovkornet_nativefilmcamera_jni_CameraStateJNI_setLensDistortion(
 }
 
 JNIEXPORT jfloat JNICALL
+Java_com_grovkornet_nativefilmcamera_jni_CameraStateJNI_getHalationIntensity(
+        JNIEnv* env, jclass clazz, jlong statePtr) {
+    if (statePtr == 0) {
+        return CameraStateManager::getInstance().getActiveState()->renderParams.halationIntensity;
+    } else {
+        auto* state = reinterpret_cast<RenderState*>(statePtr);
+        return state->renderParams.halationIntensity;
+    }
+}
+
+JNIEXPORT void JNICALL
+Java_com_grovkornet_nativefilmcamera_jni_CameraStateJNI_setHalationIntensity(
+        JNIEnv* env, jclass clazz, jlong statePtr, jfloat value) {
+    if (statePtr == 0) {
+        CameraStateManager::getInstance().updateStateField([value](RenderState& state) {
+            state.renderParams.halationIntensity = value;
+        });
+    } else {
+        auto* state = reinterpret_cast<RenderState*>(statePtr);
+        state->renderParams.halationIntensity = value;
+        CameraStateManager::getInstance().clampState(*state);
+    }
+}
+
+JNIEXPORT jboolean JNICALL
+Java_com_grovkornet_nativefilmcamera_jni_CameraStateJNI_getHalationEnabled(
+        JNIEnv* env, jclass clazz, jlong statePtr) {
+    if (statePtr == 0) {
+        return CameraStateManager::getInstance().getActiveState()->renderParams.halationEnabled;
+    } else {
+        auto* state = reinterpret_cast<RenderState*>(statePtr);
+        return state->renderParams.halationEnabled;
+    }
+}
+
+JNIEXPORT void JNICALL
+Java_com_grovkornet_nativefilmcamera_jni_CameraStateJNI_setHalationEnabled(
+        JNIEnv* env, jclass clazz, jlong statePtr, jboolean value) {
+    if (statePtr == 0) {
+        CameraStateManager::getInstance().updateStateField([value](RenderState& state) {
+            state.renderParams.halationEnabled = (value == JNI_TRUE);
+        });
+    } else {
+        auto* state = reinterpret_cast<RenderState*>(statePtr);
+        state->renderParams.halationEnabled = (value == JNI_TRUE);
+        CameraStateManager::getInstance().clampState(*state);
+    }
+}
+
+JNIEXPORT jfloat JNICALL
+Java_com_grovkornet_nativefilmcamera_jni_CameraStateJNI_getHalationThreshold(
+        JNIEnv* env, jclass clazz, jlong statePtr) {
+    if (statePtr == 0) {
+        return CameraStateManager::getInstance().getActiveState()->renderParams.halationThreshold;
+    } else {
+        auto* state = reinterpret_cast<RenderState*>(statePtr);
+        return state->renderParams.halationThreshold;
+    }
+}
+
+JNIEXPORT void JNICALL
+Java_com_grovkornet_nativefilmcamera_jni_CameraStateJNI_setHalationThreshold(
+        JNIEnv* env, jclass clazz, jlong statePtr, jfloat value) {
+    if (statePtr == 0) {
+        CameraStateManager::getInstance().updateStateField([value](RenderState& state) {
+            state.renderParams.halationThreshold = value;
+        });
+    } else {
+        auto* state = reinterpret_cast<RenderState*>(statePtr);
+        state->renderParams.halationThreshold = value;
+        CameraStateManager::getInstance().clampState(*state);
+    }
+}
+
+JNIEXPORT jfloat JNICALL
+Java_com_grovkornet_nativefilmcamera_jni_CameraStateJNI_getBloomThreshold(
+        JNIEnv* env, jclass clazz, jlong statePtr) {
+    if (statePtr == 0) {
+        return CameraStateManager::getInstance().getActiveState()->renderParams.bloomThreshold;
+    } else {
+        auto* state = reinterpret_cast<RenderState*>(statePtr);
+        return state->renderParams.bloomThreshold;
+    }
+}
+
+JNIEXPORT void JNICALL
+Java_com_grovkornet_nativefilmcamera_jni_CameraStateJNI_setBloomThreshold(
+        JNIEnv* env, jclass clazz, jlong statePtr, jfloat value) {
+    if (statePtr == 0) {
+        CameraStateManager::getInstance().updateStateField([value](RenderState& state) {
+            state.renderParams.bloomThreshold = value;
+        });
+    } else {
+        auto* state = reinterpret_cast<RenderState*>(statePtr);
+        state->renderParams.bloomThreshold = value;
+        CameraStateManager::getInstance().clampState(*state);
+    }
+}
+
+JNIEXPORT jfloat JNICALL
 Java_com_grovkornet_nativefilmcamera_jni_CameraStateJNI_getEv(
         JNIEnv* env, jclass clazz, jlong statePtr) {
     if (statePtr == 0) {

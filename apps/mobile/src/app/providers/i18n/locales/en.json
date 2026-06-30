@@ -81,7 +81,10 @@
       "chroma_shift": "SHIFT",
       "tape_jitter": "JITTER",
       "scanlines": "SCANLINES",
-      "lens_distortion": "LENS DISTORTION"
+      "lens_distortion": "LENS DISTORTION",
+      "halation": "HALATION",
+      "bloomThreshold": "THRESHOLD",
+      "halationThreshold": "THRESHOLD"
     },
     "footer": {
       "coming_soon": "COMING SOON"
