@@ -88,9 +88,11 @@ vec3 applyChromaBleed(vec3 centerColor, vec2 uv) {
         return centerColor;
     }
     
-    // Scale blur to max ~30 pixels for a pronounced VHS bleed effect
+    // Scale blur to max ~30 reference pixels for a pronounced VHS bleed effect
+    // Using 1080.0 as a reference resolution ensures the bleed radius is
+    // resolution-independent and visually identical between preview and photo capture.
     float blurRadius = materialParams.u_ChromaBleed * 30.0;
-    float stepX = blurRadius * materialParams.u_TexelSize.x;
+    float stepX = blurRadius / 1080.0;
     
     vec3 centerYiq = rgb2yiq(centerColor);
     vec3 yiqSum = vec3(0.0);
