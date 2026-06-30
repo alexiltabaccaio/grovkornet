@@ -19,7 +19,7 @@ jest.mock('@features/film-controls', () => {
     ...actual,
     resetFilmEffect: mockResetFilmEffect,
     resetFilmParameter: jest.fn((param) => {
-      if (['grain', 'chroma_shift', 'sharpening', 'noise_reduction', 'scanlines', 'pixelation'].includes(param)) {
+      if (['grain', 'chroma_shift', 'sharpening', 'noise_reduction', 'scanlines', 'pixelation', 'chromatic_aberration'].includes(param)) {
         mockResetFilmEffect(param);
         return true;
       }
@@ -70,6 +70,12 @@ jest.mock('@features/lens-controls', () => {
         handlePressWithDouble('focus', () => {});
         handlePressWithDouble('camera_selection', () => {});
         handlePressWithDouble('camera_selection', () => {});
+      }} />
+    ),
+    OpticalEffectsModule: ({ handlePressWithDouble }: any) => (
+      <Button testID="btn-optical-effects" title="Optical Effects" onPress={() => {
+        handlePressWithDouble('chromatic_aberration', () => {});
+        handlePressWithDouble('chromatic_aberration', () => {});
       }} />
     ),
   };
@@ -264,6 +270,17 @@ describe('Parameters', () => {
     fireEvent.press(button);
     expect(spySetFocusAuto).toHaveBeenCalledWith(true);
     expect(spySetCameraAuto).toHaveBeenCalledWith(true);
+  });
+
+  it('renders OpticalEffectsModule and resets chromatic_aberration', () => {
+    act(() => {
+      useControlPanelStore.getState().setActiveModule('optical_effects');
+    });
+    const { getByTestId } = render(<Parameters />);
+    const button = getByTestId('btn-optical-effects');
+    
+    fireEvent.press(button);
+    expect(spyResetEffect).toHaveBeenCalledWith('chromatic_aberration');
   });
 
   it('renders ExposureModule and resets ev, iso, shutter_speed', () => {

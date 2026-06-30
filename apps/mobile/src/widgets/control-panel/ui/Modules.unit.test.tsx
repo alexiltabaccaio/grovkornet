@@ -14,7 +14,7 @@ jest.mock('@features/film-controls', () => {
     ...actual,
     resetFilmEffect: mockResetFilmEffect,
     resetFilmParameter: jest.fn((param) => {
-      if (['grain', 'chroma_shift', 'sharpening', 'noise_reduction', 'scanlines', 'pixelation'].includes(param)) {
+      if (['grain', 'chroma_shift', 'sharpening', 'noise_reduction', 'scanlines', 'pixelation', 'chromatic_aberration', 'lens_distortion', 'vignette', 'bloom'].includes(param)) {
         mockResetFilmEffect(param);
         return true;
       }
@@ -125,8 +125,12 @@ describe('Modules', () => {
     });
     const { getByText, queryByText } = render(<Modules />);
     expect(getByText('modules.optics')).toBeDefined();
+    expect(getByText('modules.optical_effects')).toBeDefined();
     expect(queryByText('modules.flaws')).toBeNull();
     expect(queryByText('modules.artifacts')).toBeNull();
+
+    fireEvent.press(getByText('modules.optical_effects'));
+    expect(useControlPanelStore.getState().activeModule).toBe('optical_effects');
   });
 
   it('renders correct modules and handles press for body section', () => {
@@ -187,6 +191,32 @@ describe('Modules', () => {
     expect(spyResetEffect).toHaveBeenCalledWith('grain');
     expect(spyResetEffect).toHaveBeenCalledWith('scanlines');
     expect(spyResetEffect).toHaveBeenCalledWith('pixelation');
+
+    spyResetEffect.mockRestore();
+  });
+
+  it('resets all parameters of optical_effects module on double press', () => {
+    const spyResetEffect = jest.spyOn(filmControls, 'resetFilmEffect');
+
+    act(() => {
+      useControlPanelStore.setState({
+        activeSection: 'lens',
+        activeModule: 'optical_effects',
+      });
+    });
+
+    const { getByText } = render(<Modules />);
+    const button = getByText('modules.optical_effects');
+
+    act(() => {
+      fireEvent.press(button);
+      fireEvent.press(button);
+    });
+
+    expect(spyResetEffect).toHaveBeenCalledWith('chromatic_aberration');
+    expect(spyResetEffect).toHaveBeenCalledWith('lens_distortion');
+    expect(spyResetEffect).toHaveBeenCalledWith('vignette');
+    expect(spyResetEffect).toHaveBeenCalledWith('bloom');
 
     spyResetEffect.mockRestore();
   });

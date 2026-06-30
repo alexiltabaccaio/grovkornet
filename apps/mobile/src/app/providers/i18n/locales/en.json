@@ -16,6 +16,7 @@
       "presets": "Presets",
       "theme": "Theme",
       "optics": "Optics",
+      "optical_effects": "Optical Effects",
       "artifacts": "Artifacts",
       "exposure": "Exposure",
       "lighting": "Lighting",

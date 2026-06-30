@@ -10,7 +10,6 @@ export * from './lib/useSelectiveHue';
 export * from './ui/tone/ContrastSubPanel';
 export * from './ui/artifacts/ArtifactsModule';
 export * from './ui/artifacts/chroma-shift/ChromaShiftSubPanel';
-export * from './ui/artifacts/aberration/ChromaticAberrationSubPanel';
 export * from './ui/details/DetailsModule';
 export * from './lib/filmActions';
 

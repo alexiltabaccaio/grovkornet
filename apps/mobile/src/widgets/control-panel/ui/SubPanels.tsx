@@ -4,8 +4,9 @@ import Animated, { useAnimatedStyle, SharedValue } from 'react-native-reanimated
 import { useSystemStore, useControlPanelStore } from '@entities/system';
 
 // We will import the new SubPanels here once they are ready.
-import { GrainSubPanel, ContrastSubPanel, SelectiveColorSubPanel, ChromaShiftSubPanel, ChromaticAberrationSubPanel, ScanlinesSubPanel } from '@features/film-controls';
+import { GrainSubPanel, ContrastSubPanel, SelectiveColorSubPanel, ChromaShiftSubPanel, ScanlinesSubPanel } from '@features/film-controls';
 import { ZoomSubPanel, TorchSubPanel, ResolutionSubPanel, AspectRatioSubPanel } from '@features/body-controls';
+import { ChromaticAberrationSubPanel } from '@features/lens-controls';
 
 const DUMMY_STYLE = {};
 

@@ -9,7 +9,7 @@ import { controlPanelStyles } from './ControlPanel.styles';
 
 // Import modules from feature slices
 import { ColorModule, ToneModule, TextureModule, ArtifactsModule, DetailsModule } from '@features/film-controls';
-import { OpticsModule } from '@features/lens-controls';
+import { OpticsModule, OpticalEffectsModule } from '@features/lens-controls';
 import { CaptureModule, ExposureModule, LightingModule, ProcessingModule } from '@features/body-controls';
 import { PreferencesModule, PresetsModule, ThemeModule, DebugModule } from '@features/system-settings';
 
@@ -47,6 +47,8 @@ export const Parameters = () => {
         return <ExposureModule handlePressWithDouble={handlePressWithDouble} />;
       case 'optics':
         return <OpticsModule handlePressWithDouble={handlePressWithDouble} />;
+      case 'optical_effects':
+        return <OpticalEffectsModule handlePressWithDouble={handlePressWithDouble} />;
       case 'lighting':
         return <LightingModule handlePressWithDouble={handlePressWithDouble} />;
       case 'processing':

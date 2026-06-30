@@ -12,7 +12,7 @@ import {
   LIGHTING_PARAMETERS,
   PROCESSING_PARAMETERS,
 } from '@features/body-controls';
-import { OPTICS_PARAMETERS } from '@features/lens-controls';
+import { OPTICS_PARAMETERS, OPTICAL_EFFECTS_PARAMETERS } from '@features/lens-controls';
 
 export const MODULE_PARAMETERS: Record<Exclude<ModuleType, 'preferences' | 'presets' | 'theme' | 'debug' | 'none'>, ParameterType[]> = {
   texture: TEXTURE_PARAMETERS,
@@ -22,6 +22,7 @@ export const MODULE_PARAMETERS: Record<Exclude<ModuleType, 'preferences' | 'pres
   artifacts: ARTIFACTS_PARAMETERS,
   exposure: EXPOSURE_PARAMETERS,
   optics: OPTICS_PARAMETERS,
+  optical_effects: OPTICAL_EFFECTS_PARAMETERS,
   lighting: LIGHTING_PARAMETERS,
   processing: PROCESSING_PARAMETERS,
   capture: CAPTURE_PARAMETERS,
