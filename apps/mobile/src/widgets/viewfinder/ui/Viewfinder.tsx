@@ -136,6 +136,11 @@ export const Viewfinder = React.memo(({ cameraKey }: ViewfinderProps) => {
           return;
         }
         bodyWorklets.updateZoom(startZoom.value * scale);
+      })
+      .onFinalize(() => {
+        // Prevents restoring old values if the gesture is recreated (e.g. opening/closing gallery)
+        // and react-native-gesture-handler emits a spurious event with scale=1.
+        startZoom.value = zoom.value;
       });
   }, [zoom, bodyWorklets, startZoom, isInteractable, hasWarnedPinchNaN]);
 

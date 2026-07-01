@@ -97,5 +97,13 @@ export const usePinchGesture = ({
       } else {
         isZoomed.value = true;
       }
+    })
+    .onFinalize(() => {
+      'worklet';
+      // Sync saved scale/translation with active values to prevent layout jumps 
+      // when the gesture is destroyed/recreated on render state updates.
+      savedZoomScale.value = zoomScale.value;
+      savedZoomTranslateX.value = zoomTranslateX.value;
+      savedZoomTranslateY.value = zoomTranslateY.value;
     });
 };
