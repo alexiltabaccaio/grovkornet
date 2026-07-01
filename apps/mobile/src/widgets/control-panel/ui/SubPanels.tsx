@@ -16,16 +16,19 @@ interface SubPanelsProps {
 
 export const SubPanels = React.memo(({ translateY }: SubPanelsProps) => {
   const storeActiveParameter = useControlPanelStore(state => state.activeParameter);
-  const [activeParameter, setActiveParameter] = React.useState<ParameterType>(storeActiveParameter);
+  const [deferredParameter, setDeferredParameter] = React.useState<ParameterType>(storeActiveParameter);
+  
+  // Instantly reflect active parameter when opening/switching, but defer when closing to 'none'
+  const activeParameter = storeActiveParameter !== 'none' ? storeActiveParameter : deferredParameter;
 
   React.useEffect(() => {
-    if (storeActiveParameter !== 'none') {
-      setActiveParameter(storeActiveParameter);
-    } else {
+    if (storeActiveParameter === 'none') {
       const timeout = setTimeout(() => {
-        setActiveParameter('none');
+        setDeferredParameter('none');
       }, 300); // Wait for the drawer animation to finish
       return () => clearTimeout(timeout);
+    } else {
+      setDeferredParameter(storeActiveParameter);
     }
   }, [storeActiveParameter]);
   const isLayoutOverlayEnabled = useSystemStore(state => state.isLayoutOverlayEnabled);
