@@ -48,12 +48,25 @@ export function App() {
       require('../../assets/flags/en.png'),
       require('../../assets/flags/it.png'),
       require('../../assets/monoscope.jpg'),
-    ] as unknown as string[];
+    ];
     /* eslint-enable @typescript-eslint/no-require-imports */
 
-    const urlsToPrefetch = staticAssets.filter((asset): asset is string => typeof asset === 'string');
-    if (urlsToPrefetch.length > 0) {
-      void Image.prefetch(urlsToPrefetch);
+    // Load static assets
+    void Promise.all(staticAssets.map(asset => Image.loadAsync(asset as number)));
+
+    // Prefetch user preset thumbnails
+    const presetStore = usePresetStore.getState();
+    const { userPresets, customizedThumbnailUri } = presetStore;
+    const presetUris = userPresets
+      .map((p) => p.thumbnailUri)
+      .filter((uri): uri is string => typeof uri === 'string');
+      
+    if (customizedThumbnailUri) {
+      presetUris.push(customizedThumbnailUri);
+    }
+
+    if (presetUris.length > 0) {
+      void Image.prefetch(presetUris);
     }
 
     // Restore global preferences
@@ -113,8 +126,6 @@ export function App() {
 
     // Apply the favorite preset or fallback to default on startup, 
     // ignoring the last active preset (which might have been 'customized')
-    const presetStore = usePresetStore.getState();
-    const { userPresets } = presetStore;
     
     const favorite = userPresets.find((p) => p.isFavorite);
     if (favorite) {

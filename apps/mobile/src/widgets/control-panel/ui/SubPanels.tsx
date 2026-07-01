@@ -2,6 +2,7 @@ import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import Animated, { useAnimatedStyle, SharedValue } from 'react-native-reanimated';
 import { useSystemStore, useControlPanelStore, ParameterType } from '@entities/system';
+import { useShallow } from 'zustand/shallow';
 
 // We will import the new SubPanels here once they are ready.
 import { GrainSubPanel, ContrastSubPanel, SelectiveColorSubPanel, ChromaShiftSubPanel, ScanlinesSubPanel } from '@features/sections/film';
@@ -15,7 +16,11 @@ interface SubPanelsProps {
 }
 
 export const SubPanels = React.memo(({ translateY }: SubPanelsProps) => {
-  const storeActiveParameter = useControlPanelStore(state => state.activeParameter);
+  const { storeActiveParameter, storeActiveSection } = useControlPanelStore(useShallow(state => ({
+    storeActiveParameter: state.activeParameter,
+    storeActiveSection: state.activeSection,
+  })));
+  
   const [deferredParameter, setDeferredParameter] = React.useState<ParameterType>(storeActiveParameter);
   
   // Instantly reflect active parameter when opening/switching, but defer when closing to 'none'
@@ -23,14 +28,18 @@ export const SubPanels = React.memo(({ translateY }: SubPanelsProps) => {
 
   React.useEffect(() => {
     if (storeActiveParameter === 'none') {
-      const timeout = setTimeout(() => {
+      if (storeActiveSection === 'none') {
+        const timeout = setTimeout(() => {
+          setDeferredParameter('none');
+        }, 300); // Wait for the drawer animation to finish
+        return () => clearTimeout(timeout);
+      } else {
         setDeferredParameter('none');
-      }, 300); // Wait for the drawer animation to finish
-      return () => clearTimeout(timeout);
+      }
     } else {
       setDeferredParameter(storeActiveParameter);
     }
-  }, [storeActiveParameter]);
+  }, [storeActiveParameter, storeActiveSection]);
   const isLayoutOverlayEnabled = useSystemStore(state => state.isLayoutOverlayEnabled);
 
   const parentAnimatedStyle = useAnimatedStyle(() => {

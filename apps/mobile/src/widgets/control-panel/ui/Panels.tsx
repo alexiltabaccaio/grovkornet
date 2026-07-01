@@ -44,8 +44,9 @@ interface PanelsProps {
 }
 
 export const Panels = React.memo(({ translateY }: PanelsProps) => {
-  const { storeActiveParameter } = useControlPanelStore(useShallow(state => ({
+  const { storeActiveParameter, storeActiveSection } = useControlPanelStore(useShallow(state => ({
     storeActiveParameter: state.activeParameter,
+    storeActiveSection: state.activeSection,
   })));
 
   const [deferredParameter, setDeferredParameter] = React.useState<ParameterType>(storeActiveParameter);
@@ -55,14 +56,18 @@ export const Panels = React.memo(({ translateY }: PanelsProps) => {
 
   React.useEffect(() => {
     if (storeActiveParameter === 'none') {
-      const timeout = setTimeout(() => {
+      if (storeActiveSection === 'none') {
+        const timeout = setTimeout(() => {
+          setDeferredParameter('none');
+        }, 300); // Wait for the drawer animation to finish
+        return () => clearTimeout(timeout);
+      } else {
         setDeferredParameter('none');
-      }, 300); // Wait for the drawer animation to finish
-      return () => clearTimeout(timeout);
+      }
     } else {
       setDeferredParameter(storeActiveParameter);
     }
-  }, [storeActiveParameter]);
+  }, [storeActiveParameter, storeActiveSection]);
 
   const panelAnimatedStyle = useAnimatedStyle(() => {
     if (!translateY) return { opacity: 0 };
