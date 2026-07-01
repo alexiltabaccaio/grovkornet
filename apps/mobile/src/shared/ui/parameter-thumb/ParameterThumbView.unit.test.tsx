@@ -25,4 +25,16 @@ describe('ParameterThumbView', () => {
     expect(toJSON()).toBeDefined();
   });
 
+  it('renders customized thumbnailComponent when provided in preset variant', () => {
+    const { View } = require('react-native');
+    const { getByTestId } = render(
+      <ParameterThumbView
+        label="Custom Preset"
+        isActive={true}
+        variant="preset"
+        thumbnailComponent={<View testID="custom-thumbnail" />}
+      />
+    );
+    expect(getByTestId('custom-thumbnail')).toBeDefined();
+  });
 });

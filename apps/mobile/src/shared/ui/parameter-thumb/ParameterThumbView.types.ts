@@ -13,6 +13,7 @@ export interface ParameterThumbViewProps {
   maxValue?: number;
   icon?: keyof typeof Ionicons.glyphMap;
   imageSource?: ImageSourcePropType;
+  thumbnailComponent?: React.ReactNode;
   renderValue?: boolean;
   valueFormatter?: (val: number) => string;
   variant?: ThumbVariant;

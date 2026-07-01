@@ -53,15 +53,19 @@ const ParameterThumbViewBase = forwardRef<View, ParameterThumbViewProps>((props,
           ]}
         >
         <View style={[styles.presetImageContainer, isActive && styles.presetImageContainerActive]}>
-          <Image
-            source={imageSource || defaultMonoscope}
-            placeholder={defaultMonoscope}
-            placeholderContentFit="cover"
-            style={[styles.presetImage, !isActive && { opacity: 0.7 }]}
-            contentFit="cover"
-            transition={0}
-            cachePolicy="memory-disk"
-          />
+          {props.thumbnailComponent ? (
+            props.thumbnailComponent
+          ) : (
+            <Image
+              source={imageSource || defaultMonoscope}
+              placeholder={defaultMonoscope}
+              placeholderContentFit="cover"
+              style={[styles.presetImage, !isActive && { opacity: 0.7 }]}
+              contentFit="cover"
+              transition={0}
+              cachePolicy="memory-disk"
+            />
+          )}
         </View>
         <Text
           allowFontScaling={false}
@@ -199,6 +203,7 @@ const arePropsEqual = (prev: ParameterThumbViewProps, next: ParameterThumbViewPr
     prev.icon === next.icon &&
     prev.hideAutoPlaceholder === next.hideAutoPlaceholder &&
     prev.isMainSlider === next.isMainSlider &&
+    prev.thumbnailComponent === next.thumbnailComponent &&
     isImageEqual &&
     areCallbacksEqual
   );
