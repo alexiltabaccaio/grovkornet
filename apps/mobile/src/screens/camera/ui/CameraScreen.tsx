@@ -66,13 +66,14 @@ export const CameraScreen = () => {
     : 47;
 
   const viewfinderContainerStyle = useMemo(() => ({
-    flex: 1, 
-    width: '100%' as const, 
-    marginTop: statusBarHeight, 
+    position: 'absolute' as const,
+    left: 0,
+    right: 0,
+    top: statusBarHeight, 
     // Subtracted 4 pixels to create an intentional overlap under the footer.
     // This hides the SurfaceView hole gap during Android layout recalculations on resume,
     // preventing the Android OS wallpaper from showing through as a "thin line".
-    marginBottom: (80 + (insets.bottom ?? 0)) - 4 
+    bottom: (80 + (insets.bottom ?? 0)) - 4 
   }), [statusBarHeight, insets.bottom]);
 
   const bottomControlsStyle = useMemo(() => [
