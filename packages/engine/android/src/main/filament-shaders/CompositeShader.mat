@@ -59,6 +59,19 @@ fragment {
     #include "includes/Glassmorphism.glsl"
     #include "includes/LensDistortion.glsl"
 
+    vec4 sampleTextureWithPixelationBlur(vec2 uv, vec2 blurOffset) {
+        if (blurOffset.x == 0.0) {
+            return texture(materialParams_u_Texture, uv);
+        } else {
+            vec4 c = texture(materialParams_u_Texture, uv);
+            c += texture(materialParams_u_Texture, uv + vec2(blurOffset.x, blurOffset.y));
+            c += texture(materialParams_u_Texture, uv + vec2(-blurOffset.x, blurOffset.y));
+            c += texture(materialParams_u_Texture, uv + vec2(blurOffset.x, -blurOffset.y));
+            c += texture(materialParams_u_Texture, uv + vec2(-blurOffset.x, -blurOffset.y));
+            return c * 0.2;
+        }
+    }
+
     void material(inout MaterialInputs material) {
         prepareMaterial(material);
         vec2 uv = getUV0();
@@ -75,21 +88,31 @@ fragment {
 
         // 3. Texture base color sampling
         vec4 baseColor;
-        bool hasChromaEffects = materialParams.u_ChromaShift > 0.0 || materialParams.u_ChromaticAberration > 0.0 || materialParams.u_TapeJitter > 0.0;
-        if (hasChromaEffects) {
-            vec4 colR = texture(materialParams_u_Texture, rUv);
-            vec4 colG = texture(materialParams_u_Texture, gUv);
-            vec4 colB = texture(materialParams_u_Texture, bUv);
-            baseColor = vec4(colR.r, colG.g, colB.b, colG.a);
-        } else {
-            baseColor = texture(materialParams_u_Texture, compositeUv);
+        
+        vec2 blurOffset = vec2(0.0);
+        if (materialParams.u_PixelationFactor > 1.0) {
+            float maxDim = max(res.x, res.y);
+            float scaledFactor = max(1.0, materialParams.u_PixelationFactor * (maxDim / 1920.0));
+            blurOffset = (1.0 / (res / scaledFactor)) * 0.35;
         }
 
-        // Apply Chroma Bleed
-        baseColor.rgb = applyChromaBleed(baseColor.rgb, compositeUv);
+        bool hasChromaEffects = materialParams.u_ChromaShift > 0.0 || materialParams.u_ChromaticAberration > 0.0 || materialParams.u_TapeJitter > 0.0;
+        if (hasChromaEffects) {
+            vec4 colR = sampleTextureWithPixelationBlur(rUv, blurOffset);
+            vec4 colG = sampleTextureWithPixelationBlur(gUv, blurOffset);
+            vec4 colB = sampleTextureWithPixelationBlur(bUv, blurOffset);
+            baseColor = vec4(colR.r, colG.g, colB.b, colG.a);
+        } else {
+            baseColor = sampleTextureWithPixelationBlur(compositeUv, blurOffset);
+        }
 
-        // 4. Sharpening filter
-        baseColor.rgb = applySharpening(baseColor.rgb, compositeUv);
+        if (materialParams.u_PixelationFactor <= 1.0) {
+            // Apply Chroma Bleed
+            baseColor.rgb = applyChromaBleed(baseColor.rgb, compositeUv);
+
+            // 4. Sharpening filter
+            baseColor.rgb = applySharpening(baseColor.rgb, compositeUv);
+        }
 
         // 5. Scanlines
         baseColor.rgb = applyScanlines(baseColor.rgb, uv, res);

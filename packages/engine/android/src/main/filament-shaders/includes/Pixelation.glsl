@@ -10,7 +10,8 @@ vec2 applyPixelation(vec2 uv, vec2 res, float minDim) {
     }
 
     if (materialParams.u_PixelationFactor > 1.0) {
-        float scaledFactor = max(1.0, materialParams.u_PixelationFactor * (minDim / 1080.0));
+        float maxDim = max(res.x, res.y);
+        float scaledFactor = max(1.0, materialParams.u_PixelationFactor * (maxDim / 1920.0));
         vec2 gridSize = res / scaledFactor;
         targetUv = (floor(targetUv * gridSize) + 0.5) / gridSize;
     }
