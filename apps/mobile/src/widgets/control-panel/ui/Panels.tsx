@@ -3,6 +3,7 @@ import { StyleSheet, StyleProp, ViewStyle } from 'react-native';
 import Animated, { useAnimatedStyle, interpolate, Extrapolation, SharedValue } from 'react-native-reanimated';
 import { useShallow } from 'zustand/shallow';
 import { useControlPanelStore } from '@entities/system';
+import { ParameterType } from '@entities/system';
 
 import { SliderPanel } from './components/SliderPanel';
 import { TorchPanel, FpsPanel, ResolutionPanel, AspectRatioPanel } from '@features/sections/body';
@@ -43,9 +44,22 @@ interface PanelsProps {
 }
 
 export const Panels = React.memo(({ translateY }: PanelsProps) => {
-  const { activeParameter } = useControlPanelStore(useShallow(state => ({
-    activeParameter: state.activeParameter,
+  const { storeActiveParameter } = useControlPanelStore(useShallow(state => ({
+    storeActiveParameter: state.activeParameter,
   })));
+
+  const [activeParameter, setActiveParameter] = React.useState<ParameterType>(storeActiveParameter);
+
+  React.useEffect(() => {
+    if (storeActiveParameter !== 'none') {
+      setActiveParameter(storeActiveParameter);
+    } else {
+      const timeout = setTimeout(() => {
+        setActiveParameter('none');
+      }, 300); // Wait for the drawer animation to finish
+      return () => clearTimeout(timeout);
+    }
+  }, [storeActiveParameter]);
 
   const panelAnimatedStyle = useAnimatedStyle(() => {
     if (!translateY) return { opacity: 0 };
