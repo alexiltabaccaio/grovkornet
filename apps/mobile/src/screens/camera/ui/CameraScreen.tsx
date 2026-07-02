@@ -114,8 +114,9 @@ export const CameraScreen = () => {
           <React.Fragment key={`viewfinder-${cameraKey}`}>
             <GestureController 
               footerTranslateY={footerTranslateY} 
-              drawerAnimation={drawerAnimation}
+              drawerAnimation={drawerAnimation} 
               viewfinderTranslateY={viewfinderTranslateY}
+              layoutSyncOffset={layoutSyncOffset}
             >
               {viewfinderElement}
             </GestureController>

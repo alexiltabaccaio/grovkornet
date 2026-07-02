@@ -48,6 +48,29 @@ jest.mock('@entities/system', () => {
   };
 });
 
+jest.mock('@entities/body', () => ({
+  useBodyStore: Object.assign(
+    jest.fn(() => ({
+      capabilities: {
+        hasTorch: false,
+        maxTorchStrength: 1,
+        isoMin: 100,
+        isoMax: 3200,
+        maxFps: 60,
+      },
+    })),
+    {
+      getState: jest.fn(() => ({
+        zoom: { value: 1.0 },
+        setZoom: jest.fn(),
+      })),
+    }
+  ),
+  useBodyWorklets: () => ({
+    updateZoom: jest.fn(),
+  }),
+}));
+
 jest.mock('@entities/camera', () => {
   const state = {
     triggerCapture: mockTriggerCapture,

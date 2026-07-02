@@ -21,7 +21,6 @@ export const useCameraUIAnimations = (galleryTransition: SharedValue<number>, ca
     if (activeSection === 'none') {
       drawerAnimation.value = withTiming(0, { duration: 300 });
       footerTranslateY.value = withTiming(0, { duration: 300 });
-      viewfinderTranslateY.value = withTiming(0, { duration: 300 });
     }
   }, [activeSection, drawerAnimation, footerTranslateY, viewfinderTranslateY]);
 

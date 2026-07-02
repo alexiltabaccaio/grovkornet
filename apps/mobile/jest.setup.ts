@@ -337,6 +337,7 @@ jest.mock('expo-image', () => {
   });
 
   MockImage.prefetch = jest.fn().mockImplementation(() => Promise.resolve(true));
+  MockImage.loadAsync = jest.fn().mockImplementation(() => Promise.resolve({}));
   MockImage.displayName = 'MockImage';
 
   return {

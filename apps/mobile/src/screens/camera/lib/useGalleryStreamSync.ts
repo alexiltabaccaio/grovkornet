@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useAnimatedReaction, runOnJS } from 'react-native-reanimated';
 import { pauseStream, resumeStream } from '@grovkornet/engine';
 import { useBodyStore } from '@entities/body';
@@ -13,6 +13,8 @@ export const useGalleryStreamSync = (
   galleryTransition: { value: number },
   cameraKey: number
 ) => {
+  const prevIsOpenRef = useRef(isOpen);
+
   // Sync native stream state (e.g. on camera remount when returning from background)
   useEffect(() => {
     if (isOpen) {
@@ -24,8 +26,11 @@ export const useGalleryStreamSync = (
     } else {
       // Restore stream when the gallery closes.
       void resumeStream();
-      nudgeZoom();
+      if (prevIsOpenRef.current) {
+        nudgeZoom();
+      }
     }
+    prevIsOpenRef.current = isOpen;
   }, [cameraKey, isOpen, galleryTransition]);
 
   // Use reanimated reaction to pause stream when overlay animation finishes,

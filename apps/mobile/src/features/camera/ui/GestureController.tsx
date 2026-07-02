@@ -13,9 +13,10 @@ interface GestureControllerProps {
   footerTranslateY?: SharedValue<number>;
   drawerAnimation?: SharedValue<number>;
   viewfinderTranslateY?: SharedValue<number>;
+  layoutSyncOffset?: SharedValue<number>;
 }
 
-export const GestureController = React.memo(({ children, footerTranslateY, drawerAnimation, viewfinderTranslateY }: GestureControllerProps) => {
+export const GestureController = React.memo(({ children, footerTranslateY, drawerAnimation, viewfinderTranslateY, layoutSyncOffset }: GestureControllerProps) => {
   const { activeSection, setActiveSection } = useControlPanelStore(useShallow((s) => ({
     activeSection: s.activeSection,
     setActiveSection: s.setActiveSection,
@@ -235,7 +236,7 @@ export const GestureController = React.memo(({ children, footerTranslateY, drawe
 
   const animatedStyle = useAnimatedStyle(() => {
     return {
-      transform: [{ translateY: translateY.value }],
+      transform: [{ translateY: translateY.value + (layoutSyncOffset?.value ?? 0) }],
     };
   });
 

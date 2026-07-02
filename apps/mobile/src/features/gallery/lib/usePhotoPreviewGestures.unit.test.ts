@@ -50,6 +50,10 @@ const mockPinchGesture: any = {
     capturedPinchCallbacks.onEnd = cb;
     return mockPinchGesture;
   }),
+  onFinalize: jest.fn().mockImplementation((cb) => {
+    capturedPinchCallbacks.onFinalize = cb;
+    return mockPinchGesture;
+  }),
 };
 
 const mockDoubleTapGesture: any = {

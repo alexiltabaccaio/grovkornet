@@ -5,8 +5,34 @@ import * as FileSystem from 'expo-file-system';
 import { logger } from '@shared/lib/logger';
 import { GalleryItem } from './types';
 
+const isFinalProcessedUri = (uri: string) => {
+  if (!uri.startsWith('file://')) return true; // content:// is final
+  return (
+    uri.startsWith('file:///storage/') ||
+    uri.includes('/storage/emulated/') ||
+    uri.includes('DCIM/') ||
+    uri.includes('Grovkornet/')
+  );
+};
+
+const isTempUri = (uri: string) => {
+  return (
+    uri.startsWith('file:///data/') ||
+    uri.includes('preview') ||
+    uri.includes('temp')
+  );
+};
+
 export const useGalleryPhotos = (initialUri?: string | null) => {
-  const [photos, setPhotos] = useState<GalleryItem[]>([]);
+  const [photos, setPhotos] = useState<GalleryItem[]>(() => {
+    if (initialUri) {
+      const initialFilenameOrId = initialUri.split('/').pop();
+      const isTemp = isTempUri(initialUri);
+      const id = isTemp ? 'preview-temp' : (initialUri.split('/').pop() || 'initial');
+      return [{ id, key: id, uri: initialUri, filename: initialFilenameOrId }];
+    }
+    return [];
+  });
   const [loading, setLoading] = useState(true);
   const [permissionGranted, setPermissionGranted] = useState(false);
 
@@ -56,26 +82,33 @@ export const useGalleryPhotos = (initialUri?: string | null) => {
         }
 
         if (status !== 'granted' && status !== ('limited' as unknown as typeof status)) {
-          logger.warn('Gallery', 'MediaLibrary permissions not granted or timed out');
-          setPermissionGranted(false);
+          logger.warn('Gallery', 'MediaLibrary permission denied');
           setLoading(false);
+          setPermissionGranted(false);
           if (currentInitialUriLocal) {
-            try {
-              const info = await FileSystem.getInfoAsync(currentInitialUriLocal);
-              if (info.exists) {
-                logger.debug('useGalleryPhotos', `Permissions not granted: setting photos to single fallback item: ${currentInitialUriLocal}`);
-                setPhotos([{ id: 'initial', uri: currentInitialUriLocal }]);
-              } else {
+            const isProcessed = isFinalProcessedUri(currentInitialUriLocal);
+            if (isProcessed) {
+              setPhotos([{ id: 'initial', uri: currentInitialUriLocal }]);
+            } else {
+              try {
+                const info = await FileSystem.getInfoAsync(currentInitialUriLocal);
+                if (info.exists) {
+                  setPhotos([{ id: 'initial', uri: currentInitialUriLocal }]);
+                } else {
+                  setPhotos([]);
+                }
+              } catch (e) {
                 setPhotos([]);
               }
-            } catch (e) {
-              setPhotos([]);
             }
+          } else {
+            setPhotos([]);
           }
           return;
         }
 
         setPermissionGranted(true);
+        logger.debug('Gallery', 'Fetching user albums...');
 
         let allAlbums: MediaLibrary.Album[];
         if (process.env.NODE_ENV === 'test') {
@@ -92,32 +125,40 @@ export const useGalleryPhotos = (initialUri?: string | null) => {
         }
 
         if (!active) {
-          logger.debug('useGalleryPhotos', `loadPhotos: active became false during album fetch`);
+          logger.debug('useGalleryPhotos', `loadPhotos: active became false during albums resolution`);
           return;
         }
 
         const grovkornetAlbums = allAlbums.filter(a => a.title.toLowerCase() === 'grovkornet');
-
         let media: MediaLibrary.Asset[] = [];
 
         if (grovkornetAlbums.length > 0) {
           logger.debug('Gallery', `Found ${grovkornetAlbums.length} Grovkornet albums, fetching from all...`);
-          const fetchPromises = grovkornetAlbums.map(album => 
-            MediaLibrary.getAssetsAsync({
-              album: album.id,
-              first: 50,
-              sortBy: [[MediaLibrary.SortBy.creationTime, false]],
-              mediaType: MediaLibrary.MediaType.photo,
-            })
-          );
+          let results: MediaLibrary.PagedInfo<MediaLibrary.Asset>[] = [];
           
-          let results: MediaLibrary.PagedInfo<MediaLibrary.Asset>[];
           if (process.env.NODE_ENV === 'test') {
-            results = await Promise.all(fetchPromises);
+            results = await Promise.all(
+              grovkornetAlbums.map(album =>
+                MediaLibrary.getAssetsAsync({
+                  album: album.id,
+                  first: 100,
+                  sortBy: [[MediaLibrary.SortBy.creationTime, false]],
+                  mediaType: MediaLibrary.MediaType.photo,
+                })
+              )
+            );
           } else {
             let assetsTimer: NodeJS.Timeout;
             const assetsTimeout = new Promise<never>((_, reject) =>
               assetsTimer = setTimeout(() => reject(new Error('ASSETS_TIMEOUT')), 15000)
+            );
+            const fetchPromises = grovkornetAlbums.map(album =>
+              MediaLibrary.getAssetsAsync({
+                album: album.id,
+                first: 100,
+                sortBy: [[MediaLibrary.SortBy.creationTime, false]],
+                mediaType: MediaLibrary.MediaType.photo,
+              })
             );
 
             results = await Promise.race([
@@ -125,13 +166,14 @@ export const useGalleryPhotos = (initialUri?: string | null) => {
               assetsTimeout
             ]).finally(() => clearTimeout(assetsTimer));
           }
-          
-          // Combine and sort descending by creationTime
-          const combinedAssets = results.flatMap(r => r.assets);
-          combinedAssets.sort((a, b) => b.creationTime - a.creationTime);
-          
-          // Take top 50 across all albums
-          media = combinedAssets.slice(0, 50);
+
+          if (!active) {
+            logger.debug('useGalleryPhotos', `loadPhotos: active became false during assets resolution`);
+            return;
+          }
+
+          media = results.flatMap(r => r.assets);
+          media.sort((a, b) => b.creationTime - a.creationTime);
         } else {
           logger.debug('Gallery', 'Grovkornet album not found. Using global fallback...');
           try {
@@ -174,16 +216,23 @@ export const useGalleryPhotos = (initialUri?: string | null) => {
 
           logger.debug('useGalleryPhotos', `loadPhotos check: initialUri=${currentInitialUriLocal}, alreadyExists=${alreadyExists}`);
           if (!alreadyExists) {
-            try {
-              const info = await FileSystem.getInfoAsync(currentInitialUriLocal);
-              if (info.exists) {
-                logger.debug('useGalleryPhotos', `loadPhotos: unshifting temp preview: ${currentInitialUriLocal}`);
-                items.unshift({ id: 'preview-temp', key: 'preview-temp', uri: currentInitialUriLocal, filename: initialFilenameOrId });
-              } else {
-                logger.debug('useGalleryPhotos', `loadPhotos: temp preview ${currentInitialUriLocal} does not exist on disk, skipping.`);
+            const isProcessed = isFinalProcessedUri(currentInitialUriLocal);
+            if (isProcessed) {
+              logger.debug('useGalleryPhotos', `loadPhotos: unshifting final processed photo directly: ${currentInitialUriLocal}`);
+              const id = currentInitialUriLocal.split('/').pop() || 'initial';
+              items.unshift({ id, key: id, uri: currentInitialUriLocal, filename: initialFilenameOrId });
+            } else {
+              try {
+                const info = await FileSystem.getInfoAsync(currentInitialUriLocal);
+                if (info.exists) {
+                  logger.debug('useGalleryPhotos', `loadPhotos: unshifting temp preview: ${currentInitialUriLocal}`);
+                  items.unshift({ id: 'preview-temp', key: 'preview-temp', uri: currentInitialUriLocal, filename: initialFilenameOrId });
+                } else {
+                  logger.debug('useGalleryPhotos', `loadPhotos: temp preview ${currentInitialUriLocal} does not exist on disk, skipping.`);
+                }
+              } catch (e) {
+                logger.warn('useGalleryPhotos', `Failed to check existence of temp preview: ${currentInitialUriLocal}`, e);
               }
-            } catch (e) {
-              logger.warn('useGalleryPhotos', `Failed to check existence of temp preview: ${currentInitialUriLocal}`, e);
             }
           }
         }
@@ -207,15 +256,20 @@ export const useGalleryPhotos = (initialUri?: string | null) => {
           setLoading(false);
           setPermissionGranted(false);
           if (currentInitialUriLocal) {
-            try {
-              const info = await FileSystem.getInfoAsync(currentInitialUriLocal);
-              if (info.exists) {
-                setPhotos([{ id: 'initial', uri: currentInitialUriLocal }]);
-              } else {
+            const isProcessed = isFinalProcessedUri(currentInitialUriLocal);
+            if (isProcessed) {
+              setPhotos([{ id: 'initial', uri: currentInitialUriLocal }]);
+            } else {
+              try {
+                const info = await FileSystem.getInfoAsync(currentInitialUriLocal);
+                if (info.exists) {
+                  setPhotos([{ id: 'initial', uri: currentInitialUriLocal }]);
+                } else {
+                  setPhotos([]);
+                }
+              } catch (e) {
                 setPhotos([]);
               }
-            } catch (e) {
-              setPhotos([]);
             }
           }
         }
@@ -243,9 +297,6 @@ export const useGalleryPhotos = (initialUri?: string | null) => {
   }, []);
 
   // Dynamically inject initialUri if it updates AFTER initial load and is missing from the list.
-  // This fixes the race condition where a photo is captured, the user immediately opens the gallery,
-  // and the new photo is missing because MediaLibrary hasn't indexed it yet or the preview URI
-  // arrived after the initial fetch.
   useEffect(() => {
     if (loading || !initialUri) return;
     if (initialUri === lastEvaluatedUriRef.current) return;
@@ -256,9 +307,13 @@ export const useGalleryPhotos = (initialUri?: string | null) => {
     const injectInitialUri = async () => {
       try {
         const initialFilenameOrId = initialUri.split('/').pop();
+        const isProcessed = isFinalProcessedUri(initialUri);
+        const isTemp = isTempUri(initialUri);
         
         let shouldInject = false;
-        if (initialUri.startsWith('file://') && !initialUri.includes('external')) {
+        if (isProcessed) {
+          shouldInject = true; // Always trust final processed photos
+        } else if (initialUri.startsWith('file://')) {
           const info = await FileSystem.getInfoAsync(initialUri);
           if (info.exists) shouldInject = true;
         } else {
@@ -276,7 +331,6 @@ export const useGalleryPhotos = (initialUri?: string | null) => {
           if (alreadyExists) return prev;
 
           logger.debug('useGalleryPhotos', `Dynamically injecting missing initialUri: ${initialUri}`);
-          const isTemp = initialUri.startsWith('file:///data/') || initialUri.includes('preview');
           const id = isTemp ? 'preview-temp' : (initialUri.split('/').pop() || 'injected');
           return [{ id, key: id, uri: initialUri, filename: initialFilenameOrId }, ...prev];
         });

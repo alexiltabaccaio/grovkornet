@@ -122,7 +122,6 @@ describe('useCameraUIAnimations', () => {
     expect(reanimated.withTiming).toHaveBeenCalledWith(0, { duration: 300 });
     expect(result.current.drawerAnimation.value).toBe(0);
     expect(result.current.footerTranslateY.value).toBe(0);
-    expect(result.current.viewfinderTranslateY.value).toBe(0);
   });
 
   it('resets animation values when cameraKey changes if activeSection is none', () => {
