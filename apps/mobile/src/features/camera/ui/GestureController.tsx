@@ -143,15 +143,7 @@ export const GestureController = React.memo(({ children, footerTranslateY, drawe
     }
   );
 
-  useAnimatedReaction(
-    () => Math.round(translateY.value),
-    (current, prev) => {
-      if (prev !== null && Math.abs(current - prev) > 10) {
-        // eslint-disable-next-line no-console
-        console.log(`[GestureController] translateY jumped from ${prev} to ${current}. ActiveSection: ${activeSectionSV.value}, isClosing: ${isClosing.value}`);
-      }
-    }
-  );
+
 
   const composedGesture = useMemo(() => {
     const { zoom } = useBodyStore.getState();

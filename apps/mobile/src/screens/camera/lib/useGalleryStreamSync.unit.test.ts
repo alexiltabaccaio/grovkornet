@@ -10,6 +10,17 @@ jest.mock('@grovkornet/engine', () => ({
   resumeStream: () => mockResumeStream(),
 }));
 
+const mockSetZoom = jest.fn();
+const mockZoom = { value: 1.0 };
+jest.mock('@entities/body', () => ({
+  useBodyStore: {
+    getState: () => ({
+      zoom: mockZoom,
+      setZoom: mockSetZoom,
+    }),
+  },
+}));
+
 let mockReactionCallback: ((current: number, previous: number | null | undefined) => void) | null = null;
 let mockPrepareCallback: (() => any) | null = null;
 

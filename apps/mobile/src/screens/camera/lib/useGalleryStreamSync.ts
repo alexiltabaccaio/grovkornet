@@ -1,6 +1,12 @@
 import { useEffect } from 'react';
 import { useAnimatedReaction, runOnJS } from 'react-native-reanimated';
 import { pauseStream, resumeStream } from '@grovkornet/engine';
+import { useBodyStore } from '@entities/body';
+
+const nudgeZoom = () => {
+  const { zoom, setZoom } = useBodyStore.getState();
+  setZoom(zoom.value + 0.000001);
+};
 
 export const useGalleryStreamSync = (
   isOpen: boolean,
@@ -18,6 +24,7 @@ export const useGalleryStreamSync = (
     } else {
       // Restore stream when the gallery closes.
       void resumeStream();
+      nudgeZoom();
     }
   }, [cameraKey, isOpen, galleryTransition]);
 
@@ -33,6 +40,7 @@ export const useGalleryStreamSync = (
       // When it starts closing (value falls below 1 from 1)
       if (currentValue < 1 && previousValue === 1) {
         runOnJS(resumeStream)();
+        runOnJS(nudgeZoom)();
       }
     },
     [galleryTransition]

@@ -63,7 +63,7 @@ export const Viewfinder = React.memo(({ cameraKey }: ViewfinderProps) => {
   const isCameraSecure = useCameraStore(state => state.isCameraSecure);
   const thermalState = useCameraStore(state => state.thermalState);
   const { isInteractable } = useInteractionContext();
-  
+
   const capabilities = useBodyStore(state => state.capabilities);
   const { cameraAuto, cameraId } = useLensStore(useShallow(state => ({
     cameraAuto: state.cameraAuto,
@@ -123,23 +123,25 @@ export const Viewfinder = React.memo(({ cameraKey }: ViewfinderProps) => {
   const gestures = React.useMemo(() => {
     return Gesture.Pinch()
       .enabled(isInteractable)
+      .onBegin(() => {
+        // Force Reanimated and CameraX to bypass optimizations and re-sync HAL hardware state
+        bodyWorklets.updateZoom(zoom.value + 0.000001);
+      })
       .onStart(() => {
         startZoom.value = zoom.value;
       })
       .onChange((event) => {
         const scale = event.scale ?? 1;
-        if (isNaN(scale) || isNaN(startZoom.value)) {
+        if (isNaN(scale) || scale === 0 || isNaN(startZoom.value)) {
           if (__DEV__ && !hasWarnedPinchNaN.value) {
             hasWarnedPinchNaN.value = true;
-            console.warn(`[Gesture Warning]: scale or startZoom is NaN in Viewfinder (Pinch)`);
+            console.warn(`[Gesture Warning]: scale or startZoom is NaN/0 in Viewfinder (Pinch)`);
           }
           return;
         }
         bodyWorklets.updateZoom(startZoom.value * scale);
       })
       .onFinalize(() => {
-        // Prevents restoring old values if the gesture is recreated (e.g. opening/closing gallery)
-        // and react-native-gesture-handler emits a spurious event with scale=1.
         startZoom.value = zoom.value;
       });
   }, [zoom, bodyWorklets, startZoom, isInteractable, hasWarnedPinchNaN]);
@@ -169,7 +171,7 @@ export const Viewfinder = React.memo(({ cameraKey }: ViewfinderProps) => {
 
   const effectiveFps = useDerivedValue(() => {
     let fps = fpsSetting.value;
-    
+
     // If we are at high resolution (4K or 1440p) and the 60 FPS crop is disabled,
     // limit the target FPS to 30 (hardware limit) to allow the full uncropped frame.
     const isHighRes = resolutionSetting.value <= 1;
@@ -231,12 +233,12 @@ export const Viewfinder = React.memo(({ cameraKey }: ViewfinderProps) => {
         cameraId={cameraAuto ? null : cameraId}
         secureViewEnabled={isCameraSecure}
         // @@GEN_PROPS_END@@
-          onCapabilitiesUpdate={capabilitiesHandler}
-          onDebugUpdate={debugHandler}
-          onExposureUpdate={exposureHandler}
-          onPhotoCaptured={photoHandler}
-          onTorchStateChanged={torchStateHandler}
-          onSessionReady={sessionReadyHandler}
+            onCapabilitiesUpdate={capabilitiesHandler}
+            onDebugUpdate={debugHandler}
+            onExposureUpdate={exposureHandler}
+            onPhotoCaptured={photoHandler}
+            onTorchStateChanged={torchStateHandler}
+            onSessionReady={sessionReadyHandler}
           />
         </Animated.View>
       </GestureDetector>
