@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { StyleSheet, View, Platform, useWindowDimensions, BackHandler } from 'react-native';
+import { StyleSheet, View, Platform, useWindowDimensions } from 'react-native';
 import { Image } from 'expo-image';
 import Animated, { useAnimatedStyle, SharedValue, interpolate, useSharedValue, withTiming, runOnJS } from 'react-native-reanimated';
 import { ShareButton, PhotoPreview, GalleryStrip, useGalleryViewer } from '@features/gallery';
@@ -72,20 +72,6 @@ export const GalleryViewer = React.memo(({ onClose, initialUri, galleryTransitio
   useEffect(() => {
     onCloseRef.current = onClose;
   }, [onClose]);
-
-  useEffect(() => {
-    if (Platform.OS !== 'android') return;
-
-    const handleBackPress = () => {
-      onCloseRef.current();
-      return true;
-    };
-
-    const subscription = BackHandler.addEventListener('hardwareBackPress', handleBackPress);
-    return () => {
-      subscription.remove();
-    };
-  }, []);
 
   const animatedContainerStyle = useAnimatedStyle(() => {
     if (!galleryTransition) return {};

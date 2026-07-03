@@ -3,6 +3,7 @@ import { useControlPanelStore } from '@entities/system';
 import { Gesture } from 'react-native-gesture-handler';
 import { useSharedValue, withTiming, withSpring, SharedValue, useAnimatedReaction } from 'react-native-reanimated';
 import { useInteractionContext } from '@shared/lib';
+import { BackHandler, Platform } from 'react-native';
 
 interface UseControlPanelGesturesProps {
   externalTranslateY?: SharedValue<number>;
@@ -29,6 +30,21 @@ export const useControlPanelGestures = ({
   useEffect(() => {
     activeSectionSV.value = activeSection;
   }, [activeSection, activeSectionSV]);
+
+  useEffect(() => {
+    if (Platform.OS !== 'android') return;
+
+    const onBackPress = () => {
+      if (activeSection !== 'none') {
+        useControlPanelStore.getState().setActiveSection('none');
+        return true;
+      }
+      return false;
+    };
+
+    const subscription = BackHandler.addEventListener('hardwareBackPress', onBackPress);
+    return () => subscription.remove();
+  }, [activeSection]);
 
   useAnimatedReaction(
     () => activeSectionSV.value,

@@ -1,8 +1,8 @@
 # LinkedIn Posts
 
-## Post 1: Project Announcement (Bilingual)
+## Post 1: Project Announcement
 
-🇬🇧 **English** (🇮🇹 Italiano scorrendo in basso)
+🇬🇧 **English**
 
 I’m excited to share a major milestone: after 9 years running my tobacconist business, I am officially leaving the retail sector to fully dedicate myself to my true passion: software engineering. 💻
 
