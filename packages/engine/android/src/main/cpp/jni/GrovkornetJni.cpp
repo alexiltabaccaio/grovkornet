@@ -120,6 +120,10 @@ Java_com_grovkornet_nativefilmcamera_rendering_OffscreenFilmProcessor_nativeProc
             tempState = *CameraStateManager::getInstance().getActiveState();
         }
         tempState.invertYShift = (invert_y == JNI_TRUE);
+        
+        // The image is already physically rotated by Kotlin for final capture, 
+        // so its local orientation is always upright (0).
+        tempState.renderParams.deviceOrientation = 0.0f;
 
         // Call the engine's offscreen rendering method
         enginePtr->renderOffscreenFrame(inLocker.pixels, outLocker.pixels, &tempState);
@@ -146,6 +150,9 @@ Java_com_grovkornet_nativefilmcamera_rendering_OffscreenFilmProcessor_nativeProc
         tempState = *CameraStateManager::getInstance().getActiveState();
     }
     tempState.invertYShift = (invert_y == JNI_TRUE);
+    
+    // The image is already physically rotated, so local orientation is 0.
+    tempState.renderParams.deviceOrientation = 0.0f;
     
     try {
         AHardwareBuffer* ahb = AHardwareBuffer_fromHardwareBuffer(env, hardwareBuffer);

@@ -49,6 +49,7 @@ fragment {
     #define u_BloomThreshold u_RenderData7.x
     #define u_HalationThreshold u_RenderData7.y
     #define u_ChromaBleed u_RenderData7.z
+    #define u_DeviceOrientation u_RenderData7.w
 
     #include "includes/Pixelation.glsl"
     #include "includes/ChromaEffects.glsl"

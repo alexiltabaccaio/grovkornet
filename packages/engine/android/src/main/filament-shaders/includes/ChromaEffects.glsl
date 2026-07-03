@@ -6,12 +6,13 @@ void computeChromaUvs(vec2 uv, vec2 res, out vec2 rUv, out vec2 gUv, out vec2 bU
     if (materialParams.u_ChromaticAberration > 0.0) maxShift += 0.02 * materialParams.u_ChromaticAberration;
     if (materialParams.u_TapeJitter > 0.0) maxShift += 0.002 * materialParams.u_TapeJitter;
 
+    float scaleBase = min(res.x, res.y) / res.x;
+
     if (maxShift > 0.0) {
-        float aspect = res.x / res.y;
         // Divide maxShift by u_DrsScale so that when resolution is downscaled, 
         // the padding remains absolute in texture space.
         float padding = maxShift / max(0.1, materialParams.u_DrsScale);
-        float uniformScale = 1.0 - (2.0 * padding * max(1.0, aspect));
+        float uniformScale = 1.0 - (2.0 * padding);
         uv = (uv - 0.5) * uniformScale + 0.5;
     }
 
@@ -21,15 +22,24 @@ void computeChromaUvs(vec2 uv, vec2 res, out vec2 rUv, out vec2 gUv, out vec2 bU
     bUv = compositeUv;
 
     if (materialParams.u_TapeJitter > 0.0) {
-        float jitter = sin(uv.y * 50.0 + materialParams.u_Time * 10.0) * 0.002 * materialParams.u_TapeJitter;
-        compositeUv.x += jitter;
-        rUv.x += jitter;
-        gUv.x += jitter;
-        bUv.x += jitter;
+        int orientation = int(materialParams.u_DeviceOrientation + 0.1);
+        if (orientation == 1 || orientation == 3) {
+            float jitter = sin(uv.x * 50.0 * (res.x / min(res.x, res.y)) + materialParams.u_Time * 10.0) * 0.002 * materialParams.u_TapeJitter * (min(res.x, res.y) / res.y);
+            compositeUv.y += jitter;
+            rUv.y += jitter;
+            gUv.y += jitter;
+            bUv.y += jitter;
+        } else {
+            float jitter = sin(uv.y * 50.0 * (res.y / min(res.x, res.y)) + materialParams.u_Time * 10.0) * 0.002 * materialParams.u_TapeJitter * scaleBase;
+            compositeUv.x += jitter;
+            rUv.x += jitter;
+            gUv.x += jitter;
+            bUv.x += jitter;
+        }
     }
 
     if (materialParams.u_ChromaShift > 0.0) {
-        float shift = 0.02 * materialParams.u_ChromaShift;
+        float shift = 0.02 * materialParams.u_ChromaShift * scaleBase;
         if (materialParams.u_ChromaShiftInvert > 0.5) {
             shift = -shift;
         }
@@ -47,7 +57,7 @@ void computeChromaUvs(vec2 uv, vec2 res, out vec2 rUv, out vec2 gUv, out vec2 bU
     }
 
     if (materialParams.u_ChromaticAberration > 0.0) {
-        float caIntensity = materialParams.u_ChromaticAberration * 0.02;
+        float caIntensity = materialParams.u_ChromaticAberration * 0.02 * scaleBase;
         float aspect = res.x / res.y;
         
         vec2 dir = normalize(uv - 0.5);
@@ -92,28 +102,38 @@ vec3 applyChromaBleed(vec3 centerColor, vec2 uv) {
     // Using 1080.0 as a reference resolution ensures the bleed radius is
     // resolution-independent and visually identical between preview and photo capture.
     float blurRadius = materialParams.u_ChromaBleed * 30.0;
-    float stepX = blurRadius / 1080.0;
+    vec2 res = 1.0 / materialParams.u_TexelSize;
+    
+    vec2 blurDir;
+    int orientation = int(materialParams.u_DeviceOrientation + 0.1);
+    if (orientation == 1 || orientation == 3) {
+        float stepY = (blurRadius / 1080.0) * (min(res.x, res.y) / res.y);
+        blurDir = vec2(0.0, stepY);
+    } else {
+        float stepX = (blurRadius / 1080.0) * (min(res.x, res.y) / res.x);
+        blurDir = vec2(stepX, 0.0);
+    }
     
     vec3 centerYiq = rgb2yiq(centerColor);
     vec3 yiqSum = vec3(0.0);
     
-    // Trailing blur: sample only pixels to the left (negative offset)
-    // so that the color bleeds to the right.
+    // Trailing blur: sample only pixels to the left/top (negative offset)
+    // so that the color bleeds to the right/bottom.
     
     // Sample offset -4
-    vec3 colM4 = texture(materialParams_u_Texture, uv - vec2(4.0 * stepX, 0.0)).rgb;
+    vec3 colM4 = texture(materialParams_u_Texture, uv - 4.0 * blurDir).rgb;
     yiqSum += rgb2yiq(colM4) * 0.0625;
     
     // Sample offset -3
-    vec3 colM3 = texture(materialParams_u_Texture, uv - vec2(3.0 * stepX, 0.0)).rgb;
+    vec3 colM3 = texture(materialParams_u_Texture, uv - 3.0 * blurDir).rgb;
     yiqSum += rgb2yiq(colM3) * 0.125;
     
     // Sample offset -2
-    vec3 colM2 = texture(materialParams_u_Texture, uv - vec2(2.0 * stepX, 0.0)).rgb;
+    vec3 colM2 = texture(materialParams_u_Texture, uv - 2.0 * blurDir).rgb;
     yiqSum += rgb2yiq(colM2) * 0.25;
     
     // Sample offset -1
-    vec3 colM1 = texture(materialParams_u_Texture, uv - vec2(1.0 * stepX, 0.0)).rgb;
+    vec3 colM1 = texture(materialParams_u_Texture, uv - 1.0 * blurDir).rgb;
     yiqSum += rgb2yiq(colM1) * 0.25;
     
     // Center sample

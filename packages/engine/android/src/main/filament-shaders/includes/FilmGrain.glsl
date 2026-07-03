@@ -11,7 +11,9 @@ highp vec3 randVec3(highp vec2 co) {
 vec3 applyFilmGrain(vec3 color, vec2 uv) {
     if (materialParams.u_GrainIntensity > 0.0) {
         highp float size = materialParams.u_GrainSize;
-        highp vec2 grainUv = floor(uv * (1080.0 / clamp(size, 0.1, 10.0))) * clamp(size, 0.1, 10.0) / 1080.0;
+        vec2 res = 1.0 / materialParams.u_TexelSize;
+        vec2 scaledRes = res * (1080.0 / min(res.x, res.y));
+        highp vec2 grainUv = floor(uv * (scaledRes / clamp(size, 0.1, 10.0))) * clamp(size, 0.1, 10.0) / scaledRes;
         
         highp vec3 rands = randVec3(grainUv);
         highp float t = materialParams.u_Time * materialParams.u_GrainSpeed;
