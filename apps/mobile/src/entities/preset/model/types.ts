@@ -116,6 +116,7 @@ export type GeneratedBodyExcludedKeys =
 export type GeneratedFilmExcludedKeys =
   | 'isSelfieCamera'
   | 'scanlinesHorizontal'
+  | 'deviceOrientation'
   ;
 
 export type GeneratedLensExcludedKeys =

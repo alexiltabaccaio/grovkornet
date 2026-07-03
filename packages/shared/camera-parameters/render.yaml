@@ -1206,4 +1206,20 @@ parameters:
     worklet:
       clamp: [ 0.0, 1.0 ]
     includeInPreset: true
+  - name: deviceOrientation
+    category: render
+    arrayIndex: 66
+    kotlin:
+      type: Int
+      default: "0"
+      arrayMapping: deviceOrientation.toFloat()
+    ts:
+      type: number
+    zustand:
+      default: 0
+      type: number
+      store: film
+    nitro: true
+    includeInPreset: false
+
 

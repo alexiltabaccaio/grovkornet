@@ -142,6 +142,8 @@ namespace margelo::nitro::grovkornet {
       prototype.registerHybridSetter("bloomThreshold", &HybridNitroCameraConfigurationSpec::setBloomThreshold);
       prototype.registerHybridGetter("chromaBleed", &HybridNitroCameraConfigurationSpec::getChromaBleed);
       prototype.registerHybridSetter("chromaBleed", &HybridNitroCameraConfigurationSpec::setChromaBleed);
+      prototype.registerHybridGetter("deviceOrientation", &HybridNitroCameraConfigurationSpec::getDeviceOrientation);
+      prototype.registerHybridSetter("deviceOrientation", &HybridNitroCameraConfigurationSpec::setDeviceOrientation);
     });
   }
 

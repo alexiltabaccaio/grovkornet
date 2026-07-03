@@ -172,6 +172,8 @@ namespace margelo::nitro::grovkornet {
       virtual void setBloomThreshold(double bloomThreshold) = 0;
       virtual double getChromaBleed() = 0;
       virtual void setChromaBleed(double chromaBleed) = 0;
+      virtual double getDeviceOrientation() = 0;
+      virtual void setDeviceOrientation(double deviceOrientation) = 0;
 
     public:
       // Methods

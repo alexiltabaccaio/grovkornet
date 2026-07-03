@@ -75,6 +75,7 @@ export const SYNC_MAP: Record<string, string> = {
   halationThreshold: 'halationThreshold',
   bloomThreshold: 'bloomThreshold',
   chromaBleed: 'chromaBleed',
+  deviceOrientation: 'deviceOrientation',
   // @@GEN_SYNC_MAP_END@@
 };
 

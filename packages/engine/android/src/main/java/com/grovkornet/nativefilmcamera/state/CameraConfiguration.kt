@@ -587,6 +587,15 @@ class CameraConfiguration(val nativePointer: Long = 0L) {
                     CameraStateJNI.fallbackSet("chromaBleed", nativePointer, value)
                 }
             }
+    var deviceOrientation: Int
+            get() = if (CameraStateJNI.isJniLoaded) CameraStateJNI.getDeviceOrientation(nativePointer) else (CameraStateJNI.fallbackGet("deviceOrientation", nativePointer, 0) as Int)
+            set(value) {
+                if (CameraStateJNI.isJniLoaded) {
+                    CameraStateJNI.setDeviceOrientation(nativePointer, value)
+                } else {
+                    CameraStateJNI.fallbackSet("deviceOrientation", nativePointer, value)
+                }
+            }
 
     // Hardware Props
     var ev: Float
@@ -1082,6 +1091,9 @@ fun CameraConfiguration.loadFromMap(payload: Map<String, Any>) {
     }
     payload["chromaBleed"]?.let { rawValue ->
         (rawValue as? Number)?.toFloat()?.let { chromaBleed = it }
+    }
+    payload["deviceOrientation"]?.let { rawValue ->
+        (rawValue as? Number)?.toInt()?.let { deviceOrientation = it }
     }
     payload["viewportWidth"]?.let { rawValue ->
         (rawValue as? Number)?.toFloat()?.let { viewportWidth = it }

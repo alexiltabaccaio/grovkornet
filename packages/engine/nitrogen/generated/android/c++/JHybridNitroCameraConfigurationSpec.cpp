@@ -617,6 +617,15 @@ namespace margelo::nitro::grovkornet {
     static const auto method = _javaPart->javaClassStatic()->getMethod<void(double /* chromaBleed */)>("setChromaBleed");
     method(_javaPart, chromaBleed);
   }
+  double JHybridNitroCameraConfigurationSpec::getDeviceOrientation() {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<double()>("getDeviceOrientation");
+    auto __result = method(_javaPart);
+    return __result;
+  }
+  void JHybridNitroCameraConfigurationSpec::setDeviceOrientation(double deviceOrientation) {
+    static const auto method = _javaPart->javaClassStatic()->getMethod<void(double /* deviceOrientation */)>("setDeviceOrientation");
+    method(_javaPart, deviceOrientation);
+  }
 
   // Methods
   

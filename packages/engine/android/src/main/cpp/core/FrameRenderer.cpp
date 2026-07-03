@@ -214,7 +214,17 @@ bool FrameRenderer::renderLiveFrame(GrovkornetEngine& gEngine, const RenderState
         sharedState = CameraStateManager::getInstance().getActiveState();
         activeState = sharedState.get();
     }
-    const RenderParams& params = activeState->renderParams;
+
+    // Create a local copy to swap axes of directional effects in preview mode if landscape
+    RenderState localState = *activeState;
+    int orientation = static_cast<int>(localState.renderParams.deviceOrientation);
+    if (orientation == 1 || orientation == 3) {
+        // Swap chroma shift direction (0.0f <-> 1.0f)
+        localState.renderParams.chromaShiftDirection = (localState.renderParams.chromaShiftDirection < 0.5f) ? 1.0f : 0.0f;
+        // Invert scanlinesHorizontal (1.0f <-> 0.0f)
+        localState.renderParams.scanlinesHorizontal = (localState.renderParams.scanlinesHorizontal > 0.5f) ? 0.0f : 1.0f;
+    }
+    const RenderParams& params = localState.renderParams;
 
     int targetFps          = activeState->targetFps;
     int aspectRatioSetting = activeState->aspectRatio;
@@ -272,7 +282,7 @@ bool FrameRenderer::renderLiveFrame(GrovkornetEngine& gEngine, const RenderState
         gEngine.shaderManager.getMaterialInstanceExternal()->setParameter("u_UvMatrix", u_UvMatrix);
         
         // Apply unified parameters (waitForLut = false)
-        gEngine.applyShaderParameters(activeState, gEngine.shaderManager.getMaterialInstanceExternal(), false);
+        gEngine.applyShaderParameters(&localState, gEngine.shaderManager.getMaterialInstanceExternal(), false);
         
         if (skipScreenRender) {
             // To perfectly freeze the screen on the last frame, we bypass beginFrame/endFrame entirely.

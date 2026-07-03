@@ -408,6 +408,12 @@ abstract class HybridNitroCameraConfigurationSpec: HybridObject() {
   @set:DoNotStrip
   @set:Keep
   abstract var chromaBleed: Double
+  
+  @get:DoNotStrip
+  @get:Keep
+  @set:DoNotStrip
+  @set:Keep
+  abstract var deviceOrientation: Double
 
   // Methods
   

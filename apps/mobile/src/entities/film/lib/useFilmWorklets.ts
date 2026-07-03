@@ -66,6 +66,7 @@ export const useFilmWorklets = () => {
   const hasWarnedNaN_halationThreshold = useSharedValue(false);
   const hasWarnedNaN_bloomThreshold = useSharedValue(false);
   const hasWarnedNaN_chromaBleed = useSharedValue(false);
+  const hasWarnedNaN_deviceOrientation = useSharedValue(false);
   // @@GEN_WORKLET_FLAGS_END@@
 
   return useMemo(() => {
@@ -1036,6 +1037,19 @@ export const useFilmWorklets = () => {
           config.chromaBleed = safeValue;
         }
         };
+
+        const updateDeviceOrientation = (value: number) => {
+        'worklet';
+        if (isNaN(value)) {
+          if (__DEV__ && !hasWarnedNaN_deviceOrientation.value) {
+            hasWarnedNaN_deviceOrientation.value = true;
+            console.warn(`[Camera Codegen Warning]: NaN value intercepted for parameter 'deviceOrientation'`);
+          }
+          if (!BYPASS_JS_SANITIZATION) return;
+        }
+        updateSharedValue(film.deviceOrientation, value);
+        config.deviceOrientation = value;
+        };
     // @@GEN_WORKLETS_END@@
 
     return {
@@ -1110,6 +1124,7 @@ export const useFilmWorklets = () => {
             updateHalationThreshold,
             updateBloomThreshold,
             updateChromaBleed,
+            updateDeviceOrientation,
       // @@GEN_WORKLET_EXPORTS_END@@
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps

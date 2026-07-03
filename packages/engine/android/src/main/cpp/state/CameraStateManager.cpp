@@ -73,6 +73,7 @@ CameraStateManager::CameraStateManager() {
     initial->renderParams.halationThreshold = 0.5f;
     initial->renderParams.bloomThreshold = 0.5f;
     initial->renderParams.chromaBleed = 0.0f;
+    initial->renderParams.deviceOrientation = 0.0f;
     // @@GEN_DEFAULTS_END@@
     
     std::atomic_store(&m_activeState, initial);

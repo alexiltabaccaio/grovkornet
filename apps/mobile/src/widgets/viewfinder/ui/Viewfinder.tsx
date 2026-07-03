@@ -3,7 +3,7 @@ import { StyleSheet, View } from 'react-native';
 import { useShallow } from 'zustand/shallow';
 import { useBodyStore, useBodyWorklets } from '@entities/body';
 import { useLensStore } from '@entities/lens';
-import { useFilmStore } from '@entities/film';
+import { useFilmStore, useFilmWorklets } from '@entities/film';
 import { useCameraStore } from '@entities/camera';
 import { useGalleryStore } from '@entities/gallery';
 import { NativeRenderer } from '@entities/lens';
@@ -147,24 +147,22 @@ export const Viewfinder = React.memo(({ cameraKey }: ViewfinderProps) => {
   }, [zoom, bodyWorklets, startZoom, isInteractable, hasWarnedPinchNaN]);
 
   const rotationY = useDeviceRotation();
-  const { scanlinesMode } = useFilmStore.getState();
-
-  const syncScanlinesOrientation = React.useCallback((r: number, m: number) => {
-    const isLandscape = Math.abs(r) === 90;
-    const { setScanlinesHorizontal } = useFilmStore.getState();
-    const isHorizontal = m === 0 ? !isLandscape : isLandscape;
-    setScanlinesHorizontal(isHorizontal);
-  }, []);
+  const filmWorklets = useFilmWorklets();
 
   useAnimatedReaction(
-    () => ({
-      rotation: rotationY.value,
-      mode: scanlinesMode.value,
-    }),
-    (current) => {
-      runOnJS(syncScanlinesOrientation)(current.rotation, current.mode);
+    () => rotationY.value,
+    (rotation) => {
+      let deviceOrientation = 0; // Portrait
+      if (rotation === 90) {
+        deviceOrientation = 1; // Landscape Left
+      } else if (rotation === 180) {
+        deviceOrientation = 2; // Portrait Upside Down
+      } else if (rotation === -90 || rotation === 270) {
+        deviceOrientation = 3; // Landscape Right
+      }
+      filmWorklets.updateDeviceOrientation(deviceOrientation);
     },
-    [syncScanlinesOrientation]
+    [filmWorklets]
   );
 
 

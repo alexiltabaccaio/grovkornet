@@ -178,6 +178,8 @@ namespace margelo::nitro::grovkornet {
     void setBloomThreshold(double bloomThreshold) override;
     double getChromaBleed() override;
     void setChromaBleed(double chromaBleed) override;
+    double getDeviceOrientation() override;
+    void setDeviceOrientation(double deviceOrientation) override;
 
   public:
     // Methods

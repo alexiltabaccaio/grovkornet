@@ -136,6 +136,7 @@ export const useFilmStore = create<FilmStore>((set, get) => ({
   halationThreshold: makeMutable(DEFAULT_HALATION_THRESHOLD),
   bloomThreshold: makeMutable(DEFAULT_BLOOM_THRESHOLD),
   chromaBleed: makeMutable(DEFAULT_CHROMA_BLEED),
+  deviceOrientation: makeMutable(0),
   // @@GEN_INIT_END@@
   capabilities: {
     availableNoiseReductionModes: [],
@@ -466,6 +467,10 @@ export const useFilmStore = create<FilmStore>((set, get) => ({
   setChromaBleed: (value) => {
     get().chromaBleed.value = value;
     notifyFilmStoreListener('chromaBleed');
+  },
+  setDeviceOrientation: (value) => {
+    get().deviceOrientation.value = value;
+    notifyFilmStoreListener('deviceOrientation');
   },
   // @@GEN_SETTERS_END@@
   setCapabilities: (caps) => {

@@ -2022,6 +2022,31 @@ Java_com_grovkornet_nativefilmcamera_jni_CameraStateJNI_setChromaBleed(
     }
 }
 
+JNIEXPORT jint JNICALL
+Java_com_grovkornet_nativefilmcamera_jni_CameraStateJNI_getDeviceOrientation(
+        JNIEnv* env, jclass clazz, jlong statePtr) {
+    if (statePtr == 0) {
+        return CameraStateManager::getInstance().getActiveState()->renderParams.deviceOrientation;
+    } else {
+        auto* state = reinterpret_cast<RenderState*>(statePtr);
+        return state->renderParams.deviceOrientation;
+    }
+}
+
+JNIEXPORT void JNICALL
+Java_com_grovkornet_nativefilmcamera_jni_CameraStateJNI_setDeviceOrientation(
+        JNIEnv* env, jclass clazz, jlong statePtr, jint value) {
+    if (statePtr == 0) {
+        CameraStateManager::getInstance().updateStateField([value](RenderState& state) {
+            state.renderParams.deviceOrientation = value;
+        });
+    } else {
+        auto* state = reinterpret_cast<RenderState*>(statePtr);
+        state->renderParams.deviceOrientation = value;
+        CameraStateManager::getInstance().clampState(*state);
+    }
+}
+
 JNIEXPORT jfloat JNICALL
 Java_com_grovkornet_nativefilmcamera_jni_CameraStateJNI_getEv(
         JNIEnv* env, jclass clazz, jlong statePtr) {

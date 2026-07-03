@@ -77,6 +77,7 @@ interface FilmState {
   halationThreshold: SharedValue<number>;
   bloomThreshold: SharedValue<number>;
   chromaBleed: SharedValue<number>;
+  deviceOrientation: SharedValue<number>;
   // @@GEN_STATE_END@@
   capabilities?: FilmCapabilities;
 }
@@ -153,6 +154,7 @@ interface FilmActions {
   setHalationThreshold: (value: number) => void;
   setBloomThreshold: (value: number) => void;
   setChromaBleed: (value: number) => void;
+  setDeviceOrientation: (value: number) => void;
   // @@GEN_ACTIONS_END@@
   setCapabilities?: (capabilities: FilmCapabilities) => void;
 }

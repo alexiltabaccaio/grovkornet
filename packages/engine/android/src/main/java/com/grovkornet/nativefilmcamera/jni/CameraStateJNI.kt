@@ -168,6 +168,8 @@ object CameraStateJNI {
         @JvmStatic external fun setBloomThreshold(statePtr: Long, value: Float)
         @JvmStatic external fun getChromaBleed(statePtr: Long): Float
         @JvmStatic external fun setChromaBleed(statePtr: Long, value: Float)
+        @JvmStatic external fun getDeviceOrientation(statePtr: Long): Int
+        @JvmStatic external fun setDeviceOrientation(statePtr: Long, value: Int)
         @JvmStatic external fun getEv(statePtr: Long): Float
         @JvmStatic external fun setEv(statePtr: Long, value: Float)
         @JvmStatic external fun getTargetFps(statePtr: Long): Int

@@ -648,5 +648,15 @@ class HybridNitroCameraConfiguration : HybridNitroCameraConfigurationSpec() {
                 Log.e("HybridNitroCameraConfiguration", "Failed to set chromaBleed", e)
             }
         }
+
+    override var deviceOrientation: Double
+        get() = try { CameraStateJNI.getDeviceOrientation(0L).toDouble() } catch (e: Throwable) { 0.0 }
+        set(value) {
+            try {
+                CameraStateJNI.setDeviceOrientation(0L, value.toInt())
+            } catch (e: Throwable) {
+                Log.e("HybridNitroCameraConfiguration", "Failed to set deviceOrientation", e)
+            }
+        }
     // @@GEN_OVERRIDES_END@@
 }
