@@ -9,7 +9,7 @@ function generateZustandTypesForStore(parameters, storeName, filePath) {
     .map(p => {
       const name = p.zustand.name || p.name;
       const type = p.zustand.type || (p.ts?.type === 'boolean' ? 'boolean' : 'number');
-      if (type === 'string') {
+      if (type === 'string' && p.category !== 'transient') {
         return `${name}: ${type};`;
       }
       return `${name}: SharedValue<${type}>;`;
@@ -57,6 +57,7 @@ function generateZustandTypes(parameters) {
 function isSharedValue(parameters, paramName) {
   const p = parameters.find(x => (x.zustand?.name || x.name) === paramName);
   if (!p) return true;
+  if (p.category === 'transient') return true;
   return p.zustand?.type !== 'string';
 }
 
@@ -70,7 +71,7 @@ function generateZustandStoreForStore(parameters, storeName, filePath, initMarke
       const name = p.zustand.name || p.name;
       const def = p.zustand.default;
       const type = p.zustand.type || (p.ts?.type === 'boolean' ? 'boolean' : 'number');
-      if (type === 'string') {
+      if (type === 'string' && p.category !== 'transient') {
         return `${name}: ${def},`;
       }
       return `${name}: makeMutable(${def}),`;

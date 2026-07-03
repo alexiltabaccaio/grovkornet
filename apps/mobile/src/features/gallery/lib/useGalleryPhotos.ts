@@ -1,9 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
 import { AppState } from 'react-native';
-import * as MediaLibrary from 'expo-media-library/legacy';
 import * as FileSystem from 'expo-file-system';
 import { logger } from '@shared/lib/logger';
 import { GalleryItem } from './types';
+import { useGalleryPermissions } from './useGalleryPermissions';
+import { useGalleryFetch } from './useGalleryFetch';
 
 const isFinalProcessedUri = (uri: string) => {
   if (!uri.startsWith('file://')) return true; // content:// is final
@@ -34,7 +35,14 @@ export const useGalleryPhotos = (initialUri?: string | null) => {
     return [];
   });
   const [loading, setLoading] = useState(true);
-  const [permissionGranted, setPermissionGranted] = useState(false);
+
+  const {
+    permissionGranted,
+    setPermissionGranted,
+    checkAndRequestPermissions,
+  } = useGalleryPermissions();
+
+  const { fetchPhotos } = useGalleryFetch();
 
   const initialUriRef = useRef(initialUri);
   const lastEvaluatedUriRef = useRef<string | null | undefined>(initialUri);
@@ -43,7 +51,7 @@ export const useGalleryPhotos = (initialUri?: string | null) => {
   }, [initialUri]);
 
   useEffect(() => {
-    let active = true;
+    const activeRef = { current: true };
     const currentInitialUri = initialUriRef.current;
     logger.debug('useGalleryPhotos', `Effect started: initialUri=${currentInitialUri}`);
 
@@ -51,37 +59,14 @@ export const useGalleryPhotos = (initialUri?: string | null) => {
       const currentInitialUriLocal = initialUriRef.current;
       logger.debug('useGalleryPhotos', `loadPhotos started: initialUri=${currentInitialUriLocal}`);
       try {
-        logger.debug('Gallery', 'Checking MediaLibrary permissions...');
-        const checkPerms = async () => {
-          const current = await MediaLibrary.getPermissionsAsync();
-          if (current.granted || current.status === ('limited' as unknown as typeof current.status)) return current.status;
+        const granted = await checkAndRequestPermissions(activeRef);
 
-          logger.debug('Gallery', 'Requesting MediaLibrary permissions (ignoring canAskAgain)...');
-          const req = await MediaLibrary.requestPermissionsAsync();
-          return req.status;
-        };
-
-        let status = 'denied';
-        if (process.env.NODE_ENV === 'test') {
-          status = await checkPerms();
-        } else {
-          let permTimer: NodeJS.Timeout;
-          const permTimeout = new Promise<string>((_, reject) =>
-            permTimer = setTimeout(() => reject(new Error('PERM_TIMEOUT')), 60000)
-          );
-          try {
-            status = await Promise.race([checkPerms(), permTimeout]).finally(() => clearTimeout(permTimer));
-          } catch (e) {
-            logger.warn('Gallery', 'Permissions timeout or error', e);
-          }
-        }
-
-        if (!active) {
+        if (!activeRef.current) {
           logger.debug('useGalleryPhotos', `loadPhotos: active became false during permission check`);
           return;
         }
 
-        if (status !== 'granted' && status !== ('limited' as unknown as typeof status)) {
+        if (!granted) {
           logger.warn('Gallery', 'MediaLibrary permission denied');
           setLoading(false);
           setPermissionGranted(false);
@@ -108,104 +93,14 @@ export const useGalleryPhotos = (initialUri?: string | null) => {
         }
 
         setPermissionGranted(true);
-        logger.debug('Gallery', 'Fetching user albums...');
+        const fetchedItems = await fetchPhotos(activeRef);
 
-        let allAlbums: MediaLibrary.Album[];
-        if (process.env.NODE_ENV === 'test') {
-          allAlbums = await MediaLibrary.getAlbumsAsync();
-        } else {
-          let albumsTimer: NodeJS.Timeout;
-          const albumsTimeout = new Promise<never>((_, reject) =>
-            albumsTimer = setTimeout(() => reject(new Error('ALBUM_TIMEOUT')), 10000)
-          );
-          allAlbums = await Promise.race([
-            MediaLibrary.getAlbumsAsync(),
-            albumsTimeout
-          ]).finally(() => clearTimeout(albumsTimer));
-        }
-
-        if (!active) {
-          logger.debug('useGalleryPhotos', `loadPhotos: active became false during albums resolution`);
+        if (!activeRef.current) {
+          logger.debug('useGalleryPhotos', `loadPhotos: active became false during photo fetching`);
           return;
         }
 
-        const grovkornetAlbums = allAlbums.filter(a => a.title.toLowerCase() === 'grovkornet');
-        let media: MediaLibrary.Asset[] = [];
-
-        if (grovkornetAlbums.length > 0) {
-          logger.debug('Gallery', `Found ${grovkornetAlbums.length} Grovkornet albums, fetching from all...`);
-          let results: MediaLibrary.PagedInfo<MediaLibrary.Asset>[] = [];
-          
-          if (process.env.NODE_ENV === 'test') {
-            results = await Promise.all(
-              grovkornetAlbums.map(album =>
-                MediaLibrary.getAssetsAsync({
-                  album: album.id,
-                  first: 100,
-                  sortBy: [[MediaLibrary.SortBy.creationTime, false]],
-                  mediaType: MediaLibrary.MediaType.photo,
-                })
-              )
-            );
-          } else {
-            let assetsTimer: NodeJS.Timeout;
-            const assetsTimeout = new Promise<never>((_, reject) =>
-              assetsTimer = setTimeout(() => reject(new Error('ASSETS_TIMEOUT')), 15000)
-            );
-            const fetchPromises = grovkornetAlbums.map(album =>
-              MediaLibrary.getAssetsAsync({
-                album: album.id,
-                first: 100,
-                sortBy: [[MediaLibrary.SortBy.creationTime, false]],
-                mediaType: MediaLibrary.MediaType.photo,
-              })
-            );
-
-            results = await Promise.race([
-              Promise.all(fetchPromises),
-              assetsTimeout
-            ]).finally(() => clearTimeout(assetsTimer));
-          }
-
-          if (!active) {
-            logger.debug('useGalleryPhotos', `loadPhotos: active became false during assets resolution`);
-            return;
-          }
-
-          media = results.flatMap(r => r.assets);
-          media.sort((a, b) => b.creationTime - a.creationTime);
-        } else {
-          logger.debug('Gallery', 'Grovkornet album not found. Using global fallback...');
-          try {
-            // Fallback: get recent assets and filter by 'Grovkornet'
-            const recent = await MediaLibrary.getAssetsAsync({
-              first: 200,
-              sortBy: [[MediaLibrary.SortBy.creationTime, false]],
-              mediaType: MediaLibrary.MediaType.photo,
-            });
-            media = recent.assets.filter(a => 
-              a.uri.includes('Grovkornet') || 
-              a.filename.includes('Grovkornet') || 
-              a.filename.startsWith('Grovkornet_') ||
-              a.filename.startsWith('GVK_')
-            );
-            logger.debug('Gallery', `Fallback found ${media.length} photos containing 'Grovkornet'`);
-          } catch (e) {
-            logger.error('Gallery', 'Error in global fallback', e);
-            media = [];
-          }
-        }
-
-        if (!active) {
-          logger.debug('useGalleryPhotos', `loadPhotos: active became false during media resolution`);
-          return;
-        }
-
-        const items: GalleryItem[] = media.map(asset => ({
-          id: asset.id,
-          uri: asset.uri,
-          filename: asset.filename
-        }));
+        const items = [...fetchedItems];
 
         if (currentInitialUriLocal) {
           const initialFilenameOrId = currentInitialUriLocal.split('/').pop();
@@ -252,7 +147,7 @@ export const useGalleryPhotos = (initialUri?: string | null) => {
         setLoading(false);
       } catch (error) {
         logger.error('Gallery', 'Failed to load photos (graceful fallback)', error);
-        if (active) {
+        if (activeRef.current) {
           setLoading(false);
           setPermissionGranted(false);
           if (currentInitialUriLocal) {
@@ -280,8 +175,8 @@ export const useGalleryPhotos = (initialUri?: string | null) => {
 
     let rafId: number;
     const subscription = AppState.addEventListener('change', nextAppState => {
-      logger.debug('useGalleryPhotos', `AppState change: status=${nextAppState}, active=${active}`);
-      if (nextAppState === 'active' && active) {
+      logger.debug('useGalleryPhotos', `AppState change: status=${nextAppState}, active=${activeRef.current}`);
+      if (nextAppState === 'active' && activeRef.current) {
         rafId = requestAnimationFrame(() => {
           void loadPhotos();
         });
@@ -290,7 +185,7 @@ export const useGalleryPhotos = (initialUri?: string | null) => {
 
     return () => {
       logger.debug('useGalleryPhotos', `Effect cleanup running for initialUri=${initialUriRef.current}`);
-      active = false;
+      activeRef.current = false;
       subscription.remove();
       if (rafId) cancelAnimationFrame(rafId);
     };
@@ -303,13 +198,13 @@ export const useGalleryPhotos = (initialUri?: string | null) => {
 
     lastEvaluatedUriRef.current = initialUri;
 
-    let active = true;
+    const activeRef = { current: true };
     const injectInitialUri = async () => {
       try {
         const initialFilenameOrId = initialUri.split('/').pop();
         const isProcessed = isFinalProcessedUri(initialUri);
         const isTemp = isTempUri(initialUri);
-        
+
         let shouldInject = false;
         try {
           const info = await FileSystem.getInfoAsync(initialUri);
@@ -326,14 +221,14 @@ export const useGalleryPhotos = (initialUri?: string | null) => {
           }
         }
 
-        if (!active || !shouldInject) return;
+        if (!activeRef.current || !shouldInject) return;
 
         setPhotos(prev => {
           const alreadyExists = prev.some(item =>
             item.uri === initialUri ||
             (initialFilenameOrId && (item.filename === initialFilenameOrId || item.id === initialFilenameOrId))
           );
-          
+
           if (alreadyExists) return prev;
 
           logger.debug('useGalleryPhotos', `Dynamically injecting missing initialUri: ${initialUri}`);
@@ -348,7 +243,7 @@ export const useGalleryPhotos = (initialUri?: string | null) => {
     void injectInitialUri();
 
     return () => {
-      active = false;
+      activeRef.current = false;
     };
   }, [initialUri, loading]);
 

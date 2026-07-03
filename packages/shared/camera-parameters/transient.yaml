@@ -24,3 +24,30 @@ parameters:
       argumentName: invertYShift
       arrayMapping: if (invertYShift) 1.0f else 0.0f
     includeInPreset: false
+  - name: fps
+    category: transient
+    ts:
+      type: number
+    zustand:
+      store: body
+      default: "0"
+      type: number
+    includeInPreset: false
+  - name: hwFps
+    category: transient
+    ts:
+      type: number
+    zustand:
+      store: body
+      default: "0"
+      type: number
+    includeInPreset: false
+  - name: resolution
+    category: transient
+    ts:
+      type: string
+    zustand:
+      store: body
+      default: "''"
+      type: string
+    includeInPreset: false

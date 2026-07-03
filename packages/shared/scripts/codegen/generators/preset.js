@@ -56,6 +56,23 @@ function generatePresetSettings(parameters) {
     .join('\n\n');
   replaceBetweenMarkers(FILE_PATHS.presetTypes, '// @@GEN_PAYLOAD_EXCLUDED_START@@', '// @@GEN_PAYLOAD_EXCLUDED_END@@', excludedContent, '');
 
+  // 1.6. Generate store-specific ActionKeys union in types.ts
+  const actionsContent = stores
+    .map(store => {
+      const allParams = parameters.filter(
+        p => p.zustand && (p.zustand.store || 'film') === store
+      );
+      const union = allParams
+        .map(p => {
+          const name = p.zustand.name || p.name;
+          return `  | 'set${capitalize(name)}'`;
+        })
+        .join('\n');
+      return `export type Generated${capitalize(store)}ActionKeys =\n${union ? union : '  | never'}\n  ;`;
+    })
+    .join('\n\n');
+  replaceBetweenMarkers(FILE_PATHS.presetTypes, '// @@GEN_PAYLOAD_ACTIONS_START@@', '// @@GEN_PAYLOAD_ACTIONS_END@@', actionsContent, '');
+
   // 2. Generate @grovkornet/shared imports in usePresetStore.ts
   const defaults = new Set();
   parameters.forEach(p => {

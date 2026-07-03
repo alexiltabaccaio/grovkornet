@@ -13,7 +13,7 @@ test('generatePresetSettings correctly outputs preset interfaces, defaults, and 
   fs.existsSync = (filePath) => true;
 
   const fileTemplates = {
-    'types.ts': '// @@GEN_PAYLOAD_INTERFACES_START@@\n// @@GEN_PAYLOAD_INTERFACES_END@@\n// @@GEN_MASTER_PAYLOAD_START@@\n// @@GEN_MASTER_PAYLOAD_END@@\n// @@GEN_PAYLOAD_EXCLUDED_START@@\n// @@GEN_PAYLOAD_EXCLUDED_END@@',
+    'types.ts': '// @@GEN_PAYLOAD_INTERFACES_START@@\n// @@GEN_PAYLOAD_INTERFACES_END@@\n// @@GEN_MASTER_PAYLOAD_START@@\n// @@GEN_MASTER_PAYLOAD_END@@\n// @@GEN_PAYLOAD_EXCLUDED_START@@\n// @@GEN_PAYLOAD_EXCLUDED_END@@\n// @@GEN_PAYLOAD_ACTIONS_START@@\n// @@GEN_PAYLOAD_ACTIONS_END@@',
     'usePresetStore.ts': '// @@GEN_IMPORTS_START@@\n// @@GEN_IMPORTS_END@@\n// @@GEN_PAYLOAD_DEFAULTS_START@@\n// @@GEN_PAYLOAD_DEFAULTS_END@@\n// @@GEN_MASTER_DEFAULTS_START@@\n// @@GEN_MASTER_DEFAULTS_END@@',
     'presetActions.ts': '// @@GEN_SNAPSHOT_START@@\n// @@GEN_SNAPSHOT_END@@\n// @@GEN_NORMALIZE_START@@\n// @@GEN_NORMALIZE_END@@\n// @@GEN_EQUAL_START@@\n// @@GEN_EQUAL_END@@\n// @@GEN_APPLY_START@@\n// @@GEN_APPLY_END@@\n// @@GEN_SYNC_NATIVE_START@@\n// @@GEN_SYNC_NATIVE_END@@'
   };

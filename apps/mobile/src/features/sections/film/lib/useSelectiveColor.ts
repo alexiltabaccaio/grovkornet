@@ -4,17 +4,10 @@ import { useFilmStore, useFilmWorklets } from '@entities/film';
 import { 
   DEFAULT_SELECTIVE_SATURATION,
   DEFAULT_SELECTIVE_HUE,
-  DEFAULT_BOUND_RED_ORANGE,
-  DEFAULT_BOUND_ORANGE_YELLOW,
-  DEFAULT_BOUND_YELLOW_GREEN,
-  DEFAULT_BOUND_GREEN_CYAN,
-  DEFAULT_BOUND_CYAN_BLUE,
-  DEFAULT_BOUND_BLUE_PURPLE,
-  DEFAULT_BOUND_PURPLE_MAGENTA,
-  DEFAULT_BOUND_MAGENTA_RED,
 } from '@grovkornet/shared';
 import { useDoublePress } from '@shared/lib/hooks/useDoublePress';
 import { useControlPanelStore } from '@entities/system';
+import { COLORS, DEFAULT_BOUNDS, getAdjacentBoundIndices } from './selectiveColorHelpers';
 
 export type ColorIndex = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7;
 
@@ -27,198 +20,84 @@ export const useSelectiveColor = (type: 'saturation' | 'hue') => {
   );
 
   const {
-    satRed, setSatRed,
-    satOrange, setSatOrange,
-    satYellow, setSatYellow,
-    satGreen, setSatGreen,
-    satCyan, setSatCyan,
-    satBlue, setSatBlue,
-    satPurple, setSatPurple,
-    satMagenta, setSatMagenta,
-
-    hueRed, setHueRed,
-    hueOrange, setHueOrange,
-    hueYellow, setHueYellow,
-    hueGreen, setHueGreen,
-    hueCyan, setHueCyan,
-    hueBlue, setHueBlue,
-    huePurple, setHuePurple,
-    hueMagenta, setHueMagenta,
-
-    setBoundMagentaRed,
-    setBoundRedOrange,
-    setBoundOrangeYellow,
-    setBoundYellowGreen,
-    setBoundGreenCyan,
-    setBoundCyanBlue,
-    setBoundBluePurple,
-    setBoundPurpleMagenta,
+    v0, v1, v2, v3, v4, v5, v6, v7,
+    s0, s1, s2, s3, s4, s5, s6, s7,
+    b0, b1, b2, b3, b4, b5, b6, b7
   } = useFilmStore(
-    useShallow(state => ({
-      satRed: state.satRed,
-      setSatRed: state.setSatRed,
-      satOrange: state.satOrange,
-      setSatOrange: state.setSatOrange,
-      satYellow: state.satYellow,
-      setSatYellow: state.setSatYellow,
-      satGreen: state.satGreen,
-      setSatGreen: state.setSatGreen,
-      satCyan: state.satCyan,
-      setSatCyan: state.setSatCyan,
-      satBlue: state.satBlue,
-      setSatBlue: state.setSatBlue,
-      satPurple: state.satPurple,
-      setSatPurple: state.setSatPurple,
-      satMagenta: state.satMagenta,
-      setSatMagenta: state.setSatMagenta,
-
-      hueRed: state.hueRed,
-      setHueRed: state.setHueRed,
-      hueOrange: state.hueOrange,
-      setHueOrange: state.setHueOrange,
-      hueYellow: state.hueYellow,
-      setHueYellow: state.setHueYellow,
-      hueGreen: state.hueGreen,
-      setHueGreen: state.setHueGreen,
-      hueCyan: state.hueCyan,
-      setHueCyan: state.setHueCyan,
-      hueBlue: state.hueBlue,
-      setHueBlue: state.setHueBlue,
-      huePurple: state.huePurple,
-      setHuePurple: state.setHuePurple,
-      hueMagenta: state.hueMagenta,
-      setHueMagenta: state.setHueMagenta,
-
-      setBoundMagentaRed: state.setBoundMagentaRed,
-      setBoundRedOrange: state.setBoundRedOrange,
-      setBoundOrangeYellow: state.setBoundOrangeYellow,
-      setBoundYellowGreen: state.setBoundYellowGreen,
-      setBoundGreenCyan: state.setBoundGreenCyan,
-      setBoundCyanBlue: state.setBoundCyanBlue,
-      setBoundBluePurple: state.setBoundBluePurple,
-      setBoundPurpleMagenta: state.setBoundPurpleMagenta,
-    }))
+    useShallow(state => {
+      if (type === 'saturation') {
+        return {
+          v0: state.satRed,
+          v1: state.satOrange,
+          v2: state.satYellow,
+          v3: state.satGreen,
+          v4: state.satCyan,
+          v5: state.satBlue,
+          v6: state.satPurple,
+          v7: state.satMagenta,
+          s0: state.setSatRed,
+          s1: state.setSatOrange,
+          s2: state.setSatYellow,
+          s3: state.setSatGreen,
+          s4: state.setSatCyan,
+          s5: state.setSatBlue,
+          s6: state.setSatPurple,
+          s7: state.setSatMagenta,
+          b0: state.setBoundMagentaRed,
+          b1: state.setBoundRedOrange,
+          b2: state.setBoundOrangeYellow,
+          b3: state.setBoundYellowGreen,
+          b4: state.setBoundGreenCyan,
+          b5: state.setBoundCyanBlue,
+          b6: state.setBoundBluePurple,
+          b7: state.setBoundPurpleMagenta,
+        };
+      } else {
+        return {
+          v0: state.hueRed,
+          v1: state.hueOrange,
+          v2: state.hueYellow,
+          v3: state.hueGreen,
+          v4: state.hueCyan,
+          v5: state.hueBlue,
+          v6: state.huePurple,
+          v7: state.hueMagenta,
+          s0: state.setHueRed,
+          s1: state.setHueOrange,
+          s2: state.setHueYellow,
+          s3: state.setHueGreen,
+          s4: state.setHueCyan,
+          s5: state.setHueBlue,
+          s6: state.setHuePurple,
+          s7: state.setHueMagenta,
+          b0: state.setBoundMagentaRed,
+          b1: state.setBoundRedOrange,
+          b2: state.setBoundOrangeYellow,
+          b3: state.setBoundYellowGreen,
+          b4: state.setBoundGreenCyan,
+          b5: state.setBoundCyanBlue,
+          b6: state.setBoundBluePurple,
+          b7: state.setBoundPurpleMagenta,
+        };
+      }
+    })
   );
 
-  const handleParameterOnlyReset = useCallback((colorKey: string) => {
-    if (type === 'saturation') {
-      const v = DEFAULT_SELECTIVE_SATURATION;
-      switch (colorKey) {
-        case 'red':     setSatRed(v); break;
-        case 'orange':  setSatOrange(v); break;
-        case 'yellow':  setSatYellow(v); break;
-        case 'green':   setSatGreen(v); break;
-        case 'cyan':    setSatCyan(v); break;
-        case 'blue':    setSatBlue(v); break;
-        case 'purple':  setSatPurple(v); break;
-        case 'magenta': setSatMagenta(v); break;
-      }
-    } else {
-      const v = DEFAULT_SELECTIVE_HUE;
-      switch (colorKey) {
-        case 'red':     setHueRed(v); break;
-        case 'orange':  setHueOrange(v); break;
-        case 'yellow':  setHueYellow(v); break;
-        case 'green':   setHueGreen(v); break;
-        case 'cyan':    setHueCyan(v); break;
-        case 'blue':    setHueBlue(v); break;
-        case 'purple':  setHuePurple(v); break;
-        case 'magenta': setHueMagenta(v); break;
-      }
-    }
-  }, [type, setSatRed, setSatOrange, setSatYellow, setSatGreen, setSatCyan, setSatBlue, setSatPurple, setSatMagenta, setHueRed, setHueOrange, setHueYellow, setHueGreen, setHueCyan, setHueBlue, setHuePurple, setHueMagenta]);
+  const values = useMemo(() => [v0, v1, v2, v3, v4, v5, v6, v7], [v0, v1, v2, v3, v4, v5, v6, v7]);
+  const setters = useMemo(() => [s0, s1, s2, s3, s4, s5, s6, s7], [s0, s1, s2, s3, s4, s5, s6, s7]);
+  const boundSetters = useMemo(() => [b0, b1, b2, b3, b4, b5, b6, b7], [b0, b1, b2, b3, b4, b5, b6, b7]);
 
   const handleFullColorReset = useCallback((colorKey: string) => {
-    if (type === 'saturation') {
-      const v = DEFAULT_SELECTIVE_SATURATION;
-      switch (colorKey) {
-        case 'red':
-          setSatRed(v);
-          setBoundMagentaRed(DEFAULT_BOUND_MAGENTA_RED);
-          setBoundRedOrange(DEFAULT_BOUND_RED_ORANGE);
-          break;
-        case 'orange':
-          setSatOrange(v);
-          setBoundRedOrange(DEFAULT_BOUND_RED_ORANGE);
-          setBoundOrangeYellow(DEFAULT_BOUND_ORANGE_YELLOW);
-          break;
-        case 'yellow':
-          setSatYellow(v);
-          setBoundOrangeYellow(DEFAULT_BOUND_ORANGE_YELLOW);
-          setBoundYellowGreen(DEFAULT_BOUND_YELLOW_GREEN);
-          break;
-        case 'green':
-          setSatGreen(v);
-          setBoundYellowGreen(DEFAULT_BOUND_YELLOW_GREEN);
-          setBoundGreenCyan(DEFAULT_BOUND_GREEN_CYAN);
-          break;
-        case 'cyan':
-          setSatCyan(v);
-          setBoundGreenCyan(DEFAULT_BOUND_GREEN_CYAN);
-          setBoundCyanBlue(DEFAULT_BOUND_CYAN_BLUE);
-          break;
-        case 'blue':
-          setSatBlue(v);
-          setBoundCyanBlue(DEFAULT_BOUND_CYAN_BLUE);
-          setBoundBluePurple(DEFAULT_BOUND_BLUE_PURPLE);
-          break;
-        case 'purple':
-          setSatPurple(v);
-          setBoundBluePurple(DEFAULT_BOUND_BLUE_PURPLE);
-          setBoundPurpleMagenta(DEFAULT_BOUND_PURPLE_MAGENTA);
-          break;
-        case 'magenta':
-          setSatMagenta(v);
-          setBoundPurpleMagenta(DEFAULT_BOUND_PURPLE_MAGENTA);
-          setBoundMagentaRed(DEFAULT_BOUND_MAGENTA_RED);
-          break;
-      }
-    } else {
-      const v = DEFAULT_SELECTIVE_HUE;
-      switch (colorKey) {
-        case 'red':
-          setHueRed(v);
-          setBoundMagentaRed(DEFAULT_BOUND_MAGENTA_RED);
-          setBoundRedOrange(DEFAULT_BOUND_RED_ORANGE);
-          break;
-        case 'orange':
-          setHueOrange(v);
-          setBoundRedOrange(DEFAULT_BOUND_RED_ORANGE);
-          setBoundOrangeYellow(DEFAULT_BOUND_ORANGE_YELLOW);
-          break;
-        case 'yellow':
-          setHueYellow(v);
-          setBoundOrangeYellow(DEFAULT_BOUND_ORANGE_YELLOW);
-          setBoundYellowGreen(DEFAULT_BOUND_YELLOW_GREEN);
-          break;
-        case 'green':
-          setHueGreen(v);
-          setBoundYellowGreen(DEFAULT_BOUND_YELLOW_GREEN);
-          setBoundGreenCyan(DEFAULT_BOUND_GREEN_CYAN);
-          break;
-        case 'cyan':
-          setHueCyan(v);
-          setBoundGreenCyan(DEFAULT_BOUND_GREEN_CYAN);
-          setBoundCyanBlue(DEFAULT_BOUND_CYAN_BLUE);
-          break;
-        case 'blue':
-          setHueBlue(v);
-          setBoundCyanBlue(DEFAULT_BOUND_CYAN_BLUE);
-          setBoundBluePurple(DEFAULT_BOUND_BLUE_PURPLE);
-          break;
-        case 'purple':
-          setHuePurple(v);
-          setBoundBluePurple(DEFAULT_BOUND_BLUE_PURPLE);
-          setBoundPurpleMagenta(DEFAULT_BOUND_PURPLE_MAGENTA);
-          break;
-        case 'magenta':
-          setHueMagenta(v);
-          setBoundPurpleMagenta(DEFAULT_BOUND_PURPLE_MAGENTA);
-          setBoundMagentaRed(DEFAULT_BOUND_MAGENTA_RED);
-          break;
-      }
-    }
-  }, [type, setSatRed, setSatOrange, setSatYellow, setSatGreen, setSatCyan, setSatBlue, setSatPurple, setSatMagenta, setHueRed, setHueOrange, setHueYellow, setHueGreen, setHueCyan, setHueBlue, setHuePurple, setHueMagenta, setBoundMagentaRed, setBoundRedOrange, setBoundOrangeYellow, setBoundYellowGreen, setBoundGreenCyan, setBoundCyanBlue, setBoundBluePurple, setBoundPurpleMagenta]);
+    const index = COLORS.indexOf(colorKey as any);
+    if (index === -1) return;
+
+    const defaultValue = type === 'saturation' ? DEFAULT_SELECTIVE_SATURATION : DEFAULT_SELECTIVE_HUE;
+    setters[index](defaultValue);
+
+    const [firstBoundIdx, secondBoundIdx] = getAdjacentBoundIndices(index);
+    boundSetters[firstBoundIdx](DEFAULT_BOUNDS[firstBoundIdx]);
+    boundSetters[secondBoundIdx](DEFAULT_BOUNDS[secondBoundIdx]);
+  }, [type, setters, boundSetters]);
 
   const { handlePressWithDouble } = useDoublePress(handleFullColorReset);
 
@@ -229,87 +108,43 @@ export const useSelectiveColor = (type: 'saturation' | 'hue') => {
   const worklets = useFilmWorklets();
 
   const activeValue = useMemo(() => {
-    if (type === 'saturation') {
-      switch (activeColorIndex) {
-        case 0: return satRed;
-        case 1: return satOrange;
-        case 2: return satYellow;
-        case 3: return satGreen;
-        case 4: return satCyan;
-        case 5: return satBlue;
-        case 6: return satPurple;
-        case 7: return satMagenta;
-      }
-    } else {
-      switch (activeColorIndex) {
-        case 0: return hueRed;
-        case 1: return hueOrange;
-        case 2: return hueYellow;
-        case 3: return hueGreen;
-        case 4: return hueCyan;
-        case 5: return hueBlue;
-        case 6: return huePurple;
-        case 7: return hueMagenta;
-      }
-    }
-  }, [type, activeColorIndex, satRed, satOrange, satYellow, satGreen, satCyan, satBlue, satPurple, satMagenta, hueRed, hueOrange, hueYellow, hueGreen, hueCyan, hueBlue, huePurple, hueMagenta]);
+    return values[activeColorIndex];
+  }, [activeColorIndex, values]);
 
   const activeSetter = useMemo(() => {
-    if (type === 'saturation') {
-      switch (activeColorIndex) {
-        case 0: return setSatRed;
-        case 1: return setSatOrange;
-        case 2: return setSatYellow;
-        case 3: return setSatGreen;
-        case 4: return setSatCyan;
-        case 5: return setSatBlue;
-        case 6: return setSatPurple;
-        case 7: return setSatMagenta;
-      }
-    } else {
-      switch (activeColorIndex) {
-        case 0: return setHueRed;
-        case 1: return setHueOrange;
-        case 2: return setHueYellow;
-        case 3: return setHueGreen;
-        case 4: return setHueCyan;
-        case 5: return setHueBlue;
-        case 6: return setHuePurple;
-        case 7: return setHueMagenta;
-      }
-    }
-  }, [type, activeColorIndex, setSatRed, setSatOrange, setSatYellow, setSatGreen, setSatCyan, setSatBlue, setSatPurple, setSatMagenta, setHueRed, setHueOrange, setHueYellow, setHueGreen, setHueCyan, setHueBlue, setHuePurple, setHueMagenta]);
+    return setters[activeColorIndex];
+  }, [activeColorIndex, setters]);
 
   const activeWorklet = useMemo(() => {
-    if (type === 'saturation') {
-      switch (activeColorIndex) {
-        case 0: return worklets.updateSatRed;
-        case 1: return worklets.updateSatOrange;
-        case 2: return worklets.updateSatYellow;
-        case 3: return worklets.updateSatGreen;
-        case 4: return worklets.updateSatCyan;
-        case 5: return worklets.updateSatBlue;
-        case 6: return worklets.updateSatPurple;
-        case 7: return worklets.updateSatMagenta;
-      }
-    } else {
-      switch (activeColorIndex) {
-        case 0: return worklets.updateHueRed;
-        case 1: return worklets.updateHueOrange;
-        case 2: return worklets.updateHueYellow;
-        case 3: return worklets.updateHueGreen;
-        case 4: return worklets.updateHueCyan;
-        case 5: return worklets.updateHueBlue;
-        case 6: return worklets.updateHuePurple;
-        case 7: return worklets.updateHueMagenta;
-      }
-    }
+    const satWorklets = [
+      worklets.updateSatRed,
+      worklets.updateSatOrange,
+      worklets.updateSatYellow,
+      worklets.updateSatGreen,
+      worklets.updateSatCyan,
+      worklets.updateSatBlue,
+      worklets.updateSatPurple,
+      worklets.updateSatMagenta,
+    ];
+    const hueWorklets = [
+      worklets.updateHueRed,
+      worklets.updateHueOrange,
+      worklets.updateHueYellow,
+      worklets.updateHueGreen,
+      worklets.updateHueCyan,
+      worklets.updateHueBlue,
+      worklets.updateHuePurple,
+      worklets.updateHueMagenta,
+    ];
+    return type === 'saturation' ? satWorklets[activeColorIndex] : hueWorklets[activeColorIndex];
   }, [type, activeColorIndex, worklets]);
 
   const activeReset = useMemo(() => {
-    const colorKeys = ['red', 'orange', 'yellow', 'green', 'cyan', 'blue', 'purple', 'magenta'];
-    return () => handleParameterOnlyReset(colorKeys[activeColorIndex]);
-  }, [activeColorIndex, handleParameterOnlyReset]);
+    return () => {
+      const defaultValue = type === 'saturation' ? DEFAULT_SELECTIVE_SATURATION : DEFAULT_SELECTIVE_HUE;
+      setters[activeColorIndex](defaultValue);
+    };
+  }, [type, activeColorIndex, setters]);
 
   return {
     activeColorIndex,

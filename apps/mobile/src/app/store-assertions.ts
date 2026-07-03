@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-redundant-type-constituents */
 import { FilmStore } from '@entities/film';
 import { BodyStore } from '@entities/body';
-import { FilmPresetPayload, BodyPresetPayload, GeneratedFilmExcludedKeys, GeneratedBodyExcludedKeys } from '@entities/preset';
+import { FilmPresetPayload, BodyPresetPayload, GeneratedFilmExcludedKeys, GeneratedBodyExcludedKeys, GeneratedFilmActionKeys, GeneratedBodyActionKeys } from '@entities/preset';
 
 // ============================================================================
 // TypeScript Exhaustiveness Guards
@@ -9,75 +9,7 @@ import { FilmPresetPayload, BodyPresetPayload, GeneratedFilmExcludedKeys, Genera
 // Located in app layer to avoid cross-slice entity imports.
 // ============================================================================
 
-type FilmActionsKeys =
-  | 'setSaturation'
-  | 'setContrast'
-  | 'setGrainIntensity'
-  | 'setGrainChroma'
-  | 'setGrainSize'
-  | 'setGrainSpeed'
-  | 'setGrainRoughness'
-  | 'setTemperature'
-  | 'setTint'
-  | 'setBloomIntensity'
-  | 'setChromaticAberration'
-  | 'setChromaShift'
-  | 'setChromaShiftDirection'
-  | 'setSharpening'
-  | 'setSatRed'
-  | 'setSatOrange'
-  | 'setSatYellow'
-  | 'setSatGreen'
-  | 'setSatCyan'
-  | 'setSatBlue'
-  | 'setSatPurple'
-  | 'setSatMagenta'
-  | 'setAberrationInvert'
-  | 'setBoundMagentaRed'
-  | 'setBoundRedOrange'
-  | 'setBoundOrangeYellow'
-  | 'setBoundYellowGreen'
-  | 'setBoundGreenCyan'
-  | 'setBoundCyanBlue'
-  | 'setBoundBluePurple'
-  | 'setBoundPurpleMagenta'
-  | 'setGrainEnabled'
-  | 'setBloomEnabled'
-  | 'setNoiseReductionMode'
-  | 'setNoiseReductionAuto'
-  | 'setTemperatureAuto'
-  | 'setCapabilities'
-  | 'setIsSelfieCamera'
-  | 'setBlackLevel'
-  | 'setHighlights'
-  | 'setPivot'
-  | 'setContrastAuto'
-  | 'setBlackLevelAuto'
-  | 'setHighlightsAuto'
-  | 'setPivotAuto'
-  | 'setVignetteIntensity'
-  | 'setPixelationFactor'
-  | 'setTapeJitter'
-  | 'setScanlines'
-  | 'setScanlinesHorizontal'
-  | 'setScanlinesMode'
-  | 'setScanlinesDensity'
-  | 'setChromaShiftInvert'
-  | 'setHue'
-  | 'setHueRed'
-  | 'setHueOrange'
-  | 'setHueYellow'
-  | 'setHueGreen'
-  | 'setHueCyan'
-  | 'setHueBlue'
-  | 'setHuePurple'
-  | 'setHueMagenta'
-  | 'setLensDistortion'
-  | 'setHalationIntensity'
-  | 'setHalationEnabled'
-  | 'setHalationThreshold'
-  | 'setBloomThreshold'
-  | 'setChromaBleed';
+type FilmActionsKeys = GeneratedFilmActionKeys | 'setCapabilities';
 
 type FilmExcludedKeys = 'capabilities' | GeneratedFilmExcludedKeys;
 
@@ -91,31 +23,9 @@ type IsFilmStoreFullyCategorized = Exclude<
 // This will trigger a TypeScript error if any key in FilmStore state is added without being categorized
 const _assertFilmStoreCategorized: IsFilmStoreFullyCategorized = true;
 
-type BodyActionsKeys =
-  | 'setDebugInfo'
-  | 'setIso'
-  | 'setEv'
-  | 'setShutterSpeed'
-  | 'setIsoAuto'
-  | 'setShutterSpeedAuto'
-  | 'setEvAuto'
-  | 'setTorchState'
-  | 'setTorchStrength'
-  | 'setAspectRatio'
-  | 'setResolutionSetting'
-  | 'setFpsSetting'
-  | 'setPreviewQuality'
-  | 'setForce60fpsCrop'
-  | 'setCapabilities'
-  | 'setZoom';
+type BodyActionsKeys = GeneratedBodyActionKeys | 'setDebugInfo' | 'setCapabilities';
 
-type BodyExcludedKeys =
-  | 'fps'
-  | 'hwFps'
-  | 'resolution'
-  | 'evAuto'
-  | 'capabilities'
-  | GeneratedBodyExcludedKeys;
+type BodyExcludedKeys = 'capabilities' | GeneratedBodyExcludedKeys;
 
 type IsBodyStoreFullyCategorized = Exclude<
   keyof BodyStore,

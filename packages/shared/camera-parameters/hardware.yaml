@@ -1,4 +1,17 @@
 parameters:
+  - name: evAuto
+    category: hardware
+    ts:
+      type: boolean
+    zustand:
+      store: body
+      default: "true"
+      type: boolean
+      setSideEffects:
+        - target: ev
+          value: DEFAULT_EV
+          condition: value
+    includeInPreset: false
   - name: ev
     category: hardware
     arrayIndex: 9
