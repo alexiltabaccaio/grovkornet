@@ -107,13 +107,11 @@ fragment {
             baseColor = sampleTextureWithPixelationBlur(compositeUv, blurOffset);
         }
 
-        if (materialParams.u_PixelationFactor <= 1.0) {
-            // Apply Chroma Bleed
-            baseColor.rgb = applyChromaBleed(baseColor.rgb, compositeUv);
+        // Apply Chroma Bleed
+        baseColor.rgb = applyChromaBleed(baseColor.rgb, compositeUv);
 
-            // 4. Sharpening filter
-            baseColor.rgb = applySharpening(baseColor.rgb, compositeUv);
-        }
+        // 4. Sharpening filter
+        baseColor.rgb = applySharpening(baseColor.rgb, compositeUv);
 
         // 5. Scanlines
         baseColor.rgb = applyScanlines(baseColor.rgb, uv, res);
