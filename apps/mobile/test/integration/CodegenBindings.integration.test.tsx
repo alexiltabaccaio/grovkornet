@@ -63,7 +63,7 @@ describe('CodegenBindings Integration Test', () => {
       useFilmStore.getState().noiseReductionMode.value = 2;
       
       // Trigger a state update on useCameraStore to force Viewfinder to rerender reactively
-      useCameraStore.getState().setIsCameraSecure(false);
+      useCameraStore.getState().setIsCameraSecure(true);
     });
 
     // Rerender to force Reanimated's mocked useAnimatedProps to re-evaluate the callbacks

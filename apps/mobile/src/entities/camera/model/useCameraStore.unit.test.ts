@@ -4,7 +4,7 @@ describe('useCameraStore', () => {
   beforeEach(() => {
     useCameraStore.setState({
       isCapturing: false,
-      isCameraSecure: true,
+      isCameraSecure: false,
       isTorchOn: false,
       thermalState: 'normal',
       isLowRam: false,
@@ -14,7 +14,7 @@ describe('useCameraStore', () => {
   it('initializes with default values', () => {
     const state = useCameraStore.getState();
     expect(state.isCapturing).toBe(false);
-    expect(state.isCameraSecure).toBe(true);
+    expect(state.isCameraSecure).toBe(false);
     expect(state.isTorchOn).toBe(false);
     expect(state.thermalState).toBe('normal');
     expect(state.isLowRam).toBe(false);

@@ -120,19 +120,14 @@ class NativeFilmCameraView(context: Context) : SurfaceView(context), SurfaceHold
         updateScheduler?.schedule()
     }
     fun setSecureMode(enabled: Boolean) {
-        val isDebuggable = (context.applicationInfo.flags and android.content.pm.ApplicationInfo.FLAG_DEBUGGABLE) != 0
-        if (isDebuggable) {
-            this.setSecure(enabled)
-        } else {
-            // In production (Release build), we ALWAYS force security by bypassing React Native
-            this.setSecure(true)
-        }
+        this.setSecure(enabled)
     }
 
     init {
         activeInstances.add(this)
         // Obscures the video feed in screenshots and screen recordings (hardware FLAG_SECURE)
-        this.setSecure(true)
+        // Set to false initially, let React Native prop drive it
+        this.setSecure(false)
         holder.addCallback(this)
 
         val cameraListener = object : CameraEngine.Listener {

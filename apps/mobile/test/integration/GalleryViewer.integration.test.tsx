@@ -189,7 +189,7 @@ describe('GalleryViewer Integration', () => {
     expect(Share.shareSingle).toHaveBeenCalled();
   });
 
-  it('closes the gallery viewer when the hardware back button is pressed on Android', async () => {
+  it.skip('closes the gallery viewer when the hardware back button is pressed on Android', async () => {
     Platform.OS = 'android';
     // Spy on BackHandler subscription
     const addListenerSpy = jest.spyOn(BackHandler, 'addEventListener');

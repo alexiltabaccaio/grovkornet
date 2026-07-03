@@ -18,8 +18,7 @@ jest.mock('@entities/system', () => ({
       setThermalState: jest.fn(),
       isLogsEnabled: false,
       setIsLogsEnabled: jest.fn(),
-      isCameraSecure: false,
-      setIsCameraSecure: jest.fn(),
+
     };
     return fn ? fn(state) : state;
   }),
@@ -63,6 +62,6 @@ describe('Debug module panels', () => {
   it('renders DeveloperOptionsPanel correctly', () => {
     const { getByText } = render(<DeveloperOptionsPanel />);
     expect(getByText('LOGS')).toBeDefined();
-    expect(getByText('SECURE')).toBeDefined();
+
   });
 });

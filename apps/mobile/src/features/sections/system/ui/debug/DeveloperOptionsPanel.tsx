@@ -3,7 +3,7 @@ import { StyleSheet, StyleProp, ViewStyle } from 'react-native';
 import { useShallow } from 'zustand/shallow';
 import { ParameterPanelWrapper } from '@entities/system';
 import { useSystemStore } from '@entities/system';
-import { useCameraStore } from '@entities/camera';
+import { useCameraStore, IS_SECURE_CAMERA_ENABLED } from '@entities/camera';
 import { PillButton } from '@shared/ui';
 
 interface DeveloperOptionsPanelProps {
@@ -29,6 +29,8 @@ export const DeveloperOptionsPanel = ({ animatedStyle }: DeveloperOptionsPanelPr
     setIsCameraSecure: state.setIsCameraSecure,
   })));
 
+
+
   return (
     <ParameterPanelWrapper animatedStyle={animatedStyle} gap={16} paddingHorizontal={32} scrollable={true}>
       <PillButton
@@ -38,13 +40,16 @@ export const DeveloperOptionsPanel = ({ animatedStyle }: DeveloperOptionsPanelPr
         isLayoutOverlayEnabled={isLayoutOverlayEnabled}
         style={styles.pressable}
       />
-      <PillButton
-        label="SECURE"
-        isActive={isCameraSecure}
-        onPress={() => setIsCameraSecure(!isCameraSecure)}
-        isLayoutOverlayEnabled={isLayoutOverlayEnabled}
-        style={styles.pressable}
-      />
+      {IS_SECURE_CAMERA_ENABLED && (
+        <PillButton
+          label="SECURE"
+          isActive={isCameraSecure}
+          onPress={() => setIsCameraSecure(!isCameraSecure)}
+          isLayoutOverlayEnabled={isLayoutOverlayEnabled}
+          style={styles.pressable}
+        />
+      )}
+
     </ParameterPanelWrapper>
   );
 };
