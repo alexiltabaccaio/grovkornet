@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { ScrollView, TouchableOpacity } from 'react-native-gesture-handler';
-import { useTranslation } from 'react-i18next';
 import { ParameterThumbView } from '@shared/ui/parameter-thumb';
 import { AppPreviewThumbnail } from '@shared/ui/theme-thumbnail';
 
@@ -56,7 +55,6 @@ const MOCK_THEMES = [
 ];
 
 export const ThemeModule = React.memo(() => {
-  const { t } = useTranslation();
   const [activeTheme, setActiveTheme] = useState('grovkornet');
 
   return (
@@ -72,7 +70,7 @@ export const ThemeModule = React.memo(() => {
             activeOpacity={0.8} 
             onPress={() => setActiveTheme(theme.id)}
             disabled={theme.disabled}
-            style={[theme.disabled && { opacity: 0.4 }]}
+            style={theme.disabled && { opacity: 0.4 }}
           >
             <ParameterThumbView
               label={theme.label}

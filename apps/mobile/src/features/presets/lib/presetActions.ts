@@ -26,51 +26,58 @@ const AUTO_MAPPINGS: Record<string, string> = {
   ev: 'evAuto',
 };
 
-const snapshotStorePayload = <T extends Record<string, any>>(
-  storeState: Record<string, any>,
+const snapshotStorePayload = <T extends object>(
+  storeState: Record<string, unknown> | object,
   defaultPayload: T
 ): T => {
+  const state = storeState as Record<string, unknown>;
   const payload = {} as Record<keyof T, unknown>;
   Object.keys(defaultPayload).forEach((key) => {
     const k = key as keyof T;
-    const val = storeState[key];
-    const hasValue = val && typeof val === 'object' && 'value' in val;
-    payload[k] = hasValue ? val.value : val !== undefined ? val : defaultPayload[k];
+    const val = state[key];
+    const hasValue = !!(val && typeof val === 'object' && 'value' in (val as Record<string, unknown>));
+    payload[k] = hasValue
+      ? (val as Record<string, unknown>).value
+      : val !== undefined
+      ? val
+      : (defaultPayload as Record<keyof T, unknown>)[k];
   });
   return payload as T;
 };
 
-const normalizeStorePayload = <T extends Record<string, any>>(
+const normalizeStorePayload = <T extends object>(
   payload: T | undefined,
   defaultPayload: T
 ): T => {
   const result = { ...defaultPayload };
   if (payload) {
+    const p = payload as Record<string, unknown>;
     Object.keys(payload).forEach((key) => {
-      const k = key as keyof T;
-      if (payload[k] !== undefined && payload[k] !== null) {
-        result[k] = payload[k];
+      if (p[key] !== undefined && p[key] !== null) {
+        (result as Record<string, unknown>)[key] = p[key];
       }
     });
   }
   return result;
 };
 
-const areStorePayloadsEqual = <T extends Record<string, any>>(
+const areStorePayloadsEqual = <T extends object>(
   n1: T,
   n2: T,
   defaultPayload: T
 ): boolean => {
   const keys = Object.keys(defaultPayload) as Array<keyof T>;
+  const o1 = n1 as Record<string, unknown>;
+  const o2 = n2 as Record<string, unknown>;
   for (const key of keys) {
     const keyStr = key as string;
     const autoKey = AUTO_MAPPINGS[keyStr];
-    if (autoKey && n1[autoKey] && n2[autoKey]) {
+    if (autoKey && o1[autoKey] && o2[autoKey]) {
       continue;
     }
 
-    const val1 = n1[key];
-    const val2 = n2[key];
+    const val1 = o1[keyStr];
+    const val2 = o2[keyStr];
     if (typeof val1 === 'number' && typeof val2 === 'number') {
       if (Math.abs(val1 - val2) >= 0.000001) return false;
     } else if (val1 !== val2) {
@@ -80,27 +87,30 @@ const areStorePayloadsEqual = <T extends Record<string, any>>(
   return true;
 };
 
-const applyStorePayload = <T extends Record<string, any>>(
-  storeState: Record<string, any>,
+const applyStorePayload = <T extends object>(
+  storeState: Record<string, unknown> | object,
   defaultPayload: T,
   customPayload: T | undefined
 ): T => {
   const target = { ...defaultPayload, ...customPayload };
+  const state = storeState as Record<string, unknown>;
+  const t = target as Record<string, unknown>;
   Object.keys(target).forEach((key) => {
-    const storeItem = storeState[key];
-    if (storeItem && typeof storeItem === 'object' && 'value' in storeItem) {
-      (storeItem as Record<string, unknown>).value = target[key];
+    const storeItem = state[key];
+    if (storeItem && typeof storeItem === 'object' && 'value' in (storeItem as Record<string, unknown>)) {
+      (storeItem as Record<string, unknown>).value = t[key];
     }
   });
   return target;
 };
 
-const syncPayloadToNitro = (payload: Record<string, any>): void => {
+const syncPayloadToNitro = (payload: Record<string, unknown> | object): void => {
   const nitroConfig = getNitroConfig();
-  Object.keys(payload).forEach((key) => {
+  const p = payload as Record<string, unknown>;
+  Object.keys(p).forEach((key) => {
     if (key in nitroConfig) {
       try {
-        (nitroConfig as unknown as Record<string, unknown>)[key] = payload[key];
+        (nitroConfig as unknown as Record<string, unknown>)[key] = p[key];
       } catch {
         // Ignored
       }

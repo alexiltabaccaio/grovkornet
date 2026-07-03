@@ -14,8 +14,18 @@ export function getFsdInfo(filePath) {
   const match = filePath.match(/apps\/(?:mobile|web)\/src\/([^/]+)\/([^/]+)(.*)/);
   if (match) {
     const layer = match[1];
-    const slice = match[2];
-    const rest = match[3];
+    let slice = match[2];
+    let rest = match[3];
+
+    // Support nested slice group 'sections' under features
+    if (slice === 'sections') {
+      const nestedMatch = rest.match(/^\/([^/]+)(.*)/);
+      if (nestedMatch) {
+        slice = `sections/${nestedMatch[1]}`;
+        rest = nestedMatch[2];
+      }
+    }
+
     if (FSD_LAYERS.includes(layer)) {
       return {
         layer,
@@ -63,8 +73,9 @@ export function validateFsdBoundaries(edges) {
       }
 
       // 2. Public API Bypass
+      const layersWithSlices = ['screens', 'widgets', 'features', 'entities'];
       const isCrossSlice = sourceLayer !== targetLayer || sourceInfo.slice !== targetInfo.slice;
-      if (isCrossSlice && targetLayer !== 'shared') {
+      if (isCrossSlice && layersWithSlices.includes(targetLayer)) {
         if (!targetInfo.isPublicApi) {
           violations.push({
             type: 'public_api_bypass',

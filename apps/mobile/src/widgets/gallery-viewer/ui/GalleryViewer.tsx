@@ -2,7 +2,6 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { StyleSheet, View, Platform, useWindowDimensions, BackHandler } from 'react-native';
 import { Image } from 'expo-image';
 import Animated, { useAnimatedStyle, SharedValue, interpolate, useSharedValue, withTiming, runOnJS } from 'react-native-reanimated';
-import { useTranslation } from 'react-i18next';
 import { ShareButton, PhotoPreview, GalleryStrip, useGalleryViewer } from '@features/gallery';
 import { useDeviceRotation } from '@shared/lib/hooks/useDeviceRotation';
 import { useVerificationStore } from '@entities/verification';
@@ -15,7 +14,6 @@ interface GalleryViewerProps {
 }
 
 export const GalleryViewer = React.memo(({ onClose, initialUri, galleryTransition, header }: GalleryViewerProps) => {
-  const { t } = useTranslation();
   const { photos, selectedPhoto, loading, onPhotoVisible, onSelectPhoto } = useGalleryViewer(initialUri);
   const rotationY = useDeviceRotation();
   const { width, height } = useWindowDimensions();
@@ -150,7 +148,6 @@ export const GalleryViewer = React.memo(({ onClose, initialUri, galleryTransitio
                   onPhotoVisible={onPhotoVisible}
                   rotationY={rotationY}
                   onInitialImageLoad={handleInitialImageLoad}
-                  initialUri={initialUri}
                   zoomScale={zoomScale}
                   zoomTranslateX={zoomTranslateX}
                   zoomTranslateY={zoomTranslateY}

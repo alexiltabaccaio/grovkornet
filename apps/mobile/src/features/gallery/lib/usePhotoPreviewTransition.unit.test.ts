@@ -118,7 +118,7 @@ describe('usePhotoPreviewTransition', () => {
 
   it('preserves zoom state when photos list updates but index is unchanged', () => {
     const resetZoomSignalMock = { value: 0 };
-    const { result, rerender } = renderHook(
+    const { rerender } = renderHook(
       (props: { selectedPhoto: GalleryItem | null; photos: GalleryItem[] }) =>
         usePhotoPreviewTransition({
           selectedPhoto: props.selectedPhoto,

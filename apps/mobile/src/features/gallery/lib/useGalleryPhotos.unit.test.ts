@@ -289,7 +289,7 @@ describe('useGalleryPhotos', () => {
     });
   });
 
-  it('aborts loadPhotos if hook is unmounted during permission request', async () => {
+  it('aborts loadPhotos if hook is unmounted during permission request', () => {
     let resolvePerm!: (val: any) => void;
     const permPromise = new Promise(resolve => {
       resolvePerm = resolve;

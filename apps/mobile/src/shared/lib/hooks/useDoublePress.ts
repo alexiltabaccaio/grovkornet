@@ -1,5 +1,5 @@
 import { useRef, useCallback, useMemo } from 'react';
-import * as Haptics from '@shared/lib/haptics';
+import * as Haptics from '../haptics';
 
 export const useDoublePress = <T extends string>(onReset: (tool: T) => void) => {
   const lastPressRef = useRef<{ [key: string]: number }>({});

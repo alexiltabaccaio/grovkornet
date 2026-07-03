@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-require-imports, unused-imports/no-unused-vars, react-hooks/exhaustive-deps */
+/* eslint-disable unused-imports/no-unused-vars, react-hooks/exhaustive-deps */
 import React from 'react';
 import { render, act } from '@testing-library/react-native';
 import { SubPanels } from './SubPanels';

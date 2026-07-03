@@ -3,8 +3,7 @@ import { StyleSheet, View, TouchableOpacity } from 'react-native';
 import Animated, { 
   useSharedValue, 
   useAnimatedStyle, 
-  withSpring, 
-  SharedValue,
+  withSpring,
 } from 'react-native-reanimated';
 import * as Haptics from '@shared/lib/haptics';
 

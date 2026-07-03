@@ -5,11 +5,17 @@ import unusedImports from 'eslint-plugin-unused-imports';
 import reactPlugin from 'eslint-plugin-react';
 import reactHooksPlugin from 'eslint-plugin-react-hooks';
 import reactNativePlugin from 'eslint-plugin-react-native';
+import i18nextPlugin from 'eslint-plugin-i18next';
+import conartiFsdPlugin from '@conarti/eslint-plugin-feature-sliced';
+import zustandPlugin from 'eslint-plugin-zustand';
 
 const fsdDeepImportRestrictions = {
   group: [
     '@entities/*/**',
-    '@features/*/**',
+    '@features/camera/**',
+    '@features/gallery/**',
+    '@features/presets/**',
+    '@features/sections/*/**',
     '@widgets/*/**',
     '@screens/*/**',
   ],
@@ -52,6 +58,9 @@ export default [
       'react': reactPlugin,
       'react-hooks': reactHooksPlugin,
       'react-native': reactNativePlugin,
+      'i18next': i18nextPlugin,
+      '@conarti/feature-sliced': conartiFsdPlugin,
+      'zustand': zustandPlugin,
     },
     languageOptions: {
       parser: tsParser,
@@ -102,12 +111,48 @@ export default [
       'react-native/no-unused-styles': 'warn',
       'react-native/no-single-element-style-arrays': 'warn',
       'no-restricted-imports': ['error', {
+        paths: [
+          {
+            name: 'react-native-vision-camera',
+            message: 'Do not reintroduce react-native-vision-camera. Use custom native NativeFilmCamera.'
+          },
+          {
+            name: '@shopify/react-native-skia',
+            message: 'Do not reintroduce react-native-skia. Use native single-pass rendering pipeline.'
+          }
+        ],
         patterns: [
           {
             group: ['../../../**'],
             message: 'Relative imports going up 3 or more levels are not allowed. Please use path aliases (@features/, @shared/, etc.) instead.',
           },
           fsdDeepImportRestrictions
+        ]
+      }],
+      'i18next/no-literal-string': ['warn', {
+        markupOnly: true,
+        ignoreCallees: ['t', 'i18n.t', 'require'],
+        ignoreAttribute: ['style', 'className', 'testID', 'accessibilityLabel', 'id'],
+      }],
+      '@conarti/feature-sliced/layers-slices': ['error', {
+        ignoreInFilesPatterns: ['**/*.test.{ts,tsx}', '**/__tests__/**', '**/__mocks__/**', '**/jest.setup.ts']
+      }],
+      '@conarti/feature-sliced/absolute-relative': ['error', {
+        ignoreInFilesPatterns: ['**/*.test.{ts,tsx}', '**/__tests__/**', '**/__mocks__/**', '**/jest.setup.ts']
+      }],
+      '@conarti/feature-sliced/public-api': ['error', {
+        ignoreInFilesPatterns: ['**/*.test.{ts,tsx}', '**/__tests__/**', '**/__mocks__/**', '**/jest.setup.ts', '**/app/index.tsx']
+      }],
+      'zustand/no-destructure': ['warn', {
+        hooks: [
+          'useBodyStore',
+          'useLensStore',
+          'useFilmStore',
+          'useCameraStore',
+          'useGalleryStore',
+          'useVerificationStore',
+          'usePreferencesStore',
+          'usePresetsStore'
         ]
       }],
     },
@@ -216,14 +261,14 @@ export default [
   },
   // --- FSD RULES: CROSS-IMPORT BOUNDARIES ---
   {
-    files: ['src/features/lens-controls/**/*.{ts,tsx}'],
+    files: ['src/features/sections/lens/**/*.{ts,tsx}'],
     rules: {
       'no-restricted-imports': ['error', {
         patterns: [
           fsdLayerRestrictions.features,
 
           {
-            group: ['@features/body-controls/**', '@features/film-controls/**', '@features/system-settings/**', '@features/gallery/**'],
+            group: ['@features/sections/body/**', '@features/sections/film/**', '@features/sections/system/**', '@features/gallery/**'],
             message: 'Cross-imports between features are not allowed.'
           },
           fsdDeepImportRestrictions
@@ -232,14 +277,14 @@ export default [
     }
   },
   {
-    files: ['src/features/body-controls/**/*.{ts,tsx}'],
+    files: ['src/features/sections/body/**/*.{ts,tsx}'],
     rules: {
       'no-restricted-imports': ['error', {
         patterns: [
           fsdLayerRestrictions.features,
 
           {
-            group: ['@features/lens-controls/**', '@features/film-controls/**', '@features/system-settings/**', '@features/gallery/**'],
+            group: ['@features/sections/lens/**', '@features/sections/film/**', '@features/sections/system/**', '@features/gallery/**'],
             message: 'Cross-imports between features are not allowed.'
           },
           fsdDeepImportRestrictions
@@ -248,14 +293,14 @@ export default [
     }
   },
   {
-    files: ['src/features/film-controls/**/*.{ts,tsx}'],
+    files: ['src/features/sections/film/**/*.{ts,tsx}'],
     rules: {
       'no-restricted-imports': ['error', {
         patterns: [
           fsdLayerRestrictions.features,
 
           {
-            group: ['@features/lens-controls/**', '@features/body-controls/**', '@features/system-settings/**', '@features/gallery/**'],
+            group: ['@features/sections/lens/**', '@features/sections/body/**', '@features/sections/system/**', '@features/gallery/**'],
             message: 'Cross-imports between features are not allowed.'
           },
           fsdDeepImportRestrictions
@@ -264,14 +309,14 @@ export default [
     }
   },
   {
-    files: ['src/features/system-settings/**/*.{ts,tsx}'],
+    files: ['src/features/sections/system/**/*.{ts,tsx}'],
     rules: {
       'no-restricted-imports': ['error', {
         patterns: [
           fsdLayerRestrictions.features,
 
           {
-            group: ['@features/lens-controls/**', '@features/body-controls/**', '@features/film-controls/**', '@features/gallery/**'],
+            group: ['@features/sections/lens/**', '@features/sections/body/**', '@features/sections/film/**', '@features/gallery/**'],
             message: 'Cross-imports between features are not allowed.'
           },
           fsdDeepImportRestrictions
@@ -287,7 +332,7 @@ export default [
           fsdLayerRestrictions.features,
 
           {
-            group: ['@features/lens-controls/**', '@features/body-controls/**', '@features/film-controls/**', '@features/system-settings/**'],
+            group: ['@features/sections/lens/**', '@features/sections/body/**', '@features/sections/film/**', '@features/sections/system/**'],
             message: 'Cross-imports between features are not allowed.'
           },
           fsdDeepImportRestrictions
@@ -385,6 +430,11 @@ export default [
       '@typescript-eslint/no-unsafe-return': 'off',
       '@typescript-eslint/no-explicit-any': 'off',
       '@typescript-eslint/no-unsafe-argument': 'off',
+      '@typescript-eslint/no-require-imports': 'off',
+      '@typescript-eslint/no-unsafe-function-type': 'off',
+      '@typescript-eslint/unbound-method': 'off',
+      'react/display-name': 'off',
+      'i18next/no-literal-string': 'off',
     },
   },
   {
@@ -397,6 +447,8 @@ export default [
       '@typescript-eslint/no-explicit-any': 'off',
       '@typescript-eslint/no-unsafe-argument': 'off',
       'unused-imports/no-unused-vars': 'off',
+      '@typescript-eslint/no-require-imports': 'off',
+      'i18next/no-literal-string': 'off',
     },
   },
 ];

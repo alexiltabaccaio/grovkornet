@@ -97,7 +97,7 @@ export const useGalleryPhotos = (initialUri?: string | null) => {
                 } else {
                   setPhotos([]);
                 }
-              } catch (e) {
+              } catch {
                 setPhotos([]);
               }
             }
@@ -216,23 +216,23 @@ export const useGalleryPhotos = (initialUri?: string | null) => {
 
           logger.debug('useGalleryPhotos', `loadPhotos check: initialUri=${currentInitialUriLocal}, alreadyExists=${alreadyExists}`);
           if (!alreadyExists) {
-            const isProcessed = isFinalProcessedUri(currentInitialUriLocal);
-            if (isProcessed) {
-              logger.debug('useGalleryPhotos', `loadPhotos: unshifting final processed photo directly: ${currentInitialUriLocal}`);
-              const id = currentInitialUriLocal.split('/').pop() || 'initial';
-              items.unshift({ id, key: id, uri: currentInitialUriLocal, filename: initialFilenameOrId });
-            } else {
-              try {
-                const info = await FileSystem.getInfoAsync(currentInitialUriLocal);
-                if (info.exists) {
+            try {
+              const info = await FileSystem.getInfoAsync(currentInitialUriLocal);
+              if (info.exists) {
+                const isProcessed = isFinalProcessedUri(currentInitialUriLocal);
+                if (isProcessed) {
+                  logger.debug('useGalleryPhotos', `loadPhotos: unshifting final processed photo directly: ${currentInitialUriLocal}`);
+                  const id = currentInitialUriLocal.split('/').pop() || 'initial';
+                  items.unshift({ id, key: id, uri: currentInitialUriLocal, filename: initialFilenameOrId });
+                } else {
                   logger.debug('useGalleryPhotos', `loadPhotos: unshifting temp preview: ${currentInitialUriLocal}`);
                   items.unshift({ id: 'preview-temp', key: 'preview-temp', uri: currentInitialUriLocal, filename: initialFilenameOrId });
-                } else {
-                  logger.debug('useGalleryPhotos', `loadPhotos: temp preview ${currentInitialUriLocal} does not exist on disk, skipping.`);
                 }
-              } catch (e) {
-                logger.warn('useGalleryPhotos', `Failed to check existence of temp preview: ${currentInitialUriLocal}`, e);
+              } else {
+                logger.debug('useGalleryPhotos', `loadPhotos: photo ${currentInitialUriLocal} does not exist on disk, skipping.`);
               }
+            } catch (e) {
+              logger.warn('useGalleryPhotos', `Failed to check existence of photo: ${currentInitialUriLocal}`, e);
             }
           }
         }
@@ -267,7 +267,7 @@ export const useGalleryPhotos = (initialUri?: string | null) => {
                 } else {
                   setPhotos([]);
                 }
-              } catch (e) {
+              } catch {
                 setPhotos([]);
               }
             }
@@ -311,13 +311,19 @@ export const useGalleryPhotos = (initialUri?: string | null) => {
         const isTemp = isTempUri(initialUri);
         
         let shouldInject = false;
-        if (isProcessed) {
-          shouldInject = true; // Always trust final processed photos
-        } else if (initialUri.startsWith('file://')) {
+        try {
           const info = await FileSystem.getInfoAsync(initialUri);
-          if (info.exists) shouldInject = true;
-        } else {
-          shouldInject = true; // Trust content:// URIs
+          if (info.exists) {
+            shouldInject = true;
+          } else {
+            logger.debug('useGalleryPhotos', `Dynamically injecting missing initialUri: ${initialUri} failed, file does not exist.`);
+          }
+        } catch (e) {
+          logger.warn('useGalleryPhotos', `Failed to check existence of injected photo: ${initialUri}`, e);
+          // Fallback: if it's a processed URI or content://, try to inject it anyway if we cannot verify it
+          if (isProcessed || !initialUri.startsWith('file://')) {
+             shouldInject = true;
+          }
         }
 
         if (!active || !shouldInject) return;

@@ -16,7 +16,6 @@ interface AnimatedSlotProps {
   zoomScale?: SharedValue<number>;
   zoomTranslateX?: SharedValue<number>;
   zoomTranslateY?: SharedValue<number>;
-  currentIndex?: SharedValue<number>;
   isTeleporting?: SharedValue<boolean>;
   teleportMockIndex?: SharedValue<number>;
   teleportRealIndex?: SharedValue<number>;
@@ -33,7 +32,6 @@ export const AnimatedSlot = memo(({
   zoomScale,
   zoomTranslateX,
   zoomTranslateY,
-  currentIndex,
   isTeleporting,
   teleportMockIndex,
   teleportRealIndex,

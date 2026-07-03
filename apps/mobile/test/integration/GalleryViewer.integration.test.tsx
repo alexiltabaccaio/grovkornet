@@ -13,7 +13,7 @@ jest.mock('expo-modules-core', () => {
   return {
     ...actual,
     requireNativeViewManager: jest.fn(() => {
-      // eslint-disable-next-line @typescript-eslint/no-require-imports
+       
       const { View } = require('react-native');
       return View;
     }),

@@ -8,7 +8,7 @@ import Animated, {
   Extrapolation
 } from 'react-native-reanimated';
 import { ParameterThumbViewProps } from './ParameterThumbView.types';
-import { logger } from '@shared/lib/logger';
+import { logger } from '../../lib/logger';
 import { AutoButton } from '../auto-button/AutoButton';
 import { 
   globalMainTrackWidth, 

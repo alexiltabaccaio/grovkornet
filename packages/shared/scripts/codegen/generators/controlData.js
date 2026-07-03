@@ -57,6 +57,7 @@ function generateControlData(parameters) {
   replaceBetweenMarkers(FILE_PATHS.controlData, '        // @@GEN_STORE_SELECTION_START@@', '        // @@GEN_STORE_SELECTION_END@@', selectionCases, '        ');
 
   // 3. Generate control configs switch cases
+  const uniqueDefaults = new Set();
   const configCases = filmParams.map(p => {
     const uiName = p.ui.name;
     const storeProp = p.zustand.name || p.name;
@@ -134,6 +135,9 @@ function generateControlData(parameters) {
         fields.push(`onReset: () => {\n            film.setPivotAuto(true);\n          }`);
       } else {
         fields.push(`onReset: () => film.set${capitalized}(${p.zustand.default})`);
+        if (p.zustand && p.zustand.default && typeof p.zustand.default === 'string' && p.zustand.default.startsWith('DEFAULT_')) {
+          uniqueDefaults.add(p.zustand.default);
+        }
       }
     }
 
@@ -145,13 +149,6 @@ function generateControlData(parameters) {
   replaceBetweenMarkers(FILE_PATHS.controlData, '      // @@GEN_CONTROL_CASES_START@@', '      // @@GEN_CONTROL_CASES_END@@', configCases, '      ');
 
   // 4. Generate imports
-  const uniqueDefaults = new Set();
-  const filmParams2 = parameters.filter(p => p.zustand && (p.zustand.store || 'film') === 'film');
-  for (const p of filmParams2) {
-    if (p.zustand && p.zustand.default && typeof p.zustand.default === 'string' && p.zustand.default.startsWith('DEFAULT_')) {
-      uniqueDefaults.add(p.zustand.default);
-    }
-  }
   const importsContent = `import {\n  ${Array.from(uniqueDefaults).join(',\n  ')}\n} from '@grovkornet/shared';`;
   replaceBetweenMarkers(FILE_PATHS.controlData, '// @@GEN_IMPORTS_START@@', '// @@GEN_IMPORTS_END@@', importsContent, '');
 }

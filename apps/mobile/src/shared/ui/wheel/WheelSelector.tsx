@@ -11,7 +11,7 @@ import Animated, {
   Extrapolation,
   SharedValue,
 } from 'react-native-reanimated';
-import { useInteractionContext } from '@shared/lib';
+import { useInteractionContext } from '../../lib';
 
 const ITEM_WIDTH = 120;
 

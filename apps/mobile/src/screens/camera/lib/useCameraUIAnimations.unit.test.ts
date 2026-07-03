@@ -2,7 +2,6 @@ import React from 'react';
 import { renderHook } from '@testing-library/react-native';
 import { useCameraUIAnimations } from './useCameraUIAnimations';
 import { useControlPanelStore } from '@entities/system';
-import { useGalleryStore } from '@entities/gallery';
 import * as reanimatedModule from 'react-native-reanimated';
 
 // Mock the system store
@@ -86,10 +85,7 @@ describe('useCameraUIAnimations', () => {
     expect(result.current.viewfinderTranslateY.value).toBe(0);
     expect(result.current.layoutSyncOffset.value).toBe(0);
   });
-
   it('triggers the safety net to animate values to 0 when activeSection becomes none', () => {
-    const mockControlPanelStore = require('@entities/system').useControlPanelStore;
-    
     // Start with activeSection !== 'none'
     (useControlPanelStore.getState as jest.Mock).mockReturnValue({
       activeSection: 'lens',

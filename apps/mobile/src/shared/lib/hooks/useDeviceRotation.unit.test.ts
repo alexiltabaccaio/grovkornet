@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/unbound-method */
+ 
 import { renderHook, act } from '@testing-library/react-native';
 import { Accelerometer } from 'expo-sensors';
 import { useDeviceRotation } from './useDeviceRotation';

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-empty-object-type */
 /**
  * Serialized Look & Feel parameters per store, dynamically generated
  */

@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-require-imports */
+ 
 import React from 'react';
 import { render, waitFor, act, fireEvent } from '@testing-library/react-native';
 import { CameraScreen } from '@screens/camera';
@@ -85,7 +85,7 @@ describe('NativeErrorsAndThrottling Integration Test', () => {
   });
 
   it('displays critical warning banner and throttles FPS to 15 when thermalState is critical', async () => {
-    const { getByTestId, queryByTestId, queryByText, rerender } = render(<CameraScreen />);
+    const { getByTestId, queryByText, rerender } = render(<CameraScreen />);
 
     await waitFor(() => expect(queryByText('camera.requesting_permissions')).toBeNull());
 

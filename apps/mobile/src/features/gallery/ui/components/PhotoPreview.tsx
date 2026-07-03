@@ -16,13 +16,12 @@ interface PhotoPreviewProps {
   onPhotoVisible?: (photo: GalleryItem) => void;
   rotationY?: SharedValue<number>;
   onInitialImageLoad?: () => void;
-  initialUri?: string | null;
   zoomScale?: SharedValue<number>;
   zoomTranslateX?: SharedValue<number>;
   zoomTranslateY?: SharedValue<number>;
 }
 
-export const PhotoPreview = React.memo(({ selectedPhoto, photos, onPhotoVisible, rotationY, onInitialImageLoad, initialUri, zoomScale: zoomScaleRef, zoomTranslateX: zoomTranslateXRef, zoomTranslateY: zoomTranslateYRef }: PhotoPreviewProps) => {
+export const PhotoPreview = React.memo(({ selectedPhoto, photos, onPhotoVisible, rotationY, onInitialImageLoad, zoomScale: zoomScaleRef, zoomTranslateX: zoomTranslateXRef, zoomTranslateY: zoomTranslateYRef }: PhotoPreviewProps) => {
   const { t } = useTranslation();
   const { width, height } = useWindowDimensions();
   const GAP = 20;
@@ -108,7 +107,6 @@ export const PhotoPreview = React.memo(({ selectedPhoto, photos, onPhotoVisible,
                 zoomScale={zoomScale}
                 zoomTranslateX={zoomTranslateX}
                 zoomTranslateY={zoomTranslateY}
-                currentIndex={currentIndex}
                 isTeleporting={isTeleporting}
                 teleportMockIndex={teleportMockIndex}
                 teleportRealIndex={teleportRealIndex}

@@ -2,8 +2,8 @@ import React from 'react';
 import { Text, StyleProp, TextStyle, StyleSheet } from 'react-native';
 import Animated, { runOnJS } from 'react-native-reanimated';
 import { GestureDetector, Gesture } from 'react-native-gesture-handler';
-import * as Haptics from '@shared/lib/haptics';
-import { useInteractionContext } from '@shared/lib';
+import * as Haptics from '../../lib/haptics';
+import { useInteractionContext } from '../../lib';
 
 interface ResettableLabelProps {
   label: string;

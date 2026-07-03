@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-require-imports */
+ 
 
 import React from 'react';
 import { render, fireEvent, waitFor, act } from '@testing-library/react-native';

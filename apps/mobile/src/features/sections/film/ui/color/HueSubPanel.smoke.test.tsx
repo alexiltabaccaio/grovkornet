@@ -1,5 +1,5 @@
 import { useControlPanelStore } from '@entities/system';
-/* eslint-disable @typescript-eslint/no-require-imports, react-hooks/exhaustive-deps */
+/* eslint-disable react-hooks/exhaustive-deps */
 import React from 'react';
 import { render, fireEvent } from '@testing-library/react-native';
 import { HueSubPanel } from './HueSubPanel';

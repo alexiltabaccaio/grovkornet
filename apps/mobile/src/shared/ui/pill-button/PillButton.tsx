@@ -2,7 +2,7 @@ import React, { memo, useRef, useEffect } from 'react';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { StyleSheet, StyleProp, ViewStyle, TextStyle, View, Text } from 'react-native';
 import Animated, { useAnimatedStyle, SharedValue } from 'react-native-reanimated';
-import * as Haptics from '@shared/lib/haptics';
+import * as Haptics from '../../lib/haptics';
 
 export interface PillButtonProps {
   label: string;

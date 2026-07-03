@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-redundant-type-constituents */
 import { FilmStore } from '@entities/film';
 import { BodyStore } from '@entities/body';
 import { FilmPresetPayload, BodyPresetPayload, GeneratedFilmExcludedKeys, GeneratedBodyExcludedKeys } from '@entities/preset';

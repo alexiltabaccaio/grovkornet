@@ -9,7 +9,7 @@ describe('useSharedValueToReact', () => {
 
   it('should return initial value of shared value and register reaction with dependencies', () => {
     let prepareCallback: (() => any) | null = null;
-    (useAnimatedReaction as jest.Mock).mockImplementation((prepare, react) => {
+    (useAnimatedReaction as jest.Mock).mockImplementation((prepare, _react) => {
       prepareCallback = prepare;
     });
 

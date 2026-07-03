@@ -102,7 +102,9 @@ export const usePhotoPreviewTransition = ({
         currentIndex.value = animatingToIndexRef.current;
       }
       isTeleporting.value = false;
-      setPendingTeleport(null);
+      setTimeout(() => {
+        setPendingTeleport(null);
+      }, 0);
     }
 
     const baseIndex = animatingToIndexRef.current !== null
@@ -144,7 +146,20 @@ export const usePhotoPreviewTransition = ({
 
       setPendingTeleport({ mockIdx: mockAdjacentIndex, idx, timestamp: Date.now() });
     }
-  }, [selectedPhoto, photos, slotWidth, currentIndex, translateX, finalizeTransition, finalizeTeleport, isTransitioning]);
+  }, [
+    selectedPhoto,
+    photos,
+    slotWidth,
+    currentIndex,
+    translateX,
+    finalizeTransition,
+    finalizeTeleport,
+    isTransitioning,
+    isTeleporting,
+    resetZoomSignal,
+    teleportMockIndex,
+    teleportRealIndex
+  ]);
 
   useEffect(() => {
     if (!pendingTeleport) return;
@@ -172,7 +187,16 @@ export const usePhotoPreviewTransition = ({
     });
 
     return () => cancelAnimationFrame(rafId);
-  }, [pendingTeleport, isTeleporting, teleportRealIndex, slotWidth, translateX, finalizeTeleport, isTransitioning]);
+  }, [
+    pendingTeleport,
+    isTeleporting,
+    teleportRealIndex,
+    teleportMockIndex,
+    slotWidth,
+    translateX,
+    finalizeTeleport,
+    isTransitioning
+  ]);
 
   useEffect(() => {
     let rafId1: number;

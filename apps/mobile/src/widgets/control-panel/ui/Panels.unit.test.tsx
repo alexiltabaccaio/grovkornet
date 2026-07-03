@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-require-imports, unused-imports/no-unused-vars, react-hooks/exhaustive-deps */
+/* eslint-disable unused-imports/no-unused-vars, react-hooks/exhaustive-deps */
 import React from 'react';
 import { render, act, fireEvent } from '@testing-library/react-native';
 import { Image } from 'expo-image';

@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/unbound-method */
+ 
 import React from 'react';
 import { render, fireEvent, waitFor } from '@testing-library/react-native';
 import { LanguagePanel } from './LanguagePanel';

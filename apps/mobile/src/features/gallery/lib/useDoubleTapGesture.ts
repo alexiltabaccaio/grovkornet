@@ -21,7 +21,7 @@ export const useDoubleTapGesture = ({
   zoomTranslateX,
   zoomTranslateY,
   isZoomed,
-  isTransitioning,
+  isTransitioning: _isTransitioning,
   recentlyStoppedDecay,
 }: UseDoubleTapGestureProps) => {
   const hasWarnedDoubleTapNaN = useSharedValue(false);

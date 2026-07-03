@@ -1,6 +1,6 @@
-/* eslint-disable @typescript-eslint/no-require-imports */
+ 
 import React from 'react';
-import { render, act, waitFor } from '@testing-library/react-native';
+import { render, waitFor } from '@testing-library/react-native';
 import { CameraScreen } from '@screens/camera';
 import { PermissionsAndroid, Platform } from 'react-native';
 
