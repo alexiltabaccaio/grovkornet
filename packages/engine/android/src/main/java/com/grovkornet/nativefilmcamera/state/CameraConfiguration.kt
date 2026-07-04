@@ -12,589 +12,329 @@ class CameraConfiguration(val nativePointer: Long = 0L) {
     // or packages/shared/camera-errors.yaml, then run `npm run codegen`.
     // Rendering / Effect Props
     var saturation: Float
-            get() = if (CameraStateJNI.isJniLoaded) CameraStateJNI.getSaturation(nativePointer) else (CameraStateJNI.fallbackGet("saturation", nativePointer, 1.0f) as Float)
+            get() = (CameraStateJNI.fallbackGet("saturation", nativePointer, 1.0f) as Float)
             set(value) {
-                if (CameraStateJNI.isJniLoaded) {
-                    CameraStateJNI.setSaturation(nativePointer, value)
-                } else {
-                    CameraStateJNI.fallbackSet("saturation", nativePointer, value)
-                }
+                CameraStateJNI.fallbackSet("saturation", nativePointer, value)
             }
     var contrast: Float
-            get() = if (CameraStateJNI.isJniLoaded) CameraStateJNI.getContrast(nativePointer) else (CameraStateJNI.fallbackGet("contrast", nativePointer, 1.0f) as Float)
+            get() = (CameraStateJNI.fallbackGet("contrast", nativePointer, 1.0f) as Float)
             set(value) {
-                if (CameraStateJNI.isJniLoaded) {
-                    CameraStateJNI.setContrast(nativePointer, value)
-                } else {
-                    CameraStateJNI.fallbackSet("contrast", nativePointer, value)
-                }
+                CameraStateJNI.fallbackSet("contrast", nativePointer, value)
             }
     var grainIntensity: Float
-            get() = if (CameraStateJNI.isJniLoaded) CameraStateJNI.getGrainIntensity(nativePointer) else (CameraStateJNI.fallbackGet("grainIntensity", nativePointer, 0.0f) as Float)
+            get() = (CameraStateJNI.fallbackGet("grainIntensity", nativePointer, 0.0f) as Float)
             set(value) {
-                if (CameraStateJNI.isJniLoaded) {
-                    CameraStateJNI.setGrainIntensity(nativePointer, value)
-                } else {
-                    CameraStateJNI.fallbackSet("grainIntensity", nativePointer, value)
-                }
+                CameraStateJNI.fallbackSet("grainIntensity", nativePointer, value)
             }
     var grainChroma: Float
-            get() = if (CameraStateJNI.isJniLoaded) CameraStateJNI.getGrainChroma(nativePointer) else (CameraStateJNI.fallbackGet("grainChroma", nativePointer, 0.0f) as Float)
+            get() = (CameraStateJNI.fallbackGet("grainChroma", nativePointer, 0.0f) as Float)
             set(value) {
-                if (CameraStateJNI.isJniLoaded) {
-                    CameraStateJNI.setGrainChroma(nativePointer, value)
-                } else {
-                    CameraStateJNI.fallbackSet("grainChroma", nativePointer, value)
-                }
+                CameraStateJNI.fallbackSet("grainChroma", nativePointer, value)
             }
     var grainSize: Float
-            get() = if (CameraStateJNI.isJniLoaded) CameraStateJNI.getGrainSize(nativePointer) else (CameraStateJNI.fallbackGet("grainSize", nativePointer, 1.0f) as Float)
+            get() = (CameraStateJNI.fallbackGet("grainSize", nativePointer, 1.0f) as Float)
             set(value) {
-                if (CameraStateJNI.isJniLoaded) {
-                    CameraStateJNI.setGrainSize(nativePointer, value)
-                } else {
-                    CameraStateJNI.fallbackSet("grainSize", nativePointer, value)
-                }
+                CameraStateJNI.fallbackSet("grainSize", nativePointer, value)
             }
     var grainSpeed: Float
-            get() = if (CameraStateJNI.isJniLoaded) CameraStateJNI.getGrainSpeed(nativePointer) else (CameraStateJNI.fallbackGet("grainSpeed", nativePointer, 20.0f) as Float)
+            get() = (CameraStateJNI.fallbackGet("grainSpeed", nativePointer, 20.0f) as Float)
             set(value) {
-                if (CameraStateJNI.isJniLoaded) {
-                    CameraStateJNI.setGrainSpeed(nativePointer, value)
-                } else {
-                    CameraStateJNI.fallbackSet("grainSpeed", nativePointer, value)
-                }
+                CameraStateJNI.fallbackSet("grainSpeed", nativePointer, value)
             }
     var vignetteIntensity: Float
-            get() = if (CameraStateJNI.isJniLoaded) CameraStateJNI.getVignetteIntensity(nativePointer) else (CameraStateJNI.fallbackGet("vignetteIntensity", nativePointer, 0.0f) as Float)
+            get() = (CameraStateJNI.fallbackGet("vignetteIntensity", nativePointer, 0.0f) as Float)
             set(value) {
-                if (CameraStateJNI.isJniLoaded) {
-                    CameraStateJNI.setVignetteIntensity(nativePointer, value)
-                } else {
-                    CameraStateJNI.fallbackSet("vignetteIntensity", nativePointer, value)
-                }
+                CameraStateJNI.fallbackSet("vignetteIntensity", nativePointer, value)
             }
     var chromaShift: Float
-            get() = if (CameraStateJNI.isJniLoaded) CameraStateJNI.getChromaShift(nativePointer) else (CameraStateJNI.fallbackGet("chromaShift", nativePointer, 0.0f) as Float)
+            get() = (CameraStateJNI.fallbackGet("chromaShift", nativePointer, 0.0f) as Float)
             set(value) {
-                if (CameraStateJNI.isJniLoaded) {
-                    CameraStateJNI.setChromaShift(nativePointer, value)
-                } else {
-                    CameraStateJNI.fallbackSet("chromaShift", nativePointer, value)
-                }
+                CameraStateJNI.fallbackSet("chromaShift", nativePointer, value)
             }
     var temperature: Float
-            get() = if (CameraStateJNI.isJniLoaded) CameraStateJNI.getTemperature(nativePointer) else (CameraStateJNI.fallbackGet("temperature", nativePointer, 5000.0f) as Float)
+            get() = (CameraStateJNI.fallbackGet("temperature", nativePointer, 5000.0f) as Float)
             set(value) {
-                if (CameraStateJNI.isJniLoaded) {
-                    CameraStateJNI.setTemperature(nativePointer, value)
-                } else {
-                    CameraStateJNI.fallbackSet("temperature", nativePointer, value)
-                }
+                CameraStateJNI.fallbackSet("temperature", nativePointer, value)
             }
     var tint: Float
-            get() = if (CameraStateJNI.isJniLoaded) CameraStateJNI.getTint(nativePointer) else (CameraStateJNI.fallbackGet("tint", nativePointer, 0.0f) as Float)
+            get() = (CameraStateJNI.fallbackGet("tint", nativePointer, 0.0f) as Float)
             set(value) {
-                if (CameraStateJNI.isJniLoaded) {
-                    CameraStateJNI.setTint(nativePointer, value)
-                } else {
-                    CameraStateJNI.fallbackSet("tint", nativePointer, value)
-                }
+                CameraStateJNI.fallbackSet("tint", nativePointer, value)
             }
     var bloomIntensity: Float
-            get() = if (CameraStateJNI.isJniLoaded) CameraStateJNI.getBloomIntensity(nativePointer) else (CameraStateJNI.fallbackGet("bloomIntensity", nativePointer, 0.0f) as Float)
+            get() = (CameraStateJNI.fallbackGet("bloomIntensity", nativePointer, 0.0f) as Float)
             set(value) {
-                if (CameraStateJNI.isJniLoaded) {
-                    CameraStateJNI.setBloomIntensity(nativePointer, value)
-                } else {
-                    CameraStateJNI.fallbackSet("bloomIntensity", nativePointer, value)
-                }
+                CameraStateJNI.fallbackSet("bloomIntensity", nativePointer, value)
             }
     var aberration: Float
-            get() = if (CameraStateJNI.isJniLoaded) CameraStateJNI.getAberration(nativePointer) else (CameraStateJNI.fallbackGet("aberration", nativePointer, 0.0f) as Float)
+            get() = (CameraStateJNI.fallbackGet("aberration", nativePointer, 0.0f) as Float)
             set(value) {
-                if (CameraStateJNI.isJniLoaded) {
-                    CameraStateJNI.setAberration(nativePointer, value)
-                } else {
-                    CameraStateJNI.fallbackSet("aberration", nativePointer, value)
-                }
+                CameraStateJNI.fallbackSet("aberration", nativePointer, value)
             }
     var chromaShiftDirection: Int
-            get() = if (CameraStateJNI.isJniLoaded) CameraStateJNI.getChromaShiftDirection(nativePointer) else (CameraStateJNI.fallbackGet("chromaShiftDirection", nativePointer, 0) as Int)
+            get() = (CameraStateJNI.fallbackGet("chromaShiftDirection", nativePointer, 0) as Int)
             set(value) {
-                if (CameraStateJNI.isJniLoaded) {
-                    CameraStateJNI.setChromaShiftDirection(nativePointer, value)
-                } else {
-                    CameraStateJNI.fallbackSet("chromaShiftDirection", nativePointer, value)
-                }
+                CameraStateJNI.fallbackSet("chromaShiftDirection", nativePointer, value)
             }
     var sharpening: Float
-            get() = if (CameraStateJNI.isJniLoaded) CameraStateJNI.getSharpening(nativePointer) else (CameraStateJNI.fallbackGet("sharpening", nativePointer, 0.0f) as Float)
+            get() = (CameraStateJNI.fallbackGet("sharpening", nativePointer, 0.0f) as Float)
             set(value) {
-                if (CameraStateJNI.isJniLoaded) {
-                    CameraStateJNI.setSharpening(nativePointer, value)
-                } else {
-                    CameraStateJNI.fallbackSet("sharpening", nativePointer, value)
-                }
+                CameraStateJNI.fallbackSet("sharpening", nativePointer, value)
             }
     var satRed: Float
-            get() = if (CameraStateJNI.isJniLoaded) CameraStateJNI.getSatRed(nativePointer) else (CameraStateJNI.fallbackGet("satRed", nativePointer, 50.0f) as Float)
+            get() = (CameraStateJNI.fallbackGet("satRed", nativePointer, 50.0f) as Float)
             set(value) {
-                if (CameraStateJNI.isJniLoaded) {
-                    CameraStateJNI.setSatRed(nativePointer, value)
-                } else {
-                    CameraStateJNI.fallbackSet("satRed", nativePointer, value)
-                }
+                CameraStateJNI.fallbackSet("satRed", nativePointer, value)
             }
     var satOrange: Float
-            get() = if (CameraStateJNI.isJniLoaded) CameraStateJNI.getSatOrange(nativePointer) else (CameraStateJNI.fallbackGet("satOrange", nativePointer, 50.0f) as Float)
+            get() = (CameraStateJNI.fallbackGet("satOrange", nativePointer, 50.0f) as Float)
             set(value) {
-                if (CameraStateJNI.isJniLoaded) {
-                    CameraStateJNI.setSatOrange(nativePointer, value)
-                } else {
-                    CameraStateJNI.fallbackSet("satOrange", nativePointer, value)
-                }
+                CameraStateJNI.fallbackSet("satOrange", nativePointer, value)
             }
     var satYellow: Float
-            get() = if (CameraStateJNI.isJniLoaded) CameraStateJNI.getSatYellow(nativePointer) else (CameraStateJNI.fallbackGet("satYellow", nativePointer, 50.0f) as Float)
+            get() = (CameraStateJNI.fallbackGet("satYellow", nativePointer, 50.0f) as Float)
             set(value) {
-                if (CameraStateJNI.isJniLoaded) {
-                    CameraStateJNI.setSatYellow(nativePointer, value)
-                } else {
-                    CameraStateJNI.fallbackSet("satYellow", nativePointer, value)
-                }
+                CameraStateJNI.fallbackSet("satYellow", nativePointer, value)
             }
     var satGreen: Float
-            get() = if (CameraStateJNI.isJniLoaded) CameraStateJNI.getSatGreen(nativePointer) else (CameraStateJNI.fallbackGet("satGreen", nativePointer, 50.0f) as Float)
+            get() = (CameraStateJNI.fallbackGet("satGreen", nativePointer, 50.0f) as Float)
             set(value) {
-                if (CameraStateJNI.isJniLoaded) {
-                    CameraStateJNI.setSatGreen(nativePointer, value)
-                } else {
-                    CameraStateJNI.fallbackSet("satGreen", nativePointer, value)
-                }
+                CameraStateJNI.fallbackSet("satGreen", nativePointer, value)
             }
     var satCyan: Float
-            get() = if (CameraStateJNI.isJniLoaded) CameraStateJNI.getSatCyan(nativePointer) else (CameraStateJNI.fallbackGet("satCyan", nativePointer, 50.0f) as Float)
+            get() = (CameraStateJNI.fallbackGet("satCyan", nativePointer, 50.0f) as Float)
             set(value) {
-                if (CameraStateJNI.isJniLoaded) {
-                    CameraStateJNI.setSatCyan(nativePointer, value)
-                } else {
-                    CameraStateJNI.fallbackSet("satCyan", nativePointer, value)
-                }
+                CameraStateJNI.fallbackSet("satCyan", nativePointer, value)
             }
     var satBlue: Float
-            get() = if (CameraStateJNI.isJniLoaded) CameraStateJNI.getSatBlue(nativePointer) else (CameraStateJNI.fallbackGet("satBlue", nativePointer, 50.0f) as Float)
+            get() = (CameraStateJNI.fallbackGet("satBlue", nativePointer, 50.0f) as Float)
             set(value) {
-                if (CameraStateJNI.isJniLoaded) {
-                    CameraStateJNI.setSatBlue(nativePointer, value)
-                } else {
-                    CameraStateJNI.fallbackSet("satBlue", nativePointer, value)
-                }
+                CameraStateJNI.fallbackSet("satBlue", nativePointer, value)
             }
     var satPurple: Float
-            get() = if (CameraStateJNI.isJniLoaded) CameraStateJNI.getSatPurple(nativePointer) else (CameraStateJNI.fallbackGet("satPurple", nativePointer, 50.0f) as Float)
+            get() = (CameraStateJNI.fallbackGet("satPurple", nativePointer, 50.0f) as Float)
             set(value) {
-                if (CameraStateJNI.isJniLoaded) {
-                    CameraStateJNI.setSatPurple(nativePointer, value)
-                } else {
-                    CameraStateJNI.fallbackSet("satPurple", nativePointer, value)
-                }
+                CameraStateJNI.fallbackSet("satPurple", nativePointer, value)
             }
     var satMagenta: Float
-            get() = if (CameraStateJNI.isJniLoaded) CameraStateJNI.getSatMagenta(nativePointer) else (CameraStateJNI.fallbackGet("satMagenta", nativePointer, 50.0f) as Float)
+            get() = (CameraStateJNI.fallbackGet("satMagenta", nativePointer, 50.0f) as Float)
             set(value) {
-                if (CameraStateJNI.isJniLoaded) {
-                    CameraStateJNI.setSatMagenta(nativePointer, value)
-                } else {
-                    CameraStateJNI.fallbackSet("satMagenta", nativePointer, value)
-                }
+                CameraStateJNI.fallbackSet("satMagenta", nativePointer, value)
             }
     var aberrationInvert: Boolean
-            get() = if (CameraStateJNI.isJniLoaded) CameraStateJNI.getAberrationInvert(nativePointer) else (CameraStateJNI.fallbackGet("aberrationInvert", nativePointer, false) as Boolean)
+            get() = (CameraStateJNI.fallbackGet("aberrationInvert", nativePointer, false) as Boolean)
             set(value) {
-                if (CameraStateJNI.isJniLoaded) {
-                    CameraStateJNI.setAberrationInvert(nativePointer, value)
-                } else {
-                    CameraStateJNI.fallbackSet("aberrationInvert", nativePointer, value)
-                }
+                CameraStateJNI.fallbackSet("aberrationInvert", nativePointer, value)
             }
     var boundMagentaRed: Float
-            get() = if (CameraStateJNI.isJniLoaded) CameraStateJNI.getBoundMagentaRed(nativePointer) else (CameraStateJNI.fallbackGet("boundMagentaRed", nativePointer, 350.0f) as Float)
+            get() = (CameraStateJNI.fallbackGet("boundMagentaRed", nativePointer, 350.0f) as Float)
             set(value) {
-                if (CameraStateJNI.isJniLoaded) {
-                    CameraStateJNI.setBoundMagentaRed(nativePointer, value)
-                } else {
-                    CameraStateJNI.fallbackSet("boundMagentaRed", nativePointer, value)
-                }
+                CameraStateJNI.fallbackSet("boundMagentaRed", nativePointer, value)
             }
     var boundRedOrange: Float
-            get() = if (CameraStateJNI.isJniLoaded) CameraStateJNI.getBoundRedOrange(nativePointer) else (CameraStateJNI.fallbackGet("boundRedOrange", nativePointer, 40.0f) as Float)
+            get() = (CameraStateJNI.fallbackGet("boundRedOrange", nativePointer, 40.0f) as Float)
             set(value) {
-                if (CameraStateJNI.isJniLoaded) {
-                    CameraStateJNI.setBoundRedOrange(nativePointer, value)
-                } else {
-                    CameraStateJNI.fallbackSet("boundRedOrange", nativePointer, value)
-                }
+                CameraStateJNI.fallbackSet("boundRedOrange", nativePointer, value)
             }
     var boundOrangeYellow: Float
-            get() = if (CameraStateJNI.isJniLoaded) CameraStateJNI.getBoundOrangeYellow(nativePointer) else (CameraStateJNI.fallbackGet("boundOrangeYellow", nativePointer, 70.0f) as Float)
+            get() = (CameraStateJNI.fallbackGet("boundOrangeYellow", nativePointer, 70.0f) as Float)
             set(value) {
-                if (CameraStateJNI.isJniLoaded) {
-                    CameraStateJNI.setBoundOrangeYellow(nativePointer, value)
-                } else {
-                    CameraStateJNI.fallbackSet("boundOrangeYellow", nativePointer, value)
-                }
+                CameraStateJNI.fallbackSet("boundOrangeYellow", nativePointer, value)
             }
     var boundYellowGreen: Float
-            get() = if (CameraStateJNI.isJniLoaded) CameraStateJNI.getBoundYellowGreen(nativePointer) else (CameraStateJNI.fallbackGet("boundYellowGreen", nativePointer, 110.0f) as Float)
+            get() = (CameraStateJNI.fallbackGet("boundYellowGreen", nativePointer, 110.0f) as Float)
             set(value) {
-                if (CameraStateJNI.isJniLoaded) {
-                    CameraStateJNI.setBoundYellowGreen(nativePointer, value)
-                } else {
-                    CameraStateJNI.fallbackSet("boundYellowGreen", nativePointer, value)
-                }
+                CameraStateJNI.fallbackSet("boundYellowGreen", nativePointer, value)
             }
     var boundGreenCyan: Float
-            get() = if (CameraStateJNI.isJniLoaded) CameraStateJNI.getBoundGreenCyan(nativePointer) else (CameraStateJNI.fallbackGet("boundGreenCyan", nativePointer, 170.0f) as Float)
+            get() = (CameraStateJNI.fallbackGet("boundGreenCyan", nativePointer, 170.0f) as Float)
             set(value) {
-                if (CameraStateJNI.isJniLoaded) {
-                    CameraStateJNI.setBoundGreenCyan(nativePointer, value)
-                } else {
-                    CameraStateJNI.fallbackSet("boundGreenCyan", nativePointer, value)
-                }
+                CameraStateJNI.fallbackSet("boundGreenCyan", nativePointer, value)
             }
     var boundCyanBlue: Float
-            get() = if (CameraStateJNI.isJniLoaded) CameraStateJNI.getBoundCyanBlue(nativePointer) else (CameraStateJNI.fallbackGet("boundCyanBlue", nativePointer, 230.0f) as Float)
+            get() = (CameraStateJNI.fallbackGet("boundCyanBlue", nativePointer, 230.0f) as Float)
             set(value) {
-                if (CameraStateJNI.isJniLoaded) {
-                    CameraStateJNI.setBoundCyanBlue(nativePointer, value)
-                } else {
-                    CameraStateJNI.fallbackSet("boundCyanBlue", nativePointer, value)
-                }
+                CameraStateJNI.fallbackSet("boundCyanBlue", nativePointer, value)
             }
     var boundBluePurple: Float
-            get() = if (CameraStateJNI.isJniLoaded) CameraStateJNI.getBoundBluePurple(nativePointer) else (CameraStateJNI.fallbackGet("boundBluePurple", nativePointer, 280.0f) as Float)
+            get() = (CameraStateJNI.fallbackGet("boundBluePurple", nativePointer, 280.0f) as Float)
             set(value) {
-                if (CameraStateJNI.isJniLoaded) {
-                    CameraStateJNI.setBoundBluePurple(nativePointer, value)
-                } else {
-                    CameraStateJNI.fallbackSet("boundBluePurple", nativePointer, value)
-                }
+                CameraStateJNI.fallbackSet("boundBluePurple", nativePointer, value)
             }
     var boundPurpleMagenta: Float
-            get() = if (CameraStateJNI.isJniLoaded) CameraStateJNI.getBoundPurpleMagenta(nativePointer) else (CameraStateJNI.fallbackGet("boundPurpleMagenta", nativePointer, 315.0f) as Float)
+            get() = (CameraStateJNI.fallbackGet("boundPurpleMagenta", nativePointer, 315.0f) as Float)
             set(value) {
-                if (CameraStateJNI.isJniLoaded) {
-                    CameraStateJNI.setBoundPurpleMagenta(nativePointer, value)
-                } else {
-                    CameraStateJNI.fallbackSet("boundPurpleMagenta", nativePointer, value)
-                }
+                CameraStateJNI.fallbackSet("boundPurpleMagenta", nativePointer, value)
             }
     var grainRoughness: Float
-            get() = if (CameraStateJNI.isJniLoaded) CameraStateJNI.getGrainRoughness(nativePointer) else (CameraStateJNI.fallbackGet("grainRoughness", nativePointer, 0.0f) as Float)
+            get() = (CameraStateJNI.fallbackGet("grainRoughness", nativePointer, 0.0f) as Float)
             set(value) {
-                if (CameraStateJNI.isJniLoaded) {
-                    CameraStateJNI.setGrainRoughness(nativePointer, value)
-                } else {
-                    CameraStateJNI.fallbackSet("grainRoughness", nativePointer, value)
-                }
+                CameraStateJNI.fallbackSet("grainRoughness", nativePointer, value)
             }
     var panelY: Float
-            get() = if (CameraStateJNI.isJniLoaded) CameraStateJNI.getPanelY(nativePointer) else (CameraStateJNI.fallbackGet("panelY", nativePointer, 1.0f) as Float)
+            get() = (CameraStateJNI.fallbackGet("panelY", nativePointer, 1.0f) as Float)
             set(value) {
-                if (CameraStateJNI.isJniLoaded) {
-                    CameraStateJNI.setPanelY(nativePointer, value)
-                } else {
-                    CameraStateJNI.fallbackSet("panelY", nativePointer, value)
-                }
+                CameraStateJNI.fallbackSet("panelY", nativePointer, value)
             }
     var grainEnabled: Boolean
-            get() = if (CameraStateJNI.isJniLoaded) CameraStateJNI.getGrainEnabled(nativePointer) else (CameraStateJNI.fallbackGet("grainEnabled", nativePointer, false) as Boolean)
+            get() = (CameraStateJNI.fallbackGet("grainEnabled", nativePointer, false) as Boolean)
             set(value) {
-                if (CameraStateJNI.isJniLoaded) {
-                    CameraStateJNI.setGrainEnabled(nativePointer, value)
-                } else {
-                    CameraStateJNI.fallbackSet("grainEnabled", nativePointer, value)
-                }
+                CameraStateJNI.fallbackSet("grainEnabled", nativePointer, value)
             }
     var bloomEnabled: Boolean
-            get() = if (CameraStateJNI.isJniLoaded) CameraStateJNI.getBloomEnabled(nativePointer) else (CameraStateJNI.fallbackGet("bloomEnabled", nativePointer, false) as Boolean)
+            get() = (CameraStateJNI.fallbackGet("bloomEnabled", nativePointer, false) as Boolean)
             set(value) {
-                if (CameraStateJNI.isJniLoaded) {
-                    CameraStateJNI.setBloomEnabled(nativePointer, value)
-                } else {
-                    CameraStateJNI.fallbackSet("bloomEnabled", nativePointer, value)
-                }
+                CameraStateJNI.fallbackSet("bloomEnabled", nativePointer, value)
             }
     var blackLevel: Float
-            get() = if (CameraStateJNI.isJniLoaded) CameraStateJNI.getBlackLevel(nativePointer) else (CameraStateJNI.fallbackGet("blackLevel", nativePointer, 0.0f) as Float)
+            get() = (CameraStateJNI.fallbackGet("blackLevel", nativePointer, 0.0f) as Float)
             set(value) {
-                if (CameraStateJNI.isJniLoaded) {
-                    CameraStateJNI.setBlackLevel(nativePointer, value)
-                } else {
-                    CameraStateJNI.fallbackSet("blackLevel", nativePointer, value)
-                }
+                CameraStateJNI.fallbackSet("blackLevel", nativePointer, value)
             }
     var highlights: Float
-            get() = if (CameraStateJNI.isJniLoaded) CameraStateJNI.getHighlights(nativePointer) else (CameraStateJNI.fallbackGet("highlights", nativePointer, 1.0f) as Float)
+            get() = (CameraStateJNI.fallbackGet("highlights", nativePointer, 1.0f) as Float)
             set(value) {
-                if (CameraStateJNI.isJniLoaded) {
-                    CameraStateJNI.setHighlights(nativePointer, value)
-                } else {
-                    CameraStateJNI.fallbackSet("highlights", nativePointer, value)
-                }
+                CameraStateJNI.fallbackSet("highlights", nativePointer, value)
             }
     var pivot: Float
-            get() = if (CameraStateJNI.isJniLoaded) CameraStateJNI.getPivot(nativePointer) else (CameraStateJNI.fallbackGet("pivot", nativePointer, 0.5f) as Float)
+            get() = (CameraStateJNI.fallbackGet("pivot", nativePointer, 0.5f) as Float)
             set(value) {
-                if (CameraStateJNI.isJniLoaded) {
-                    CameraStateJNI.setPivot(nativePointer, value)
-                } else {
-                    CameraStateJNI.fallbackSet("pivot", nativePointer, value)
-                }
+                CameraStateJNI.fallbackSet("pivot", nativePointer, value)
             }
     var contrastAuto: Boolean
-            get() = if (CameraStateJNI.isJniLoaded) CameraStateJNI.getContrastAuto(nativePointer) else (CameraStateJNI.fallbackGet("contrastAuto", nativePointer, true) as Boolean)
+            get() = (CameraStateJNI.fallbackGet("contrastAuto", nativePointer, true) as Boolean)
             set(value) {
-                if (CameraStateJNI.isJniLoaded) {
-                    CameraStateJNI.setContrastAuto(nativePointer, value)
-                } else {
-                    CameraStateJNI.fallbackSet("contrastAuto", nativePointer, value)
-                }
+                CameraStateJNI.fallbackSet("contrastAuto", nativePointer, value)
             }
     var blackLevelAuto: Boolean
-            get() = if (CameraStateJNI.isJniLoaded) CameraStateJNI.getBlackLevelAuto(nativePointer) else (CameraStateJNI.fallbackGet("blackLevelAuto", nativePointer, true) as Boolean)
+            get() = (CameraStateJNI.fallbackGet("blackLevelAuto", nativePointer, true) as Boolean)
             set(value) {
-                if (CameraStateJNI.isJniLoaded) {
-                    CameraStateJNI.setBlackLevelAuto(nativePointer, value)
-                } else {
-                    CameraStateJNI.fallbackSet("blackLevelAuto", nativePointer, value)
-                }
+                CameraStateJNI.fallbackSet("blackLevelAuto", nativePointer, value)
             }
     var highlightsAuto: Boolean
-            get() = if (CameraStateJNI.isJniLoaded) CameraStateJNI.getHighlightsAuto(nativePointer) else (CameraStateJNI.fallbackGet("highlightsAuto", nativePointer, true) as Boolean)
+            get() = (CameraStateJNI.fallbackGet("highlightsAuto", nativePointer, true) as Boolean)
             set(value) {
-                if (CameraStateJNI.isJniLoaded) {
-                    CameraStateJNI.setHighlightsAuto(nativePointer, value)
-                } else {
-                    CameraStateJNI.fallbackSet("highlightsAuto", nativePointer, value)
-                }
+                CameraStateJNI.fallbackSet("highlightsAuto", nativePointer, value)
             }
     var pivotAuto: Boolean
-            get() = if (CameraStateJNI.isJniLoaded) CameraStateJNI.getPivotAuto(nativePointer) else (CameraStateJNI.fallbackGet("pivotAuto", nativePointer, true) as Boolean)
+            get() = (CameraStateJNI.fallbackGet("pivotAuto", nativePointer, true) as Boolean)
             set(value) {
-                if (CameraStateJNI.isJniLoaded) {
-                    CameraStateJNI.setPivotAuto(nativePointer, value)
-                } else {
-                    CameraStateJNI.fallbackSet("pivotAuto", nativePointer, value)
-                }
+                CameraStateJNI.fallbackSet("pivotAuto", nativePointer, value)
             }
     var pixelationFactor: Float
-            get() = if (CameraStateJNI.isJniLoaded) CameraStateJNI.getPixelationFactor(nativePointer) else (CameraStateJNI.fallbackGet("pixelationFactor", nativePointer, 1.0f) as Float)
+            get() = (CameraStateJNI.fallbackGet("pixelationFactor", nativePointer, 1.0f) as Float)
             set(value) {
-                if (CameraStateJNI.isJniLoaded) {
-                    CameraStateJNI.setPixelationFactor(nativePointer, value)
-                } else {
-                    CameraStateJNI.fallbackSet("pixelationFactor", nativePointer, value)
-                }
+                CameraStateJNI.fallbackSet("pixelationFactor", nativePointer, value)
             }
     var tapeJitter: Float
-            get() = if (CameraStateJNI.isJniLoaded) CameraStateJNI.getTapeJitter(nativePointer) else (CameraStateJNI.fallbackGet("tapeJitter", nativePointer, 0.0f) as Float)
+            get() = (CameraStateJNI.fallbackGet("tapeJitter", nativePointer, 0.0f) as Float)
             set(value) {
-                if (CameraStateJNI.isJniLoaded) {
-                    CameraStateJNI.setTapeJitter(nativePointer, value)
-                } else {
-                    CameraStateJNI.fallbackSet("tapeJitter", nativePointer, value)
-                }
+                CameraStateJNI.fallbackSet("tapeJitter", nativePointer, value)
             }
     var scanlines: Float
-            get() = if (CameraStateJNI.isJniLoaded) CameraStateJNI.getScanlines(nativePointer) else (CameraStateJNI.fallbackGet("scanlines", nativePointer, 0.0f) as Float)
+            get() = (CameraStateJNI.fallbackGet("scanlines", nativePointer, 0.0f) as Float)
             set(value) {
-                if (CameraStateJNI.isJniLoaded) {
-                    CameraStateJNI.setScanlines(nativePointer, value)
-                } else {
-                    CameraStateJNI.fallbackSet("scanlines", nativePointer, value)
-                }
+                CameraStateJNI.fallbackSet("scanlines", nativePointer, value)
             }
     var chromaShiftInvert: Boolean
-            get() = if (CameraStateJNI.isJniLoaded) CameraStateJNI.getChromaShiftInvert(nativePointer) else (CameraStateJNI.fallbackGet("chromaShiftInvert", nativePointer, false) as Boolean)
+            get() = (CameraStateJNI.fallbackGet("chromaShiftInvert", nativePointer, false) as Boolean)
             set(value) {
-                if (CameraStateJNI.isJniLoaded) {
-                    CameraStateJNI.setChromaShiftInvert(nativePointer, value)
-                } else {
-                    CameraStateJNI.fallbackSet("chromaShiftInvert", nativePointer, value)
-                }
+                CameraStateJNI.fallbackSet("chromaShiftInvert", nativePointer, value)
             }
     var hue: Float
-            get() = if (CameraStateJNI.isJniLoaded) CameraStateJNI.getHue(nativePointer) else (CameraStateJNI.fallbackGet("hue", nativePointer, 0.0f) as Float)
+            get() = (CameraStateJNI.fallbackGet("hue", nativePointer, 0.0f) as Float)
             set(value) {
-                if (CameraStateJNI.isJniLoaded) {
-                    CameraStateJNI.setHue(nativePointer, value)
-                } else {
-                    CameraStateJNI.fallbackSet("hue", nativePointer, value)
-                }
+                CameraStateJNI.fallbackSet("hue", nativePointer, value)
             }
     var hueRed: Float
-            get() = if (CameraStateJNI.isJniLoaded) CameraStateJNI.getHueRed(nativePointer) else (CameraStateJNI.fallbackGet("hueRed", nativePointer, 0.0f) as Float)
+            get() = (CameraStateJNI.fallbackGet("hueRed", nativePointer, 0.0f) as Float)
             set(value) {
-                if (CameraStateJNI.isJniLoaded) {
-                    CameraStateJNI.setHueRed(nativePointer, value)
-                } else {
-                    CameraStateJNI.fallbackSet("hueRed", nativePointer, value)
-                }
+                CameraStateJNI.fallbackSet("hueRed", nativePointer, value)
             }
     var hueOrange: Float
-            get() = if (CameraStateJNI.isJniLoaded) CameraStateJNI.getHueOrange(nativePointer) else (CameraStateJNI.fallbackGet("hueOrange", nativePointer, 0.0f) as Float)
+            get() = (CameraStateJNI.fallbackGet("hueOrange", nativePointer, 0.0f) as Float)
             set(value) {
-                if (CameraStateJNI.isJniLoaded) {
-                    CameraStateJNI.setHueOrange(nativePointer, value)
-                } else {
-                    CameraStateJNI.fallbackSet("hueOrange", nativePointer, value)
-                }
+                CameraStateJNI.fallbackSet("hueOrange", nativePointer, value)
             }
     var hueYellow: Float
-            get() = if (CameraStateJNI.isJniLoaded) CameraStateJNI.getHueYellow(nativePointer) else (CameraStateJNI.fallbackGet("hueYellow", nativePointer, 0.0f) as Float)
+            get() = (CameraStateJNI.fallbackGet("hueYellow", nativePointer, 0.0f) as Float)
             set(value) {
-                if (CameraStateJNI.isJniLoaded) {
-                    CameraStateJNI.setHueYellow(nativePointer, value)
-                } else {
-                    CameraStateJNI.fallbackSet("hueYellow", nativePointer, value)
-                }
+                CameraStateJNI.fallbackSet("hueYellow", nativePointer, value)
             }
     var hueGreen: Float
-            get() = if (CameraStateJNI.isJniLoaded) CameraStateJNI.getHueGreen(nativePointer) else (CameraStateJNI.fallbackGet("hueGreen", nativePointer, 0.0f) as Float)
+            get() = (CameraStateJNI.fallbackGet("hueGreen", nativePointer, 0.0f) as Float)
             set(value) {
-                if (CameraStateJNI.isJniLoaded) {
-                    CameraStateJNI.setHueGreen(nativePointer, value)
-                } else {
-                    CameraStateJNI.fallbackSet("hueGreen", nativePointer, value)
-                }
+                CameraStateJNI.fallbackSet("hueGreen", nativePointer, value)
             }
     var hueCyan: Float
-            get() = if (CameraStateJNI.isJniLoaded) CameraStateJNI.getHueCyan(nativePointer) else (CameraStateJNI.fallbackGet("hueCyan", nativePointer, 0.0f) as Float)
+            get() = (CameraStateJNI.fallbackGet("hueCyan", nativePointer, 0.0f) as Float)
             set(value) {
-                if (CameraStateJNI.isJniLoaded) {
-                    CameraStateJNI.setHueCyan(nativePointer, value)
-                } else {
-                    CameraStateJNI.fallbackSet("hueCyan", nativePointer, value)
-                }
+                CameraStateJNI.fallbackSet("hueCyan", nativePointer, value)
             }
     var hueBlue: Float
-            get() = if (CameraStateJNI.isJniLoaded) CameraStateJNI.getHueBlue(nativePointer) else (CameraStateJNI.fallbackGet("hueBlue", nativePointer, 0.0f) as Float)
+            get() = (CameraStateJNI.fallbackGet("hueBlue", nativePointer, 0.0f) as Float)
             set(value) {
-                if (CameraStateJNI.isJniLoaded) {
-                    CameraStateJNI.setHueBlue(nativePointer, value)
-                } else {
-                    CameraStateJNI.fallbackSet("hueBlue", nativePointer, value)
-                }
+                CameraStateJNI.fallbackSet("hueBlue", nativePointer, value)
             }
     var huePurple: Float
-            get() = if (CameraStateJNI.isJniLoaded) CameraStateJNI.getHuePurple(nativePointer) else (CameraStateJNI.fallbackGet("huePurple", nativePointer, 0.0f) as Float)
+            get() = (CameraStateJNI.fallbackGet("huePurple", nativePointer, 0.0f) as Float)
             set(value) {
-                if (CameraStateJNI.isJniLoaded) {
-                    CameraStateJNI.setHuePurple(nativePointer, value)
-                } else {
-                    CameraStateJNI.fallbackSet("huePurple", nativePointer, value)
-                }
+                CameraStateJNI.fallbackSet("huePurple", nativePointer, value)
             }
     var hueMagenta: Float
-            get() = if (CameraStateJNI.isJniLoaded) CameraStateJNI.getHueMagenta(nativePointer) else (CameraStateJNI.fallbackGet("hueMagenta", nativePointer, 0.0f) as Float)
+            get() = (CameraStateJNI.fallbackGet("hueMagenta", nativePointer, 0.0f) as Float)
             set(value) {
-                if (CameraStateJNI.isJniLoaded) {
-                    CameraStateJNI.setHueMagenta(nativePointer, value)
-                } else {
-                    CameraStateJNI.fallbackSet("hueMagenta", nativePointer, value)
-                }
+                CameraStateJNI.fallbackSet("hueMagenta", nativePointer, value)
             }
     var scanlinesHorizontal: Boolean
-            get() = if (CameraStateJNI.isJniLoaded) CameraStateJNI.getScanlinesHorizontal(nativePointer) else (CameraStateJNI.fallbackGet("scanlinesHorizontal", nativePointer, true) as Boolean)
+            get() = (CameraStateJNI.fallbackGet("scanlinesHorizontal", nativePointer, true) as Boolean)
             set(value) {
-                if (CameraStateJNI.isJniLoaded) {
-                    CameraStateJNI.setScanlinesHorizontal(nativePointer, value)
-                } else {
-                    CameraStateJNI.fallbackSet("scanlinesHorizontal", nativePointer, value)
-                }
+                CameraStateJNI.fallbackSet("scanlinesHorizontal", nativePointer, value)
             }
     var scanlinesMode: Int
-            get() = if (CameraStateJNI.isJniLoaded) CameraStateJNI.getScanlinesMode(nativePointer) else (CameraStateJNI.fallbackGet("scanlinesMode", nativePointer, 0) as Int)
+            get() = (CameraStateJNI.fallbackGet("scanlinesMode", nativePointer, 0) as Int)
             set(value) {
-                if (CameraStateJNI.isJniLoaded) {
-                    CameraStateJNI.setScanlinesMode(nativePointer, value)
-                } else {
-                    CameraStateJNI.fallbackSet("scanlinesMode", nativePointer, value)
-                }
+                CameraStateJNI.fallbackSet("scanlinesMode", nativePointer, value)
             }
     var scanlinesDensity: Float
-            get() = if (CameraStateJNI.isJniLoaded) CameraStateJNI.getScanlinesDensity(nativePointer) else (CameraStateJNI.fallbackGet("scanlinesDensity", nativePointer, 800.0f) as Float)
+            get() = (CameraStateJNI.fallbackGet("scanlinesDensity", nativePointer, 800.0f) as Float)
             set(value) {
-                if (CameraStateJNI.isJniLoaded) {
-                    CameraStateJNI.setScanlinesDensity(nativePointer, value)
-                } else {
-                    CameraStateJNI.fallbackSet("scanlinesDensity", nativePointer, value)
-                }
+                CameraStateJNI.fallbackSet("scanlinesDensity", nativePointer, value)
             }
     var lensDistortion: Float
-            get() = if (CameraStateJNI.isJniLoaded) CameraStateJNI.getLensDistortion(nativePointer) else (CameraStateJNI.fallbackGet("lensDistortion", nativePointer, 0.0f) as Float)
+            get() = (CameraStateJNI.fallbackGet("lensDistortion", nativePointer, 0.0f) as Float)
             set(value) {
-                if (CameraStateJNI.isJniLoaded) {
-                    CameraStateJNI.setLensDistortion(nativePointer, value)
-                } else {
-                    CameraStateJNI.fallbackSet("lensDistortion", nativePointer, value)
-                }
+                CameraStateJNI.fallbackSet("lensDistortion", nativePointer, value)
             }
     var halationIntensity: Float
-            get() = if (CameraStateJNI.isJniLoaded) CameraStateJNI.getHalationIntensity(nativePointer) else (CameraStateJNI.fallbackGet("halationIntensity", nativePointer, 0.0f) as Float)
+            get() = (CameraStateJNI.fallbackGet("halationIntensity", nativePointer, 0.0f) as Float)
             set(value) {
-                if (CameraStateJNI.isJniLoaded) {
-                    CameraStateJNI.setHalationIntensity(nativePointer, value)
-                } else {
-                    CameraStateJNI.fallbackSet("halationIntensity", nativePointer, value)
-                }
+                CameraStateJNI.fallbackSet("halationIntensity", nativePointer, value)
             }
     var halationEnabled: Boolean
-            get() = if (CameraStateJNI.isJniLoaded) CameraStateJNI.getHalationEnabled(nativePointer) else (CameraStateJNI.fallbackGet("halationEnabled", nativePointer, false) as Boolean)
+            get() = (CameraStateJNI.fallbackGet("halationEnabled", nativePointer, false) as Boolean)
             set(value) {
-                if (CameraStateJNI.isJniLoaded) {
-                    CameraStateJNI.setHalationEnabled(nativePointer, value)
-                } else {
-                    CameraStateJNI.fallbackSet("halationEnabled", nativePointer, value)
-                }
+                CameraStateJNI.fallbackSet("halationEnabled", nativePointer, value)
             }
     var halationThreshold: Float
-            get() = if (CameraStateJNI.isJniLoaded) CameraStateJNI.getHalationThreshold(nativePointer) else (CameraStateJNI.fallbackGet("halationThreshold", nativePointer, 0.5f) as Float)
+            get() = (CameraStateJNI.fallbackGet("halationThreshold", nativePointer, 0.5f) as Float)
             set(value) {
-                if (CameraStateJNI.isJniLoaded) {
-                    CameraStateJNI.setHalationThreshold(nativePointer, value)
-                } else {
-                    CameraStateJNI.fallbackSet("halationThreshold", nativePointer, value)
-                }
+                CameraStateJNI.fallbackSet("halationThreshold", nativePointer, value)
             }
     var bloomThreshold: Float
-            get() = if (CameraStateJNI.isJniLoaded) CameraStateJNI.getBloomThreshold(nativePointer) else (CameraStateJNI.fallbackGet("bloomThreshold", nativePointer, 0.5f) as Float)
+            get() = (CameraStateJNI.fallbackGet("bloomThreshold", nativePointer, 0.5f) as Float)
             set(value) {
-                if (CameraStateJNI.isJniLoaded) {
-                    CameraStateJNI.setBloomThreshold(nativePointer, value)
-                } else {
-                    CameraStateJNI.fallbackSet("bloomThreshold", nativePointer, value)
-                }
+                CameraStateJNI.fallbackSet("bloomThreshold", nativePointer, value)
             }
     var chromaBleed: Float
-            get() = if (CameraStateJNI.isJniLoaded) CameraStateJNI.getChromaBleed(nativePointer) else (CameraStateJNI.fallbackGet("chromaBleed", nativePointer, 0.0f) as Float)
+            get() = (CameraStateJNI.fallbackGet("chromaBleed", nativePointer, 0.0f) as Float)
             set(value) {
-                if (CameraStateJNI.isJniLoaded) {
-                    CameraStateJNI.setChromaBleed(nativePointer, value)
-                } else {
-                    CameraStateJNI.fallbackSet("chromaBleed", nativePointer, value)
-                }
+                CameraStateJNI.fallbackSet("chromaBleed", nativePointer, value)
             }
     var deviceOrientation: Int
-            get() = if (CameraStateJNI.isJniLoaded) CameraStateJNI.getDeviceOrientation(nativePointer) else (CameraStateJNI.fallbackGet("deviceOrientation", nativePointer, 0) as Int)
+            get() = (CameraStateJNI.fallbackGet("deviceOrientation", nativePointer, 0) as Int)
             set(value) {
-                if (CameraStateJNI.isJniLoaded) {
-                    CameraStateJNI.setDeviceOrientation(nativePointer, value)
-                } else {
-                    CameraStateJNI.fallbackSet("deviceOrientation", nativePointer, value)
-                }
+                CameraStateJNI.fallbackSet("deviceOrientation", nativePointer, value)
             }
 
     // Hardware Props

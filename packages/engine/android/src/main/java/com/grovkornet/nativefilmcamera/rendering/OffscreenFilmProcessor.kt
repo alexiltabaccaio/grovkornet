@@ -15,7 +15,7 @@ import java.util.concurrent.Executors
 class OffscreenFilmProcessor {
     private val TAG = "OffscreenProcessor"
 
-    private var nativeEnginePtr: Long = 0L
+    private var nativeProcessor: OffscreenFilmProcessorNative? = null
     private val processMutex = Mutex()
 
     private var isPrepared = false
@@ -37,29 +37,6 @@ class OffscreenFilmProcessor {
         }
     }
 
-    // Native JNI methods
-    private external fun nativePrepare(width: Int, height: Int, assetManager: android.content.res.AssetManager): Long
-    private external fun nativeProcessBitmap(
-        nativeEnginePtr: Long,
-        input: Bitmap,
-        output: Bitmap,
-        statePtr: Long,
-        invertY: Boolean
-    )
-    private external fun nativeProcessHardwareBuffer(
-        nativeEnginePtr: Long,
-        hardwareBuffer: android.hardware.HardwareBuffer,
-        statePtr: Long,
-        invertY: Boolean
-    )
-    private external fun nativeUpdateOverlay(
-        nativeEnginePtr: Long,
-        bitmaps: Array<Bitmap>
-    )
-    private external fun nativeRelease(nativeEnginePtr: Long)
-    private external fun nativeGetDrsScale(nativeEnginePtr: Long): Float
-    private external fun nativeSimulateFrameTime(nativeEnginePtr: Long, frameTimeMs: Float)
-
     suspend fun prepare(width: Int, height: Int, assetManager: android.content.res.AssetManager) = withContext(singleThreadContext) {
         if (isPrepared && currentWidth == width && currentHeight == height) return@withContext
         
@@ -70,17 +47,14 @@ class OffscreenFilmProcessor {
 
         try {
             if (isPrepared) {
-                if (nativeEnginePtr != 0L) {
-                    nativeRelease(nativeEnginePtr)
-                    nativeEnginePtr = 0L
-                }
+                nativeProcessor?.release()
                 isPrepared = false
             }
 
-            nativeEnginePtr = nativePrepare(width, height, assetManager)
-            if (nativeEnginePtr == 0L) {
-                throw CameraErrorFactory.createFilamentInitFailed("nativePrepare returned 0 pointer")
+            if (nativeProcessor == null) {
+                nativeProcessor = OffscreenFilmProcessorNative()
             }
+            nativeProcessor!!.prepare(width, height, assetManager)
 
             currentWidth = width
             currentHeight = height
@@ -115,8 +89,8 @@ class OffscreenFilmProcessor {
                 prepare(input.width, input.height, context.assets)
             }
 
-            if (nativeEnginePtr == 0L) {
-                Log.e(TAG, "Native engine pointer is null, returning original bitmap")
+            if (!isPrepared) {
+                Log.e(TAG, "Native engine is not prepared, returning original bitmap")
                 return@withContext input
             }
 
@@ -128,8 +102,7 @@ class OffscreenFilmProcessor {
                 val outputBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
                 
                 // Process pixels in C++ (with C++ flip enabled)
-                nativeProcessBitmap(
-                    nativeEnginePtr,
+                nativeProcessor!!.processBitmap(
                     input,
                     outputBitmap,
                     params.nativePointer,
@@ -168,15 +141,14 @@ class OffscreenFilmProcessor {
                 prepare(hardwareBuffer.width, hardwareBuffer.height, context.assets)
             }
 
-            if (nativeEnginePtr == 0L) {
-                Log.e(TAG, "Native engine pointer is null, skipping hardware buffer processing")
+            if (!isPrepared) {
+                Log.e(TAG, "Native engine is not prepared, skipping hardware buffer processing")
                 return@withContext
             }
 
             val startTime = System.currentTimeMillis()
             try {
-                nativeProcessHardwareBuffer(
-                    nativeEnginePtr,
+                nativeProcessor!!.processHardwareBuffer(
                     hardwareBuffer,
                     params.nativePointer,
                     false
@@ -194,18 +166,18 @@ class OffscreenFilmProcessor {
     }
 
     fun updateOverlay(bitmaps: Array<Bitmap>) {
-        if (nativeEnginePtr != 0L) {
-            nativeUpdateOverlay(nativeEnginePtr, bitmaps)
+        if (isPrepared) {
+            nativeProcessor!!.updateOverlay(bitmaps)
         }
     }
 
     fun getDrsScale(): Float {
-        return if (nativeEnginePtr != 0L) nativeGetDrsScale(nativeEnginePtr) else 1.0f
+        return if (isPrepared) nativeProcessor!!.getDrsScale() else 1.0f
     }
 
     fun simulateFrameTime(frameTimeMs: Float) {
-        if (nativeEnginePtr != 0L) {
-            nativeSimulateFrameTime(nativeEnginePtr, frameTimeMs)
+        if (isPrepared) {
+            nativeProcessor!!.simulateFrameTime(frameTimeMs)
         }
     }
 
@@ -217,11 +189,8 @@ class OffscreenFilmProcessor {
                 if (BuildConfig.DEBUG) {
                     Log.i(TAG, "Releasing native Filament engine...")
                 }
-                if (nativeEnginePtr != 0L) {
-                    nativeRelease(nativeEnginePtr)
-                    nativeEnginePtr = 0L
-                }
-                
+                nativeProcessor?.release()
+                nativeProcessor = null
                 isPrepared = false
                 if (BuildConfig.DEBUG) {
                     Log.i(TAG, "Release complete.")

@@ -18,6 +18,7 @@ include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/src/main/cpp/pipeline
     ${CMAKE_CURRENT_SOURCE_DIR}/src/main/cpp/utils
     ${CMAKE_CURRENT_SOURCE_DIR}/src/main/cpp/jni
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/main/cpp/state
 )
 
 # Macro to add static imported Filament libraries
@@ -45,6 +46,7 @@ add_library(grovkornet_engine SHARED
     src/main/cpp/core/GrovkornetEngine.cpp
     src/main/cpp/core/FrameRenderer.cpp
     src/main/cpp/state/CameraStateManager.cpp
+    src/main/cpp/state/HybridNitroCameraConfiguration.cpp
     src/main/cpp/pipeline/PipelineRenderer.cpp
     src/main/cpp/pipeline/GeometryBuilder.cpp
     src/main/cpp/pipeline/LutGenerator.cpp
@@ -55,6 +57,7 @@ add_library(grovkornet_engine SHARED
     src/main/cpp/utils/FrameTimingController.cpp
     src/main/cpp/utils/DrsManager.cpp
     src/main/cpp/jni/GrovkornetJni.cpp
+    src/main/cpp/jni/OffscreenFilmProcessorNative.cpp
 )
 
 # Include Nitrogen autolinking CMake project
@@ -116,9 +119,12 @@ if (EXISTS "${ANDROID_NDK}/sources/third_party/googletest")
         src/test/cpp/PerformanceBenchmark.test.cpp
         src/test/cpp/FrameRendererConcurrency.test.cpp
         src/test/cpp/JniLifecycleConcurrency.test.cpp
+        src/test/cpp/HybridNitroCameraConfigurationTest.cpp
+        ../nitrogen/generated/shared/c++/HybridNitroCameraConfigurationSpec.cpp
         src/main/cpp/core/GrovkornetEngine.cpp
         src/main/cpp/core/FrameRenderer.cpp
         src/main/cpp/state/CameraStateManager.cpp
+        src/main/cpp/state/HybridNitroCameraConfiguration.cpp
         src/main/cpp/pipeline/PipelineRenderer.cpp
         src/main/cpp/pipeline/GeometryBuilder.cpp
         src/main/cpp/pipeline/LutGenerator.cpp
@@ -148,6 +154,9 @@ if (EXISTS "${ANDROID_NDK}/sources/third_party/googletest")
     target_link_libraries(grovkornet-engine-tests
         PRIVATE
         gtest
+        fbjni::fbjni
+        ReactAndroid::jsi
+        react-native-nitro-modules::NitroModules
         -Wl,--start-group
         filament
         backend

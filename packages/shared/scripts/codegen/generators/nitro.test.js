@@ -23,7 +23,8 @@ test('generateNitroConfig correctly generates Nitro specs and Kotlin overrides, 
 
   const fileTemplates = {
     'NitroCameraConfiguration.nitro.ts': '  // @@GEN_PROPERTIES_START@@\n  // @@GEN_PROPERTIES_END@@',
-    'HybridNitroCameraConfiguration.kt': '    // @@GEN_OVERRIDES_START@@\n    // @@GEN_OVERRIDES_END@@'
+    'HybridNitroCameraConfiguration.hpp': '    // @@GEN_PROPERTIES_START@@\n    // @@GEN_PROPERTIES_END@@',
+    'HybridNitroCameraConfiguration.cpp': '// @@GEN_PROPERTIES_START@@\n// @@GEN_PROPERTIES_END@@'
   };
 
   fs.readFileSync = (filePath, options) => {
@@ -72,9 +73,13 @@ test('generateNitroConfig correctly generates Nitro specs and Kotlin overrides, 
     assert.match(written['NitroCameraConfiguration.nitro.ts'], /saturation: number;/, 'Should define saturation property');
     assert.match(written['NitroCameraConfiguration.nitro.ts'], /torchState: boolean;/, 'Should define torchState property');
 
-    assert.ok(written['HybridNitroCameraConfiguration.kt']);
-    assert.match(written['HybridNitroCameraConfiguration.kt'], /override var saturation: Double/, 'Should override var saturation');
-    assert.match(written['HybridNitroCameraConfiguration.kt'], /override var torchState: Boolean/, 'Should override var torchState');
+    assert.ok(written['HybridNitroCameraConfiguration.hpp']);
+    assert.match(written['HybridNitroCameraConfiguration.hpp'], /double getSaturation\(\) override/, 'Should declare getSaturation');
+    assert.match(written['HybridNitroCameraConfiguration.hpp'], /void setSaturation\(double value\) override/, 'Should declare setSaturation');
+
+    assert.ok(written['HybridNitroCameraConfiguration.cpp']);
+    assert.match(written['HybridNitroCameraConfiguration.cpp'], /double HybridNitroCameraConfiguration::getSaturation\(\)/, 'Should define getSaturation');
+    assert.match(written['HybridNitroCameraConfiguration.cpp'], /void HybridNitroCameraConfiguration::setSaturation\(double value\)/, 'Should define setSaturation');
 
     assert.strictEqual(executedCommand, 'npx nitrogen .', 'Should invoke nitrogen CLI');
 

@@ -35,7 +35,7 @@ target_sources(
   # Shared Nitrogen C++ sources
   ../nitrogen/generated/shared/c++/HybridNitroCameraConfigurationSpec.cpp
   # Android-specific Nitrogen C++ sources
-  ../nitrogen/generated/android/c++/JHybridNitroCameraConfigurationSpec.cpp
+  
 )
 
 # From node_modules/react-native/ReactAndroid/cmake-utils/folly-flags.cmake

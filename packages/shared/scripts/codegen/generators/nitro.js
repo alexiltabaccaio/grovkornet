@@ -16,64 +16,50 @@ function generateNitroConfig(parameters) {
     .join('\n');
   replaceBetweenMarkers(FILE_PATHS.nitroSpec, '  // @@GEN_PROPERTIES_START@@', '  // @@GEN_PROPERTIES_END@@', specProperties, '  ');
 
-  // 2. Generate HybridNitroCameraConfiguration.kt overrides
-  const overrides = nitroParams
+  // 2. Generate C++ declarations for HybridNitroCameraConfiguration.hpp
+  const headerProperties = nitroParams
     .map(p => {
-      const name = p.name;
-      const cppName = p.cpp?.name || p.kotlin?.name || p.name;
-      const capitalized = cppName.charAt(0).toUpperCase() + cppName.slice(1);
-      const kotlinName = p.kotlin?.name || p.name;
-      const kotlinType = p.kotlin?.type || 'Float';
+      const funcName = p.name;
+      const capitalized = funcName.charAt(0).toUpperCase() + funcName.slice(1);
+      const cppType = p.ts?.type === 'boolean' ? 'bool' : 'double';
+      return `${cppType} get${capitalized}() override;\nvoid set${capitalized}(${cppType} value) override;`;
+    })
+    .join('\n');
+  replaceBetweenMarkers(FILE_PATHS.cppNitroHeader, '    // @@GEN_PROPERTIES_START@@', '    // @@GEN_PROPERTIES_END@@', headerProperties, '    ');
+
+  // 3. Generate C++ implementations for HybridNitroCameraConfiguration.cpp
+  const sourceProperties = nitroParams
+    .map(p => {
+      const funcName = p.name;
+      const cppFieldName = p.cpp?.name || p.name;
+      const capitalized = funcName.charAt(0).toUpperCase() + funcName.slice(1);
+      const isBool = p.ts?.type === 'boolean';
+      const cppType = isBool ? 'bool' : 'double';
       
-      let tsToKotlinType = 'Double';
-      let castExpr = 'value.toFloat()';
-      let returnCastExpr = '?.toDouble()';
-      let defaultValue = '1.0';
-      let jniGetCall = `CameraStateJNI.get${capitalized}(0L)`;
-      let jniSetCall = `CameraStateJNI.set${capitalized}(0L, ${castExpr})`;
-
-      if (p.ts?.type === 'boolean') {
-        tsToKotlinType = 'Boolean';
-        castExpr = 'value';
-        returnCastExpr = '';
-        defaultValue = 'false';
-        jniGetCall = `CameraStateJNI.get${capitalized}(0L)`;
-        jniSetCall = `CameraStateJNI.set${capitalized}(0L, value)`;
-      } else if (kotlinType === 'Int') {
-        tsToKotlinType = 'Double';
-        castExpr = 'value.toInt()';
-        returnCastExpr = '?.toDouble()';
-        defaultValue = '0.0';
-        jniGetCall = `CameraStateJNI.get${capitalized}(0L).toDouble()`;
-        jniSetCall = `CameraStateJNI.set${capitalized}(0L, value.toInt())`;
-      } else if (kotlinType === 'Long') {
-        tsToKotlinType = 'Double';
-        castExpr = 'value.toLong()';
-        returnCastExpr = '?.toDouble()';
-        defaultValue = '0.0';
-        jniGetCall = `CameraStateJNI.get${capitalized}(0L).toDouble()`;
-        jniSetCall = `CameraStateJNI.set${capitalized}(0L, value.toLong())`;
-      } else {
-        tsToKotlinType = 'Double';
-        castExpr = 'value.toFloat()';
-        returnCastExpr = '?.toDouble()';
-        defaultValue = p.kotlin?.default ? p.kotlin.default.replace('f', '') : '1.0';
-        jniGetCall = `CameraStateJNI.get${capitalized}(0L).toDouble()`;
-        jniSetCall = `CameraStateJNI.set${capitalized}(0L, value.toFloat())`;
+      let getterBody = `return CameraStateManager::getInstance().getActiveState()->renderParams.${cppFieldName};`;
+      if (isBool) {
+        getterBody = `return CameraStateManager::getInstance().getActiveState()->renderParams.${cppFieldName} > 0.5f;`;
       }
+      
+      let setterBody = `CameraStateManager::getInstance().updateStateField([=](RenderState& state) {
+    state.renderParams.${cppFieldName} = static_cast<float>(value);
+});`;
+      if (isBool) {
+        setterBody = `CameraStateManager::getInstance().updateStateField([=](RenderState& state) {
+    state.renderParams.${cppFieldName} = value ? 1.0f : 0.0f;
+});`;
+      }
+      
+      return `${cppType} HybridNitroCameraConfiguration::get${capitalized}() {
+    ${getterBody}
+}
 
-      return `override var ${name}: ${tsToKotlinType}
-    get() = try { ${jniGetCall} } catch (e: Throwable) { ${defaultValue} }
-    set(value) {
-        try {
-            ${jniSetCall}
-        } catch (e: Throwable) {
-            Log.e("HybridNitroCameraConfiguration", "Failed to set ${name}", e)
-        }
-    }`;
+void HybridNitroCameraConfiguration::set${capitalized}(${cppType} value) {
+    ${setterBody}
+}`;
     })
     .join('\n\n');
-  replaceBetweenMarkers(FILE_PATHS.nitroImpl, '    // @@GEN_OVERRIDES_START@@', '    // @@GEN_OVERRIDES_END@@', overrides, '    ');
+  replaceBetweenMarkers(FILE_PATHS.cppNitroSource, '// @@GEN_PROPERTIES_START@@', '// @@GEN_PROPERTIES_END@@', sourceProperties, '');
 
   // Trigger Nitrogen code generation automatically
   try {

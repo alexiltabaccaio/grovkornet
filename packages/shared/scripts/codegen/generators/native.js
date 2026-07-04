@@ -126,13 +126,22 @@ function generateNativeBridge(parameters, renderParams) {
   const renderFieldObjects = parameters.filter(p => p.kotlin && !p.kotlin.transient && p.category === 'render');
   const hardwareFieldObjects = parameters.filter(p => p.kotlin && !p.kotlin.transient && p.category === 'hardware');
   const viewportFieldObjects = parameters.filter(p => p.kotlin && !p.kotlin.transient && p.category === 'viewport');
-
+ 
   const renderFields = renderFieldObjects
     .map(p => {
       const cppName = p.cpp?.name || p.kotlin?.name || p.name;
       const capitalized = cppName.charAt(0).toUpperCase() + cppName.slice(1);
       const ktType = toKotlinJniType(p.kotlin?.type);
       const fallbackVal = toKotlinFallbackDefault(p);
+      
+      if (p.nitro) {
+        return `var ${p.kotlin.name || p.name}: ${ktType}
+        get() = (CameraStateJNI.fallbackGet("${p.kotlin.name || p.name}", nativePointer, ${fallbackVal}) as ${ktType})
+        set(value) {
+            CameraStateJNI.fallbackSet("${p.kotlin.name || p.name}", nativePointer, value)
+        }`;
+      }
+      
       return `var ${p.kotlin.name || p.name}: ${ktType}
         get() = if (CameraStateJNI.isJniLoaded) CameraStateJNI.get${capitalized}(nativePointer) else (CameraStateJNI.fallbackGet("${p.kotlin.name || p.name}", nativePointer, ${fallbackVal}) as ${ktType})
         set(value) {
@@ -284,7 +293,7 @@ function generateNativeBridge(parameters, renderParams) {
   replaceBetweenMarkers(FILE_PATHS.cppStateManagerSource, '// @@GEN_CLAMPING_START@@', '// @@GEN_CLAMPING_END@@', cppClampingContent, '    ');
 
   // 9. Generate JNI Bridge declarations in CameraStateJNI.kt
-  const kotlinJniFields = [...renderFieldObjects, ...hardwareFieldObjects, ...viewportFieldObjects];
+  const kotlinJniFields = [...renderFieldObjects, ...hardwareFieldObjects, ...viewportFieldObjects].filter(p => !p.nitro);
   const kotlinJniContent = kotlinJniFields
     .map(p => {
       const cppName = p.cpp?.name || p.kotlin?.name || p.name;

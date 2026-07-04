@@ -11,7 +11,7 @@
   "autolinking": {
     "NitroCameraConfiguration": {
       "android": {
-        "language": "kotlin",
+        "language": "c++",
         "implementationClassName": "HybridNitroCameraConfiguration"
       }
     }

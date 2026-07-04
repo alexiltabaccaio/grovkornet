@@ -15,8 +15,7 @@
 #include <fbjni/fbjni.h>
 #include <NitroModules/HybridObjectRegistry.hpp>
 
-#include "JHybridNitroCameraConfigurationSpec.hpp"
-#include <NitroModules/DefaultConstructableObject.hpp>
+#include "HybridNitroCameraConfiguration.hpp"
 
 namespace margelo::nitro::grovkornet {
 
@@ -26,27 +25,23 @@ int initialize(JavaVM* vm) {
   });
 }
 
-struct JHybridNitroCameraConfigurationSpecImpl: public jni::JavaClass<JHybridNitroCameraConfigurationSpecImpl, JHybridNitroCameraConfigurationSpec::JavaPart> {
-  static constexpr auto kJavaDescriptor = "Lcom/margelo/nitro/com/grovkornet/nativefilmcamera/HybridNitroCameraConfiguration;";
-  static std::shared_ptr<JHybridNitroCameraConfigurationSpec> create() {
-    static const auto constructorFn = javaClassStatic()->getConstructor<JHybridNitroCameraConfigurationSpecImpl::javaobject()>();
-    jni::local_ref<JHybridNitroCameraConfigurationSpec::JavaPart> javaPart = javaClassStatic()->newObject(constructorFn);
-    return javaPart->getJHybridNitroCameraConfigurationSpec();
-  }
-};
+
 
 void registerAllNatives() {
   using namespace margelo::nitro;
   using namespace margelo::nitro::grovkornet;
 
   // Register native JNI methods
-  margelo::nitro::grovkornet::JHybridNitroCameraConfigurationSpec::CxxPart::registerNatives();
+  
 
   // Register Nitro Hybrid Objects
   HybridObjectRegistry::registerHybridObjectConstructor(
     "NitroCameraConfiguration",
     []() -> std::shared_ptr<HybridObject> {
-      return JHybridNitroCameraConfigurationSpecImpl::create();
+      static_assert(std::is_default_constructible_v<HybridNitroCameraConfiguration>,
+                    "The HybridObject \"HybridNitroCameraConfiguration\" is not default-constructible! "
+                    "Create a public constructor that takes zero arguments to be able to autolink this HybridObject.");
+      return std::make_shared<HybridNitroCameraConfiguration>();
     }
   );
 }
