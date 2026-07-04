@@ -153,4 +153,42 @@ class CapturePipelineTest {
         // Ensure the image proxy was closed
         verify { mockImageProxy.close() }
     }
+
+    @Test
+    fun testProcessAndSave_clearsBitmapsOnException() {
+        // Setup config
+        val config = CameraConfiguration().apply {
+            aspectRatio = 1
+            resolutionSetting = 2
+            isSelfieCamera = false
+        }
+
+        // Trigger an exception midway through the pipeline to halt processing
+        every { ImageProcessorPipeline.scaleToTargetResolution(any(), any()) } throws RuntimeException("Simulated exception for memory leak test")
+
+        // Mock imageCapture to invoke success immediately
+        every { mockImageCapture.takePicture(any(), any<ImageCapture.OnImageCapturedCallback>()) } answers {
+            val callback = secondArg<ImageCapture.OnImageCapturedCallback>()
+            callback.onCaptureSuccess(mockImageProxy)
+        }
+
+        val pipeline = CapturePipeline(mockContext, config, mockGalleryManager, object : CapturePipeline.Listener {
+            override fun onPhotoCaptured(uri: String) {}
+        })
+
+        pipeline.takePicture(mockImageCapture)
+
+        // Wait for coroutine processing
+        var attempts = 0
+        while (attempts < 50) {
+            org.robolectric.shadows.ShadowLooper.idleMainLooper()
+            Thread.sleep(50)
+            attempts++
+        }
+
+        // The pipeline crashes during scaleToTargetResolution.
+        // At that point, 'bitmap' is pointing to mockCroppedBitmap.
+        // We verify that recycle is called on it to ensure memory leak prevention via finally block.
+        verify(atLeast = 1) { mockCroppedBitmap.recycle() }
+    }
 }

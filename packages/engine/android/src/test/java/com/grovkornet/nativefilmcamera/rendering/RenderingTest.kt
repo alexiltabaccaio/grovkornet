@@ -6,7 +6,7 @@ import android.graphics.Bitmap
 import android.graphics.SurfaceTexture
 import android.view.Surface
 import com.grovkornet.nativefilmcamera.state.CameraConfiguration
-import io.mockk.mockk
+import io.mockk.*
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.*
 import org.junit.Test
@@ -79,6 +79,59 @@ class RenderingTest {
         } catch (e: Throwable) {
             // Acceptable
         }
+    }
+
+    @Test
+    fun offscreenFilmProcessor_clearsBitmapOnException() = runBlocking {
+        // Mock Bitmap companion to intercept createBitmap
+        io.mockk.mockkStatic(Bitmap::class)
+        val mockOutputBitmap = mockk<Bitmap>(relaxed = true)
+        io.mockk.every { Bitmap.createBitmap(any<Int>(), any<Int>(), any<Bitmap.Config>()) } returns mockOutputBitmap
+
+        // Mock OffscreenFilmProcessorNative dynamically to bypass JNI initHybrid() constructor
+        val mockNative = mockk<OffscreenFilmProcessorNative>(relaxed = true)
+        io.mockk.every { mockNative.prepare(any(), any(), any()) } just io.mockk.Runs
+        io.mockk.every { mockNative.processBitmap(any(), any(), any(), any()) } throws RuntimeException("Simulated native crash")
+
+        val processor = OffscreenFilmProcessor()
+        
+        // Inject the mocked native processor via reflection
+        val nativeProcessorField = OffscreenFilmProcessor::class.java.getDeclaredField("nativeProcessor")
+        nativeProcessorField.isAccessible = true
+        nativeProcessorField.set(processor, mockNative)
+
+        // Bypasse prepare link error since field is injected, we manually set isPrepared flag
+        val preparedField = OffscreenFilmProcessor::class.java.getDeclaredField("isPrepared")
+        preparedField.isAccessible = true
+        preparedField.set(processor, true)
+        
+        // Set dimensions to match input bitmap to avoid prepare() re-trigger inside process()
+        val widthField = OffscreenFilmProcessor::class.java.getDeclaredField("currentWidth")
+        widthField.isAccessible = true
+        widthField.set(processor, 1920)
+        
+        val heightField = OffscreenFilmProcessor::class.java.getDeclaredField("currentHeight")
+        heightField.isAccessible = true
+        heightField.set(processor, 1080)
+
+        val inputBitmap = mockk<Bitmap>(relaxed = true)
+        io.mockk.every { inputBitmap.width } returns 1920
+        io.mockk.every { inputBitmap.height } returns 1080
+        
+        val context = mockk<Context>(relaxed = true)
+        val params = CameraConfiguration()
+
+        try {
+            processor.process(inputBitmap, params, context)
+            fail("Expected exception to be thrown from simulated native crash")
+        } catch (e: Exception) {
+            // Processing failed as expected
+        }
+
+        // Verify that the outputBitmap generated inside process() was recycled before throwing the exception
+        io.mockk.verify(atLeast = 1) { mockOutputBitmap.recycle() }
+        
+        io.mockk.unmockkStatic(Bitmap::class)
     }
 
     @Test

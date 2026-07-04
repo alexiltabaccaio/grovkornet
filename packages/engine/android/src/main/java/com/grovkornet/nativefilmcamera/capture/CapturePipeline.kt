@@ -70,11 +70,17 @@ class CapturePipeline(
             ContextCompat.getMainExecutor(context),
             object : ImageCapture.OnImageCapturedCallback() {
                 override fun onCaptureSuccess(image: ImageProxy) {
-                    cont.resume(image)
+                    if (cont.isActive) {
+                        cont.resume(image)
+                    } else {
+                        image.close()
+                    }
                 }
 
                 override fun onError(exception: ImageCaptureException) {
-                    cont.resumeWithException(exception)
+                    if (cont.isActive) {
+                        cont.resumeWithException(exception)
+                    }
                 }
             }
         )
@@ -83,17 +89,25 @@ class CapturePipeline(
     private suspend fun processAndSave(image: ImageProxy) = withContext(Dispatchers.Default) {
         val procStartTime = System.currentTimeMillis()
         
-        // 1. Light and fast extraction (allowed to run concurrently to free CameraX buffer quickly)
-        val rotation = image.imageInfo.rotationDegrees
-        val buffer = image.planes[0].buffer
-        val bytes = ByteArray(buffer.remaining())
-        buffer.get(bytes)
-        
-        image.close() // Unfreeze camera preview immediately!
+        val rotation: Int
+        val bytes: ByteArray
+        try {
+            // 1. Light and fast extraction (allowed to run concurrently to free CameraX buffer quickly)
+            rotation = image.imageInfo.rotationDegrees
+            val buffer = image.planes[0].buffer
+            bytes = ByteArray(buffer.remaining())
+            buffer.get(bytes)
+        } finally {
+            image.close() // Unfreeze camera preview immediately!
+        }
         
         // 2. Heavy memory allocation and processing (serialized with a Mutex to prevent OOM)
         memoryMutex.withLock {
+            var rawBitmap: Bitmap? = null
             var bitmap: Bitmap? = null
+            var scaled: Bitmap? = null
+            var processed: Bitmap? = null
+            var watermarked: Bitmap? = null
             var originalExifMap: Map<String, String> = emptyMap()
             
             try {
@@ -101,32 +115,27 @@ class CapturePipeline(
                     ExifMetadataManager.extractMetadata(stream)
                 }
 
-                val rawBitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
+                rawBitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
+                if (rawBitmap == null) return@withLock
                 bitmap = ImageProcessorPipeline.rotateAndMirror(rawBitmap, rotation, config.isSelfieCamera)
-            } catch (e: Exception) {
-                Log.e(TAG, "Failed to decode photo buffer", e)
-            }
 
-            if (bitmap == null) return@withLock
-
-            try {
                 // Crop to target aspect ratio
-                val cropped = ImageUtils.cropToAspectRatio(bitmap, config.aspectRatio)
+                val cropped = ImageUtils.cropToAspectRatio(bitmap!!, config.aspectRatio)
                 if (cropped != bitmap) {
-                    bitmap.recycle()
+                    bitmap!!.recycle()
                     bitmap = cropped
                 }
 
                 // Scale to target resolution
-                val scaled = ImageProcessorPipeline.scaleToTargetResolution(bitmap, config.resolutionSetting)
+                scaled = ImageProcessorPipeline.scaleToTargetResolution(bitmap!!, config.resolutionSetting)
                 
                 // Process the full-resolution image
-                val processed = ImageProcessorPipeline.processRenderPipeline(scaled, config, context, offscreenProcessor)
+                processed = ImageProcessorPipeline.processRenderPipeline(scaled, config, context, offscreenProcessor)
                 if (scaled != processed) {
                     scaled.recycle()
                 }
 
-                val watermarked = WatermarkEngine.embedSignature(processed)
+                watermarked = WatermarkEngine.embedSignature(processed)
                 if (watermarked != processed) {
                     processed.recycle()
                 }
@@ -135,7 +144,6 @@ class CapturePipeline(
                 val uri = galleryManager.createGalleryUri()
                 if (uri == null) {
                     Log.e(TAG, "Failed to create Gallery URI")
-                    watermarked.recycle()
                     return@withLock
                 }
 
@@ -143,7 +151,6 @@ class CapturePipeline(
                 context.contentResolver.openOutputStream(uri)?.use { os ->
                     watermarked.compress(Bitmap.CompressFormat.JPEG, 100, os)
                 }
-                watermarked.recycle()
 
                 // 3. Write EXIF directly to MediaStore URI
                 ExifMetadataManager.writeMetadata(context, uri, originalExifMap)
@@ -154,8 +161,15 @@ class CapturePipeline(
                 if (BuildConfig.DEBUG) {
                     Log.d(TAG, "Processing complete in ${System.currentTimeMillis() - procStartTime}ms: $uri")
                 }
-            } catch (e: Exception) {
+            } catch (e: Throwable) {
                 Log.e(TAG, "Failed to process photo", e)
+            } finally {
+                // Prevent memory leaks by freeing all resources allocated in this scope
+                rawBitmap?.takeIf { !it.isRecycled }?.recycle()
+                bitmap?.takeIf { !it.isRecycled }?.recycle()
+                scaled?.takeIf { !it.isRecycled }?.recycle()
+                processed?.takeIf { !it.isRecycled }?.recycle()
+                watermarked?.takeIf { !it.isRecycled }?.recycle()
             }
         }
     }

@@ -66,7 +66,8 @@ class LiveFilmProcessor {
         }
 
         try {
-            if (isPrepared) release()
+            // Unconditionally release any existing engine pointer before creating a new one
+            release()
 
             nativeEnginePtr = nativePrepare(width, height, assetManager)
             if (nativeEnginePtr == 0L) {
@@ -83,9 +84,9 @@ class LiveFilmProcessor {
             if (BuildConfig.DEBUG) {
                 Log.i(TAG, "Live native preparation complete in ${System.currentTimeMillis() - startTime}ms")
             }
-        } catch (e: Exception) {
+        } catch (e: Throwable) {
             Log.e(TAG, "Failed to prepare LiveFilmProcessor", e)
-            isPrepared = false
+            release() // Clean up any partially initialized native engine
             if (e is CameraCodedException) throw e
             throw CameraErrorFactory.createFilamentInitFailed("Failed to prepare LiveFilmProcessor: ${e.message}", e)
         }

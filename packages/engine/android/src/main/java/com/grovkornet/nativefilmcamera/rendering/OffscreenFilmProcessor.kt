@@ -98,8 +98,9 @@ class OffscreenFilmProcessor {
             val width = input.width
             val height = input.height
 
+            var outputBitmap: Bitmap? = null
             try {
-                val outputBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+                outputBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
                 
                 // Process pixels in C++ (with C++ flip enabled)
                 nativeProcessor!!.processBitmap(
@@ -113,8 +114,9 @@ class OffscreenFilmProcessor {
                     Log.i(TAG, "Frame processed natively (with C++ flip) in ${System.currentTimeMillis() - startTime}ms")
                 }
                 return@withContext outputBitmap
-            } catch (e: Exception) {
+            } catch (e: Throwable) {
                 Log.e(TAG, "Offscreen native processing failed", e)
+                outputBitmap?.recycle()
                 if (e is CameraCodedException) throw e
                 throw CameraErrorFactory.createPipelineInitFailed("Offscreen native processing failed: ${e.message}", e)
             }
