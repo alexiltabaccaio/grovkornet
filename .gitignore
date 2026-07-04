@@ -37,6 +37,8 @@ firebase-export-*
 **/android/.cxx/
 **/android/.externalNativeBuild/
 **/android/local.properties
+**/.kotlin/
+*.salive
 *.iml
 .idea/
 *.apk
