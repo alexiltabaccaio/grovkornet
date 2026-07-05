@@ -138,7 +138,6 @@ class CameraSessionManager(
             extender.setSessionCaptureCallback(it)
         }
         if (config.torchEnabled) {
-            extender.setCaptureRequestOption(android.hardware.camera2.CaptureRequest.FLASH_MODE, android.hardware.camera2.CaptureRequest.FLASH_MODE_TORCH)
             extender.setCaptureRequestOption(android.hardware.camera2.CaptureRequest.CONTROL_AE_MODE, android.hardware.camera2.CaptureRequest.CONTROL_AE_MODE_ON)
         }
 
