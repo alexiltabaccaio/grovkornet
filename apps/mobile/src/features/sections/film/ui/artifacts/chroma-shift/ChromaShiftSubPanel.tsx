@@ -12,7 +12,7 @@ interface ChromaShiftSubPanelProps {
   animatedStyle?: StyleProp<ViewStyle>;
 }
 
-export const ChromaShiftSubPanel = ({ animatedStyle: _animatedStyle }: ChromaShiftSubPanelProps) => {
+const ChromaShiftSubPanelComponent = ({ animatedStyle: _animatedStyle }: ChromaShiftSubPanelProps) => {
   const { t } = useTranslation();
   const isLayoutOverlayEnabled = useSystemStore(
     (s) => s.isLayoutOverlayEnabled
@@ -113,3 +113,5 @@ const styles = StyleSheet.create({
     marginHorizontal: 4,
   },
 });
+
+export const ChromaShiftSubPanel = React.memo(ChromaShiftSubPanelComponent);

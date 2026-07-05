@@ -5,7 +5,7 @@ import { useBodyStore } from '@entities/body';
 
 const AnimatedTextInput = Animated.createAnimatedComponent(TextInput);
 
-export const DebugOverlay = () => {
+const DebugOverlayComponent = () => {
   const fps = useBodyStore(state => state.fps);
 
   return (
@@ -138,3 +138,5 @@ const styles = StyleSheet.create({
     marginHorizontal: 8,
   },
 });
+
+export const DebugOverlay = React.memo(DebugOverlayComponent);

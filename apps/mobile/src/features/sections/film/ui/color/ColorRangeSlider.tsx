@@ -73,7 +73,7 @@ interface ColorRangeSliderProps {
   activeColorIndex: number; // 0 to 7
 }
 
-export const ColorRangeSlider = ({ activeColorIndex }: ColorRangeSliderProps) => {
+const ColorRangeSliderComponent = ({ activeColorIndex }: ColorRangeSliderProps) => {
   const store = useFilmStore();
   const worklets = useFilmWorklets();
   const trackWidth = useSharedValue(globalSubFullTrackWidth);
@@ -254,3 +254,5 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
 });
+
+export const ColorRangeSlider = React.memo(ColorRangeSliderComponent);

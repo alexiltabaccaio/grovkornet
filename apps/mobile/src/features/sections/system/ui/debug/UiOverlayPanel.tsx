@@ -9,7 +9,7 @@ interface UiOverlayPanelProps {
   animatedStyle?: StyleProp<ViewStyle>;
 }
 
-export const UiOverlayPanel = ({ animatedStyle }: UiOverlayPanelProps) => {
+const UiOverlayPanelComponent = ({ animatedStyle }: UiOverlayPanelProps) => {
   const {
     isFpsOverlayEnabled,
     setIsFpsOverlayEnabled,
@@ -49,3 +49,5 @@ const styles = StyleSheet.create({
     maxWidth: 140,
   },
 });
+
+export const UiOverlayPanel = React.memo(UiOverlayPanelComponent);

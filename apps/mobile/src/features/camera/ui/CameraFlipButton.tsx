@@ -11,7 +11,7 @@ import { useShallow } from 'zustand/shallow';
 import { useTranslation } from 'react-i18next';
 import * as Haptics from '@shared/lib/haptics';
 
-export const CameraFlipButton = () => {
+const CameraFlipButtonComponent = () => {
   const { isSelfieCamera, setIsSelfieCamera } = useFilmStore(
     useShallow((s) => ({
       isSelfieCamera: s.isSelfieCamera,
@@ -76,3 +76,5 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
 });
+
+export const CameraFlipButton = React.memo(CameraFlipButtonComponent);

@@ -14,7 +14,7 @@ interface ResolutionSubPanelProps {
   animatedStyle?: StyleProp<ViewStyle>;
 }
 
-export const ResolutionSubPanel = ({ animatedStyle }: ResolutionSubPanelProps) => {
+const ResolutionSubPanelComponent = ({ animatedStyle }: ResolutionSubPanelProps) => {
   const { t } = useTranslation();
   const isLayoutOverlayEnabled = useSystemStore(state => state.isLayoutOverlayEnabled);
   const {
@@ -131,3 +131,5 @@ const styles = StyleSheet.create({
     letterSpacing: 0.5,
   },
 });
+
+export const ResolutionSubPanel = React.memo(ResolutionSubPanelComponent);

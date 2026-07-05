@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { useCameraStore } from '@entities/camera';
 import { usePreferencesStore } from '@entities/preferences';
 
-export const DeviceHealthWarningBanner = () => {
+const DeviceHealthWarningBannerComponent = () => {
   const { t } = useTranslation();
   const thermalState = useCameraStore(state => state.thermalState);
   const preferredFps = usePreferencesStore(state => state.fpsSetting) ?? 60;
@@ -198,3 +198,5 @@ const styles = StyleSheet.create({
   },
 });
 
+
+export const DeviceHealthWarningBanner = React.memo(DeviceHealthWarningBannerComponent);

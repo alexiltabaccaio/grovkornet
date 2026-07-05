@@ -14,7 +14,7 @@ interface ColorRangeTrackProps {
   nextColorHex: string;
 }
 
-export const ColorRangeTrack = ({
+const ColorRangeTrackComponent = ({
   trackWidth,
   leftShared,
   rightShared,
@@ -97,3 +97,5 @@ const styles = StyleSheet.create({
     opacity: 0.85,
   },
 });
+
+export const ColorRangeTrack = React.memo(ColorRangeTrackComponent);

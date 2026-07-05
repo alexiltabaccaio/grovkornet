@@ -7,7 +7,7 @@ import * as Haptics from '@shared/lib/haptics';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 import { removePreset } from '../lib/presetActions';
 
-export const DeletePresetModal = () => {
+const DeletePresetModalComponent = () => {
   const { t } = useTranslation();
   const { isDeleteModalVisible, setDeleteModalVisible, userPresets, activePresetId } = usePresetStore(
     useShallow((s: PresetStore) => ({
@@ -143,3 +143,5 @@ const styles = StyleSheet.create({
     color: '#FF3B30',
   },
 });
+
+export const DeletePresetModal = React.memo(DeletePresetModalComponent);

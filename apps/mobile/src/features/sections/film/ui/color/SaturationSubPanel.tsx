@@ -6,8 +6,10 @@ interface SaturationSubPanelProps {
   animatedStyle?: StyleProp<ViewStyle>;
 }
 
-export const SaturationSubPanel = ({
+const SaturationSubPanelComponent = ({
   animatedStyle
 }: SaturationSubPanelProps) => {
   return <SelectiveColorSubPanel type="saturation" animatedStyle={animatedStyle} />;
 };
+
+export const SaturationSubPanel = React.memo(SaturationSubPanelComponent);

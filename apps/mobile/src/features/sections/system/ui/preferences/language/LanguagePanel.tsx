@@ -17,7 +17,7 @@ interface LanguagePanelProps {
   animatedStyle: StyleProp<ViewStyle>;
 }
 
-export const LanguagePanel = ({ animatedStyle }: LanguagePanelProps) => {
+const LanguagePanelComponent = ({ animatedStyle }: LanguagePanelProps) => {
   const { i18n } = useTranslation();
 
   const { activeDetailPanel, setActiveDetailPanel } = useControlPanelStore(useShallow(state => ({
@@ -57,3 +57,5 @@ export const LanguagePanel = ({ animatedStyle }: LanguagePanelProps) => {
   );
 };
 
+
+export const LanguagePanel = React.memo(LanguagePanelComponent);

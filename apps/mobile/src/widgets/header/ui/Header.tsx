@@ -6,7 +6,7 @@ import { useSystemStore } from '@entities/system';
 const DEFAULT_ANDROID_HEIGHT = 24;
 const DEFAULT_IOS_HEIGHT = 47;
 
-export const Header = () => {
+const HeaderComponent = () => {
   const isLayoutOverlayEnabled = useSystemStore(state => state.isLayoutOverlayEnabled);
   
   // Try to use the native StatusBar height on Android, fallback to standard values
@@ -41,3 +41,5 @@ const styles = StyleSheet.create({
   },
 });
 
+
+export const Header = React.memo(HeaderComponent);

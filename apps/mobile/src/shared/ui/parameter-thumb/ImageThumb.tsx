@@ -3,7 +3,7 @@ import { Image } from 'expo-image';
 import { ParameterThumbViewProps } from './ParameterThumbView.types';
 import { styles } from './ParameterThumbView.styles';
 
-export const ImageThumb = ({
+const ImageThumbComponent = ({
   isActive,
   imageSource,
 }: ParameterThumbViewProps) => {
@@ -19,3 +19,5 @@ export const ImageThumb = ({
     />
   );
 };
+
+export const ImageThumb = React.memo(ImageThumbComponent);

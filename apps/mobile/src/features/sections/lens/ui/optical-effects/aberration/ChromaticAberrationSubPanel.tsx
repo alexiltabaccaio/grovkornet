@@ -11,7 +11,7 @@ interface ChromaticAberrationSubPanelProps {
   animatedStyle?: StyleProp<ViewStyle>;
 }
 
-export const ChromaticAberrationSubPanel = ({ animatedStyle }: ChromaticAberrationSubPanelProps) => {
+const ChromaticAberrationSubPanelComponent = ({ animatedStyle }: ChromaticAberrationSubPanelProps) => {
   const { t } = useTranslation();
   const isLayoutOverlayEnabled = useSystemStore((s) => s.isLayoutOverlayEnabled);
   const { aberrationInvert, setAberrationInvert } = useFilmStore(
@@ -71,3 +71,5 @@ const styles = StyleSheet.create({
     width: 50,
   },
 });
+
+export const ChromaticAberrationSubPanel = React.memo(ChromaticAberrationSubPanelComponent);

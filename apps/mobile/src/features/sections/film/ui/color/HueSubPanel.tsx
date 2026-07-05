@@ -6,8 +6,10 @@ interface HueSubPanelProps {
   animatedStyle?: StyleProp<ViewStyle>;
 }
 
-export const HueSubPanel = ({
+const HueSubPanelComponent = ({
   animatedStyle
 }: HueSubPanelProps) => {
   return <SelectiveColorSubPanel type="hue" animatedStyle={animatedStyle} />;
 };
+
+export const HueSubPanel = React.memo(HueSubPanelComponent);

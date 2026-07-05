@@ -41,7 +41,7 @@ PresetButton.displayName = 'PresetButton';
 
 import { applyPreset } from '../lib/presetActions';
 
-export const PresetsModule = () => {
+const PresetsModuleComponent = () => {
   const { t } = useTranslation();
   const {
     userPresets,
@@ -142,3 +142,5 @@ const styles = StyleSheet.create({
 // PresetsModule.whyDidYouRender = true;
 
 
+
+export const PresetsModule = React.memo(PresetsModuleComponent);

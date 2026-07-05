@@ -32,7 +32,7 @@ const getActiveFilmPayload = (customizedPayload: PresetPayload | null): FilmPres
 
 import { addPreset } from '../lib/presetActions';
 
-export const AddPresetModal = () => {
+const AddPresetModalComponent = () => {
   const { t } = useTranslation();
   const { isAddModalVisible, setAddModalVisible, userPresets, customizedPayload } = usePresetStore(
     useShallow((s: PresetStore) => ({
@@ -284,3 +284,5 @@ const styles = StyleSheet.create({
     color: 'rgba(255, 255, 255, 0.2)',
   },
 });
+
+export const AddPresetModal = React.memo(AddPresetModalComponent);

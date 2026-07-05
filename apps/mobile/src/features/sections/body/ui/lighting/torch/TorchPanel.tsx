@@ -12,7 +12,7 @@ interface TorchPanelProps {
   animatedStyle?: StyleProp<ViewStyle>;
 }
 
-export const TorchPanel = ({ animatedStyle }: TorchPanelProps) => {
+const TorchPanelComponent = ({ animatedStyle }: TorchPanelProps) => {
   const isLayoutOverlayEnabled = useSystemStore(state => state.isLayoutOverlayEnabled);
 
   const {
@@ -64,3 +64,5 @@ const styles = StyleSheet.create({
     width: 60,
   },
 });
+
+export const TorchPanel = React.memo(TorchPanelComponent);

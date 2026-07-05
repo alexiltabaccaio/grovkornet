@@ -15,7 +15,7 @@ interface AspectRatioSubPanelProps {
   animatedStyle?: StyleProp<ViewStyle>;
 }
 
-export const AspectRatioSubPanel = ({ animatedStyle }: AspectRatioSubPanelProps) => {
+const AspectRatioSubPanelComponent = ({ animatedStyle }: AspectRatioSubPanelProps) => {
   const { t } = useTranslation();
   const isLayoutOverlayEnabled = useSystemStore(state => state.isLayoutOverlayEnabled);
   const { 
@@ -163,3 +163,5 @@ const styles = StyleSheet.create({
     letterSpacing: 0.5,
   },
 });
+
+export const AspectRatioSubPanel = React.memo(AspectRatioSubPanelComponent);

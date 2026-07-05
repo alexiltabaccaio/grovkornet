@@ -10,7 +10,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { useCameraStore } from '@entities/camera';
 
-export const FlashOverlay = () => {
+const FlashOverlayComponent = () => {
   const isCapturing = useCameraStore(state => state.isCapturing);
   const opacity = useSharedValue(0);
   const isCapturingSV = useSharedValue(isCapturing);
@@ -52,3 +52,5 @@ const styles = StyleSheet.create({
     zIndex: 999,
   },
 });
+
+export const FlashOverlay = React.memo(FlashOverlayComponent);

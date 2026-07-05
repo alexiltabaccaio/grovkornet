@@ -19,7 +19,7 @@ import { PresetsModule } from '@features/presets';
  * It has been simplified to follow the Single Responsibility Principle, 
  * moving state consumption into the individual modules.
  */
-export const Parameters = () => {
+const ParametersComponent = () => {
   const { activeModule, lastNonNoneModule } = useControlPanelStore(useShallow(state => ({
     activeModule: state.activeModule,
     lastNonNoneModule: state.lastNonNoneModule,
@@ -81,3 +81,5 @@ export const Parameters = () => {
     </View>
   );
 };
+
+export const Parameters = React.memo(ParametersComponent);

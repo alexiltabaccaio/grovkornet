@@ -13,7 +13,7 @@ interface ParameterPanelWrapperProps {
   rightAccessory?: React.ReactNode;
 }
 
-export const ParameterPanelWrapper = ({
+const ParameterPanelWrapperComponent = ({
   animatedStyle,
   children,
   gap = 12,
@@ -145,3 +145,5 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
 });
+
+export const ParameterPanelWrapper = React.memo(ParameterPanelWrapperComponent);

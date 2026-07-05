@@ -10,7 +10,7 @@ interface DeveloperOptionsPanelProps {
   animatedStyle?: StyleProp<ViewStyle>;
 }
 
-export const DeveloperOptionsPanel = ({ animatedStyle }: DeveloperOptionsPanelProps) => {
+const DeveloperOptionsPanelComponent = ({ animatedStyle }: DeveloperOptionsPanelProps) => {
   const {
     isLogsEnabled,
     setIsLogsEnabled,
@@ -61,3 +61,5 @@ const styles = StyleSheet.create({
     maxWidth: 140,
   },
 });
+
+export const DeveloperOptionsPanel = React.memo(DeveloperOptionsPanelComponent);

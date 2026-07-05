@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useShallow } from 'zustand/shallow';
 import { useSystemStore, useControlPanelStore } from '@entities/system';
 
-export const TopSection = () => {
+const TopSectionComponent = () => {
   const { activeSection, lastNonNoneSection } = useControlPanelStore(useShallow(state => ({
     activeSection: state.activeSection,
     lastNonNoneSection: state.lastNonNoneSection,
@@ -77,3 +77,5 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255, 0, 255, 0.2)',
   },
 });
+
+export const TopSection = React.memo(TopSectionComponent);

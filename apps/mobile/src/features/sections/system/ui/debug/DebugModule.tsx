@@ -9,7 +9,7 @@ const DEBUG_PARAMETERS: (ParameterType | ParameterConfig<ParameterType>)[] = [
   { id: 'developer_options', labelKey: 'parameters.developer_options' },
 ];
 
-export const DebugModule = () => {
+const DebugModuleComponent = () => {
   const { activeParameter, setActiveParameter } = useControlPanelStore(
     useShallow((s) => ({
       activeParameter: s.activeParameter,
@@ -40,5 +40,6 @@ export const DebugModule = () => {
   );
 };
 
-DebugModule.displayName = 'DebugModule';
+DebugModuleComponent.displayName = 'DebugModule';
 
+export const DebugModule = React.memo(DebugModuleComponent);

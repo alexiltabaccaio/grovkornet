@@ -9,7 +9,7 @@ interface FooterProps {
   testID?: string;
 }
 
-export const Footer = ({ children, style, testID = 'footer-container' }: FooterProps) => {
+const FooterComponent = ({ children, style, testID = 'footer-container' }: FooterProps) => {
   const insets = useSafeAreaInsets();
   const bottomInset = insets.bottom ?? 0;
 
@@ -41,3 +41,5 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
 });
+
+export const Footer = React.memo(FooterComponent);

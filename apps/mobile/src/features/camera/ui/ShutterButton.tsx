@@ -12,7 +12,7 @@ interface ShutterButtonProps {
   disabled?: boolean;
 }
 
-export const ShutterButton = ({ onPress, disabled }: ShutterButtonProps) => {
+const ShutterButtonComponent = ({ onPress, disabled }: ShutterButtonProps) => {
   const scale = useSharedValue(1);
 
   const animatedStyle = useAnimatedStyle(() => ({
@@ -77,3 +77,5 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFF',
   },
 });
+
+export const ShutterButton = React.memo(ShutterButtonComponent);

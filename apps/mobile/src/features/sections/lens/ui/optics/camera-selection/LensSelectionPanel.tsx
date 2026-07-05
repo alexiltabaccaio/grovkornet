@@ -9,7 +9,7 @@ interface LensSelectionPanelProps {
   animatedStyle?: StyleProp<ViewStyle>;
 }
 
-export const LensSelectionPanel = ({ animatedStyle }: LensSelectionPanelProps) => {
+const LensSelectionPanelComponent = ({ animatedStyle }: LensSelectionPanelProps) => {
   const { capabilities, cameraId, setCameraId, cameraAuto, setCameraAuto, activeCameraId } = useLensStore(useShallow(state => ({
     capabilities: state.capabilities,
     cameraId: state.cameraId,
@@ -46,3 +46,5 @@ export const LensSelectionPanel = ({ animatedStyle }: LensSelectionPanelProps) =
   );
 };
 
+
+export const LensSelectionPanel = React.memo(LensSelectionPanelComponent);

@@ -10,7 +10,7 @@ interface DebugPanelsProps {
   animatedStyle?: StyleProp<ViewStyle>;
 }
 
-export const DebugPanels = ({ parameter, animatedStyle }: DebugPanelsProps) => {
+const DebugPanelsComponent = ({ parameter, animatedStyle }: DebugPanelsProps) => {
   if (!__DEV__) {
     return null;
   }
@@ -26,4 +26,6 @@ export const DebugPanels = ({ parameter, animatedStyle }: DebugPanelsProps) => {
   }
 };
 
-DebugPanels.displayName = 'DebugPanels';
+DebugPanelsComponent.displayName = 'DebugPanels';
+
+export const DebugPanels = React.memo(DebugPanelsComponent);

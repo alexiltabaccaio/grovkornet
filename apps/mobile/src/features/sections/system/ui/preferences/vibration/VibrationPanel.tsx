@@ -9,7 +9,7 @@ interface VibrationPanelProps {
   animatedStyle?: StyleProp<ViewStyle>;
 }
 
-export const VibrationPanel = ({ animatedStyle }: VibrationPanelProps) => {
+const VibrationPanelComponent = ({ animatedStyle }: VibrationPanelProps) => {
   const { hapticsEnabled, setHapticsEnabledPref } = usePreferencesStore(useShallow(state => ({
     hapticsEnabled: state.hapticsEnabled !== false, // default is true
     setHapticsEnabledPref: state.setHapticsEnabledPref,
@@ -39,3 +39,5 @@ const styles = StyleSheet.create({
     maxWidth: 140,
   },
 });
+
+export const VibrationPanel = React.memo(VibrationPanelComponent);

@@ -13,7 +13,7 @@ interface PresetsPanelProps {
 }
 
 
-export const PresetsPanel = ({ animatedStyle }: PresetsPanelProps) => {
+const PresetsPanelComponent = ({ animatedStyle }: PresetsPanelProps) => {
   const { t } = useTranslation();
 
   const {
@@ -150,3 +150,5 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
 });
+
+export const PresetsPanel = React.memo(PresetsPanelComponent);

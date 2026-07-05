@@ -12,7 +12,7 @@ export interface AutoButtonProps {
   isLayoutOverlayEnabled?: boolean;
 }
 
-export const AutoButton = ({
+const AutoButtonComponent = ({
   isActive,
   onPress,
   style,
@@ -39,3 +39,5 @@ const styles = StyleSheet.create({
     height: 32,
   },
 });
+
+export const AutoButton = React.memo(AutoButtonComponent);

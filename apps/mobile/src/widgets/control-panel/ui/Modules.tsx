@@ -11,7 +11,7 @@ import { useResetTool } from '../lib/useResetTool';
 import { useVisibleModules } from '../lib/useVisibleModules';
 import { MODULE_PARAMETERS } from '../config/moduleParameters';
 
-export const Modules = () => {
+const ModulesComponent = () => {
   const { 
     activeSection, 
     activeModule, 
@@ -92,3 +92,5 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 255, 255, 0.1)',
   },
 });
+
+export const Modules = React.memo(ModulesComponent);

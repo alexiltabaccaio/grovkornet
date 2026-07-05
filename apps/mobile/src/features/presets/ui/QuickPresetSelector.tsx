@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next';
 
 import { nextQuickPreset, prevQuickPreset, generateQuickSelectList } from '../lib/presetActions';
 
-export const QuickPresetSelector = () => {
+const QuickPresetSelectorComponent = () => {
   const {
     activePresetId,
     userPresets,
@@ -131,3 +131,5 @@ const styles = StyleSheet.create({
     opacity: 0.2,
   },
 });
+
+export const QuickPresetSelector = React.memo(QuickPresetSelectorComponent);

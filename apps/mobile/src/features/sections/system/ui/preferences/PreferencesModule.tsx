@@ -8,7 +8,7 @@ const PREFERENCES_PARAMETERS: (ParameterType | ParameterConfig<ParameterType>)[]
   { id: 'vibration', labelKey: 'parameters.vibration' },
 ];
 
-export const PreferencesModule = () => {
+const PreferencesModuleComponent = () => {
   const { activeParameter, setActiveParameter } = useControlPanelStore(
     useShallow((s) => ({
       activeParameter: s.activeParameter,
@@ -36,3 +36,5 @@ export const PreferencesModule = () => {
 };
 
 
+
+export const PreferencesModule = React.memo(PreferencesModuleComponent);

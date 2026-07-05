@@ -14,7 +14,7 @@ interface InternalNativeRef {
   getNativeElement?: () => { takePhoto: () => void };
 }
 
-export const NativeRenderer = forwardRef<NativeRendererRef, AnimatedProps<NativeFilmCameraViewProps>>((props, ref) => {
+const NativeRendererComponent = forwardRef<NativeRendererRef, AnimatedProps<NativeFilmCameraViewProps>>((props, ref) => {
   const nativeRef = useRef<InternalNativeRef>(null);
 
   useImperativeHandle(ref, () => ({
@@ -31,4 +31,6 @@ export const NativeRenderer = forwardRef<NativeRendererRef, AnimatedProps<Native
   return <AnimatedNativeFilmCamera {...props} ref={nativeRef} />;
 });
 
-NativeRenderer.displayName = 'NativeRenderer';
+NativeRendererComponent.displayName = 'NativeRenderer';
+
+export const NativeRenderer = React.memo(NativeRendererComponent);

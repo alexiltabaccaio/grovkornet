@@ -7,7 +7,7 @@ interface ColorRangeThumbProps {
   activeColorHex: string;
 }
 
-export const ColorRangeThumb = ({ style, activeColorHex }: ColorRangeThumbProps) => {
+const ColorRangeThumbComponent = ({ style, activeColorHex }: ColorRangeThumbProps) => {
   return (
     <Animated.View style={[styles.thumb, style, { borderColor: activeColorHex }]} />
   );
@@ -29,3 +29,5 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
 });
+
+export const ColorRangeThumb = React.memo(ColorRangeThumbComponent);

@@ -10,7 +10,7 @@ interface TemperatureTestPanelProps {
   animatedStyle?: StyleProp<ViewStyle>;
 }
 
-export const TemperatureTestPanel = ({ animatedStyle }: TemperatureTestPanelProps) => {
+const TemperatureTestPanelComponent = ({ animatedStyle }: TemperatureTestPanelProps) => {
   const {
     thermalState,
     setThermalState,
@@ -54,3 +54,5 @@ const styles = StyleSheet.create({
     maxWidth: 140,
   },
 });
+
+export const TemperatureTestPanel = React.memo(TemperatureTestPanelComponent);
