@@ -29,6 +29,7 @@ class CameraControlManager(
     private var lastAutoShutter = 1000000000L / 60
 
     private var lastAppliedTargetFps: Int = -1
+    private var lastAppliedCamera: Camera? = null
     private var lastAppliedIsoAuto: Boolean? = null
     private var lastAppliedShutterSpeedAuto: Boolean? = null
     private var lastAppliedEv: Float = Float.NaN
@@ -50,6 +51,8 @@ class CameraControlManager(
         try {
             camera.cameraControl.setZoomRatio(baseZoom * config.zoom)
 
+            val cameraInstanceChanged = lastAppliedCamera !== camera
+
             val interopChanged = lastAppliedTargetFps != config.targetFps ||
                 lastAppliedIsoAuto != config.isoAuto ||
                 lastAppliedShutterSpeedAuto != config.shutterSpeedAuto ||
@@ -62,12 +65,14 @@ class CameraControlManager(
                 lastAppliedAutoFocus != config.autoFocus ||
                 lastAppliedFocusDistance != config.focusDistance ||
                 lastAppliedTorchEnabled != config.torchEnabled ||
-                lastAppliedTorchStrength != config.torchStrength
+                lastAppliedTorchStrength != config.torchStrength ||
+                cameraInstanceChanged
 
             if (!interopChanged) {
                 return
             }
 
+            lastAppliedCamera = camera
             lastAppliedTargetFps = config.targetFps
             lastAppliedIsoAuto = config.isoAuto
             lastAppliedShutterSpeedAuto = config.shutterSpeedAuto
