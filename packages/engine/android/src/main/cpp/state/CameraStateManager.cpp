@@ -14,7 +14,7 @@ CameraStateManager::CameraStateManager() {
     initial->renderParams.grainIntensity = 0.0f;
     initial->renderParams.grainChroma = 0.0f;
     initial->renderParams.grainSize = 1.0f;
-    initial->renderParams.grainSpeed = 20.0f;
+    initial->renderParams.grainSpeed = 30.0f;
     initial->renderParams.vignetteIntensity = 0.0f;
     initial->renderParams.chromaShift = 0.0f;
     initial->renderParams.temperature = 5000.0f;

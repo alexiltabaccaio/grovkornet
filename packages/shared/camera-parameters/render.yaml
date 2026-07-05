@@ -5,7 +5,6 @@ parameters:
     nitro: true
     kotlin:
       type: Float
-      default: 1.0f
     ts:
       type: number
     zustand:
@@ -27,7 +26,6 @@ parameters:
     arrayIndex: 1
     kotlin:
       type: Float
-      default: 1.0f
     ts:
       type: number
     zustand:
@@ -59,7 +57,6 @@ parameters:
     arrayIndex: 2
     kotlin:
       type: Float
-      default: 0.0f
       arrayMapping: if (grainEnabled) grainIntensity else 0f
     ts:
       type: number
@@ -91,7 +88,6 @@ parameters:
     arrayIndex: 3
     kotlin:
       type: Float
-      default: 0.0f
     ts:
       type: number
     zustand:
@@ -106,7 +102,6 @@ parameters:
     arrayIndex: 4
     kotlin:
       type: Float
-      default: 1.0f
     ts:
       type: number
     zustand:
@@ -121,7 +116,6 @@ parameters:
     arrayIndex: 5
     kotlin:
       type: Float
-      default: 20.0f
     ts:
       type: number
     zustand:
@@ -136,7 +130,6 @@ parameters:
     arrayIndex: 6
     kotlin:
       type: Float
-      default: 0.0f
     ts:
       type: number
     zustand:
@@ -158,7 +151,6 @@ parameters:
     arrayIndex: 7
     kotlin:
       type: Float
-      default: 0.0f
     ts:
       type: number
     zustand:
@@ -180,7 +172,6 @@ parameters:
     arrayIndex: 10
     kotlin:
       type: Float
-      default: 5000.0f
     ts:
       type: number
     zustand:
@@ -211,7 +202,6 @@ parameters:
     arrayIndex: 11
     kotlin:
       type: Float
-      default: 0.0f
     ts:
       type: number
     zustand:
@@ -243,7 +233,6 @@ parameters:
     arrayIndex: 12
     kotlin:
       type: Float
-      default: 0.0f
       arrayMapping: if (bloomEnabled) bloomIntensity else 0f
     ts:
       type: number
@@ -276,7 +265,6 @@ parameters:
     kotlin:
       name: aberration
       type: Float
-      default: 0.0f
     ts:
       type: number
     zustand:
@@ -298,7 +286,6 @@ parameters:
     arrayIndex: 14
     kotlin:
       type: Int
-      default: "0"
       arrayMapping: chromaShiftDirection.toFloat()
     ts:
       type: number
@@ -314,7 +301,6 @@ parameters:
     arrayIndex: 15
     kotlin:
       type: Float
-      default: 0.0f
     ts:
       type: number
     zustand:
@@ -336,7 +322,6 @@ parameters:
     arrayIndex: 16
     kotlin:
       type: Float
-      default: 50.0f
     ts:
       type: number
     zustand:
@@ -351,7 +336,6 @@ parameters:
     arrayIndex: 17
     kotlin:
       type: Float
-      default: 50.0f
     ts:
       type: number
     zustand:
@@ -366,7 +350,6 @@ parameters:
     arrayIndex: 18
     kotlin:
       type: Float
-      default: 50.0f
     ts:
       type: number
     zustand:
@@ -381,7 +364,6 @@ parameters:
     arrayIndex: 19
     kotlin:
       type: Float
-      default: 50.0f
     ts:
       type: number
     zustand:
@@ -396,7 +378,6 @@ parameters:
     arrayIndex: 20
     kotlin:
       type: Float
-      default: 50.0f
     ts:
       type: number
     zustand:
@@ -411,7 +392,6 @@ parameters:
     arrayIndex: 21
     kotlin:
       type: Float
-      default: 50.0f
     ts:
       type: number
     zustand:
@@ -426,7 +406,6 @@ parameters:
     arrayIndex: 22
     kotlin:
       type: Float
-      default: 50.0f
     ts:
       type: number
     zustand:
@@ -441,7 +420,6 @@ parameters:
     arrayIndex: 23
     kotlin:
       type: Float
-      default: 50.0f
     ts:
       type: number
     zustand:
@@ -456,7 +434,6 @@ parameters:
     arrayIndex: 28
     kotlin:
       type: Boolean
-      default: "false"
       arrayMapping: if (aberrationInvert) 1.0f else 0.0f
     ts:
       type: boolean
@@ -472,7 +449,6 @@ parameters:
     arrayIndex: 29
     kotlin:
       type: Float
-      default: 350.0f
     ts:
       type: number
     zustand:
@@ -487,7 +463,6 @@ parameters:
     arrayIndex: 30
     kotlin:
       type: Float
-      default: 40.0f
     ts:
       type: number
     zustand:
@@ -502,7 +477,6 @@ parameters:
     arrayIndex: 31
     kotlin:
       type: Float
-      default: 70.0f
     ts:
       type: number
     zustand:
@@ -517,7 +491,6 @@ parameters:
     arrayIndex: 32
     kotlin:
       type: Float
-      default: 110.0f
     ts:
       type: number
     zustand:
@@ -532,7 +505,6 @@ parameters:
     arrayIndex: 33
     kotlin:
       type: Float
-      default: 170.0f
     ts:
       type: number
     zustand:
@@ -547,7 +519,6 @@ parameters:
     arrayIndex: 34
     kotlin:
       type: Float
-      default: 230.0f
     ts:
       type: number
     zustand:
@@ -562,7 +533,6 @@ parameters:
     arrayIndex: 35
     kotlin:
       type: Float
-      default: 280.0f
     ts:
       type: number
     zustand:
@@ -577,7 +547,6 @@ parameters:
     arrayIndex: 36
     kotlin:
       type: Float
-      default: 315.0f
     ts:
       type: number
     zustand:
@@ -592,7 +561,6 @@ parameters:
     arrayIndex: 37
     kotlin:
       type: Float
-      default: 0.0f
     ts:
       type: number
     zustand:
@@ -616,7 +584,6 @@ parameters:
     category: render
     kotlin:
       type: Boolean
-      default: "false"
     ts:
       type: boolean
     zustand:
@@ -630,7 +597,6 @@ parameters:
     category: render
     kotlin:
       type: Boolean
-      default: "false"
     ts:
       type: boolean
     zustand:
@@ -645,7 +611,6 @@ parameters:
     arrayIndex: 39
     kotlin:
       type: Float
-      default: 0.0f
     ts:
       type: number
     zustand:
@@ -676,7 +641,6 @@ parameters:
     arrayIndex: 40
     kotlin:
       type: Float
-      default: 1.0f
     ts:
       type: number
     zustand:
@@ -708,7 +672,6 @@ parameters:
     arrayIndex: 41
     kotlin:
       type: Float
-      default: 0.5f
     ts:
       type: number
     zustand:
@@ -740,7 +703,6 @@ parameters:
     arrayIndex: 42
     kotlin:
       type: Boolean
-      default: "true"
     ts:
       type: boolean
     zustand:
@@ -759,7 +721,6 @@ parameters:
     arrayIndex: 43
     kotlin:
       type: Boolean
-      default: "true"
     ts:
       type: boolean
     zustand:
@@ -778,7 +739,6 @@ parameters:
     arrayIndex: 44
     kotlin:
       type: Boolean
-      default: "true"
     ts:
       type: boolean
     zustand:
@@ -797,7 +757,6 @@ parameters:
     arrayIndex: 45
     kotlin:
       type: Boolean
-      default: "true"
     ts:
       type: boolean
     zustand:
@@ -816,7 +775,6 @@ parameters:
     arrayIndex: 46
     kotlin:
       type: Float
-      default: 1.0f
     ts:
       type: number
     zustand:
@@ -837,7 +795,6 @@ parameters:
     arrayIndex: 47
     kotlin:
       type: Float
-      default: 0.0f
     ts:
       type: number
     zustand:
@@ -859,7 +816,6 @@ parameters:
     arrayIndex: 48
     kotlin:
       type: Float
-      default: 0.0f
     ts:
       type: number
     zustand:
@@ -881,7 +837,6 @@ parameters:
     arrayIndex: 49
     kotlin:
       type: Boolean
-      default: "false"
       arrayMapping: if (chromaShiftInvert) 1.0f else 0.0f
     ts:
       type: boolean
@@ -897,7 +852,6 @@ parameters:
     arrayIndex: 50
     kotlin:
       type: Float
-      default: 0.0f
     ts:
       type: number
     zustand:
@@ -919,7 +873,6 @@ parameters:
     arrayIndex: 51
     kotlin:
       type: Float
-      default: 0.0f
     ts:
       type: number
     zustand:
@@ -934,7 +887,6 @@ parameters:
     arrayIndex: 52
     kotlin:
       type: Float
-      default: 0.0f
     ts:
       type: number
     zustand:
@@ -949,7 +901,6 @@ parameters:
     arrayIndex: 53
     kotlin:
       type: Float
-      default: 0.0f
     ts:
       type: number
     zustand:
@@ -964,7 +915,6 @@ parameters:
     arrayIndex: 54
     kotlin:
       type: Float
-      default: 0.0f
     ts:
       type: number
     zustand:
@@ -979,7 +929,6 @@ parameters:
     arrayIndex: 55
     kotlin:
       type: Float
-      default: 0.0f
     ts:
       type: number
     zustand:
@@ -994,7 +943,6 @@ parameters:
     arrayIndex: 56
     kotlin:
       type: Float
-      default: 0.0f
     ts:
       type: number
     zustand:
@@ -1009,7 +957,6 @@ parameters:
     arrayIndex: 57
     kotlin:
       type: Float
-      default: 0.0f
     ts:
       type: number
     zustand:
@@ -1024,7 +971,6 @@ parameters:
     arrayIndex: 58
     kotlin:
       type: Float
-      default: 0.0f
     ts:
       type: number
     zustand:
@@ -1039,7 +985,6 @@ parameters:
     arrayIndex: 59
     kotlin:
       type: Boolean
-      default: "true"
       arrayMapping: if (scanlinesHorizontal) 1.0f else 0.0f
     ts:
       type: boolean
@@ -1054,7 +999,6 @@ parameters:
     category: render
     kotlin:
       type: Int
-      default: "0"
     ts:
       type: number
     zustand:
@@ -1069,7 +1013,6 @@ parameters:
     arrayIndex: 60
     kotlin:
       type: Float
-      default: 800.0f
     ts:
       type: number
     zustand:
@@ -1084,7 +1027,6 @@ parameters:
     arrayIndex: 61
     kotlin:
       type: Float
-      default: 0.0f
     ts:
       type: number
     zustand:
@@ -1107,7 +1049,6 @@ parameters:
     arrayIndex: 62
     kotlin:
       type: Float
-      default: 0.0f
       arrayMapping: if (halationEnabled) halationIntensity else 0f
     ts:
       type: number
@@ -1138,7 +1079,6 @@ parameters:
     category: render
     kotlin:
       type: Boolean
-      default: "false"
     ts:
       type: boolean
     zustand:
@@ -1153,7 +1093,6 @@ parameters:
     arrayIndex: 63
     kotlin:
       type: Float
-      default: 0.5f
     ts:
       type: number
     zustand:
@@ -1170,7 +1109,6 @@ parameters:
     arrayIndex: 64
     kotlin:
       type: Float
-      default: 0.5f
     ts:
       type: number
     zustand:
@@ -1187,7 +1125,6 @@ parameters:
     arrayIndex: 65
     kotlin:
       type: Float
-      default: 0.0f
     ts:
       type: number
     zustand:

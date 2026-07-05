@@ -22,7 +22,7 @@ function main() {
       console.log("\nCodegen script running in DRY-RUN mode. Target files are unmodified.");
     } else {
       generateSharedIndex(data);
-      generateNativeBridge(parameters, renderParams);
+      generateNativeBridge(parameters, renderParams, data.constants);
       generateZustandTypes(parameters);
       generateZustandStore(parameters);
       generateViewfinderProps(parameters);

@@ -12,62 +12,62 @@ class CameraConfiguration(val nativePointer: Long = 0L) {
     // or packages/shared/camera-errors.yaml, then run `npm run codegen`.
     // Rendering / Effect Props
     var saturation: Float
-            get() = (CameraStateJNI.fallbackGet("saturation", nativePointer, 1.0f) as Float)
+            get() = (CameraStateJNI.fallbackGet("saturation", nativePointer, 1f) as Float)
             set(value) {
                 CameraStateJNI.fallbackSet("saturation", nativePointer, value)
             }
     var contrast: Float
-            get() = (CameraStateJNI.fallbackGet("contrast", nativePointer, 1.0f) as Float)
+            get() = (CameraStateJNI.fallbackGet("contrast", nativePointer, 1f) as Float)
             set(value) {
                 CameraStateJNI.fallbackSet("contrast", nativePointer, value)
             }
     var grainIntensity: Float
-            get() = (CameraStateJNI.fallbackGet("grainIntensity", nativePointer, 0.0f) as Float)
+            get() = (CameraStateJNI.fallbackGet("grainIntensity", nativePointer, 0f) as Float)
             set(value) {
                 CameraStateJNI.fallbackSet("grainIntensity", nativePointer, value)
             }
     var grainChroma: Float
-            get() = (CameraStateJNI.fallbackGet("grainChroma", nativePointer, 0.0f) as Float)
+            get() = (CameraStateJNI.fallbackGet("grainChroma", nativePointer, 0f) as Float)
             set(value) {
                 CameraStateJNI.fallbackSet("grainChroma", nativePointer, value)
             }
     var grainSize: Float
-            get() = (CameraStateJNI.fallbackGet("grainSize", nativePointer, 1.0f) as Float)
+            get() = (CameraStateJNI.fallbackGet("grainSize", nativePointer, 1f) as Float)
             set(value) {
                 CameraStateJNI.fallbackSet("grainSize", nativePointer, value)
             }
     var grainSpeed: Float
-            get() = (CameraStateJNI.fallbackGet("grainSpeed", nativePointer, 20.0f) as Float)
+            get() = (CameraStateJNI.fallbackGet("grainSpeed", nativePointer, 30f) as Float)
             set(value) {
                 CameraStateJNI.fallbackSet("grainSpeed", nativePointer, value)
             }
     var vignetteIntensity: Float
-            get() = (CameraStateJNI.fallbackGet("vignetteIntensity", nativePointer, 0.0f) as Float)
+            get() = (CameraStateJNI.fallbackGet("vignetteIntensity", nativePointer, 0f) as Float)
             set(value) {
                 CameraStateJNI.fallbackSet("vignetteIntensity", nativePointer, value)
             }
     var chromaShift: Float
-            get() = (CameraStateJNI.fallbackGet("chromaShift", nativePointer, 0.0f) as Float)
+            get() = (CameraStateJNI.fallbackGet("chromaShift", nativePointer, 0f) as Float)
             set(value) {
                 CameraStateJNI.fallbackSet("chromaShift", nativePointer, value)
             }
     var temperature: Float
-            get() = (CameraStateJNI.fallbackGet("temperature", nativePointer, 5000.0f) as Float)
+            get() = (CameraStateJNI.fallbackGet("temperature", nativePointer, 5000f) as Float)
             set(value) {
                 CameraStateJNI.fallbackSet("temperature", nativePointer, value)
             }
     var tint: Float
-            get() = (CameraStateJNI.fallbackGet("tint", nativePointer, 0.0f) as Float)
+            get() = (CameraStateJNI.fallbackGet("tint", nativePointer, 0f) as Float)
             set(value) {
                 CameraStateJNI.fallbackSet("tint", nativePointer, value)
             }
     var bloomIntensity: Float
-            get() = (CameraStateJNI.fallbackGet("bloomIntensity", nativePointer, 0.0f) as Float)
+            get() = (CameraStateJNI.fallbackGet("bloomIntensity", nativePointer, 0f) as Float)
             set(value) {
                 CameraStateJNI.fallbackSet("bloomIntensity", nativePointer, value)
             }
     var aberration: Float
-            get() = (CameraStateJNI.fallbackGet("aberration", nativePointer, 0.0f) as Float)
+            get() = (CameraStateJNI.fallbackGet("aberration", nativePointer, 0f) as Float)
             set(value) {
                 CameraStateJNI.fallbackSet("aberration", nativePointer, value)
             }
@@ -77,47 +77,47 @@ class CameraConfiguration(val nativePointer: Long = 0L) {
                 CameraStateJNI.fallbackSet("chromaShiftDirection", nativePointer, value)
             }
     var sharpening: Float
-            get() = (CameraStateJNI.fallbackGet("sharpening", nativePointer, 0.0f) as Float)
+            get() = (CameraStateJNI.fallbackGet("sharpening", nativePointer, 0f) as Float)
             set(value) {
                 CameraStateJNI.fallbackSet("sharpening", nativePointer, value)
             }
     var satRed: Float
-            get() = (CameraStateJNI.fallbackGet("satRed", nativePointer, 50.0f) as Float)
+            get() = (CameraStateJNI.fallbackGet("satRed", nativePointer, 50f) as Float)
             set(value) {
                 CameraStateJNI.fallbackSet("satRed", nativePointer, value)
             }
     var satOrange: Float
-            get() = (CameraStateJNI.fallbackGet("satOrange", nativePointer, 50.0f) as Float)
+            get() = (CameraStateJNI.fallbackGet("satOrange", nativePointer, 50f) as Float)
             set(value) {
                 CameraStateJNI.fallbackSet("satOrange", nativePointer, value)
             }
     var satYellow: Float
-            get() = (CameraStateJNI.fallbackGet("satYellow", nativePointer, 50.0f) as Float)
+            get() = (CameraStateJNI.fallbackGet("satYellow", nativePointer, 50f) as Float)
             set(value) {
                 CameraStateJNI.fallbackSet("satYellow", nativePointer, value)
             }
     var satGreen: Float
-            get() = (CameraStateJNI.fallbackGet("satGreen", nativePointer, 50.0f) as Float)
+            get() = (CameraStateJNI.fallbackGet("satGreen", nativePointer, 50f) as Float)
             set(value) {
                 CameraStateJNI.fallbackSet("satGreen", nativePointer, value)
             }
     var satCyan: Float
-            get() = (CameraStateJNI.fallbackGet("satCyan", nativePointer, 50.0f) as Float)
+            get() = (CameraStateJNI.fallbackGet("satCyan", nativePointer, 50f) as Float)
             set(value) {
                 CameraStateJNI.fallbackSet("satCyan", nativePointer, value)
             }
     var satBlue: Float
-            get() = (CameraStateJNI.fallbackGet("satBlue", nativePointer, 50.0f) as Float)
+            get() = (CameraStateJNI.fallbackGet("satBlue", nativePointer, 50f) as Float)
             set(value) {
                 CameraStateJNI.fallbackSet("satBlue", nativePointer, value)
             }
     var satPurple: Float
-            get() = (CameraStateJNI.fallbackGet("satPurple", nativePointer, 50.0f) as Float)
+            get() = (CameraStateJNI.fallbackGet("satPurple", nativePointer, 50f) as Float)
             set(value) {
                 CameraStateJNI.fallbackSet("satPurple", nativePointer, value)
             }
     var satMagenta: Float
-            get() = (CameraStateJNI.fallbackGet("satMagenta", nativePointer, 50.0f) as Float)
+            get() = (CameraStateJNI.fallbackGet("satMagenta", nativePointer, 50f) as Float)
             set(value) {
                 CameraStateJNI.fallbackSet("satMagenta", nativePointer, value)
             }
@@ -127,47 +127,47 @@ class CameraConfiguration(val nativePointer: Long = 0L) {
                 CameraStateJNI.fallbackSet("aberrationInvert", nativePointer, value)
             }
     var boundMagentaRed: Float
-            get() = (CameraStateJNI.fallbackGet("boundMagentaRed", nativePointer, 350.0f) as Float)
+            get() = (CameraStateJNI.fallbackGet("boundMagentaRed", nativePointer, 350f) as Float)
             set(value) {
                 CameraStateJNI.fallbackSet("boundMagentaRed", nativePointer, value)
             }
     var boundRedOrange: Float
-            get() = (CameraStateJNI.fallbackGet("boundRedOrange", nativePointer, 40.0f) as Float)
+            get() = (CameraStateJNI.fallbackGet("boundRedOrange", nativePointer, 40f) as Float)
             set(value) {
                 CameraStateJNI.fallbackSet("boundRedOrange", nativePointer, value)
             }
     var boundOrangeYellow: Float
-            get() = (CameraStateJNI.fallbackGet("boundOrangeYellow", nativePointer, 70.0f) as Float)
+            get() = (CameraStateJNI.fallbackGet("boundOrangeYellow", nativePointer, 70f) as Float)
             set(value) {
                 CameraStateJNI.fallbackSet("boundOrangeYellow", nativePointer, value)
             }
     var boundYellowGreen: Float
-            get() = (CameraStateJNI.fallbackGet("boundYellowGreen", nativePointer, 110.0f) as Float)
+            get() = (CameraStateJNI.fallbackGet("boundYellowGreen", nativePointer, 110f) as Float)
             set(value) {
                 CameraStateJNI.fallbackSet("boundYellowGreen", nativePointer, value)
             }
     var boundGreenCyan: Float
-            get() = (CameraStateJNI.fallbackGet("boundGreenCyan", nativePointer, 170.0f) as Float)
+            get() = (CameraStateJNI.fallbackGet("boundGreenCyan", nativePointer, 170f) as Float)
             set(value) {
                 CameraStateJNI.fallbackSet("boundGreenCyan", nativePointer, value)
             }
     var boundCyanBlue: Float
-            get() = (CameraStateJNI.fallbackGet("boundCyanBlue", nativePointer, 230.0f) as Float)
+            get() = (CameraStateJNI.fallbackGet("boundCyanBlue", nativePointer, 230f) as Float)
             set(value) {
                 CameraStateJNI.fallbackSet("boundCyanBlue", nativePointer, value)
             }
     var boundBluePurple: Float
-            get() = (CameraStateJNI.fallbackGet("boundBluePurple", nativePointer, 280.0f) as Float)
+            get() = (CameraStateJNI.fallbackGet("boundBluePurple", nativePointer, 280f) as Float)
             set(value) {
                 CameraStateJNI.fallbackSet("boundBluePurple", nativePointer, value)
             }
     var boundPurpleMagenta: Float
-            get() = (CameraStateJNI.fallbackGet("boundPurpleMagenta", nativePointer, 315.0f) as Float)
+            get() = (CameraStateJNI.fallbackGet("boundPurpleMagenta", nativePointer, 315f) as Float)
             set(value) {
                 CameraStateJNI.fallbackSet("boundPurpleMagenta", nativePointer, value)
             }
     var grainRoughness: Float
-            get() = (CameraStateJNI.fallbackGet("grainRoughness", nativePointer, 0.0f) as Float)
+            get() = (CameraStateJNI.fallbackGet("grainRoughness", nativePointer, 0f) as Float)
             set(value) {
                 CameraStateJNI.fallbackSet("grainRoughness", nativePointer, value)
             }
@@ -187,12 +187,12 @@ class CameraConfiguration(val nativePointer: Long = 0L) {
                 CameraStateJNI.fallbackSet("bloomEnabled", nativePointer, value)
             }
     var blackLevel: Float
-            get() = (CameraStateJNI.fallbackGet("blackLevel", nativePointer, 0.0f) as Float)
+            get() = (CameraStateJNI.fallbackGet("blackLevel", nativePointer, 0f) as Float)
             set(value) {
                 CameraStateJNI.fallbackSet("blackLevel", nativePointer, value)
             }
     var highlights: Float
-            get() = (CameraStateJNI.fallbackGet("highlights", nativePointer, 1.0f) as Float)
+            get() = (CameraStateJNI.fallbackGet("highlights", nativePointer, 1f) as Float)
             set(value) {
                 CameraStateJNI.fallbackSet("highlights", nativePointer, value)
             }
@@ -222,17 +222,17 @@ class CameraConfiguration(val nativePointer: Long = 0L) {
                 CameraStateJNI.fallbackSet("pivotAuto", nativePointer, value)
             }
     var pixelationFactor: Float
-            get() = (CameraStateJNI.fallbackGet("pixelationFactor", nativePointer, 1.0f) as Float)
+            get() = (CameraStateJNI.fallbackGet("pixelationFactor", nativePointer, 1f) as Float)
             set(value) {
                 CameraStateJNI.fallbackSet("pixelationFactor", nativePointer, value)
             }
     var tapeJitter: Float
-            get() = (CameraStateJNI.fallbackGet("tapeJitter", nativePointer, 0.0f) as Float)
+            get() = (CameraStateJNI.fallbackGet("tapeJitter", nativePointer, 0f) as Float)
             set(value) {
                 CameraStateJNI.fallbackSet("tapeJitter", nativePointer, value)
             }
     var scanlines: Float
-            get() = (CameraStateJNI.fallbackGet("scanlines", nativePointer, 0.0f) as Float)
+            get() = (CameraStateJNI.fallbackGet("scanlines", nativePointer, 0f) as Float)
             set(value) {
                 CameraStateJNI.fallbackSet("scanlines", nativePointer, value)
             }
@@ -242,47 +242,47 @@ class CameraConfiguration(val nativePointer: Long = 0L) {
                 CameraStateJNI.fallbackSet("chromaShiftInvert", nativePointer, value)
             }
     var hue: Float
-            get() = (CameraStateJNI.fallbackGet("hue", nativePointer, 0.0f) as Float)
+            get() = (CameraStateJNI.fallbackGet("hue", nativePointer, 0f) as Float)
             set(value) {
                 CameraStateJNI.fallbackSet("hue", nativePointer, value)
             }
     var hueRed: Float
-            get() = (CameraStateJNI.fallbackGet("hueRed", nativePointer, 0.0f) as Float)
+            get() = (CameraStateJNI.fallbackGet("hueRed", nativePointer, 0f) as Float)
             set(value) {
                 CameraStateJNI.fallbackSet("hueRed", nativePointer, value)
             }
     var hueOrange: Float
-            get() = (CameraStateJNI.fallbackGet("hueOrange", nativePointer, 0.0f) as Float)
+            get() = (CameraStateJNI.fallbackGet("hueOrange", nativePointer, 0f) as Float)
             set(value) {
                 CameraStateJNI.fallbackSet("hueOrange", nativePointer, value)
             }
     var hueYellow: Float
-            get() = (CameraStateJNI.fallbackGet("hueYellow", nativePointer, 0.0f) as Float)
+            get() = (CameraStateJNI.fallbackGet("hueYellow", nativePointer, 0f) as Float)
             set(value) {
                 CameraStateJNI.fallbackSet("hueYellow", nativePointer, value)
             }
     var hueGreen: Float
-            get() = (CameraStateJNI.fallbackGet("hueGreen", nativePointer, 0.0f) as Float)
+            get() = (CameraStateJNI.fallbackGet("hueGreen", nativePointer, 0f) as Float)
             set(value) {
                 CameraStateJNI.fallbackSet("hueGreen", nativePointer, value)
             }
     var hueCyan: Float
-            get() = (CameraStateJNI.fallbackGet("hueCyan", nativePointer, 0.0f) as Float)
+            get() = (CameraStateJNI.fallbackGet("hueCyan", nativePointer, 0f) as Float)
             set(value) {
                 CameraStateJNI.fallbackSet("hueCyan", nativePointer, value)
             }
     var hueBlue: Float
-            get() = (CameraStateJNI.fallbackGet("hueBlue", nativePointer, 0.0f) as Float)
+            get() = (CameraStateJNI.fallbackGet("hueBlue", nativePointer, 0f) as Float)
             set(value) {
                 CameraStateJNI.fallbackSet("hueBlue", nativePointer, value)
             }
     var huePurple: Float
-            get() = (CameraStateJNI.fallbackGet("huePurple", nativePointer, 0.0f) as Float)
+            get() = (CameraStateJNI.fallbackGet("huePurple", nativePointer, 0f) as Float)
             set(value) {
                 CameraStateJNI.fallbackSet("huePurple", nativePointer, value)
             }
     var hueMagenta: Float
-            get() = (CameraStateJNI.fallbackGet("hueMagenta", nativePointer, 0.0f) as Float)
+            get() = (CameraStateJNI.fallbackGet("hueMagenta", nativePointer, 0f) as Float)
             set(value) {
                 CameraStateJNI.fallbackSet("hueMagenta", nativePointer, value)
             }
@@ -297,17 +297,17 @@ class CameraConfiguration(val nativePointer: Long = 0L) {
                 CameraStateJNI.fallbackSet("scanlinesMode", nativePointer, value)
             }
     var scanlinesDensity: Float
-            get() = (CameraStateJNI.fallbackGet("scanlinesDensity", nativePointer, 800.0f) as Float)
+            get() = (CameraStateJNI.fallbackGet("scanlinesDensity", nativePointer, 800f) as Float)
             set(value) {
                 CameraStateJNI.fallbackSet("scanlinesDensity", nativePointer, value)
             }
     var lensDistortion: Float
-            get() = (CameraStateJNI.fallbackGet("lensDistortion", nativePointer, 0.0f) as Float)
+            get() = (CameraStateJNI.fallbackGet("lensDistortion", nativePointer, 0f) as Float)
             set(value) {
                 CameraStateJNI.fallbackSet("lensDistortion", nativePointer, value)
             }
     var halationIntensity: Float
-            get() = (CameraStateJNI.fallbackGet("halationIntensity", nativePointer, 0.0f) as Float)
+            get() = (CameraStateJNI.fallbackGet("halationIntensity", nativePointer, 0f) as Float)
             set(value) {
                 CameraStateJNI.fallbackSet("halationIntensity", nativePointer, value)
             }
@@ -327,7 +327,7 @@ class CameraConfiguration(val nativePointer: Long = 0L) {
                 CameraStateJNI.fallbackSet("bloomThreshold", nativePointer, value)
             }
     var chromaBleed: Float
-            get() = (CameraStateJNI.fallbackGet("chromaBleed", nativePointer, 0.0f) as Float)
+            get() = (CameraStateJNI.fallbackGet("chromaBleed", nativePointer, 0f) as Float)
             set(value) {
                 CameraStateJNI.fallbackSet("chromaBleed", nativePointer, value)
             }
@@ -465,7 +465,7 @@ class CameraConfiguration(val nativePointer: Long = 0L) {
                 }
             }
     var cameraId: String?
-            get() = if (CameraStateJNI.isJniLoaded) CameraStateJNI.getCameraId(nativePointer) else (CameraStateJNI.fallbackGet("cameraId", nativePointer, null) as String?)
+            get() = if (CameraStateJNI.isJniLoaded) CameraStateJNI.getCameraId(nativePointer) else (CameraStateJNI.fallbackGet("cameraId", nativePointer, "") as String?)
             set(value) {
                 if (CameraStateJNI.isJniLoaded) {
                     CameraStateJNI.setCameraId(nativePointer, value)

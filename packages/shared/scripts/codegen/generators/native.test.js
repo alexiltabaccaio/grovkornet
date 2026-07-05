@@ -61,11 +61,23 @@ test('generateNativeBridge correctly replaces content in native files', () => {
         ts: { type: 'boolean' },
         kotlin: { type: 'Boolean', name: 'torchState', default: false },
         cpp: { name: 'torchState' }
+      },
+      {
+        name: 'grainSpeed',
+        category: 'render',
+        ts: { type: 'number' },
+        zustand: { default: 'DEFAULT_GRAIN_SPEED' },
+        kotlin: { type: 'Float', name: 'grainSpeed' },
+        cpp: { name: 'grainSpeed' },
+        worklet: { clamp: [0.0, 100.0] }
       }
     ];
-    const mockRenderParams = [mockParameters[0]];
+    const mockRenderParams = [mockParameters[0], mockParameters[2]];
+    const mockConstants = {
+      DEFAULT_GRAIN_SPEED: 30.0
+    };
 
-    generateNativeBridge(mockParameters, mockRenderParams);
+    generateNativeBridge(mockParameters, mockRenderParams, mockConstants);
 
     assert.ok(Object.keys(written).length > 0, 'Should have written files');
     assert.ok(written['index.ts']);
@@ -73,9 +85,13 @@ test('generateNativeBridge correctly replaces content in native files', () => {
     assert.match(written['index.ts'], /torchState\?: boolean;/, 'Should define TS prop torchState');
     assert.ok(written['RenderParams.h']);
     assert.match(written['RenderParams.h'], /float saturation;/, 'Should define C++ field saturation');
+    assert.match(written['RenderParams.h'], /float grainSpeed;/, 'Should define C++ field grainSpeed');
     assert.ok(written['CameraStateManager.cpp']);
     assert.match(written['CameraStateManager.cpp'], /initial->renderParams\.saturation = 1\.0f;/, 'Should set default saturation');
+    assert.match(written['CameraStateManager.cpp'], /initial->renderParams\.grainSpeed = 30\.0f;/, 'Should set default grainSpeed from constants');
     assert.match(written['CameraStateManager.cpp'], /std::clamp/, 'Should contain clamp expression');
+    assert.ok(written['CameraConfiguration.kt']);
+    assert.match(written['CameraConfiguration.kt'], /CameraStateJNI\.fallbackGet\("grainSpeed", nativePointer, 30f\)/, 'Should use constant fallback for Kotlin default');
 
   } finally {
     fs.readFileSync = originalRead;

@@ -1,6 +1,6 @@
 const { FILE_PATHS, replaceBetweenMarkers } = require('../utils/helpers');
 
-function generateNativeBridge(parameters, renderParams) {
+function generateNativeBridge(parameters, renderParams, constants) {
   console.log('\n--- Generating Native Bridge (Step 2) ---');
 
   // Helper to convert Kotlin types to Kotlin JNI types
@@ -96,7 +96,15 @@ function generateNativeBridge(parameters, renderParams) {
 
   function toKotlinFallbackDefault(p) {
     const ktType = p.kotlin?.type;
-    const def = p.kotlin?.default;
+    let def = p.kotlin?.default;
+    
+    // Try to resolve from constants if not explicitly provided
+    if (def === undefined || def === null) {
+      if (p.zustand?.default && constants && constants[p.zustand.default] !== undefined) {
+        def = constants[p.zustand.default];
+      }
+    }
+
     if (def !== undefined && def !== null) {
       const defStr = def.toString().trim();
       if (ktType === 'Boolean') {
@@ -239,7 +247,14 @@ function generateNativeBridge(parameters, renderParams) {
 
 
   // Helper to convert YAML defaults to C++ floats
-  function toCppFloatDefault(def) {
+  function toCppFloatDefault(defVal, p) {
+    let def = defVal;
+    if (def === undefined || def === null) {
+      if (p?.zustand?.default && constants && constants[p.zustand.default] !== undefined) {
+        def = constants[p.zustand.default];
+      }
+    }
+    
     if (def === undefined || def === null) return '0.0f';
     const valStr = def.toString().trim();
     if (valStr === 'true') return '1.0f';
@@ -250,10 +265,10 @@ function generateNativeBridge(parameters, renderParams) {
   }
 
   // 7. Generate CameraStateManager.cpp defaults
-  const cppDefaultsContent = allRenderParams
+    const cppDefaultsContent = allRenderParams
     .map(p => {
       const cppName = p.cpp?.name || p.name;
-      const defValue = toCppFloatDefault(p.kotlin?.default);
+      const defValue = toCppFloatDefault(p.kotlin?.default, p);
       return `initial->renderParams.${cppName} = ${defValue};`;
     })
     .join('\n');
@@ -282,10 +297,14 @@ function generateNativeBridge(parameters, renderParams) {
       const fieldAccess = isRender ? `state.renderParams.${cppFieldName}` : `state.${cppFieldName}`;
 
       const isInt = p.kotlin?.type === 'Int';
+      const defaultVal = toCppFloatDefault(p.kotlin?.default, p);
+      const floatDefault = defaultVal;
+      const intDefault = Math.round(parseFloat(defaultVal) || 0);
+
       if (isInt) {
-        return `${fieldAccess} = std::isnan(static_cast<float>(${fieldAccess})) ? ${Math.round(p.kotlin?.default || 0)} : std::clamp(${fieldAccess}, ${Math.round(clampMin)}, ${Math.round(clampMax)});`;
+        return `${fieldAccess} = std::isnan(static_cast<float>(${fieldAccess})) ? ${intDefault} : std::clamp(${fieldAccess}, ${Math.round(clampMin)}, ${Math.round(clampMax)});`;
       } else {
-        return `${fieldAccess} = std::isnan(${fieldAccess}) ? ${toCppFloatDefault(p.kotlin?.default)} : std::clamp(${fieldAccess}, ${clampMin.toFixed(4)}f, ${clampMax.toFixed(4)}f);`;
+        return `${fieldAccess} = std::isnan(${fieldAccess}) ? ${floatDefault} : std::clamp(${fieldAccess}, ${clampMin.toFixed(4)}f, ${clampMax.toFixed(4)}f);`;
       }
     })
     .filter(Boolean)
