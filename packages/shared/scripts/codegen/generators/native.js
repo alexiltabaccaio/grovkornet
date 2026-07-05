@@ -99,7 +99,7 @@ function generateNativeBridge(parameters, renderParams, constants) {
     let def = p.kotlin?.default;
     
     // Try to resolve from constants if not explicitly provided
-    if (def === undefined || def === null) {
+    if (def === undefined) {
       if (p.zustand?.default && constants && constants[p.zustand.default] !== undefined) {
         def = constants[p.zustand.default];
       }

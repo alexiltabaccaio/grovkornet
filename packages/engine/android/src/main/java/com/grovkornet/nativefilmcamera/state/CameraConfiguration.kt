@@ -465,7 +465,7 @@ class CameraConfiguration(val nativePointer: Long = 0L) {
                 }
             }
     var cameraId: String?
-            get() = if (CameraStateJNI.isJniLoaded) CameraStateJNI.getCameraId(nativePointer) else (CameraStateJNI.fallbackGet("cameraId", nativePointer, "") as String?)
+            get() = if (CameraStateJNI.isJniLoaded) CameraStateJNI.getCameraId(nativePointer) else (CameraStateJNI.fallbackGet("cameraId", nativePointer, null) as String?)
             set(value) {
                 if (CameraStateJNI.isJniLoaded) {
                     CameraStateJNI.setCameraId(nativePointer, value)

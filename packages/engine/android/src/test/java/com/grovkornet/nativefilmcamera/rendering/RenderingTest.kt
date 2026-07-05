@@ -88,8 +88,8 @@ class RenderingTest {
         val mockOutputBitmap = mockk<Bitmap>(relaxed = true)
         io.mockk.every { Bitmap.createBitmap(any<Int>(), any<Int>(), any<Bitmap.Config>()) } returns mockOutputBitmap
 
-        // Mock OffscreenFilmProcessorNative dynamically to bypass JNI initHybrid() constructor
-        val mockNative = mockk<OffscreenFilmProcessorNative>(relaxed = true)
+        // Mock OffscreenFilmProcessorNative using a open subclass with JNI methods overridden as non-native
+        val mockNative = mockk<TestOffscreenFilmProcessorNative>(relaxed = true)
         io.mockk.every { mockNative.prepare(any(), any(), any()) } just io.mockk.Runs
         io.mockk.every { mockNative.processBitmap(any(), any(), any(), any()) } throws RuntimeException("Simulated native crash")
 
@@ -161,5 +161,10 @@ class RenderingTest {
 
         // Clean up
         thread.release()
+    }
+
+    open class TestOffscreenFilmProcessorNative : OffscreenFilmProcessorNative() {
+        override fun prepare(width: Int, height: Int, assetManager: Any) {}
+        override fun processBitmap(input: Any, output: Any, statePtr: Long, invertY: Boolean) {}
     }
 }
