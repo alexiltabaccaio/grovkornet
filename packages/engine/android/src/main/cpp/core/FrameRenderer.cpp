@@ -62,7 +62,10 @@ bool FrameRenderer::renderOffscreenFrame(GrovkornetEngine& gEngine, void* pixels
         pixelsIn, 
         gEngine.width * gEngine.height * 4, 
         filament::backend::PixelDataFormat::RGBA, 
-        filament::backend::PixelDataType::UBYTE
+        filament::backend::PixelDataType::UBYTE,
+        [](void* buffer, size_t size, void* user) {
+            // Dummy callback to enforce Zero-Copy. Memory is managed externally by JNI locks.
+        }
     ));
 
     // Update geometry to use the 2D material
@@ -96,7 +99,10 @@ bool FrameRenderer::renderOffscreenFrame(GrovkornetEngine& gEngine, void* pixels
                 pixelsOut, 
                 gEngine.width * gEngine.height * 4, 
                 filament::backend::PixelDataFormat::RGBA, 
-                filament::backend::PixelDataType::UBYTE
+                filament::backend::PixelDataType::UBYTE,
+                [](void* buffer, size_t size, void* user) {
+                    // Dummy callback to enforce Zero-Copy.
+                }
             );
             gEngine.renderer->readPixels(0, 0, gEngine.width, gEngine.height, std::move(desc));
         }

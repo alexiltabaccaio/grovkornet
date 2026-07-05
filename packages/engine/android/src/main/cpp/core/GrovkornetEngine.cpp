@@ -239,6 +239,9 @@ GrovkornetEngine::~GrovkornetEngine() {
         LOGI("Destroyed renderer");
         
         LOGI("Calling Engine::destroy()...");
+        if (engine) {
+            engine->flushAndWait();
+        }
         filament::Engine::destroy(&engine);
         LOGI("Engine destroyed successfully!");
         engine = nullptr;

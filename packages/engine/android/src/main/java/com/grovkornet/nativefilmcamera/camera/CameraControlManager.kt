@@ -28,6 +28,20 @@ class CameraControlManager(
     private var lastAutoIso = 400
     private var lastAutoShutter = 1000000000L / 60
 
+    private var lastAppliedTargetFps: Int = -1
+    private var lastAppliedIsoAuto: Boolean? = null
+    private var lastAppliedShutterSpeedAuto: Boolean? = null
+    private var lastAppliedEv: Float = Float.NaN
+    private var lastAppliedIso: Int = -1
+    private var lastAppliedExposureTime: Long = -1L
+    private var lastAppliedNoiseReductionAuto: Boolean? = null
+    private var lastAppliedNoiseReduction: Int = -1
+    private var lastAppliedTemperatureAuto: Boolean? = null
+    private var lastAppliedAutoFocus: Boolean? = null
+    private var lastAppliedFocusDistance: Float = Float.NaN
+    private var lastAppliedTorchEnabled: Boolean? = null
+    private var lastAppliedTorchStrength: Int = -1
+
     interface Listener {
         fun onExposureUpdate(iso: Int, shutterSpeed: Double, focusDistance: Float, noiseReduction: Int, activeCameraId: String?)
     }
@@ -35,6 +49,39 @@ class CameraControlManager(
     fun updateControls(camera: Camera, baseZoom: Float = 1.0f) {
         try {
             camera.cameraControl.setZoomRatio(baseZoom * config.zoom)
+
+            val interopChanged = lastAppliedTargetFps != config.targetFps ||
+                lastAppliedIsoAuto != config.isoAuto ||
+                lastAppliedShutterSpeedAuto != config.shutterSpeedAuto ||
+                lastAppliedEv != config.ev ||
+                (!config.isoAuto && lastAppliedIso != config.iso) ||
+                (!config.shutterSpeedAuto && lastAppliedExposureTime != config.exposureTime) ||
+                lastAppliedNoiseReductionAuto != config.noiseReductionAuto ||
+                lastAppliedNoiseReduction != config.noiseReduction ||
+                lastAppliedTemperatureAuto != config.temperatureAuto ||
+                lastAppliedAutoFocus != config.autoFocus ||
+                lastAppliedFocusDistance != config.focusDistance ||
+                lastAppliedTorchEnabled != config.torchEnabled ||
+                lastAppliedTorchStrength != config.torchStrength
+
+            if (!interopChanged) {
+                return
+            }
+
+            lastAppliedTargetFps = config.targetFps
+            lastAppliedIsoAuto = config.isoAuto
+            lastAppliedShutterSpeedAuto = config.shutterSpeedAuto
+            lastAppliedEv = config.ev
+            lastAppliedIso = config.iso
+            lastAppliedExposureTime = config.exposureTime
+            lastAppliedNoiseReductionAuto = config.noiseReductionAuto
+            lastAppliedNoiseReduction = config.noiseReduction
+            lastAppliedTemperatureAuto = config.temperatureAuto
+            lastAppliedAutoFocus = config.autoFocus
+            lastAppliedFocusDistance = config.focusDistance
+            lastAppliedTorchEnabled = config.torchEnabled
+            lastAppliedTorchStrength = config.torchStrength
+
             val control = Camera2CameraControl.from(camera.cameraControl)
             val info = Camera2CameraInfo.from(camera.cameraInfo)
             val builder = CaptureRequestOptions.Builder()
