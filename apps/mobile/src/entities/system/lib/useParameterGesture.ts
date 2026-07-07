@@ -184,7 +184,11 @@ export const useParameterGesture = ({
 
         if (newValue !== value.value) {
           if (onUpdateWorklet) {
-            onUpdateWorklet(newValue);
+            if (__DEV__ && !('__workletHash' in onUpdateWorklet)) {
+              console.error("[Gesture Error]: onUpdateWorklet must be a worklet to prevent UI thread crashes.");
+            } else {
+              onUpdateWorklet(newValue);
+            }
           } else {
             updateSharedValue(value, newValue);
             

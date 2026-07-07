@@ -95,7 +95,12 @@ export const useColorRangeGestures = ({
         
         let finalAngle = clampedAngleUnwrapped % 360;
         if (finalAngle < 0) finalAngle += 360;
-        updateLeftBound(finalAngle);
+        
+        if (__DEV__ && !('__workletHash' in updateLeftBound)) {
+          console.error("[Gesture Error]: updateLeftBound must be a worklet to prevent UI thread crashes.");
+        } else {
+          updateLeftBound(finalAngle);
+        }
       } else {
         const newX = startXRight.value + event.translationX;
         const newAngleUnwrapped = xToAngleLocal(newX);
@@ -115,7 +120,12 @@ export const useColorRangeGestures = ({
         
         let finalAngle = clampedAngleUnwrapped % 360;
         if (finalAngle < 0) finalAngle += 360;
-        updateRightBound(finalAngle);
+
+        if (__DEV__ && !('__workletHash' in updateRightBound)) {
+          console.error("[Gesture Error]: updateRightBound must be a worklet to prevent UI thread crashes.");
+        } else {
+          updateRightBound(finalAngle);
+        }
       }
     });
 
