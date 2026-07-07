@@ -120,7 +120,6 @@ export const Panels = React.memo(({ translateY }: PanelsProps) => {
     <Animated.View style={[styles.contentContainer, panelAnimatedStyle]}>
       {isSlider && (
         <SliderPanel
-          key={activeParameter}
           parameter={activeParameter}
           isActiveOverride={true}
           animatedStyle={panelAnimatedStyle}

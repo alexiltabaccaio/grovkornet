@@ -44,8 +44,8 @@ describe('useColorRangeGestures', () => {
   let mockRightShared: { value: number };
   let mockLimitLeftShared: { value: number };
   let mockLimitRightShared: { value: number };
-  const mockUpdateLeftBound = jest.fn();
-  const mockUpdateRightBound = jest.fn();
+  const mockUpdateLeftBound = Object.assign(jest.fn(), { __workletHash: 1 });
+  const mockUpdateRightBound = Object.assign(jest.fn(), { __workletHash: 1 });
 
   beforeAll(() => {
     (reanimatedModule as any).useSharedValue = (val: any) => {

@@ -209,11 +209,9 @@ export const SliderThumb = React.memo(({
       >
         <Animated.View style={[styles.trackBackground, animatedTrackStyle]} />
         <Animated.View 
-          key={`fill-${parameterId ?? label}`}
           style={[styles.trackFill, animatedFillStyle, animatedFillBgStyle]} 
         />
         <Animated.View 
-          key={`thumb-${parameterId ?? label}`}
           style={[styles.thumb, animatedThumbStyle]} 
         />
       </View>

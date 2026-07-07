@@ -65,7 +65,6 @@ export const SliderPanel = React.memo(({
   return (
     <ParameterPanelWrapper animatedStyle={animatedStyle}>
       <ParameterControl
-        key={parameter}
         parameterId={parameter}
         label=""
         isActive={finalIsActive}

@@ -39,7 +39,7 @@ describe('useParameterGesture', () => {
   it('creates race gesture with tap and pan when variant is slider', () => {
     const mockOnPress = jest.fn();
     const mockOnChange = jest.fn();
-    const mockOnUpdateWorklet = jest.fn();
+    const mockOnUpdateWorklet = Object.assign(jest.fn(), { __workletHash: 1 });
     const valueVal = makeMutable(0.5);
     const trackWidthVal = makeMutable(200);
 
