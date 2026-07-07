@@ -53,8 +53,9 @@ To ensure maximum realism, the engine processes the image in the exact physical 
 
 To add or modify camera parameters (e.g., effects, zoom) or error codes, **do not write boilerplate manually**. 
 Modify the single source of truth files:
-- `packages/shared/camera-parameters.json`
-- `packages/shared/camera-errors.json`
+- `packages/shared/camera-parameters/*.yaml`
+- `packages/shared/camera-errors.yaml`
+- `packages/shared/camera-events.yaml`
 
 Then, run `npm run codegen` from the root. This will automatically regenerate the native bindings (C++/Kotlin), Zustand stores, and TypeScript types. 
 
@@ -73,7 +74,7 @@ Then, run `npm run codegen` from the root. This will automatically regenerate th
 ### Prerequisites
 - Node.js & npm
 - Android Studio & NDK
-- A physical Android/iOS device (Recommended for 60 FPS testing)
+- A physical Android device (Recommended for 60 FPS testing)
 
 ### Installation
 1. Clone the repository

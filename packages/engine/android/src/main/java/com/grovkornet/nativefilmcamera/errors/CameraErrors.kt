@@ -9,7 +9,7 @@ package com.grovkornet.nativefilmcamera.errors
  * 
  * To add, edit, or remove camera errors, modify the YAML file above and run:
  *   npm run codegen
- * (or build/run the mobile app via npm run android / npm run ios)
+ * (or build/run the mobile app via npm run android)
  */
 enum class CameraErrorCode(val code: Int, val severity: String, val category: String) {
     E_CAMERA_UNAUTHORIZED(1001, "fatal", "permissions"),

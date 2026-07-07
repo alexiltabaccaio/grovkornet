@@ -54,7 +54,7 @@ function main() {
  * 
  * To add, edit, or remove camera errors, modify the YAML file above and run:
  *   npm run codegen
- * (or build/run the mobile app via npm run android / npm run ios)
+ * (or build/run the mobile app via npm run android)
  */
 
 export enum CameraErrorCode {
@@ -116,7 +116,7 @@ ${tsDetailsEntries}
  * 
  * To add, edit, or remove camera errors, modify the YAML file above and run:
  *   npm run codegen
- * (or build/run the mobile app via npm run android / npm run ios)
+ * (or build/run the mobile app via npm run android)
  */
 enum class CameraErrorCode(val code: Int, val severity: String, val category: String) {
 ${kotlinEnumEntries}
