@@ -30,6 +30,7 @@ interface BodyState {
   previewQuality: SharedValue<number>;
   force60fpsCrop: SharedValue<number>;
   zoom: SharedValue<number>;
+  stabilizationMode: SharedValue<number>;
   fps: SharedValue<number>;
   hwFps: SharedValue<number>;
   resolution: SharedValue<string>;
@@ -57,6 +58,7 @@ interface BodyActions {
   setPreviewQuality: (value: number) => void;
   setForce60fpsCrop: (value: number) => void;
   setZoom: (value: number) => void;
+  setStabilizationMode: (value: number) => void;
   setFps: (value: number) => void;
   setHwFps: (value: number) => void;
   setResolution: (value: string) => void;

@@ -89,6 +89,9 @@ export function App() {
     if (prefs.previewQuality !== null) {
       bodyStore.previewQuality.value = prefs.previewQuality;
     }
+    if (prefs.stabilizationMode !== null) {
+      bodyStore.stabilizationMode.value = prefs.stabilizationMode;
+    }
     if (prefs.language !== null) {
       void i18n.changeLanguage(prefs.language).catch(() => {});
     }

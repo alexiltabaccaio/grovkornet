@@ -42,6 +42,7 @@ class CameraControlManager(
     private var lastAppliedFocusDistance: Float = Float.NaN
     private var lastAppliedTorchEnabled: Boolean? = null
     private var lastAppliedTorchStrength: Int = -1
+    private var lastAppliedStabilizationMode: Int = -1
 
     interface Listener {
         fun onExposureUpdate(iso: Int, shutterSpeed: Double, focusDistance: Float, noiseReduction: Int, activeCameraId: String?)
@@ -66,6 +67,7 @@ class CameraControlManager(
                 lastAppliedFocusDistance != config.focusDistance ||
                 lastAppliedTorchEnabled != config.torchEnabled ||
                 lastAppliedTorchStrength != config.torchStrength ||
+                lastAppliedStabilizationMode != config.stabilizationMode ||
                 cameraInstanceChanged
 
             if (!interopChanged) {
@@ -86,6 +88,7 @@ class CameraControlManager(
             lastAppliedFocusDistance = config.focusDistance
             lastAppliedTorchEnabled = config.torchEnabled
             lastAppliedTorchStrength = config.torchStrength
+            lastAppliedStabilizationMode = config.stabilizationMode
 
             val control = Camera2CameraControl.from(camera.cameraControl)
             val info = Camera2CameraInfo.from(camera.cameraInfo)
@@ -168,6 +171,26 @@ class CameraControlManager(
             } else {
                 builder.setCaptureRequestOption(CaptureRequest.CONTROL_AF_MODE, CaptureRequest.CONTROL_AF_MODE_OFF)
                 builder.setCaptureRequestOption(CaptureRequest.LENS_FOCUS_DISTANCE, config.focusDistance)
+            }
+
+            // Stabilization configuration
+            when (config.stabilizationMode) {
+                1 -> { // Standard (OIS)
+                    builder.setCaptureRequestOption(CaptureRequest.CONTROL_VIDEO_STABILIZATION_MODE, CaptureRequest.CONTROL_VIDEO_STABILIZATION_MODE_OFF)
+                    builder.setCaptureRequestOption(CaptureRequest.LENS_OPTICAL_STABILIZATION_MODE, CaptureRequest.LENS_OPTICAL_STABILIZATION_MODE_ON)
+                }
+                2 -> { // Azione (EIS)
+                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+                        builder.setCaptureRequestOption(CaptureRequest.CONTROL_VIDEO_STABILIZATION_MODE, CaptureRequest.CONTROL_VIDEO_STABILIZATION_MODE_PREVIEW_STABILIZATION)
+                    } else {
+                        builder.setCaptureRequestOption(CaptureRequest.CONTROL_VIDEO_STABILIZATION_MODE, CaptureRequest.CONTROL_VIDEO_STABILIZATION_MODE_ON)
+                    }
+                    builder.setCaptureRequestOption(CaptureRequest.LENS_OPTICAL_STABILIZATION_MODE, CaptureRequest.LENS_OPTICAL_STABILIZATION_MODE_OFF)
+                }
+                else -> { // Off
+                    builder.setCaptureRequestOption(CaptureRequest.CONTROL_VIDEO_STABILIZATION_MODE, CaptureRequest.CONTROL_VIDEO_STABILIZATION_MODE_OFF)
+                    builder.setCaptureRequestOption(CaptureRequest.LENS_OPTICAL_STABILIZATION_MODE, CaptureRequest.LENS_OPTICAL_STABILIZATION_MODE_OFF)
+                }
             }
 
             val hasFlash = camera.cameraInfo.hasFlashUnit()

@@ -244,6 +244,70 @@ function generateNativeBridge(parameters, renderParams, constants) {
     .join('\n');
   replaceBetweenMarkers(FILE_PATHS.cppHeader, '// @@GEN_STRUCT_START@@', '// @@GEN_STRUCT_END@@', cppFieldsContent, '    ');
 
+  // 5b. Generate CameraStateManager.h struct fields
+  function toCppType(kotlinType) {
+    if (kotlinType === 'Boolean') return 'bool';
+    if (kotlinType === 'Int') return 'int';
+    if (kotlinType === 'Long') return 'long long';
+    if (kotlinType === 'String' || kotlinType === 'String?') return 'std::string';
+    return 'float';
+  }
+
+  function toCppDefault(p) {
+    const ktType = p.kotlin?.type;
+    let def = p.kotlin?.default;
+    
+    // Try to resolve from constants if not explicitly provided
+    if (def === undefined) {
+      if (p.zustand?.default && constants && constants[p.zustand.default] !== undefined) {
+        def = constants[p.zustand.default];
+      }
+    }
+
+    if (def !== undefined && def !== null) {
+      const defStr = def.toString().trim();
+      if (ktType === 'Boolean') {
+        return defStr === 'true' ? 'true' : 'false';
+      }
+      if (ktType === 'Int') {
+        return defStr;
+      }
+      if (ktType === 'Long') {
+        return defStr.replace(/(\d+)L/g, '$1LL');
+      }
+      if (ktType === 'String' || ktType === 'String?') {
+        return defStr === 'null' || defStr === '""' ? '""' : `"${defStr}"`;
+      }
+      // Float
+      let clean = defStr;
+      if (clean.endsWith('f')) {
+        clean = clean.slice(0, -1);
+      }
+      if (!clean.includes('.')) {
+        clean = clean + '.0';
+      }
+      return clean + 'f';
+    }
+
+    if (ktType === 'Boolean') return 'false';
+    if (ktType === 'Int') return '0';
+    if (ktType === 'Long') return '0LL';
+    if (ktType === 'String' || ktType === 'String?') return '""';
+    return '0.0f';
+  }
+
+  const allHardwareParams = parameters.filter(p => p.kotlin && !p.kotlin.transient && (p.category === 'hardware' || p.category === 'viewport'));
+  const cppHardwareFieldsContent = allHardwareParams
+    .map(p => {
+      const cppName = p.cpp?.name || p.kotlin?.name || p.name;
+      const cppType = toCppType(p.kotlin?.type);
+      const cppDefault = toCppDefault(p);
+      return `${cppType} ${cppName} = ${cppDefault};`;
+    })
+    .join('\n');
+  replaceBetweenMarkers(FILE_PATHS.cppStateManagerHeader, '// @@GEN_HARDWARE_START@@', '// @@GEN_HARDWARE_END@@', cppHardwareFieldsContent, '    ');
+
+
 
 
   // Helper to convert YAML defaults to C++ floats

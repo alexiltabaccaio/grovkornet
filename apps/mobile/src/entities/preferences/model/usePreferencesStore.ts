@@ -15,6 +15,7 @@ interface PreferencesState {
   focusAuto: boolean | null;
   hapticsEnabled: boolean | null;
   previewQuality: number | null;
+  stabilizationMode: number | null;
 }
 
 interface PreferencesActions {
@@ -29,6 +30,7 @@ interface PreferencesActions {
   setFocusAutoPref: (val: boolean) => void;
   setHapticsEnabledPref: (val: boolean) => void;
   setPreviewQualityPref: (val: number) => void;
+  setStabilizationModePref: (val: number) => void;
 }
 
 export const usePreferencesStore = create<PreferencesState & PreferencesActions>()(
@@ -45,6 +47,7 @@ export const usePreferencesStore = create<PreferencesState & PreferencesActions>
       focusAuto: null,
       hapticsEnabled: null,
       previewQuality: null,
+      stabilizationMode: 1,
 
       setFpsSettingPref: (val) => set({ fpsSetting: val }),
       setResolutionSettingPref: (val) => set({ resolutionSetting: val }),
@@ -57,6 +60,7 @@ export const usePreferencesStore = create<PreferencesState & PreferencesActions>
       setFocusAutoPref: (val) => set({ focusAuto: val }),
       setHapticsEnabledPref: (val) => set({ hapticsEnabled: val }),
       setPreviewQualityPref: (val) => set({ previewQuality: val }),
+      setStabilizationModePref: (val) => set({ stabilizationMode: val }),
     }),
     {
       name: 'grovkornet-preferences-storage',
@@ -80,6 +84,7 @@ export const usePreferencesStore = create<PreferencesState & PreferencesActions>
           focusAuto: typeof state.focusAuto === 'boolean' ? state.focusAuto : currentState.focusAuto,
           hapticsEnabled: typeof state.hapticsEnabled === 'boolean' ? state.hapticsEnabled : currentState.hapticsEnabled,
           previewQuality: typeof state.previewQuality === 'number' ? state.previewQuality : currentState.previewQuality,
+          stabilizationMode: typeof state.stabilizationMode === 'number' ? state.stabilizationMode : currentState.stabilizationMode,
         };
       },
     }

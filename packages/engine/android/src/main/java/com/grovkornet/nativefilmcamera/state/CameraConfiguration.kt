@@ -527,6 +527,15 @@ class CameraConfiguration(val nativePointer: Long = 0L) {
                     CameraStateJNI.fallbackSet("zoom", nativePointer, value)
                 }
             }
+    var stabilizationMode: Int
+            get() = if (CameraStateJNI.isJniLoaded) CameraStateJNI.getStabilizationMode(nativePointer) else (CameraStateJNI.fallbackGet("stabilizationMode", nativePointer, 1) as Int)
+            set(value) {
+                if (CameraStateJNI.isJniLoaded) {
+                    CameraStateJNI.setStabilizationMode(nativePointer, value)
+                } else {
+                    CameraStateJNI.fallbackSet("stabilizationMode", nativePointer, value)
+                }
+            }
 
     // Viewport Props
     var viewportWidth: Float
@@ -639,6 +648,9 @@ fun CameraConfiguration.loadFromMap(payload: Map<String, Any>) {
     }
     payload["zoom"]?.let { rawValue ->
         (rawValue as? Number)?.toFloat()?.let { zoom = it }
+    }
+    payload["stabilizationMode"]?.let { rawValue ->
+        (rawValue as? Number)?.toInt()?.let { stabilizationMode = it }
     }
     payload["saturation"]?.let { rawValue ->
         (rawValue as? Number)?.toFloat()?.let { saturation = it }

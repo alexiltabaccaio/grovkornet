@@ -6,6 +6,7 @@ import { useShallow } from 'zustand/shallow';
 const PREFERENCES_PARAMETERS: (ParameterType | ParameterConfig<ParameterType>)[] = [
   'language',
   { id: 'vibration', labelKey: 'parameters.vibration' },
+  { id: 'stabilization_mode', labelKey: 'parameters.stabilizationMode' },
 ];
 
 const PreferencesModuleComponent = () => {

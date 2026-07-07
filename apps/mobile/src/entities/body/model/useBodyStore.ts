@@ -17,6 +17,7 @@ import {
   DEFAULT_PREVIEW_QUALITY,
   DEFAULT_FORCE_60FPS_CROP,
   DEFAULT_ZOOM,
+  DEFAULT_STABILIZATION_MODE,
 } from '@grovkornet/shared';
 
 export const useBodyStore = create<BodyStore>((set, get) => ({
@@ -38,6 +39,7 @@ export const useBodyStore = create<BodyStore>((set, get) => ({
   previewQuality: makeMutable(DEFAULT_PREVIEW_QUALITY),
   force60fpsCrop: makeMutable(DEFAULT_FORCE_60FPS_CROP),
   zoom: makeMutable(DEFAULT_ZOOM),
+  stabilizationMode: makeMutable(DEFAULT_STABILIZATION_MODE),
   fps: makeMutable(0),
   hwFps: makeMutable(0),
   resolution: makeMutable(''),
@@ -143,6 +145,10 @@ export const useBodyStore = create<BodyStore>((set, get) => ({
   setZoom: (value) => {
     get().zoom.value = value;
     notifyBodyStoreListener('zoom');
+  },
+  setStabilizationMode: (value) => {
+    get().stabilizationMode.value = value;
+    notifyBodyStoreListener('stabilizationMode');
   },
   setFps: (value) => {
     get().fps.value = value;

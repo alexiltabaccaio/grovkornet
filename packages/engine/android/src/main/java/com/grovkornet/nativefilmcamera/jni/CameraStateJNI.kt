@@ -82,6 +82,8 @@ object CameraStateJNI {
         @JvmStatic external fun setIsSelfieCamera(statePtr: Long, value: Boolean)
         @JvmStatic external fun getZoom(statePtr: Long): Float
         @JvmStatic external fun setZoom(statePtr: Long, value: Float)
+        @JvmStatic external fun getStabilizationMode(statePtr: Long): Int
+        @JvmStatic external fun setStabilizationMode(statePtr: Long, value: Int)
         @JvmStatic external fun getViewportWidth(statePtr: Long): Float
         @JvmStatic external fun setViewportWidth(statePtr: Long, value: Float)
         @JvmStatic external fun getViewportHeight(statePtr: Long): Float

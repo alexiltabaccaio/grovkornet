@@ -373,3 +373,20 @@ parameters:
       default: DEFAULT_ZOOM
       type: number
     includeInPreset: false
+  - name: stabilizationMode
+    category: hardware
+    kotlin:
+      type: Int
+      default: "1"
+      propHandler: |-
+        if (view.config.stabilizationMode != value) {
+          view.updateHardware { stabilizationMode = value }
+        }
+    ts:
+      type: number
+    zustand:
+      store: body
+      default: DEFAULT_STABILIZATION_MODE
+      type: number
+    includeInPreset: false
+

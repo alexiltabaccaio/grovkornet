@@ -31,6 +31,7 @@ export interface NativeFilmCameraViewProps extends ViewProps, GeneratedCameraVie
   secureViewEnabled?: boolean;
   isSelfieCamera?: boolean;
   zoom?: number;
+  stabilizationMode?: number;
   fps?: number;
   hwFps?: number;
   resolution?: string;

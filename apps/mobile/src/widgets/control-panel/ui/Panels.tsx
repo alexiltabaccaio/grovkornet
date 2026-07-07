@@ -7,7 +7,7 @@ import { ParameterType } from '@entities/system';
 
 import { SliderPanel } from './components/SliderPanel';
 import { TorchPanel, FpsPanel, ResolutionPanel, AspectRatioPanel } from '@features/sections/body';
-import { LanguagePanel, VibrationPanel, DebugPanels } from '@features/sections/system';
+import { LanguagePanel, VibrationPanel, StabilizationPanel, DebugPanels } from '@features/sections/system';
 import { PresetsPanel } from '@features/presets';
 import { LensSelectionPanel } from '@features/sections/lens';
 import { NoiseReductionPanel } from '@features/sections/film';
@@ -95,6 +95,8 @@ export const Panels = React.memo(({ translateY }: PanelsProps) => {
         return <LanguagePanel animatedStyle={panelAnimatedStyle} />;
       case 'vibration':
         return <VibrationPanel animatedStyle={panelAnimatedStyle} />;
+      case 'stabilization_mode':
+        return <StabilizationPanel animatedStyle={panelAnimatedStyle} />;
       case 'ui_overlay':
       case 'temperature_test':
       case 'developer_options':

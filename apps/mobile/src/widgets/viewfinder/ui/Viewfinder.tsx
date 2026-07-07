@@ -40,6 +40,7 @@ export const Viewfinder = React.memo(({ cameraKey }: ViewfinderProps) => {
     fps,
     hwFps,
     resolution,
+    stabilizationMode,
   } = useBodyStore.getState();
 
   const {
@@ -225,6 +226,7 @@ export const Viewfinder = React.memo(({ cameraKey }: ViewfinderProps) => {
       force60fpsCrop: resolvedForce60fpsCrop.value,
       isSelfieCamera: isSelfieCamera.value,
       zoom: zoom.value,
+      stabilizationMode: stabilizationMode.value,
       fps: fps.value,
       hwFps: hwFps.value,
       resolution: resolution.value,

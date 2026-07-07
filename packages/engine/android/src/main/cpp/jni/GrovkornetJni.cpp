@@ -800,6 +800,31 @@ Java_com_grovkornet_nativefilmcamera_jni_CameraStateJNI_setZoom(
     }
 }
 
+JNIEXPORT jint JNICALL
+Java_com_grovkornet_nativefilmcamera_jni_CameraStateJNI_getStabilizationMode(
+        JNIEnv* env, jclass clazz, jlong statePtr) {
+    if (statePtr == 0) {
+        return CameraStateManager::getInstance().getActiveState()->stabilizationMode;
+    } else {
+        auto* state = reinterpret_cast<RenderState*>(statePtr);
+        return state->stabilizationMode;
+    }
+}
+
+JNIEXPORT void JNICALL
+Java_com_grovkornet_nativefilmcamera_jni_CameraStateJNI_setStabilizationMode(
+        JNIEnv* env, jclass clazz, jlong statePtr, jint value) {
+    if (statePtr == 0) {
+        CameraStateManager::getInstance().updateStateField([value](RenderState& state) {
+            state.stabilizationMode = value;
+        });
+    } else {
+        auto* state = reinterpret_cast<RenderState*>(statePtr);
+        state->stabilizationMode = value;
+        CameraStateManager::getInstance().clampState(*state);
+    }
+}
+
 JNIEXPORT jfloat JNICALL
 Java_com_grovkornet_nativefilmcamera_jni_CameraStateJNI_getViewportWidth(
         JNIEnv* env, jclass clazz, jlong statePtr) {

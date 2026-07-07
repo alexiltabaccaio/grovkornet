@@ -214,6 +214,14 @@ class NativeFilmCameraModule : Module() {
                 if (view.config.zoom != value) view.updateHardware { zoom = value }
               }
       }
+
+      Prop("stabilizationMode") { view: NativeFilmCameraView, value: Int? ->
+        value?.let { value ->
+                if (view.config.stabilizationMode != value) {
+                  view.updateHardware { stabilizationMode = value }
+                }
+              }
+      }
       // @@GEN_PROPS_END@@
 
       AsyncFunction("takePhoto") { view: NativeFilmCameraView ->

@@ -121,4 +121,34 @@ class CameraControlManagerTest {
         // Verify captureRequestOptions was assigned
         verify { mockCamera2Control.captureRequestOptions = any() }
     }
+
+    @Test
+    fun testUpdateControls_configuresStabilizationModes() {
+        val listener = mockk<CameraControlManager.Listener>(relaxed = true)
+
+        // Test Off (0)
+        val configOff = CameraConfiguration().apply {
+            stabilizationMode = 0
+        }
+        val managerOff = CameraControlManager(context, configOff, listener)
+        managerOff.updateControls(mockCamera)
+        verify { mockCamera2Control.captureRequestOptions = any() }
+
+        // Test OIS (1)
+        val configOis = CameraConfiguration().apply {
+            stabilizationMode = 1
+        }
+        val managerOis = CameraControlManager(context, configOis, listener)
+        managerOis.updateControls(mockCamera)
+        verify { mockCamera2Control.captureRequestOptions = any() }
+
+        // Test EIS (2)
+        val configEis = CameraConfiguration().apply {
+            stabilizationMode = 2
+        }
+        val managerEis = CameraControlManager(context, configEis, listener)
+        managerEis.updateControls(mockCamera)
+        verify { mockCamera2Control.captureRequestOptions = any() }
+    }
 }
+

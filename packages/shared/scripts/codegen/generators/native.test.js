@@ -17,6 +17,7 @@ test('generateNativeBridge correctly replaces content in native files', () => {
     'NativeFilmCameraModule.kt': '// @@GEN_PROPS_START@@\n// @@GEN_PROPS_END@@',
     'CameraConfiguration.kt': '// @@GEN_FIELDS_START@@\n// @@GEN_FIELDS_END@@\n// @@GEN_MAP_LOADER_START@@\n// @@GEN_MAP_LOADER_END@@',
     'RenderParams.h': '// @@GEN_STRUCT_START@@\n// @@GEN_STRUCT_END@@',
+    'CameraStateManager.h': '// @@GEN_HARDWARE_START@@\n// @@GEN_HARDWARE_END@@',
     'CameraStateManager.cpp': '// @@GEN_DEFAULTS_START@@\n// @@GEN_DEFAULTS_END@@\n// @@GEN_CLAMPING_START@@\n// @@GEN_CLAMPING_END@@',
     'CameraStateJNI.kt': '// @@GEN_JNI_METHODS_START@@\n// @@GEN_JNI_METHODS_END@@',
     'GrovkornetJni.cpp': '// @@GEN_JNI_BINDINGS_START@@\n// @@GEN_JNI_BINDINGS_END@@'
@@ -92,6 +93,8 @@ test('generateNativeBridge correctly replaces content in native files', () => {
     assert.match(written['CameraStateManager.cpp'], /std::clamp/, 'Should contain clamp expression');
     assert.ok(written['CameraConfiguration.kt']);
     assert.match(written['CameraConfiguration.kt'], /CameraStateJNI\.fallbackGet\("grainSpeed", nativePointer, 30f\)/, 'Should use constant fallback for Kotlin default');
+    assert.ok(written['CameraStateManager.h']);
+    assert.match(written['CameraStateManager.h'], /bool torchState = false;/, 'Should define C++ hardware field torchState');
 
   } finally {
     fs.readFileSync = originalRead;
