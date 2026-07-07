@@ -18,7 +18,7 @@
     "native-film-camera"
   ],
   "author": "alexg",
-  "license": "MIT",
+  "license": "GPL-3.0",
   "devDependencies": {
     "expo-module-scripts": "~4.0.5",
     "typescript": "^5.3.3",

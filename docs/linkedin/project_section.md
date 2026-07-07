@@ -10,7 +10,7 @@ The Problem: Standard mobile camera libraries and filters lack the performance a
 The Solution: Designed a custom native rendering engine and a scalable mobile architecture that processes video through a single-pass GPU pipeline, physically simulating the path of light for authentic analog aesthetics without compromising device performance.
 
 Technical & Architectural Highlights: 
-• Native Rendering Engine: Bypassed standard React Native limitations by building a proprietary C++ and Kotlin engine powered by Google Filament (Physically Based Rendering). 
+• Native Rendering Engine: Bypassed standard React Native limitations by building a custom C++ and Kotlin engine powered by Google Filament (Physically Based Rendering). 
 • Uber Shader Pipeline: Implemented a single-pass GPU rendering architecture that physically simulates optics, sensor mechanics, and chemical film development at a rock-solid 60 FPS. 
 • Frontend Architecture: Structured as a Turborepo monorepo (React Native/Expo & Next.js), strictly adhering to the Feature-Sliced Design (FSD) pattern to ensure maximum scalability and maintainability. 
 • In-House Tooling: Developed "Code GraphRAG", a custom AST-based static analyzer to map dependency graphs and automatically enforce architectural boundaries. 

@@ -1,7 +1,6 @@
 # Grovkornet 🎞️
 
-> [!IMPORTANT]
-> **Proprietary Software**: This repository is private. Unauthorized use, copying, or distribution is strictly prohibited.
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
 A high-performance cinematic camera ecosystem built with React Native and a custom C++/Kotlin native rendering engine (**Google Filament**-based Uber Shader) for real-time analog film emulation.
 
@@ -136,6 +135,19 @@ To ensure changes are correctly grouped in the `CHANGELOG.md`, always follow the
    git checkout dev
    git merge main
    ```
+
+## 📜 License & Commercial Use
+
+Grovkornet is released under the **GNU General Public License v3.0 (GPLv3)**. 
+
+This means you are free to read the source code, study the architecture, and use the engine for your own **open-source** projects, provided that any derivative work is also released publicly under the GPLv3 license.
+
+### Commercial Licensing (Dual License)
+
+If you are a company or a developer intending to use Grovkornet (or its C++/Kotlin engine) in a **closed-source or commercial application** without releasing your source code under the GPLv3, you must obtain a commercial license.
+
+For commercial inquiries, custom integrations, or revenue share agreements, please contact:
+📧 **[alexgiustizieri@gmail.com](mailto:alexgiustizieri@gmail.com)**
 
 ---
 
