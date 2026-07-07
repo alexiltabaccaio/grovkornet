@@ -4,7 +4,7 @@ void computeChromaUvs(vec2 uv, vec2 res, out vec2 rUv, out vec2 gUv, out vec2 bU
     float maxShift = 0.0;
     if (materialParams.u_ChromaShift > 0.0) maxShift += 0.02 * materialParams.u_ChromaShift;
     if (materialParams.u_ChromaticAberration > 0.0) maxShift += 0.02 * materialParams.u_ChromaticAberration;
-    if (materialParams.u_TapeJitter > 0.0) maxShift += 0.002 * materialParams.u_TapeJitter;
+    if (materialParams.u_TapeJitter > 0.0) maxShift += 0.01 * materialParams.u_TapeJitter;
 
     float scaleBase = min(res.x, res.y) / res.x;
 
@@ -23,14 +23,30 @@ void computeChromaUvs(vec2 uv, vec2 res, out vec2 rUv, out vec2 gUv, out vec2 bU
 
     if (materialParams.u_TapeJitter > 0.0) {
         int orientation = int(materialParams.u_DeviceOrientation + 0.1);
+        // Quantize time to create abrupt, frame-by-frame jumps (approx 14 Hz for a retro feel)
+        float t = floor(materialParams.u_Time * 14.0);
+        
         if (orientation == 1 || orientation == 3) {
-            float jitter = sin(uv.x * 50.0 * (res.x / min(res.x, res.y)) + materialParams.u_Time * 10.0) * 0.002 * materialParams.u_TapeJitter * (min(res.x, res.y) / res.y);
+            // Usa pow(abs(sin), 40) per creare un "picco" acutissimo anziché un'onda larga, 
+            // simulando uno strappo analogico sottile in punti specifici.
+            float spike = pow(abs(sin(uv.x * 3.0 + t * 5.0)), 40.0);
+            float tearOffset = (fract(sin(t * 78.233) * 43758.5453) * 2.0 - 1.0);
+            
+            // Add a global gate weave (entire frame shake)
+            float gateWeave = fract(sin(t * 12.9898) * 43758.5453) * 2.0 - 1.0;
+            
+            float jitter = (spike * tearOffset * 0.008 + gateWeave * 0.002) * materialParams.u_TapeJitter * (min(res.x, res.y) / res.y);
             compositeUv.y += jitter;
             rUv.y += jitter;
             gUv.y += jitter;
             bUv.y += jitter;
         } else {
-            float jitter = sin(uv.y * 50.0 * (res.y / min(res.x, res.y)) + materialParams.u_Time * 10.0) * 0.002 * materialParams.u_TapeJitter * scaleBase;
+            float spike = pow(abs(sin(uv.y * 3.0 + t * 5.0)), 40.0);
+            float tearOffset = (fract(sin(t * 78.233) * 43758.5453) * 2.0 - 1.0);
+            
+            float gateWeave = fract(sin(t * 12.9898) * 43758.5453) * 2.0 - 1.0;
+            
+            float jitter = (spike * tearOffset * 0.008 + gateWeave * 0.002) * materialParams.u_TapeJitter * scaleBase;
             compositeUv.x += jitter;
             rUv.x += jitter;
             gUv.x += jitter;
