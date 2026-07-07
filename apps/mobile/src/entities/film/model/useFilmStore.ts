@@ -434,7 +434,10 @@ export const useFilmStore = create<FilmStore>((set, get) => ({
     notifyFilmStoreListener('scanlinesHorizontal');
   },
   setScanlinesMode: (value) => {
-    get().scanlinesMode.value = value;
+    const { scanlinesMode, scanlinesHorizontal } = get();
+    scanlinesMode.value = value;
+    scanlinesHorizontal.value = value === 0;
+
     notifyFilmStoreListener('scanlinesMode');
   },
   setScanlinesDensity: (value) => {

@@ -913,6 +913,8 @@ export const useFilmWorklets = () => {
         }
         updateSharedValue(film.scanlinesMode, value);
         config.scanlinesMode = value;
+        updateSharedValue(film.scanlinesHorizontal, value === 0);
+        config.scanlinesHorizontal = value === 0;
         };
 
         const updateScanlinesDensity = (value: number) => {

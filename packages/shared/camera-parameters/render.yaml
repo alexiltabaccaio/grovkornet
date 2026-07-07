@@ -1006,7 +1006,15 @@ parameters:
       type: number
       resetGroup: scanlines
       store: film
+      setSideEffects:
+        - target: scanlinesHorizontal
+          value: "value === 0"
     nitro: true
+    worklet:
+      sideEffects:
+        - target: scanlinesHorizontal
+          value: "value === 0"
+          type: boolean
     includeInPreset: true
   - name: scanlinesDensity
     category: render
