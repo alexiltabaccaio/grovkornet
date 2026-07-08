@@ -32,7 +32,7 @@
       "presets": "PRESET",
       "language": "LINGUA",
       "vibration": "VIBRAZIONE",
-      "stabilizationMode": "STABILIZZAZIONE",
+      "stabilizationMode": "STABILIZZATORE",
       "stabilization_off": "DISATTIVO",
       "stabilization_standard": "STANDARD (OIS)",
       "stabilization_action": "AZIONE (EIS)",
@@ -104,7 +104,14 @@
       "purple": "VIOLA",
       "magenta": "MAGENTA"
     },
+    "common": {
+      "yes": "SI",
+      "no": "NO",
+      "ok": "OK"
+    },
     "presets": {
+      "error_fatal": "Errore Fatale",
+      "error_warning": "Attenzione",
       "error_title": "Errore",
       "error_empty": "Il nome non può essere vuoto",
       "error_duplicate": "Questo nome è già in uso",
@@ -112,6 +119,7 @@
       "limit_body": "Puoi selezionare al massimo 5 preset per la scelta rapida",
       "delete_title": "Elimina Preset",
       "delete_body": "Sei sicuro di voler eliminare \"{{name}}\"?",
+      "overwrite_title": "SOVRASCRIVERE PRESET?",
       "cancel": "ANNULLA",
       "delete": "ELIMINA",
       "save_title": "SALVA PRESET",
@@ -127,7 +135,13 @@
     },
     "gallery": {
       "no_photos": "Nessuna foto trovata",
-      "loading": "Caricamento galleria..."
+      "loading": "Caricamento galleria...",
+      "unverified_title": "Foto Non Verificata",
+      "unverified_message": "Questa foto non è stata scattata con Grovkornet o è stata modificata. La condivisione ufficiale del brand è disabilitata.",
+      "unverified_badge": "Non Verificato",
+      "share_title": "Condividi Foto",
+      "share_instagram": "Condividi su Instagram",
+      "share_generic": "Condividi"
     }
   }
 }

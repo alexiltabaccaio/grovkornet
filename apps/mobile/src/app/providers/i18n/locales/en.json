@@ -104,7 +104,14 @@
       "purple": "PURPLE",
       "magenta": "MAGENTA"
     },
+    "common": {
+      "yes": "YES",
+      "no": "NO",
+      "ok": "OK"
+    },
     "presets": {
+      "error_fatal": "Fatal Error",
+      "error_warning": "Warning",
       "error_title": "Error",
       "error_empty": "Name cannot be empty",
       "error_duplicate": "This name is already in use",
@@ -112,6 +119,7 @@
       "limit_body": "You can select up to 5 presets for quick select",
       "delete_title": "Delete Preset",
       "delete_body": "Are you sure you want to delete \"{{name}}\"?",
+      "overwrite_title": "OVERWRITE PRESET?",
       "cancel": "CANCEL",
       "delete": "DELETE",
       "save_title": "SAVE PRESET",
@@ -127,7 +135,13 @@
     },
     "gallery": {
       "no_photos": "No photos found",
-      "loading": "Loading gallery..."
+      "loading": "Loading gallery...",
+      "unverified_title": "Unverified Photo",
+      "unverified_message": "This photo was not taken with Grovkornet or has been modified. Official brand sharing is disabled.",
+      "unverified_badge": "Unverified",
+      "share_title": "Share Photo",
+      "share_instagram": "Share to Instagram",
+      "share_generic": "Share"
     }
   }
 }

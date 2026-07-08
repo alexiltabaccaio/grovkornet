@@ -6,14 +6,24 @@ import it from './locales/it.json';
 
 const getInitialLanguage = (): string => {
   const defaultLanguage = 'en';
+  const supportedLanguages = ['en', 'it'];
+  
   if (typeof window !== 'undefined') {
     const match = document.cookie.match(new RegExp('(^| )grovkornet-lang=([^;]+)'));
-    if (match && ['en', 'it'].includes(match[2])) {
+    if (match && supportedLanguages.includes(match[2])) {
       return match[2];
     }
     const local = localStorage.getItem('grovkornet-lang');
-    if (local && ['en', 'it'].includes(local)) {
+    if (local && supportedLanguages.includes(local)) {
       return local;
+    }
+    
+    // Fallback to browser language
+    if (navigator.language) {
+      const browserLang = navigator.language.split('-')[0];
+      if (supportedLanguages.includes(browserLang)) {
+        return browserLang;
+      }
     }
   }
   return defaultLanguage;
