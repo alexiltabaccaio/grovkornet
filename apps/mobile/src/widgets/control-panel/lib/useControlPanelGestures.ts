@@ -69,9 +69,11 @@ export const useControlPanelGestures = ({
       .activeOffsetY([-15, 15]) // Increased to prevent small movements (wiggles) during tap from hijacking the event
       .failOffsetX([-15, 15]) // Fails the gesture if moving horizontally, unlocking touch events
       .onStart(() => {
+        'worklet';
         startY.value = isNaN(translateY.value) ? -50 : translateY.value;
       })
       .onUpdate((e) => {
+        'worklet';
         if (isNaN(e.translationY) || isNaN(startY.value)) return;
         let newY = startY.value + e.translationY;
         // Clamp between open and closed (now restricted to -50px as base)
@@ -81,6 +83,7 @@ export const useControlPanelGestures = ({
         translateY.value = newY;
       })
       .onEnd((e) => {
+        'worklet';
         const currentY = isNaN(translateY.value) ? -50 : translateY.value;
         const vY = isNaN(e.velocityY) ? 0 : e.velocityY;
         const estimatedY = currentY + vY * 0.1;

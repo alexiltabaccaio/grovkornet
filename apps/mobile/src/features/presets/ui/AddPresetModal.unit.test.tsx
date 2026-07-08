@@ -26,10 +26,11 @@ jest.mock('react-native', () => {
   return RN;
 });
 
-import { addPreset } from '../lib/presetActions';
+import { addPreset, removePreset } from '../lib/presetActions';
 
 jest.mock('../lib/presetActions', () => ({
   addPreset: jest.fn(),
+  removePreset: jest.fn(),
 }));
 
 describe('AddPresetModal', () => {
@@ -84,7 +85,7 @@ describe('AddPresetModal', () => {
     fireEvent.press(saveBtn);
     expect(Alert.alert).not.toHaveBeenCalled();
 
-    // 2. Save duplicate name
+    // 2. Save duplicate name (should enter overwrite mode)
     const duplicatePreset = {
       id: '1',
       name: 'VINTAGE',
@@ -97,9 +98,42 @@ describe('AddPresetModal', () => {
 
     fireEvent.changeText(input, 'VINTAGE');
     fireEvent.press(saveBtn);
-    expect(Alert.alert).toHaveBeenCalledWith('presets.error_title', 'presets.error_duplicate');
+    
+    // Verify it enters overwrite mode (title changes, buttons change)
+    expect(getByText('presets.overwrite_title')).toBeTruthy();
+    expect(getByText('common.yes')).toBeTruthy();
+    expect(getByText('common.no')).toBeTruthy();
+    
+    // 2.1 Pressing "NO" (which replaces CANCEL) should return to normal mode
+    fireEvent.press(getByText('common.no'));
+    expect(getByText('presets.save_title')).toBeTruthy();
+    expect(getByText('presets.cancel')).toBeTruthy();
+    expect(getByText('PRESETS.SAVE')).toBeTruthy();
+    
+    // Re-enter overwrite mode
+    fireEvent.press(saveBtn);
+    expect(getByText('presets.overwrite_title')).toBeTruthy();
+    
+    // 2.2 Changing the text input should return to normal mode
+    fireEvent.changeText(input, 'VINTAG');
+    expect(getByText('presets.save_title')).toBeTruthy();
+    
+    // 2.3 Pressing SI should delete the old preset and save the new one
+    // First type duplicate name again and press save to enter overwrite mode
+    fireEvent.changeText(input, 'VINTAGE');
+    fireEvent.press(saveBtn);
+    expect(getByText('presets.overwrite_title')).toBeTruthy();
+    
+    (addPreset as jest.Mock).mockClear();
+    (removePreset as jest.Mock).mockClear();
+    
+    fireEvent.press(getByText('common.yes'));
+    
+    expect(removePreset).toHaveBeenCalledWith('1');
+    expect(addPreset).toHaveBeenCalledWith('VINTAGE', expect.any(String));
+    expect(mockSetAddModalVisible).toHaveBeenCalledWith(false);
 
-    // 3. Save valid preset
+    // 3. Save valid preset (directly without duplicate check)
     (addPreset as jest.Mock).mockClear();
     await waitFor(() => {
       fireEvent.changeText(input, 'UNIQUE_PRESET');

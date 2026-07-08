@@ -44,12 +44,12 @@ export const useColorRangeGestures = ({
     return unwrap(limitRightShared.value, dragRefAngle.value);
   };
 
-  const angleToXLocal = (angle: number) => {
+  const angleToXLocal = (angle: number): number => {
     'worklet';
     return angleToX(angle, getMinAngle(), getMaxAngle(), trackWidth.value);
   };
 
-  const xToAngleLocal = (x: number) => {
+  const xToAngleLocal = (x: number): number => {
     'worklet';
     return xToAngle(x, getMinAngle(), getMaxAngle(), trackWidth.value);
   };
@@ -57,6 +57,7 @@ export const useColorRangeGestures = ({
   const panGesture = Gesture.Pan()
     .enabled(isInteractable)
     .onStart((event) => {
+      'worklet';
       dragRefAngle.value = limitLeftShared.value;
       const leftUnwrapped = unwrap(leftShared.value, dragRefAngle.value);
       const rightUnwrapped = unwrap(rightShared.value, dragRefAngle.value);
@@ -76,6 +77,7 @@ export const useColorRangeGestures = ({
       }
     })
     .onUpdate((event) => {
+      'worklet';
       if (activeThumb.value === 0) {
         const newX = startXLeft.value + event.translationX;
         const newAngleUnwrapped = xToAngleLocal(newX);

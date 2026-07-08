@@ -4,10 +4,10 @@ import { useTranslation } from 'react-i18next';
 import { useShallow } from 'zustand/shallow';
 import { usePresetStore, Preset, DEFAULT_FILM_PAYLOAD, FilmPresetPayload, PresetStore, PresetPayload } from '@entities/preset';
 import * as Haptics from '@shared/lib/haptics';
-import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 import { Asset } from 'expo-asset';
 import { generatePresetPreview, deleteFile, CameraErrorCode, CAMERA_ERROR_DETAILS } from '@grovkornet/engine';
 import { useFilmStore } from '@entities/film';
+import { PopupContainer } from '@shared/ui/popup/PopupContainer';
 
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const monoscopeAssetSource = require('../../../../assets/monoscope.jpg') as number;
@@ -30,7 +30,7 @@ const getActiveFilmPayload = (customizedPayload: PresetPayload | null): FilmPres
   return filmPayload as FilmPresetPayload;
 };
 
-import { addPreset } from '../lib/presetActions';
+import { addPreset, removePreset } from '../lib/presetActions';
 
 const AddPresetModalComponent = () => {
   const { t } = useTranslation();
@@ -45,6 +45,9 @@ const AddPresetModalComponent = () => {
 
   const [newPresetName, setNewPresetName] = useState('');
   const [tempThumbnailUri, setTempThumbnailUri] = useState<string | null>(null);
+  const [errorPopup, setErrorPopup] = useState<{ title: string; message: string } | null>(null);
+  const [isOverwriteMode, setIsOverwriteMode] = useState(false);
+  const [existingPresetId, setExistingPresetId] = useState<string | null>(null);
   
   const isSavedRef = useRef(false);
 
@@ -119,7 +122,7 @@ const AddPresetModalComponent = () => {
     const trimmedName = newPresetName.trim();
     if (!trimmedName) {
       void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-      Alert.alert(t('presets.error_title', 'Errore'), t('presets.error_empty', 'Il nome non può essere vuoto'));
+      setErrorPopup({ title: t('presets.error_title', 'Errore'), message: t('presets.error_empty', 'Il nome non può essere vuoto') });
       return;
     }
 
@@ -127,35 +130,61 @@ const AddPresetModalComponent = () => {
       (p: Preset) => p.name.toLowerCase() === trimmedName.toLowerCase() || trimmedName.toLowerCase() === 'default'
     );
     if (isDuplicate) {
-      void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-      Alert.alert(t('presets.error_title', 'Errore'), t('presets.error_duplicate', 'Questo nome è già in uso'));
-      return;
+      if (trimmedName.toLowerCase() === 'default') {
+        void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+        setErrorPopup({ title: t('presets.error_title', 'Errore'), message: t('presets.error_duplicate', 'Questo nome è già in uso') });
+        return;
+      }
+      
+      if (!isOverwriteMode) {
+        const duplicatePreset = userPresets.find(
+          (p: Preset) => p.name.toLowerCase() === trimmedName.toLowerCase()
+        );
+        void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+        setIsOverwriteMode(true);
+        setExistingPresetId(duplicatePreset?.id || null);
+        return;
+      }
     }
 
     void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     isSavedRef.current = true;
+
+    if (isOverwriteMode && existingPresetId) {
+      removePreset(existingPresetId);
+    }
+
     addPreset(trimmedName, tempThumbnailUri || undefined);
     setNewPresetName('');
+    setIsOverwriteMode(false);
+    setExistingPresetId(null);
     setAddModalVisible(false);
   };
 
   return (
-    <Animated.View 
-      style={styles.modalOverlay} 
-      entering={FadeIn.duration(200)} 
-      exiting={FadeOut.duration(200)}
-    >
-      <View style={styles.modalContent}>
-        <Text style={styles.modalTitle} allowFontScaling={false}>
-          {t('presets.save_title', 'SALVA PRESET')}
-        </Text>
-        
+    <>
+      <PopupContainer 
+        visible={isAddModalVisible} 
+        title={isOverwriteMode ? t('presets.overwrite_title', 'SOVRASCRIVERE PRESET?') : t('presets.save_title', 'SALVA PRESET')}
+        onClose={() => {
+          setNewPresetName('');
+          setIsOverwriteMode(false);
+          setExistingPresetId(null);
+          setAddModalVisible(false);
+        }}
+      >
         <TextInput
           style={styles.textInput}
           placeholder={t('presets.placeholder', 'NOME PRESET')}
           placeholderTextColor="rgba(255, 255, 255, 0.3)"
           value={newPresetName}
-          onChangeText={setNewPresetName}
+          onChangeText={(text) => {
+            setNewPresetName(text);
+            if (isOverwriteMode) {
+              setIsOverwriteMode(false);
+              setExistingPresetId(null);
+            }
+          }}
           autoFocus={true}
           maxLength={20}
           autoCapitalize="characters"
@@ -166,14 +195,19 @@ const AddPresetModalComponent = () => {
         <View style={styles.modalButtons}>
           <TouchableOpacity
             onPress={() => {
-              setNewPresetName('');
-              setAddModalVisible(false);
+              if (isOverwriteMode) {
+                setIsOverwriteMode(false);
+                setExistingPresetId(null);
+              } else {
+                setNewPresetName('');
+                setAddModalVisible(false);
+              }
             }}
             activeOpacity={0.7}
             style={[styles.modalButton, styles.modalCancelButton]}
           >
             <Text style={styles.modalButtonText} allowFontScaling={false}>
-              {t('presets.cancel', 'ANNULLA')}
+              {isOverwriteMode ? t('common.no', 'NO') : t('presets.cancel', 'ANNULLA')}
             </Text>
           </TouchableOpacity>
           
@@ -195,41 +229,44 @@ const AddPresetModalComponent = () => {
               ]} 
               allowFontScaling={false}
             >
-              {t('presets.save', 'SALVA').toUpperCase()}
+              {isOverwriteMode ? t('common.yes', 'SI') : t('presets.save', 'SALVA').toUpperCase()}
             </Text>
           </TouchableOpacity>
         </View>
-      </View>
-    </Animated.View>
+      </PopupContainer>
+
+      <PopupContainer
+        visible={!!errorPopup}
+        title={errorPopup?.title}
+        onClose={() => setErrorPopup(null)}
+      >
+        <Text style={styles.errorText} allowFontScaling={false}>
+          {errorPopup?.message}
+        </Text>
+        <View style={styles.modalButtons}>
+          <TouchableOpacity
+            onPress={() => setErrorPopup(null)}
+            activeOpacity={0.7}
+            style={[styles.modalButton, styles.modalSaveButton]}
+          >
+            <Text style={[styles.modalButtonText, styles.modalSaveText]} allowFontScaling={false}>
+              {t('common.ok', 'OK')}
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </PopupContainer>
+    </>
   );
 };
 
 const styles = StyleSheet.create({
-  modalOverlay: {
-    ...StyleSheet.absoluteFill,
-    backgroundColor: 'rgba(0, 0, 0, 0.65)',
-    alignItems: 'center',
-    justifyContent: 'center',
-    zIndex: 9999,
-    elevation: 9999,
-  },
-  modalContent: {
-    width: '80%',
-    maxWidth: 290,
-    backgroundColor: '#161616',
-    borderColor: 'rgba(255, 255, 255, 0.08)',
-    borderWidth: 1,
-    borderRadius: 12,
-    padding: 18,
-    alignItems: 'center',
-  },
-  modalTitle: {
-    fontSize: 11,
-    fontWeight: '900',
-    color: '#FF5722',
-    letterSpacing: 1.5,
-    marginBottom: 12,
-    textTransform: 'uppercase',
+  errorText: {
+    color: 'rgba(255, 255, 255, 0.7)',
+    fontSize: 12,
+    fontWeight: '600',
+    textAlign: 'center',
+    marginBottom: 20,
+    lineHeight: 16,
   },
   textInput: {
     width: '100%',

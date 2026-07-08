@@ -71,7 +71,7 @@ export const SliderThumb = React.memo(({
       text: val,
       defaultValue: val,
     };
-  });
+  }, [value, valueFormatter]);
 
   const animatedFillStyle = useAnimatedStyle(() => {
     if (!value || trackWidth.value === 0) return { width: 0, left: 6, opacity: 0 };
@@ -108,7 +108,7 @@ export const SliderThumb = React.memo(({
       left: 6,
       width: percentage * totalTravel,
     };
-  });
+  }, [value, trackWidth, minValue, maxValue, centerValue]);
 
   const animatedThumbStyle = useAnimatedStyle(() => {
     if (!value || trackWidth.value === 0) return { transform: [{ translateX: 0 }], opacity: 0 };
@@ -136,14 +136,14 @@ export const SliderThumb = React.memo(({
       borderColor: 'transparent',
       backgroundColor: '#FFF',
     };
-  });
+  }, [value, trackWidth, minValue, maxValue, isAuto, sliderColor]);
 
   const animatedTextStyle = useAnimatedStyle(() => {
     if (disabled && disabled.value) {
       return { color: '#555' };
     }
     return { color: '#FFF' };
-  });
+  }, [disabled]);
 
   const animatedTrackStyle = useAnimatedStyle(() => {
     if (disabled && disabled.value) {
@@ -153,7 +153,7 @@ export const SliderThumb = React.memo(({
       return { backgroundColor: 'rgba(255, 255, 255, 0.08)' };
     }
     return { backgroundColor: 'rgba(255, 255, 255, 0.15)' };
-  });
+  }, [disabled, isAuto]);
 
   const animatedFillBgStyle = useAnimatedStyle(() => {
     if (disabled && disabled.value) {
@@ -163,7 +163,7 @@ export const SliderThumb = React.memo(({
       return { backgroundColor: sliderColor ? `${sliderColor}4D` : 'rgba(255, 255, 255, 0.3)' };
     }
     return { backgroundColor: sliderColor ? sliderColor : '#FFF' };
-  });
+  }, [disabled, isAuto, sliderColor]);
 
   return (
     <View key={resumeKey} style={[styles.container, hideAutoPlaceholder && { paddingHorizontal: 8 }]}>
