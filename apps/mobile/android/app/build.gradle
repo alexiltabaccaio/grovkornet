@@ -93,8 +93,8 @@ if (localPropertiesFile.exists()) {
 
 // Resolve version details strictly from app.json with safe fallbacks
 def appJsonFile = file("${rootDir}/../app.json")
-def appVersionName = "0.11.2"
-def appVersionCode = 9
+def appVersionName = "0.12.0"
+def appVersionCode = 10
 
 if (appJsonFile.exists()) {
     try {

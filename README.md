@@ -1,6 +1,7 @@
 # Grovkornet 🎞️
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+[![Version: 0.12.0](https://img.shields.io/badge/Version-0.12.0-brightgreen.svg)](https://github.com/alexiltabaccaio/grovkornet)
 
 A high-performance cinematic camera ecosystem built with React Native and a custom C++/Kotlin native rendering engine (**Google Filament**-based Uber Shader) for real-time analog film emulation.
 
