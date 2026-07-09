@@ -1,8 +1,21 @@
 import { useEffect, useState, useMemo } from 'react';
-import { Search } from 'lucide-react';
+import { Search, Folder, FolderOpen } from 'lucide-react';
 import { FileNode } from '../model/types';
 import { fetchTree } from '../api/fetch-tree';
 import { TreeList } from './TreeList';
+
+function getAllDirPaths(nodes: FileNode[]): string[] {
+  let paths: string[] = [];
+  for (const node of nodes) {
+    if (node.type === 'directory') {
+      paths.push(node.path);
+      if (node.children) {
+        paths = paths.concat(getAllDirPaths(node.children));
+      }
+    }
+  }
+  return paths;
+}
 
 interface FileTreeProps {
   onSelectFile: (path: string) => void;
@@ -32,6 +45,21 @@ export default function FileTree({ onSelectFile, selectedPath }: FileTreeProps) 
 
   const toggleDir = (path: string) => {
     setExpandedDirs(prev => ({ ...prev, [path]: !prev[path] }));
+  };
+
+  const allDirPaths = useMemo(() => getAllDirPaths(tree), [tree]);
+  const areAllClosed = useMemo(() => allDirPaths.every(path => !expandedDirs[path]), [allDirPaths, expandedDirs]);
+
+  const toggleAllDirs = () => {
+    if (areAllClosed) {
+      const newExpanded: Record<string, boolean> = {};
+      allDirPaths.forEach(path => {
+        newExpanded[path] = true;
+      });
+      setExpandedDirs(newExpanded);
+    } else {
+      setExpandedDirs({});
+    }
   };
 
   // Filter helper
@@ -78,19 +106,43 @@ export default function FileTree({ onSelectFile, selectedPath }: FileTreeProps) 
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', maxHeight: '400px', minHeight: 0 }}>
-      <div style={{ position: 'relative' }}>
-        <input
-          type="text"
-          placeholder="Cerca file..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
+      <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+        <div style={{ position: 'relative', flex: 1 }}>
+          <input
+            type="text"
+            placeholder="Cerca file..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            style={{
+              width: '100%',
+              paddingLeft: '2.2rem',
+              fontSize: '0.85rem',
+            }}
+          />
+          <Search size={14} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
+        </div>
+        <div
+          onClick={toggleAllDirs}
+          title={areAllClosed ? "Espandi tutte le cartelle" : "Comprimi tutte le cartelle"}
           style={{
-            width: '100%',
-            paddingLeft: '2.2rem',
-            fontSize: '0.85rem',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '32px',
+            height: '32px',
+            borderRadius: '6px',
+            border: '1px solid var(--border-glass, rgba(255,255,255,0.1))',
+            background: 'rgba(255, 255, 255, 0.08)',
+            cursor: 'pointer',
+            flexShrink: 0
           }}
-        />
-        <Search size={14} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
+        >
+          {areAllClosed ? (
+            <FolderOpen size={16} style={{ color: 'var(--text-primary)' }} />
+          ) : (
+            <Folder size={16} style={{ color: 'var(--text-primary)' }} />
+          )}
+        </div>
       </div>
 
       <div style={{
