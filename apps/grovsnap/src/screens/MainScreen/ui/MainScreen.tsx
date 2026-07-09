@@ -1,0 +1,92 @@
+import { useState } from 'react';
+import { Sidebar } from '@widgets/Sidebar';
+import { PreviewArea } from '@widgets/PreviewArea';
+import { getLanguageFromPath } from '@shared/lib';
+import { exportSnippetPng } from '@features/export-snippet';
+
+const INITIAL_CODE = `// Let's share some Grovkornet magic!
+import React, { useCallback } from 'react';
+import { NativeFilmCamera } from '@shared/camera';
+
+export function CameraPreview() {
+  const handleFrame = useCallback((frame) => {
+    'worklet';
+    // Multi-pass Uber Shader processing
+    processFilmGrain(frame);
+  }, []);
+
+  return (
+    <NativeFilmCamera
+      preset="kodak-chrome-64"
+      onFrame={handleFrame}
+    />
+  );
+}`;
+
+export default function MainScreen() {
+  const [selectedPath, setSelectedPath] = useState('');
+  const [fullCode, setFullCode] = useState(INITIAL_CODE);
+  const [startLine, setStartLine] = useState(1);
+  const [endLine, setEndLine] = useState(25);
+  const [language, setLanguage] = useState('typescript');
+  const [fileName, setFileName] = useState('CameraPreview.tsx');
+  const [isExporting, setIsExporting] = useState(false);
+
+  const lines = fullCode.split('\n');
+  const totalLines = lines.length;
+  const slicedCode = lines.slice(startLine - 1, endLine).join('\n');
+
+  const handleSelectFile = async (path: string) => {
+    setSelectedPath(path);
+    try {
+      const res = await fetch(`/api/fs/file?path=${encodeURIComponent(path)}`);
+      if (!res.ok) throw new Error('Failed to fetch file content');
+      const content = await res.text();
+      setFullCode(content);
+      
+      const fileLines = content.split('\n');
+      setStartLine(1);
+      setEndLine(Math.min(fileLines.length, 30));
+      
+      const name = path.split('/').pop() || '';
+      setFileName(name);
+      setLanguage(getLanguageFromPath(path));
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleDownload = () => {
+    const node = document.getElementById('grovsnap-canvas');
+    if (!node) return;
+
+    exportSnippetPng({
+      fileName,
+      node,
+      onStart: () => setIsExporting(true),
+      onComplete: () => setIsExporting(false),
+      onError: (err) => console.error('Download error:', err)
+    });
+  };
+
+  return (
+    <div className="app-container">
+      <Sidebar
+        selectedPath={selectedPath}
+        onSelectFile={handleSelectFile}
+        startLine={startLine}
+        setStartLine={setStartLine}
+        endLine={endLine}
+        setEndLine={setEndLine}
+        totalLines={totalLines}
+        isExporting={isExporting}
+        onDownload={handleDownload}
+      />
+      <PreviewArea
+        code={slicedCode}
+        language={language}
+        fileName={fileName}
+      />
+    </div>
+  );
+}

@@ -1,5 +1,4 @@
-
-import GrovkornetLogo from './GrovkornetLogo';
+import { GrovkornetLogo } from '../GrovkornetLogo';
 
 interface BrandingOverlayProps {
   children: React.ReactNode;
@@ -24,7 +23,6 @@ export default function BrandingOverlay({ children }: BrandingOverlayProps) {
         position: 'relative',
       }}
     >
-
       {/* Center: Code window */}
       <div style={{ width: 'fit-content', zIndex: 2, flexGrow: 1, display: 'flex', alignItems: 'flex-start', justifyContent: 'flex-start' }}>
         {children}

@@ -6,20 +6,24 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "vitest run --environment jsdom"
   },
   "dependencies": {
+    "html-to-image": "^1.11.11",
+    "lucide-react": "^0.400.0",
     "react": "19.2.3",
     "react-dom": "19.2.3",
-    "shiki": "^1.10.0",
-    "html-to-image": "^1.11.11",
-    "lucide-react": "^0.400.0"
+    "shiki": "^1.10.0"
   },
   "devDependencies": {
+    "@testing-library/react": "^16.3.2",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "@vitejs/plugin-react": "^4.3.1",
+    "jsdom": "^20.0.3",
     "typescript": "^5.2.2",
-    "vite": "^5.3.1"
+    "vite": "^5.3.1",
+    "vitest": "^4.1.9"
   }
 }
