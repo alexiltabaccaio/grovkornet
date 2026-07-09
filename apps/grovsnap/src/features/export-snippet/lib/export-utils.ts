@@ -21,11 +21,17 @@ export async function exportSnippetPng({
   await new Promise(resolve => setTimeout(resolve, 100));
 
   try {
+    const width = node.scrollWidth;
+    const height = node.scrollHeight;
+    
     const dataUrl = await toPng(node, {
       cacheBust: true,
       pixelRatio: 3,
+      width,
+      height,
       style: {
         transform: 'scale(1)',
+        margin: '0',
       }
     });
     

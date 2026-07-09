@@ -46,10 +46,9 @@ export default function MainScreen() {
       
       const fileLines = content.split('\n');
       setStartLine(1);
-      setEndLine(Math.min(fileLines.length, 30));
+      setEndLine(fileLines.length);
       
-      const name = path.split('/').pop() || '';
-      setFileName(name);
+      setFileName(path);
       setLanguage(getLanguageFromPath(path));
     } catch (err) {
       console.error(err);
@@ -86,6 +85,7 @@ export default function MainScreen() {
         code={slicedCode}
         language={language}
         fileName={fileName}
+        startLine={startLine}
       />
     </div>
   );

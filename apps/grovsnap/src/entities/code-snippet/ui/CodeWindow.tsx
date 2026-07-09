@@ -6,9 +6,10 @@ interface CodeWindowProps {
   code: string;
   language: string;
   fileName: string;
+  startLine?: number;
 }
 
-export default function CodeWindow({ code, language, fileName }: CodeWindowProps) {
+export default function CodeWindow({ code, language, fileName, startLine = 1 }: CodeWindowProps) {
   const [highlightedHtml, setHighlightedHtml] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -73,7 +74,23 @@ export default function CodeWindow({ code, language, fileName }: CodeWindowProps
           Highlighting...
         </div>
       )}
+      <style>{`
+        .shiki-container {
+          counter-reset: step ${startLine - 1};
+        }
+        .shiki-container .line::before {
+          counter-increment: step;
+          content: counter(step);
+          display: inline-block;
+          width: 1.5rem;
+          margin-right: 1.25rem;
+          text-align: right;
+          color: rgba(255, 255, 255, 0.25);
+          user-select: none;
+        }
+      `}</style>
       <div 
+        className="shiki-container"
         dangerouslySetInnerHTML={{ __html: highlightedHtml }} 
         style={{ width: 'fit-content' }}
       />

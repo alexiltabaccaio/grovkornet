@@ -28,26 +28,43 @@ export default function BrandingOverlay({ children }: BrandingOverlayProps) {
         {children}
       </div>
 
-      {/* Bottom Right: Logo and Watermark stacked */}
+      {/* Bottom Footer: License left, Logo right */}
       <div style={{
         width: '100%',
         display: 'flex',
-        flexDirection: 'column',
+        justifyContent: 'space-between',
         alignItems: 'flex-end',
-        gap: '6px',
         zIndex: 10,
-        padding: '0 20px 20px 0',
+        padding: '0 20px 20px 20px',
       }}>
-        <div style={{ paddingBottom: '2px' }}>
-          <GrovkornetLogo />
-        </div>
+        {/* Left side: License */}
         <div style={{
           fontSize: '0.75rem',
           color: 'rgba(255, 255, 255, 0.35)',
           fontFamily: 'var(--font-mono)',
           letterSpacing: '0.5px',
         }}>
-          @alexgiustizieri | grovkornet.com
+          License: GPL-3.0
+        </div>
+
+        {/* Right side: Logo and Attribution */}
+        <div style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'flex-end',
+          gap: '6px',
+        }}>
+          <div style={{ paddingBottom: '2px' }}>
+            <GrovkornetLogo />
+          </div>
+          <div style={{
+            fontSize: '0.75rem',
+            color: 'rgba(255, 255, 255, 0.35)',
+            fontFamily: 'var(--font-mono)',
+            letterSpacing: '0.5px',
+          }}>
+            @alexgiustizieri | grovkornet.com
+          </div>
         </div>
       </div>
     </div>
