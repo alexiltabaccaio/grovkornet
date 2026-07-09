@@ -7,6 +7,7 @@ import { useGalleryStore } from '@entities/gallery';
 import { useShallow } from 'zustand/shallow';
 import * as Haptics from '@shared/lib/haptics';
 import { useRecentMediaThumbnail } from '../lib/useRecentMediaThumbnail';
+import { useDeviceRotation } from '@shared/lib/hooks/useDeviceRotation';
 
 interface CaptureThumbnailProps {
   onPress: () => void;
@@ -20,6 +21,7 @@ export const CaptureThumbnail = React.memo(({ onPress }: CaptureThumbnailProps) 
   })));
 
   useRecentMediaThumbnail();
+  const rotationY = useDeviceRotation();
 
   const [prevUri, setPrevUri] = useState<string | null>(null);
   const [placeholderUri, setPlaceholderUri] = useState<string | null>(null);
@@ -91,6 +93,15 @@ export const CaptureThumbnail = React.memo(({ onPress }: CaptureThumbnailProps) 
     transform: [{ scale: scale.value }],
   }));
 
+  const animatedInnerStyle = useAnimatedStyle(() => ({
+    width: '100%',
+    height: '100%',
+    transform: [
+      { scale: 1.5 },
+      { rotate: `${rotationY.value}deg` }
+    ],
+  }));
+
   const oldImageStyle = useAnimatedStyle(() => ({
     position: 'absolute',
     width: '100%',
@@ -115,32 +126,34 @@ export const CaptureThumbnail = React.memo(({ onPress }: CaptureThumbnailProps) 
       {!currentUri ? (
         <View style={styles.placeholder} />
       ) : (
-        <Animated.View style={[styles.container, animatedContainerStyle]}>
-          {placeholderUri && (
-            <View style={[StyleSheet.absoluteFill, { zIndex: 0 }]}>
-              <Image source={{ uri: placeholderUri }} style={styles.image} resizeMode="cover" fadeDuration={0} />
-            </View>
-          )}
-          {prevUri && (
-            <Animated.View style={oldImageStyle}>
-              <Image
-                source={{ uri: prevUri }}
-                style={styles.image}
-                resizeMode="cover"
-                fadeDuration={0}
-              />
-            </Animated.View>
-          )}
-          {currentUri && (
-            <Animated.View style={[newImageStyle, { zIndex: 1 }]}>
-              <Image
-                source={{ uri: currentUri }}
-                style={styles.image}
-                resizeMode="cover"
-                fadeDuration={0}
-              />
-            </Animated.View>
-          )}
+        <Animated.View testID="capture-thumbnail-container" style={[styles.container, animatedContainerStyle]}>
+          <Animated.View testID="capture-thumbnail-inner" style={animatedInnerStyle}>
+            {placeholderUri && (
+              <View style={[StyleSheet.absoluteFill, { zIndex: 0 }]}>
+                <Image source={{ uri: placeholderUri }} style={styles.image} resizeMode="cover" fadeDuration={0} />
+              </View>
+            )}
+            {prevUri && (
+              <Animated.View style={oldImageStyle}>
+                <Image
+                  source={{ uri: prevUri }}
+                  style={styles.image}
+                  resizeMode="cover"
+                  fadeDuration={0}
+                />
+              </Animated.View>
+            )}
+            {currentUri && (
+              <Animated.View style={[newImageStyle, { zIndex: 1 }]}>
+                <Image
+                  source={{ uri: currentUri }}
+                  style={styles.image}
+                  resizeMode="cover"
+                  fadeDuration={0}
+                />
+              </Animated.View>
+            )}
+          </Animated.View>
         </Animated.View>
       )}
     </Pressable>
