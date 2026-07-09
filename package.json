@@ -1,6 +1,6 @@
 {
   "name": "grovkornet-monorepo",
-  "version": "0.12.0",
+  "version": "0.12.1",
   "private": true,
   "license": "GPL-3.0",
   "packageManager": "npm@10.8.1",
