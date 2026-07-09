@@ -34,3 +34,33 @@ I've made the codebase public for anyone interested in seeing how C++, Filament,
 Has anyone else tried pushing Agent-First IDEs into native performance territory? Would love to discuss the stack or answer any questions on how the C++ integration works!
 
 *(Note: If anyone wants to actually try the compiled app and test if the 60 FPS rendering holds up on their device, I've set up a small Discord for beta testers. Any feedback on the UI or performance is incredibly welcome: https://discord.gg/cvYa4SmPaW)*
+
+---
+
+## 2. r/SideProject Version (New)
+
+**Title:** I'm a tobacconist by day, but I spent the last few months building a custom 60FPS film camera engine.
+
+**Body:**
+
+Hey everyone,
+
+My biggest goal right now is to transition into software engineering full-time. For the past 9 years, my day job has been running a tobacconist shop, but I've been pouring all my free time into building a project to prove my skills and break into the industry.
+
+While the open-source codebase and the upcoming technical documentation are my main tools for job hunting, actually seeing this app published on the Play Store would be a massive personal milestone for me.
+
+The app is **Grovkornet**, a cinematic analog film camera.
+
+When building it, the biggest hurdle was performance. I found it incredibly difficult to achieve real-time GPU rendering without dropping frames or draining the battery using standard out-of-the-box mobile tools. To solve this, I challenged myself to build a custom multi-pass GPU pipeline using C++ and Google Filament, bridging it all back to React Native.
+
+It’s completely open source, and I'd love for you to check it out.
+
+**Discord (To join the closed beta):** https://discord.gg/cvYa4SmPaW
+
+**GitHub (Source & Architecture):** https://github.com/alexiltabaccaio/grovkornet
+
+Google Play requires new developers to run a closed beta before publishing. So if anyone is curious and wants to opt-in to test how the custom engine holds up on their device, I'd be incredibly grateful for the help!
+
+I'm also planning to write a series of technical deep-dives over the next few months, breaking down the brutal performance bottlenecks I hit during development and exactly how I solved them.
+
+I'd love any feedback on the code, or just general advice for a solo dev trying to get their first tech job!
