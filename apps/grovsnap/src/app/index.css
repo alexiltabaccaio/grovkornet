@@ -147,7 +147,6 @@ button {
 /* Canvas styling */
 .canvas-wrapper {
   padding: 80px;
-  border-radius: 12px;
   position: relative;
   display: flex;
   align-items: center;

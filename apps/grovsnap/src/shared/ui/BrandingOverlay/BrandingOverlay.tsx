@@ -2,9 +2,11 @@ import { GrovkornetLogo } from '../GrovkornetLogo';
 
 interface BrandingOverlayProps {
   children: React.ReactNode;
+  seriesTag?: string;
+  seriesNumber?: string;
 }
 
-export default function BrandingOverlay({ children }: BrandingOverlayProps) {
+export default function BrandingOverlay({ children, seriesTag, seriesNumber }: BrandingOverlayProps) {
   const grovkornetGlow = 'radial-gradient(circle at center, #1b1214 0%, #0a0a0c 100%), radial-gradient(circle at 20% 30%, rgba(255, 82, 56, 0.15) 0%, rgba(0,0,0,0) 60%), radial-gradient(circle at 80% 70%, rgba(255, 139, 56, 0.1) 0%, rgba(0,0,0,0) 60%)';
   return (
     <div
@@ -28,7 +30,7 @@ export default function BrandingOverlay({ children }: BrandingOverlayProps) {
         {children}
       </div>
 
-      {/* Bottom Footer: License left, Logo right */}
+      {/* Bottom Footer: Tag left, Logo/License right */}
       <div style={{
         width: '100%',
         display: 'flex',
@@ -37,33 +39,48 @@ export default function BrandingOverlay({ children }: BrandingOverlayProps) {
         zIndex: 10,
         padding: '0 20px 20px 20px',
       }}>
-        {/* Left side: License */}
+        {/* Left side: Series Tag (if any) */}
         <div style={{
-          fontSize: '0.75rem',
-          color: 'rgba(255, 255, 255, 0.35)',
-          fontFamily: 'var(--font-mono)',
-          letterSpacing: '0.5px',
+          fontSize: '0.85rem',
+          color: 'rgba(255, 255, 255, 0.4)',
+          fontFamily: 'var(--font-heading)',
+          fontWeight: 500,
+          letterSpacing: '1px',
+          textTransform: 'uppercase',
+          display: 'flex',
+          gap: '6px'
         }}>
-          License: GPL-3.0
+          {seriesTag && seriesTag !== 'None' && (
+            <>
+              <span>{seriesTag}</span>
+              <span style={{ color: 'var(--accent-primary)' }}>#{seriesNumber}</span>
+            </>
+          )}
         </div>
 
-        {/* Right side: Logo and Attribution */}
+        {/* Right side: Logo, License, Attribution */}
         <div style={{
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'flex-end',
-          gap: '6px',
+          gap: '8px',
         }}>
-          <div style={{ paddingBottom: '2px' }}>
+          <div style={{ paddingBottom: '4px' }}>
             <GrovkornetLogo />
           </div>
           <div style={{
+            display: 'flex',
+            gap: '12px',
             fontSize: '0.75rem',
             color: 'rgba(255, 255, 255, 0.35)',
             fontFamily: 'var(--font-mono)',
             letterSpacing: '0.5px',
           }}>
-            @alexgiustizieri | grovkornet.com
+            <span>License: GPL-3.0</span>
+            <span>|</span>
+            <span>@alexgiustizieri</span>
+            <span>|</span>
+            <span>grovkornet.com</span>
           </div>
         </div>
       </div>

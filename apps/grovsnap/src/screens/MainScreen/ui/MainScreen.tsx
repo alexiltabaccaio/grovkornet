@@ -31,7 +31,8 @@ export default function MainScreen() {
   const [language, setLanguage] = useState('typescript');
   const [fileName, setFileName] = useState('CameraPreview.tsx');
   const [isExporting, setIsExporting] = useState(false);
-
+  const [seriesTag, setSeriesTag] = useState('Friday Log');
+  const [seriesNumber, setSeriesNumber] = useState('01');
   const lines = fullCode.split('\n');
   const totalLines = lines.length;
   const slicedCode = lines.slice(startLine - 1, endLine).join('\n');
@@ -59,8 +60,14 @@ export default function MainScreen() {
     const node = document.getElementById('grovsnap-canvas');
     if (!node) return;
 
+    let exportName = fileName.split('/').pop() || 'snippet';
+    if (seriesTag && seriesTag !== 'None') {
+      const formattedTag = seriesTag.replace(/\s+/g, '');
+      exportName = `${formattedTag}_${seriesNumber}_${exportName}`;
+    }
+
     exportSnippetPng({
-      fileName,
+      fileName: exportName,
       node,
       onStart: () => setIsExporting(true),
       onComplete: () => setIsExporting(false),
@@ -80,12 +87,18 @@ export default function MainScreen() {
         totalLines={totalLines}
         isExporting={isExporting}
         onDownload={handleDownload}
+        seriesTag={seriesTag}
+        setSeriesTag={setSeriesTag}
+        seriesNumber={seriesNumber}
+        setSeriesNumber={setSeriesNumber}
       />
       <PreviewArea
         code={slicedCode}
         language={language}
         fileName={fileName}
         startLine={startLine}
+        seriesTag={seriesTag}
+        seriesNumber={seriesNumber}
       />
     </div>
   );

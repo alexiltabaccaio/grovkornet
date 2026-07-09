@@ -11,6 +11,10 @@ interface SidebarProps {
   totalLines: number;
   isExporting: boolean;
   onDownload: () => void;
+  seriesTag: string;
+  setSeriesTag: (val: string) => void;
+  seriesNumber: string;
+  setSeriesNumber: (val: string) => void;
 }
 
 export default function Sidebar({
@@ -22,7 +26,11 @@ export default function Sidebar({
   setEndLine,
   totalLines,
   isExporting,
-  onDownload
+  onDownload,
+  seriesTag,
+  setSeriesTag,
+  seriesNumber,
+  setSeriesNumber
 }: SidebarProps) {
   return (
     <aside className="sidebar">
@@ -65,6 +73,33 @@ export default function Sidebar({
       </div>
       <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '-8px' }}>
         Righe totali: {totalLines}
+      </div>
+
+      {/* Series Tag Selector */}
+      <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '12px', marginTop: '8px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          <label style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-secondary)' }}>SERIE</label>
+          <select
+            value={seriesTag}
+            onChange={(e) => setSeriesTag(e.target.value)}
+            style={{ width: '100%' }}
+          >
+            <option value="None">Nessuna</option>
+            <option value="Tuesday Insights">Tuesday Insights</option>
+            <option value="Friday Log">Friday Log</option>
+          </select>
+        </div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          <label style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-secondary)' }}>NUMERO</label>
+          <input
+            type="number"
+            min={1}
+            value={seriesNumber}
+            onChange={(e) => setSeriesNumber(Math.max(1, Number(e.target.value)).toString().padStart(2, '0'))}
+            disabled={seriesTag === 'None'}
+            style={{ width: '100%', opacity: seriesTag === 'None' ? 0.5 : 1 }}
+          />
+        </div>
       </div>
 
       {/* Action Button */}

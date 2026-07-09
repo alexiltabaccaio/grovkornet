@@ -6,12 +6,14 @@ interface PreviewAreaProps {
   language: string;
   fileName: string;
   startLine?: number;
+  seriesTag: string;
+  seriesNumber: string;
 }
 
-export default function PreviewArea({ code, language, fileName, startLine }: PreviewAreaProps) {
+export default function PreviewArea({ code, language, fileName, startLine, seriesTag, seriesNumber }: PreviewAreaProps) {
   return (
     <main className="preview-container">
-      <BrandingOverlay>
+      <BrandingOverlay seriesTag={seriesTag} seriesNumber={seriesNumber}>
         <CodeWindow
           code={code}
           language={language}
