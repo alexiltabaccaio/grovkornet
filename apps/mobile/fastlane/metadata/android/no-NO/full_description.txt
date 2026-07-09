@@ -29,7 +29,7 @@ Utvikle din egen stil med en avansert korn- og farge-pipeline.
 
 ---
 HOVEDFUNKSJONER:
-• Sanntids GPU-pipeline i én passering (Uber Shader): Null etterslep i etterbehandlingen – det du ser, er det du fanger.
+• Sanntids GPU-pipeline i flere passeringer (Uber Shader): Null etterslep i etterbehandlingen – det du ser, er det du fanger.
 • Ren ytelse: Silkemyk 60 FPS-forhåndsvisning som utnytter innfødte C++/Kotlin-optimaliseringer.
 • Eget preset-system: Lagre dine favorittkonfigurasjoner for LENS, BODY og FILM som egne forhåndsinnstillinger, komplett med automatisk genererte visuelle miniatyrbilder.
 • Dynamisk galleri: Forhåndsvis og organiser bildene dine umiddelbart.

@@ -118,7 +118,7 @@ export default [
           },
           {
             name: '@shopify/react-native-skia',
-            message: 'Do not reintroduce react-native-skia. Use native single-pass rendering pipeline.'
+            message: 'Do not reintroduce react-native-skia. Use native multi-pass rendering pipeline.'
           }
         ],
         patterns: [

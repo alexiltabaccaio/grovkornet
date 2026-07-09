@@ -29,7 +29,7 @@ Sviluppa il tuo stile con una pipeline avanzata per grana e colore.
 
 ---
 CARATTERISTICHE PRINCIPALI:
-• Pipeline GPU Single-pass in Tempo Reale (Uber Shader): Nessun ritardo di post-elaborazione: ciò che vedi è ciò che catturi.
+• Pipeline GPU Multi-pass in Tempo Reale (Uber Shader): Nessun ritardo di post-elaborazione: ciò che vedi è ciò che catturi.
 • Prestazioni Pure: Anteprima fluida a 60 FPS grazie alle ottimizzazioni native C++/Kotlin.
 • Sistema di Preset Personalizzati: Salva le tue configurazioni preferite di LENS, BODY e FILM come preset personalizzati, completi di miniature visive generate automaticamente.
 • Galleria Dinamica: Visualizza l'anteprima e organizza istantaneamente i tuoi scatti.

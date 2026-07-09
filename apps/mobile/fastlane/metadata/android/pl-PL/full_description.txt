@@ -29,7 +29,7 @@ Twórz unikalny styl dzięki zaawansowanym opcjom ziarna i koloru.
 
 ---
 KLUCZOWE CECHY:
-• Jednoprzebiegowa pipeline GPU w czasie rzeczywistym (Uber Shader): Brak opóźnień przetwarzania końcowego – to, co widzisz na ekranie, jest natychmiast zapisywane.
+• Wieloprzebiegowa pipeline GPU w czasie rzeczywistym (Uber Shader): Brak opóźnień przetwarzania końcowego – to, co widzisz na ekranie, jest natychmiast zapisywane.
 • Czysta wydajność: Niezwykle płynny podgląd na żywo 60 FPS dzięki natywnym optymalizacjom w C++/Kotlin.
 • System własnych presetów: Zapisuj ulubione konfiguracje parametrów LENS, BODY i FILM jako presety z automatycznie generowanymi miniaturami.
 • Dynamiczna galeria: Błyskawicznie przeglądaj i porządkuj swoje zdjęcia.

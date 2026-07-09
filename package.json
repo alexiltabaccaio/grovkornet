@@ -15,11 +15,13 @@
   "scripts": {
     "dev": "turbo run dev",
     "dev:web": "turbo run dev --filter=@grovkornet/web",
+    "dev:snap": "turbo run dev --filter=@grovkornet/grovsnap",
     "dev:android": "node apps/mobile/scripts/watch.js --device",
     "dev:android_sim": "node apps/mobile/scripts/watch.js --simulator",
     "dev:mobile": "node apps/mobile/scripts/watch.js --device",
     "build": "turbo run build",
     "build:web": "turbo run build --filter=@grovkornet/web",
+    "build:snap": "turbo run build --filter=@grovkornet/grovsnap",
     "build:android": "npm run codegen && node apps/mobile/scripts/android/build.js --device",
     "build:android_sim": "npm run codegen && node apps/mobile/scripts/android/build.js --simulator",
     "build:mobile": "npm run codegen && node apps/mobile/scripts/android/build.js --device",

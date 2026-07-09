@@ -36,6 +36,6 @@
 **Description:** Vincoli di performance per garantire fluidità a 60 FPS durante l'utilizzo della fotocamera e l'elaborazione video.
 
 **Content:**
-- **Componente Base:** Usa unicamente il componente custom `NativeFilmCamera` (pipeline single-pass Uber Shader). Non usare `react-native-vision-camera` o `react-native-skia`.
+- **Componente Base:** Usa unicamente il componente custom `NativeFilmCamera` (pipeline multi-pass Uber Shader). Non usare `react-native-vision-camera` o `react-native-skia`.
 - **Thread UI:** Esegui qualsiasi handler di eventi continui tra React Native e nativo come worklet (`'worklet';`).
 - **Prevenzione Re-render:** Usa sempre `useCallback` per le funzioni passate come prop, `useMemo` per i calcoli complessi e `React.memo` per i componenti interfaccia foglia, in modo da evitare cali di frame durante lo streaming.

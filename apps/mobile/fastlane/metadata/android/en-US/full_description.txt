@@ -29,7 +29,7 @@ Develop your look with an advanced grain and color pipeline.
 
 ---
 KEY FEATURES:
-• Real-time Single-pass GPU Pipeline (Uber Shader): Zero post-processing lag—what you see is what you capture.
+• Real-time Multi-pass GPU Pipeline (Uber Shader): Zero post-processing lag—what you see is what you capture.
 • Raw Performance: Silky-smooth 60 FPS live preview utilizing native C++/Kotlin optimizations.
 • Custom Presets System: Save your favorite LENS, BODY, and FILM configurations as custom presets, complete with auto-generated visual thumbnails.
 • Dynamic Gallery: Instantly preview and organize your custom shots.

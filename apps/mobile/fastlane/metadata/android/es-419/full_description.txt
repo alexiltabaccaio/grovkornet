@@ -29,7 +29,7 @@ Desarrolla tu estilo con un procesamiento avanzado de grano y color.
 
 ---
 CARACTERÍSTICAS PRINCIPALES:
-• Procesamiento en tiempo real en un solo paso en GPU (Uber Shader): Cero retraso de postprocesamiento; lo que ves es lo que capturas.
+• Procesamiento en tiempo real multi-paso en GPU (Uber Shader): Cero retraso de postprocesamiento; lo que ves es lo que capturas.
 • Rendimiento Puro: Vista previa fluida a 60 FPS gracias a optimizaciones nativas en C++/Kotlin.
 • Sistema de Ajustes Preestablecidos: Guarda tus configuraciones favoritas de LENS, BODY y FILM como ajustes preestablecidos, con miniaturas visuales generadas automáticamente.
 • Galería Dinámica: Previsualiza y organiza tus fotos al instante.

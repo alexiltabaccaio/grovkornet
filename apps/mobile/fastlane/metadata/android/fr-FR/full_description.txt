@@ -29,7 +29,7 @@ Développez votre style grâce à un pipeline avancé pour le grain et la couleu
 
 ---
 CARACTÉRISTIQUES PRINCIPALES :
-• Pipeline GPU en un seul passage en temps réel (Uber Shader) : Aucun décalage de post-traitement—ce que vous voyez est ce que vous capturez.
+• Pipeline GPU multi-passage en temps réel (Uber Shader) : Aucun décalage de post-traitement—ce que vous voyez est ce que vous capturez.
 • Performances Pures : Aperçu fluide à 60 FPS grâce à des optimisations natives C++/Kotlin.
 • Système de Préréglages Personnalisés : Enregistrez vos configurations préférées de LENS, BODY et FILM sous forme de préréglages personnalisés, avec des miniatures visuelles générées automatiquement.
 • Galerie Dynamique : Prévisualisez et organisez instantanément vos photos.

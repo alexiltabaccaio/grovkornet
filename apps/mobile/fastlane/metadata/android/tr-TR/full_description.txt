@@ -29,7 +29,7 @@ Gelişmiş kumlanma ve renk hattı ile kendi tarzınızı oluşturun.
 
 ---
 ANA ÖZELLİKLER:
-• Gerçek Zamanlı Tek Geçişli GPU İşleme Hattı (Uber Shader): Post-proses gecikmesi olmadan, ne görüyorsanız onu kaydedin.
+• Gerçek Zamanlı Çok Geçişli GPU İşleme Hattı (Uber Shader): Post-proses gecikmesi olmadan, ne görüyorsanız onu kaydedin.
 • Ham Performans: Yerel C++/Kotlin optimizasyonları sayesinde akıcı 60 FPS canlı önizleme.
 • Özel Ön Ayar Sistemi: Favori LENS, BODY ve FILM yapılandırmalarınızı, otomatik oluşturulan görsel küçük resimlerle birlikte özel ön ayarlar olarak kaydedin.
 • Dinamik Galeri: Fotoğraflarınızı anında önizleyin ve düzenleyin.

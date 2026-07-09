@@ -29,7 +29,7 @@ Entwickle deinen Look mit einer hochentwickelten Korn- und Farbpipeline.
 
 ---
 HAUPTMERKMALE:
-• Echtzeit-Single-Pass-GPU-Pipeline (Uber Shader): Keinerlei Post-Processing-Verzögerung – was du siehst, nimmst du auf.
+• Echtzeit-Multi-Pass-GPU-Pipeline (Uber Shader): Keinerlei Post-Processing-Verzögerung – was du siehst, nimmst du auf.
 • Pure Leistung: Butterweiche 60-FPS-Vorschau dank nativer C++/Kotlin-Optimierungen.
 • Eigenes Preset-System: Speichere deine bevorzugten LENS-, BODY- und FILM-Konfigurationen als benutzerdefinierte Presets, komplett mit automatisch generierten visuellen Vorschaubildern.
 • Dynamische Galerie: Sieh dir deine Fotos sofort in der Vorschau an und organisiere sie.

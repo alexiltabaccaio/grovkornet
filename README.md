@@ -7,7 +7,7 @@ A high-performance cinematic camera ecosystem built with React Native and a cust
 
 ## 🚀 Overview
 
-Grovkornet (Swedish for "coarse-grained") is designed for photographers, content creators, and enthusiasts who want the look and feel of analog film in a modern mobile workflow. Unlike standard filter apps, Grovkornet uses a single-pass GPU rendering pipeline that simulates the physical path of light through a camera setup, ensuring a stable 60 FPS experience.
+Grovkornet (Swedish for "coarse-grained") is designed for photographers, content creators, and enthusiasts who want the look and feel of analog film in a modern mobile workflow. Unlike standard filter apps, Grovkornet uses a multi-pass GPU rendering pipeline that simulates the physical path of light through a camera setup, ensuring a stable 60 FPS experience.
 
 ## 🏗️ Architecture
 
@@ -15,6 +15,7 @@ The project is structured as a **Turborepo** monorepo to clearly separate concer
 
 - **`apps/mobile`**: The core React Native/Expo mobile camera application.
 - **`apps/web`**: The Next.js web application (e.g., for galleries or web dashboard).
+- **`apps/grovsnap`**: The Vite web application for generating aesthetic code snippets and snapshots.
 - **`packages/engine`**: The standalone custom native rendering engine (C++/Kotlin/Filament) that replaces standard libraries for maximum performance.
 - **`packages/shared`**: Shared types, utilities, and configuration.
 
@@ -87,10 +88,12 @@ Then, run `npm run codegen` from the root. This will automatically regenerate th
    ```bash
    npm run dev:android
    ```
+   *(For web apps: `npm run dev:web` or `npm run dev:snap`)*
 4. Build for production (compiles native code and bundles JS):
    ```bash
    npm run build:android
    npm run build:web
+   npm run build:snap
    ```
 
 > [!WARNING]
