@@ -26,48 +26,66 @@ export const CaptureThumbnail = React.memo(({ onPress }: CaptureThumbnailProps) 
   const [prevUri, setPrevUri] = useState<string | null>(null);
   const [placeholderUri, setPlaceholderUri] = useState<string | null>(null);
   const [currentUri, setCurrentUri] = useState<string | null>(latestPreviewUri ?? latestCapturedUri ?? null);
+  const [finalOverlayUri, setFinalOverlayUri] = useState<string | null>(null);
   const animationProgress = useSharedValue(1);
+  const currentImageRotation = useSharedValue(
+    (latestPreviewUri ?? latestCapturedUri)
+      ? (latestPreviewUri ? -rotationY.value : 0)
+      : 0
+  );
+  const prevImageRotation = useSharedValue(0);
   const lastSourceRef = React.useRef<'preview' | 'captured' | null>(
     latestPreviewUri ? 'preview' : (latestCapturedUri ? 'captured' : null)
   );
 
-   
+
   useEffect(() => {
     const isPreview = latestPreviewUri !== null;
     const newUri = latestPreviewUri ?? latestCapturedUri ?? null;
     const currentSource = isPreview ? 'preview' : (newUri ? 'captured' : null);
 
-    if (newUri && newUri !== currentUri) {
+    if (newUri && newUri !== (finalOverlayUri ?? currentUri)) {
       if (lastSourceRef.current === 'preview' && currentSource === 'captured') {
-        // Transition from preview to final capture: same photo, don't animate twice
-        setPlaceholderUri(currentUri);
-        setCurrentUri(newUri);
+        // Overlay final photo over the preview. This avoids React <Image> unmount/remount flickering.
+        setFinalOverlayUri(newUri);
       } else if (currentSource === 'preview') {
         // New photo preview: animate!
         setPlaceholderUri(null); // No placeholder needed during sliding
-        setPrevUri(currentUri);
+        setPrevUri(finalOverlayUri ?? currentUri);
         setCurrentUri(newUri);
+        setFinalOverlayUri(null);
+        
+        prevImageRotation.value = finalOverlayUri ? 0 : currentImageRotation.value;
+        currentImageRotation.value = -rotationY.value;
+        
         animationProgress.value = 0;
         animationProgress.value = withTiming(1, { duration: 300, easing: Easing.out(Easing.quad) });
       } else {
         // Transition from 'captured' to 'captured' (e.g. app wake up / init load sync)
         // or null to 'captured'
         // Just set the new URI without animating
-        setPlaceholderUri(currentUri);
+        setPlaceholderUri(finalOverlayUri ?? currentUri);
         setCurrentUri(newUri);
+        setFinalOverlayUri(null);
+        
+        prevImageRotation.value = finalOverlayUri ? 0 : currentImageRotation.value;
+        currentImageRotation.value = 0;
       }
     } else if (newUri && !currentUri) {
       setPlaceholderUri(null);
       setCurrentUri(newUri);
+      setFinalOverlayUri(null);
+      currentImageRotation.value = currentSource === 'preview' ? -rotationY.value : 0;
     } else if (!newUri && currentUri) {
       setCurrentUri(null);
       setPrevUri(null);
       setPlaceholderUri(null);
+      setFinalOverlayUri(null);
     }
 
     lastSourceRef.current = currentSource;
-  }, [latestPreviewUri, latestCapturedUri, currentUri, animationProgress]);
-   
+  }, [latestPreviewUri, latestCapturedUri, currentUri, finalOverlayUri, animationProgress, currentImageRotation, prevImageRotation, rotationY]);
+
 
   const scale = useSharedValue(1);
   const isCapturingSV = useSharedValue(isCapturing);
@@ -106,14 +124,34 @@ export const CaptureThumbnail = React.memo(({ onPress }: CaptureThumbnailProps) 
     position: 'absolute',
     width: '100%',
     height: '100%',
-    transform: [{ translateX: animationProgress.value * 50 }],
+    transform: [
+      { translateX: animationProgress.value * 50 },
+      { rotate: `${prevImageRotation.value}deg` }
+    ],
   }));
 
   const newImageStyle = useAnimatedStyle(() => ({
     position: 'absolute',
     width: '100%',
     height: '100%',
-    transform: [{ translateX: (animationProgress.value - 1) * 50 }],
+    transform: [
+      { translateX: (animationProgress.value - 1) * 50 },
+      { rotate: `${currentImageRotation.value}deg` }
+    ],
+  }));
+
+  const placeholderImageStyle = useAnimatedStyle(() => ({
+    transform: [{ rotate: `${prevImageRotation.value}deg` }],
+  }));
+
+  const finalOverlayStyle = useAnimatedStyle(() => ({
+    position: 'absolute',
+    width: '100%',
+    height: '100%',
+    transform: [
+      { translateX: (animationProgress.value - 1) * 50 },
+      { rotate: '0deg' }
+    ],
   }));
 
   const handlePress = () => {
@@ -129,9 +167,9 @@ export const CaptureThumbnail = React.memo(({ onPress }: CaptureThumbnailProps) 
         <Animated.View testID="capture-thumbnail-container" style={[styles.container, animatedContainerStyle]}>
           <Animated.View testID="capture-thumbnail-inner" style={animatedInnerStyle}>
             {placeholderUri && (
-              <View style={[StyleSheet.absoluteFill, { zIndex: 0 }]}>
+              <Animated.View style={[StyleSheet.absoluteFill, { zIndex: 0 }, placeholderImageStyle]}>
                 <Image source={{ uri: placeholderUri }} style={styles.image} resizeMode="cover" fadeDuration={0} />
-              </View>
+              </Animated.View>
             )}
             {prevUri && (
               <Animated.View style={oldImageStyle}>
@@ -144,9 +182,19 @@ export const CaptureThumbnail = React.memo(({ onPress }: CaptureThumbnailProps) 
               </Animated.View>
             )}
             {currentUri && (
-              <Animated.View style={[newImageStyle, { zIndex: 1 }]}>
+              <Animated.View testID="capture-thumbnail-current" style={[newImageStyle, { zIndex: 1 }]}>
                 <Image
                   source={{ uri: currentUri }}
+                  style={styles.image}
+                  resizeMode="cover"
+                  fadeDuration={0}
+                />
+              </Animated.View>
+            )}
+            {finalOverlayUri && (
+              <Animated.View testID="capture-thumbnail-overlay" style={[finalOverlayStyle, { zIndex: 2 }]}>
+                <Image
+                  source={{ uri: finalOverlayUri }}
                   style={styles.image}
                   resizeMode="cover"
                   fadeDuration={0}
