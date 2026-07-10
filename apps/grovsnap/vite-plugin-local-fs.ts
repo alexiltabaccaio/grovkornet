@@ -119,7 +119,7 @@ export function localFsPlugin(): Plugin {
           try {
             const safePath = path.resolve(rootDir, filePath);
             // Prevent path traversal
-            if (!safePath.startsWith(rootDir)) {
+            if (!safePath.startsWith(rootDir + path.sep) && safePath !== rootDir) {
               res.statusCode = 403;
               res.end('Access denied');
               return;
@@ -128,9 +128,14 @@ export function localFsPlugin(): Plugin {
             const content = await fs.readFile(safePath, 'utf-8');
             res.setHeader('Content-Type', 'text/plain; charset=utf-8');
             res.end(content);
-          } catch (err: any) {
-            res.statusCode = 500;
-            res.end(err.message);
+          } catch (err) {
+            if (err instanceof Error && 'code' in err && (err as any).code === 'ENOENT') {
+              res.statusCode = 404;
+              res.end('File not found');
+            } else {
+              res.statusCode = 500;
+              res.end(err instanceof Error ? err.message : 'Unknown error');
+            }
           }
           return;
         }

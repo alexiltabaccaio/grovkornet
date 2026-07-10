@@ -1,23 +1,26 @@
 # 🟦 LinkedIn
 
-Today I'm kicking off my "Friday Log" 🚀: every Friday I'll share what I've been working on during the week and the technical solutions adopted for Grovkornet.
+Friction kills developer velocity.
 
-The idea is to share snippets of my code, but there was a problem: taking manual screenshots of the IDE or pasting snippets into external tools is slow, tedious, and breaks the workflow.
+When I decided to start sharing code snippets from my monorepo, the mere thought of breaking my flow to screenshot the IDE or upload code to a third-party site was exhausting.
 
-"If you have to do something twice a week, automate it." 🛠️
+I am a firm believer in "developer laziness": if a manual task threatens the inner loop, you automate it before it becomes a chore. 
 
-So I built **Grovsnap**, an internal tool tailored specifically for my project. No copy-pasting: it connects directly to my local filesystem. I just select the file, and Grovsnap generates a branded graphic, automatically applying syntax highlighting based on the file extension.
+To solve this, I built **Grovsnap**, a zero-friction internal tool to generate branded snippets directly from my local filesystem. 
 
-In the attached image you can see the "engine" of this automation (a custom Vite script). Instead of fighting browser sandboxes, I exposed two local APIs (`/api/fs/tree` and `/api/fs/file`) that allow me to safely browse the source code, actively blocking path traversal attempts outside the project root.
+The architectural choice here was the fun part. Instead of fighting browser sandboxes with the File System Access API or building a heavy Electron app, I leveraged the dev server I was already running.
 
-Want to try the app or explore the source code?
-🌐 Website: https://grovkornet.com/
-💬 Discord Community: https://discord.gg/cvYa4SmPaW
-📂 GitHub: https://github.com/alexiltabaccaio/grovkornet
+I wrote a custom Vite plugin that exposes two local middleware endpoints (`/api/fs/tree` and `/api/fs/file`). It safely serves my source code to a React frontend, actively blocking path traversal attempts outside the project root. 
 
-Optimizing internal processes is essential when working on complex projects. How much time do you dedicate to building custom tools compared to developing the main product? 👇
+No copy-pasting, no manual uploads. I just browse the file tree, select the file, pick the exact lines I need, and the tool renders it with Shiki.
 
-#BuildInPublic #PlatformEngineering #DeveloperExperience #Vite #Grovkornet
+*(I'm kicking off a new habit today: "Friday Logs" 🚀 for my weekly recaps, and "Tuesday Insights" 💡 to share how I solved hard problems over the last few months of silence).*
+
+The Vite middleware code is fully open-source in the monorepo: https://github.com/alexiltabaccaio/grovkornet/tree/main/apps/grovsnap
+
+I'm curious: how do you manage the "build vs buy" tradeoff for internal DX tools? At what point do you decide that the friction is high enough to justify building a custom solution? 👇
+
+#PlatformEngineering #DeveloperExperience #Vite #DevTools #Grovkornet
 
 ---
 
