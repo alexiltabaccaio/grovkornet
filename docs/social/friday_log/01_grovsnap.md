@@ -23,4 +23,22 @@ Optimizing internal processes is essential when working on complex projects. How
 
 # 🟧 Reddit
 
-*(Bozza non ancora creata)*
+**Suggested Subreddits:** r/webdev, r/SideProject, r/reactjs, r/vitejs
+
+**Title:** I built a code snippet image generator directly in my monorepo using Vite, Shiki, and React.
+
+I wanted a quick way to share code snippets, but the idea of copying code into third-party systems felt like an unnecessary extra step. Honestly, I'm a very lazy person.
+
+So, I made a custom internal tool called **Grovsnap** [https://github.com/alexiltabaccaio/grovkornet/tree/main/apps/grovsnap]. 
+
+What you see here is the tool in action: it's a generated snippet showing the exact custom Vite plugin that powers the app itself. 
+
+Instead of fighting browser sandboxes or doing manual uploads, Grovsnap connects directly to my local filesystem. I wrote a custom Vite plugin to expose two local APIs (`/api/fs/tree` and `/api/fs/file`). This lets me safely browse my source code (it actively blocks path traversal attempts outside the project root), select a file, and automatically generate a styled snippet with syntax highlighting based on the file extension.
+
+It completely removes the copy-pasting step.
+
+I'm curious:
+* How much time do you usually justify spending on internal DX tools compared to developing your main product? 
+* Has anyone else built something similar to speed up their workflow?
+
+*(Note: If anyone wants to actually try the tool or chat about dev workflows, I've set up a **small Discord community** [https://discord.gg/cvYa4SmPaW]. Any feedback is incredibly welcome!)*

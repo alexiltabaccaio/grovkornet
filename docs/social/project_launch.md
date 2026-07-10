@@ -57,7 +57,7 @@ My biggest takeaway from this journey: When AI is writing the syntax, your **Sys
 
 I've made the codebase public for anyone interested in seeing how C++, Filament, and React Native bridge together in a modern FSD monorepo.
 
-📂 **GitHub (Source Code & Architecture):** https://github.com/alexiltabaccaio/grovkornet
+
 
 Has anyone else tried pushing Agent-First IDEs into native performance territory? Would love to discuss the stack or answer any questions on how the C++ integration works!
 
