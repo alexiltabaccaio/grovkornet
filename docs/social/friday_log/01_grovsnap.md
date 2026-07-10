@@ -1,6 +1,4 @@
-# LinkedIn Posts
-
-## Post 2: Friday Log #01 - Grovsnap
+# 🟦 LinkedIn
 
 Today I'm kicking off my "Friday Log" 🚀: every Friday I'll share what I've been working on during the week and the technical solutions adopted for Grovkornet.
 
@@ -20,3 +18,9 @@ Want to try the app or explore the source code?
 Optimizing internal processes is essential when working on complex projects. How much time do you dedicate to building custom tools compared to developing the main product? 👇
 
 #BuildInPublic #PlatformEngineering #DeveloperExperience #Vite #Grovkornet
+
+---
+
+# 🟧 Reddit
+
+*(Bozza non ancora creata)*

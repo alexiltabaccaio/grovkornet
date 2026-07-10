@@ -38,6 +38,7 @@ export default function BrandingOverlay({ children, seriesTag, seriesNumber }: B
         alignItems: 'flex-end',
         zIndex: 10,
         padding: '0 20px 20px 20px',
+        gap: '32px',
       }}>
         {/* Left side: Series Tag (if any) */}
         <div style={{
@@ -47,13 +48,20 @@ export default function BrandingOverlay({ children, seriesTag, seriesNumber }: B
           fontWeight: 500,
           letterSpacing: '1px',
           textTransform: 'uppercase',
-          display: 'flex',
-          gap: '6px'
+          position: 'relative'
         }}>
           {seriesTag && seriesTag !== 'None' && (
             <>
-              <span>{seriesTag}</span>
-              <span style={{ color: 'var(--accent-primary)' }}>#{seriesNumber}</span>
+              {/* Ghost element to reserve exact space of the longest tag */}
+              <div style={{ visibility: 'hidden', display: 'flex', gap: '6px' }}>
+                <span>Tuesday Insights</span>
+                <span>#{seriesNumber}</span>
+              </div>
+              {/* Actual visible element */}
+              <div style={{ position: 'absolute', top: 0, left: 0, display: 'flex', gap: '6px' }}>
+                <span>{seriesTag}</span>
+                <span style={{ color: 'var(--accent-primary)' }}>#{seriesNumber}</span>
+              </div>
             </>
           )}
         </div>
