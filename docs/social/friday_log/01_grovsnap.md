@@ -28,7 +28,7 @@ I'm curious: how do you manage the "build vs buy" tradeoff for internal DX tools
 
 **Suggested Subreddits:** r/webdev, r/SideProject, r/reactjs, r/vitejs
 
-**Title:** I built a code snippet image generator directly in my monorepo using Vite, Shiki, and React.
+**Title:** I built a code snippet image generator directly in my monorepo using React, Vite and Shiki.
 
 I wanted a quick way to share code snippets, but the idea of copying code into third-party systems felt like an unnecessary extra step. Honestly, I'm a very lazy person.
 
@@ -44,4 +44,4 @@ I'm curious:
 * How much time do you usually justify spending on internal DX tools compared to developing your main product? 
 * Has anyone else built something similar to speed up their workflow?
 
-*(Note: If anyone wants to actually try the tool or chat about dev workflows, I've set up a **small Discord community** [https://discord.gg/cvYa4SmPaW]. Any feedback is incredibly welcome!)*
+*(Note: If anyone wants to actually try the tool or chat about dev workflows, I've set up a small **Discord** [https://discord.gg/cvYa4SmPaW] community. Any feedback is incredibly welcome!)*

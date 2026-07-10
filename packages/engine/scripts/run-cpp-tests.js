@@ -124,14 +124,20 @@ try {
     process.exit(1);
   }
 
+  const testBinaryDir = path.dirname(testBinaryPath);
   console.log(`📂 Test executable found: ${testBinaryPath}`);
-  console.log(`📂 C++ runtime found: ${libCppPath}`);
+  console.log(`📂 Build directory: ${testBinaryDir}`);
 
   console.log(`📤 Pushing ${path.basename(testBinaryPath)} to /data/local/tmp/...`);
   execSync(`adb push "${testBinaryPath}" /data/local/tmp/`, { stdio: 'inherit' });
 
-  console.log(`📤 Pushing ${path.basename(libCppPath)} to /data/local/tmp/...`);
-  execSync(`adb push "${libCppPath}" /data/local/tmp/`, { stdio: 'inherit' });
+  // Find and push all shared libraries (.so) in the same directory
+  const soFiles = fs.readdirSync(testBinaryDir).filter(f => f.endsWith('.so'));
+  for (const soFile of soFiles) {
+    const fullSoPath = path.join(testBinaryDir, soFile);
+    console.log(`📤 Pushing ${soFile} to /data/local/tmp/...`);
+    execSync(`adb push "${fullSoPath}" /data/local/tmp/`, { stdio: 'inherit' });
+  }
 
   console.log(`📤 Pushing materials to /data/local/tmp/materials/...`);
   const materialsDir = path.resolve(__dirname, '../android/src/main/assets/materials');
