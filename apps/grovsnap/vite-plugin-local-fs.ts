@@ -65,7 +65,7 @@ async function buildTree(dirPath: string, baseDir: string): Promise<FileNode[]> 
             children
           });
         }
-      } catch (err) {
+      } catch {
         // Handle potential permission errors silently
       }
     } else if (entry.isFile()) {
@@ -101,9 +101,9 @@ export function localFsPlugin(): Plugin {
             const tree = await buildTree(rootDir, rootDir);
             res.setHeader('Content-Type', 'application/json');
             res.end(JSON.stringify(tree));
-          } catch (err: any) {
+          } catch (err) {
             res.statusCode = 500;
-            res.end(JSON.stringify({ error: err.message }));
+            res.end(JSON.stringify({ error: err instanceof Error ? err.message : 'Unknown error' }));
           }
           return;
         }
@@ -129,7 +129,7 @@ export function localFsPlugin(): Plugin {
             res.setHeader('Content-Type', 'text/plain; charset=utf-8');
             res.end(content);
           } catch (err) {
-            if (err instanceof Error && 'code' in err && (err as any).code === 'ENOENT') {
+            if (err instanceof Error && (err as NodeJS.ErrnoException).code === 'ENOENT') {
               res.statusCode = 404;
               res.end('File not found');
             } else {
