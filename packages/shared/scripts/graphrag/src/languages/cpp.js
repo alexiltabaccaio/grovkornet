@@ -149,3 +149,48 @@ export function resolve(currentFilePath, importPath) {
 
   return null;
 }
+
+/**
+ * Fallback parser using regex to extract exported JNI symbols
+ * @param {string} sourceCode 
+ * @returns {Set<string>}
+ */
+export function extractDefinitionsFallback(sourceCode) {
+  const exports = new Set();
+  const jniRegex = /\b(Java_[a-zA-Z0-9_]+)\b/g;
+  let match;
+  while ((match = jniRegex.exec(sourceCode)) !== null) {
+    exports.add(jniToSymbol(match[1]));
+  }
+  return exports;
+}
+
+/**
+ * Fallback parser using regex to extract preprocessor includes and filament shaders
+ * @param {string} sourceCode 
+ * @returns {Array<{ source: string, symbols: string[] }>}
+ */
+export function extractDependenciesFallback(sourceCode) {
+  const dependencies = [];
+  
+  const includeRegex = /#include\s+["']([^"']+)["']/g;
+  let match;
+  while ((match = includeRegex.exec(sourceCode)) !== null) {
+    dependencies.push({
+      source: match[1],
+      symbols: []
+    });
+  }
+
+  const shaderStringRegex = /"([A-Za-z0-9_]+Shader|FilmShader[A-Za-z0-9_]+)"/g;
+  while ((match = shaderStringRegex.exec(sourceCode)) !== null) {
+    dependencies.push({
+      source: `filament-shader:${match[1]}`,
+      symbols: [],
+      isFilamentShader: true
+    });
+  }
+
+  return dependencies;
+}
+

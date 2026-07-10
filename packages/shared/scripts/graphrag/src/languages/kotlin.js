@@ -184,3 +184,65 @@ export function resolve(currentFilePath, importPath) {
   }
   return null;
 }
+
+/**
+ * Fallback parser using regex to extract exported Kotlin classes and Expo modules
+ * @param {string} sourceCode 
+ * @returns {Set<string>}
+ */
+export function extractDefinitionsFallback(sourceCode) {
+  const exports = new Set();
+  const pkgMatch = sourceCode.match(/package\s+([a-zA-Z0-9_.]+)/);
+  if (!pkgMatch) return exports;
+  const packageName = pkgMatch[1];
+
+  const classRegex = /(?:class|object)\s+([a-zA-Z0-9_]+)/g;
+  let match;
+  while ((match = classRegex.exec(sourceCode)) !== null) {
+    exports.add(`${packageName}.${match[1]}`);
+  }
+
+  const expoModuleRegex = /Name\(\s*["']([^"']+)["']\s*\)/g;
+  while ((match = expoModuleRegex.exec(sourceCode)) !== null) {
+    exports.add(`expo-module:${match[1]}`);
+  }
+
+  return exports;
+}
+
+/**
+ * Fallback parser using regex to extract Kotlin imports and JNI external declarations
+ * @param {string} sourceCode 
+ * @returns {Array<{ source: string, symbols: string[] }>}
+ */
+export function extractDependenciesFallback(sourceCode) {
+  const dependencies = [];
+  const pkgMatch = sourceCode.match(/package\s+([a-zA-Z0-9_.]+)/);
+  const packageName = pkgMatch ? pkgMatch[1] : '';
+
+  const importRegex = /import\s+(com\.grovkornet\.nativefilmcamera\.[a-zA-Z0-9_.]+)/g;
+  let match;
+  while ((match = importRegex.exec(sourceCode)) !== null) {
+    dependencies.push({
+      source: match[1],
+      symbols: []
+    });
+  }
+
+  const classMatch = sourceCode.match(/class\s+([a-zA-Z0-9_]+)/);
+  const className = classMatch ? classMatch[1] : 'PackageLevel';
+
+  const externalFunRegex = /external\s+fun\s+([a-zA-Z0-9_]+)/g;
+  while ((match = externalFunRegex.exec(sourceCode)) !== null) {
+    if (packageName) {
+      dependencies.push({
+        source: `jni:${packageName}.${className}.${match[1]}`,
+        symbols: [],
+        isJni: true
+      });
+    }
+  }
+
+  return dependencies;
+}
+

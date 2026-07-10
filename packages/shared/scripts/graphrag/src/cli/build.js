@@ -7,11 +7,14 @@ import * as cppLang from '../languages/cpp.js';
 import * as filamentLang from '../languages/filament.js';
 import graphology from 'graphology';
 import path from 'path';
+import fs from 'fs';
 import { fileURLToPath } from 'url';
 
 const { MultiDirectedGraph } = graphology;
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+
 
 console.log("==== Building Grovkornet GraphRAG ====");
 
@@ -23,20 +26,29 @@ const webSrc = path.resolve(__dirname, '../../../../../../apps/web/src');
 const sharedSrc = path.resolve(__dirname, '../../../../../shared/src');
 const engineSrc = path.resolve(__dirname, '../../../../../../packages/engine/android/src/main');
 const engineTsSrc = path.resolve(__dirname, '../../../../../../packages/engine/src');
+const grovsnapSrc = path.resolve(__dirname, '../../../../../../apps/grovsnap/src');
 
 console.log(`🔍 Scanning Mobile: ${mobileSrc}`);
 console.log(`🔍 Scanning Web: ${webSrc}`);
 console.log(`🔍 Scanning Shared: ${sharedSrc}`);
 console.log(`🔍 Scanning Engine: ${engineSrc}`);
 console.log(`🔍 Scanning Engine TS: ${engineTsSrc}`);
+console.log(`🔍 Scanning Grovsnap: ${grovsnapSrc}`);
 
 const allFiles = [
   ...scanDirectory(mobileSrc),
   ...scanDirectory(webSrc),
   ...scanDirectory(sharedSrc),
   ...scanDirectory(engineSrc),
-  ...scanDirectory(engineTsSrc)
+  ...scanDirectory(engineTsSrc),
+  ...scanDirectory(grovsnapSrc)
 ];
+
+// Add mobile entry points explicitly if not in src
+const mobileAppTsx = path.resolve(__dirname, '../../../../../../apps/mobile/App.tsx');
+const mobileIndexTs = path.resolve(__dirname, '../../../../../../apps/mobile/index.ts');
+if (fs.existsSync(mobileAppTsx)) allFiles.push(mobileAppTsx);
+if (fs.existsSync(mobileIndexTs)) allFiles.push(mobileIndexTs);
 
 console.log(`📁 Source files found: ${allFiles.length}`);
 
@@ -76,7 +88,18 @@ for (const file of allFiles) {
     if (!handler) continue;
 
     const tree = parseFile(file);
-    const exports = handler.extractDefinitions(tree);
+    const ext = path.extname(file);
+    const isBlankTree = tree && tree.rootNode && tree.rootNode.childCount === 0 && fs.statSync(file).size > 0;
+
+    let exports;
+    if (isBlankTree) {
+      const sourceCode = fs.readFileSync(file, 'utf8');
+      exports = typeof handler.extractDefinitionsFallback === 'function'
+        ? handler.extractDefinitionsFallback(sourceCode)
+        : new Set();
+    } else {
+      exports = handler.extractDefinitions(tree);
+    }
     
     // Register exported symbols as nodes in the graph
     for (const exportName of exports) {
@@ -120,7 +143,18 @@ for (const file of allFiles) {
     if (!handler) continue;
 
     const tree = parseFile(file);
-    const dependencies = handler.extractDependencies(tree);
+    const ext = path.extname(file);
+    const isBlankTree = tree && tree.rootNode && tree.rootNode.childCount === 0 && fs.statSync(file).size > 0;
+
+    let dependencies;
+    if (isBlankTree) {
+      const sourceCode = fs.readFileSync(file, 'utf8');
+      dependencies = typeof handler.extractDependenciesFallback === 'function'
+        ? handler.extractDependenciesFallback(sourceCode)
+        : [];
+    } else {
+      dependencies = handler.extractDependencies(tree);
+    }
     
     for (const dep of dependencies) {
       const { source, symbols, isExpoModule, isJni, isFilamentShader } = dep;

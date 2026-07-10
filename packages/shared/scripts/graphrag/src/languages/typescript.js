@@ -210,3 +210,71 @@ export function resolve(currentFilePath, importPath) {
 
   return null;
 }
+
+/**
+ * Fallback parser using regex to extract exported symbols
+ * @param {string} sourceCode 
+ * @returns {Set<string>}
+ */
+export function extractDefinitionsFallback(sourceCode) {
+  const exports = new Set();
+  const simpleExportRegex = /export\s+(?:const|let|var|function\*?|class|interface|type)\s+(\w+)/g;
+  let match;
+  while ((match = simpleExportRegex.exec(sourceCode)) !== null) {
+    exports.add(match[1]);
+  }
+  
+  const curlyExportRegex = /export\s+\{([^}]+)\}/g;
+  while ((match = curlyExportRegex.exec(sourceCode)) !== null) {
+    const names = match[1].split(',').map(n => n.trim().split(/\s+as\s+/)[0].trim());
+    for (const name of names) {
+      if (name) exports.add(name);
+    }
+  }
+  return exports;
+}
+
+/**
+ * Fallback parser using regex to extract dependencies
+ * @param {string} sourceCode 
+ * @returns {Array<{ source: string, symbols: string[] }>}
+ */
+export function extractDependenciesFallback(sourceCode) {
+  const dependencies = [];
+  const importRegex = /(?:import|export)\s+(?:[\w*\s{},]*\s+from\s+)?['"]([^'"]+)['"]/g;
+  let match;
+  while ((match = importRegex.exec(sourceCode)) !== null) {
+    const source = match[1];
+    const fullStatement = match[0];
+    const symbols = [];
+    const symbolsMatch = fullStatement.match(/\{([^}]+)\}/);
+    if (symbolsMatch) {
+      const names = symbolsMatch[1].split(',').map(n => n.trim().split(/\s+as\s+/).pop().trim());
+      for (const name of names) {
+        if (name) symbols.push(name);
+      }
+    } else {
+      const defaultMatch = fullStatement.match(/(?:import|export)\s+(\w+)\s+from/);
+      if (defaultMatch && defaultMatch[1]) {
+        symbols.push(defaultMatch[1]);
+      }
+    }
+
+    dependencies.push({
+      source,
+      symbols
+    });
+  }
+
+  const expoModuleRegex = /requireNative(?:Module|ViewManager)\(['"]([^'"]+)['"]\)/g;
+  while ((match = expoModuleRegex.exec(sourceCode)) !== null) {
+    dependencies.push({
+      source: `expo-module:${match[1]}`,
+      symbols: [],
+      isExpoModule: true
+    });
+  }
+
+  return dependencies;
+}
+
