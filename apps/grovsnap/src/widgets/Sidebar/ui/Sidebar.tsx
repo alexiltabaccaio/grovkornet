@@ -61,7 +61,7 @@ export default function Sidebar({
             value={lineRanges}
             onChange={(e) => setLineRanges(e.target.value)}
             placeholder="es. 1-10, 15-20"
-            style={{ width: '100%', padding: '6px 8px', borderRadius: '4px', border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(0,0,0,0.2)', color: 'white' }}
+            style={{ width: '100%' }}
           />
         </div>
       </div>
@@ -70,7 +70,7 @@ export default function Sidebar({
       </div>
 
       {/* Series Tag Selector */}
-      <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr', gap: '12px', marginTop: '8px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr 1.5fr', gap: '12px', marginTop: '8px' }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
           <label style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-secondary)' }}>SERIE</label>
           <select
@@ -94,22 +94,22 @@ export default function Sidebar({
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
           <label style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-secondary)' }}>PAGINA</label>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <input
               type="number"
               min={1}
               max={pageTotal}
               value={pageCurrent}
               onChange={(e) => setPageCurrent(Math.min(pageTotal, Math.max(1, Number(e.target.value))))}
-              style={{ width: '100%', minWidth: '40px', padding: '6px 4px', textAlign: 'center' }}
+              style={{ width: '100%', textAlign: 'center', padding: '0.6rem 0.2rem' }}
             />
-            <span style={{ color: 'var(--text-secondary)', fontWeight: 600 }}>/</span>
+            <span style={{ color: 'var(--text-secondary)', fontWeight: 600, fontSize: '1.2rem' }}>/</span>
             <input
               type="number"
               min={pageCurrent}
               value={pageTotal}
               onChange={(e) => setPageTotal(Math.max(pageCurrent, Number(e.target.value)))}
-              style={{ width: '100%', minWidth: '40px', padding: '6px 4px', textAlign: 'center' }}
+              style={{ width: '100%', textAlign: 'center', padding: '0.6rem 0.2rem' }}
             />
           </div>
         </div>

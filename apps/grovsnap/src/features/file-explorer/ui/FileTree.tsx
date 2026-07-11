@@ -151,8 +151,8 @@ export default function FileTree({ onSelectFile, selectedPath }: FileTreeProps) 
             justifyContent: 'center',
             width: '32px',
             height: '32px',
-            borderRadius: '6px',
-            border: '1px solid var(--border-glass, rgba(255,255,255,0.1))',
+            borderRadius: '8px',
+            border: '1px solid var(--border-glass)',
             background: 'rgba(255, 255, 255, 0.08)',
             cursor: 'pointer',
             flexShrink: 0
