@@ -2,7 +2,9 @@ import React, { useState } from 'react';
 import { StyleSheet, TouchableOpacity, View, Platform, Text } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
+import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 import { PopupContainer } from '@shared/ui/popup/PopupContainer';
+import { useDeviceRotation } from '@shared/lib/hooks/useDeviceRotation';
 import { GalleryItem } from '../lib/types';
 
 interface DeleteButtonProps {
@@ -14,6 +16,13 @@ export const DeleteButton = React.memo(({ photo, onDelete }: DeleteButtonProps) 
   const { t } = useTranslation();
   const [isPopupVisible, setIsPopupVisible] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const rotationY = useDeviceRotation();
+
+  const iconStyle = useAnimatedStyle(() => {
+    return {
+      transform: [{ rotate: `${rotationY.value}deg` }],
+    };
+  });
 
   const executeDelete = async () => {
     setIsPopupVisible(false);
@@ -45,7 +54,9 @@ export const DeleteButton = React.memo(({ photo, onDelete }: DeleteButtonProps) 
         accessibilityLabel={t('gallery.delete_button', 'Delete Photo')}
         testID="delete-photo-button"
       >
-        <Ionicons name="trash-outline" size={24} color="#FF5722" />
+        <Animated.View style={iconStyle}>
+          <Ionicons name="trash-outline" size={24} color="#FF5722" />
+        </Animated.View>
       </TouchableOpacity>
 
       <PopupContainer

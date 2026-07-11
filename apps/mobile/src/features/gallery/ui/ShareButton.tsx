@@ -3,8 +3,10 @@ import { StyleSheet, View, Alert, TouchableOpacity, Platform } from 'react-nativ
 import Share, { Social } from 'react-native-share';
 import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
+import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 import { CONFIG } from '@shared/config';
 import { logger } from '@shared/lib/logger';
+import { useDeviceRotation } from '@shared/lib/hooks/useDeviceRotation';
 import * as FileSystem from 'expo-file-system/legacy';
 
 const getCachePath = (prefix: string) => {
@@ -19,6 +21,13 @@ interface ShareButtonProps {
 
 export const ShareButton = React.memo(({ id, uri, isVerified }: ShareButtonProps) => {
   const { t } = useTranslation();
+  const rotationY = useDeviceRotation();
+
+  const iconStyle = useAnimatedStyle(() => {
+    return {
+      transform: [{ rotate: `${rotationY.value}deg` }],
+    };
+  });
 
   const handleInstagramShare = async () => {
     if (!isVerified) {
@@ -99,7 +108,9 @@ export const ShareButton = React.memo(({ id, uri, isVerified }: ShareButtonProps
         onPress={() => void handleInstagramShare()}
         accessibilityLabel={isVerified ? t('gallery.share_instagram') : t('gallery.unverified_badge')}
       >
-        <Ionicons name="logo-instagram" size={24} color={isVerified ? "#FFF" : "#666"} />
+        <Animated.View style={iconStyle}>
+          <Ionicons name="logo-instagram" size={24} color={isVerified ? "#FFF" : "#666"} />
+        </Animated.View>
       </TouchableOpacity>
 
       <TouchableOpacity 
@@ -108,7 +119,9 @@ export const ShareButton = React.memo(({ id, uri, isVerified }: ShareButtonProps
         onPress={() => void handleGenericShare()}
         accessibilityLabel={t('gallery.share_generic')}
       >
-        <Ionicons name="arrow-redo-outline" size={24} color="#FFF" />
+        <Animated.View style={iconStyle}>
+          <Ionicons name="arrow-redo-outline" size={24} color="#FFF" />
+        </Animated.View>
       </TouchableOpacity>
     </View>
   );
