@@ -45,4 +45,20 @@ describe('exportSnippetPng', () => {
 
     createElementSpy.mockRestore();
   });
+
+  it('calls onError and onComplete when html-to-image fails', async () => {
+    const onError = vi.fn();
+    const onComplete = vi.fn();
+    vi.mocked(htmlToImage.toPng).mockRejectedValueOnce(new Error('Render error'));
+
+    await exportSnippetPng({
+      fileName: 'TestFile.tsx',
+      node: mockNode,
+      onError,
+      onComplete
+    });
+
+    expect(onError).toHaveBeenCalledWith(expect.any(Error));
+    expect(onComplete).toHaveBeenCalled();
+  });
 });

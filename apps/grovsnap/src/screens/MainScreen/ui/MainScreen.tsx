@@ -39,23 +39,25 @@ export default function MainScreen() {
   const totalLines = lines.length;
   const slicedCode = lines.slice(startLine - 1, endLine).join('\n');
 
-  const handleSelectFile = async (path: string) => {
+  const handleSelectFile = (path: string) => {
     setSelectedPath(path);
-    try {
-      const res = await fetch(`/api/fs/file?path=${encodeURIComponent(path)}`);
-      if (!res.ok) throw new Error('Failed to fetch file content');
-      const content = await res.text();
-      setFullCode(content);
-      
-      const fileLines = content.split('\n');
-      setStartLine(1);
-      setEndLine(fileLines.length);
-      
-      setFileName(path);
-      setLanguage(getLanguageFromPath(path));
-    } catch (err) {
-      console.error(err);
-    }
+    void (async () => {
+      try {
+        const res = await fetch(`/api/fs/file?path=${encodeURIComponent(path)}`);
+        if (!res.ok) throw new Error('Failed to fetch file content');
+        const content = await res.text();
+        setFullCode(content);
+        
+        const fileLines = content.split('\n');
+        setStartLine(1);
+        setEndLine(fileLines.length);
+        
+        setFileName(path);
+        setLanguage(getLanguageFromPath(path));
+      } catch (err) {
+        console.error(err);
+      }
+    })();
   };
 
   const handleDownload = () => {
@@ -63,12 +65,22 @@ export default function MainScreen() {
     if (!node) return;
 
     let exportName = fileName.split('/').pop() || 'snippet';
+
+    if (pageTotal > 1) {
+      const lastDot = exportName.lastIndexOf('.');
+      if (lastDot !== -1) {
+        exportName = `${exportName.slice(0, lastDot)}-p${pageCurrent}${exportName.slice(lastDot)}`;
+      } else {
+        exportName = `${exportName}-p${pageCurrent}`;
+      }
+    }
+
     if (seriesTag) {
       const formattedTag = seriesTag.replace(/\s+/g, '');
       exportName = `${formattedTag}_${seriesNumber}_${exportName}`;
     }
 
-    exportSnippetPng({
+    void exportSnippetPng({
       fileName: exportName,
       node,
       onStart: () => setIsExporting(true),

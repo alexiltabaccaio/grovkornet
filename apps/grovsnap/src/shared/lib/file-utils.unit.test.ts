@@ -17,6 +17,11 @@ describe('getLanguageFromPath', () => {
     expect(getLanguageFromPath('Camera.kt')).toBe('kotlin');
     expect(getLanguageFromPath('style.css')).toBe('css');
     expect(getLanguageFromPath('data.json')).toBe('json');
+    expect(getLanguageFromPath('Script.swift')).toBe('swift');
+    expect(getLanguageFromPath('app.py')).toBe('python');
+    expect(getLanguageFromPath('index.html')).toBe('html');
+    expect(getLanguageFromPath('run.sh')).toBe('bash');
+    expect(getLanguageFromPath('build.bash')).toBe('bash');
   });
 
   it('should fallback to text for unknown extensions', () => {

@@ -34,13 +34,13 @@ export default function FileTree({ onSelectFile, selectedPath }: FileTreeProps) 
       try {
         const data = await fetchTree();
         setTree(data);
-      } catch (err: any) {
-        setError(err.message);
+      } catch (err: unknown) {
+        setError(err instanceof Error ? err.message : 'Errore sconosciuto');
       } finally {
         setLoading(false);
       }
     }
-    loadTree();
+    void loadTree();
   }, []);
 
   const toggleDir = (path: string) => {
@@ -62,11 +62,11 @@ export default function FileTree({ onSelectFile, selectedPath }: FileTreeProps) 
     }
   };
 
+  const [prevSearch, setPrevSearch] = useState('');
+
   // Filter helper
   const filteredTree = useMemo(() => {
     if (!search) return tree;
-    
-    const autoExpanded: Record<string, boolean> = {};
     
     function filterNodes(nodes: FileNode[]): FileNode[] {
       const result: FileNode[] = [];
@@ -78,7 +78,6 @@ export default function FileTree({ onSelectFile, selectedPath }: FileTreeProps) 
               ...node,
               children: matchingChildren
             });
-            autoExpanded[node.path] = true;
           }
         } else if (node.type === 'file') {
           if (node.name.toLowerCase().includes(search.toLowerCase())) {
@@ -89,12 +88,34 @@ export default function FileTree({ onSelectFile, selectedPath }: FileTreeProps) 
       return result;
     }
     
-    const res = filterNodes(tree);
-    if (search) {
-      setExpandedDirs(prev => ({ ...prev, ...autoExpanded }));
-    }
-    return res;
+    return filterNodes(tree);
   }, [tree, search]);
+
+  if (search !== prevSearch) {
+    setPrevSearch(search);
+    if (search) {
+      const autoExpanded: Record<string, boolean> = {};
+      const collectDirs = (nodes: FileNode[]) => {
+        for (const node of nodes) {
+          if (node.type === 'directory' && node.children) {
+            const hasMatches = (n: FileNode): boolean => {
+              if (n.name.toLowerCase().includes(search.toLowerCase())) return true;
+              if (n.children) return n.children.some(hasMatches);
+              return false;
+            };
+            if (hasMatches(node)) {
+              autoExpanded[node.path] = true;
+            }
+            collectDirs(node.children);
+          }
+        }
+      };
+      collectDirs(tree);
+      if (Object.keys(autoExpanded).length > 0) {
+        setExpandedDirs(prev => ({ ...prev, ...autoExpanded }));
+      }
+    }
+  }
 
   if (loading) {
     return <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', padding: '1rem 0' }}>Caricamento albero...</div>;

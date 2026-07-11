@@ -9,7 +9,7 @@ interface BrandingOverlayProps {
 }
 
 const THEMES: Record<string, string> = {
-  'Tuesday Insights': 'radial-gradient(circle at center, #121a1bff 0%, #0a0a0c 100%), radial-gradient(circle at 20% 30%, rgba(255, 82, 56, 0.15) 0%, rgba(0,0,0,0) 60%), radial-gradient(circle at 80% 70%, rgba(255, 139, 56, 0.1) 0%, rgba(0,0,0,0) 60%)',
+  'Tuesday Insights': 'radial-gradient(circle at center, #12171bff 0%, #0a0a0c 100%), radial-gradient(circle at 20% 30%, rgba(255, 82, 56, 0.15) 0%, rgba(0,0,0,0) 60%), radial-gradient(circle at 80% 70%, rgba(255, 139, 56, 0.1) 0%, rgba(0,0,0,0) 60%)',
   'Friday Log': 'radial-gradient(circle at center, #1b1214 0%, #0a0a0c 100%), radial-gradient(circle at 20% 30%, rgba(255, 82, 56, 0.15) 0%, rgba(0,0,0,0) 60%), radial-gradient(circle at 80% 70%, rgba(255, 139, 56, 0.1) 0%, rgba(0,0,0,0) 60%)'
 };
 

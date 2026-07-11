@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { codeToHtml } from 'shiki';
+import { codeToHtml, ThemeRegistration } from 'shiki';
 import { grovkornetTheme } from '../lib/theme';
 
 interface CodeWindowProps {
@@ -20,7 +20,7 @@ export default function CodeWindow({ code, language, fileName, startLine = 1 }: 
       try {
         const html = await codeToHtml(code, {
           lang: language,
-          theme: grovkornetTheme as any
+          theme: grovkornetTheme as ThemeRegistration
         });
         if (active) {
           setHighlightedHtml(html);
@@ -36,7 +36,7 @@ export default function CodeWindow({ code, language, fileName, startLine = 1 }: 
         }
       }
     }
-    highlight();
+    void highlight();
     return () => {
       active = false;
     };

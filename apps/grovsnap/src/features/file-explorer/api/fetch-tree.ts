@@ -5,5 +5,5 @@ export async function fetchTree(): Promise<FileNode[]> {
   if (!res.ok) {
     throw new Error('Failed to fetch file tree');
   }
-  return res.json();
+  return res.json() as Promise<FileNode[]>;
 }

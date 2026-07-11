@@ -56,4 +56,63 @@ describe('TreeList Smoke Test', () => {
     expect(screen.getByText('src')).toBeDefined();
     expect(screen.getByText('App.tsx')).toBeDefined();
   });
+
+  it('calls toggleDir when directory is clicked', () => {
+    const toggleDir = vi.fn();
+    const onSelectFile = vi.fn();
+
+    render(
+      <TreeList
+        nodes={mockNodes}
+        expandedDirs={{}}
+        toggleDir={toggleDir}
+        onSelectFile={onSelectFile}
+        selectedPath=""
+        depth={0}
+      />
+    );
+
+    const dirNode = screen.getByText('src');
+    dirNode.click();
+    expect(toggleDir).toHaveBeenCalledWith('src');
+  });
+
+  it('calls onSelectFile when file is clicked', () => {
+    const toggleDir = vi.fn();
+    const onSelectFile = vi.fn();
+
+    render(
+      <TreeList
+        nodes={mockNodes}
+        expandedDirs={{ 'src': true }}
+        toggleDir={toggleDir}
+        onSelectFile={onSelectFile}
+        selectedPath=""
+        depth={0}
+      />
+    );
+
+    const fileNode = screen.getByText('App.tsx');
+    fileNode.click();
+    expect(onSelectFile).toHaveBeenCalledWith('src/App.tsx');
+  });
+
+  it('renders selected file node with selected styles', () => {
+    const toggleDir = vi.fn();
+    const onSelectFile = vi.fn();
+
+    render(
+      <TreeList
+        nodes={mockNodes}
+        expandedDirs={{ 'src': true }}
+        toggleDir={toggleDir}
+        onSelectFile={onSelectFile}
+        selectedPath="src/App.tsx"
+        depth={0}
+      />
+    );
+
+    const fileDiv = screen.getByText('App.tsx').closest('div');
+    expect(fileDiv?.style.backgroundColor).toBe('rgba(255, 87, 34, 0.15)');
+  });
 });
