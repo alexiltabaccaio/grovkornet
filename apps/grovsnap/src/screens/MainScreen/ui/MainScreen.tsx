@@ -61,7 +61,7 @@ export default function MainScreen() {
     if (!node) return;
 
     let exportName = fileName.split('/').pop() || 'snippet';
-    if (seriesTag && seriesTag !== 'None') {
+    if (seriesTag) {
       const formattedTag = seriesTag.replace(/\s+/g, '');
       exportName = `${formattedTag}_${seriesNumber}_${exportName}`;
     }

@@ -84,7 +84,6 @@ export default function Sidebar({
             onChange={(e) => setSeriesTag(e.target.value)}
             style={{ width: '100%' }}
           >
-            <option value="None">Nessuna</option>
             <option value="Tuesday Insights">Tuesday Insights</option>
             <option value="Friday Log">Friday Log</option>
           </select>
@@ -96,8 +95,7 @@ export default function Sidebar({
             min={1}
             value={seriesNumber}
             onChange={(e) => setSeriesNumber(Math.max(1, Number(e.target.value)).toString().padStart(2, '0'))}
-            disabled={seriesTag === 'None'}
-            style={{ width: '100%', opacity: seriesTag === 'None' ? 0.5 : 1 }}
+            style={{ width: '100%' }}
           />
         </div>
       </div>

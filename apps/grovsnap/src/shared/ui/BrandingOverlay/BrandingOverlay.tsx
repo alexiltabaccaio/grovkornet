@@ -6,8 +6,15 @@ interface BrandingOverlayProps {
   seriesNumber?: string;
 }
 
+const THEMES: Record<string, string> = {
+  'Tuesday Insights': 'radial-gradient(circle at center, #0f0f0f 0%, #050505 100%), radial-gradient(circle at 20% 30%, rgba(255, 255, 255, 0.07) 0%, rgba(0,0,0,0) 60%), radial-gradient(circle at 80% 70%, rgba(255, 255, 255, 0.04) 0%, rgba(0,0,0,0) 60%)',
+  'Friday Log': 'radial-gradient(circle at center, #1b1214 0%, #0a0a0c 100%), radial-gradient(circle at 20% 30%, rgba(255, 82, 56, 0.15) 0%, rgba(0,0,0,0) 60%), radial-gradient(circle at 80% 70%, rgba(255, 139, 56, 0.1) 0%, rgba(0,0,0,0) 60%)'
+};
+
 export default function BrandingOverlay({ children, seriesTag, seriesNumber }: BrandingOverlayProps) {
-  const grovkornetGlow = 'radial-gradient(circle at center, #1b1214 0%, #0a0a0c 100%), radial-gradient(circle at 20% 30%, rgba(255, 82, 56, 0.15) 0%, rgba(0,0,0,0) 60%), radial-gradient(circle at 80% 70%, rgba(255, 139, 56, 0.1) 0%, rgba(0,0,0,0) 60%)';
+  const grovkornetGlow = (seriesTag && THEMES[seriesTag]) ? THEMES[seriesTag] : THEMES['Friday Log'];
+  const accentColor = 'var(--accent-primary)';
+
   return (
     <div
       id="grovsnap-canvas"
@@ -50,17 +57,17 @@ export default function BrandingOverlay({ children, seriesTag, seriesNumber }: B
           textTransform: 'uppercase',
           position: 'relative'
         }}>
-          {seriesTag && seriesTag !== 'None' && (
+          {seriesTag && (
             <>
               {/* Ghost element to reserve exact space of the longest tag */}
               <div style={{ visibility: 'hidden', display: 'flex', gap: '6px' }}>
                 <span>Tuesday Insights</span>
-                <span>#{seriesNumber}</span>
+                <span>#00</span>
               </div>
               {/* Actual visible element */}
               <div style={{ position: 'absolute', top: 0, left: 0, display: 'flex', gap: '6px' }}>
                 <span>{seriesTag}</span>
-                <span style={{ color: 'var(--accent-primary)' }}>#{seriesNumber}</span>
+                <span style={{ color: accentColor }}>#{seriesNumber}</span>
               </div>
             </>
           )}
