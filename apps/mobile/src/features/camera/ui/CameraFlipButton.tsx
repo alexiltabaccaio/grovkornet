@@ -10,6 +10,7 @@ import { useFilmStore } from '@entities/film';
 import { useShallow } from 'zustand/shallow';
 import { useTranslation } from 'react-i18next';
 import * as Haptics from '@shared/lib/haptics';
+import { useDeviceRotation } from '@shared/lib/hooks/useDeviceRotation';
 
 const CameraFlipButtonComponent = () => {
   const { isSelfieCamera, setIsSelfieCamera } = useFilmStore(
@@ -21,6 +22,8 @@ const CameraFlipButtonComponent = () => {
   
   const { t } = useTranslation();
   const rotation = useSharedValue(0);
+  const targetRotation = React.useRef(0);
+  const deviceRotation = useDeviceRotation();
 
   const handlePress = () => {
     void Haptics.selectionAsync();
@@ -28,7 +31,9 @@ const CameraFlipButtonComponent = () => {
     setIsSelfieCamera(nextVal);
 
     // Spin animation: rotate 180 degrees on each flip
-    rotation.value = withSpring(rotation.value + 180, {
+    // We track targetRotation in a ref so rapid presses don't compound from intermediate animation values
+    targetRotation.current += 180;
+    rotation.value = withSpring(targetRotation.current, {
       damping: 15,
       stiffness: 150,
     });
@@ -39,7 +44,7 @@ const CameraFlipButtonComponent = () => {
 
   const animatedStyle = useAnimatedStyle(() => {
     return {
-      transform: [{ rotate: `${rotation.value}deg` }],
+      transform: [{ rotate: `${rotation.value + deviceRotation.value}deg` }],
     };
   });
 
