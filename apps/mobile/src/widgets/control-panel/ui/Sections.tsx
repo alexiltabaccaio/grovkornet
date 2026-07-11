@@ -6,6 +6,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { Footer } from '@shared/ui';
 import * as Haptics from '@shared/lib/haptics';
 import Animated, { useAnimatedStyle, interpolate, SharedValue } from 'react-native-reanimated';
+import { useDeviceRotation } from '@shared/lib/hooks/useDeviceRotation';
 
 import { useShallow } from 'zustand/shallow';
 
@@ -23,6 +24,7 @@ export const Sections = React.memo(({ galleryTransition, layoutSyncOffset }: Sec
   })));
   const isLayoutOverlayEnabled = useSystemStore(state => state.isLayoutOverlayEnabled);
   const { t } = useTranslation();
+  const rotationY = useDeviceRotation();
 
   const handleSectionChange = (section: SectionType) => {
     void Haptics.selectionAsync();
@@ -52,6 +54,12 @@ export const Sections = React.memo(({ galleryTransition, layoutSyncOffset }: Sec
     };
   });
 
+  const animatedIconStyle = useAnimatedStyle(() => {
+    return {
+      transform: [{ rotate: `${rotationY.value}deg` }],
+    };
+  });
+
   return (
     <Footer style={styles.footerPosition}>
       <Animated.View style={[styles.tabContainer, animatedStyle]}>
@@ -76,12 +84,14 @@ export const Sections = React.memo(({ galleryTransition, layoutSyncOffset }: Sec
                   isActive && styles.iconWrapperActive,
                 ]}
               >
-                <Ionicons 
-                  name={section.icon} 
-                  size={24} 
-                  color={isActive ? '#FF5722' : '#888'} 
-                  testID={`section-icon-${section.id}`}
-                />
+                <Animated.View style={animatedIconStyle}>
+                  <Ionicons 
+                    name={section.icon} 
+                    size={24} 
+                    color={isActive ? '#FF5722' : '#888'} 
+                    testID={`section-icon-${section.id}`}
+                  />
+                </Animated.View>
               </TouchableOpacity>
             </View>
           );
