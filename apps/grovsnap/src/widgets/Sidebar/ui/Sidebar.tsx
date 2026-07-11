@@ -4,10 +4,8 @@ import { FileTree } from '@features/file-explorer';
 interface SidebarProps {
   selectedPath: string;
   onSelectFile: (path: string) => void;
-  startLine: number;
-  setStartLine: (val: number) => void;
-  endLine: number;
-  setEndLine: (val: number) => void;
+  lineRanges: string;
+  setLineRanges: (val: string) => void;
   totalLines: number;
   isExporting: boolean;
   onDownload: () => void;
@@ -24,10 +22,8 @@ interface SidebarProps {
 export default function Sidebar({
   selectedPath,
   onSelectFile,
-  startLine,
-  setStartLine,
-  endLine,
-  setEndLine,
+  lineRanges,
+  setLineRanges,
   totalLines,
   isExporting,
   onDownload,
@@ -57,25 +53,15 @@ export default function Sidebar({
       </div>
 
       {/* Line Range Selector */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '12px' }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-          <label style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-secondary)' }}>RIGA INIZIO</label>
+          <label style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-secondary)' }}>RIGHE</label>
           <input
-            type="number"
-            min={1}
-            max={totalLines || 1}
-            value={startLine}
-            onChange={(e) => setStartLine(Math.max(1, Number(e.target.value)))}
-          />
-        </div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-          <label style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-secondary)' }}>RIGA FINE</label>
-          <input
-            type="number"
-            min={1}
-            max={totalLines || 1}
-            value={endLine}
-            onChange={(e) => setEndLine(Math.max(1, Number(e.target.value)))}
+            type="text"
+            value={lineRanges}
+            onChange={(e) => setLineRanges(e.target.value)}
+            placeholder="es. 1-10, 15-20"
+            style={{ width: '100%', padding: '6px 8px', borderRadius: '4px', border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(0,0,0,0.2)', color: 'white' }}
           />
         </div>
       </div>

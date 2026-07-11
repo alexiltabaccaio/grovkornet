@@ -1,15 +1,15 @@
 import { useEffect, useState } from 'react';
-import { codeToHtml, ThemeRegistration } from 'shiki';
+import { codeToHtml, ThemeRegistration, ShikiTransformer } from 'shiki';
 import { grovkornetTheme } from '../lib/theme';
 
 interface CodeWindowProps {
   code: string;
   language: string;
   fileName: string;
-  startLine?: number;
+  lineNumbers?: (number | string)[];
 }
 
-export default function CodeWindow({ code, language, fileName, startLine = 1 }: CodeWindowProps) {
+export default function CodeWindow({ code, language, fileName, lineNumbers }: CodeWindowProps) {
   const [highlightedHtml, setHighlightedHtml] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -18,9 +18,28 @@ export default function CodeWindow({ code, language, fileName, startLine = 1 }: 
     async function highlight() {
       setLoading(true);
       try {
+        const transformers: ShikiTransformer[] = [];
+        if (lineNumbers && lineNumbers.length > 0) {
+          transformers.push({
+            line(node, line) {
+              const actualLine = lineNumbers[line - 1];
+              if (actualLine === '...') {
+                node.properties['data-line'] = '';
+                const currentClass = node.properties['className'] as string[] | string | undefined;
+                node.properties['className'] = Array.isArray(currentClass)
+                  ? [...currentClass, 'gap-line']
+                  : (currentClass ? [currentClass, 'gap-line'] : ['gap-line']);
+              } else if (actualLine !== undefined) {
+                node.properties['data-line'] = String(actualLine);
+              }
+            }
+          });
+        }
+        
         const html = await codeToHtml(code, {
           lang: language,
-          theme: grovkornetTheme as ThemeRegistration
+          theme: grovkornetTheme as ThemeRegistration,
+          transformers
         });
         if (active) {
           setHighlightedHtml(html);
@@ -40,7 +59,7 @@ export default function CodeWindow({ code, language, fileName, startLine = 1 }: 
     return () => {
       active = false;
     };
-  }, [code, language]);
+  }, [code, language, lineNumbers]);
 
   return (
     <div style={{
@@ -75,18 +94,21 @@ export default function CodeWindow({ code, language, fileName, startLine = 1 }: 
         </div>
       )}
       <style>{`
-        .shiki-container {
-          counter-reset: step ${startLine - 1};
-        }
         .shiki-container .line::before {
-          counter-increment: step;
-          content: counter(step);
+          content: attr(data-line);
           display: inline-block;
           width: 1.5rem;
           margin-right: 1.25rem;
           text-align: right;
           color: rgba(255, 255, 255, 0.25);
           user-select: none;
+        }
+        .shiki-container .gap-line::before {
+          content: " ";
+        }
+        .shiki-container .gap-line {
+          opacity: 0.5;
+          font-style: italic;
         }
       `}</style>
       <div 

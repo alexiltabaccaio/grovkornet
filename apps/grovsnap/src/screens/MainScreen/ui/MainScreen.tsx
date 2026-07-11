@@ -26,10 +26,9 @@ export function CameraPreview() {
 export default function MainScreen() {
   const [selectedPath, setSelectedPath] = useState('');
   const [fullCode, setFullCode] = useState(INITIAL_CODE);
-  const [startLine, setStartLine] = useState(1);
-  const [endLine, setEndLine] = useState(25);
+  const [lineRanges, setLineRanges] = useState('');
   const [language, setLanguage] = useState('typescript');
-  const [fileName, setFileName] = useState('CameraPreview.tsx');
+  const [fileName, setFileName] = useState('Viewfinder.tsx');
   const [isExporting, setIsExporting] = useState(false);
   const [seriesTag, setSeriesTag] = useState('Friday Log');
   const [seriesNumber, setSeriesNumber] = useState('01');
@@ -37,7 +36,56 @@ export default function MainScreen() {
   const [pageTotal, setPageTotal] = useState(1);
   const lines = fullCode.split('\n');
   const totalLines = lines.length;
-  const slicedCode = lines.slice(startLine - 1, endLine).join('\n');
+
+  const parseLineRanges = (rangesStr: string, maxLine: number): number[] => {
+    const result: Set<number> = new Set();
+    const parts = rangesStr.split(',').map(p => p.trim());
+    
+    for (const part of parts) {
+      if (!part) continue;
+      if (part.includes('-')) {
+        const [startStr, endStr] = part.split('-');
+        const start = parseInt(startStr, 10);
+        const end = parseInt(endStr, 10);
+        
+        if (!isNaN(start) && !isNaN(end)) {
+          const s = Math.max(1, start);
+          const e = Math.min(maxLine, Math.max(s, end));
+          for (let i = s; i <= e; i++) {
+            result.add(i);
+          }
+        }
+      } else {
+        const num = parseInt(part, 10);
+        if (!isNaN(num) && num >= 1 && num <= maxLine) {
+           result.add(num);
+        }
+      }
+    }
+    return Array.from(result).sort((a, b) => a - b);
+  };
+
+  let selectedLineNumbers = parseLineRanges(lineRanges, totalLines);
+  if (selectedLineNumbers.length === 0 && !lineRanges.trim()) {
+    selectedLineNumbers = Array.from({ length: totalLines }, (_, i) => i + 1);
+  }
+  
+  const slicedCodeLines: string[] = [];
+  const lineNumbers: (number | string)[] = [];
+
+  for (let i = 0; i < selectedLineNumbers.length; i++) {
+    const currentLine = selectedLineNumbers[i];
+    
+    if (i > 0 && currentLine > selectedLineNumbers[i - 1] + 1) {
+      slicedCodeLines.push('// ...');
+      lineNumbers.push('...');
+    }
+    
+    slicedCodeLines.push(lines[currentLine - 1]);
+    lineNumbers.push(currentLine);
+  }
+  
+  const slicedCode = slicedCodeLines.join('\n');
 
   const handleSelectFile = (path: string) => {
     setSelectedPath(path);
@@ -48,9 +96,7 @@ export default function MainScreen() {
         const content = await res.text();
         setFullCode(content);
         
-        const fileLines = content.split('\n');
-        setStartLine(1);
-        setEndLine(fileLines.length);
+        setLineRanges('');
         
         setFileName(path);
         setLanguage(getLanguageFromPath(path));
@@ -94,10 +140,8 @@ export default function MainScreen() {
       <Sidebar
         selectedPath={selectedPath}
         onSelectFile={handleSelectFile}
-        startLine={startLine}
-        setStartLine={setStartLine}
-        endLine={endLine}
-        setEndLine={setEndLine}
+        lineRanges={lineRanges}
+        setLineRanges={setLineRanges}
         totalLines={totalLines}
         isExporting={isExporting}
         onDownload={handleDownload}
@@ -114,7 +158,7 @@ export default function MainScreen() {
         code={slicedCode}
         language={language}
         fileName={fileName}
-        startLine={startLine}
+        lineNumbers={lineNumbers}
         seriesTag={seriesTag}
         seriesNumber={seriesNumber}
         pageCurrent={pageCurrent}
