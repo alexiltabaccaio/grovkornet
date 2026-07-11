@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { StyleSheet, View, Platform, useWindowDimensions } from 'react-native';
 import { Image } from 'expo-image';
 import Animated, { useAnimatedStyle, SharedValue, interpolate, useSharedValue, withTiming, runOnJS } from 'react-native-reanimated';
-import { ShareButton, PhotoPreview, GalleryStrip, useGalleryViewer } from '@features/gallery';
+import { ShareButton, DeleteButton, PhotoPreview, GalleryStrip, useGalleryViewer } from '@features/gallery';
 import { useDeviceRotation } from '@shared/lib/hooks/useDeviceRotation';
 import { useVerificationStore } from '@entities/verification';
 
@@ -14,7 +14,7 @@ interface GalleryViewerProps {
 }
 
 export const GalleryViewer = React.memo(({ onClose, initialUri, galleryTransition, header }: GalleryViewerProps) => {
-  const { photos, selectedPhoto, loading, onPhotoVisible, onSelectPhoto } = useGalleryViewer(initialUri);
+  const { photos, selectedPhoto, loading, onPhotoVisible, onSelectPhoto, onDeletePhoto } = useGalleryViewer(initialUri, onClose);
   const rotationY = useDeviceRotation();
   const { width, height } = useWindowDimensions();
 
@@ -139,15 +139,23 @@ export const GalleryViewer = React.memo(({ onClose, initialUri, galleryTransitio
                   zoomTranslateY={zoomTranslateY}
                 />
 
-                {/* Share Instagram Action */}
+                {/* Delete Action (Left) & Share Action (Right) */}
                 {selectedPhoto && (
-                  <View style={styles.shareContainer}>
-                    <ShareButton
-                      id={selectedPhoto.id}
-                      uri={selectedPhoto.uri}
-                      isVerified={isVerified}
-                    />
-                  </View>
+                  <>
+                    <View style={styles.deleteContainer}>
+                      <DeleteButton
+                        photo={selectedPhoto}
+                        onDelete={onDeletePhoto}
+                      />
+                    </View>
+                    <View style={styles.shareContainer}>
+                      <ShareButton
+                        id={selectedPhoto.id}
+                        uri={selectedPhoto.uri}
+                        isVerified={isVerified}
+                      />
+                    </View>
+                  </>
                 )}
               </>
             )}
@@ -233,6 +241,12 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 20,
     right: 20,
+    zIndex: 10,
+  },
+  deleteContainer: {
+    position: 'absolute',
+    bottom: 20,
+    left: 20,
     zIndex: 10,
   },
 });

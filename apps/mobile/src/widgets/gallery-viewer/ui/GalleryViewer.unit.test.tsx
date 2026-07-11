@@ -39,6 +39,7 @@ describe('GalleryViewer', () => {
       loading: true,
       onPhotoVisible: jest.fn(),
       onSelectPhoto: jest.fn(),
+      onDeletePhoto: jest.fn(),
     });
 
     const { toJSON, queryByText, queryByTestId } = render(
@@ -57,6 +58,7 @@ describe('GalleryViewer', () => {
       loading: true,
       onPhotoVisible: jest.fn(),
       onSelectPhoto: jest.fn(),
+      onDeletePhoto: jest.fn(),
     });
 
     const testUri = 'file:///test/preview.jpg';
@@ -77,6 +79,7 @@ describe('GalleryViewer', () => {
       loading: false,
       onPhotoVisible: jest.fn(),
       onSelectPhoto: jest.fn(),
+      onDeletePhoto: jest.fn(),
     });
 
     const { toJSON, queryByText } = render(
@@ -94,6 +97,7 @@ describe('GalleryViewer', () => {
       loading: false,
       onPhotoVisible: jest.fn(),
       onSelectPhoto: jest.fn(),
+      onDeletePhoto: jest.fn(),
     });
 
     const { getByLabelText } = render(
@@ -110,6 +114,7 @@ describe('GalleryViewer', () => {
       loading: false,
       onPhotoVisible: jest.fn(),
       onSelectPhoto: jest.fn(),
+      onDeletePhoto: jest.fn(),
     });
 
     const { queryByText } = render(
@@ -126,6 +131,7 @@ describe('GalleryViewer', () => {
       loading: false,
       onPhotoVisible: jest.fn(),
       onSelectPhoto: jest.fn(),
+      onDeletePhoto: jest.fn(),
     });
 
     const onCloseMock = jest.fn();
@@ -144,6 +150,7 @@ describe('GalleryViewer', () => {
       loading: false,
       onPhotoVisible: jest.fn(),
       onSelectPhoto: jest.fn(),
+      onDeletePhoto: jest.fn(),
     });
 
     const { getByText } = render(
@@ -154,5 +161,39 @@ describe('GalleryViewer', () => {
       />
     );
     expect(getByText('Test Header')).toBeTruthy();
+  });
+
+  it('renders delete button when a photo is selected', () => {
+    mockUseGalleryViewer.mockReturnValue({
+      photos: mockPhotos,
+      selectedPhoto: mockPhotos[0],
+      loading: false,
+      onPhotoVisible: jest.fn(),
+      onSelectPhoto: jest.fn(),
+      onDeletePhoto: jest.fn(),
+    });
+
+    const { getByTestId } = render(
+      <GalleryViewer onClose={jest.fn()} initialUri={null} />
+    );
+
+    expect(getByTestId('delete-photo-button')).toBeTruthy();
+  });
+
+  it('does not render delete button when no photo is selected', () => {
+    mockUseGalleryViewer.mockReturnValue({
+      photos: mockPhotos,
+      selectedPhoto: null,
+      loading: false,
+      onPhotoVisible: jest.fn(),
+      onSelectPhoto: jest.fn(),
+      onDeletePhoto: jest.fn(),
+    });
+
+    const { queryByTestId } = render(
+      <GalleryViewer onClose={jest.fn()} initialUri={null} />
+    );
+
+    expect(queryByTestId('delete-photo-button')).toBeNull();
   });
 });

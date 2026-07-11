@@ -3,9 +3,17 @@ import { useGalleryViewer } from './useGalleryViewer';
 import { useGalleryPhotos } from './useGalleryPhotos';
 import { useImageVerification } from './useImageVerification';
 import { useVerificationStore } from '@entities/verification';
+import * as FileSystem from 'expo-file-system';
+import * as MediaLibrary from 'expo-media-library/legacy';
 
 jest.mock('./useGalleryPhotos');
 jest.mock('./useImageVerification');
+jest.mock('expo-file-system', () => ({
+  deleteAsync: jest.fn(),
+}));
+jest.mock('expo-media-library/legacy', () => ({
+  deleteAssetsAsync: jest.fn(),
+}));
 
 describe('useGalleryViewer', () => {
   const mockUseGalleryPhotos = useGalleryPhotos as jest.Mock;
@@ -238,5 +246,142 @@ describe('useGalleryViewer', () => {
 
     expect(result.current.permissionGranted).toBe(false);
     expect(result.current.photos).toEqual(mockPhotos);
+  });
+
+  describe('onDeletePhoto', () => {
+    const mockDeleteAsync = FileSystem.deleteAsync as jest.Mock;
+    const mockDeleteAssetsAsync = MediaLibrary.deleteAssetsAsync as jest.Mock;
+    const mockOnClose = jest.fn();
+
+    beforeEach(() => {
+      mockDeleteAsync.mockReset();
+      mockDeleteAssetsAsync.mockReset();
+      mockOnClose.mockReset();
+    });
+
+    it('deletes temporary photo using FileSystem and updates selection', async () => {
+      const tempPhoto = { id: 'preview-temp', uri: 'file:///data/preview.jpg' };
+      mockUseGalleryPhotos.mockReturnValue({
+        photos: [tempPhoto, mockPhotos[1]],
+        setPhotos: mockSetPhotos,
+        loading: false,
+        permissionGranted: true,
+      });
+
+      const { result } = renderHook(() => useGalleryViewer(tempPhoto.uri, mockOnClose));
+
+      await act(async () => {
+        await result.current.onDeletePhoto(tempPhoto);
+      });
+
+      expect(mockDeleteAsync).toHaveBeenCalledWith(tempPhoto.uri, { idempotent: true });
+      expect(mockDeleteAssetsAsync).not.toHaveBeenCalled();
+      expect(mockVerifyPhoto).toHaveBeenCalledWith(mockPhotos[1]);
+      expect(mockSetPhotos).toHaveBeenCalled();
+    });
+
+    it('deletes persistent asset using MediaLibrary and updates selection to next photo', async () => {
+      mockUseGalleryPhotos.mockReturnValue({
+        photos: [mockPhotos[0], mockPhotos[1]],
+        setPhotos: mockSetPhotos,
+        loading: false,
+        permissionGranted: true,
+      });
+
+      mockDeleteAssetsAsync.mockResolvedValue(true);
+
+      const { result } = renderHook(() => useGalleryViewer(null, mockOnClose));
+
+      await act(async () => {
+        await result.current.onDeletePhoto(mockPhotos[0]);
+      });
+
+      expect(mockDeleteAssetsAsync).toHaveBeenCalledWith([mockPhotos[0].id]);
+      expect(mockVerifyPhoto).toHaveBeenCalledWith(mockPhotos[1]);
+      expect(mockSetPhotos).toHaveBeenCalled();
+    });
+
+    it('deletes last persistent asset and updates selection to previous photo', async () => {
+      mockUseGalleryPhotos.mockReturnValue({
+        photos: [mockPhotos[0], mockPhotos[1]],
+        setPhotos: mockSetPhotos,
+        loading: false,
+        permissionGranted: true,
+      });
+
+      mockDeleteAssetsAsync.mockResolvedValue(true);
+
+      const { result } = renderHook(() => useGalleryViewer(null, mockOnClose));
+
+      await act(async () => {
+        await result.current.onDeletePhoto(mockPhotos[1]);
+      });
+
+      expect(mockDeleteAssetsAsync).toHaveBeenCalledWith([mockPhotos[1].id]);
+      expect(mockVerifyPhoto).toHaveBeenCalledWith(mockPhotos[0]);
+      expect(mockSetPhotos).toHaveBeenCalled();
+    });
+
+    it('closes the gallery and clears photos when deleting the last remaining photo', async () => {
+      mockUseGalleryPhotos.mockReturnValue({
+        photos: [mockPhotos[0]],
+        setPhotos: mockSetPhotos,
+        loading: false,
+        permissionGranted: true,
+      });
+
+      mockDeleteAssetsAsync.mockResolvedValue(true);
+
+      const { result } = renderHook(() => useGalleryViewer(null, mockOnClose));
+
+      await act(async () => {
+        await result.current.onDeletePhoto(mockPhotos[0]);
+      });
+
+      expect(mockDeleteAssetsAsync).toHaveBeenCalledWith([mockPhotos[0].id]);
+      expect(mockOnClose).toHaveBeenCalled();
+      expect(mockSetPhotos).toHaveBeenCalledWith([]);
+    });
+
+    it('does not update state if user cancels the MediaLibrary deletion', async () => {
+      mockUseGalleryPhotos.mockReturnValue({
+        photos: [mockPhotos[0], mockPhotos[1]],
+        setPhotos: mockSetPhotos,
+        loading: false,
+        permissionGranted: true,
+      });
+
+      mockDeleteAssetsAsync.mockResolvedValue(false); // User cancelled
+
+      const { result } = renderHook(() => useGalleryViewer(null, mockOnClose));
+
+      await act(async () => {
+        await result.current.onDeletePhoto(mockPhotos[0]);
+      });
+
+      expect(mockDeleteAssetsAsync).toHaveBeenCalledWith([mockPhotos[0].id]);
+      expect(mockSetPhotos).not.toHaveBeenCalled();
+      expect(mockOnClose).not.toHaveBeenCalled();
+    });
+
+    it('gracefully handles deletion errors', async () => {
+      mockUseGalleryPhotos.mockReturnValue({
+        photos: [mockPhotos[0]],
+        setPhotos: mockSetPhotos,
+        loading: false,
+        permissionGranted: true,
+      });
+
+      mockDeleteAssetsAsync.mockRejectedValue(new Error('Test deletion error'));
+
+      const { result } = renderHook(() => useGalleryViewer(null, mockOnClose));
+
+      await act(async () => {
+        await result.current.onDeletePhoto(mockPhotos[0]);
+      });
+
+      expect(mockSetPhotos).not.toHaveBeenCalled();
+      expect(mockOnClose).not.toHaveBeenCalled();
+    });
   });
 });

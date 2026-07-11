@@ -141,7 +141,10 @@
       "unverified_badge": "Unverified",
       "share_title": "Share Photo",
       "share_instagram": "Share to Instagram",
-      "share_generic": "Share"
+      "share_generic": "Share",
+      "delete_button": "Delete Photo",
+      "delete_confirm_title": "Delete Photo",
+      "delete_confirm_message": "Are you sure you want to permanently delete this photo?"
     }
   }
 }

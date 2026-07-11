@@ -141,7 +141,10 @@
       "unverified_badge": "Non Verificato",
       "share_title": "Condividi Foto",
       "share_instagram": "Condividi su Instagram",
-      "share_generic": "Condividi"
+      "share_generic": "Condividi",
+      "delete_button": "Elimina Foto",
+      "delete_confirm_title": "Elimina Foto",
+      "delete_confirm_message": "Sei sicuro di voler eliminare definitivamente questa foto?"
     }
   }
 }

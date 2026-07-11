@@ -1,4 +1,6 @@
 import { useEffect, useCallback } from 'react';
+import * as FileSystem from 'expo-file-system';
+import * as MediaLibrary from 'expo-media-library/legacy';
 import { logger } from '@shared/lib/logger';
 import { useGalleryPhotos } from './useGalleryPhotos';
 import { useImageVerification } from './useImageVerification';
@@ -14,7 +16,7 @@ import { useVerificationStore } from '@entities/verification';
  * Used by GalleryViewer.tsx as the single source of truth for
  * gallery state, allowing the component to focus solely on layout.
  */
-export const useGalleryViewer = (initialUri?: string | null) => {
+export const useGalleryViewer = (initialUri?: string | null, onClose?: () => void) => {
   const { photos, setPhotos, loading, permissionGranted } = useGalleryPhotos(initialUri);
   const { selectedPhoto, verifyPhoto } = useImageVerification();
 
@@ -170,6 +172,46 @@ export const useGalleryViewer = (initialUri?: string | null) => {
     void verifyPhoto(photo);
   }, [verifyPhoto]);
 
+  const onDeletePhoto = useCallback(async (photo: GalleryItem) => {
+    try {
+      const isTemp = photo.uri.startsWith('file:///data/') || photo.id === 'preview-temp' || photo.uri.includes('preview') || photo.uri.includes('temp');
+      
+      if (isTemp) {
+        logger.debug('useGalleryViewer', `Deleting temporary file: ${photo.uri}`);
+        await FileSystem.deleteAsync(photo.uri, { idempotent: true });
+      } else {
+        logger.debug('useGalleryViewer', `Deleting media asset: ${photo.id}`);
+        const success = await MediaLibrary.deleteAssetsAsync([photo.id]);
+        if (!success) {
+          logger.debug('useGalleryViewer', 'Deletion cancelled by user or failed');
+          return;
+        }
+      }
+
+      const deletedIndex = photos.findIndex(p => p.id === photo.id || p.uri === photo.uri);
+      
+      if (photos.length <= 1) {
+        logger.debug('useGalleryViewer', 'No photos left after deletion, closing gallery');
+        onClose?.();
+        setPhotos([]);
+      } else {
+        let nextSelected: GalleryItem;
+        if (deletedIndex < photos.length - 1) {
+          nextSelected = photos[deletedIndex + 1];
+        } else {
+          nextSelected = photos[deletedIndex - 1];
+        }
+        
+        logger.debug('useGalleryViewer', `Selecting next photo after deletion: ${nextSelected.uri}`);
+        void verifyPhoto(nextSelected);
+        setPhotos(prev => prev.filter(p => p.id !== photo.id && p.uri !== photo.uri));
+      }
+
+    } catch (error) {
+      logger.error('useGalleryViewer', 'Failed to delete photo', error);
+    }
+  }, [photos, setPhotos, verifyPhoto, onClose]);
+
   return {
     photos,
     selectedPhoto,
@@ -177,5 +219,6 @@ export const useGalleryViewer = (initialUri?: string | null) => {
     onPhotoVisible,
     onSelectPhoto,
     permissionGranted,
+    onDeletePhoto,
   };
 };

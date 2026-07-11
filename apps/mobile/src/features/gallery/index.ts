@@ -1,4 +1,5 @@
 export * from './ui/ShareButton';
+export * from './ui/DeleteButton';
 export * from './ui/CaptureThumbnail';
 export * from './ui/components/PhotoPreview';
 export * from './ui/components/GalleryStrip';
