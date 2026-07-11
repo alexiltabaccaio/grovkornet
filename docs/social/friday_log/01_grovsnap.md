@@ -45,3 +45,23 @@ I'm curious:
 * Has anyone else built something similar to speed up their workflow?
 
 *(Note: If anyone wants to actually try the tool or chat about dev workflows, I've set up a small **Discord** [https://discord.gg/cvYa4SmPaW] community. Any feedback is incredibly welcome!)*
+
+---
+
+# 🟧 Reddit (r/Grovkornet)
+
+**Title:** Friday Log #1: Building an internal tool to share code snippets with you
+
+Welcome to the very first Friday Log! *(Yes, I know today is Saturday, but I literally just opened this subreddit so I'm catching up!)*
+
+Since I'll be sharing a lot of code in the upcoming *Tuesday Insights*, I wanted a quick way to generate beautiful code snippets. But copying code into third-party websites every time felt like an unnecessary extra step. Honestly, I'm a very lazy person.
+
+So, I built a custom internal tool inside the monorepo called **Grovsnap** [https://github.com/alexiltabaccaio/grovkornet/tree/main/apps/grovsnap].
+
+What you see in the image is the tool in action: it's a generated snippet showing the exact custom Vite plugin that powers the tool itself!
+
+Instead of fighting browser sandboxes or doing manual uploads, Grovsnap connects directly to my **local filesystem**. I wrote a **custom Vite plugin** to expose two local APIs (`/api/fs/tree` and `/api/fs/file`). This lets me safely browse the Grovkornet source code, select a file, and automatically generate a styled snippet with syntax highlighting. **It completely removes the copy-pasting step.**
+
+Let me know what you think of this setup, and see you on Tuesday for the first deep-dive into the Grovkornet codebase! 
+
+#Grovkornet #DevLog #ReactNative #Vite #PlatformEngineering #SoloDev
