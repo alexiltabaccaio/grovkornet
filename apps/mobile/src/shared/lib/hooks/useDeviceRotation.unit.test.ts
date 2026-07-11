@@ -1,7 +1,7 @@
  
 import { renderHook, act } from '@testing-library/react-native';
 import { Accelerometer } from 'expo-sensors';
-import { useDeviceRotation } from './useDeviceRotation';
+import { useDeviceRotation, _setLastKnownAngleForTesting } from './useDeviceRotation';
 
 describe('useDeviceRotation', () => {
   let accelerometerCallback: ((data: { x: number; y: number; z: number }) => void) | null = null;
@@ -9,6 +9,7 @@ describe('useDeviceRotation', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+    _setLastKnownAngleForTesting(0);
     accelerometerCallback = null;
     (Accelerometer.addListener as jest.Mock).mockImplementation((callback) => {
       accelerometerCallback = callback;

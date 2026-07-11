@@ -2,9 +2,15 @@ import { useEffect, useRef } from 'react';
 import { Accelerometer } from 'expo-sensors';
 import { useSharedValue, withTiming } from 'react-native-reanimated';
 
+export let _lastKnownAngle = 0;
+
+export const _setLastKnownAngleForTesting = (angle: number) => {
+  _lastKnownAngle = angle;
+};
+
 export const useDeviceRotation = () => {
-  const rotationY = useSharedValue(0);
-  const currentTargetAngle = useRef(0);
+  const rotationY = useSharedValue(_lastKnownAngle);
+  const currentTargetAngle = useRef(_lastKnownAngle);
 
   useEffect(() => {
     // Limit update frequency to reduce CPU overhead
@@ -35,6 +41,7 @@ export const useDeviceRotation = () => {
         const angleDiff = ((targetAngle - currentAngle + 540) % 360) - 180;
         
         currentTargetAngle.current = targetAngle;
+        _lastKnownAngle = targetAngle;
         rotationY.value = withTiming(currentAngle + angleDiff, { duration: 300 });
       }
     });
