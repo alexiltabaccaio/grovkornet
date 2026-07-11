@@ -33,6 +33,8 @@ export default function MainScreen() {
   const [isExporting, setIsExporting] = useState(false);
   const [seriesTag, setSeriesTag] = useState('Friday Log');
   const [seriesNumber, setSeriesNumber] = useState('01');
+  const [pageCurrent, setPageCurrent] = useState(1);
+  const [pageTotal, setPageTotal] = useState(1);
   const lines = fullCode.split('\n');
   const totalLines = lines.length;
   const slicedCode = lines.slice(startLine - 1, endLine).join('\n');
@@ -91,6 +93,10 @@ export default function MainScreen() {
         setSeriesTag={setSeriesTag}
         seriesNumber={seriesNumber}
         setSeriesNumber={setSeriesNumber}
+        pageCurrent={pageCurrent}
+        setPageCurrent={setPageCurrent}
+        pageTotal={pageTotal}
+        setPageTotal={setPageTotal}
       />
       <PreviewArea
         code={slicedCode}
@@ -99,6 +105,8 @@ export default function MainScreen() {
         startLine={startLine}
         seriesTag={seriesTag}
         seriesNumber={seriesNumber}
+        pageCurrent={pageCurrent}
+        pageTotal={pageTotal}
       />
     </div>
   );

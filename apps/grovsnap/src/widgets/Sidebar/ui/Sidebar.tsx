@@ -15,6 +15,10 @@ interface SidebarProps {
   setSeriesTag: (val: string) => void;
   seriesNumber: string;
   setSeriesNumber: (val: string) => void;
+  pageCurrent: number;
+  setPageCurrent: (val: number) => void;
+  pageTotal: number;
+  setPageTotal: (val: number) => void;
 }
 
 export default function Sidebar({
@@ -30,7 +34,11 @@ export default function Sidebar({
   seriesTag,
   setSeriesTag,
   seriesNumber,
-  setSeriesNumber
+  setSeriesNumber,
+  pageCurrent,
+  setPageCurrent,
+  pageTotal,
+  setPageTotal
 }: SidebarProps) {
   return (
     <aside className="sidebar">
@@ -76,7 +84,7 @@ export default function Sidebar({
       </div>
 
       {/* Series Tag Selector */}
-      <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '12px', marginTop: '8px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr', gap: '12px', marginTop: '8px' }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
           <label style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-secondary)' }}>SERIE</label>
           <select
@@ -97,6 +105,27 @@ export default function Sidebar({
             onChange={(e) => setSeriesNumber(Math.max(1, Number(e.target.value)).toString().padStart(2, '0'))}
             style={{ width: '100%' }}
           />
+        </div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          <label style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-secondary)' }}>PAGINA</label>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+            <input
+              type="number"
+              min={1}
+              max={pageTotal}
+              value={pageCurrent}
+              onChange={(e) => setPageCurrent(Math.min(pageTotal, Math.max(1, Number(e.target.value))))}
+              style={{ width: '100%', minWidth: '40px', padding: '6px 4px', textAlign: 'center' }}
+            />
+            <span style={{ color: 'var(--text-secondary)', fontWeight: 600 }}>/</span>
+            <input
+              type="number"
+              min={pageCurrent}
+              value={pageTotal}
+              onChange={(e) => setPageTotal(Math.max(pageCurrent, Number(e.target.value)))}
+              style={{ width: '100%', minWidth: '40px', padding: '6px 4px', textAlign: 'center' }}
+            />
+          </div>
         </div>
       </div>
 
