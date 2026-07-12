@@ -1,3 +1,5 @@
+**Attachment for Grovsnap:** `@[apps/grovsnap/vite-plugin-local-fs.ts]` (Lines 92-147)
+
 # 🟦 LinkedIn
 
 Friction kills developer velocity.
