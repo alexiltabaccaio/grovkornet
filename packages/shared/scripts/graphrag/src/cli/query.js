@@ -49,16 +49,16 @@ Usage: npm run query -- --node=<search_string> [--depth=<number>] [--direction=i
        npm run query -- --from=<nodeA> --to=<nodeB> [--mermaid]
 
 Parameters:
-  --node       Name of the file or symbol to search for (partial search)
-  --depth      Exploration depth of the dependencies (default: 2)
-  --direction  Direction of the relations to follow:
-                 - 'in'   : Who uses this node (dependents)
-                 - 'out'  : What this node uses (dependencies)
-                 - 'both' : Both directions
-  --mermaid    Outputs a Mermaid JS graph
-  --from, --to Find the shortest path between two nodes (dependencies flow)
+  --node        Name of the file or symbol to search for (partial search)
+  --depth       Exploration depth of the dependencies (default: 2)
+  --direction   Direction of the relations to follow:
+                  - 'in'   : Who uses this node (dependents)
+                  - 'out'  : What this node uses (dependencies)
+                  - 'both' : Both directions
+  --mermaid     Outputs a Mermaid JS graph
+  --from, --to  Find the shortest path between two nodes (dependencies flow)
 `);
-  process.exit(0);
+  process.exit(1);
 }
 
 // Load query-optimized graph representation

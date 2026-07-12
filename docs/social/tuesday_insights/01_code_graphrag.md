@@ -13,6 +13,8 @@ To solve this, I had to stop acting like a programmer and start acting like an A
 
 It's a custom AST (Abstract Syntax Tree) analyzer that dynamically maps the entire codebase and creates a relational database of dependencies (from TypeScript, all the way down to C++ and Kotlin).
 
+You might be wondering: why not use Dependency Cruiser or ESLint? Because my stack spans TypeScript, Kotlin, and C++. I needed a unified graph that could speak natively to an LLM using Mermaid, bridging cross-language boundaries.
+
 Now, before the agent is allowed to execute any structural change, it must query this graph via CLI:
 1️⃣ **Node Search:** It asks "If I modify `useCameraStore`, what components will break downstream?"
 2️⃣ **Architectural Validation:** A CLI command (`npm run analyze`) verifies that there are no FSD violations (e.g., a 'shared' module importing from 'features'), dependency cycles, or orphaned files.
@@ -39,6 +41,8 @@ If you don't give the AI strict boundaries, it will turn your codebase into spag
 So, I built an internal tool called **Code GraphRAG** [https://github.com/alexiltabaccaio/grovkornet/tree/main/packages/shared/scripts/graphrag/].
 
 It's a custom AST (Abstract Syntax Tree) scanner that reads our entire TypeScript, Kotlin, and C++ codebase and builds a dynamic dependency graph. 
+
+I know what you're thinking: *"Why reinvent the wheel instead of using ESLint plugin boundaries or Dependency Cruiser?"*. The answer is my stack. Grovkornet relies heavily on native C++ and Kotlin. Standard TS tools couldn't give the LLM a unified cross-language graph formatted in conversational Mermaid. So, I built one.
 
 Now, before the agent is allowed to make any structural changes, it uses this CLI tool to:
 1. **Query the impact:** "If I change `useCameraStore`, what else breaks?"
