@@ -4,6 +4,15 @@ import { PreviewArea } from '@widgets/PreviewArea';
 import { getLanguageFromPath } from '@shared/lib';
 import { exportSnippetPng } from '@features/export-snippet';
 
+export interface SnapshotPage {
+  id: string;
+  selectedPath: string;
+  fullCode: string;
+  lineRanges: string;
+  language: string;
+  fileName: string;
+}
+
 const INITIAL_CODE = `// Let's share some Grovkornet magic!
 import React, { useCallback } from 'react';
 import { NativeFilmCamera } from '@shared/camera';
@@ -23,19 +32,62 @@ export function CameraPreview() {
   );
 }`;
 
+const INITIAL_PAGE: SnapshotPage = {
+  id: 'initial',
+  selectedPath: '',
+  fullCode: INITIAL_CODE,
+  lineRanges: '',
+  language: 'typescript',
+  fileName: 'Viewfinder.tsx'
+};
+
 export default function MainScreen() {
-  const [selectedPath, setSelectedPath] = useState('');
-  const [fullCode, setFullCode] = useState(INITIAL_CODE);
-  const [lineRanges, setLineRanges] = useState('');
-  const [language, setLanguage] = useState('typescript');
-  const [fileName, setFileName] = useState('Viewfinder.tsx');
+  const [pages, setPages] = useState<SnapshotPage[]>([INITIAL_PAGE]);
+  const [activePageIndex, setActivePageIndex] = useState(0);
   const [isExporting, setIsExporting] = useState(false);
   const [seriesTag, setSeriesTag] = useState('Friday Log');
   const [seriesNumber, setSeriesNumber] = useState('01');
-  const [pageCurrent, setPageCurrent] = useState(1);
-  const [pageTotal, setPageTotal] = useState(1);
+
+  const currentPage = pages[activePageIndex] || INITIAL_PAGE;
+  const { selectedPath, fullCode, lineRanges, language, fileName } = currentPage;
+
   const lines = fullCode.split('\n');
   const totalLines = lines.length;
+
+  const updateActivePage = (updatedFields: Partial<SnapshotPage>) => {
+    setPages(prev => prev.map((page, idx) => 
+      idx === activePageIndex ? { ...page, ...updatedFields } : page
+    ));
+  };
+
+  const handleAddPage = () => {
+    const newPage: SnapshotPage = {
+      ...currentPage,
+      id: Math.random().toString(36).substring(2, 9),
+    };
+    setPages(prev => {
+      const nextPages = [...prev, newPage];
+      setActivePageIndex(nextPages.length - 1);
+      return nextPages;
+    });
+  };
+
+  const handleRemovePage = (indexToRemove: number) => {
+    if (pages.length <= 1) return;
+    setPages(prev => {
+      const nextPages = prev.filter((_, idx) => idx !== indexToRemove);
+      setActivePageIndex(currentActive => {
+        if (currentActive === indexToRemove) {
+          return Math.max(0, indexToRemove - 1);
+        }
+        if (currentActive > indexToRemove) {
+          return currentActive - 1;
+        }
+        return currentActive;
+      });
+      return nextPages;
+    });
+  };
 
   const parseLineRanges = (rangesStr: string, maxLine: number): number[] => {
     const result: Set<number> = new Set();
@@ -88,29 +140,39 @@ export default function MainScreen() {
   const slicedCode = slicedCodeLines.join('\n');
 
   const handleSelectFile = (path: string) => {
-    setSelectedPath(path);
+    const targetIndex = activePageIndex;
+    setPages(prev => prev.map((page, idx) => 
+      idx === targetIndex ? { ...page, selectedPath: path } : page
+    ));
     void (async () => {
       try {
         const res = await fetch(`/api/fs/file?path=${encodeURIComponent(path)}`);
         if (!res.ok) throw new Error('Failed to fetch file content');
         const content = await res.text();
-        setFullCode(content);
-        
-        setLineRanges('');
-        
-        setFileName(path);
-        setLanguage(getLanguageFromPath(path));
+        setPages(prev => prev.map((page, idx) => 
+          idx === targetIndex ? {
+            ...page,
+            selectedPath: path,
+            fullCode: content,
+            lineRanges: '',
+            fileName: path,
+            language: getLanguageFromPath(path)
+          } : page
+        ));
       } catch (err) {
         console.error(err);
       }
     })();
   };
 
+  const pageCurrent = activePageIndex + 1;
+  const pageTotal = pages.length;
+
   const handleDownload = () => {
     const node = document.getElementById('grovsnap-canvas');
     if (!node) return;
 
-    let exportName = fileName.split('/').pop() || 'snippet';
+    let exportName = fileName.split(/[/\\]/).pop() || 'snippet';
 
     if (pageTotal > 1) {
       const lastDot = exportName.lastIndexOf('.');
@@ -141,7 +203,7 @@ export default function MainScreen() {
         selectedPath={selectedPath}
         onSelectFile={handleSelectFile}
         lineRanges={lineRanges}
-        setLineRanges={setLineRanges}
+        setLineRanges={(val) => updateActivePage({ lineRanges: val })}
         totalLines={totalLines}
         isExporting={isExporting}
         onDownload={handleDownload}
@@ -149,10 +211,11 @@ export default function MainScreen() {
         setSeriesTag={setSeriesTag}
         seriesNumber={seriesNumber}
         setSeriesNumber={setSeriesNumber}
-        pageCurrent={pageCurrent}
-        setPageCurrent={setPageCurrent}
-        pageTotal={pageTotal}
-        setPageTotal={setPageTotal}
+        pages={pages}
+        activePageIndex={activePageIndex}
+        onAddPage={handleAddPage}
+        onRemovePage={handleRemovePage}
+        onSelectPage={setActivePageIndex}
       />
       <PreviewArea
         code={slicedCode}

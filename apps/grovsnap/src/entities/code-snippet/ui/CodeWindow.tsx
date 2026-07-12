@@ -11,12 +11,10 @@ interface CodeWindowProps {
 
 export default function CodeWindow({ code, language, fileName, lineNumbers }: CodeWindowProps) {
   const [highlightedHtml, setHighlightedHtml] = useState('');
-  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     let active = true;
     async function highlight() {
-      setLoading(true);
       try {
         const transformers: ShikiTransformer[] = [];
         if (lineNumbers && lineNumbers.length > 0) {
@@ -49,10 +47,6 @@ export default function CodeWindow({ code, language, fileName, lineNumbers }: Co
         if (active) {
           setHighlightedHtml(`<pre class="shiki"><code>${code}</code></pre>`);
         }
-      } finally {
-        if (active) {
-          setLoading(false);
-        }
       }
     }
     void highlight();
@@ -80,19 +74,7 @@ export default function CodeWindow({ code, language, fileName, lineNumbers }: Co
           {fileName}
         </div>
       )}
-      {loading && (
-        <div style={{
-          position: 'absolute',
-          inset: 0,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          fontSize: '0.85rem',
-          color: 'var(--text-secondary)'
-        }}>
-          Highlighting...
-        </div>
-      )}
+
       <style>{`
         .shiki-container .line::before {
           content: attr(data-line);
