@@ -16,14 +16,14 @@ export async function exportSnippetPng({
   onError
 }: ExportOptions) {
   onStart?.();
-  
+
   // Give Shiki highlighter a moment to settle in case of changes
   await new Promise(resolve => setTimeout(resolve, 100));
 
   try {
     const width = node.scrollWidth;
     const height = node.scrollHeight;
-    
+
     const dataUrl = await toPng(node, {
       cacheBust: true,
       pixelRatio: 3,
@@ -34,7 +34,7 @@ export async function exportSnippetPng({
         margin: '0',
       }
     });
-    
+
     const link = document.createElement('a');
     const nameWithoutExt = fileName ? fileName.replace(/\.[^/.]+$/, "") : 'grovsnap';
     link.download = `${nameWithoutExt}.png`;

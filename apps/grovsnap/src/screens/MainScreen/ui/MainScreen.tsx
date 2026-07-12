@@ -188,12 +188,7 @@ export default function MainScreen() {
     let exportName = fileName.split(/[/\\]/).pop() || 'snippet';
 
     if (pageTotal > 1) {
-      const lastDot = exportName.lastIndexOf('.');
-      if (lastDot !== -1) {
-        exportName = `${exportName.slice(0, lastDot)}-p${pageCurrent}${exportName.slice(lastDot)}`;
-      } else {
-        exportName = `${exportName}-p${pageCurrent}`;
-      }
+      exportName = `p${pageCurrent}-${exportName}`;
     }
 
     if (seriesTag) {
