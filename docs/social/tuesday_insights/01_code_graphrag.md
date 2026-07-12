@@ -13,7 +13,7 @@ To solve this, I had to stop acting like a programmer and start acting like an A
 
 It's a custom AST (Abstract Syntax Tree) analyzer that dynamically maps the entire codebase and creates a relational database of dependencies (from TypeScript, all the way down to C++ and Kotlin).
 
-You might be wondering: why not use Dependency Cruiser or ESLint? Because my stack spans TypeScript, Kotlin, and C++. I needed a unified graph that could speak natively to an LLM using Mermaid, bridging cross-language boundaries.
+In my previous project (T-Facile), I successfully used ESLint to enforce architectural boundaries. But Grovkornet is different. I needed a unified graph that could speak natively to an LLM using Mermaid, bridging those cross-language boundaries that standard TS tools can't see.
 
 Now, before the agent is allowed to execute any structural change, it must query this graph via CLI:
 1️⃣ **Node Search:** It asks "If I modify `useCameraStore`, what components will break downstream?"
@@ -34,21 +34,21 @@ Have you ever experienced issues with LLM-generated "spaghetti code" while scali
 
 Welcome to the very first Tuesday Insights! Every Tuesday, I'll deep dive into the technical challenges of building Grovkornet and the tools I've created to solve them.
 
-If you read my original launch post, you might remember that I rely heavily on AI to build the C++ and React Native engines. They are incredible at writing boilerplate, but they have a fatal flaw: they lack "architectural vision". When doing complex refactoring across the monorepo, the model would often introduce circular dependencies or violate our Feature-Sliced Design (FSD) boundaries because it couldn't see the whole picture.
+If you read my original launch post, you might remember that I rely heavily on AI to build the C++ and React Native engines. They are incredible at writing boilerplate, but they have a fatal flaw: they lack **"architectural vision"**. When doing complex refactoring across the monorepo, the model would often introduce circular dependencies or violate our Feature-Sliced Design (FSD) boundaries because it couldn't see the whole picture.
 
-If you don't give the AI strict boundaries, it will turn your codebase into spaghetti code in a matter of days.
+If you don't give the AI strict boundaries, it will turn your codebase into **spaghetti code** in a matter of days.
 
 So, I built an internal tool called **Code GraphRAG** [https://github.com/alexiltabaccaio/grovkornet/tree/main/packages/shared/scripts/graphrag/].
 
-It's a custom AST (Abstract Syntax Tree) scanner that reads our entire TypeScript, Kotlin, and C++ codebase and builds a dynamic dependency graph. 
+It's a custom AST (Abstract Syntax Tree) scanner that reads our entire TypeScript, Kotlin, and C++ codebase and builds a **dynamic dependency graph**. 
 
-I know what you're thinking: *"Why reinvent the wheel instead of using ESLint plugin boundaries or Dependency Cruiser?"*. The answer is my stack. Grovkornet relies heavily on native C++ and Kotlin. Standard TS tools couldn't give the LLM a unified cross-language graph formatted in conversational Mermaid. So, I built one.
+I know what you're thinking: *"Why reinvent the wheel instead of using ESLint plugin boundaries or Dependency Cruiser?"*. The answer is my stack. While ESLint is perfect for pure-TS apps, standard tools aren't designed out-of-the-box to give an LLM a **unified cross-language graph** formatted in conversational Mermaid.
 
 Now, before the agent is allowed to make any structural changes, it uses this CLI tool to:
 1. **Query the impact:** "If I change `useCameraStore`, what else breaks?"
 2. **Validate boundaries:** Run `npm run analyze` to ensure no FSD rules are broken (e.g., a shared module importing a feature).
 3. **Visualize:** Generate a Mermaid graph so the agent can literally "see" the architecture.
 
-By giving the model a map of the territory, I can let it run fast without worrying about it breaking the core architecture. You can't control every line of code it writes, but you *must* build the load-bearing walls.
+By giving the model a map of the territory, I can let it run fast without worrying about it breaking the core architecture. You can't control every line of code it writes, but you **must** build the **load-bearing walls**.
 
 The code for GraphRAG is open-source in the monorepo if you want to see how we manage LLMs! Let me know if you have any questions on how it works.
