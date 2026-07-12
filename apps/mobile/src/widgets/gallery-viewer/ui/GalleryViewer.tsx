@@ -90,24 +90,38 @@ export const GalleryViewer = React.memo(({ onClose, initialUri, galleryTransitio
     if (!galleryTransition) return {};
     const t = galleryTransition.value;
 
+    const angle = rotationY ? rotationY.value : 0;
+    const rad = (angle * Math.PI) / 180;
+    const sinSq = Math.sin(rad) * Math.sin(rad);
+    const cosSq = Math.cos(rad) * Math.cos(rad);
+    
+    // Swap dimensions if landscape, so the container bounds match AnimatedSlot
+    const currentWidth = width * cosSq + height * sinSq;
+    const currentHeight = height * cosSq + width * sinSq;
+
     // Animate from thumbnail approximate position (bottom left) to center screen
     const translateX = interpolate(t, [0, 1], [-80, 0]);
     const translateY = interpolate(t, [0, 1], [height / 2 - 120, 0]);
+    // The visual width of the rotated view is ALWAYS `width` on screen.
+    // So to start at exactly 50px, we scale by `50 / width`.
     const scale = interpolate(t, [0, 1], [50 / width, 1]);
 
     return {
+      width: currentWidth,
+      height: currentHeight,
       transform: [
         { translateX },
         { translateY },
         { scale },
         { translateX: zoomTranslateX.value },
         { translateY: zoomTranslateY.value },
-        { scale: zoomScale.value }
+        { scale: zoomScale.value },
+        { rotate: `${rotationY.value}deg` }
       ],
       borderRadius: interpolate(t, [0, 1], [8, 0]),
       overflow: 'hidden',
     };
-  }, [width, height, galleryTransition, zoomScale, zoomTranslateX, zoomTranslateY]);
+  }, [width, height, galleryTransition, zoomScale, zoomTranslateX, zoomTranslateY, rotationY]);
 
   return (
     <Animated.View
@@ -164,10 +178,10 @@ export const GalleryViewer = React.memo(({ onClose, initialUri, galleryTransitio
             {showPlaceholder && (
               <Animated.View style={[StyleSheet.absoluteFill, styles.center, animatedOverlayStyle]} pointerEvents="none">
                 {initialUri ? (
-                  <Animated.View style={[StyleSheet.absoluteFill, animatedPlaceholderStyle]}>
+                  <Animated.View testID="gallery-placeholder-container" style={animatedPlaceholderStyle}>
                     <Image
                       source={{ uri: initialUri }}
-                      style={StyleSheet.absoluteFill}
+                      style={{ width: '100%', height: '100%' }}
                       contentFit="contain"
                       transition={0}
                       cachePolicy="memory-disk"

@@ -63,5 +63,3 @@ What you see in the image is the tool in action: it's a generated snippet showin
 Instead of fighting browser sandboxes or doing manual uploads, Grovsnap connects directly to my **local filesystem**. I wrote a **custom Vite plugin** to expose two local APIs (`/api/fs/tree` and `/api/fs/file`). This lets me safely browse the Grovkornet source code, select a file, and automatically generate a styled snippet with syntax highlighting. **It completely removes the copy-pasting step.**
 
 Let me know what you think of this setup, and see you on Tuesday for the first deep-dive into the Grovkornet codebase! 
-
-#Grovkornet #DevLog #ReactNative #Vite #PlatformEngineering #SoloDev

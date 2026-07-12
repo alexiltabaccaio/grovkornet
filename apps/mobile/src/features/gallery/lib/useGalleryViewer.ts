@@ -1,4 +1,5 @@
 import { useEffect, useCallback } from 'react';
+import { BackHandler, Platform } from 'react-native';
 import * as FileSystem from 'expo-file-system';
 import * as MediaLibrary from 'expo-media-library/legacy';
 import { logger } from '@shared/lib/logger';
@@ -211,6 +212,22 @@ export const useGalleryViewer = (initialUri?: string | null, onClose?: () => voi
       logger.error('useGalleryViewer', 'Failed to delete photo', error);
     }
   }, [photos, setPhotos, verifyPhoto, onClose]);
+
+  // Handle hardware back button on Android to close the gallery
+  useEffect(() => {
+    if (Platform.OS !== 'android' || !onClose) return;
+
+    const onBackPress = () => {
+      onClose();
+      return true; // prevent default (exiting the app)
+    };
+
+    const subscription = BackHandler.addEventListener('hardwareBackPress', onBackPress);
+
+    return () => {
+      subscription.remove();
+    };
+  }, [onClose]);
 
   return {
     photos,

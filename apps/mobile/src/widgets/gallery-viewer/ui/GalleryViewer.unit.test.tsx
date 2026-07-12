@@ -1,10 +1,11 @@
 import React from 'react';
 import { render, fireEvent } from '@testing-library/react-native';
-import { Text } from 'react-native';
+import { Text, StyleSheet } from 'react-native';
 import { makeMutable } from 'react-native-reanimated';
 import { GalleryViewer } from './GalleryViewer';
 import { useGalleryViewer } from '@features/gallery';
 import { useVerificationStore } from '@entities/verification';
+import { useDeviceRotation } from '@shared/lib/hooks/useDeviceRotation';
 
 jest.mock('@features/gallery', () => {
   const actual = jest.requireActual('@features/gallery');
@@ -14,6 +15,10 @@ jest.mock('@features/gallery', () => {
   };
 });
 
+jest.mock('@shared/lib/hooks/useDeviceRotation', () => ({
+  useDeviceRotation: jest.fn(),
+}));
+
 const mockPhotos = [
   { uri: 'file:///test/1.jpg', id: '1' },
   { uri: 'file:///test/2.jpg', id: '2' },
@@ -21,9 +26,12 @@ const mockPhotos = [
 
 describe('GalleryViewer', () => {
   const mockUseGalleryViewer = useGalleryViewer as jest.Mock;
+  const mockRotation = makeMutable(0);
 
   beforeEach(() => {
     jest.clearAllMocks();
+    mockRotation.value = 0;
+    (useDeviceRotation as jest.Mock).mockReturnValue(mockRotation);
     useVerificationStore.setState({
       verifiedMap: {
         'file:///test/1.jpg': true,
@@ -195,5 +203,33 @@ describe('GalleryViewer', () => {
     );
 
     expect(queryByTestId('delete-photo-button')).toBeNull();
+  });
+
+  it('applies rotation and layout dimensions to placeholder image container based on device rotation', () => {
+    mockUseGalleryViewer.mockReturnValue({
+      photos: mockPhotos,
+      selectedPhoto: mockPhotos[0],
+      loading: true,
+      onPhotoVisible: jest.fn(),
+      onSelectPhoto: jest.fn(),
+      onDeletePhoto: jest.fn(),
+    });
+
+    mockRotation.value = 90;
+
+    const { getByTestId } = render(
+      <GalleryViewer onClose={jest.fn()} initialUri="file:///test/1.jpg" galleryTransition={makeMutable(0)} />
+    );
+
+    const container = getByTestId('gallery-placeholder-container');
+    const flattened = StyleSheet.flatten(container.props.style);
+
+    expect(flattened).toEqual(
+      expect.objectContaining({
+        transform: expect.arrayContaining([
+          expect.objectContaining({ rotate: '90deg' })
+        ])
+      })
+    );
   });
 });
