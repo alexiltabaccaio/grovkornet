@@ -103,8 +103,6 @@ class CapturePipeline(
         
         // 2. Heavy memory allocation and processing (serialized with a Mutex to prevent OOM)
         memoryMutex.withLock {
-            var rawBitmap: Bitmap? = null
-            var bitmap: Bitmap? = null
             var scaled: Bitmap? = null
             var processed: Bitmap? = null
             var watermarked: Bitmap? = null
@@ -115,20 +113,9 @@ class CapturePipeline(
                     ExifMetadataManager.extractMetadata(stream)
                 }
 
-                rawBitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
-                if (rawBitmap == null) return@withLock
-                bitmap = ImageProcessorPipeline.rotateAndMirror(rawBitmap, rotation, config.isSelfieCamera)
+                scaled = ImageProcessorPipeline.processRawCaptureBytes(bytes, rotation, config)
+                if (scaled == null) return@withLock
 
-                // Crop to target aspect ratio
-                val cropped = ImageUtils.cropToAspectRatio(bitmap!!, config.aspectRatio)
-                if (cropped != bitmap) {
-                    bitmap!!.recycle()
-                    bitmap = cropped
-                }
-
-                // Scale to target resolution
-                scaled = ImageProcessorPipeline.scaleToTargetResolution(bitmap!!, config.resolutionSetting)
-                
                 // Process the full-resolution image
                 processed = ImageProcessorPipeline.processRenderPipeline(scaled, config, context, offscreenProcessor)
                 if (scaled != processed) {
@@ -158,6 +145,7 @@ class CapturePipeline(
                 withContext(Dispatchers.Main) {
                     listener.onPhotoCaptured(uri.toString())
                 }
+
                 if (BuildConfig.DEBUG) {
                     Log.d(TAG, "Processing complete in ${System.currentTimeMillis() - procStartTime}ms: $uri")
                 }
@@ -165,8 +153,6 @@ class CapturePipeline(
                 Log.e(TAG, "Failed to process photo", e)
             } finally {
                 // Prevent memory leaks by freeing all resources allocated in this scope
-                rawBitmap?.takeIf { !it.isRecycled }?.recycle()
-                bitmap?.takeIf { !it.isRecycled }?.recycle()
                 scaled?.takeIf { !it.isRecycled }?.recycle()
                 processed?.takeIf { !it.isRecycled }?.recycle()
                 watermarked?.takeIf { !it.isRecycled }?.recycle()

@@ -83,51 +83,49 @@ class CapturePipelineTest {
         mockkObject(ImageProcessorPipeline)
         mockkObject(ImageUtils)
         mockkObject(WatermarkEngine)
-
+ 
         every { BitmapFactory.decodeByteArray(any(), any(), any()) } returns mockRawBitmap
         every { ExifMetadataManager.extractMetadata(any()) } returns mapOf("Make" to "Grovkornet")
         every { ExifMetadataManager.writeMetadata(any(), any(), any()) } just Runs
         
-        every { ImageProcessorPipeline.rotateAndMirror(any(), any(), any()) } returns mockRotatedBitmap
-        every { ImageProcessorPipeline.scaleToTargetResolution(any(), any()) } returns mockScaledBitmap
+        every { ImageProcessorPipeline.processRawCaptureBytes(any(), any(), any()) } returns mockScaledBitmap
         coEvery { ImageProcessorPipeline.processRenderPipeline(any(), any(), any(), any()) } returns mockProcessedBitmap
         
-        every { ImageUtils.cropToAspectRatio(any(), any()) } returns mockCroppedBitmap
         every { WatermarkEngine.embedSignature(any()) } returns mockWatermarkedBitmap
     }
-
+ 
     @After
     fun tearDown() {
         unmockkAll()
     }
-
+ 
     @Test
     fun testTakePicture_coordinatesEntireCaptureAndSaveFlow() {
         val latch = CountDownLatch(1)
         var capturedUriString: String? = null
-
+ 
         val listener = object : CapturePipeline.Listener {
             override fun onPhotoCaptured(uri: String) {
                 capturedUriString = uri
                 latch.countDown()
             }
         }
-
+ 
         // Mock imageCapture.takePicture to execute the callback immediately with our mockImageProxy
         every { mockImageCapture.takePicture(any(), any<ImageCapture.OnImageCapturedCallback>()) } answers {
             val callback = secondArg<ImageCapture.OnImageCapturedCallback>()
             callback.onCaptureSuccess(mockImageProxy)
         }
-
+ 
         val config = CameraConfiguration().apply {
             aspectRatio = 1
             resolutionSetting = 2
             isSelfieCamera = false
         }
-
+ 
         val pipeline = CapturePipeline(mockContext, config, mockGalleryManager, listener)
         pipeline.takePicture(mockImageCapture)
-
+ 
         // Wait for asynchronous processing to complete
         var attempts = 0
         while (capturedUriString == null && attempts < 100) {
@@ -135,15 +133,12 @@ class CapturePipelineTest {
             Thread.sleep(50)
             attempts++
         }
-
+ 
         assertNotNull("Async processing should complete successfully within timeout", capturedUriString)
         assertEquals(testUri.toString(), capturedUriString)
-
+ 
         // Verify key functions were executed in the expected sequence
-        verify { BitmapFactory.decodeByteArray(any(), any(), any()) }
-        verify { ImageProcessorPipeline.rotateAndMirror(mockRawBitmap, 90, false) }
-        verify { ImageUtils.cropToAspectRatio(mockRotatedBitmap, 1) }
-        verify { ImageProcessorPipeline.scaleToTargetResolution(mockCroppedBitmap, 2) }
+        verify { ImageProcessorPipeline.processRawCaptureBytes(any(), 90, config) }
         coVerify { ImageProcessorPipeline.processRenderPipeline(mockScaledBitmap, config, mockContext, any()) }
         verify { WatermarkEngine.embedSignature(mockProcessedBitmap) }
         verify { mockGalleryManager.createGalleryUri() }
@@ -153,7 +148,7 @@ class CapturePipelineTest {
         // Ensure the image proxy was closed
         verify { mockImageProxy.close() }
     }
-
+ 
     @Test
     fun testProcessAndSave_clearsBitmapsOnException() {
         // Setup config
@@ -162,22 +157,22 @@ class CapturePipelineTest {
             resolutionSetting = 2
             isSelfieCamera = false
         }
-
+ 
         // Trigger an exception midway through the pipeline to halt processing
-        every { ImageProcessorPipeline.scaleToTargetResolution(any(), any()) } throws RuntimeException("Simulated exception for memory leak test")
-
+        coEvery { ImageProcessorPipeline.processRenderPipeline(any(), any(), any(), any()) } throws RuntimeException("Simulated exception for memory leak test")
+ 
         // Mock imageCapture to invoke success immediately
         every { mockImageCapture.takePicture(any(), any<ImageCapture.OnImageCapturedCallback>()) } answers {
             val callback = secondArg<ImageCapture.OnImageCapturedCallback>()
             callback.onCaptureSuccess(mockImageProxy)
         }
-
+ 
         val pipeline = CapturePipeline(mockContext, config, mockGalleryManager, object : CapturePipeline.Listener {
             override fun onPhotoCaptured(uri: String) {}
         })
-
+ 
         pipeline.takePicture(mockImageCapture)
-
+ 
         // Wait for coroutine processing
         var attempts = 0
         while (attempts < 50) {
@@ -185,10 +180,10 @@ class CapturePipelineTest {
             Thread.sleep(50)
             attempts++
         }
-
-        // The pipeline crashes during scaleToTargetResolution.
-        // At that point, 'bitmap' is pointing to mockCroppedBitmap.
+ 
+        // The pipeline crashes during processRenderPipeline.
+        // At that point, 'scaled' is pointing to mockScaledBitmap.
         // We verify that recycle is called on it to ensure memory leak prevention via finally block.
-        verify(atLeast = 1) { mockCroppedBitmap.recycle() }
+        verify(atLeast = 1) { mockScaledBitmap.recycle() }
     }
 }

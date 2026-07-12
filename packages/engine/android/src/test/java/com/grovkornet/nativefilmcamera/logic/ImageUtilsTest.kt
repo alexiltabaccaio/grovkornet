@@ -86,4 +86,57 @@ class ImageUtilsTest {
         assertEquals(800, result.width)
         assertEquals(800, result.height)
     }
+
+    @Test
+    fun calculateCropRectBeforeRotation_invalidType_returnsFullBounds() {
+        val rect = ImageUtils.calculateCropRectBeforeRotation(800, 600, 0, 999)
+        assertEquals(0, rect.left)
+        assertEquals(0, rect.top)
+        assertEquals(800, rect.right)
+        assertEquals(600, rect.bottom)
+    }
+
+    @Test
+    fun calculateCropRectBeforeRotation_closeTolerance_returnsFullBounds() {
+        val rect = ImageUtils.calculateCropRectBeforeRotation(800, 600, 0, 0) // 4:3 (type 0)
+        assertEquals(0, rect.left)
+        assertEquals(0, rect.top)
+        assertEquals(800, rect.right)
+        assertEquals(600, rect.bottom)
+    }
+
+    @Test
+    fun calculateCropRectBeforeRotation_landscape_rotation90_target16_9() {
+        // Raw: 4000x3000 (4:3), Rotated 90: 3000x4000 (portrait).
+        // Target: 16:9, which maps to 9:16 portrait -> 2250x4000 rotated.
+        // Unrotated crop should be 4000x2250 (16:9).
+        val rect = ImageUtils.calculateCropRectBeforeRotation(4000, 3000, 90, 1) // 16:9 (type 1)
+        assertEquals(0, rect.left)
+        assertEquals(375, rect.top)
+        assertEquals(4000, rect.right)
+        assertEquals(2625, rect.bottom)
+    }
+
+    @Test
+    fun calculateCropRectBeforeRotation_landscape_rotation0_target16_9() {
+        // Raw: 4000x3000 (4:3), Rotated 0: 4000x3000.
+        // Target: 16:9 landscape -> 4000x2250.
+        val rect = ImageUtils.calculateCropRectBeforeRotation(4000, 3000, 0, 1) // 16:9
+        assertEquals(0, rect.left)
+        assertEquals(375, rect.top)
+        assertEquals(4000, rect.right)
+        assertEquals(2625, rect.bottom)
+    }
+
+    @Test
+    fun calculateCropRectBeforeRotation_portraitSensor_rotation90_target16_9() {
+        // Raw: 3000x4000 (portrait), Rotated 90: 4000x3000 (landscape).
+        // Target: 16:9 landscape -> 4000x2250.
+        // Unrotated crop should be 2250x4000 (portrait 9:16).
+        val rect = ImageUtils.calculateCropRectBeforeRotation(3000, 4000, 90, 1) // 16:9
+        assertEquals(375, rect.left)
+        assertEquals(0, rect.top)
+        assertEquals(2625, rect.right)
+        assertEquals(4000, rect.bottom)
+    }
 }

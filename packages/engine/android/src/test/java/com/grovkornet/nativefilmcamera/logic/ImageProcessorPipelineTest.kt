@@ -1,7 +1,10 @@
 package com.grovkornet.nativefilmcamera.logic
 
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.BitmapRegionDecoder
 import android.graphics.Matrix
+import com.grovkornet.nativefilmcamera.state.CameraConfiguration
 import io.mockk.*
 import org.junit.After
 import org.junit.Assert.*
@@ -12,13 +15,17 @@ class ImageProcessorPipelineTest {
 
     private lateinit var mockOriginal: Bitmap
     private lateinit var mockResult: Bitmap
+    private lateinit var mockDecoder: BitmapRegionDecoder
 
     @Before
     fun setUp() {
         mockOriginal = mockk<Bitmap>(relaxed = true)
         mockResult = mockk<Bitmap>(relaxed = true)
+        mockDecoder = mockk<BitmapRegionDecoder>(relaxed = true)
 
         mockkStatic(Bitmap::class)
+        mockkStatic(BitmapFactory::class)
+        mockkStatic(BitmapRegionDecoder::class)
         mockkConstructor(Matrix::class)
 
         every { mockOriginal.width } returns 100
@@ -26,6 +33,19 @@ class ImageProcessorPipelineTest {
 
         every { Bitmap.createBitmap(any<Bitmap>(), any(), any(), any(), any(), any(), any()) } returns mockResult
         every { Bitmap.createScaledBitmap(any(), any(), any(), any()) } returns mockResult
+
+        // Setup BitmapFactory mock
+        every { BitmapFactory.decodeByteArray(any(), any(), any(), any()) } answers {
+            val options = arg<BitmapFactory.Options>(3)
+            options.outWidth = 4000
+            options.outHeight = 3000
+            mockOriginal
+        }
+
+        // Setup BitmapRegionDecoder mock
+        every { BitmapRegionDecoder.newInstance(any<ByteArray>(), any(), any(), any()) } returns mockDecoder
+        every { BitmapRegionDecoder.newInstance(any<ByteArray>(), any(), any()) } returns mockDecoder
+        every { mockDecoder.decodeRegion(any(), any()) } returns mockOriginal
     }
 
     @After
@@ -73,6 +93,27 @@ class ImageProcessorPipelineTest {
 
         val result = ImageProcessorPipeline.scaleToTargetResolution(mockOriginal, 2) // Target 1080p
         assertSame("Should return scaled bitmap", mockResult, result)
+        verify(exactly = 1) { mockOriginal.recycle() }
+    }
+
+    @Test
+    fun testProcessRawCaptureBytes_success() {
+        val config = mockk<CameraConfiguration>(relaxed = true)
+        every { config.aspectRatio } returns 1 // 16:9
+        every { config.resolutionSetting } returns 2 // 1080p
+        every { config.isSelfieCamera } returns false
+
+        // Mock decoded bounds
+        every { mockOriginal.width } returns 4000
+        every { mockOriginal.height } returns 2250 // already cropped aspect ratio size
+
+        val dummyBytes = ByteArray(10)
+        val result = ImageProcessorPipeline.processRawCaptureBytes(dummyBytes, 90, config)
+
+        assertNotNull(result)
+        assertSame(mockResult, result)
+        verify(exactly = 1) { mockDecoder.decodeRegion(any(), any()) }
+        verify(exactly = 1) { mockDecoder.recycle() }
         verify(exactly = 1) { mockOriginal.recycle() }
     }
 }
