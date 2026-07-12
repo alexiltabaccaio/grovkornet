@@ -49,7 +49,7 @@ export default function MainScreen() {
   const [seriesNumber, setSeriesNumber] = useState('01');
 
   const currentPage = pages[activePageIndex] || INITIAL_PAGE;
-  const { selectedPath, fullCode, lineRanges, language, fileName } = currentPage;
+  const { selectedPath, fullCode, lineRanges, fileName } = currentPage;
 
   const lines = fullCode.split('\n');
   const totalLines = lines.length;
@@ -117,27 +117,40 @@ export default function MainScreen() {
     return Array.from(result).sort((a, b) => a - b);
   };
 
-  let selectedLineNumbers = parseLineRanges(lineRanges, totalLines);
-  if (selectedLineNumbers.length === 0 && !lineRanges.trim()) {
-    selectedLineNumbers = Array.from({ length: totalLines }, (_, i) => i + 1);
-  }
-  
-  const slicedCodeLines: string[] = [];
-  const lineNumbers: (number | string)[] = [];
+  const [adaptFormat, setAdaptFormat] = useState(true);
 
-  for (let i = 0; i < selectedLineNumbers.length; i++) {
-    const currentLine = selectedLineNumbers[i];
-    
-    if (i > 0 && currentLine > selectedLineNumbers[i - 1] + 1) {
-      slicedCodeLines.push('// ...');
-      lineNumbers.push('...');
+  const getPageRenderData = (page: SnapshotPage) => {
+    const lines = page.fullCode.split('\n');
+    const totalLines = lines.length;
+    let selectedLineNumbers = parseLineRanges(page.lineRanges, totalLines);
+    if (selectedLineNumbers.length === 0 && !page.lineRanges.trim()) {
+      selectedLineNumbers = Array.from({ length: totalLines }, (_, i) => i + 1);
     }
     
-    slicedCodeLines.push(lines[currentLine - 1]);
-    lineNumbers.push(currentLine);
-  }
-  
-  const slicedCode = slicedCodeLines.join('\n');
+    const slicedCodeLines: string[] = [];
+    const lineNumbers: (number | string)[] = [];
+
+    for (let i = 0; i < selectedLineNumbers.length; i++) {
+      const currentLine = selectedLineNumbers[i];
+      if (i > 0 && currentLine > selectedLineNumbers[i - 1] + 1) {
+        slicedCodeLines.push('// ...');
+        lineNumbers.push('...');
+      }
+      slicedCodeLines.push(lines[currentLine - 1]);
+      lineNumbers.push(currentLine);
+    }
+    
+    return {
+      id: page.id,
+      code: slicedCodeLines.join('\n'),
+      language: page.language,
+      fileName: page.fileName,
+      lineNumbers,
+    };
+  };
+
+  const pagesRenderData = adaptFormat ? pages.map(getPageRenderData) : [getPageRenderData(currentPage)];
+  const renderedActiveIndex = adaptFormat ? activePageIndex : 0;
 
   const handleSelectFile = (path: string) => {
     const targetIndex = activePageIndex;
@@ -216,12 +229,12 @@ export default function MainScreen() {
         onAddPage={handleAddPage}
         onRemovePage={handleRemovePage}
         onSelectPage={setActivePageIndex}
+        adaptFormat={adaptFormat}
+        setAdaptFormat={setAdaptFormat}
       />
       <PreviewArea
-        code={slicedCode}
-        language={language}
-        fileName={fileName}
-        lineNumbers={lineNumbers}
+        pages={pagesRenderData}
+        activeIndex={renderedActiveIndex}
         seriesTag={seriesTag}
         seriesNumber={seriesNumber}
         pageCurrent={pageCurrent}

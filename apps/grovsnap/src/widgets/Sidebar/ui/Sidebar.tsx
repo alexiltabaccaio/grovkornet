@@ -27,6 +27,8 @@ interface SidebarProps {
   onAddPage: () => void;
   onRemovePage: (index: number) => void;
   onSelectPage: (index: number) => void;
+  adaptFormat: boolean;
+  setAdaptFormat: (val: boolean) => void;
 }
 
 export default function Sidebar({
@@ -45,7 +47,9 @@ export default function Sidebar({
   activePageIndex,
   onAddPage,
   onRemovePage,
-  onSelectPage
+  onSelectPage,
+  adaptFormat,
+  setAdaptFormat
 }: SidebarProps) {
   return (
     <aside className="sidebar">
@@ -90,7 +94,18 @@ export default function Sidebar({
 
       {/* 3. Pagine Selector */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-        <label style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-secondary)' }}>PAGINE</label>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <label style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-secondary)' }}>PAGINE</label>
+          <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.75rem', color: 'var(--text-secondary)', cursor: 'pointer' }}>
+            <input 
+              type="checkbox" 
+              checked={adaptFormat}
+              onChange={(e) => setAdaptFormat(e.target.checked)}
+              style={{ accentColor: 'var(--accent-primary)', cursor: 'pointer' }}
+            />
+            Adatta Formato
+          </label>
+        </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
           {pages.map((page, index) => {
             const isActive = index === activePageIndex;
