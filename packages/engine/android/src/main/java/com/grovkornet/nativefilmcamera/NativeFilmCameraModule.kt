@@ -7,6 +7,9 @@ import com.grovkornet.nativefilmcamera.errors.CameraErrorFactory
 import com.grovkornet.nativefilmcamera.ui.NativeFilmCameraView
 import com.grovkornet.nativefilmcamera.events.CameraEvents
 import kotlin.math.roundToInt
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.Dispatchers
 
 class NativeFilmCameraModule : Module() {
   private var deviceHealthManager: com.grovkornet.nativefilmcamera.managers.DeviceHealthManager? = null
@@ -44,10 +47,19 @@ class NativeFilmCameraModule : Module() {
       com.grovkornet.nativefilmcamera.logic.WatermarkEngine.verifyGrovkornetAuthenticity(appContext.reactContext ?: throw CameraErrorFactory.createCameraBindFailed("React context is null"), uri)
     }
 
-    AsyncFunction("generatePresetPreview") { inputUriString: String, payload: Map<String, Any> ->
-      kotlinx.coroutines.runBlocking {
-        val context = appContext.reactContext ?: throw CameraErrorFactory.createCameraBindFailed("React context is null")
-        com.grovkornet.nativefilmcamera.services.PresetPreviewService.generatePresetPreview(context, inputUriString, payload)
+    AsyncFunction("generatePresetPreview") { inputUriString: String, payload: Map<String, Any>, promise: expo.modules.kotlin.Promise ->
+      val context = appContext.reactContext
+      if (context == null) {
+          promise.reject("BIND_FAILED", "React context is null", null)
+          return@AsyncFunction
+      }
+      kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.Default).launch {
+          try {
+              val result = com.grovkornet.nativefilmcamera.services.PresetPreviewService.generatePresetPreview(context, inputUriString, payload)
+              promise.resolve(result)
+          } catch (e: Throwable) {
+              promise.reject("PREVIEW_FAILED", e.message ?: "Failed to generate preset preview", e)
+          }
       }
     }
 

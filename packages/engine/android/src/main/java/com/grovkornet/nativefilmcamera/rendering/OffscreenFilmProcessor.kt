@@ -10,6 +10,8 @@ import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 import java.util.concurrent.Executors
 
 class OffscreenFilmProcessor {
@@ -183,10 +185,10 @@ class OffscreenFilmProcessor {
         }
     }
 
-    fun release() = kotlinx.coroutines.runBlocking {
-        withContext(singleThreadContext) {
+    fun release() {
+        kotlinx.coroutines.CoroutineScope(singleThreadContext).launch {
             processMutex.withLock {
-                if (!isPrepared) return@withContext
+                if (!isPrepared) return@launch
                 
                 if (BuildConfig.DEBUG) {
                     Log.i(TAG, "Releasing native Filament engine...")

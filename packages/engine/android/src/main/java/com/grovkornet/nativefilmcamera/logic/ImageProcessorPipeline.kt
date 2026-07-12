@@ -79,6 +79,9 @@ object ImageProcessorPipeline {
                 val full = BitmapFactory.decodeByteArray(bytes, 0, bytes.size, options)
                 if (full != null) {
                     regionBitmap = ImageUtils.cropToAspectRatio(full, config.aspectRatio)
+                    if (regionBitmap != full) {
+                        full.recycle()
+                    }
                 }
             } catch (e: Exception) {
                 android.util.Log.e("ImageProcessorPipeline", "Fallback decode failed", e)
