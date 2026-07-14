@@ -1,7 +1,5 @@
 **Attachment for Grovsnap:** `@[apps/grovsnap/vite-plugin-local-fs.ts]` (Lines 92-147)
 
-# 🟦 LinkedIn
-
 Friction kills developer velocity.
 
 When I decided to start sharing code snippets from my monorepo, the mere thought of breaking my flow to screenshot the IDE or upload code to a third-party site was exhausting.
@@ -23,21 +21,3 @@ The Vite middleware code is fully open-source in the monorepo: https://github.co
 I'm curious: how do you manage the "build vs buy" tradeoff for internal DX tools? At what point do you decide that the friction is high enough to justify building a custom solution? 👇
 
 #PlatformEngineering #DeveloperExperience #Vite #DevTools #Grovkornet
-
----
-
-# 🟧 Reddit (r/Grovkornet)
-
-**Title:** Friday Log #1: Building an internal tool to share code snippets with you
-
-Welcome to the very first Friday Log! *(Yes, I know today is Saturday, but I literally just opened this subreddit so I'm catching up!)*
-
-Since I'll be sharing a lot of code in the upcoming *Tuesday Insights*, I wanted a quick way to generate beautiful code snippets. But copying code into third-party websites every time felt like an unnecessary extra step. Honestly, I'm a very lazy person.
-
-So, I built a custom internal tool inside the monorepo called **Grovsnap** [https://github.com/alexiltabaccaio/grovkornet/tree/main/apps/grovsnap].
-
-What you see in the image is the tool in action: it's a generated snippet showing the exact custom Vite plugin that powers the tool itself!
-
-Instead of fighting browser sandboxes or doing manual uploads, Grovsnap connects directly to my **local filesystem**. I wrote a **custom Vite plugin** to expose two local APIs (`/api/fs/tree` and `/api/fs/file`). This lets me safely browse the Grovkornet source code, select a file, and automatically generate a styled snippet with syntax highlighting. **It completely removes the copy-pasting step.**
-
-Let me know what you think of this setup, and see you on Tuesday for the first deep-dive into the Grovkornet codebase! 
