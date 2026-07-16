@@ -1,6 +1,8 @@
+**Publication Date:** 2026-07-17
+
 **Attachments for Grovsnap:**
-1. `@[packages/engine/android/src/main/java/com/grovkornet/nativefilmcamera/logic/ImageProcessorPipeline.kt]` (Lines 19-24, 47-74)
-2. `@[packages/engine/android/src/test/java/com/grovkornet/nativefilmcamera/logic/ImageProcessorPipelineTest.kt]` (Lines 108-126)
+1. `@[packages/engine/android/src/main/java/com/grovkornet/nativefilmcamera/logic/ImageProcessorPipeline.kt]` (Lines 19-24, 47-74) - *Shows the use of BitmapRegionDecoder for on-the-fly downsampling of the cropped region*
+2. `@[packages/engine/android/src/test/java/com/grovkornet/nativefilmcamera/logic/ImageProcessorPipelineTest.kt]` (Lines 108-126) - *Shows the native unit tests validating the memory footprint reduction*
 
 Building a custom camera app comes with a harsh reality check: processing high-resolution camera frames will eat your memory alive if you're not careful.
 

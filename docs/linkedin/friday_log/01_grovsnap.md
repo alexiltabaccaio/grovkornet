@@ -1,4 +1,6 @@
-**Attachment for Grovsnap:** `@[apps/grovsnap/vite-plugin-local-fs.ts]` (Lines 92-147)
+**Publication Date:** 2026-07-10
+
+**Attachment for Grovsnap:** `@[apps/grovsnap/vite-plugin-local-fs.ts]` (Lines 92-147) - *Shows the custom Vite middleware that securely exposes the local filesystem*
 
 Friction kills developer velocity.
 

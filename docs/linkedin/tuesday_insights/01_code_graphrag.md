@@ -1,6 +1,8 @@
+**Publication Date:** 2026-07-14
+
 **Attachments for Grovsnap:**
-1. `@[packages/shared/scripts/graphrag/src/algorithms/fsd-validator.js]` (Lines 64-90) - *Mostra il cuore della validazione delle regole architetturali*
-2. `@[packages/shared/scripts/graphrag/src/cli/query.js]` (Lines 46-62) - *Mostra l'interfaccia CLI usata dall'LLM per interrogare il grafo*
+1. `@[packages/shared/scripts/graphrag/src/algorithms/fsd-validator.js]` (Lines 64-90) - *Shows the core of architectural rules validation*
+2. `@[packages/shared/scripts/graphrag/src/cli/query.js]` (Lines 46-62) - *Shows the CLI interface used by the LLM to query the graph*
 
 LLM Agents are incredible tools that write code at a frightening speed. But there's a catch: if you don't set rigid boundaries, they will destroy your architecture in a matter of days.
 
@@ -22,4 +24,4 @@ An AI is a formidable executor, but for complex projects, *you* must be the arch
 
 Have you ever experienced issues with LLM-generated "spaghetti code" while scaling your projects? 👇
 
-#LLMs #SoftwareArchitecture #GraphRAG #FeatureSlicedDesign #SystemDesign #TypeScript #ReactNative
+#LLMs #SoftwareArchitecture #GraphRAG #FeatureSlicedDesign #SystemDesign #TypeScript #ReactNative #Grovkornet
