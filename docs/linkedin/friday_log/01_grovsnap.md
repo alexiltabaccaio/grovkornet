@@ -14,8 +14,6 @@ I wrote a custom Vite plugin that exposes two local middleware endpoints (`/api/
 
 No copy-pasting, no manual uploads. I just browse the file tree, select the file, pick the exact lines I need, and the tool renders it with Shiki.
 
-*(I'm kicking off a new habit today: "Friday Logs" 🚀 for my weekly recaps, and "Tuesday Insights" 💡 to share how I solved hard problems over the last few months of silence).*
-
 The Vite middleware code is fully open-source in the monorepo: https://github.com/alexiltabaccaio/grovkornet/tree/main/apps/grovsnap
 
 I'm curious: how do you manage the "build vs buy" tradeoff for internal DX tools? At what point do you decide that the friction is high enough to justify building a custom solution? 👇

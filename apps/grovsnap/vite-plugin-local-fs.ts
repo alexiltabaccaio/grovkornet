@@ -17,8 +17,6 @@ const EXCLUDE_DIRS = new Set([
   '.expo',
   'dist',
   'build',
-  'ios',
-  'android',
   'bin',
   'obj',
   'gradle',
