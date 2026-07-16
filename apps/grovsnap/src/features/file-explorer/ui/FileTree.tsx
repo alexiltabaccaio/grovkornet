@@ -73,14 +73,21 @@ export default function FileTree({ onSelectFile, selectedPath }: FileTreeProps) 
       for (const node of nodes) {
         if (node.type === 'directory' && node.children) {
           const matchingChildren = filterNodes(node.children);
-          if (matchingChildren.length > 0 || node.name.toLowerCase().includes(search.toLowerCase())) {
+          if (
+            matchingChildren.length > 0 || 
+            node.name.toLowerCase().includes(search.toLowerCase()) ||
+            node.path.replace(/\\/g, '/').toLowerCase().includes(search.toLowerCase())
+          ) {
             result.push({
               ...node,
               children: matchingChildren
             });
           }
         } else if (node.type === 'file') {
-          if (node.name.toLowerCase().includes(search.toLowerCase())) {
+          if (
+            node.name.toLowerCase().includes(search.toLowerCase()) ||
+            node.path.replace(/\\/g, '/').toLowerCase().includes(search.toLowerCase())
+          ) {
             result.push(node);
           }
         }
@@ -99,7 +106,10 @@ export default function FileTree({ onSelectFile, selectedPath }: FileTreeProps) 
         for (const node of nodes) {
           if (node.type === 'directory' && node.children) {
             const hasMatches = (n: FileNode): boolean => {
-              if (n.name.toLowerCase().includes(search.toLowerCase())) return true;
+              if (
+                n.name.toLowerCase().includes(search.toLowerCase()) || 
+                n.path.replace(/\\/g, '/').toLowerCase().includes(search.toLowerCase())
+              ) return true;
               if (n.children) return n.children.some(hasMatches);
               return false;
             };
