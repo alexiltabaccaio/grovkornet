@@ -29,7 +29,7 @@ const EXCLUDE_DIRS = new Set([
 
 const ALLOWED_EXTENSIONS = new Set([
   '.ts', '.tsx', '.js', '.jsx', '.json', '.css', '.html', '.md',
-  '.cpp', '.h', '.kt', '.swift', '.gradle', '.xml', '.yml', '.yaml', '.txt', '.jsonl'
+  '.cpp', '.h', '.hpp', '.kt', '.swift', '.gradle', '.xml', '.yml', '.yaml', '.txt', '.jsonl'
 ]);
 
 const __filename = fileURLToPath(import.meta.url);
