@@ -11,7 +11,7 @@ public:
 
     static void initTables();
 
-    // Embeds the 64-bit watermark into the top-left 64x64 region of the pixels (in ARGB_8888 or RGBA_8888 format)
+    // Embeds the 64-bit watermark into 5 distinct 64x64 regions of the pixels (in ARGB_8888 or RGBA_8888 format)
     static void embedSignature(uint32_t* pixels, int width, int height, int stride);
 
     // Verifies if the pixels have the signature embedded (uses EXIF software tag check as fast path in Kotlin, DCT deep pass here)
